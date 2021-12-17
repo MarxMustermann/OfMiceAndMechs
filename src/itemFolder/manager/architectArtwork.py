@@ -1384,7 +1384,7 @@ class ArchitectArtwork(src.items.Item):
             task["offset"][0],
             task["offset"][1],
         )
-        if task["roomType"] == "EmptyRoom":
+        if task["roomType"] in ("EmptyRoom","TrapRoom"):
             entryPoints = []
             for part in task["doors"].split(" "):
                 entryPointX = int(part.split(",")[0])
@@ -1400,6 +1400,10 @@ class ArchitectArtwork(src.items.Item):
                 context["character"].addMessage(entryPoints)
 
             room.reconfigure(task["size"][0], task["size"][1], doorPos=entryPoints)
+
+        faction = task.get("faction")
+        if faction: 
+            room.faction = faction
 
         terrain = self.getTerrain()
 

@@ -68,6 +68,7 @@ except:
             return tuple(color)
 
 
+landmine = (AttrSpec("#f00", "black"), "_~")
 sunScreen = (AttrSpec("#420", "black"), "oo")
 healingStation = (AttrSpec("#f00", "black"), "HS")
 forceField2 = (AttrSpec("#3f3", "black"), "##")
@@ -193,6 +194,8 @@ corpse = (AttrSpec("#f00", "black"), "＠")
 unconciousBody = (AttrSpec("#f22", "black"), "@ ")
 growthTank_filled = (AttrSpec("#3b3", "black"), "OO")
 growthTank_unfilled = (AttrSpec("#3b3", "black"), "00")
+corpseAnimator_filled = (AttrSpec("#f33", "black"), "OO")
+corpseAnimator_unfilled = (AttrSpec("#f33", "black"), "00")
 hutch_free = (AttrSpec("#3b3", "black"), "==")
 hutch_occupied = (AttrSpec("#3f3", "black"), "=}")
 lever_notPulled = (AttrSpec("#bb3", "black"), "||")
@@ -349,6 +352,6 @@ staffCharactersByLetter = {
 winch = "8O"
 winch_inactive = "80"
 winch_active = "iW"
-scrap_light = (AttrSpec("#f50", "black"), ".;")
-scrap_medium = (AttrSpec("#a60", "black"), "*,")
-scrap_heavy = (AttrSpec("#860", "black"), "%#")
+scrap_light = (AttrSpec("#830", "black"), ".;")
+scrap_medium = (AttrSpec("#740", "black"), "*,")
+scrap_heavy = (AttrSpec("#a50", "black"), "%#")

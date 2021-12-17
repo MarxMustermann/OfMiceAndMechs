@@ -8,6 +8,7 @@ for module in os.listdir(os.path.dirname(__file__)):
 del module
 """
 
+import src.itemFolder.automation.commandCycler
 import src.itemFolder.automation.command
 import src.itemFolder.automation.jobBoard
 import src.itemFolder.automation.jobOrder

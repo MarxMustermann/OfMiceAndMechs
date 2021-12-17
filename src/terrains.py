@@ -1381,7 +1381,7 @@ class Terrain(src.saveing.Saveable):
         character.yPosition = y
         character.changed()
         self.changed("entered terrain", character)
-        src.interaction.multi_chars.add(character)
+        src.interaction.new_chars.add(character)
 
     # obsolete: debugging code for obsolete code
     # bad code: is part visual debugging and partially looking nice, it still has to be integrated properly

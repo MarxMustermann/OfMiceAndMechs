@@ -113,8 +113,13 @@ class NPCsOverlay(object):
                     print("failed to show char")
                     print(character.yPosition-coordinateOffset[0],character.xPosition-coordinateOffset[1])
             else:
-                try:
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
+                #try:
+                if 1==1:
+                    if not isinstance(character,src.characters.Ghul):
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@"+str(character.rank))
+                    else:
+                        chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@x")
+                    
                     if character.faction.endswith("#1"):
                         chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].fg = "#066"
                     if character.faction.endswith("#2"):
@@ -154,8 +159,8 @@ class NPCsOverlay(object):
                     if character.showGaveCommand:
                         chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#855"
                         character.showGaveCommand = False
-                except:
-                    pass
+                #except:
+                #    pass
 
 class MainCharOverlay(object):
     """

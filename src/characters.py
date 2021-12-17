@@ -2554,6 +2554,57 @@ class CollectorSpider(Spider):
     def render(self):
         return "SS"
 
+class Ghul(Character):
+
+    def __init__(
+        self,
+        display="@ ",
+        xPosition=0,
+        yPosition=0,
+        quests=[],
+        automated=True,
+        name="Ghul",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+        self.solvers.append("NaiveActivateQuest")
+
+        self.baseDamage = self.baseDamage*3
+        self.randomBonus = self.randomBonus*2
+
+    def getOwnAction(self):
+        self.hasOwnAction = 0
+        return "."
+
+    def heal(self, amount, reason=None):
+        self.addMessage("ghuls don't heal")
+        return
+
+    def hurt(self, damage, reason=None):
+        super().hurt(1,reason=reason)
 
 characterMap = {
     "Character": Character,

@@ -602,11 +602,11 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = 200
+        self.startDelay = 500
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
-        self.gatherTime = 100
+        self.gatherTime = 200
 
     def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
         self.npcCounter += 1
@@ -673,7 +673,7 @@ class BackToTheRoots(BasicPhase):
         self.citylocations.append((8,8))
         numCities = 0
         while numCities < 4:
-            pos = (random.randint(3,11),random.randint(3,11))
+            pos = (random.randint(3,11),random.randint(4,11))
 
             foundEnemyCity = None
             for cityPos in self.citylocations:
@@ -794,18 +794,6 @@ class BackToTheRoots(BasicPhase):
         )
         rooms.append(room)
 
-        room = architect.doAddRoom(
-            {
-                "coordinate": (7-1,7+1),
-                "roomType": "EmptyRoom",
-                "doors": "12,6 0,6",
-                "offset": [1,1],
-                "size": [13, 13],
-                },
-            None,
-        )
-        rooms.append(room)
-
         # add treasure room
         room = rooms[0]
         sword = src.items.itemMap["Sword"]()
@@ -817,20 +805,21 @@ class BackToTheRoots(BasicPhase):
 
 
         roomCounter = 0
-        for room in reversed(rooms[1:]):
+        for room in reversed(rooms[1:-1]):
             roomCounter += 1
-            for i in range(0,1):
-                pos = (int(random.random()*14),int(random.random()*14))
+            for i in range(0,3):
+                pos = (int(random.random()*12)+1,int(random.random()*12)+1)
                 enemy = src.characters.Monster(pos[0],pos[1])
                 enemy.health = 10*roomCounter
                 enemy.baseDamage = roomCounter
+                enemy.godMode = True
                 enemy.macroState["macros"]["g"] = ["g","g","_","g"]
                 enemy.runCommandString("_g")
                 room.addCharacter(enemy, pos[0], pos[1])
         
         placedMainChar = False
 
-        offsets = [(-2,+1)]
+        offsets = [(-1,+1)]
         for offset in offsets:
             architect.doClearField(7+offset[0],7+offset[1])
             currentTerrain.noPlacementTiles.append((7+offset[0],7+offset[1]))
@@ -854,7 +843,7 @@ class BackToTheRoots(BasicPhase):
                                 mine = src.items.itemMap["LandMine"]()
                                 currentTerrain.addItem(mine,pos)
                         
-                        item = src.items.itemMap["Scrap"](amount=int(random.random()*5))
+                        item = src.items.itemMap["Scrap"](amount=int(random.random()*13))
                         currentTerrain.addItem(item,pos)
 
         enemy = src.characters.Character(6,6)
@@ -989,7 +978,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": citylocation,
                     "roomType": "EmptyRoom",
-                    "doors": "0,6 6,0 12,6 6,12",
+                    "doors": "6,12",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
@@ -997,6 +986,7 @@ class BackToTheRoots(BasicPhase):
             )
 
             rooms = []
+
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0],citylocation[1]+1),
@@ -1007,42 +997,314 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
+            backGuardRoom = room
             rooms.append(room)
+            
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0],citylocation[1]-1),
-                    "roomType": "EmptyRoom",
-                    "doors": "0,6 6,12 12,6",
+                    "roomType": "TrapRoom",
+                    "faction": "city #%s"%(cityCounter,),
+                    "doors": "0,6 6,0 12,6",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
                 None,
             )
+            guardRoom = room
             rooms.append(room)
+
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]),
                     "roomType": "EmptyRoom",
-                    "doors": "0,6 6,0 6,12",
+                    "doors": "6,0 6,12",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
                 None,
             )
+            crystalWorkshop = room
             rooms.append(room)
+
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]-1,citylocation[1]),
                     "roomType": "EmptyRoom",
-                    "doors": "6,0 6,12 12,6",
+                    "doors": "6,0 6,12",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
                 None,
             )
+            basicMetalWorkshop = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]-1,citylocation[1]-1),
+                    "roomType": "EmptyRoom",
+                    "doors": "6,12 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            guardRoom2 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]-1,citylocation[1]+1),
+                    "roomType": "EmptyRoom",
+                    "doors": "6,0 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            workshop = room
             rooms.append(room)
 
             self.cityNPCCounters[citylocation] = 0
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+1,citylocation[1]-1),
+                    "roomType": "EmptyRoom",
+                    "doors": "0,6 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            guardRoom3 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+1,citylocation[1]+1),
+                    "roomType": "EmptyRoom",
+                    "doors": "6,0 0,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            workshop2 = room
+            rooms.append(room)
+
+            scrap= src.items.itemMap["Scrap"](amount=20)
+            basicMetalWorkshop.addItem(scrap,(1,2,0))
+            scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+            basicMetalWorkshop.addItem(scrapCompactor,(2,2,0))
+
+            machine = src.items.itemMap["Machine"]()
+            machine.setToProduce("Sheet")
+            basicMetalWorkshop.addItem(machine,(4,2,0))
+
+            machine = src.items.itemMap["Machine"]()
+            machine.setToProduce("Rod")
+            basicMetalWorkshop.addItem(machine,(2,4,0))
+
+            machine = src.items.itemMap["Machine"]()
+            machine.setToProduce("Armor")
+            basicMetalWorkshop.addItem(machine,(4,4,0))
+
+            machine = src.items.itemMap["GrowthTank"]()
+            workshop.addItem(machine,(2,2,0))
+
+            scrap= src.items.itemMap["Scrap"](amount=20)
+            crystalWorkshop.addItem(scrap,(1,2,0))
+            scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+            crystalWorkshop.addItem(scrapCompactor,(2,2,0))
+
+            machine = src.items.itemMap["Machine"]()
+            machine.setToProduce("CrystalCompressor")
+            crystalWorkshop.addItem(machine,(4,2,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3w4aJwddJwdKwd3s"+"15w"+"15a"+"4d3wJw3s4a"+"15d"+"15s"
+            crystalWorkshop.addItem(command,(6,6,0))
+
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(4,1,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(4,1,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(4,1,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(4,1,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(4,1,0))
+            
+            machine = src.items.itemMap["CorpseAnimator"]()
+            machine.commands["born"] = "j"
+            workshop.addItem(machine,(4,2,0))
+
+            machine = src.items.itemMap["CommandCycler"]()
+            machine.commands = ["ssdj", "s3dwj", "s3dsj"]
+            workshop.addItem(machine,(8,2,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "ddJd"
+            workshop.addItem(command,(5,2,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "Kdaassj"
+            workshop.addItem(command,(8,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(9,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(9,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(9,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(9,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(9,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(9,4,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "Kdaaaass"+"15d15dj"
+            workshop.addItem(command,(10,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,4,0))
+
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "Kdssaaaass"+"15w15w15dj"
+            workshop.addItem(command,(10,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(11,2,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "Kdwjsajdsjw"+"15w"+"j"+"15s"+"j"
+            workshop.addItem(command,(6,6,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop.addItem(corpse,(7,6,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "Kdwjsajdsjw"+"15w"+"j"+"15s"+"j"
+            workshop2.addItem(command,(6,6,0))
+            corpse = src.items.itemMap["Corpse"]()
+            workshop2.addItem(corpse,(7,6,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "wjsajddjasjw"+"15a"+"j"+"15d"+"15d"+"j"+"15a"+"j"
+            guardRoom.addItem(command,(6,6,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "gg"
+            guardRoom.addItem(command,(7,6,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "ggKdKsKa"
+            guardRoom.addItem(command,(6,7,0))
+            corpse = src.items.itemMap["Corpse"]()
+            guardRoom.addItem(corpse,(6,8,0))
+            corpse = src.items.itemMap["Corpse"]()
+            guardRoom.addItem(corpse,(5,7,0))
+            corpse = src.items.itemMap["Corpse"]()
+            guardRoom.addItem(corpse,(7,7,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "gg"
+            guardRoom.addItem(command,(6,5,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "gg"
+            guardRoom.addItem(command,(5,6,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "gg"
+            guardRoom2.addItem(command,(6,6,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "gg"
+            guardRoom3.addItem(command,(6,6,0))
+
+            machine = src.items.itemMap["ProductionArtwork"]()
+            machine.godMode = True
+            workshop2.addItem(machine,(2,2,0))
+
+            machine = src.items.itemMap["AutoTutor"]()
+            workshop2.addItem(machine,(2,4,0))
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,8,4)
+            ghul.runCommandString("j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,4)
+            ghul.runCommandString("j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,2)
+            ghul.runCommandString("j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,2)
+            ghul.runCommandString("8.j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,2)
+            ghul.runCommandString("60.j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,2)
+            ghul.runCommandString("100.j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,2)
+            ghul.runCommandString("120.j")
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            workshop.addCharacter(ghul,10,2)
+            ghul.runCommandString("132.j")
+
+            #src.gamestate.gamestate.mainChar = ghul
+            #placedMainChar = True
 
             counter = 1
             for pos in self.specialItemSlotPositions:
@@ -1050,14 +1312,14 @@ class BackToTheRoots(BasicPhase):
                 slotItem.itemID = counter
                 if counter == cityCounter:
                     slotItem.hasItem = True
-                mainRoom.addItem(slotItem,(pos[0],pos[1],0))
+                backGuardRoom.addItem(slotItem,(pos[0],pos[1],0))
                 counter += 1
 
             slotItem = src.items.itemMap["SpecialItem"]()
             slotItem.itemID = cityCounter
 
             leader = self.genNPC(cityCounter,citylocation)
-            leader.registers["ATTNPOSx"] = 7
+            leader.registers["ATTNPOSx"] = 5
             leader.registers["ATTNPOSy"] = 3
             mainRoom.addCharacter(leader,7,3)
             leader.rank = 3
@@ -1075,7 +1337,7 @@ class BackToTheRoots(BasicPhase):
 
             for i in range(0,3):
                 subleader = self.genNPC(cityCounter,citylocation)
-                subleader.registers["ATTNPOSx"] = 4+i*3
+                subleader.registers["ATTNPOSx"] = 3+i*3
                 subleader.registers["ATTNPOSy"] = 4
                 mainRoom.addCharacter(subleader,4+i*3,4)
 
@@ -1088,7 +1350,7 @@ class BackToTheRoots(BasicPhase):
 
                 for j in range(0,3):
                     subsubleader = self.genNPC(cityCounter,citylocation)
-                    subsubleader.registers["ATTNPOSx"] = 3+i*3+j
+                    subsubleader.registers["ATTNPOSx"] = 2+i*3+j
                     subsubleader.registers["ATTNPOSy"] = 5
                     offset = random.choice(((1,1),(1,-1),(-1,-1),(-1,1)))
                     currentTerrain.addCharacter(subsubleader, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
@@ -1116,7 +1378,7 @@ class BackToTheRoots(BasicPhase):
                             spawnWeapon = True
 
                         worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)+1,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
-                        worker.registers["ATTNPOSx"] = 3+i*3+j
+                        worker.registers["ATTNPOSx"] = 2+i*3+j
                         worker.registers["ATTNPOSy"] = 7+k
                         #mainRoom.addCharacter(worker,3+i*3+j,7+k)
                         offset = random.choice(((1,1),(1,-1),(-1,-1),(-1,1)))
@@ -1141,26 +1403,37 @@ class BackToTheRoots(BasicPhase):
 
             cityCounter += 1
 
-            for room in rooms:
-                xPos = 6
-                yPos = 6
-                if (xPos//15,yPos//15) in self.citylocations:
-                    continue
-                enemy = src.characters.Guardian(xPos,yPos)
-                enemy.health = 1500
-                enemy.baseDamage = 100 + random.randint(1, 10)
-                enemy.godMode = True
-                enemy.aggro = 1000000
-                enemy.macroState["macros"]["g"] = ["g","g","_","g"]
-                enemy.runCommandString("_g")
-                enemy.faction = leader.faction
-                #enemy.disabled = True
-                room.addCharacter(enemy, xPos, yPos)
+            xPos = 1
+            yPos = 1
+
+            enemy = src.characters.Guardian(xPos,yPos)
+            enemy.health = 1500
+            enemy.baseDamage = 100 + random.randint(1, 10)
+            enemy.godMode = True
+            enemy.aggro = 1000000
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            enemy.faction = leader.faction
+            mainRoom.addCharacter(enemy, xPos, yPos)
+
+            xPos = 7
+            yPos = 1
+
+            enemy = src.characters.Guardian(xPos,yPos)
+            enemy.health = 1500
+            enemy.baseDamage = 100 + random.randint(1, 10)
+            enemy.godMode = True
+            enemy.aggro = 1000000
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            enemy.faction = leader.faction
+            backGuardRoom.addCharacter(enemy, xPos, yPos)
 
         src.gamestate.gamestate.mainChar.runCommandString("~~", clear=True)
         src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
         src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
+        src.gamestate.gamestate.mainChar.personality["avoidItems"] = False
 
         src.gamestate.gamestate.mainChar.solvers = [
             "SurviveQuest",
@@ -1348,7 +1621,7 @@ press space to continue"""%(self.gatherTime,))
             terrain = src.gamestate.gamestate.terrainMap[7][7]
             foundRoom = None
             for room in terrain.rooms:
-                if room.xPosition == cityLocation[0] and room.yPosition == cityLocation[1]:
+                if room.xPosition == cityLocation[0] and room.yPosition == cityLocation[1]+1:
                     foundRoom = room
 
             if foundRoom:
@@ -1367,7 +1640,7 @@ press space to continue"""%(self.gatherTime,))
                         missingItems.append(item.itemID)
                         continue
                     foundItems.append(item.itemID)
-                    specialItemPositions[item.itemID] = cityLocation
+                    specialItemPositions[item.itemID] = (cityLocation[0],cityLocation[1]+1)
 
             hasItemMap[cityLocation] = foundItems
 

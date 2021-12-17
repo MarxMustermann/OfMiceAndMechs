@@ -18,7 +18,7 @@ class LandMine(src.items.Item):
         set up internal state
         """
 
-        super().__init__(display="_~")
+        super().__init__(display=src.canvas.displayChars.landmine)
 
     def pickUp(self, character):
         print("picked up")

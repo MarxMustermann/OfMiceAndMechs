@@ -5048,7 +5048,7 @@ class Serve(MetaQuestParralel):
             character.die(reason="superior died")
             return
         if not self.subQuests:
-            character.runCommandString("gg")
+            character.runCommandString(".gg.")
             return
         super().solver(character)
 
@@ -5250,9 +5250,11 @@ class GoToTile(Quest):
                 if character.container.getPositionWalkable((6,12,0)):
                     randomDirections.append("s")
                     directions.extend("s"*(self.targetPosition[1]-character.container.yPosition))
-                if random.random() < 0.2 or not directions:
+                if localRandom.random() < 0.2 or not directions:
                     directions = randomDirections
-                return ".15"+localRandom.choice(directions)+"gg"
+                if localRandom.random() < 0.2:
+                    return ".gg."
+                return ".15"+localRandom.choice(directions)
         else:
             if not (character.xPosition%15 == 7 and character.yPosition%15 == 7):
                 return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
@@ -5271,9 +5273,11 @@ class GoToTile(Quest):
                 if not character.container.getRoomByPosition((character.xPosition//15,character.yPosition//15+1)):
                     randomDirections.append("s")
                     directions.extend("s"*(self.targetPosition[1]-character.yPosition//15))
-                if random.random() < 0.2 or not directions:
+                if localRandom.random() < 0.2 or not directions:
                     directions = randomDirections
-                return ".13"+localRandom.choice(directions)+"gg"
+                if localRandom.random() < 0.2:
+                    return ".gg."
+                return ".13"+localRandom.choice(directions)
 
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None):
@@ -5424,6 +5428,27 @@ class GoHome(MetaQuestSequence):
                     if character.yPosition > 6:
                         return "w"*(character.yPosition-6)
                 else:
+
+                    pos = (character.container.xPosition,character.container.yPosition)
+                    if pos == (self.cityLocation[0],self.cityLocation[1]+1):
+                        return "15w"
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]+1):
+                        return "15a"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]+1):
+                        return "15d"
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]):
+                        return "15s"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]):
+                        return "15s"
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]-1):
+                        return "15s"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]-1):
+                        return "15s"
+                    if pos == (self.cityLocation[0],self.cityLocation[1]-1):
+                        return localRandom.choice(["15a","15d"])
+                    if pos == (self.cityLocation[0],self.cityLocation[1]-2):
+                        return "15s"
+
                     if character.container.xPosition < self.cityLocation[0]:
                         direction = "d"
                     elif character.container.xPosition > self.cityLocation[0]:
@@ -5605,6 +5630,7 @@ class EnterEnemyCity(MetaQuestSequence):
 
             if (not (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1])):
                 if not (character.xPosition == 6 and character.yPosition == 6):
+
                     if character.xPosition < 6:
                         return "a"*(6-character.xPosition)
                     if character.xPosition > 6:
@@ -5614,6 +5640,26 @@ class EnterEnemyCity(MetaQuestSequence):
                     if character.yPosition > 6:
                         return "s"*(character.yPosition-6)
                 else:
+                    pos = (character.container.xPosition,character.container.yPosition)
+                    if pos == (self.cityLocation[0],self.cityLocation[1]+1):
+                        return "15w"
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]+1):
+                        return "15a"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]+1):
+                        return "15d"
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]):
+                        return "15s"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]):
+                        return "15s"
+                    if pos == (self.cityLocation[0]+1,self.cityLocation[1]-1):
+                        return "15s"
+                    if pos == (self.cityLocation[0]-1,self.cityLocation[1]-1):
+                        return "15s"
+                    if pos == (self.cityLocation[0],self.cityLocation[1]-1):
+                        return localRandom.choice(["15a","15d"])
+                    if pos == (self.cityLocation[0],self.cityLocation[1]-2):
+                        return "15s"
+
                     directions = ["w","a","s","d"]
                     if character.container.xPosition < self.cityLocation[0]:
                         directions.extend(["d"]*(self.cityLocation[0]-character.container.xPosition))
@@ -5751,6 +5797,7 @@ class ObtainSpecialItem(MetaQuestSequence):
 
             #quest = StandAttention()
             #self.addQuest(quest)
+            homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
 
             # order is reverse to order in code
 
@@ -5762,6 +5809,13 @@ class ObtainSpecialItem(MetaQuestSequence):
             # go home
             quest = GoHome()
             self.addQuest(quest)
+
+            if self.itemLocation[0] == homeLocation[0]:
+                quest = GoToTile()
+                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-2)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
             # grab the item
             lifetime = None
@@ -5781,36 +5835,45 @@ class ObtainSpecialItem(MetaQuestSequence):
             quest.activate()
 
             # enter the city
-            homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
-            direction = [0,0]
-            if self.itemLocation[0] < homeLocation[0]:
-                direction[0] = -1
-            if self.itemLocation[0] > homeLocation[0]:
-                direction[0] = +1
-            if self.itemLocation[1] < homeLocation[1]:
-                direction[1] = -1
-            if self.itemLocation[1] > homeLocation[1]:
-                direction[1] = +1
+            quest = GoToTile()
+            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-2)})
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
 
-            if direction[0] == 0:
-                if random.random() > 0.5:
-                    direction[0] = 1
-                else:
-                    direction[0] = -1
-            if direction[1] == 0:
-                if random.random() > 0.5:
-                    direction[1] = 1
-                else:
-                    direction[1] = -1
+            if self.itemLocation[0] == homeLocation[0]:
+                quest = GoToTile()
+                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-2)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
             quest = GoToTile()
-            quest.setParameters({"targetPosition":(self.itemLocation[0]-direction[0],self.itemLocation[1]-direction[1])})
+            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]-2)})
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
 
             quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0]+direction[0],homeLocation[1]+direction[1])})
+            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]-1)})
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
+
+            quest = GoToTile()
+            quest.setParameters({"targetPosition":(homeLocation[0]-1,homeLocation[1]-1)})
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
+
+            quest = GoToTile()
+            quest.setParameters({"targetPosition":(homeLocation[0]-1,homeLocation[1]+1)})
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
+
+            quest = GoToTile()
+            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]+1)})
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)

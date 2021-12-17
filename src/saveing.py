@@ -1,3 +1,4 @@
+import random
 
 class LoadingRegistry(object):
     """
@@ -69,7 +70,7 @@ class Saveable(object):
     attributes that should be saved need to be registered as such
     """
 
-    attributesToStore = []
+    attributesToStore = ["id"]
     callbacksToStore = []
     objectsToStore = []
     tupleDictsToStore = []
@@ -84,6 +85,7 @@ class Saveable(object):
         basic state setting
         """
         self.doInit2()
+        self.id = str(random.random())
 
     def serializeCallback(self, callback):
         """
@@ -231,7 +233,12 @@ class Saveable(object):
         # set attributes
         for attribute in self.attributesToStore:
             if attribute in state:
-                setattr(self, attribute, state[attribute])
+                try:
+                    setattr(self, attribute, state[attribute])
+                except:
+                    print(attribute)
+                    print(self)
+                    pass
 
         # set callbacks
         for callbackName in self.callbacksToStore:

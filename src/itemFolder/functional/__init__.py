@@ -16,3 +16,4 @@ import src.itemFolder.functional.note
 import src.itemFolder.functional.roomControls
 import src.itemFolder.functional.stasisTank
 import src.itemFolder.functional.suicideBooth
+import src.itemFolder.functional.corpseAnimator

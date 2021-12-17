@@ -1918,7 +1918,7 @@ class ChatMenu(Chat):
             return True
 
         if not key == "~":
-            if src.gamestate.gamestate.mainChar.rank > self.partner.rank:
+            if self.partner.rank and src.gamestate.gamestate.mainChar.rank > self.partner.rank:
                 src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to adress someone out of rank")
                 return True
 

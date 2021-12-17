@@ -1,5 +1,6 @@
 import urwid
 
+landmine = (AttrSpec("#f00", "black"), "_~")
 sunScreen = (urwid.AttrSpec("#420", "black"), "oo")
 healingStation = (urwid.AttrSpec("#f00", "black"), "HS")
 forceField2 = (urwid.AttrSpec("#373", "black"), "##")
@@ -125,6 +126,8 @@ corpse = "࿊ "
 unconciousBody = "࿌ "
 growthTank_filled = (urwid.AttrSpec("#3b3", "black"), "⏣ ")
 growthTank_unfilled = (urwid.AttrSpec("#3f3", "black"), "⌬ ")
+corpseAnimator_filled = (urwid.AttrSpec("#f33", "black"), "⏣ ")
+corpseAnimator_unfilled = (urwid.AttrSpec("#f33", "black"), "⌬ ")
 hutch_free = (urwid.AttrSpec("#3b3", "black"), "Ѻ ")
 hutch_occupied = (urwid.AttrSpec("#3f3", "black"), "ꙭ ")
 lever_notPulled = (urwid.AttrSpec("#bb3", "black"), "||")
@@ -268,6 +271,6 @@ staffCharactersByLetter = {
 winch = "🞇 "
 winch_inactive = "🞅 "
 winch_active = "🞇 "
-scrap_light = (urwid.AttrSpec("#f50", "black"), "㌱")
-scrap_medium = (urwid.AttrSpec("#a60", "black"), "㌭")
-scrap_heavy = (urwid.AttrSpec("#860", "black"), "㌕")
+scrap_light = (urwid.AttrSpec("#830", "black"), "㌱")
+scrap_medium = (urwid.AttrSpec("#740", "black"), "㌭")
+scrap_heavy = (urwid.AttrSpec("#a50", "black"), "㌕")

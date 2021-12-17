@@ -18,6 +18,7 @@ import src.chats
 import src.gameMath
 import src.characters
 import src.gamestate
+import random
 
 # bad code: too many attributes
 # obsolete: lots of old code needs a cleanup
@@ -384,8 +385,6 @@ class Room(src.saveing.Saveable):
         """
         self.health -= 1
         if self.itemsOnFloor:
-            import random
-
             item = random.choice(self.itemsOnFloor)
             if (
                 item.yPosition == 0
@@ -724,7 +723,11 @@ class Room(src.saveing.Saveable):
                     if not "city" in character.faction or not character.charType == "Character":
                         chars[character.yPosition][character.xPosition] = character.display
                     else:
-                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@ ")
+                        if not isinstance(character,src.characters.Ghul):
+                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@"+str(character.rank))
+                        else:
+                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@x")
+
                         if character.faction.endswith("#1"):
                             chars[character.yPosition][character.xPosition][0].fg = "#066"
                         if character.faction.endswith("#2"):
@@ -1496,7 +1499,6 @@ XXXXXXXXXXX
         corpse.charges = 300
         sunScreen = src.items.itemMap["SunScreen"]()
         vial = src.items.itemMap["Vial"]()
-        import random
 
         vial.uses = random.randint(0, 10)
         self.addItems([(healingstation,(4,1,0)), (sunScreen,(5,5,0)), (vial,(7,3,0)), (corpseShredder,(4,8,0)), (corpse,(3,8,0))])
@@ -1620,6 +1622,41 @@ XXX
                 self.walkingAccess.append((access[0], access[1]))
         except:
             self.walkingAccess = []
+
+class TrapRoom(EmptyRoom):
+
+    electricalCharges = 25
+    faction = "Trap"
+
+    def moveCharacterDirection(self, character, direction):
+        if self.electricalCharges and not character.faction == self.faction:
+            character.hurt(int(random.triangular(1,self.electricalCharges,self.electricalCharges*2)),reason="the floor shocks you")
+            self.electricalCharges -= 1
+
+        return super().moveCharacterDirection(character, direction)
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+
+    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+        super().reconfigure(sizeX,sizeY,items,bio,doorPos)
+
+        shocker = src.items.itemMap["Shocker"]()
+        self.addItem(shocker,(2,2,0))
+        shocker = src.items.itemMap["Shocker"]()
+        self.addItem(shocker,(10,2,0))
+        shocker = src.items.itemMap["Shocker"]()
+        self.addItem(shocker,(2,10,0))
+        shocker = src.items.itemMap["Shocker"]()
+        self.addItem(shocker,(10,10,0))
 
 class DungeonRoom(Room):
     def __init__(
@@ -3802,8 +3839,6 @@ XXXXXXXXXXX
         )
         self.addCharacter(npcE, 6, 8)
 
-        import random
-
         factions = [npcA, npcB, npcC, npcD, npcE]
         for faction in factions:
             faction.minRep = random.randint(1, 60)
@@ -4217,6 +4252,7 @@ roomMap = {
     "ConstructionSite": ConstructionSite,
     "GameTestingRoom": GameTestingRoom,
     "ScrapStorage": ScrapStorage,
+    "TrapRoom": TrapRoom,
 }
 
 

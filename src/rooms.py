@@ -1721,11 +1721,10 @@ class StaticRoom(EmptyRoom):
         )
 
         self.depth = depth
-        import urwid
 
         self.floorDisplay = [
             (
-                urwid.AttrSpec("#00" + str(10 - depth), "black"),
+                src.interaction.urwid.AttrSpec("#00" + str(10 - depth), "black"),
                 [".", ",", ":", ";"][depth // 4 % 4] + [".", ",", ":", ";"][depth % 4],
             )
         ]

@@ -1119,7 +1119,36 @@ class ObtainAllSpecialItems(Quest):
 
     def solver(self, character):
         if self.didDelegate:
-            character.runCommandString("10.")
+                
+            deadchars = 0
+            for subordinate in character.subordinates:
+                if subordinate.dead:
+                    deadchars += 1
+                    continue
+                for subsubordinate in subordinate.subordinates:
+                    if subsubordinate.dead:
+                        deadchars += 1
+                        continue
+                    for worker in subsubordinate.subordinates:
+                        if worker.dead:
+                            deadchars += 1
+                            continue
+
+            for subordinate in character.subordinates:
+                if subordinate.dead:
+                    continue
+                subordinate.addMessage("%s dead"%(deadchars,))
+                for subsubordinate in subordinate.subordinates:
+                    if subsubordinate.dead:
+                        continue
+                    subsubordinate.addMessage("%s dead"%(deadchars,))
+                    for worker in subsubordinate.subordinates:
+                        if worker.dead:
+                            continue
+                        if deadchars > 20:
+                            worker.addMessage("abort")
+                        worker.addMessage("numdead "+str(deadchars))
+            character.runCommandString("gg.")
             return False
 
         if self.resetDelegations:
@@ -5252,15 +5281,21 @@ class GoToTile(Quest):
                     directions.extend("s"*(self.targetPosition[1]-character.container.yPosition))
                 if localRandom.random() < 0.2 or not directions:
                     directions = randomDirections
-                if localRandom.random() < 0.2:
+                if localRandom.random() < 0.5:
                     return ".gg."
                 return ".15"+localRandom.choice(directions)
         else:
             if not (character.xPosition%15 == 7 and character.yPosition%15 == 7):
-                return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
+                tilePos = (character.xPosition//15,character.yPosition//15,0)
+                charPos = (character.xPosition%15,character.yPosition%15,0)
+                if character == src.gamestate.gamestate.mainChar:
+                    return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)
+                else:
+                    return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
             else:
                 directions = []
                 randomDirections = []
+                moveTwice = False
                 if not character.container.getRoomByPosition((character.xPosition//15-1,character.yPosition//15)):
                     randomDirections.append("a")
                     directions.extend("a"*(character.xPosition//15-self.targetPosition[0]))
@@ -5274,10 +5309,17 @@ class GoToTile(Quest):
                     randomDirections.append("s")
                     directions.extend("s"*(self.targetPosition[1]-character.yPosition//15))
                 if localRandom.random() < 0.2 or not directions:
+                    if localRandom.random() < 0.5:
+                        moveTwice = True
                     directions = randomDirections
-                if localRandom.random() < 0.2:
+                if localRandom.random() < 0.5:
                     return ".gg."
-                return ".13"+localRandom.choice(directions)
+
+                command = ".13"+localRandom.choice(directions)
+                if moveTwice:
+                    return command*2
+                else:
+                    return command
 
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None):
@@ -5469,14 +5511,13 @@ class GoHome(MetaQuestSequence):
             if isinstance(character.container, src.terrains.Terrain):
                 characterTerrainPos = (character.container.xPosition,character.container.yPosition)
 
-                if character.xPosition%15 < 7:
-                    return "d"*(7-character.xPosition%15)
-                if character.xPosition%15 > 7:
-                    return "a"*(character.xPosition%15-7)
-                if character.yPosition%15 < 7:
-                    return "s"*(7-character.yPosition%15)
-                if character.yPosition%15 > 7:
-                    return "w"*(character.yPosition%15-7)
+                if not (character.xPosition%15 == 7 and character.yPosition%15 == 7):
+                    tilePos = (character.xPosition//15,character.yPosition//15,0)
+                    charPos = (character.xPosition%15,character.yPosition%15,0)
+                    if character == src.gamestate.gamestate.mainChar:
+                        return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)
+                    else:
+                        return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
 
                 directions = []
                 if character.xPosition//15 > self.cityLocation[0]:
@@ -5632,13 +5673,13 @@ class EnterEnemyCity(MetaQuestSequence):
                 if not (character.xPosition == 6 and character.yPosition == 6):
 
                     if character.xPosition < 6:
-                        return "a"*(6-character.xPosition)
+                        return "d"*(6-character.xPosition)
                     if character.xPosition > 6:
-                        return "d"*(character.xPosition-6)
+                        return "a"*(character.xPosition-6)
                     if character.yPosition < 6:
-                        return "w"*(6-character.yPosition)
+                        return "s"*(6-character.yPosition)
                     if character.yPosition > 6:
-                        return "s"*(character.yPosition-6)
+                        return "w"*(character.yPosition-6)
                 else:
                     pos = (character.container.xPosition,character.container.yPosition)
                     if pos == (self.cityLocation[0]+1,self.cityLocation[1]):
@@ -5810,7 +5851,7 @@ class ObtainSpecialItem(MetaQuestSequence):
 
             if self.itemLocation[0] == homeLocation[0]:
                 quest = GoToTile()
-                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-2)})
+                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)

@@ -1629,11 +1629,19 @@ class TrapRoom(EmptyRoom):
     faction = "Trap"
 
     def moveCharacterDirection(self, character, direction):
-        if self.electricalCharges and not character.faction == self.faction:
-            character.hurt(int(random.triangular(1,self.electricalCharges,self.electricalCharges*2)),reason="the floor shocks you")
-            self.electricalCharges -= 1
+        oldPos = character.getPosition()
 
-        return super().moveCharacterDirection(character, direction)
+        item = super().moveCharacterDirection(character, direction)
+
+        newPos = character.getPosition()
+
+        if not oldPos == newPos and character.container == self:
+            if self.electricalCharges and not character.faction == self.faction:
+                if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
+                    character.hurt(int(random.triangular(1,self.electricalCharges+1,self.electricalCharges*2+1)),reason="the floor shocks you")
+                    self.electricalCharges -= 1
+
+        return item
 
     def __init__(
         self,

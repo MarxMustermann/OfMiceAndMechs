@@ -115,23 +115,26 @@ Select the thing to produce and confirm.
         elif selection == "produce":
             self.productionSwitch()
 
-    def addBlueprint(self):
+    def addBlueprint(self, blueprint=None):
         """
         try to load a blueprint into the machine
         """
 
-        blueprintFound = None
-        if (self.xPosition, self.yPosition - 1,0) in self.container.itemByCoordinates:
-            for item in self.container.itemByCoordinates[
-                (self.xPosition, self.yPosition - 1,0)
-            ]:
-                if item.type in ["BluePrint"]:
-                    blueprintFound = item
-                    break
+        if not blueprint:
+            blueprintFound = None
+            if (self.xPosition, self.yPosition - 1,0) in self.container.itemByCoordinates:
+                for item in self.container.itemByCoordinates[
+                    (self.xPosition, self.yPosition - 1,0)
+                ]:
+                    if item.type in ["BluePrint"]:
+                        blueprintFound = item
+                        break
 
-        if not blueprintFound:
-            self.character.addMessage("no blueprint found above/north")
-            return
+            if not blueprintFound:
+                self.character.addMessage("no blueprint found above/north")
+                return
+        else:
+            blueprintFound = blueprint
 
         self.endProducts[blueprintFound.endProduct] = blueprintFound.endProduct
         if blueprintFound.endProduct not in self.blueprintLevels:
@@ -139,10 +142,11 @@ Select the thing to produce and confirm.
         if self.blueprintLevels[blueprintFound.endProduct] < blueprintFound.level:
             self.blueprintLevels[blueprintFound.endProduct] = blueprintFound.level
 
-        self.character.addMessage(
-            "blueprint for " + blueprintFound.endProduct + " inserted"
-        )
-        self.container.removeItem(blueprintFound)
+        if not blueprint:
+            self.character.addMessage(
+                "blueprint for " + blueprintFound.endProduct + " inserted"
+            )
+            self.container.removeItem(blueprintFound)
 
     def productionSwitch(self):
         """

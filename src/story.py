@@ -900,6 +900,10 @@ class BackToTheRoots(BasicPhase):
                     item = src.items.itemMap["LandMine"]()
                     items.append(item)
                     landmines.append(item)
+                for i in range(0,random.randint(1,300)):
+                    item = src.items.itemMap["Bomb"]()
+                    items.append(item)
+                    landmines.append(item)
                 for i in range(0,random.randint(1,200)):
                     item = src.items.itemMap["Bolt"]()
                     items.append(item)
@@ -1094,25 +1098,129 @@ class BackToTheRoots(BasicPhase):
             workshop2 = room
             rooms.append(room)
 
-            scrap= src.items.itemMap["Scrap"](amount=20)
-            basicMetalWorkshop.addItem(scrap,(1,2,0))
-            scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-            basicMetalWorkshop.addItem(scrapCompactor,(2,2,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "wajdwwajd"+"3s"+"sajdssajdssajd"+"5w"
+            basicMetalWorkshop.addItem(command,(6,6,0))
 
-            machine = src.items.itemMap["Machine"]()
-            machine.setToProduce("Sheet")
-            basicMetalWorkshop.addItem(machine,(4,2,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3aJwddJwd"
+            basicMetalWorkshop.addItem(command,(5,3,0))
 
-            machine = src.items.itemMap["Machine"]()
-            machine.setToProduce("Rod")
-            basicMetalWorkshop.addItem(machine,(2,4,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3aJwddJwd"
+            basicMetalWorkshop.addItem(command,(5,5,0))
 
-            machine = src.items.itemMap["Machine"]()
-            machine.setToProduce("Armor")
-            basicMetalWorkshop.addItem(machine,(4,4,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3aJwddJwd"
+            basicMetalWorkshop.addItem(command,(5,7,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3aJwddJwd"
+            basicMetalWorkshop.addItem(command,(5,9,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3aJwddJwd"
+            basicMetalWorkshop.addItem(command,(5,11,0))
+
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(1,1,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(2,1,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(3,1,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(4,1,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(5,1,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(1,2,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(1,4,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(1,6,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(1,8,0))
+            if random.random() > 0.1:
+                scrap= src.items.itemMap["Scrap"](amount=int(random.triangular(1,5,20)))
+                basicMetalWorkshop.addItem(scrap,(1,10,0))
+
+            if random.random() > 0.1:
+                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+                scrapCompactor.charges = 0
+                basicMetalWorkshop.addItem(scrapCompactor,(2,2,0))
+
+            if random.random() > 0.1:
+                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+                scrapCompactor.charges = 0
+                basicMetalWorkshop.addItem(scrapCompactor,(2,4,0))
+
+            if random.random() > 0.1:
+                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+                scrapCompactor.charges = 0
+                basicMetalWorkshop.addItem(scrapCompactor,(2,6,0))
+
+            if random.random() > 0.1:
+                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+                scrapCompactor.charges = 0
+                basicMetalWorkshop.addItem(scrapCompactor,(2,8,0))
+
+            if random.random() > 0.1:
+                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+                scrapCompactor.charges = 0
+                basicMetalWorkshop.addItem(scrapCompactor,(2,10,0))
+
+            if random.random() > 0.2:
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Sheet")
+                machine.charges = 0
+                basicMetalWorkshop.addItem(machine,(4,2,0))
+
+            if random.random() > 0.3:
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Rod")
+                machine.charges = 0
+                basicMetalWorkshop.addItem(machine,(4,6,0))
+
+            if random.random() > 0.4:
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Armor")
+                machine.charges = 0
+                basicMetalWorkshop.addItem(machine,(4,4,0))
+
+            if random.random() > 0.5:
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Bolt")
+                machine.charges = 0
+                basicMetalWorkshop.addItem(machine,(4,10,0))
 
             machine = src.items.itemMap["GrowthTank"]()
             workshop.addItem(machine,(2,2,0))
+
+            machine = src.items.itemMap["BloomShredder"]()
+            workshop.addItem(machine,(2,10,0))
+
+            machine = src.items.itemMap["BioPress"]()
+            workshop.addItem(machine,(4,10,0))
+
+            machine = src.items.itemMap["GooProducer"]()
+            workshop.addItem(machine,(6,10,0))
+            machine = src.items.itemMap["GooDispenser"]()
+            workshop.addItem(machine,(7,10,0))
 
             scrap= src.items.itemMap["Scrap"](amount=20)
             crystalWorkshop.addItem(scrap,(1,2,0))
@@ -1128,16 +1236,21 @@ class BackToTheRoots(BasicPhase):
             command.command = "3w4aJwddJwdKwd3s"+"15w"+"15a"+"4d3wJw3s4a"+"15d"+"15s"
             crystalWorkshop.addItem(command,(6,6,0))
 
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(4,1,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(4,1,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(4,1,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(4,1,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(4,1,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(4,1,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(4,1,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(4,1,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(4,1,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(4,1,0))
             
             machine = src.items.itemMap["CorpseAnimator"]()
             machine.commands["born"] = "j"
@@ -1156,71 +1269,94 @@ class BackToTheRoots(BasicPhase):
             command.bolted = True
             command.command = "Kdaassj"
             workshop.addItem(command,(8,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(9,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(9,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(9,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(9,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(9,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(9,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(9,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(9,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(9,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(9,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(9,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(9,4,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdaaaass"+"15d15dj"
             workshop.addItem(command,(10,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,4,0))
 
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdssaaaass"+"15w15w15dj"
             workshop.addItem(command,(10,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(11,2,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdwjsajdsjw"+"15w"+"j"+"15s"+"j"
             workshop.addItem(command,(6,6,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop.addItem(corpse,(7,6,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(7,6,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdwjsajdsjw"+"15w"+"j"+"15s"+"j"
             workshop2.addItem(command,(6,6,0))
-            corpse = src.items.itemMap["Corpse"]()
-            workshop2.addItem(corpse,(7,6,0))
+
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                workshop2.addItem(corpse,(7,6,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1236,12 +1372,15 @@ class BackToTheRoots(BasicPhase):
             command.bolted = True
             command.command = "ggKdKsKa"
             guardRoom.addItem(command,(6,7,0))
-            corpse = src.items.itemMap["Corpse"]()
-            guardRoom.addItem(corpse,(6,8,0))
-            corpse = src.items.itemMap["Corpse"]()
-            guardRoom.addItem(corpse,(5,7,0))
-            corpse = src.items.itemMap["Corpse"]()
-            guardRoom.addItem(corpse,(7,7,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                guardRoom.addItem(corpse,(6,8,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                guardRoom.addItem(corpse,(5,7,0))
+            if random.random() > 0.5:
+                corpse = src.items.itemMap["Corpse"]()
+                guardRoom.addItem(corpse,(7,7,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1267,6 +1406,51 @@ class BackToTheRoots(BasicPhase):
             machine.godMode = True
             workshop2.addItem(machine,(2,2,0))
 
+            machine = src.items.itemMap["BluePrintingArtwork"]()
+            machine.godMode = True
+            workshop2.addItem(machine,(4,2,0))
+
+            machine = src.items.itemMap["MachineMachine"]()
+            machine.charges = 0
+            for i in range(0,4):
+                blueprint = src.items.itemMap["BluePrint"]()
+                blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
+                machine.addBlueprint(blueprint)
+            workshop2.addItem(machine,(8,2,0))
+
+            machine = src.items.itemMap["MachineMachine"]()
+            machine.charges = 0
+            for i in range(0,4):
+                blueprint = src.items.itemMap["BluePrint"]()
+                blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
+                machine.addBlueprint(blueprint)
+            workshop2.addItem(machine,(10,2,0))
+
+            machine = src.items.itemMap["MachineMachine"]()
+            machine.charges = 0
+            for i in range(0,4):
+                blueprint = src.items.itemMap["BluePrint"]()
+                blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
+                machine.addBlueprint(blueprint)
+            workshop2.addItem(machine,(8,4,0))
+
+            machine = src.items.itemMap["MachineMachine"]()
+            machine.charges = 0
+            for i in range(0,4):
+                blueprint = src.items.itemMap["BluePrint"]()
+                blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
+                machine.addBlueprint(blueprint)
+            workshop2.addItem(machine,(10,4,0))
+
+            machine = src.items.itemMap["BluePrinter"]()
+            workshop2.addItem(machine,(8,8,0))
+            machine = src.items.itemMap["ItemUpgrader"]()
+            workshop2.addItem(machine,(10,8,0))
+
+            machine = src.items.itemMap["AutoTutor"]()
+            machine = src.items.itemMap["AutoTutor"]()
+            machine = src.items.itemMap["AutoTutor"]()
+            machine = src.items.itemMap["AutoTutor"]()
             machine = src.items.itemMap["AutoTutor"]()
             workshop2.addItem(machine,(2,4,0))
 
@@ -1352,8 +1536,7 @@ class BackToTheRoots(BasicPhase):
                     subsubleader = self.genNPC(cityCounter,citylocation)
                     subsubleader.registers["ATTNPOSx"] = 2+i*3+j
                     subsubleader.registers["ATTNPOSy"] = 5
-                    offset = random.choice(((1,1),(1,-1),(-1,-1),(-1,1)))
-                    currentTerrain.addCharacter(subsubleader, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
+                    random.choice(rooms).addCharacter(subsubleader, random.randint(1,11), random.randint(1,11))
 
                     subleader.subordinates.append(subsubleader)
 
@@ -1381,8 +1564,7 @@ class BackToTheRoots(BasicPhase):
                         worker.registers["ATTNPOSx"] = 2+i*3+j
                         worker.registers["ATTNPOSy"] = 7+k
                         #mainRoom.addCharacter(worker,3+i*3+j,7+k)
-                        offset = random.choice(((1,1),(1,-1),(-1,-1),(-1,1)))
-                        currentTerrain.addCharacter(worker, (citylocation[0]+offset[0])*15+random.randint(2,13), (citylocation[1]+offset[1])*15+random.randint(2,13))
+                        random.choice(rooms).addCharacter(worker, random.randint(1,11), random.randint(1,11))
                         subsubleader.subordinates.append(worker)
 
                         quest = src.quests.Serve(superior=subsubleader)
@@ -1405,7 +1587,42 @@ class BackToTheRoots(BasicPhase):
 
             xPos = 1
             yPos = 1
+            enemy = src.characters.Guardian(xPos,yPos)
+            enemy.health = 1500
+            enemy.baseDamage = 100 + random.randint(1, 10)
+            enemy.godMode = True
+            enemy.aggro = 1000000
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            enemy.faction = leader.faction
+            mainRoom.addCharacter(enemy, xPos, yPos)
 
+            xPos = 1
+            yPos = 13
+            enemy = src.characters.Guardian(xPos,yPos)
+            enemy.health = 1500
+            enemy.baseDamage = 100 + random.randint(1, 10)
+            enemy.godMode = True
+            enemy.aggro = 1000000
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            enemy.faction = leader.faction
+            mainRoom.addCharacter(enemy, xPos, yPos)
+
+            xPos = 13
+            yPos = 1
+            enemy = src.characters.Guardian(xPos,yPos)
+            enemy.health = 1500
+            enemy.baseDamage = 100 + random.randint(1, 10)
+            enemy.godMode = True
+            enemy.aggro = 1000000
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            enemy.faction = leader.faction
+            mainRoom.addCharacter(enemy, xPos, yPos)
+
+            xPos = 13
+            yPos = 13
             enemy = src.characters.Guardian(xPos,yPos)
             enemy.health = 1500
             enemy.baseDamage = 100 + random.randint(1, 10)
@@ -1417,8 +1634,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom.addCharacter(enemy, xPos, yPos)
 
             xPos = 7
-            yPos = 1
-
+            yPos = 13
             enemy = src.characters.Guardian(xPos,yPos)
             enemy.health = 1500
             enemy.baseDamage = 100 + random.randint(1, 10)
@@ -1427,7 +1643,19 @@ class BackToTheRoots(BasicPhase):
             enemy.macroState["macros"]["g"] = ["g","g","_","g"]
             enemy.runCommandString("_g")
             enemy.faction = leader.faction
-            backGuardRoom.addCharacter(enemy, xPos, yPos)
+            mainRoom.addCharacter(enemy, xPos, yPos)
+
+            xPos = 5
+            yPos = 13
+            enemy = src.characters.Guardian(xPos,yPos)
+            enemy.health = 1500
+            enemy.baseDamage = 100 + random.randint(1, 10)
+            enemy.godMode = True
+            enemy.aggro = 1000000
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            enemy.faction = leader.faction
+            mainRoom.addCharacter(enemy, xPos, yPos)
 
         src.gamestate.gamestate.mainChar.runCommandString("~~", clear=True)
         src.gamestate.gamestate.mainChar.personality["autoFlee"] = False

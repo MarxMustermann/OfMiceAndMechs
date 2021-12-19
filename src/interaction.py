@@ -5165,7 +5165,7 @@ def gameLoop(loop, user_data=None):
                     """
 
                     while len(char.messages) > 100:
-                        char.messages.pop()
+                        char.messages = char.messages[-100:]
 
                     if len(state["commandKeyQueue"]):
                         key = state["commandKeyQueue"][-1]

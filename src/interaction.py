@@ -2399,8 +2399,6 @@ press key for advanced drop
                         return
 
                     item.pickUp(char)
-                    if not item.walkable:
-                        char.container.calculatePathMap()
 
         # open chat partner selection
         if key in (commandChars.hail,):

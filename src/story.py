@@ -1574,6 +1574,10 @@ class BackToTheRoots(BasicPhase):
 
                         if not placedMainChar and i == 2 and j == 2 and k == 2:
                             src.gamestate.gamestate.mainChar = worker
+                            worker.health = 1000000
+                            worker.maxHealth = 1000000
+                            worker.baseDamage = 10000
+                            worker.satiation = 1000000
                             placedMainChar = True
 
             quest = src.quests.ObtainAllSpecialItems()

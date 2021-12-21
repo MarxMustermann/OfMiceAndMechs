@@ -5203,13 +5203,15 @@ class DeliverSpecialItem(Quest):
         character.runCommandString("w"*(character.yPosition-foundItemSlot.yPosition))
 
 class GoToTile(Quest):
-    def __init__(self, description="go to tile", creator=None):
+    def __init__(self, description="go to tile", creator=None, lifetime=None):
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList, creator=creator, lifetime=lifetime)
         self.targetPosition = None
         self.description = description
         self.metaDescription = description
         self.hasListener = False
+        self.path = None
+        self.expectedPosition = None
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -5220,9 +5222,17 @@ class GoToTile(Quest):
     def assignToCharacter(self, character):
         if not self.hasListener:
             character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+            character.addListener(self.reCheckPath, "changedTile")
             self.hasListener = True
 
         super().assignToCharacter(character)
+
+    def reCheckPath(self,extraInfo=None):
+        if not self.character:
+            return
+
+        if self.expectedPosition and not (tilePos == self.expectedPosition):
+            path = None
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -5243,7 +5253,7 @@ class GoToTile(Quest):
         return super().setParameters(parameters)
 
     def solver(self, character):
-        commandString = self.getSolvingCommandString(character)
+        commandString = self.getSolvingCommandString(character,dryRun=False)
         self.randomSeed = random.random()
         if commandString:
             character.runCommandString(commandString)
@@ -5256,14 +5266,57 @@ class GoToTile(Quest):
         parameters.append({"name":"targetPosition","type":"coordinate"})
         return parameters
 
-    def getSolvingCommandString(self, character):
+    def reroll(self):
+        self.path = None
+        super().reroll()
+
+    def getSolvingCommandString(self, character, dryRun = True):
+        if not self.targetPosition:
+            return ".10.."
+        if self.path:
+            character.addMessage(self.path)
+            character.addMessage(list(reversed(self.path)))
         localRandom = random.Random(self.randomSeed)
         if isinstance(character.container, src.rooms.Room):
-            if not (character.xPosition == 6 and character.yPosition == 6):
-                return "d"*(6-character.xPosition)+"s"*(6-character.yPosition)+"w"*(character.yPosition-6)+"a"*(character.xPosition-6)
+            charPos = (character.xPosition,character.yPosition,0)
+            if not charPos == (6,6,0):
+                return character.container.getPathCommandTile(charPos,(6,6,0),localRandom=localRandom)
             else:
-                if not character.container.xPosition:
-                    return "..."
+                tilePos = (character.container.xPosition,character.container.yPosition,0)
+                if character == src.gamestate.gamestate.mainChar:
+                    path = self.path
+                    if self.expectedPosition and not (tilePos == self.expectedPosition):
+                        path = None
+
+                    targetPos = (self.targetPosition[0],self.targetPosition[1],0)
+                    if not path:
+                        path = list(reversed(character.container.container.getPath(tilePos,targetPos,localRandom=localRandom)))
+
+                    if not dryRun:
+                        self.path = path
+
+                    if not path:
+                        return ".10.."
+
+                    if not dryRun:
+                        direction = self.path.pop()
+                        self.expectedPosition = (tilePos[0]+direction[0],tilePos[1]+direction[1],0)
+                        print("set expected")
+                        print(self.expectedPosition)
+                        print(tilePos)
+                    else:
+                        direction = path[-1]
+
+
+                    if direction == (1,0):
+                        return "15d"
+                    if direction == (-1,0):
+                        return "15a"
+                    if direction == (0,1):
+                        return "15s"
+                    if direction == (0,-1):
+                        return "15w"
+                    return ".10.."
 
                 directions = []
                 randomDirections = []
@@ -5285,14 +5338,45 @@ class GoToTile(Quest):
                     return ".gg."
                 return ".15"+localRandom.choice(directions)
         else:
-            if not (character.xPosition%15 == 7 and character.yPosition%15 == 7):
-                tilePos = (character.xPosition//15,character.yPosition//15,0)
-                charPos = (character.xPosition%15,character.yPosition%15,0)
+            tilePos = (character.xPosition//15,character.yPosition//15,0)
+            charPos = (character.xPosition%15,character.yPosition%15,0)
+            if not charPos == (7,7,0):
                 if character == src.gamestate.gamestate.mainChar:
                     return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)
                 else:
                     return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
             else:
+                if character == src.gamestate.gamestate.mainChar:
+                    path = self.path
+                    if self.expectedPosition and not (tilePos == self.expectedPosition):
+                        path = None
+
+                    targetPos = (self.targetPosition[0],self.targetPosition[1],0)
+                    if not path:
+                        path = list(reversed(character.container.getPath(tilePos,targetPos,localRandom=localRandom)))
+
+                    if not dryRun:
+                        self.path = path
+
+                    if not path:
+                        return ".10.."
+
+                    if not dryRun:
+                        direction = self.path.pop()
+                        self.expectedPosition = (tilePos[0]+direction[0],tilePos[1]+direction[1],0)
+                    else:
+                        direction = path[-1]
+
+                    if direction == (1,0):
+                        return "15d"
+                    if direction == (-1,0):
+                        return "15a"
+                    if direction == (0,1):
+                        return "15s"
+                    if direction == (0,-1):
+                        return "15w"
+                    return ".10.."
+
                 directions = []
                 randomDirections = []
                 moveTwice = False
@@ -5430,20 +5514,20 @@ class GoHome(MetaQuestSequence):
     def generateSubquests(self,character):
         if not self.addedSubQuests:
 
-            """
             quest = GoToTile()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
-            quest.setParameters({"targetTile":self.cityLocation})
+            quest.setParameters({"targetPosition":self.cityLocation})
 
             self.addedSubQuests = True
-            """
             return
 
     def solver(self, character):
-        #if self.subQuests:
-        #    return super().solver()
+        self.generateSubquests(character)
+
+        if self.subQuests:
+            return super().solver(character)
 
         commandString = self.getSolvingCommandString(character)
         self.randomSeed = random.random()
@@ -5460,16 +5544,11 @@ class GoHome(MetaQuestSequence):
                 return
 
             if not (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
-                if not (character.xPosition == 6 and character.yPosition == 6):
-                    if character.xPosition < 6:
-                        return "d"*(6-character.xPosition)
-                    if character.xPosition > 6:
-                        return "a"*(character.xPosition-6)
-                    if character.yPosition < 6:
-                        return "s"*(6-character.yPosition)
-                    if character.yPosition > 6:
-                        return "w"*(character.yPosition-6)
+                charPos = (character.xPosition,character.yPosition,0)
+                if not charPos == (6,6,0):
+                    return character.container.getPathCommandTile(charPos,(6,6,0),localRandom=localRandom)
                 else:
+                    tilePos = (character.container.xPosition//15,character.container.yPosition//15,0)
 
                     pos = (character.container.xPosition,character.container.yPosition)
                     if pos == (self.cityLocation[0],self.cityLocation[1]+1):
@@ -5511,13 +5590,14 @@ class GoHome(MetaQuestSequence):
             if isinstance(character.container, src.terrains.Terrain):
                 characterTerrainPos = (character.container.xPosition,character.container.yPosition)
 
+                tilePos = (character.xPosition//15,character.yPosition//15,0)
+                charPos = (character.xPosition%15,character.yPosition%15,0)
                 if not (character.xPosition%15 == 7 and character.yPosition%15 == 7):
-                    tilePos = (character.xPosition//15,character.yPosition//15,0)
-                    charPos = (character.xPosition%15,character.yPosition%15,0)
-                    if character == src.gamestate.gamestate.mainChar:
-                        return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)
-                    else:
-                        return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
+                    return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)
+
+                if character == src.gamestate.gamestate.mainChar:
+                    targetPos = (self.cityLocation[0],self.cityLocation[1],0)
+                    return character.container.getPath(tilePos,targetPos,localRandom=localRandom)
 
                 directions = []
                 if character.xPosition//15 > self.cityLocation[0]:
@@ -5849,17 +5929,11 @@ class ObtainSpecialItem(MetaQuestSequence):
             quest = GoHome()
             self.addQuest(quest)
 
-            if self.itemLocation[0] == homeLocation[0]:
-                quest = GoToTile()
-                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-3)})
-                quest.assignToCharacter(character)
-                quest.activate()
-                self.addQuest(quest)
-
-            # grab the item
             lifetime = None
             if self.initialLifetime:
                 lifetime = self.initialLifetime//2
+
+            # grab the item
             quest = GrabSpecialItem(lifetime=lifetime)
             self.addQuest(quest)
             quest.assignToCharacter(character)
@@ -5874,45 +5948,8 @@ class ObtainSpecialItem(MetaQuestSequence):
             quest.activate()
 
             # enter the city
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-
-            if self.itemLocation[0] == homeLocation[0]:
-                quest = GoToTile()
-                quest.setParameters({"targetPosition":(self.itemLocation[0]-2,self.itemLocation[1]-3)})
-                quest.assignToCharacter(character)
-                quest.activate()
-                self.addQuest(quest)
-
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]-2)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]-1)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0]-1,homeLocation[1]-1)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0]-1,homeLocation[1]+1)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]+1)})
+            quest = GoToTile(lifetime=lifetime)
+            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1])})
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)

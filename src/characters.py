@@ -125,6 +125,7 @@ class Character(src.saveing.Saveable):
         self.lastRoom = None
         self.lastTerrain = None
         self.health = 100
+        self.maxHealth = 100
         self.heatResistance = 0
         self.godMode = False
         self.submenue = None
@@ -596,7 +597,7 @@ class Character(src.saveing.Saveable):
         """
 
         if self.numAttackedWithoutResponse > 2:
-            self.numAttackedWithoutResponse -= 2
+            self.numAttackedWithoutResponse = int(self.numAttackedWithoutResponse/2)
         else:
             self.numAttackedWithoutResponse = 0
 
@@ -633,8 +634,8 @@ class Character(src.saveing.Saveable):
             reason: the reason why the character was healed
         """
 
-        if 100 - self.health < amount:
-            amount = 100 - self.health
+        if self.maxHealth - self.health < amount:
+            amount = self.maxHealth - self.health
 
         self.health += amount
         self.addMessage("you heal for %s and have %s health" % (amount, self.health))

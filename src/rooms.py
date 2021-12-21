@@ -60,6 +60,8 @@ class Room(src.saveing.Saveable):
 
         super().__init__()
 
+        self.container = None
+
         # initialize attributes
         self.health = 40
         self.desiredPosition = desiredPosition
@@ -369,6 +371,101 @@ class Room(src.saveing.Saveable):
                 "timeIndex",
             ]
         )
+
+    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None):
+        path = self.getPathTile(startPos,targetPos,avoidItems,localRandom)
+
+        command = ""
+        movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
+        if path:
+            for offset in path:
+                command += movementMap[offset]
+        else:
+            return random.choice(["w","a","s","d"])
+        return command
+
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None):
+        if not avoidItems:
+            avoidItems = []
+        if not localRandom:
+            localRandom = random
+
+        costMap = {startPos:0}
+        lastPos = startPos
+        toCheck = []
+        nextPos = startPos
+        paths = {startPos:[]}
+
+        counter = 0
+        while counter < 200:
+            counter += 1
+            
+            if not nextPos:
+                if not toCheck:
+                    return []
+                pos = localRandom.choice(toCheck)
+                toCheck.remove(pos)
+            else:
+                pos = nextPos
+            nextPos = None
+            currentCost = costMap[pos]
+
+            neutralOffsets = []
+            goodOffsets = []
+            badOffsets = []
+            if targetPos[0] > pos[0]:
+                goodOffsets.append((+1,0))
+                badOffsets.append((-1,0))
+            elif targetPos[0] < pos[0]:
+                goodOffsets.append((-1,0))
+                badOffsets.append((+1,0))
+            else:
+                neutralOffsets.append((-1,0))
+                neutralOffsets.append((+1,0))
+
+            if targetPos[1] > pos[1]:
+                goodOffsets.append((0,+1))
+                badOffsets.append((0,-1))
+            elif targetPos[1] < pos[1]:
+                goodOffsets.append((0,-1))
+                badOffsets.append((0,+1))
+            else:
+                neutralOffsets.append((0,+1))
+                neutralOffsets.append((0,-1))
+
+            localRandom.shuffle(goodOffsets)
+            localRandom.shuffle(neutralOffsets)
+            localRandom.shuffle(badOffsets)
+            offsets = badOffsets+neutralOffsets+goodOffsets
+
+            while offsets:
+                offset = offsets.pop()
+                newPos = (pos[0]+offset[0],pos[1]+offset[1],pos[2])
+
+                if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
+                    continue
+
+                if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2])):
+                    continue
+
+                #if self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
+                #    continue
+
+                if not costMap.get(newPos) == None:
+                    continue
+
+                costMap[newPos] = currentCost+1
+                paths[newPos] = paths[pos]+[offset]
+
+                if not nextPos:
+                    nextPos = newPos
+                else:
+                    toCheck.append(newPos)
+
+            if nextPos == targetPos:
+                break
+
+        return paths.get(targetPos)
 
     def getPositionWalkable(self,pos):
         items = self.getItemByPosition(pos)

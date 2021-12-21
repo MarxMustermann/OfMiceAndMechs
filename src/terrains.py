@@ -433,6 +433,7 @@ class Terrain(src.saveing.Saveable):
             if item.walkable == False:
                 return False
             return True
+        return True
 
     def getRoomByPosition(self, position):
         foundRooms = []
@@ -555,366 +556,6 @@ class Terrain(src.saveing.Saveable):
                 listenFunction(info)
         for listenFunction in self.listeners["default"]:
             listenFunction()
-
-    # obsolete: used by old disabled pathfinding
-    # bad code: disabled in a brutal way
-    def setNonMovableMap(self):
-        """
-        create a map of non passable tiles
-        """
-
-        return
-        self.nonMovablecoordinates = {}
-
-        # add non movable items
-        for coordinate, itemList in self.itemByCoordinates.items():
-            for item in itemList:
-                if not item.walkable:
-                    self.nonMovablecoordinates[coordinate] = True
-
-        # add rooms
-        for room in self.rooms:
-            for x in range(
-                room.xPosition * 15 + room.offsetX,
-                room.xPosition * 15 + room.offsetX + room.sizeX,
-            ):
-                for y in range(
-                    room.yPosition * 15 + room.offsetY,
-                    room.yPosition * 15 + room.offsetY + room.sizeY,
-                ):
-                    self.nonMovablecoordinates[(x, y)] = True
-
-    # obsolete: not currently used
-    def calculatePathMap(self):
-        """
-        precalculate pathfinding data
-        """
-
-        # container for pathfinding information
-        self.watershedNodeMap = {}
-        self.foundPaths = {}
-        self.applicablePaths = []
-        self.obseveredCoordinates = {}
-        self.superNodePaths = {}
-        self.watershedSuperNodeMap = {}
-        self.watershedSuperCoordinates = {}
-        self.foundSuperPaths = {}
-        self.foundSuperPathsComplete = {}
-
-        self.setNonMovableMap()
-        self.watershedCoordinates = {}
-
-        return
-        if self.noPaths:
-            return
-
-        # place starting points for pathfinding next to doors
-        for room in self.rooms:
-            # ignore rooms intended to be moved
-            if room in self.miniMechs:
-                continue
-
-            # get the coordinate of the door
-            xCoord = room.xPosition * 15 + room.offsetX + room.walkingAccess[0][0]
-            yCoord = room.yPosition * 15 + room.offsetY + room.walkingAccess[0][1]
-
-            # mark door as movable
-            if (xCoord, yCoord) in self.nonMovablecoordinates:
-                del self.nonMovablecoordinates[(xCoord, yCoord)]
-
-            # get coordinate in front of the door
-            if room.walkingAccess[0][0] == 0:
-                xCoord -= 1
-            elif room.walkingAccess[0][0] == room.sizeX - 1:
-                xCoord += 1
-            if room.walkingAccess[0][1] == 0:
-                yCoord -= 1
-            elif room.walkingAccess[0][1] == room.sizeY - 1:
-                yCoord += 1
-
-            # add the starting point
-            self.watershedStart.append((xCoord, yCoord))
-
-        # container for pathfinding information
-        self.watershedCoordinates = {}
-
-        # try to find paths between all nodes by placing growing circles around the starting points until the meet each other
-        last = {}
-        for coordinate in self.watershedStart:
-            self.watershedNodeMap[coordinate] = []
-            self.watershedCoordinates[coordinate] = (coordinate, 0)
-            last[coordinate] = [coordinate]
-        self.watershed(0, last)
-
-        # try to connect the super nodes using the paths between the nodes
-        # bad code: redundant code with the pathfinding between nodes
-        last = {}
-        for bigCoord, smallCoord in self.superNodes.items():
-            self.watershedSuperNodeMap[smallCoord] = []
-
-            self.watershedSuperCoordinates[smallCoord] = (smallCoord, 0)
-            last[smallCoord] = [smallCoord]
-        self.superWatershed(0, last)
-
-        # try to find paths between all nodes by placing growing circles around the starting points until the meet each other
-        self.superNodePaths
-        self.overlay = self.addWatershedOverlay
-        self.overlay = None
-
-    # obsolete: not currently used
-    def walkBack(self, coordinate, bucket, path, last=1000):
-        """
-        get a path to node from within the nodes section
-        result is not returned instead an argument is modified to store the result
-
-        Parameters:
-            coordinate: starting point for the backtracking
-            bucket: restrict pathfinding to tiles in the bucket
-            path: the path so far
-            last: rating of the latest try
-        """
-
-
-        # get neighbouring coordinates
-        testCoordinates = [
-            (coordinate[0] - 1, coordinate[1]),
-            (coordinate[0] + 1, coordinate[1]),
-            (coordinate[0], coordinate[1] - 1),
-            (coordinate[0], coordinate[1] + 1),
-        ]
-        nextStep = (None, (None, last))
-
-        # select step leading back to node
-        for testCoordinate in testCoordinates:
-
-            # skip coordinates that were not mapped
-            if testCoordinate not in self.watershedCoordinates:
-                continue
-
-            # get node for coordinate
-            value = self.watershedCoordinates[testCoordinate]
-
-            # stay within the current section
-            if not value[0] == bucket:
-                continue
-
-            # select tile with lower distance to node
-            if value[1] < nextStep[1][1]:
-                nextStep = (testCoordinate, value)
-
-        # continue till no improvement
-        if nextStep[1][1] < last:
-            path.append(nextStep[0])
-            self.walkBack(nextStep[0], bucket, path, last=nextStep[1][1] + 1)
-
-    # obsolete: not really used
-    def watershed(self, counter, lastCoordinates):
-        """
-        expand the section around a node in a circular pattern until it reaches the section of another node and connect them
-
-        Parameters:
-            counter: how many runs were already done
-            lastCoordinates: the last Coordinates added
-        """
-
-
-        # limit size to not destroy performance/get endless loops
-        counter += 1
-        if counter > 60:
-            return
-
-        # extend the size of each bucket/starting point
-        newLast = {}
-        for start, coordinates in lastCoordinates.items():
-            newLastList = []
-
-            # expand each coordinate
-            for coordinate in coordinates:
-
-                # add applicable neighbour coordinates
-                newCoordinates = [
-                    (coordinate[0] - 1, coordinate[1]),
-                    (coordinate[0] + 1, coordinate[1]),
-                    (coordinate[0], coordinate[1] - 1),
-                    (coordinate[0], coordinate[1] + 1),
-                ]
-                for newCoordinate in newCoordinates:
-
-                    # ignore non walkable terrain
-                    if newCoordinate in self.nonMovablecoordinates:
-                        continue
-
-                    # handle hitting another section
-                    if newCoordinate in self.watershedCoordinates:
-                        # skip sections with a known path
-                        partnerNode = self.watershedCoordinates[newCoordinate][0]
-                        if partnerNode == start:
-                            continue
-                        if (start, partnerNode) in self.foundPaths or (
-                            partnerNode,
-                            start,
-                        ) in self.foundPaths:
-                            continue
-
-                        # add path from node to intersection
-                        path = []
-                        self.walkBack(newCoordinate, start, path)
-                        path.reverse()
-                        path.append(newCoordinate)
-
-                        # add path from intersection to partner node
-                        self.walkBack(newCoordinate, partnerNode, path)
-                        self.foundPaths[(start, partnerNode)] = path
-                        path = path[:]
-                        path.reverse()
-
-                        # save path
-                        self.foundPaths[(partnerNode, start)] = path
-                        continue
-
-                    # add coordinates to section
-                    newLastList.append(newCoordinate)
-                    self.watershedCoordinates[newCoordinate] = (start, counter)
-
-            # store the coordinates visited for next interaction
-            newLast[start] = newLastList
-
-        # recursively increase section
-        self.watershed(counter, newLast)
-
-        # add found path between nodes to map
-        for pair, path in self.foundPaths.items():
-            if pair[1] not in self.watershedNodeMap[pair[0]]:
-                self.watershedNodeMap[pair[0]].append(pair[1])
-            if pair[0] not in [pair[1]]:
-                self.watershedNodeMap[pair[1]].append(pair[0])
-
-    # obsolete: not really used
-    # bad code: similar to pathfinding for nodes
-    def walkBackSuper(self, coordinate, bucket, path, last=1000):
-        """
-        get a path to supernode from within the supernodes section
-        result is not returned but a modifcation of a argument
-
-        Parameters:
-            coordinate: starting point for the backtracking
-            bucket: restrict pathfinding to tiles in the bucket
-            path: the path so far
-            last: rating of the latest try
-        """
-
-        # get neighbouring nodes
-        testCoordinates = self.watershedNodeMap[coordinate]
-        nextStep = (None, (None, last))
-
-        # select step leading back to super node
-        for testCoordinate in testCoordinates:
-
-            # skip coordinates that were not mapped
-            if testCoordinate not in self.watershedSuperCoordinates:
-                continue
-
-            # get supernode for node
-            value = self.watershedSuperCoordinates[testCoordinate]
-
-            # stay within the current section
-            if not value[0] == bucket:
-                continue
-
-            # select node with lower distance to supernode
-            if value[1] < nextStep[1][1]:
-                nextStep = (testCoordinate, value)
-
-        # continue till no improvement
-        if nextStep[1][1] < last:
-            path.append(nextStep[0])
-            self.walkBackSuper(nextStep[0], bucket, path, last=nextStep[1][1] + 1)
-
-    # bad code: similar to pathfinding for nodes
-    def superWatershed(self, counter, lastCoordinates):
-        """
-        expand the section around a supernode in a circular pattern until it reaches the section of another supernode and connect them
-        
-        Parameters:
-            counter: how many runs were already done
-            lastCoordinates: the last Coordinates added
-        """
-
-        # limit size to not destroy performance/get endless loops
-        counter += 1
-        if counter > 60:
-            return
-
-        # extend the size of each bucket/starting point
-        newLast = {}
-        for start, coordinates in lastCoordinates.items():
-            newLastList = []
-
-            # expand each coordinate
-            for coordinate in coordinates:
-
-                # add applicable neighbour coordinates
-                newCoordinates = self.watershedNodeMap[coordinate]
-                for newCoordinate in newCoordinates:
-
-                    # handle hitting another section
-                    if newCoordinate in self.watershedSuperCoordinates:
-                        # skip sections with a known path
-                        partnerSuperNode = self.watershedSuperCoordinates[
-                            newCoordinate
-                        ][0]
-                        if partnerSuperNode == start:
-                            continue
-                        if (start, partnerSuperNode) in self.foundSuperPaths or (
-                            partnerSuperNode,
-                            start,
-                        ) in self.foundSuperPaths:
-                            continue
-
-                        # add path from supernode to intersection
-                        path = []
-                        self.walkBackSuper(newCoordinate, start, path)
-                        path.reverse()
-                        path.append(newCoordinate)
-
-                        # add path from intersection to supernode
-                        self.walkBackSuper(newCoordinate, partnerSuperNode, path)
-                        self.foundSuperPaths[(partnerSuperNode, start)] = path
-                        self.foundSuperPaths[(start, partnerSuperNode)] = path
-
-                        # save path
-                        last = path[0]
-                        completePath = [last]
-                        for waypoint in path[1:]:
-                            completePath.extend(self.foundPaths[(last, waypoint)][1:])
-                            last = waypoint
-                        self.foundSuperPathsComplete[
-                            (start, partnerSuperNode)
-                        ] = completePath[1:]
-                        completePath = completePath[:-1]
-                        completePath.reverse()
-                        self.foundSuperPathsComplete[
-                            (partnerSuperNode, start)
-                        ] = completePath
-                        continue
-
-                    # add nodes to section
-                    newLastList.append(newCoordinate)
-                    self.watershedSuperCoordinates[newCoordinate] = (start, counter)
-
-            # store the nodes visited for next iteration
-            newLast[start] = newLastList
-
-        # add found path between supernodes to map
-        for pair, path in self.foundSuperPaths.items():
-            if pair[1] not in self.watershedSuperNodeMap[pair[0]]:
-                self.watershedSuperNodeMap[pair[0]].append(pair[1])
-
-            if pair[0] not in self.watershedSuperNodeMap[pair[1]]:
-                self.watershedSuperNodeMap[pair[1]].append(pair[0])
-
-        # recursively increase section
-        self.superWatershed(counter, newLast)
 
     def removeCharacter(self, character):
         """
@@ -1373,9 +1014,19 @@ class Terrain(src.saveing.Saveable):
 
             return foundItem
 
-    def getPathCommandTile(self,tilePos,startPos,targetPos,avoidItems=None,localRandom=None):
-        if not avoidItems:
-            avoidItems = []
+    def getPathCommand(self,startPos,targetPos,localRandom=None):
+        path = self.getPath(startPos,targetPos,localRandom)
+
+        command = ""
+        movementMap = {(1,0):"15d",(-1,0):"15a",(0,1):"15s",(0,-1):"15w"}
+        if path:
+            for offset in path:
+                command += movementMap[offset]
+        else:
+            return "..."
+        return command
+
+    def getPath(self,startPos,targetPos,localRandom=None):
         if not localRandom:
             localRandom = random
 
@@ -1386,12 +1037,12 @@ class Terrain(src.saveing.Saveable):
         paths = {startPos:[]}
 
         counter = 0
-        while counter < 200:
+        while counter < 100:
             counter += 1
             
             if not nextPos:
                 if not toCheck:
-                    return "..."
+                    return []
                 pos = localRandom.choice(toCheck)
                 toCheck.remove(pos)
             else:
@@ -1434,11 +1085,27 @@ class Terrain(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
-                    continue
+                passable = False
 
-                #if self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
-                #    continue
+                oldRoom = self.getRoomByPosition(pos)
+                if oldRoom:
+                    oldRoom = oldRoom[0]
+
+                newRoom = self.getRoomByPosition(newPos)
+                if newRoom:
+                    newRoom = newRoom[0]
+
+                if offset == (0,+1) and (not newRoom or newRoom.getPositionWalkable((6,0,0) )) and (not oldRoom or oldRoom.getPositionWalkable((6,12,0))):
+                    passable = True
+                if offset == (0,-1) and (not newRoom or newRoom.getPositionWalkable((6,12,0))) and (not oldRoom or oldRoom.getPositionWalkable((6,0,0 ))):
+                    passable = True
+                if offset == (+1,0) and (not newRoom or newRoom.getPositionWalkable((0,6,0) )) and (not oldRoom or oldRoom.getPositionWalkable((12,6,0))):
+                    passable = True
+                if offset == (-1,0) and (not newRoom or newRoom.getPositionWalkable((12,6,0))) and (not oldRoom or oldRoom.getPositionWalkable((0,6,0 ))):
+                    passable = True
+
+                if not passable:
+                    continue
 
                 if not costMap.get(newPos) == None:
                     continue
@@ -1454,13 +1121,104 @@ class Terrain(src.saveing.Saveable):
             if nextPos == targetPos:
                 break
 
+        return paths.get(targetPos)
+
+    def getPathCommandTile(self,tilePos,startPos,targetPos,avoidItems=None,localRandom=None):
+        path = self.getPathTile(tilePos,startPos,targetPos,avoidItems,localRandom)
+
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
-        if paths.get(targetPos):
-            for offset in paths.get(targetPos):
+        if path:
+            for offset in path:
                 command += movementMap[offset]
-
+        else:
+            return random.choice(["w","a","s","d"])
         return command
+
+
+    def getPathTile(self,tilePos,startPos,targetPos,avoidItems=None,localRandom=None):
+        if not avoidItems:
+            avoidItems = []
+        if not localRandom:
+            localRandom = random
+
+        costMap = {startPos:0}
+        lastPos = startPos
+        toCheck = []
+        nextPos = startPos
+        paths = {startPos:[]}
+
+        counter = 0
+        while counter < 200:
+            counter += 1
+            
+            if not nextPos:
+                if not toCheck:
+                    return []
+                pos = localRandom.choice(toCheck)
+                toCheck.remove(pos)
+            else:
+                pos = nextPos
+            nextPos = None
+            currentCost = costMap[pos]
+
+            neutralOffsets = []
+            goodOffsets = []
+            badOffsets = []
+            if targetPos[0] > pos[0]:
+                goodOffsets.append((+1,0))
+                badOffsets.append((-1,0))
+            elif targetPos[0] < pos[0]:
+                goodOffsets.append((-1,0))
+                badOffsets.append((+1,0))
+            else:
+                neutralOffsets.append((-1,0))
+                neutralOffsets.append((+1,0))
+
+            if targetPos[1] > pos[1]:
+                goodOffsets.append((0,+1))
+                badOffsets.append((0,-1))
+            elif targetPos[1] < pos[1]:
+                goodOffsets.append((0,-1))
+                badOffsets.append((0,+1))
+            else:
+                neutralOffsets.append((0,+1))
+                neutralOffsets.append((0,-1))
+
+            localRandom.shuffle(goodOffsets)
+            localRandom.shuffle(neutralOffsets)
+            localRandom.shuffle(badOffsets)
+            offsets = badOffsets+neutralOffsets+goodOffsets
+
+            while offsets:
+                offset = offsets.pop()
+                newPos = (pos[0]+offset[0],pos[1]+offset[1],pos[2])
+
+                if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
+                    continue
+
+                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
+                    continue
+
+                items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
+                if items and items[-1].type == "LandMine":
+                    continue
+
+                if not costMap.get(newPos) == None:
+                    continue
+
+                costMap[newPos] = currentCost+1
+                paths[newPos] = paths[pos]+[offset]
+
+                if not nextPos:
+                    nextPos = newPos
+                else:
+                    toCheck.append(newPos)
+
+            if nextPos == targetPos:
+                break
+
+        return paths.get(targetPos)
 
     def addCharacter(self, character, x, y):
         """
@@ -1889,14 +1647,11 @@ class Terrain(src.saveing.Saveable):
         self.rooms.extend(rooms)
         for room in rooms:
             room.terrain = self
+            room.container = self
             if (room.xPosition, room.yPosition) in self.roomByCoordinates:
                 self.roomByCoordinates[(room.xPosition, room.yPosition)].append(room)
             else:
                 self.roomByCoordinates[(room.xPosition, room.yPosition)] = [room]
-        if hasattr(
-            self, "watershedStart"
-        ):  # nontrivial: prevents crashes in constructor
-            self.calculatePathMap()
 
     def removeItem(self, item, recalculate=True):
         """
@@ -2518,10 +2273,6 @@ class Terrain(src.saveing.Saveable):
             ):
                 char.die()
 
-        # reset paths
-        if hasattr(self, "watershedStart"):
-            self.calculatePathMap()
-
     def removeRoom(self, room):
         """
         remove a room from terrain
@@ -2536,11 +2287,6 @@ class Terrain(src.saveing.Saveable):
             self.roomByCoordinates[(room.xPosition, room.yPosition)].remove(room)
             if not len(self.roomByCoordinates[(room.xPosition, room.yPosition)]):
                 del self.roomByCoordinates[(room.xPosition, room.yPosition)]
-
-        if hasattr(
-            self, "watershedStart"
-        ):  # nontrivial: prevents crashes in constructor
-            self.calculatePathMap()
 
     def addRoom(self, room):
         """
@@ -2557,11 +2303,6 @@ class Terrain(src.saveing.Saveable):
             self.roomByCoordinates[(room.xPosition, room.yPosition)].append(room)
         else:
             self.roomByCoordinates[(room.xPosition, room.yPosition)] = [room]
-
-        if hasattr(
-            self, "watershedStart"
-        ):  # nontrivial: prevents crashes in constructor
-            self.calculatePathMap()
 
     def teleportRoom(self, room, newPosition):
         """
@@ -2587,10 +2328,6 @@ class Terrain(src.saveing.Saveable):
             self.roomByCoordinates[newPosition] = [room]
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
-
-        # reset paths
-        if hasattr(self, "watershedStart"):
-            self.calculatePathMap()
 
     # bad code: should be in saveable
     def setState(self, state, tick=0):

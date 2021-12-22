@@ -1602,7 +1602,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom.addCharacter(enemy, xPos, yPos)
 
             xPos = 1
-            yPos = 13
+            yPos = 11
             enemy = src.characters.Guardian(xPos,yPos)
             enemy.health = 1500
             enemy.baseDamage = 100 + random.randint(1, 10)
@@ -1613,7 +1613,7 @@ class BackToTheRoots(BasicPhase):
             enemy.faction = leader.faction
             mainRoom.addCharacter(enemy, xPos, yPos)
 
-            xPos = 13
+            xPos = 11
             yPos = 1
             enemy = src.characters.Guardian(xPos,yPos)
             enemy.health = 1500
@@ -1625,8 +1625,8 @@ class BackToTheRoots(BasicPhase):
             enemy.faction = leader.faction
             mainRoom.addCharacter(enemy, xPos, yPos)
 
-            xPos = 13
-            yPos = 13
+            xPos = 11
+            yPos = 11
             enemy = src.characters.Guardian(xPos,yPos)
             enemy.health = 1500
             enemy.baseDamage = 100 + random.randint(1, 10)

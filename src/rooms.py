@@ -442,7 +442,7 @@ class Room(src.saveing.Saveable):
                 offset = offsets.pop()
                 newPos = (pos[0]+offset[0],pos[1]+offset[1],pos[2])
 
-                if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
+                if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 0 or newPos[1] < 0:
                     continue
 
                 if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2])):

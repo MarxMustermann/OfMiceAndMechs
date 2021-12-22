@@ -650,6 +650,8 @@ class Terrain(src.saveing.Saveable):
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
+            if char.xPosition % 15 == 14:
+                char.changed("changedTile")
         elif direction == "east":
             if char.xPosition % 15 == 13:
                 if char.yPosition % 15 < 7:
@@ -665,6 +667,8 @@ class Terrain(src.saveing.Saveable):
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
+            if char.xPosition % 15 == 0:
+                char.changed("changedTile")
         elif direction == "north":
             if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
@@ -680,6 +684,8 @@ class Terrain(src.saveing.Saveable):
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
+            if char.yPosition % 15 == 14:
+                char.changed("changedTile")
         elif direction == "south":
             if char.yPosition % 15 == 13:
                 if char.xPosition % 15 < 7:
@@ -695,6 +701,8 @@ class Terrain(src.saveing.Saveable):
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
+            if char.yPosition % 15 == 0:
+                char.changed("changedTile")
         """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
             return
@@ -1123,8 +1131,8 @@ class Terrain(src.saveing.Saveable):
 
         return paths.get(targetPos)
 
-    def getPathCommandTile(self,tilePos,startPos,targetPos,avoidItems=None,localRandom=None):
-        path = self.getPathTile(tilePos,startPos,targetPos,avoidItems,localRandom)
+    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None):
+        path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -1132,11 +1140,11 @@ class Terrain(src.saveing.Saveable):
             for offset in path:
                 command += movementMap[offset]
         else:
-            return random.choice(["w","a","s","d"])
+            return None
         return command
 
 
-    def getPathTile(self,tilePos,startPos,targetPos,avoidItems=None,localRandom=None):
+    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None):
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -1200,9 +1208,10 @@ class Terrain(src.saveing.Saveable):
                 if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
                     continue
 
-                items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
-                if items and items[-1].type == "LandMine":
-                    continue
+                if not tryHard:
+                    items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
+                    if items and items[0].type == "LandMine":
+                        continue
 
                 if not costMap.get(newPos) == None:
                     continue

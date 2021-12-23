@@ -2018,6 +2018,25 @@ class Terrain(src.saveing.Saveable):
 
         return chars
 
+    def renderTiles(self):
+        chars = []
+        for y in range(0,15):
+            chars.append([])
+            for x in range(0,15):
+                if y == 0 or x == 0 or y == 14 or x == 14:
+                    chars[y].append(src.canvas.displayChars.forceField)
+                else:
+                    chars[y].append(src.canvas.displayChars.dirt)
+
+        for room in self.rooms:
+            color = "#334"
+            if src.gamestate.gamestate.mainChar.container == room:
+                color = "#ff2"
+            displayChar = (src.interaction.urwid.AttrSpec(color, "black"), "RR")
+            chars[room.yPosition][room.xPosition] = displayChar
+
+        return chars
+
     def getAffectedByRoomMovementDirection(
         self, room, direction, force=1, movementBlock=set()
     ):

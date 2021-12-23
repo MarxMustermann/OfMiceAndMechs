@@ -4625,11 +4625,25 @@ def render(char):
     ):
         chars = src.gamestate.gamestate.mainChar.room.render()
     else:
-        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
+        mapChars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
+        miniMapChars = thisTerrain.renderTiles()
+
+        chars = []
+        y = 0
+        for line in mapChars:
+            if y < 15:
+                chars.append(miniMapChars[y]+["  "]*5)
+            else:
+                chars.append(["  "]*20)
+
+            chars[y].extend(mapChars[y])
+
+            y += 1
+
 
     # place rendering in screen
     canvas = src.canvas.Canvas(
-        size=(viewsize, viewsize),
+        size=(viewsize, viewsize+20),
         chars=chars,
         coordinateOffset=(0,0),
         shift=shift,
@@ -4638,7 +4652,6 @@ def render(char):
     )
 
     return canvas
-
 
 multi_currentChar = None
 multi_chars = set()
@@ -5317,7 +5330,7 @@ def gameLoop(loop, user_data=None):
                             for line in stringifyUrwid(header.get_text()).split("\n"):
                                 tcodConsole.print(x=1, y=counter, string=line)
                                 counter += 1
-                            canvas.printTcod(tcodConsole,counter,20,warning=warning)
+                            canvas.printTcod(tcodConsole,counter,0,warning=warning)
                             footertext = stringifyUrwid(footer.get_text())
                             tcodConsole.print(x=0,y=51,string=" "*(200-len(footertext))+footertext)
                             tcodContext.present(tcodConsole)

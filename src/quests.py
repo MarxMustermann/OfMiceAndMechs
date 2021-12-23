@@ -250,6 +250,9 @@ class Quest(src.saveing.Saveable):
         self.id = str(random.random())+str(time.time())
         self.reroll()
 
+    def getQuestMarkersSmall(self,character):
+        return []
+
     def getRequiredParameters(self):
         return []
     
@@ -674,8 +677,9 @@ class MetaQuestSequence(Quest):
 
     def getActiveQuest(self):
         if self.subQuests:
-            return self.subQuests[0]
-        return self
+            return self.subQuests[0].getActiveQuest()
+        else:
+            return self
 
     """
     get state as dict
@@ -5229,6 +5233,20 @@ class GoToTile(Quest):
         self.expectedPosition = None
         self.lastPos = None
         self.lastDirection = None
+        self.smallPath = None
+
+    def getQuestMarkersSmall(self,character):
+        self.getSolvingCommandString(character)
+        result = super().getQuestMarkersSmall(character)
+        if self.smallPath:
+            if isinstance(character.container,src.rooms.Room):
+                pos = (character.xPosition,character.yPosition)
+            else:
+                pos = (character.xPosition%15,character.yPosition%15)
+            for step in self.smallPath:
+                pos = (pos[0]+step[0],pos[1]+step[1])
+                result.append((pos,"path"))
+        return result
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -5321,9 +5339,6 @@ class GoToTile(Quest):
 
                 if not dryRun:
                     self.path = path
-                character.addMessage(path)
-                character.addMessage(list(reversed(path)))
-                character.addMessage(direction)
 
                 if not path:
                     return ".13.."
@@ -5334,31 +5349,26 @@ class GoToTile(Quest):
                         self.expectedPosition = (tilePos[0]+direction[0],tilePos[1]+direction[1],0)
                         self.lastPos = tilePos
                         self.lastDirection = direction
-                        print("set expected")
-                        print(self.expectedPosition)
-                        print(tilePos)
                     else:
                         direction = path[-1]
 
                 if direction == (1,0):
-                    print("try go d (r)")
                     if charPos == (12,6,0):
                         return "d"
-                    command = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
                         return ".19.."
                     return command
                 if direction == (-1,0):
-                    print("try go a (r)")
                     if charPos == (0,6,0):
                         return "a"
-                    command = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5367,10 +5377,9 @@ class GoToTile(Quest):
                 if direction == (0,1):
                     if charPos == (6,12,0):
                         return "s"
-                    print("try go s (r)")
-                    command = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5379,10 +5388,7 @@ class GoToTile(Quest):
                 if direction == (0,-1):
                     if charPos == (6,0,0):
                         return "w"
-                    print("try go w (r)")
-                    command = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom)
-                    if not command:
-                        command = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom,tryHard=True)
+                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5406,16 +5412,12 @@ class GoToTile(Quest):
                     basePath = character.container.getPath(tilePos,targetPos,localRandom=localRandom)
                     if not basePath:
                         return ".32.."
-                    path = list(reversed(basePath))
 
                 if not dryRun:
                     self.path = path
-                character.addMessage(path)
-                character.addMessage(list(reversed(path)))
-                character.addMessage(direction)
 
                 if not path and not direction:
-                    return ".10.."
+                    return ".16.."
 
                 if direction == None:
                     if charPos == (0,7,0):
@@ -5437,73 +5439,68 @@ class GoToTile(Quest):
                         direction = path[-1]
 
                 if direction == (1,0):
-                    print("try go d (t)")
                     if charPos == (13,7,0):
                         return "d"
                     if charPos == (14,7,0):
                         return "d"
-                    command = character.container.getPathCommandTile(tilePos,charPos,(13,7,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(13,7,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(tilePos,charPos,(13,7,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(13,7,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
                         return ".12.."
                     return command
                 if direction == (-1,0):
-                    print("try go a (t)")
-                    print(charPos)
                     if charPos == (1,7,0):
                         return "a"
                     if charPos == (0,7,0):
                         return "a"
-                    command = character.container.getPathCommandTile(tilePos,charPos,(1,7,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(1,7,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(tilePos,charPos,(1,7,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(1,7,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
                         return ".12.."
                     return command
                 if direction == (0,1):
-                    print("try go s (t)")
                     if charPos == (7,13,0):
                         return "s"
                     if charPos == (7,14,0):
                         return "s"
-                    command = character.container.getPathCommandTile(tilePos,charPos,(7,13,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,13,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(tilePos,charPos,(7,13,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,13,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
                         return ".12.."
                     return command
                 if direction == (0,-1):
-                    print("try go w (t)")
                     if charPos == (7,1,0):
                         return "w"
                     if charPos == (7,0,0):
                         return "w"
-                    command = character.container.getPathCommandTile(tilePos,charPos,(7,1,0),localRandom=localRandom)
+                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,1,0),localRandom=localRandom)
                     if not command:
-                        command = character.container.getPathCommandTile(tilePos,charPos,(7,1,0),localRandom=localRandom,tryHard=True)
+                        (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,1,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
                         return ".12.."
                     return command
-                return ".10.."
+                return ".17.."
             return ".20.."
 
         if not self.targetPosition:
-            return ".10.."
+            return ".18.."
 
         localRandom = random.Random(self.randomSeed)
         if isinstance(character.container, src.rooms.Room):
             charPos = (character.xPosition,character.yPosition,0)
             if not charPos == (6,6,0):
-                return character.container.getPathCommandTile(charPos,(6,6,0),localRandom=localRandom)
+                return character.container.getPathCommandTile(charPos,(6,6,0),localRandom=localRandom)[0]
             else:
                 tilePos = (character.container.xPosition,character.container.yPosition,0)
                 if character == src.gamestate.gamestate.mainChar:
@@ -5519,14 +5516,11 @@ class GoToTile(Quest):
                         self.path = path
 
                     if not path:
-                        return ".10.."
+                        return ".19.."
 
                     if not dryRun:
                         direction = self.path.pop()
                         self.expectedPosition = (tilePos[0]+direction[0],tilePos[1]+direction[1],0)
-                        print("set expected")
-                        print(self.expectedPosition)
-                        print(tilePos)
                     else:
                         direction = path[-1]
 
@@ -5539,7 +5533,7 @@ class GoToTile(Quest):
                         return "15s"
                     if direction == (0,-1):
                         return "15w"
-                    return ".10.."
+                    return ".20.."
 
                 directions = []
                 randomDirections = []
@@ -5565,7 +5559,7 @@ class GoToTile(Quest):
             charPos = (character.xPosition%15,character.yPosition%15,0)
             if not charPos == (7,7,0):
                 if character == src.gamestate.gamestate.mainChar:
-                    return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)
+                    return character.container.getPathCommandTile(tilePos,charPos,(7,7,0),localRandom=localRandom)[0]
                 else:
                     return "d"*(7-character.xPosition%15)+"s"*(7-character.yPosition%15)+"w"*(character.yPosition%15-7)+"a"*(character.xPosition%15-7)
             else:
@@ -5582,7 +5576,7 @@ class GoToTile(Quest):
                         self.path = path
 
                     if not path:
-                        return ".10.."
+                        return ".21.."
 
                     if not dryRun:
                         direction = self.path.pop()
@@ -5598,7 +5592,7 @@ class GoToTile(Quest):
                         return "15s"
                     if direction == (0,-1):
                         return "15w"
-                    return ".10.."
+                    return ".22.."
 
                 directions = []
                 randomDirections = []

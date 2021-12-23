@@ -602,7 +602,7 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = 500
+        self.startDelay = int(random.random()*1700)+300
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
@@ -1412,6 +1412,9 @@ class BackToTheRoots(BasicPhase):
 
             machine = src.items.itemMap["MachineMachine"]()
             machine.charges = 0
+            blueprint = src.items.itemMap["BluePrint"]()
+            blueprint.setToProduce("CrystalCompressor")
+            machine.addBlueprint(blueprint)
             for i in range(0,4):
                 blueprint = src.items.itemMap["BluePrint"]()
                 blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
@@ -1420,6 +1423,9 @@ class BackToTheRoots(BasicPhase):
 
             machine = src.items.itemMap["MachineMachine"]()
             machine.charges = 0
+            blueprint = src.items.itemMap["BluePrint"]()
+            blueprint.setToProduce("Rod")
+            machine.addBlueprint(blueprint)
             for i in range(0,4):
                 blueprint = src.items.itemMap["BluePrint"]()
                 blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
@@ -1428,6 +1434,12 @@ class BackToTheRoots(BasicPhase):
 
             machine = src.items.itemMap["MachineMachine"]()
             machine.charges = 0
+            blueprint = src.items.itemMap["BluePrint"]()
+            blueprint.setToProduce("Armor")
+            machine.addBlueprint(blueprint)
+            blueprint = src.items.itemMap["BluePrint"]()
+            blueprint.setToProduce("ScrapCompactor")
+            machine.addBlueprint(blueprint)
             for i in range(0,4):
                 blueprint = src.items.itemMap["BluePrint"]()
                 blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
@@ -1436,6 +1448,9 @@ class BackToTheRoots(BasicPhase):
 
             machine = src.items.itemMap["MachineMachine"]()
             machine.charges = 0
+            blueprint = src.items.itemMap["BluePrint"]()
+            blueprint.setToProduce("Sheet")
+            machine.addBlueprint(blueprint)
             for i in range(0,4):
                 blueprint = src.items.itemMap["BluePrint"]()
                 blueprint.setToProduce(random.choice(list(src.items.rawMaterialLookup.keys())))
@@ -1447,10 +1462,6 @@ class BackToTheRoots(BasicPhase):
             machine = src.items.itemMap["ItemUpgrader"]()
             workshop2.addItem(machine,(10,8,0))
 
-            machine = src.items.itemMap["AutoTutor"]()
-            machine = src.items.itemMap["AutoTutor"]()
-            machine = src.items.itemMap["AutoTutor"]()
-            machine = src.items.itemMap["AutoTutor"]()
             machine = src.items.itemMap["AutoTutor"]()
             workshop2.addItem(machine,(2,4,0))
 
@@ -1574,10 +1585,6 @@ class BackToTheRoots(BasicPhase):
 
                         if not placedMainChar and i == 2 and j == 2 and k == 2:
                             src.gamestate.gamestate.mainChar = worker
-                            worker.health = 1000000
-                            worker.maxHealth = 1000000
-                            worker.baseDamage = 10000
-                            worker.satiation = 1000000
                             placedMainChar = True
 
             quest = src.quests.ObtainAllSpecialItems()
@@ -1666,6 +1673,12 @@ class BackToTheRoots(BasicPhase):
         src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
         src.gamestate.gamestate.mainChar.personality["avoidItems"] = False
+        """
+        worker.health = 1000000
+        worker.maxHealth = 1000000
+        worker.baseDamage = 10000
+        worker.satiation = 1000000
+        """
 
         src.gamestate.gamestate.mainChar.solvers = [
             "SurviveQuest",

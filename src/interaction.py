@@ -4627,7 +4627,6 @@ def render(char):
     else:
         chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
 
-
     # place rendering in screen
     canvas = src.canvas.Canvas(
         size=(viewsize, viewsize),

@@ -1139,9 +1139,7 @@ class Terrain(src.saveing.Saveable):
         if path:
             for offset in path:
                 command += movementMap[offset]
-        else:
-            return None
-        return command
+        return (command,path)
 
 
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None):

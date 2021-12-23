@@ -380,9 +380,7 @@ class Room(src.saveing.Saveable):
         if path:
             for offset in path:
                 command += movementMap[offset]
-        else:
-            return random.choice(["w","a","s","d"])
-        return command
+        return (command,path)
 
     def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None):
         if not avoidItems:
@@ -813,7 +811,10 @@ class Room(src.saveing.Saveable):
                     src.logger.debugMessages.append("room drawing failed")
 
             # draw characters
+            foundMainchar = None
             for character in self.characters:
+                if character == src.gamestate.gamestate.mainChar:
+                    foundMainchar = character
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
@@ -864,6 +865,25 @@ class Room(src.saveing.Saveable):
                         if character.showGaveCommand:
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
+                    if foundMainchar:
+                        activeQuest = foundMainchar.getActiveQuest()
+                        for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
+                            pos = marker[0]
+                            try:
+                                display = chars[pos[1]][pos[0]]
+                            except:
+                                continue
+                            if isinstance(display,int):
+                                display = src.canvas.displayChars.indexedMapping[display]
+                            if isinstance(display,str):
+                                display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                            if hasattr(display[0],"fg"):
+                                display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                            else:
+                                display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                            chars[pos[1]][pos[0]] = display
                 else:
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"
@@ -1720,6 +1740,10 @@ XXX
         except:
             self.walkingAccess = []
 
+"""
+class GrowRoom(EmptyRoom):
+class WorkshopRoom(EmptyRoom):
+"""
 class TrapRoom(EmptyRoom):
 
     electricalCharges = 25

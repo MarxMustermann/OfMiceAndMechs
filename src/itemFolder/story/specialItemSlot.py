@@ -44,6 +44,7 @@ class SpecialItemSlot(src.items.Item):
 
                 self.hasItem = True
                 character.addMessage("you add the special item")
+                character.awardReputation(1000,carryOver=True)
             else:
                 character.addMessage("you need to have special item #%s in your inventory"%(self.itemID,))
         else:
@@ -58,7 +59,7 @@ class SpecialItemSlot(src.items.Item):
 
     def render(self):
         if self.hasItem:
-            return ":)"
+            return "\/"
         else:
             return src.canvas.displayChars.sparkPlug
 

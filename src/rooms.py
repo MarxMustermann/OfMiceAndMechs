@@ -103,6 +103,7 @@ class Room(src.saveing.Saveable):
         self.isContainment = False
         self.listeners = {"default": []}
         self.seed = seed
+        self.displayChar = (src.interaction.urwid.AttrSpec("#343", "black"), "RR")
 
         # set id
         import uuid
@@ -372,8 +373,8 @@ class Room(src.saveing.Saveable):
             ]
         )
 
-    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None):
-        path = self.getPathTile(startPos,targetPos,avoidItems,localRandom)
+    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False):
+        path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -382,7 +383,7 @@ class Room(src.saveing.Saveable):
                 command += movementMap[offset]
         return (command,path)
 
-    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None):
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False):
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -1673,6 +1674,8 @@ XXX
 
         self.attributesToStore.extend(["bio"])
 
+        self.displayChar = (src.interaction.urwid.AttrSpec("#343", "black"), "ER")
+
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         """
         change the size of the room
@@ -1774,6 +1777,7 @@ class TrapRoom(EmptyRoom):
         bio=False,
     ):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
 
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         super().reconfigure(sizeX,sizeY,items,bio,doorPos)

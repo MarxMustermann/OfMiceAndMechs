@@ -602,7 +602,7 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = int(random.random()*1700)+300
+        self.startDelay = int(random.random()*0)+300
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
@@ -667,17 +667,14 @@ class BackToTheRoots(BasicPhase):
         mainChar = src.gamestate.gamestate.mainChar
 
         # build cities
-        self.citylocations.append((6,6))
-        self.citylocations.append((6,8))
-        self.citylocations.append((8,6))
-        self.citylocations.append((8,8))
         numCities = 0
+        self.citylocations.append((7,7))
         while numCities < 4:
             pos = (random.randint(3,11),random.randint(4,11))
 
             foundEnemyCity = None
             for cityPos in self.citylocations:
-                if abs(pos[0]-cityPos[0])+abs(pos[1]-cityPos[1]) > 4:
+                if abs(pos[0]-cityPos[0])+abs(pos[1]-cityPos[1]) > 5:
                     continue
                 foundEnemyCity = cityPos
                 break
@@ -688,11 +685,9 @@ class BackToTheRoots(BasicPhase):
             print("city at %s"%(pos,))
             self.citylocations.append(pos)
             numCities += 1
-        self.citylocations.remove((6,6))
-        self.citylocations.remove((6,8))
-        self.citylocations.remove((8,6))
-        self.citylocations.remove((8,8))
+        self.citylocations.remove((7,7))
 
+        # add old main fortress
         architect = src.items.itemMap["ArchitectArtwork"]()
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         currentTerrain.addItem(architect,(124, 110, 0))
@@ -819,6 +814,8 @@ class BackToTheRoots(BasicPhase):
         
         placedMainChar = False
 
+        currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
+
         offsets = [(-1,+1)]
         for offset in offsets:
             architect.doClearField(7+offset[0],7+offset[1])
@@ -863,7 +860,7 @@ class BackToTheRoots(BasicPhase):
             for terrain in row[:]:
                 x += 1
 
-                if not (y == 8 and x == 8):
+                if not (y == 7 and x == 8):
                     continue
                 """
                 if random.choice([True,False]) or 1==1:
@@ -956,7 +953,7 @@ class BackToTheRoots(BasicPhase):
 
         cityCounter = 1
         for citylocation in self.citylocations:
-            currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+            currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
             
             scrapCompactor = src.items.itemMap["ScrapCompactor"]()
             currentTerrain.addItem(scrapCompactor,(107, 92, 0))
@@ -1592,7 +1589,7 @@ class BackToTheRoots(BasicPhase):
             self.leaderQuests[citylocation] = quest
 
             self.cityIds[citylocation] = cityCounter
-            self.scoreTracker[citylocation] = 0
+            self.scoreTracker[citylocation] = -1
 
             cityCounter += 1
 
@@ -1674,10 +1671,11 @@ class BackToTheRoots(BasicPhase):
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
         src.gamestate.gamestate.mainChar.personality["avoidItems"] = False
         """
-        worker.health = 1000000
-        worker.maxHealth = 1000000
-        worker.baseDamage = 10000
-        worker.satiation = 1000000
+        src.gamestate.gamestate.mainChar.health = 1000000
+        src.gamestate.gamestate.mainChar.maxHealth = 1000000
+        src.gamestate.gamestate.mainChar.baseDamage = 10000
+        src.gamestate.gamestate.mainChar.satiation = 1000000
+        src.gamestate.gamestate.mainChar.reputation = 1000000
         """
 
         src.gamestate.gamestate.mainChar.solvers = [
@@ -1848,11 +1846,50 @@ press space to continue"""%(self.gatherTime,))
         event.setCallback({"container": self, "method": "startNewEpoch"})
         terrain.addEvent(event)
 
+        self.checkRespawn()
+
+    def checkRespawn(self):
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 10)
+        event.setCallback({"container": self, "method": "checkRespawn"})
+        terrain.addEvent(event)
+
+        if src.gamestate.gamestate.mainChar.dead == False:
+            return
+
+        foundNPCs = []
+        foundCityNPCs = []
+        for cityLocation in self.citylocations:
+            cityLeader = self.leaders[cityLocation]
+            if cityLeader.dead == True:
+                continue
+            for subleader in cityLeader.subordinates:
+                if subleader.dead == True:
+                    continue
+                for subsubleader in subleader.subordinates:
+                    if subsubleader.dead == True:
+                        continue
+                    for worker in subsubleader.subordinates:
+                        if worker.dead == True:
+                            continue
+                        foundNPCs.append(worker)
+                        if worker.faction == src.gamestate.gamestate.mainChar.faction:
+                            foundCityNPCs.append(worker)
+
+        if random.random() > 0.3 and foundCityNPCs:
+            src.gamestate.gamestate.mainChar = random.choice(foundCityNPCs)
+        else:
+            src.gamestate.gamestate.mainChar = random.choice(foundNPCs)
+
+        src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
+
     def rewardNPCDirect(self,character):
         print("rewarding npc")
 
     def startNewEpoch(self):
         print("starting new epoch")
+        src.gamestate.gamestate.mainChar.addMessage("starting new epoch")
 
         specialItemPositions = {}
         toFetchMap = {}
@@ -1863,7 +1900,7 @@ press space to continue"""%(self.gatherTime,))
         for cityLocation in self.citylocations:
             print("handling city #%s %s"%(self.cityIds[cityLocation],cityLocation,))
 
-            terrain = src.gamestate.gamestate.terrainMap[7][7]
+            terrain = src.gamestate.gamestate.terrainMap[6][7]
             foundRoom = None
             for room in terrain.rooms:
                 if room.xPosition == cityLocation[0] and room.yPosition == cityLocation[1]+1:
@@ -1902,6 +1939,13 @@ press space to continue"""%(self.gatherTime,))
 
             if not candidates:
                 print("city %s won the game"%(cityLocation,))
+                cityLeader = self.leaders[cityLocation]
+                print("%s won the game"%(cityLeader.name,))
+                if cityLeader == src.gamestate.gamestate.mainChar:
+                    print("you won the game")
+                else:
+                    print("you lost the game")
+                1/0
                 return
                 
             itemToFetch = random.choice(candidates)
@@ -1929,8 +1973,8 @@ press space to continue"""%(self.gatherTime,))
                         gatherNPC(worker)
 
         for cityLocation in self.citylocations:
-            numNpcs = len(hasItemMap[cityLocation])*5
-            currentTerrain = src.gamestate.gamestate.terrainMap[cityLocation[1]][cityLocation[0]]
+            numNpcs = len(hasItemMap[cityLocation])*50
+            currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
 
             foundRoom = None
             for room in terrain.rooms:
@@ -1947,7 +1991,7 @@ press space to continue"""%(self.gatherTime,))
             cityLeader = self.leaders[cityLocation]
 
             if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                if self.firstEpoch:
+                if self.firstEpoch and 1==0:
                     showText("""
 A new epoch has started and the attack on the enemy city is about to start.
 
@@ -1962,18 +2006,26 @@ press space to continue""")
                     for i in range(0,9*6*2):
                         infogrid.append(" "*rowwidth)
 
+                    def getname(character):
+                        if character.dead:
+                            return ""
+                        name = character.name
+                        if character == src.gamestate.gamestate.mainChar:
+                            name = "== "+name+" =="
+                        return name
+
                     infogrid[4] = cityLeader.name+" "*(rowwidth-len(cityLeader.name))
                     row2Counter = 0
                     row3Counter = 0
                     for subleader in cityLeader.subordinates:
-                        infogrid[2*9+1+row2Counter*3] = subleader.name+" "*(rowwidth-len(subleader.name))
+                        infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
                         infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
                         for subsubleader in subleader.subordinates:
-                            infogrid[4*9+row3Counter] = subsubleader.name+" "*(rowwidth-len(subsubleader.name))
+                            infogrid[4*9+row3Counter] = getname(subsubleader)+" "*(rowwidth-len(getname(subsubleader)))
                             infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
                             lineCounter = 0
                             for worker in subsubleader.subordinates:
-                                infogrid[(2+1+lineCounter)*2*9+row3Counter] = worker.name+" "*(rowwidth-len(worker.name))
+                                infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
                                 infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
                                 lineCounter += 1
                             row3Counter += 1
@@ -2010,6 +2062,7 @@ press space to continue"""%(reputationTree))
                 print("leader dead")
                 continue
         
+            # spawn reward npcs
             for i in range(0,numNpcs):
                 newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
                 self.cityNPCCounters[cityLocation] += 1
@@ -2038,6 +2091,7 @@ press space to continue"""%(reputationTree))
                     newNPC.assignQuest(quest, active=True)
                     newNPC.superior = cityLeader
                     newNPC.rank = 4
+                    newNPC.inventory.append(src.items.itemMap["GooFlask"](uses=100))
 
                     newNPC.addMessage("added as replacement 2nd tier officer")
                     continue
@@ -2078,6 +2132,7 @@ press space to continue"""%(reputationTree))
                     newNPC.assignQuest(quest, active=True)
                     newNPC.superior = selectedSubLeader
                     newNPC.rank = 5
+                    newNPC.inventory.append(src.items.itemMap["GooFlask"](uses=100))
 
                     newNPC.addMessage("added as replacement 2nd tier officer")
                     continue
@@ -2119,6 +2174,9 @@ press space to continue"""%(reputationTree))
                     newNPC.superior = selectedSubsubLeader
                     newNPC.rank = 6
 
+                    if src.gamestate.gamestate.mainChar.dead == True:
+                        src.gamestate.gamestate.mainChar = newNPC
+
                     newNPC.addMessage("added as replacement worker")
                     continue
 
@@ -2129,7 +2187,7 @@ press space to continue"""%(reputationTree))
                 for y in (92,94,96,98,100,102):
                     for x in (107,109,111,113,115,117):
                         if currentTerrain.getItemByPosition((x,y,0)):
-                            print("skipping")
+                            print("skipping"
                             continue
                         dropType = random.choice(["Machine","ItemUpgrader","ScrapCompactor"])
                         item = src.items.itemMap[dropType]()
@@ -2149,9 +2207,11 @@ press space to continue"""%(reputationTree))
                 newNPC.die()
                 """
 
+        # do promotions
         toKill = []
         for cityLocation in self.citylocations:
             newScore = len(hasItemMap[cityLocation])
+            cityLeader = self.leaders[cityLocation]
 
             if newScore <= self.scoreTracker[cityLocation]:
                 cityLeader = self.leaders[cityLocation]
@@ -2177,6 +2237,7 @@ press space to continue"""%(reputationTree))
                 serveQuest = subLeader.quests[0]
                 subLeader.quests.remove(serveQuest)
                 subLeader.rank = 3
+                subLeader.inventory.append(src.items.itemMap["GooFlask"](uses = 100))
 
                 subLeader.quests.append(cityLeader.quests[0])
                 subLeader.runCommandString("w")
@@ -2214,10 +2275,11 @@ press space to continue"""%(reputationTree))
 
                 subsubLeader.runCommandString("w")
                 subsubLeader.rank = 4
+                subsubLeader.inventory.append(src.items.itemMap["GooFlask"](uses = 100))
                 oldSubordinatesSubsubLeader = subsubLeader.subordinates
                 subsubLeader.subordinates = []
 
-                subsubLeader.superior = subLeader
+                subsubLeader.superior = self.leaders[cityLocation]
                 subLeader.subordinates.insert(subLeaderInsertIndex,subsubLeader)
 
                 for subordinate in oldSubordinatesSubLeader:
@@ -2246,6 +2308,7 @@ press space to continue"""%(reputationTree))
 
                 worker.runCommandString("w"*(worker.yPosition-5))
                 worker.rank = 5
+                worker.inventory.append(src.items.itemMap["GooFlask"](uses = 100))
 
                 worker.superior = subsubLeader
                 subsubLeader.subordinates.insert(subLeaderInsertIndex,worker)
@@ -2262,6 +2325,125 @@ press space to continue"""%(reputationTree))
             cityLeader.die()
             cityLeader.quests = []
             cityLeader.subordinates = []
+
+        didForcePromotion = False
+        if not toKill:
+            # do force reward
+            for cityLocation in self.citylocations:
+                forcePromoted = []
+                toForcePromote = []
+                cityLeader = self.leaders[cityLocation]
+                for subordinate in cityLeader.subordinates:
+                    if subordinate.dead:
+                        continue
+                    if subordinate.reputation > 800:
+                        toForcePromote.append(subordinate)
+                    for subsubordinate in subordinate.subordinates:
+                        if subsubordinate.dead:
+                            continue
+                        if subsubordinate.reputation > 800:
+                            toForcePromote.append(subsubordinate)
+                        for worker in subsubordinate.subordinates:
+                            if worker.dead:
+                                continue
+                            if worker.reputation > 800:
+                                toForcePromote.append(worker)
+
+                for character in toForcePromote:
+                    character.addMessage("should be force promoted")
+                    character.superior.addMessage("should be force demoted")
+
+                    forcePromoted.append("%s (%s) => %s (%s) "%(character.name,character.rank,oldBoss.name,oldBoss.rank))
+
+                    oldBoss = character.superior
+                    oldSubordintes = character.subordinates
+                    oldRank = character.rank
+
+                    character.superior = oldBoss.superior
+                    character.subordinates = oldBoss.subordinates
+                    character.rank = oldBoss.rank
+                    character.reputation = character.reputation//10
+
+                    oldBoss.superior = character
+                    oldBoss.rank = oldRank
+                    oldBoss.subordinates = oldSubordintes
+                    oldBoss.reputation = oldBoss.reputation//10
+
+                    character.superior.subordinates.remove(oldBoss)
+                    character.superior.subordinates.append(character)
+
+                    character.subordinates.remove(character)
+                    character.subordinates.append(oldBoss)
+
+                if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
+                    showText("""
+promotions this round:
+
+forcePromoted: %s
+
+press space to continue"""%(forcePromoted,))
+
+        if toKill or forcePromoted:
+            for cityLocation in self.citylocations:
+                cityLeader = self.leaders[cityLocation]
+
+                if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
+                    if self.firstEpoch and 1==0:
+                        showText("""
+A new epoch has started and the attack on the enemy city is about to start.
+
+The commands are given out any moment. Wait a few moments more and be ready to roll!
+
+press space to continue""")
+                        self.firstEpoch = False
+                    else:
+                        rowwidth = 15
+
+                        infogrid = []
+                        for i in range(0,9*6*2):
+                            infogrid.append(" "*rowwidth)
+
+                        infogrid[4] = cityLeader.name+" "*(rowwidth-len(cityLeader.name))
+                        row2Counter = 0
+                        row3Counter = 0
+                        for subleader in cityLeader.subordinates:
+                            infogrid[2*9+1+row2Counter*3] = subleader.name+" "*(rowwidth-len(subleader.name))
+                            infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
+                            for subsubleader in subleader.subordinates:
+                                infogrid[4*9+row3Counter] = subsubleader.name+" "*(rowwidth-len(subsubleader.name))
+                                infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
+                                lineCounter = 0
+                                for worker in subsubleader.subordinates:
+                                    infogrid[(2+1+lineCounter)*2*9+row3Counter] = worker.name+" "*(rowwidth-len(worker.name))
+                                    infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
+                                    lineCounter += 1
+                                row3Counter += 1
+                            row2Counter += 1
+
+                        reputationTree = """
+    cityleader:   """+"%s   "*9+"""
+                  """+"%s   "*9+"""
+    subleaders:   """+"%s   "*9+"""
+                  """+"%s   "*9+"""
+    squadleaders: """+"%s   "*9+"""
+                  """+"%s   "*9+"""
+
+    workers:      """+"%s   "*9+"""
+                  """+"%s   "*9+"""
+    workers:      """+"%s   "*9+"""
+                  """+"%s   "*9+"""
+    workers:      """+"%s   "*9+"""
+                  """+"%s   "*9+"""
+    """
+                        reputationTree = reputationTree%tuple(infogrid)
+
+                        showText("""
+    a new epoch has started!
+
+    the current reputation is:
+    %s
+
+    press space to continue"""%(reputationTree))
 
 
         print("fetch map:")

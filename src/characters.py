@@ -714,6 +714,11 @@ class Character(src.saveing.Saveable):
         if self.quests:
             return self.quests[0].getActiveQuest()
 
+    def getActiveQuests(self):
+        if self.quests:
+            return self.quests[0].getActiveQuests()
+        return []
+
     # bad code: should be removed
     def getQuest(self):
         """
@@ -1067,7 +1072,6 @@ class Character(src.saveing.Saveable):
 
         return state
 
-    # obsolete: remove or reintegrate
     def awardReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
         """
         give the character reputation (reward)
@@ -1089,9 +1093,9 @@ class Character(src.saveing.Saveable):
         self.addMessage(text)
 
         if carryOver and self.superior:
-            self.superior.awardReputation(amount=amount,fraction=fraction,reason=reason,carryOver=carryOver)
+            newAmount = amount//4
+            self.superior.awardReputation(amount=newAmount,fraction=fraction,reason=reason,carryOver=carryOver)
 
-    # obsolete: remove or reintegrate
     def revokeReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
         """
         remove some of the character reputation (punishment)
@@ -1113,7 +1117,8 @@ class Character(src.saveing.Saveable):
             self.addMessage(text)
 
         if carryOver and self.superior:
-            self.superior.revokeReputation(amount=amount,fraction=fraction,reason=reason,carryOver=carryOver)
+            newAmount = amount//4
+            self.superior.revokeReputation(amount=newAmount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     # obsolete: reintegrate
     # bad code: this is kind of incompatible with the meta quests

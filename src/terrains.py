@@ -1022,8 +1022,8 @@ class Terrain(src.saveing.Saveable):
 
             return foundItem
 
-    def getPathCommand(self,startPos,targetPos,localRandom=None):
-        path = self.getPath(startPos,targetPos,localRandom)
+    def getPathCommand(self,startPos,targetPos,localRandom=None,tryHard=False):
+        path = self.getPath(startPos,targetPos,localRandom,tryHard)
 
         command = ""
         movementMap = {(1,0):"15d",(-1,0):"15a",(0,1):"15s",(0,-1):"15w"}
@@ -1034,7 +1034,7 @@ class Terrain(src.saveing.Saveable):
             return "..."
         return command
 
-    def getPath(self,startPos,targetPos,localRandom=None):
+    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False):
         if not localRandom:
             localRandom = random
 
@@ -2016,6 +2016,31 @@ class Terrain(src.saveing.Saveable):
         if self.overlay:
             self.overlay(chars)
 
+        for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar):
+                pos = marker[0]
+                pos = (src.gamestate.gamestate.mainChar.xPosition-2,src.gamestate.gamestate.mainChar.yPosition)
+                try:
+                    display = chars[pos[1]][pos[0]]
+                except:
+                    continue
+
+                if isinstance(display,int):
+                    display = src.canvas.displayChars.indexedMapping[display]
+                if isinstance(display,str):
+                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                if isinstance(display[0],tuple):
+                    continue
+
+                if hasattr(display[0],"fg"):
+                    display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                else:
+                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                chars[pos[1]][pos[0]] = display
+            pass
+
         return chars
 
     def renderTiles(self):
@@ -2030,10 +2055,42 @@ class Terrain(src.saveing.Saveable):
 
         for room in self.rooms:
             color = "#334"
-            if src.gamestate.gamestate.mainChar.container == room:
-                color = "#ff2"
-            displayChar = (src.interaction.urwid.AttrSpec(color, "black"), "RR")
-            chars[room.yPosition][room.xPosition] = displayChar
+            chars[room.yPosition][room.xPosition] = room.displayChar
+
+        homePos = (src.gamestate.gamestate.mainChar.registers.get("HOMEx"),src.gamestate.gamestate.mainChar.registers.get("HOMEy"))
+        if homePos[0] and homePos[1]:
+            chars[homePos[1]][homePos[0]] = "HH"
+
+        for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
+                pos = marker[0]
+                try:
+                    display = chars[pos[1]][pos[0]]
+                except:
+                    continue
+
+                if isinstance(display,int):
+                    display = src.canvas.displayChars.indexedMapping[display]
+                if isinstance(display,str):
+                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                if marker[1] == "target":
+                    color = "#fff"
+                else:
+                    color = "#555"
+                if hasattr(display[0],"fg"):
+                    display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
+                else:
+                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
+
+                chars[pos[1]][pos[0]] = display
+            pass
+
+        displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+        if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
+            chars[src.gamestate.gamestate.mainChar.container.yPosition][src.gamestate.gamestate.mainChar.container.xPosition] = displayChar
+        else:
+            chars[src.gamestate.gamestate.mainChar.yPosition//15][src.gamestate.gamestate.mainChar.xPosition//15] = displayChar
 
         return chars
 

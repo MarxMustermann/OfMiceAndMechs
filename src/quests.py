@@ -253,6 +253,9 @@ class Quest(src.saveing.Saveable):
     def getQuestMarkersSmall(self,character):
         return []
 
+    def getQuestMarkersTile(self,character):
+        return []
+
     def getRequiredParameters(self):
         return []
     
@@ -268,6 +271,9 @@ class Quest(src.saveing.Saveable):
 
     def getActiveQuest(self):
         return self
+
+    def getActiveQuests(self):
+        return [self]
 
     """
     register callback
@@ -681,6 +687,12 @@ class MetaQuestSequence(Quest):
         else:
             return self
 
+    def getActiveQuests(self):
+        if self.subQuests:
+            return self.subQuests[0].getActiveQuests()+[self]
+        else:
+            return [self]
+
     """
     get state as dict
     """
@@ -981,6 +993,12 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].deactivate()
         super().deactivate()
 
+class BeUsefull(MetaQuestSequence):
+
+    def __init__(self, description="be useful", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
 
 class StandAttention(MetaQuestSequence):
 
@@ -1078,7 +1096,7 @@ class GatherItems(Quest):
         if len(character.inventory) > 1:
             character.inventory.pop()
             character.addMessage("test")
-            character.awardReputation(amount=1,reason="gathering item",carryOver=True)
+            character.awardReputation(amount=100,reason="gathering item",carryOver=True)
             return False
         character.runCommandString(".30.")
         return False
@@ -1141,11 +1159,9 @@ class ObtainAllSpecialItems(Quest):
             for subordinate in character.subordinates:
                 if subordinate.dead:
                     continue
-                subordinate.addMessage("%s dead"%(deadchars,))
                 for subsubordinate in subordinate.subordinates:
                     if subsubordinate.dead:
                         continue
-                    subsubordinate.addMessage("%s dead"%(deadchars,))
                     for worker in subsubordinate.subordinates:
                         if worker.dead:
                             continue
@@ -1224,6 +1240,11 @@ class MetaQuestParralel(Quest):
         if self.subQuests:
             return self.subQuests[0].getActiveQuest()
         return self
+
+    def getActiveQuests(self):
+        if self.subQuests:
+            return self.subQuests[0].getActiveQuests()+[self]
+        return [self]
 
     """
     get state as dict
@@ -5163,7 +5184,7 @@ class DeliverSpecialItem(Quest):
         command = self.getSolvingCommandString(character, dryRun = False)
 
         if not command:
-            command = ".16.."
+            command = ".46.."
 
         character.runCommandString(command)
         return False
@@ -5248,6 +5269,24 @@ class GoToTile(Quest):
                 result.append((pos,"path"))
         return result
 
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        self.getSolvingCommandString(character)
+        if self.expectedPosition:
+            result.append((self.expectedPosition,"path"))
+        if self.path:
+            if self.expectedPosition:
+                pos = self.expectedPosition
+            elif isinstance(character.container,src.rooms.Room):
+                pos = (character.container.xPosition,character.container.yPosition)
+            else:
+                pos = (character.xPosition//15,character.yPosition//15)
+            for step in reversed(self.path):
+                pos = (pos[0]+step[0],pos[1]+step[1])
+                result.append((pos,"path"))
+        result.append((self.targetPosition,"target"))
+        return result
+
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
             return
@@ -5267,7 +5306,6 @@ class GoToTile(Quest):
         if not self.character:
             return
 
-        #tilePos = (self.character.container.xPosition,self.character.container.yPosition,0)
         tilePos = (self.character.xPosition//15,self.character.yPosition//15,0)
         self.character.addMessage("reCheckPath triggered")
 
@@ -5357,7 +5395,7 @@ class GoToTile(Quest):
                         return "d"
                     (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom)
                     if not command:
-                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom)
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5368,7 +5406,7 @@ class GoToTile(Quest):
                         return "a"
                     (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom)
                     if not command:
-                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom)
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5379,7 +5417,7 @@ class GoToTile(Quest):
                         return "s"
                     (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom)
                     if not command:
-                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom)
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5389,6 +5427,8 @@ class GoToTile(Quest):
                     if charPos == (6,0,0):
                         return "w"
                     (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom)
+                    if not command:
+                        (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom,tryHard=True)
                     if not command and not dryRun:
                         self.path = None
                         self.lastDirection = None
@@ -5417,7 +5457,7 @@ class GoToTile(Quest):
                     self.path = path
 
                 if not path and not direction:
-                    return ".16.."
+                    return ".26.."
 
                 if direction == None:
                     if charPos == (0,7,0):
@@ -5702,7 +5742,7 @@ class GoHome(MetaQuestSequence):
             return
 
         if isinstance(character.container, src.rooms.Room):
-            if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7):
+            if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 6):
                 return
             if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
                 character.reputation += 1
@@ -5852,7 +5892,7 @@ class EnterEnemyCity(MetaQuestSequence):
             #if (character.container.terrain.xPosition == self.cityLocation[0] and character.container.terrain.yPosition == self.cityLocation[1]):
             if not (character.container.terrain):
                 return
-            if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 7):
+            if not (character.container.terrain.xPosition == 7 and character.container.terrain.yPosition == 6):
                 return
             if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
                 self.postHandler()

@@ -5,12 +5,12 @@ class GooFlask(src.items.Item):
     type = "GooFlask"
     attributesToStore = []
 
-    def __init__(self):
+    def __init__(self,uses=0):
         """
         configure super class
         """
 
-        self.uses = 0
+        self.uses = uses
         super().__init__(display=src.canvas.displayChars.gooflask_empty)
         
         self.name = "goo flask"

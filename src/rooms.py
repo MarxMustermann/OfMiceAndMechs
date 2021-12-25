@@ -1674,7 +1674,7 @@ XXX
 
         self.attributesToStore.extend(["bio"])
 
-        self.displayChar = (src.interaction.urwid.AttrSpec("#343", "black"), "ER")
+        self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "ER")
 
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         """
@@ -1745,11 +1745,25 @@ XXX
 
 """
 class GrowRoom(EmptyRoom):
-class WorkshopRoom(EmptyRoom):
 """
+
+class WorkshopRoom(EmptyRoom):
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "WR")
+
 class TrapRoom(EmptyRoom):
 
-    electricalCharges = 25
+    electricalCharges = 0
+    maxElectricalCharges = 100
     faction = "Trap"
 
     def moveCharacterDirection(self, character, direction):
@@ -1762,7 +1776,7 @@ class TrapRoom(EmptyRoom):
         if not oldPos == newPos and character.container == self:
             if self.electricalCharges and not character.faction == self.faction:
                 if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
-                    character.hurt(int(random.triangular(1,self.electricalCharges+1,self.electricalCharges*2+1)),reason="the floor shocks you")
+                    character.hurt(20,reason="the floor shocks you")
                     self.electricalCharges -= 1
 
         return item
@@ -4385,6 +4399,7 @@ roomMap = {
     "GameTestingRoom": GameTestingRoom,
     "ScrapStorage": ScrapStorage,
     "TrapRoom": TrapRoom,
+    "WorkshopRoom": WorkshopRoom,
 }
 
 

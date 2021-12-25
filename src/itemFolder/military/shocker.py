@@ -32,9 +32,16 @@ class Shocker(src.items.Item):
         if compressorFound:
             if self.container and isinstance(self.container,src.rooms.Room):
                 if hasattr(self.container,"electricalCharges"):
-                    self.container.electricalCharges += 1
-                    character.addMessage("you activate the shocker and increase the rooms charges to %s"%(self.container.electricalCharges,))
-            character.inventory.remove(compressorFound)
+                    if self.container.electricalCharges < self.container.maxElectricalCharges:
+                        self.container.electricalCharges += 1
+                        character.addMessage("you activate the shocker and increase the rooms charges to %s"%(self.container.electricalCharges,))
+                        character.inventory.remove(compressorFound)
+                    else:
+                        character.addMessage("this room is fully charged")
+                else:
+                    character.addMessage("this room can't be charged")
+            else:
+                character.addMessage("no room found")
         else:
             character.addMessage("no crystal compressor found in inventory")
 

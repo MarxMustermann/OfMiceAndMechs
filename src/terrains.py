@@ -2020,6 +2020,7 @@ class Terrain(src.saveing.Saveable):
             for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
                 pos = (src.gamestate.gamestate.mainChar.xPosition-2,src.gamestate.gamestate.mainChar.yPosition)
+                pos = (pos[0]+coordinateOffset[1],pos[1]+coordinateOffset[0])
                 try:
                     display = chars[pos[1]][pos[0]]
                 except:

@@ -5452,6 +5452,7 @@ class GoToTile(Quest):
                     basePath = character.container.getPath(tilePos,targetPos,localRandom=localRandom)
                     if not basePath:
                         return ".32.."
+                    path = list(reversed(basePath))
 
                 if not dryRun:
                     self.path = path

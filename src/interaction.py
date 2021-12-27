@@ -4626,15 +4626,51 @@ def render(char):
         chars = src.gamestate.gamestate.mainChar.room.render()
     else:
         mapChars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
-        miniMapChars = thisTerrain.renderTiles()
+        miniMapChars = []
+        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank < 6 or 1==1:
+            miniMapChars = thisTerrain.renderTiles()
+
+        text = []
+        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank < 5 or 1==1:
+            if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
+                text.append(src.gamestate.gamestate.mainChar.container.name)
+                if hasattr(src.gamestate.gamestate.mainChar.container,"electricalCharges"):
+                    text.append("echarge: %s"%(src.gamestate.gamestate.mainChar.container.electricalCharges,))
+                if hasattr(src.gamestate.gamestate.mainChar.container,"maxElectricalCharges"):
+                    text.append("maxecharge: %s"%(src.gamestate.gamestate.mainChar.container.maxElectricalCharges,))
+                if hasattr(src.gamestate.gamestate.mainChar.container,"inputSlots"):
+                    text.append("inputSlots: ")
+                    for inputSlot in src.gamestate.gamestate.mainChar.container.getEmptyInputslots("Scrap"):
+                        text.append("    %s"%(inputSlot,))
+                if hasattr(src.gamestate.gamestate.mainChar.container,"sources"):
+                    text.append("sources: %s"%(src.gamestate.gamestate.mainChar.container.sources,))
 
         chars = []
         y = 0
+        roomCounter = 0
         for line in mapChars:
-            if y < 15:
+            if y < len(miniMapChars):
                 chars.append(miniMapChars[y]+["  "]*5)
             else:
-                chars.append(["  "]*20)
+                if roomCounter < len(text):
+                    counter = 0
+                    localChars = ""
+                    localLine = []
+                    for char in text[roomCounter]:
+                        if len(localChars) > 0:
+                            localLine.append(localChars+char)
+                            counter += 1
+                            localChars = ""
+                        else:
+                            localChars = char
+                    if localChars:
+                        counter += 1
+                        localLine.append(localChars+" ")
+
+                    chars.append(localLine+["  "]*(20-counter))
+                else:
+                    chars.append(["  "]*20)
+                roomCounter += 1
 
             chars[y].extend(mapChars[y])
 

@@ -1232,7 +1232,7 @@ class ArchitectArtwork(src.items.Item):
 
         self.doAddScrapfield(self.targetX, self.targetY, amount)
 
-    def doAddScrapfield(self, x, y, amount):
+    def doAddScrapfield(self, x, y, amount, leavePath=False):
         """
         spawn a scrap field to a big coordinate
         (god mode)
@@ -1278,6 +1278,7 @@ class ArchitectArtwork(src.items.Item):
                         item.setToProduce(random.choice(src.items.semiCommons))
                 if item.type == "HealingStation":
                     item.charges = random.randint(0, 10)
+
             items.append(itemPair)
             counter += 1
 

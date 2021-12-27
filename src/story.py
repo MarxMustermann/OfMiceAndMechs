@@ -602,7 +602,7 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = int(random.random()*0)+300
+        self.startDelay = int(random.random()*0)+30000
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
@@ -1015,6 +1015,9 @@ class BackToTheRoots(BasicPhase):
             guardRoom.electricalCharges = int(random.random()*30)+70
             rooms.append(room)
 
+            scrapFieldpos = (citylocation[0]+2,citylocation[1]-2)
+            architect.doAddScrapfield(scrapFieldpos[0],scrapFieldpos[1],300,leavePath=True)
+
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]),
@@ -1044,6 +1047,97 @@ class BackToTheRoots(BasicPhase):
 
             room = architect.doAddRoom(
                 {
+                    "coordinate": (citylocation[0]-1,citylocation[1]+2),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage1 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0],citylocation[1]+2),
+                    "roomType": "WorkshopRoom",
+                    "doors": "12,6 0,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage2 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+1,citylocation[1]+2),
+                    "roomType": "WorkshopRoom",
+                    "doors": "0,6 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage3 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+2,citylocation[1]+2),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 0,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage4 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+2,citylocation[1]+1),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage5 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+2,citylocation[1]),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage6 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+2,citylocation[1]-1),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage7 = room
+            rooms.append(room)
+
+            room = architect.doAddRoom(
+                {
                     "coordinate": (citylocation[0]-1,citylocation[1]-1),
                     "roomType": "EmptyRoom",
                     "doors": "6,12 12,6",
@@ -1059,13 +1153,14 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0]-1,citylocation[1]+1),
                     "roomType": "EmptyRoom",
-                    "doors": "6,0 12,6",
+                    "doors": "6,0 12,6 6,12",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
                 None,
             )
-            workshop = room
+            workshop = room 
+
             rooms.append(room)
 
             self.cityNPCCounters[citylocation] = 0
@@ -1095,6 +1190,9 @@ class BackToTheRoots(BasicPhase):
             )
             workshop2 = room
             rooms.append(room)
+
+            painter = src.items.itemMap["Painter"]()
+            basicMetalWorkshop.addItem(painter,(1,1,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1126,10 +1224,12 @@ class BackToTheRoots(BasicPhase):
             command.command = "3aJwddJwd"
             basicMetalWorkshop.addItem(command,(5,11,0))
 
+            for room in rooms:
+                room.sources.append((scrapFieldpos,"Scrap"))
+
             for y in (7,8):
                 for x in (7,8,9,10,11):
-                    scrap= src.items.itemMap["Scrap"](amount=random.random()*20)
-                    basicMetalWorkshop.addItem(scrap,(x,y,0))
+                    basicMetalWorkshop.addInputSlot((x,y,0),"Scrap")
 
             if random.random() > 0.1 or 1==1:
                 scrapCompactor = src.items.itemMap["ScrapCompactor"]()
@@ -1186,6 +1286,47 @@ class BackToTheRoots(BasicPhase):
                 machine.charges = 0
                 basicMetalWorkshop.addItem(machine,(4,10,0))
 
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            basicMetalWorkshop.addCharacter(ghul,9,1)
+            ghul.runCommandString("j")
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            basicMetalWorkshop.addCharacter(ghul,9,11)
+            ghul.runCommandString("j")
+
+            corpse = src.items.itemMap["Corpse"]()
+            basicMetalWorkshop.addItem(corpse,(7,1,0))
+
+            for y in range(0,13):
+                basicMetalWorkshop.walkingSpace.add((6,y,0))
+
+            for y in (3,5,7,9,11):
+                for x in range(1,6):
+                    basicMetalWorkshop.walkingSpace.add((x,y,0))
+
+            for y in (2,3,6,9,10):
+                for x in range(7,12):
+                    basicMetalWorkshop.walkingSpace.add((x,y,0))
+
+            reanimator = src.items.itemMap["CorpseAnimator"]()
+            reanimator.commands["born"] = "j"
+            basicMetalWorkshop.addItem(reanimator,(8,1,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "KdKdsj"
+            basicMetalWorkshop.addItem(command,(9,1,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "3a4sj4w3dj"
+            basicMetalWorkshop.addItem(command,(9,2,0))
+
+            corpse = src.items.itemMap["Corpse"]()
+            basicMetalWorkshop.addItem(corpse,(10,1,0))
+
             machine = src.items.itemMap["GrowthTank"]()
             workshop.addItem(machine,(2,2,0))
 
@@ -1201,24 +1342,22 @@ class BackToTheRoots(BasicPhase):
             workshop.addItem(machine,(7,10,0))
 
             for pos in [(2,2,0),(2,4,0),(2,6,0),(2,8,0),(2,10,0)]:
-                scrap= src.items.itemMap["Scrap"](amount=int(random.random()*20)+1)
-                crystalWorkshop.addItem(scrap,(pos[0]-1,pos[1],pos[2]))
+                crystalWorkshop.addInputSlot((pos[0]-1,pos[1],pos[2]),"Scrap")
                 scrapCompactor = src.items.itemMap["ScrapCompactor"]()
                 crystalWorkshop.addItem(scrapCompactor,pos)
 
                 machine = src.items.itemMap["Machine"]()
                 machine.setToProduce("CrystalCompressor")
-                crystalWorkshop.addItem(machine,(pos[0]+1,pos[1],pos[2]))
+                crystalWorkshop.addItem(machine,(pos[0]+2,pos[1],pos[2]))
 
                 command = src.items.itemMap["Command"]()
                 command.bolted = True
                 command.command = "3aJwddJwdKw"
-                crystalWorkshop.addItem(command,(pos[0]+2,pos[1]+1,0))
+                crystalWorkshop.addItem(command,(pos[0]+3,pos[1]+1,0))
 
             for y in (4,5,7,8):
                 for x in (7,8,9,10,11):
-                    scrap= src.items.itemMap["Scrap"](amount=int(random.random()*20)+1)
-                    crystalWorkshop.addItem(scrap,(x,y,0))
+                    crystalWorkshop.addInputSlot((x,y,0),"Scrap")
 
             crystalWorkshop.addItem(scrapCompactor,(2,10,0))
 
@@ -1311,6 +1450,17 @@ class BackToTheRoots(BasicPhase):
             crystalWorkshop.addItem(corpse,(11,11,0))
             corpse = src.items.itemMap["Corpse"]()
             crystalWorkshop.addItem(corpse,(11,11,0))
+
+            for y in range(0,13):
+                crystalWorkshop.walkingSpace.add((6,y,0))
+
+            for y in (3,5,7,9,11):
+                for x in range(1,6):
+                    crystalWorkshop.walkingSpace.add((x,y,0))
+
+            for y in (2,3,6,9,10):
+                for x in range(7,12):
+                    crystalWorkshop.walkingSpace.add((x,y,0))
 
             if random.random() > 0.5 or 1==1:
                 corpse = src.items.itemMap["Corpse"]()
@@ -1799,14 +1949,14 @@ class BackToTheRoots(BasicPhase):
         src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
         src.gamestate.gamestate.mainChar.personality["avoidItems"] = False
-        """
         src.gamestate.gamestate.mainChar.health = 1000000
         src.gamestate.gamestate.mainChar.maxHealth = 1000000
         src.gamestate.gamestate.mainChar.baseDamage = 10000
         src.gamestate.gamestate.mainChar.satiation = 1000000
         src.gamestate.gamestate.mainChar.reputation = 1000000
         """
-
+        """
+        
         src.gamestate.gamestate.mainChar.solvers = [
             "SurviveQuest",
             "Serve",
@@ -1903,8 +2053,10 @@ Here are some important hints:
 press space to continue
 """%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
 
+        self.checkRespawn()
+
         def waitNPC(char):
-            newQuest = src.quests.WaitQuest()
+            newQuest = src.quests.BeUsefull()
             newQuest.setParameters({"lifetime":self.startDelay-self.gatherTime})
             for charQuest in char.quests:
                 if charQuest.type == "Serve":
@@ -1975,8 +2127,6 @@ press space to continue"""%(self.gatherTime,))
         event.setCallback({"container": self, "method": "startNewEpoch"})
         terrain.addEvent(event)
 
-        self.checkRespawn()
-
     def checkRespawn(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
 
@@ -2008,8 +2158,11 @@ press space to continue"""%(self.gatherTime,))
 
         if random.random() > 0.3 and foundCityNPCs:
             src.gamestate.gamestate.mainChar = random.choice(foundCityNPCs)
-        else:
+        elif foundCityNPCs:
             src.gamestate.gamestate.mainChar = random.choice(foundNPCs)
+        else:
+            print("you lost the game")
+            1/0
 
         src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
 

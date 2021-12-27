@@ -57,6 +57,8 @@ class Room(src.saveing.Saveable):
         self.objectsToStore = []
         self.tupleDictsToStore = []
         self.tupleListsToStore = []
+        self.walkingSpace = set()
+        self.inputSlots = []
 
         super().__init__()
 
@@ -372,6 +374,31 @@ class Room(src.saveing.Saveable):
                 "timeIndex",
             ]
         )
+
+    def addInputSlot(self,position,itemType):
+        self.inputSlots.append((position,itemType))
+
+    def getEmptyInputslots(self,itemType=None):
+        result = []
+        for inputSlot in self.inputSlots:
+            if itemType and not inputSlot[1] == itemType:
+                continue
+
+            items = self.getItemByPosition(inputSlot[0])
+            print(items)
+            if not items:
+                result.append(inputSlot)
+                continue
+
+            if items[-1].type == "Scrap":
+                if items[-1].amount < 15:
+                    result.append(inputSlot)
+                continue
+
+            if len(items) < 10:
+                result.append(inputSlot)
+
+        return result
 
     def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False):
         path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard)
@@ -803,6 +830,14 @@ class Room(src.saveing.Saveable):
                             ]
                         )
                 chars.append(subChars)
+
+            # draw path
+            for pos in self.walkingSpace:
+                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
+
+            for entry in self.inputSlots:
+                pos = entry[0]
+                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
 
             # draw items
             for item in self.itemsOnFloor:
@@ -1675,6 +1710,7 @@ XXX
         self.attributesToStore.extend(["bio"])
 
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "ER")
+        self.sources = []
 
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         """
@@ -1759,6 +1795,13 @@ class WorkshopRoom(EmptyRoom):
     ):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "WR")
+
+        self.walkingSpace = set()
+
+    def render(self):
+        chars = super().render()
+
+        return chars
 
 class TrapRoom(EmptyRoom):
 

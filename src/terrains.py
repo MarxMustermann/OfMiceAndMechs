@@ -636,6 +636,8 @@ class Terrain(src.saveing.Saveable):
             return
 
         if direction == "west":
+            if char == src.gamestate.gamestate.mainChar:
+                char.addMessage("moved west")
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
                     direction = "south"
@@ -650,8 +652,16 @@ class Terrain(src.saveing.Saveable):
                         pass
                 char.addMessage("a force field pushes you")
                 char.addMessage(char)
+
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
+                if char == src.gamestate.gamestate.mainChar:
+                    print("changed tile %s"%(direction,))
+                    print((char.xPosition-1,char.yPosition,char.zPosition))
+                    print(self.getPositionWalkable((char.xPosition-1,char.yPosition,char.zPosition)))
+                    print(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
+                #while self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)):
+                self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
         elif direction == "east":
             if char.xPosition % 15 == 13:
                 if char.yPosition % 15 < 7:
@@ -669,6 +679,13 @@ class Terrain(src.saveing.Saveable):
                 char.addMessage(char)
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
+                if char == src.gamestate.gamestate.mainChar:
+                    print("changed tile %s"%(direction,))
+                    print((char.xPosition+1,char.yPosition,char.zPosition))
+                    print(self.getPositionWalkable((char.xPosition+1,char.yPosition,char.zPosition)))
+                    print(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
+                #while self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)):
+                self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
         elif direction == "north":
             if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
@@ -686,6 +703,13 @@ class Terrain(src.saveing.Saveable):
                 char.addMessage(char)
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
+                if char == src.gamestate.gamestate.mainChar:
+                    print("changed tile %s"%(direction,))
+                    print((char.xPosition,char.yPosition-1,char.zPosition))
+                    print(self.getPositionWalkable((char.xPosition,char.yPosition-1,char.zPosition)))
+                    print(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
+                #while self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)):
+                self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
         elif direction == "south":
             if char.yPosition % 15 == 13:
                 if char.xPosition % 15 < 7:
@@ -703,6 +727,13 @@ class Terrain(src.saveing.Saveable):
                 char.addMessage(char)
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
+                if char == src.gamestate.gamestate.mainChar:
+                    print("changed tile %s"%(direction,))
+                    print((char.xPosition,char.yPosition+1,char.zPosition))
+                    print(self.getPositionWalkable((char.xPosition,char.yPosition+1,char.zPosition)))
+                    print(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
+                #while self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)):
+                self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
         """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
             return
@@ -1691,7 +1722,7 @@ class Terrain(src.saveing.Saveable):
             recalculate: flag to prevent recalculatio of the pathfinding
         """
 
-        for item in items:
+        for item in items[:]:
             self.removeItem(item, recalculate=False)
 
     def addItem(self, item, pos):

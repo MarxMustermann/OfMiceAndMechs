@@ -432,7 +432,6 @@ class Terrain(src.saveing.Saveable):
         for item in items:
             if item.walkable == False:
                 return False
-            return True
         return True
 
     def getRoomByPosition(self, position):

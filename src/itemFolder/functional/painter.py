@@ -66,6 +66,9 @@ A painter. it can be used to draw markers on the floor
                 for inputSlot in character.container.inputSlots[:]:
                     if inputSlot[0] == character.getPosition():
                         character.container.inputSlots.remove(inputSlot)
+                for outputSlot in character.container.outputSlots[:]:
+                    if outputSlot[0] == character.getPosition():
+                        character.container.outputSlots.remove(outputSlot)
 
         character.addMessage("you paint a marking on the floor")
 

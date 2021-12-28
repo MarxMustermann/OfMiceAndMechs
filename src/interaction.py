@@ -4638,12 +4638,10 @@ def render(char):
                     text.append("echarge: %s"%(src.gamestate.gamestate.mainChar.container.electricalCharges,))
                 if hasattr(src.gamestate.gamestate.mainChar.container,"maxElectricalCharges"):
                     text.append("maxecharge: %s"%(src.gamestate.gamestate.mainChar.container.maxElectricalCharges,))
-                if hasattr(src.gamestate.gamestate.mainChar.container,"inputSlots"):
-                    text.append("inputSlots: ")
-                    for inputSlot in src.gamestate.gamestate.mainChar.container.getEmptyInputslots("Scrap"):
-                        text.append("    %s"%(inputSlot,))
                 if hasattr(src.gamestate.gamestate.mainChar.container,"sources"):
-                    text.append("sources: %s"%(src.gamestate.gamestate.mainChar.container.sources,))
+                    text.append("sources: ")
+                    for source in src.gamestate.gamestate.mainChar.container.sources:
+                        text.append("    %s"%(source,))
 
         chars = []
         y = 0

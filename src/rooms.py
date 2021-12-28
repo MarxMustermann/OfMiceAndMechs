@@ -59,6 +59,8 @@ class Room(src.saveing.Saveable):
         self.tupleListsToStore = []
         self.walkingSpace = set()
         self.inputSlots = []
+        self.outputSlots = []
+        self.buildSites = []
 
         super().__init__()
 
@@ -375,8 +377,30 @@ class Room(src.saveing.Saveable):
             ]
         )
 
+    def addBuildSite(self,position,specification):
+        self.buildSites.append((position,specification))
+
+    def addOutputSlot(self,position,itemType):
+        self.outputSlots.append((position,itemType))
+
     def addInputSlot(self,position,itemType):
         self.inputSlots.append((position,itemType))
+
+    def getNonEmptyOutputslots(self,itemType=None):
+        result = []
+        for outputSlot in self.outputSlots:
+            if itemType and not outputSlot[1] == itemType:
+                continue
+
+            items = self.getItemByPosition(outputSlot[0])
+            if not items:
+                continue
+
+            if not itemType and items[-1].type == itemType:
+                continue
+
+            result.append(outputSlot)
+        return result
 
     def getEmptyInputslots(self,itemType=None):
         result = []
@@ -385,9 +409,11 @@ class Room(src.saveing.Saveable):
                 continue
 
             items = self.getItemByPosition(inputSlot[0])
-            print(items)
             if not items:
                 result.append(inputSlot)
+                continue
+
+            if itemType and not items[-1].type == itemType:
                 continue
 
             if items[-1].type == "Scrap":
@@ -395,7 +421,8 @@ class Room(src.saveing.Saveable):
                     result.append(inputSlot)
                 continue
 
-            if len(items) < 10:
+
+            if len(items) < 20:
                 result.append(inputSlot)
 
         return result
@@ -838,6 +865,14 @@ class Room(src.saveing.Saveable):
             for entry in self.inputSlots:
                 pos = entry[0]
                 chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
+
+            for entry in self.outputSlots:
+                pos = entry[0]
+                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
+
+            for entry in self.buildSites:
+                pos = entry[0]
+                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#88f", "black"), ";;")
 
             # draw items
             for item in self.itemsOnFloor:
@@ -1711,6 +1746,12 @@ XXX
 
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "ER")
         self.sources = []
+
+    def addPathCross(self):
+        for x in range(1,12):
+            self.walkingSpace.add((x,6,0))
+        for y in range(1,12):
+            self.walkingSpace.add((6,y,0))
 
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         """

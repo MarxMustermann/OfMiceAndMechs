@@ -990,17 +990,22 @@ class MetaQuestSequence(Quest):
         super().deactivate()
 
 class RestockRoom(MetaQuestSequence):
-    def __init__(self, description="restock room", creator=None, targetPosition=None):
+    def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.toRestock = None
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
+        if toRestock:
+            self.setParameters({"toRestock":toRestock})
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
+        if "toRestock" in parameters and "toRestock" in parameters:
+            self.toRestock = parameters["toRestock"]
         return super().setParameters(parameters)
 
     def triggerCompletionCheck(self,character=None):
@@ -1011,7 +1016,7 @@ class RestockRoom(MetaQuestSequence):
             room = character.container
 
             foundNeighbour = None
-            for slot in room.getEmptyInputslots(itemType="Scrap"):
+            for slot in room.getEmptyInputslots(itemType=self.toRestock):
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                     if not neighbour in room.walkingSpace:
@@ -1030,7 +1035,7 @@ class RestockRoom(MetaQuestSequence):
     def getNumDrops(self,character):
         numDrops = 0
         for item in reversed(character.inventory):
-            if not item.type == "Scrap":
+            if not item.type == self.toRestock:
                 break
             numDrops += 1
         return numDrops
@@ -1052,7 +1057,7 @@ class RestockRoom(MetaQuestSequence):
             if not hasattr(room,"inputSlots"):
                 return "..23.."
 
-            inputSlots = room.getEmptyInputslots(itemType="Scrap")
+            inputSlots = room.getEmptyInputslots(itemType=self.toRestock)
 
             # find neighboured input fields
             foundDirectDrop = None
@@ -1176,6 +1181,9 @@ class GatherScrap(MetaQuestSequence):
         super().triggerCompletionCheck()
 
     def solver(self, character):
+        if character == src.gamestate.gamestate.mainChar:
+            print("ran gather scrap solver")
+
         self.triggerCompletionCheck(character)
 
         if self.subQuests:
@@ -1187,13 +1195,16 @@ class GatherScrap(MetaQuestSequence):
                 character.runCommandString("k"*min(10-len(character.inventory),items[-1].amount))
                 return
 
+        if character == src.gamestate.gamestate.mainChar:
+            print("start djiasktra")
+
         # check for direct scrap
         foundScrap = None
         toCheckFrom = [character.getPosition()]
         pathMap = {toCheckFrom[0]:[]}
-        directions = [(-1,0),(1,0),(0,1),(0,-1),(0,0)]
-        random.shuffle(directions)
+        directions = [(-1,0),(1,0),(0,1),(0,-1)]
         while len(toCheckFrom):
+            random.shuffle(directions)
             pos = toCheckFrom.pop()
             for direction in directions:
                 foundScrap = None
@@ -1205,13 +1216,18 @@ class GatherScrap(MetaQuestSequence):
 
                 items = character.container.getItemByPosition(newPos)
                 if items:
-                    if items[-1].type == "Scrap":
+                    if items[0].type == "Scrap":
                         foundScrap = (oldPos,newPos,direction)
                         break
 
                 if character.container.getPositionWalkable(newPos) and not newPos in pathMap:
+                    if character == src.gamestate.gamestate.mainChar:
+                        print("added newPos")
+                        print(newPos)
                     toCheckFrom.append(newPos)
                     pathMap[newPos] = pathMap[oldPos]+[direction]
+            if foundScrap:
+                break
 
         if foundScrap:
             if character == src.gamestate.gamestate.mainChar:
@@ -1240,9 +1256,7 @@ class GatherScrap(MetaQuestSequence):
             if foundScrap[2] == (0,0):
                 pickUpCommand = "k"
 
-            command += pickUpCommand*min(10-len(character.inventory),character.container.getItemByPosition(foundScrap[1])[-1].amount)
-            if character == command:
-                print(foundScrap)
+            command += pickUpCommand*min(10-len(character.inventory),character.container.getItemByPosition(foundScrap[1])[0].amount)
             character.runCommandString(command)
             return
 
@@ -1291,12 +1305,35 @@ class BeUsefull(MetaQuestSequence):
 
         room = character.container
         if hasattr(room,"inputSlots"):
-            if room.getEmptyInputslots():
-                self.addQuest(RestockRoom(targetPosition=room.sources[0][0]))
-                self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
-                self.addQuest(GatherScrap(targetPosition=room.sources[0][0]))
-                self.addQuest(GoToTile(targetPosition=(room.sources[0][0])))
-                return
+            emptyInputSlots = room.getEmptyInputslots()
+            if emptyInputSlots:
+                for inputSlot in emptyInputSlots:
+                    if inputSlot[1] == None:
+                        continue
+                    if inputSlot[1] == "Scrap":
+                        if not room.sources:
+                            continue
+                        source = room.sources[0]
+                        self.addQuest(RestockRoom(targetPosition=source[0],toRestock="Scrap"))
+                        self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
+                        self.addQuest(GatherScrap(targetPosition=source[0]))
+                        self.addQuest(GoToTile(targetPosition=(source[0])))
+                        return
+                    
+                    source = room.sources[1]
+
+                    sourceRoom = room.container.getRoomByPosition(source[0])
+                    if not sourceRoom:
+                        1/0
+                        continue
+                    sourceRoom = sourceRoom[0]
+                    if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                        continue
+                    self.addQuest(RestockRoom(targetPosition=source[0],toRestock=inputSlot[1]))
+                    self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
+                    self.addQuest(FetchItems(toCollect="MetalBars"))
+                    self.addQuest(GoToTile(targetPosition=(source[0])))
+                    return
             character.addMessage("no input slots")
 
         directions = [(-1,0),(1,0),(0,-1),(0,1)]
@@ -1399,15 +1436,129 @@ class GatherItems(Quest):
         self.postHandler()
 
     def solver(self, character):
-        character.addMessage("running solver")
-        character.addMessage(character)
         if len(character.inventory) > 1:
             character.inventory.pop()
-            character.addMessage("test")
             character.awardReputation(amount=100,reason="gathering item",carryOver=True)
             return False
         character.runCommandString(".30.")
         return False
+
+class FetchItems(MetaQuestSequence):
+    def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+
+        if toCollect:
+            self.setParameters({"toCollect":toCollect})
+
+    def setParameters(self,parameters):
+        if "toCollect" in parameters and "toCollect" in parameters:
+            self.toCollect = parameters["toCollect"]
+        return super().setParameters(parameters)
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"toCollect","type":"itemType"})
+        return parameters
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        if len(character.inventory) > 9:
+            self.postHandler()
+            return
+
+        if isinstance(character.container,src.rooms.Room):
+            outputSlots = character.container.getNonEmptyOutputslots(itemType=self.toCollect)
+            if not outputSlots:
+                self.postHandler()
+                return
+
+        return
+
+    def getSolvingCommandString(self,character,dryRun=True):
+
+        charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
+
+        if self.subQuests:
+            return super().getSolvingCommandString(character,dryRun=dryRun)
+
+        self.triggerCompletionCheck(character)
+
+        if isinstance(character.container,src.rooms.Room):
+            room = character.container
+
+            outputSlots = room.getNonEmptyOutputslots(itemType=self.toCollect)
+
+            # find neighboured input fields
+            foundDirectPickup = None
+            for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
+                neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
+                for outputSlot in outputSlots:
+                    if neighbour == outputSlot[0]:
+                        foundDirectPickup = (neighbour,direction)
+                        break
+
+            if foundDirectPickup:
+                inventorySpace = 10-len(character.inventory)
+                if foundDirectPickup[1] == (-1,0):
+                    return "Ka"*inventorySpace
+                if foundDirectPickup[1] == (1,0):
+                    return "Kd"*inventorySpace
+                if foundDirectPickup[1] == (0,-1):
+                    return "Kw"*inventorySpace
+                if foundDirectPickup[1] == (0,1):
+                    return "Ks"*inventorySpace
+                if foundDirectPickup[1] == (0,0):
+                    return "l"*inventorySpace
+
+            foundNeighbour = None
+            for slot in outputSlots:
+                for direction in ((-1,0),(1,0),(0,-1),(0,1)):
+                    neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
+                    if not neighbour in room.walkingSpace:
+                        continue
+                    foundNeighbour = (neighbour,direction)
+                    break
+
+            if not foundNeighbour:
+                return "..24.."
+
+            if not dryRun:
+                quest = GoToPosition()
+                quest.assignToCharacter(character)
+                quest.setParameters({"targetPosition":foundNeighbour[0]})
+                quest.activate()
+                self.addQuest(quest)
+
+                return "."
+            return str(foundNeighbour)
+
+        if charPos == (7,0,0):
+            return "s"
+        if charPos == (7,14,0):
+            return "w"
+        if charPos == (0,7,0):
+            return "d"
+        if charPos == (14,7,0):
+            return "a"
+
+    def solver(self, character):
+        self.activate()
+        self.assignToCharacter(character)
+
+        if self.subQuests:
+            return super().solver(character)
+
+        commandString = self.getSolvingCommandString(character,dryRun=False)
+        self.reroll()
+        if commandString:
+            character.runCommandString(commandString)
+            return False
+        else:
+            return True
 
 class ObtainAllSpecialItems(Quest):
 
@@ -6491,7 +6642,7 @@ class ObtainSpecialItem(MetaQuestSequence):
             character.runCommandString(command)
 
             if not character.rank < 5:
-                command = ".QSNGatherItems\nlifetime:%s; ."%(self.initialLifetime,)
+                command = ".QSNBeUsefull\nlifetime:%s; ."%(self.initialLifetime,)
                 character.runCommandString(command)
 
             self.metaDescription = "obtain special item #%s from %s (delegated)"%(self.itemID,self.itemLocation)
@@ -6586,6 +6737,8 @@ questMap = {
     "DeliverSpecialItem": DeliverSpecialItem,
     "GoHome": GoHome,
     "GatherItems": GatherItems,
+    "FetchItems": FetchItems,
+    "BeUsefull": BeUsefull,
 }
 
 def getQuestFromState(state):

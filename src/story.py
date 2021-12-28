@@ -602,7 +602,7 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = int(random.random()*0)+30000
+        self.startDelay = int(random.random()*0)+300
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
@@ -1016,7 +1016,7 @@ class BackToTheRoots(BasicPhase):
             rooms.append(room)
 
             scrapFieldpos = (citylocation[0]+2,citylocation[1]-2)
-            architect.doAddScrapfield(scrapFieldpos[0],scrapFieldpos[1],300,leavePath=True)
+            architect.doAddScrapfield(scrapFieldpos[0],scrapFieldpos[1],1200,leavePath=True)
 
             room = architect.doAddRoom(
                 {
@@ -1055,7 +1055,12 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
-            scrapStorage1 = room
+            productionRoom = room
+            for pos in [(2,2,0),(4,3,0),(2,4,0),(4,5,0)]:
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Sheet")
+                machine.charges = 0
+                productionRoom.addItem(machine,pos)
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1068,8 +1073,54 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
-            scrapStorage2 = room
+            scrapProcessing = room
             rooms.append(room)
+            """
+            for x in (1,3,4,6,7):
+                for y in range(1,6):
+                    scrapProcessing.addInputSlot((x,y,0),"Scrap")
+                for y in range(7,12):
+                    scrapProcessing.addInputSlot((x,y,0),"Scrap")
+            for x in (2,5,8):
+                for y in range(1,12):
+                    scrapProcessing.walkingSpace.add((x,y,0))
+            for x in range(1,12):
+                scrapProcessing.walkingSpace.add((x,6,0))
+            """
+
+            if 1==1:
+                for y in (1,3,5,7,9):
+                    scrapProcessing.addInputSlot((9,y,0),"Scrap")
+                    scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+                    scrapProcessing.addItem(scrapCompactor,(10,y,0))
+                    scrapProcessing.addOutputSlot((11,y,0),"MetalBars")
+
+                    scrapProcessing.walkingSpace.add((9,y+1,0))
+                    scrapProcessing.walkingSpace.add((10,y+1,0))
+                    scrapProcessing.walkingSpace.add((11,y+1,0))
+
+            reanimator = src.items.itemMap["CorpseAnimator"]()
+            reanimator.commands["born"] = "j"
+            scrapProcessing.addItem(reanimator,(9,11,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = 4*"Jwaawwdd"+"Jw"+"2a8s2d"+"j"
+            scrapProcessing.addItem(command,(10,10,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "Kdwj"
+            scrapProcessing.addItem(command,(10,11,0))
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            scrapProcessing.addCharacter(ghul,10,11)
+            ghul.runCommandString("j")
+
+            corpse = src.items.itemMap["Corpse"]()
+            scrapProcessing.addItem(corpse,(11,11,0))
+            scrapProcessing.addInputSlot((11,11,0),"Corpse")
 
             room = architect.doAddRoom(
                 {
@@ -1081,7 +1132,19 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
-            scrapStorage3 = room
+            scrapStorage = room
+            scrapStorage.addPathCross()
+            def addStorage(roomToAdd,offset,itemType=None):
+                for x in (1,3,5,):
+                    for y in range(1,6):
+                        roomToAdd.addInputSlot((x+offset[0],y+offset[1],0),itemType)
+                for x in (2,4,):
+                    for y in range(1,6):
+                        roomToAdd.walkingSpace.add((x+offset[0],y+offset[1],0))
+            addStorage(scrapStorage,(0,0,0),"Scrap")
+            addStorage(scrapStorage,(6,0,0),"Scrap")
+            addStorage(scrapStorage,(0,6,0),"Scrap")
+            addStorage(scrapStorage,(6,6,0),"Scrap")
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1094,7 +1157,10 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
-            scrapStorage4 = room
+            generalStorage = room
+            generalStorage.addPathCross()
+            addStorage(generalStorage,(0,0,0),"MetalBars")
+            addStorage(generalStorage,(6,0,0),None)
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1108,6 +1174,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage5 = room
+            room.addPathCross()
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1121,6 +1188,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage6 = room
+            room.addPathCross()
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1134,6 +1202,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage7 = room
+            room.addPathCross()
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1160,7 +1229,6 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             workshop = room 
-
             rooms.append(room)
 
             self.cityNPCCounters[citylocation] = 0
@@ -1226,35 +1294,18 @@ class BackToTheRoots(BasicPhase):
 
             for room in rooms:
                 room.sources.append((scrapFieldpos,"Scrap"))
+                room.sources.append(((scrapProcessing.xPosition,scrapProcessing.yPosition),"MetalBars"))
 
             for y in (7,8):
                 for x in (7,8,9,10,11):
                     basicMetalWorkshop.addInputSlot((x,y,0),"Scrap")
 
-            if random.random() > 0.1 or 1==1:
+            for y in (2,4,6,8,10):
+                basicMetalWorkshop.addInputSlot((1,y,0),"Scrap")
                 scrapCompactor = src.items.itemMap["ScrapCompactor"]()
                 scrapCompactor.charges = 0
-                basicMetalWorkshop.addItem(scrapCompactor,(2,2,0))
-
-            if random.random() > 0.1 or 1==1:
-                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-                scrapCompactor.charges = 0
-                basicMetalWorkshop.addItem(scrapCompactor,(2,4,0))
-
-            if random.random() > 0.1 or 1==1:
-                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-                scrapCompactor.charges = 0
-                basicMetalWorkshop.addItem(scrapCompactor,(2,6,0))
-
-            if random.random() > 0.1 or 1==1:
-                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-                scrapCompactor.charges = 0
-                basicMetalWorkshop.addItem(scrapCompactor,(2,8,0))
-
-            if random.random() > 0.1 or 1==1:
-                scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-                scrapCompactor.charges = 0
-                basicMetalWorkshop.addItem(scrapCompactor,(2,10,0))
+                basicMetalWorkshop.addItem(scrapCompactor,(2,y,0))
+                basicMetalWorkshop.addOutputSlot((5,y,0),"Scrap")
 
             if random.random() > 0.2 or 1==1:
                 machine = src.items.itemMap["Machine"]()
@@ -1847,7 +1898,7 @@ class BackToTheRoots(BasicPhase):
                         if k in (0,1,):
                             spawnWeapon = True
 
-                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)+1,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
+                        worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)+10,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
                         worker.registers["ATTNPOSx"] = 2+i*3+j
                         worker.registers["ATTNPOSy"] = 7+k
                         #mainRoom.addCharacter(worker,3+i*3+j,7+k)
@@ -1949,12 +2000,12 @@ class BackToTheRoots(BasicPhase):
         src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
         src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
         src.gamestate.gamestate.mainChar.personality["avoidItems"] = False
+        """
         src.gamestate.gamestate.mainChar.health = 1000000
         src.gamestate.gamestate.mainChar.maxHealth = 1000000
         src.gamestate.gamestate.mainChar.baseDamage = 10000
         src.gamestate.gamestate.mainChar.satiation = 1000000
         src.gamestate.gamestate.mainChar.reputation = 1000000
-        """
         """
         
         src.gamestate.gamestate.mainChar.solvers = [
@@ -2056,7 +2107,7 @@ press space to continue
         self.checkRespawn()
 
         def waitNPC(char):
-            newQuest = src.quests.BeUsefull()
+            newQuest = src.quests.WaitQuest()
             newQuest.setParameters({"lifetime":self.startDelay-self.gatherTime})
             for charQuest in char.quests:
                 if charQuest.type == "Serve":
@@ -2644,7 +2695,7 @@ press space to continue"""%(reputationTree))
                     character.subordinates = oldBoss.subordinates
                     character.rank = oldBoss.rank
                     character.reputation = character.reputation//10
-                    character.inventory.append(src.items.itemMap.GooFlask(uses=100))
+                    character.inventory.append(src.items.itemMap["GooFlask"](uses=100))
 
                     oldBoss.superior = character
                     oldBoss.rank = oldRank

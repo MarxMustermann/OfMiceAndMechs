@@ -68,6 +68,7 @@ class Terrain(src.saveing.Saveable):
         self.tupleListsToStore = []
 
         self.noPlacementTiles = []
+        self.scrapFields = []
 
         super().__init__()
 
@@ -1123,6 +1124,12 @@ class Terrain(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
+                if not costMap.get(newPos) == None:
+                    continue
+
+                if not newPos == targetPos and newPos in self.scrapFields:
+                    continue
+
                 passable = False
 
                 oldRoom = self.getRoomByPosition(pos)
@@ -1145,8 +1152,6 @@ class Terrain(src.saveing.Saveable):
                 if not passable:
                     continue
 
-                if not costMap.get(newPos) == None:
-                    continue
 
                 costMap[newPos] = currentCost+1
                 paths[newPos] = paths[pos]+[offset]
@@ -2116,6 +2121,9 @@ class Terrain(src.saveing.Saveable):
 
                 chars[pos[1]][pos[0]] = display
             pass
+
+        for scrapField in self.scrapFields:
+             chars[scrapField[1]][scrapField[0]] = "ss"
 
         displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
         if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):

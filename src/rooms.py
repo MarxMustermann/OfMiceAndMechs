@@ -1847,7 +1847,7 @@ class WorkshopRoom(EmptyRoom):
 class TrapRoom(EmptyRoom):
 
     electricalCharges = 0
-    maxElectricalCharges = 100
+    maxElectricalCharges = 500
     faction = "Trap"
 
     def moveCharacterDirection(self, character, direction):

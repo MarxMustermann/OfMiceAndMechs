@@ -1243,6 +1243,7 @@ class ArchitectArtwork(src.items.Item):
         """
 
         terrain = self.getTerrain()
+        terrain.scrapFields.append((x,y,0))
 
         counter = 0
         minX = 15 * x

@@ -624,6 +624,7 @@ class BackToTheRoots(BasicPhase):
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
+            "BeUsefull",
         ]
 
         npc.solvers = [
@@ -1012,7 +1013,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             guardRoom = room
-            guardRoom.electricalCharges = int(random.random()*30)+70
+            guardRoom.electricalCharges = int(random.random()*30)+300
             rooms.append(room)
 
             scrapFieldpos = (citylocation[0]+2,citylocation[1]-2)
@@ -1208,7 +1209,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]-1,citylocation[1]-1),
-                    "roomType": "EmptyRoom",
+                    "roomType": "TrapRoom",
                     "doors": "6,12 12,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1216,6 +1217,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             guardRoom2 = room
+            guardRoom2.electricalCharges = int(random.random()*30)+30
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1236,7 +1238,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]-1),
-                    "roomType": "EmptyRoom",
+                    "roomType": "TrapRoom",
                     "doors": "0,6 6,12",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1244,6 +1246,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             guardRoom3 = room
+            guardRoom3.electricalCharges = int(random.random()*30)+30
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -2027,6 +2030,28 @@ class BackToTheRoots(BasicPhase):
             "NaiveMurderQuest",
         ]
 
+        def waitNPC(char):
+            newQuest = src.quests.WaitQuest()
+            for charQuest in char.quests:
+                if charQuest.type == "Serve":
+                    charQuest.addQuest(newQuest)
+
+        for cityLocation in self.citylocations:
+            cityLeader = self.leaders[cityLocation]
+            waitNPC(cityLeader)
+            for subleader in cityLeader.subordinates:
+                waitNPC(subleader)
+                for subsubleader in subleader.subordinates:
+                    waitNPC(subsubleader)
+                    for worker in subsubleader.subordinates:
+                        waitNPC(worker)
+
+
+        self.startStory()
+
+    def startStory(self):
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+
         '''
         showText("""
 You are %s, a newly spawned worker in the faction %s.
@@ -2105,23 +2130,6 @@ press space to continue
 """%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
 
         self.checkRespawn()
-
-        def waitNPC(char):
-            newQuest = src.quests.WaitQuest()
-            newQuest.setParameters({"lifetime":self.startDelay-self.gatherTime})
-            for charQuest in char.quests:
-                if charQuest.type == "Serve":
-                    charQuest.addQuest(newQuest)
-
-        for cityLocation in self.citylocations:
-            cityLeader = self.leaders[cityLocation]
-            waitNPC(cityLeader)
-            for subleader in cityLeader.subordinates:
-                waitNPC(subleader)
-                for subsubleader in subleader.subordinates:
-                    waitNPC(subsubleader)
-                    for worker in subsubleader.subordinates:
-                        waitNPC(worker)
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.startDelay-self.gatherTime)
         event.setCallback({"container": self, "method": "almostStartNewEpoch"})

@@ -938,23 +938,24 @@ class Room(src.saveing.Saveable):
                             character.showGaveCommand = False
                     if foundMainchar:
                         activeQuest = foundMainchar.getActiveQuest()
-                        for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
-                            pos = marker[0]
-                            try:
-                                display = chars[pos[1]][pos[0]]
-                            except:
-                                continue
-                            if isinstance(display,int):
-                                display = src.canvas.displayChars.indexedMapping[display]
-                            if isinstance(display,str):
-                                display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+                        if activeQuest:
+                            for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
+                                pos = marker[0]
+                                try:
+                                    display = chars[pos[1]][pos[0]]
+                                except:
+                                    continue
+                                if isinstance(display,int):
+                                    display = src.canvas.displayChars.indexedMapping[display]
+                                if isinstance(display,str):
+                                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
 
-                            if hasattr(display[0],"fg"):
-                                display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
-                            else:
-                                display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                                if hasattr(display[0],"fg"):
+                                    display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                                else:
+                                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
 
-                            chars[pos[1]][pos[0]] = display
+                                chars[pos[1]][pos[0]] = display
                 else:
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"
@@ -1848,6 +1849,7 @@ class TrapRoom(EmptyRoom):
 
     electricalCharges = 0
     maxElectricalCharges = 500
+    chargeStrength = 1
     faction = "Trap"
 
     def moveCharacterDirection(self, character, direction):
@@ -1860,7 +1862,7 @@ class TrapRoom(EmptyRoom):
         if not oldPos == newPos and character.container == self:
             if self.electricalCharges and not character.faction == self.faction:
                 if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
-                    character.hurt(20,reason="the floor shocks you")
+                    character.hurt(self.chargeStrength,reason="the floor shocks you")
                     self.electricalCharges -= 1
 
         return item

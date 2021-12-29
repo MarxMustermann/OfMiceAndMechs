@@ -2599,9 +2599,6 @@ class Ghul(Character):
         self.solvers.append("NaiveActivateQuest")
         self.solvers.append("NaiveMurderQuest")
 
-        self.baseDamage = self.baseDamage*3
-        self.randomBonus = self.randomBonus*2
-
     def getOwnAction(self):
         self.hasOwnAction = 0
         return "."
@@ -2611,7 +2608,7 @@ class Ghul(Character):
         return
 
     def hurt(self, damage, reason=None):
-        super().hurt(min(1,damage//10),reason=reason)
+        super().hurt(min(1,damage//2),reason=reason)
 
 characterMap = {
     "Character": Character,

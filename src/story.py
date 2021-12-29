@@ -602,11 +602,11 @@ class BackToTheRoots(BasicPhase):
         self.leaders = {}
         self.scoreTracker = {}
 
-        self.startDelay = int(random.random()*0)+300
+        self.startDelay = int(random.random()*0)+3000
         self.epochLength = 2000
         self.firstEpoch = True
         self.npcCounter = 0
-        self.gatherTime = 200
+        self.gatherTime = 300
 
     def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
         self.npcCounter += 1
@@ -816,10 +816,16 @@ class BackToTheRoots(BasicPhase):
 
         currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
 
-        offsets = [(0,0)]
+        """
+        # add minefield
+        offsets = []
+        for x in (-1,0,1,2):
+            for y in (-2,-1,0,1,2):
+                offsets.append((x,y))
         for offset in offsets:
             architect.doClearField(7+offset[0],7+offset[1])
             currentTerrain.noPlacementTiles.append((7+offset[0],7+offset[1]))
+
         for offset in offsets:
             for x in range(1,14):
                 for y in range(1,14):
@@ -842,12 +848,22 @@ class BackToTheRoots(BasicPhase):
                         
                         item = src.items.itemMap["Scrap"](amount=int(random.random()*13))
                         currentTerrain.addItem(item,pos)
+        """
 
         enemy = src.characters.Character(6,6)
         rooms[0].addCharacter(enemy, 6, 6)
         item = src.items.itemMap["GooFlask"]()
         item.uses = 100
         enemy.inventory.append(item)
+
+        offsets = []
+        for x in (-1,0,1,2):
+            for y in (-1,0,1,2):
+                offsets.append((x,y))
+        for citylocation in self.citylocations:
+            for offset in offsets:
+                terrain = src.gamestate.gamestate.terrainMap[6][7]
+                terrain.noPlacementTiles.append((citylocation[0]+offset[0],citylocation[1]+offset[1]))
 
         #src.gamestate.gamestate.mainChar = enemy
         #placedMainChar = True
@@ -979,6 +995,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": citylocation,
                     "roomType": "EmptyRoom",
+                    "faction": "city #%s"%(cityCounter,),
                     "doors": "6,12",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -992,6 +1009,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0],citylocation[1]+1),
                     "roomType": "EmptyRoom",
+                    "faction": "city #%s"%(cityCounter,),
                     "doors": "0,6 6,0 12,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1014,6 +1032,7 @@ class BackToTheRoots(BasicPhase):
             )
             guardRoom = room
             guardRoom.electricalCharges = int(random.random()*30)+300
+            guardRoom.chargeStrength = 20
             rooms.append(room)
 
             scrapFieldpos = (citylocation[0]+2,citylocation[1]-2)
@@ -1210,6 +1229,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0]-1,citylocation[1]-1),
                     "roomType": "TrapRoom",
+                    "faction": "city #%s"%(cityCounter,),
                     "doors": "6,12 12,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1218,6 +1238,7 @@ class BackToTheRoots(BasicPhase):
             )
             guardRoom2 = room
             guardRoom2.electricalCharges = int(random.random()*30)+30
+            guardRoom2.chargeStrength = 5
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1240,6 +1261,7 @@ class BackToTheRoots(BasicPhase):
                     "coordinate": (citylocation[0]+1,citylocation[1]-1),
                     "roomType": "TrapRoom",
                     "doors": "0,6 6,12",
+                    "faction": "city #%s"%(cityCounter,),
                     "offset": [1,1],
                     "size": [13, 13],
                     },
@@ -1247,6 +1269,7 @@ class BackToTheRoots(BasicPhase):
             )
             guardRoom3 = room
             guardRoom3.electricalCharges = int(random.random()*30)+30
+            guardRoom3.chargeStrength = 5
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1802,7 +1825,6 @@ class BackToTheRoots(BasicPhase):
             ghul.faction = "city #%s"%(cityCounter,)
             workshop.addCharacter(ghul,10,4)
             ghul.runCommandString("j")
-            """
             ghul = src.characters.Ghul()
             ghul.faction = "city #%s"%(cityCounter,)
             workshop.addCharacter(ghul,10,2)
@@ -1820,6 +1842,7 @@ class BackToTheRoots(BasicPhase):
             workshop.addCharacter(ghul,10,2)
             ghul.runCommandString("100.j")
             ghul = src.characters.Ghul()
+            """
             ghul.faction = "city #%s"%(cityCounter,)
             workshop.addCharacter(ghul,10,2)
             ghul.runCommandString("120.j")
@@ -2045,93 +2068,38 @@ class BackToTheRoots(BasicPhase):
                     waitNPC(subsubleader)
                     for worker in subsubleader.subordinates:
                         waitNPC(worker)
-
-
-        self.startStory()
-
-    def startStory(self):
-        terrain = src.gamestate.gamestate.terrainMap[7][7]
-
-        '''
-        showText("""
-You are %s, a newly spawned worker in the faction %s.
-
-As far as you understand there will be a big attack on an enemy city.
-
-You have heard there will be a big attack on an enemy city.
-If you do well you might be promoted, especially if you manage to capture %s from the city yourself!
-
-After getting enough promotions you might end up leading this faction (and get the highest level of respect and glory).
-
-Here are the most important controls:
-* w/a/s/d = move north/west/south/east
-* l/L = drop item
-* j/J = activate
-* i = show inventory
-* k/K = pick up
-* e/E = examine
-* v = view own stats
-* H = view help
-
-
-
-
-Here are some important hints:
-* You start without food, weapon or armor
-* rods can be used as weapons
-* The attack on the city will start in %s ticks
-* a promotion drastically improves survivability
-* how well quests are completed has an effect on how well your faction is doing
-
-press space to continue
-"""%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
-        '''
-
-        showText("""
-You are %s, a newly spawned worker in the faction %s.
-Your current rank is 6. The lowest possible rank and you have no reputation and nobody is backing you.
-
-But as far as you understand there will be a big attack on an enemy city.
-This is your chance to shine, to defeat the odds and to impress your peers.
-Fight and defeat our enemies for the glory of our city.
-
-The enemy is weak now and after a long wait it is the time to strike!
-Wipe them from the earth and claim back the special items they have hoarded.
-The special items will allow us to prosper and grow even stronger.
-Nothing will stand in our way.
-
-Be the one to arrive at the enemies assembly hall first and help to rip the special item from their grasp!
-If you have the persistance, fighting abilities and the courage you may even be the one.
-The one, who fullfills our destiny and brings back the special item we seek.
-
-If you are that relentless fighter you will be respected and a promotion will be guaranteed!
-
-Here are the most important controls:
-* w/a/s/d = move north/west/south/east
-* l/L = drop item
-* j/J = activate
-* i = show inventory
-* k/K = pick up
-* e/E = examine
-* v = view own stats
-* H = view help
-
-
-
-
-Here are some important hints:
-* You start without food, weapon or armor
-* rods can be used as weapons
-* The attack on the enemy city will start in %s ticks
-* a promotion drastically improves survivability
-* how well quests are completed has an effect on how well your faction is doing
-
-press space to continue
-"""%(src.gamestate.gamestate.mainChar.name,src.gamestate.gamestate.mainChar.faction,self.startDelay,))
+        self.startTutorial()
 
         self.checkRespawn()
 
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.startDelay-self.gatherTime)
+    def startTutorial(self):
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        showText("""
+Hello,
+
+i'm MarxMustermann and since this game is very much work in progress i'll give you a short intro:
+
+The goal of this game is to become a city leader and to collect all special items.
+
+The path to to be city leader is by completing quests and getting promotions. Your goal is to reach rank 3.
+
+Each of the special items are currently in one city and you are going to steal them.
+
+= press space to continue =
+
+""")
+        showText("""
+Let's get to the basics first. The game is a top-down view of a play area.
+You can move around, activate items and fight enemies
+
+you are represented by a golden @
+
+= press space to continue =
+
+""")
+        # spawn into 
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
         event.setCallback({"container": self, "method": "almostStartNewEpoch"})
         terrain.addEvent(event)
 
@@ -2284,11 +2252,15 @@ press space to continue"""%(self.gatherTime,))
                 print("%s won the game"%(cityLeader.name,))
                 if cityLeader == src.gamestate.gamestate.mainChar:
                     print("you won the game")
+                    showText("you won the game. Congratulations. entering free play now")
+                    showText("you won the game. Congratulations. entering free play now\n(in case the previous screen was bugged)")
+                    src.gamestate.gamestate.mainChar.quests = []
+                    src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
                 else:
                     print("you lost the game")
-                1/0
-                return
-                
+                itemToFetch = None
+                break
+             
             itemToFetch = random.choice(candidates)
             toFetchMap[cityLocation] = itemToFetch
             print("selected item #%s for this epoch"%(itemToFetch,))
@@ -2299,6 +2271,8 @@ press space to continue"""%(self.gatherTime,))
 
         def gatherNPC(char):
             newQuest = src.quests.StandAttention()
+            newQuest.setParameters({"lifetime":self.gatherTime})
+            newQuest.generateSubquests(char)
             for charQuest in char.quests:
                 if charQuest.type == "Serve":
                     charQuest.addQuest(newQuest)
@@ -2554,7 +2528,13 @@ press space to continue"""%(reputationTree))
             newScore = len(hasItemMap[cityLocation])
             cityLeader = self.leaders[cityLocation]
 
-            if newScore <= self.scoreTracker[cityLocation]:
+            foundQuest = None
+            for quest in cityLeader.quests:
+                if isinstance(quest,src.quests.ObtainAllSpecialItems): 
+                    foundQuest = quest
+
+            if foundQuest and newScore <= self.scoreTracker[cityLocation]:
+
                 cityLeader = self.leaders[cityLocation]
                 toKill.append(cityLeader)
 
@@ -2690,6 +2670,9 @@ press space to continue"""%(reputationTree))
                                 toForcePromote.append(worker)
 
                 for character in toForcePromote:
+                    if not character.superior:
+                        continue
+
                     character.addMessage("should be force promoted")
                     character.superior.addMessage("should be force demoted")
 
@@ -2710,8 +2693,18 @@ press space to continue"""%(reputationTree))
                     oldBoss.subordinates = oldSubordintes
                     oldBoss.reputation = oldBoss.reputation//10
 
-                    character.superior.subordinates.remove(oldBoss)
-                    character.superior.subordinates.append(character)
+                    if character.superior:
+                        character.superior.subordinates.remove(oldBoss)
+                        character.superior.subordinates.append(character)
+                    else:
+                        self.leaders[cityLocation] = character
+                        character.quests = oldBoss.quests
+
+                        oldBoss.quests = []
+                        quest = src.quests.Serve(superior=character)
+                        quest.activate()
+                        quest.assignToCharacter(character)
+                        oldBoss.assignQuest(quest,active=True)
 
                     character.subordinates.remove(character)
                     character.subordinates.append(oldBoss)
@@ -2790,6 +2783,9 @@ press space to continue"""%(reputationTree))
 
         print("fetch map:")
         for cityLocation in self.citylocations:
+            if not cityLocation in toFetchMap or not toFetchMap[cityLocation]:
+                self.leaderQuests[cityLocation].setPriorityObtain(7,(7,7),epochLength=self.epochLength)
+                continue
             print("city at %s needs item #%s from %s"%(cityLocation,toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]]))
             self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=self.epochLength)
 

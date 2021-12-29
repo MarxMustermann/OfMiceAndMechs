@@ -60,45 +60,17 @@ class LandMine(src.items.Item):
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
 
-        new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
+        offsets = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
+        random.shuffle(offsets)
 
-        new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
-
-        new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,(self.xPosition-1,self.yPosition,self.zPosition))
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
-
-        new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
-
-        new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,(self.xPosition,self.yPosition-1,self.zPosition))
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
+        for offset in offsets[:-1]:
+            new = src.items.itemMap["Explosion"]()
+            self.container.addItem(new,(self.xPosition-offset[0],self.yPosition-offset[1],self.zPosition))
+            event = src.events.RunCallbackEvent(
+                src.gamestate.gamestate.tick + 1
+            )
+            event.setCallback({"container": new, "method": "explode"})
+            self.container.addEvent(event)
 
         super().destroy(generateScrap=False)
 

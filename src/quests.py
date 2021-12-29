@@ -1381,13 +1381,15 @@ class StandAttention(MetaQuestSequence):
         if not self.addedSubQuests:
             quest = GoToPosition()
             quest.assignToCharacter(character)
-            targetpos = (character.registers["ATTNPOSx"],character.registers["ATTNPOSy"])
+            if not character.registers.get("ATTNPOSx") or not character.registers.get("ATTNPOSy"):
+                return
+            targetpos = (character.registers["ATTNPOSx"],character.registers["ATTNPOSy"],0)
             quest.setParameters({"targetPosition":targetpos})
             self.addQuest(quest)
 
             quest = GoToPosition()
             quest.assignToCharacter(character)
-            quest.setParameters({"targetPosition":(6,6)})
+            quest.setParameters({"targetPosition":(6,6,0)})
             self.addQuest(quest)
 
 
@@ -6155,19 +6157,21 @@ class GoToPosition(Quest):
 
         localRandom = random.Random(self.randomSeed)
 
-        (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom)
-        if not command:
-            (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom,tryHard=True)
-        if not command:
-            return ".19.."
-        return command
-
-        if not self.targetPosition:
-            return "..."
-        if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
-            return "10."
+        if isinstance(character.container,src.rooms.Room):
+            (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom)
+            if not command:
+                (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom,tryHard=True)
+            if not command:
+                return ".19.."
+            return command
         else:
-            return "d"*(self.targetPosition[0]%15-character.xPosition%15)+"s"*(self.targetPosition[1]%15-character.yPosition%15)+"w"*(character.yPosition%15-self.targetPosition[1]%15)+"a"*(character.xPosition%15-self.targetPosition[0]%15)
+            charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
+            tilePos = (character.xPosition//15,character.yPosition//15,character.zPosition//15)
+            (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom)
+            if not command:
+                (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,tryHard=True)
+            if not command:
+                return ".19.."
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -6253,7 +6257,7 @@ class GoHome(MetaQuestSequence):
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
-            quest.setParameters({"targetPosition":self.cityLocation})
+            quest.setParameters({"targetPosition":(self.cityLocation[0],self.cityLocation[1])})
 
             self.addedSubQuests = True
             return
@@ -6273,8 +6277,16 @@ class GoHome(MetaQuestSequence):
         if self.subQuests:
             return self.subQuests[0].getSolvingCommandString(character)
         else:
-            charpos = (character.xPosition%15,character.yPosition%15,0)
-            return "ww"
+            charPos = (character.xPosition%15,character.yPosition%15,0)
+            if charPos in ((0,7,0),(0,6,0)):
+                return "d"
+            if charPos in ((7,14,0),(6,12,0)):
+                return "w"
+            if charPos in ((7,0,0),(6,0,0)):
+                return "s"
+            if charPos in ((14,7,0),(12,6,0)):
+                return "a"
+            return "..."
 
 class GrabSpecialItem(Quest):
     def __init__(self, description="grab special item", creator=None,lifetime=None):
@@ -6572,71 +6584,76 @@ class ObtainSpecialItem(MetaQuestSequence):
             self.fail()
             return False
         if not self.addedSubQuests:
+            if character.rank < 6:
+                quest = BeUsefull()
+                self.addQuest(quest)
+            else:
 
-            #quest = StandAttention()
-            #self.addQuest(quest)
-            homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
+                #quest = StandAttention()
+                #self.addQuest(quest)
+                homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
 
-            # order is reverse to order in code
+                # order is reverse to order in code
 
-            # return the loot
-            quest = DeliverSpecialItem()
-            self.addQuest(quest)
-            quest.itemID = self.itemID
+                # return the loot
+                quest = DeliverSpecialItem()
+                self.addQuest(quest)
+                quest.itemID = self.itemID
 
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]+1)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
+                quest = GoToTile()
+                quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]+1)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
-            quest = GoHome()
-            self.addQuest(quest)
+                quest = GoHome()
+                self.addQuest(quest)
 
-            quest = GoToTile()
-            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
+                quest = GoToTile()
+                quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
-            lifetime = None
-            if self.initialLifetime:
-                lifetime = self.initialLifetime//2
+                lifetime = None
+                if self.initialLifetime:
+                    lifetime = self.initialLifetime//2
 
-            # grab the item
-            quest = GrabSpecialItem(lifetime=lifetime)
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            quest.itemID = self.itemID
+                # grab the item
+                quest = GrabSpecialItem(lifetime=lifetime)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                quest.itemID = self.itemID
 
-            # enter the city
-            quest = EnterEnemyCity(lifetime=lifetime)
-            self.addQuest(quest)
-            quest.setCityLocation(self.itemLocation)
-            quest.assignToCharacter(character)
-            quest.activate()
+                # enter the city
+                quest = EnterEnemyCity(lifetime=lifetime)
+                self.addQuest(quest)
+                quest.setCityLocation(self.itemLocation)
+                quest.assignToCharacter(character)
+                quest.activate()
 
-            # enter the city
-            quest = GoToTile(lifetime=lifetime)
-            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1])})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
+                # enter the city
+                quest = GoToTile(lifetime=lifetime)
+                quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1])})
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
-            quest = GoToTile(lifetime=lifetime)
-            quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
+                quest = GoToTile(lifetime=lifetime)
+                quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
             self.addedSubQuests = True
 
     def solver(self, character):
         if character.rank < 6:
             if self.didDelegate:
-                character.runCommandString(".gg.")
-                return
+                return ".gg."
+                self.generateSubquests(character)
+                return super().solver(character)
             
             command = ".QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ."%(self.itemID,self.itemLocation[0],self.itemLocation[1],self.initialLifetime,)
             character.runCommandString(command)

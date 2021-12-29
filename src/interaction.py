@@ -4627,11 +4627,11 @@ def render(char):
     else:
         mapChars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
         miniMapChars = []
-        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank < 6 or 1==1:
+        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank and src.gamestate.gamestate.mainChar.rank < 6 or 1==1:
             miniMapChars = thisTerrain.renderTiles()
 
         text = []
-        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank < 5 or 1==1:
+        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank and src.gamestate.gamestate.mainChar.rank < 5 or 1==1:
             if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
                 text.append(src.gamestate.gamestate.mainChar.container.name)
                 if hasattr(src.gamestate.gamestate.mainChar.container,"electricalCharges"):

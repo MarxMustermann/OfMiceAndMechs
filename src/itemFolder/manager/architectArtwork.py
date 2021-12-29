@@ -1212,8 +1212,11 @@ class ArchitectArtwork(src.items.Item):
             return
 
         if not self.targetY:
-            self.targetX = int(self.submenue.text.split(",")[0])
-            self.targetY = int(self.submenue.text.split(",")[1])
+            try:
+                self.targetX = int(self.submenue.text.split(",")[0])
+                self.targetY = int(self.submenue.text.split(",")[1])
+            except:
+                return
 
             self.submenue = src.interaction.InputMenu(
                 "enter the amount of scrap piles (AMOUNt)"

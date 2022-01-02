@@ -238,6 +238,9 @@ Activate the machine to produce.
         if hasattr(new, "level"):
             new.level = self.level
 
+        #HACK: sound effect
+        if src.gamestate.gamestate.mainChar in self.container.characters:
+            src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('../Downloads/data_sound_Basic_menu_error.ogg'))
         self.runCommand("success", character)
 
     def getLongInfo(self):

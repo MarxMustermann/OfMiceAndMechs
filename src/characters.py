@@ -207,6 +207,7 @@ class Character(src.saveing.Saveable):
                     "maxInventorySpace",
                     "huntkilling",
                     "guarding",
+                    "faction",
                 ]
             )
 
@@ -1292,6 +1293,9 @@ class Character(src.saveing.Saveable):
         self.lastRoom = self.room
         self.lastTerrain = self.terrain
 
+        if src.gamestate.gamestate.mainChar == self:
+            src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('../Downloads/bss.ogg'))
+
         # replace character with corpse
         if self.container:
             container = self.container
@@ -1550,6 +1554,10 @@ class Character(src.saveing.Saveable):
         # remove item from inventory
         self.inventory.remove(item)
 
+        if src.gamestate.gamestate.mainChar in self.container.characters:
+            sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob_ruckwarts.ogg')
+            src.interaction.pygame2.mixer.Channel(6).play(sound)
+
         if foundScrap and item.type == "Scrap":
             foundScrap.amount += item.amount
             foundScrap.setWalkable()
@@ -1591,6 +1599,33 @@ class Character(src.saveing.Saveable):
 
         if self.stasis or self.dead or self.disabled:
             return
+
+        #HACK: sound effect
+        """
+        if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%4 == 1:
+            src.interaction.pygame2.mixer.Channel(1).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%4 == 2:
+            if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 2:
+                src.interaction.pygame2.mixer.Channel(3).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+            else:
+                src.interaction.pygame2.mixer.Channel(4).play(src.interaction.pygame2.mixer.Sound('../Downloads/Thip.ogg'))
+        """
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 0:
+        #    src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 1:
+        #    src.interaction.pygame2.mixer.Channel(1).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 2:
+        #    src.interaction.pygame2.mixer.Channel(2).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 3:
+        #    src.interaction.pygame2.mixer.Channel(3).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 4:
+        #    src.interaction.pygame2.mixer.Channel(4).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 5:
+        #    src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 6:
+        #    src.interaction.pygame2.mixer.Channel(6).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+        #if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%8 == 7:
+        #    src.interaction.pygame2.mixer.Channel(7).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
 
         # smooth over impossible state
         while self.events and src.gamestate.gamestate.tick > self.events[0].tick:
@@ -1712,6 +1747,33 @@ class Character(src.saveing.Saveable):
             tag: the tag determining what kind of event triggers the listen function. For example "died"
             info: additional information
         """
+
+        if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
+            #src.interaction.pygame2.mixer.Channel(1).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
+            sound = src.interaction.pygame2.mixer.Sound('../Downloads/wip.ogg')
+            if src.gamestate.gamestate.mainChar == self:
+                sound.set_volume(0.3)
+                src.interaction.pygame2.mixer.Channel(1).play(sound)
+            else:
+                sound.set_volume(0.2)
+                src.interaction.pygame2.mixer.Channel(2).play(sound)
+
+        if src.gamestate.gamestate.mainChar == self and tag == "changedTile":
+            src.interaction.pygame2.mixer.Channel(7).pause()
+
+        if src.gamestate.gamestate.mainChar == self and tag == "entered room":
+            if isinstance(info[1],src.rooms.WorkshopRoom):
+                sound = src.interaction.pygame2.mixer.Sound('../Downloads/lufter_effekt.ogg')
+                sound.set_volume(0.3)
+                src.interaction.pygame2.mixer.Channel(7).play(sound,loops=-1)
+                src.interaction.pygame2.mixer.Channel(7).unpause()
+            elif isinstance(info[1],src.rooms.TrapRoom):
+                sound = src.interaction.pygame2.mixer.Sound('../Downloads/electroRoom.ogg')
+                sound.set_volume(0.3)
+                src.interaction.pygame2.mixer.Channel(7).play(sound,loops=-1)
+                src.interaction.pygame2.mixer.Channel(7).unpause()
+            else:
+                src.interaction.pygame2.mixer.Channel(7).pause()
 
         # do nothing if nobody listens
         if tag not in self.listeners:

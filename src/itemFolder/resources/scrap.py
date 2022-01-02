@@ -20,6 +20,7 @@ class Scrap(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.scrap_light)
 
+        self.attributesToStore = []
         if not self.attributesToStore:
             # set meta information for saving
             self.attributesToStore.extend(super().attributesToStore)

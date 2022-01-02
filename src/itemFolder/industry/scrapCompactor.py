@@ -19,7 +19,7 @@ class ScrapCompactor(src.items.Item):
         self.name = "scrap compactor"
         self.description = "This machine converts scrap into metal bars."
 
-        self.coolDown = 100
+        self.coolDown = 10
         self.coolDownTimer = -self.coolDown
         self.charges = 3
         self.level = 1
@@ -138,6 +138,9 @@ class ScrapCompactor(src.items.Item):
             new, (self.xPosition + 1, self.yPosition, self.zPosition)
         )
 
+        #HACK: sound effect
+        if src.gamestate.gamestate.mainChar in self.container.characters:
+            src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('../Downloads/data_sound_Basic_menu_error.ogg'))
         self.runCommand("success", character)
 
     def getLongInfo(self):

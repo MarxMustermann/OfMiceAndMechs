@@ -61,6 +61,7 @@ class Item(src.saveing.Saveable):
     applyMap = {}
 
     def callInit(self):
+        self.attributesToStore = []
         super().__init__()
 
     def __init__(self, display=None, name="unkown", seed=0, noId=False):
@@ -352,6 +353,11 @@ class Item(src.saveing.Saveable):
         Parameters:
             character: the character picking up the item
         """
+        
+        if src.gamestate.gamestate.mainChar in character.container.characters:
+            #src.interaction.pygame2.mixer.Channel(4).play(src.interaction.pygame2.mixer.Sound('../Downloads/Soft_Airy_Swish.ogg'))
+            sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob2.ogg')
+            src.interaction.pygame2.mixer.Channel(4).play(sound)
 
         # gather the actions
         actions = self.gatherPickupActions()
@@ -1065,6 +1071,7 @@ def getItemFromState(state):
     """
 
     # create blank item
+    print(state)
     item = itemMap[state["type"]]()
 
     # load state into item

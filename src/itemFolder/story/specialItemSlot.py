@@ -21,6 +21,7 @@ class SpecialItemSlot(src.items.Item):
         self.strength = 1
         self.itemID = None
         self.hasItem = False
+        self.faction = None
 
     def apply(self, character):
         """
@@ -48,6 +49,9 @@ class SpecialItemSlot(src.items.Item):
             else:
                 character.addMessage("you need to have special item #%s in your inventory"%(self.itemID,))
         else:
+            if character.faction == self.faction:
+                character.die(reason="stealing from your own faction")
+                return
             newItem = src.items.itemMap["SpecialItem"]()
             newItem.itemID = self.itemID
             if self.yPosition == 1:

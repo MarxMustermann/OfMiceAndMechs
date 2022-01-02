@@ -91,13 +91,14 @@ class AbstractedDisplay(object):
 tcodConsole = None
 tcodContext = None
 tcod = None
+pygame2 = None
 def setUpTcod():
     import tcod as internalTcod
     global tcod
     tcod = internalTcod
 
     screen_width = 200
-    screen_height = 53
+    screen_height = 51
 
     """
     tileset = tcod.tileset.load_tilesheet(
@@ -111,7 +112,7 @@ def setUpTcod():
     )
     """
     tileset = tcod.tileset.load_tilesheet(
-        "Acorntileset.png", 16, 16, tcod.tileset.CHARMAP_CP437
+        "Acorntileset2.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)
@@ -133,6 +134,16 @@ def setUpTcod():
     root_console.print(x=1,y=1,string="loading game")
 
     context.present(root_console)
+
+    # also set up sound
+    import pygame
+
+    global pygame2
+    pygame2 = pygame
+
+    pygame2.mixer.pre_init()
+    pygame2.mixer.init()
+    pygame2.init()
 
 def setUpUrwid():
     """
@@ -5306,6 +5317,7 @@ def gameLoop(loop, user_data=None):
 
                     skipRender = True
 
+                    """
                     thresholds = [
                         10,
                         50,
@@ -5331,6 +5343,8 @@ def gameLoop(loop, user_data=None):
                         == 0
                     ):
                         skipRender = False
+                    """
+                    skipRender = False
 
                     if (not skipRender) or fixedTicks:
 
@@ -5366,7 +5380,7 @@ def gameLoop(loop, user_data=None):
                                 counter += 1
                             canvas.printTcod(tcodConsole,counter,0,warning=warning)
                             footertext = stringifyUrwid(footer.get_text())
-                            tcodConsole.print(x=0,y=51,string=" "*(200-len(footertext))+footertext)
+                            tcodConsole.print(x=0,y=48,string=" "*(170-len(footertext))+footertext)
                             tcodContext.present(tcodConsole)
                         if useTiles:
                             w, h = pydisplay.get_size()
@@ -5414,8 +5428,8 @@ def gameLoop(loop, user_data=None):
 
         #profiler.dump_stats("tmpFolder/tick%s"%(origTick,))
         
-        #if time.time()-startTime < 0.02:
-        #    time.sleep(0.2-(time.time()-startTime))
+        if time.time()-startTime < 0.09999:
+            time.sleep(0.1-(time.time()-startTime))
 
     else:
         continousOperation = 0

@@ -215,12 +215,14 @@ class GameState(src.saveing.Saveable):
         self.terrain = self.terrainMap[15][15]
         terrain = self.terrain
 
+        print("checking for terrain")
         if state["mainChar"]["terrain"]:
             for terrainLine in self.terrainMap:
                 for iterTerrain in terrainLine:
                     if iterTerrain.id == state["mainChar"]["terrain"]:
                         terrain = iterTerrain
                         self.terrain = iterTerrain
+                        print("found terrain")
 
         # load the main character
         # bad code: should be simplified

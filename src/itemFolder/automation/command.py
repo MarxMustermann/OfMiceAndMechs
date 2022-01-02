@@ -172,6 +172,13 @@ class Command(src.items.Item):
 
         text += """
 
+This command has the name: %s
+""" % (
+            self.extraName
+            )
+
+        text += """
+
 This is a level %s item.
 """ % (
             self.level

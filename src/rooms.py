@@ -380,11 +380,15 @@ class Room(src.saveing.Saveable):
     def addBuildSite(self,position,specification):
         self.buildSites.append((position,specification))
 
-    def addOutputSlot(self,position,itemType):
-        self.outputSlots.append((position,itemType))
+    def addOutputSlot(self,position,itemType,extraInfo=None):
+        if extraInfo == None:
+            extraInfo = {}
+        self.outputSlots.append((position,itemType,extraInfo))
 
-    def addInputSlot(self,position,itemType):
-        self.inputSlots.append((position,itemType))
+    def addInputSlot(self,position,itemType,extraInfo=None):
+        if extraInfo == None:
+            extraInfo = {}
+        self.inputSlots.append((position,itemType,extraInfo))
 
     def getNonEmptyOutputslots(self,itemType=None):
         result = []
@@ -402,10 +406,10 @@ class Room(src.saveing.Saveable):
             result.append(outputSlot)
         return result
 
-    def getEmptyInputslots(self,itemType=None):
+    def getEmptyInputslots(self,itemType=None,allowAny=False):
         result = []
         for inputSlot in self.inputSlots:
-            if itemType and not inputSlot[1] == itemType:
+            if (itemType and not inputSlot[1] == itemType) and (not allowAny or  not inputSlot[1] == None):
                 continue
 
             items = self.getItemByPosition(inputSlot[0])
@@ -413,7 +417,7 @@ class Room(src.saveing.Saveable):
                 result.append(inputSlot)
                 continue
 
-            if itemType and not items[-1].type == itemType:
+            if (itemType and not items[-1].type == itemType):
                 continue
 
             if items[-1].type == "Scrap":
@@ -421,8 +425,14 @@ class Room(src.saveing.Saveable):
                     result.append(inputSlot)
                 continue
 
+            if not items[-1].walkable:
+                continue
 
-            if len(items) < 20:
+            maxAmount = inputSlot[2].get("maxAmount")
+            if not maxAmount:
+                maxAmount = 20
+
+            if len(items) < maxAmount:
                 result.append(inputSlot)
 
         return result
@@ -953,7 +963,8 @@ class Room(src.saveing.Saveable):
                                 if hasattr(display[0],"fg"):
                                     display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
                                 else:
-                                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                                    if not isinstance(display[0],tuple):
+                                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
 
                                 chars[pos[1]][pos[0]] = display
                 else:
@@ -1385,7 +1396,8 @@ class Room(src.saveing.Saveable):
         if len(itemList) > 15:
             return itemList[0]
 
-        self.removeCharacter(character)
+        if character in self.characters:
+            self.removeCharacter(character)
         self.terrain.addCharacter(character, newXPos, newYPos)
         return
 
@@ -1865,6 +1877,14 @@ class TrapRoom(EmptyRoom):
                     character.hurt(self.chargeStrength,reason="the floor shocks you")
                     self.electricalCharges -= 1
 
+                    if src.gamestate.gamestate.mainChar in self.characters:
+                        sound = src.interaction.pygame2.mixer.Sound('../Downloads/electroShock.ogg')
+                        if src.gamestate.gamestate.mainChar == character:
+                            src.interaction.pygame2.mixer.Channel(6).play(sound)
+                        else:
+                            sound.set_volume(0.5)
+                            src.interaction.pygame2.mixer.Channel(6).play(sound)
+
         return item
 
     def __init__(
@@ -1890,6 +1910,9 @@ class TrapRoom(EmptyRoom):
         self.addItem(shocker,(2,10,0))
         shocker = src.items.itemMap["Shocker"]()
         self.addItem(shocker,(10,10,0))
+
+        self.addOutputSlot((1,1,0),None)
+        self.addOutputSlot((1,2,0),"Corpse")
 
 class DungeonRoom(Room):
     def __init__(

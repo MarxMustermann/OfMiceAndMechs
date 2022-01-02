@@ -565,7 +565,8 @@ class Terrain(src.saveing.Saveable):
             character: the character to remove
         """
 
-        self.characters.remove(character)
+        if character in self.characters:
+            self.characters.remove(character)
         character.room = None
         character.terrain = None
 
@@ -606,6 +607,7 @@ class Terrain(src.saveing.Saveable):
                     return room.itemByCoordinates[localisedEntry][0]
 
             char.changed("moved", (char, direction))
+            char.changed("entered room", (char, room, direction))
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -2526,7 +2528,8 @@ class Terrain(src.saveing.Saveable):
             eventStates[event.id] = event.getState()
 
         # generate state
-        return {
+        result = super().getState()
+        result.update({
             "objType": self.objType,
             "roomIds": roomIds,
             "roomStates": roomStates,
@@ -2537,7 +2540,8 @@ class Terrain(src.saveing.Saveable):
             "initialSeed": self.initialSeed,
             "eventIds": eventIds,
             "eventStates": eventStates,
-        }
+        })
+        return result
 
     # bad code: should be in extra class
     def addEvent(self, event):
@@ -3791,5 +3795,6 @@ def getTerrainFromState(state):
         seed=state["initialSeed"], noContent=True
     )
     terrain.setState(state)
+    terrain.id = state["id"]
     src.saveing.loadingRegistry.register(terrain)
     return terrain

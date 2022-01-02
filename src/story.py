@@ -614,7 +614,25 @@ class BackToTheRoots(BasicPhase):
         npc = src.characters.Character()
         item = src.items.itemMap["GooFlask"]()
         item.uses = flaskUses
-        npc.name = "worker #%s"%(self.npcCounter)
+        firstName = random.choice([
+                "Siegfried","Ernst","Alfred","Herrmann","Friedrich","Helmut","Karl","Gunnar","Berthold","Dietrich",
+                "Friedhelm","Horst","Edmund","Wilhelm","Albert","Johann","Herbert","Bertram","Hans","Jochen","Ludwig",
+                "Raimund","Thorsten","Ulrich","Veit","Lutz","Anton","Alwin","Sigmund","Kurt","Heidrun","Elfriede",
+                "Gunhilde","Hildegard","Gudrun","Gertrude","Brunhilde","Adelheid","Sieglinde","Kunigunde","Herta",
+                "Frieda","Ursula","Katharina","Johanna","Clara","Isolde","Hermine","Berta","Gisela","Lina","Irmgard",
+                "Marlene","Mathilde","Monika","Frieda","Gerlinde","Rita","Clementine","Brigitte","Adalbert","Jörg",
+                "Moritz","Maximillian","Gundula","Renate","Udo","Fritz","Susanne","Guido"])
+
+        mainNameCore = random.choice([
+                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben",
+                ])
+
+        postfix = random.choice([
+                "brecher","wurst","schmidt","maier","bach","burg","fried","treu","kraft"
+                ])
+
+        npc.name = firstName+" "+mainNameCore+postfix
+
         npc.inventory.append(item)
         npc.runCommandString("10.10*")
         npc.macroState["macros"]["j"] = ["J", "f"]
@@ -816,12 +834,8 @@ class BackToTheRoots(BasicPhase):
 
         currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
 
-        """
         # add minefield
-        offsets = []
-        for x in (-1,0,1,2):
-            for y in (-2,-1,0,1,2):
-                offsets.append((x,y))
+        offsets = [(0,0)]
         for offset in offsets:
             architect.doClearField(7+offset[0],7+offset[1])
             currentTerrain.noPlacementTiles.append((7+offset[0],7+offset[1]))
@@ -838,17 +852,16 @@ class BackToTheRoots(BasicPhase):
                             item = src.items.itemMap["Scrap"]()
                             currentTerrain.addItem(item,pos)
                     else:
-                        if random.random() < 0.1:
-                            if random.random() < 0.3:
+                        if random.random() < 0.1 or 1==1:
+                            if random.random() < 0.3 or 1==1:
                                 mine = src.items.itemMap["FireCrystals"]()
                                 currentTerrain.addItem(mine,pos)
                             else:
                                 mine = src.items.itemMap["LandMine"]()
                                 currentTerrain.addItem(mine,pos)
                         
-                        item = src.items.itemMap["Scrap"](amount=int(random.random()*13))
-                        currentTerrain.addItem(item,pos)
-        """
+                        #item = src.items.itemMap["Scrap"](amount=int(random.random()*13))
+                        #currentTerrain.addItem(item,pos)
 
         enemy = src.characters.Character(6,6)
         rooms[0].addCharacter(enemy, 6, 6)
@@ -1095,52 +1108,43 @@ class BackToTheRoots(BasicPhase):
             )
             scrapProcessing = room
             rooms.append(room)
-            """
-            for x in (1,3,4,6,7):
-                for y in range(1,6):
-                    scrapProcessing.addInputSlot((x,y,0),"Scrap")
-                for y in range(7,12):
-                    scrapProcessing.addInputSlot((x,y,0),"Scrap")
-            for x in (2,5,8):
-                for y in range(1,12):
-                    scrapProcessing.walkingSpace.add((x,y,0))
-            for x in range(1,12):
-                scrapProcessing.walkingSpace.add((x,6,0))
-            """
 
-            if 1==1:
+            for x in (1,5,9):
                 for y in (1,3,5,7,9):
-                    scrapProcessing.addInputSlot((9,y,0),"Scrap")
-                    scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-                    scrapProcessing.addItem(scrapCompactor,(10,y,0))
-                    scrapProcessing.addOutputSlot((11,y,0),"MetalBars")
+                    scrapProcessing.addInputSlot((x,y,0),"Scrap")
+                    scrapProcessing.addBuildSite((x+1,y,0),"ScrapCompactor")
+                    scrapProcessing.addOutputSlot((x+2,y,0),"MetalBars")
 
-                    scrapProcessing.walkingSpace.add((9,y+1,0))
-                    scrapProcessing.walkingSpace.add((10,y+1,0))
-                    scrapProcessing.walkingSpace.add((11,y+1,0))
+                    scrapProcessing.walkingSpace.add((x,y+1,0))
+                    scrapProcessing.walkingSpace.add((x+1,y+1,0))
+                    scrapProcessing.walkingSpace.add((x+2,y+1,0))
 
-            reanimator = src.items.itemMap["CorpseAnimator"]()
-            reanimator.commands["born"] = "j"
-            scrapProcessing.addItem(reanimator,(9,11,0))
+                reanimator = src.items.itemMap["CorpseAnimator"]()
+                reanimator.commands["born"] = "j"
+                scrapProcessing.addItem(reanimator,(x,11,0))
 
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = 4*"Jwaawwdd"+"Jw"+"2a8s2d"+"j"
-            scrapProcessing.addItem(command,(10,10,0))
+                if not x==1:
+                    command = src.items.itemMap["Command"]()
+                    command.bolted = True
+                    command.command = 4*"Jwaawwdd"+"Jw"+"2a8s2d"+"j"
+                    scrapProcessing.addItem(command,(x+1,10,0))
+                else:
+                    command = src.items.itemMap["Command"]()
+                    command.bolted = True
+                    command.command = 4*"Jwddwwaa"+"Jw"+"2d8s2a"+"j"
+                    scrapProcessing.addItem(command,(x+1,10,0))
 
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "Kdwj"
-            scrapProcessing.addItem(command,(10,11,0))
+                command = src.items.itemMap["Command"]()
+                command.bolted = True
+                command.command = "Kdwj"
+                scrapProcessing.addItem(command,(x+1,11,0))
 
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            scrapProcessing.addCharacter(ghul,10,11)
-            ghul.runCommandString("j")
+                ghul = src.characters.Ghul()
+                ghul.faction = "city #%s"%(cityCounter,)
+                scrapProcessing.addCharacter(ghul,x+1,11)
+                ghul.runCommandString("j")
 
-            corpse = src.items.itemMap["Corpse"]()
-            scrapProcessing.addItem(corpse,(11,11,0))
-            scrapProcessing.addInputSlot((11,11,0),"Corpse")
+                scrapProcessing.addInputSlot((x+2,11,0),"Corpse",{"maxAmount":2})
 
             room = architect.doAddRoom(
                 {
@@ -1152,19 +1156,71 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
-            scrapStorage = room
-            scrapStorage.addPathCross()
-            def addStorage(roomToAdd,offset,itemType=None):
+            unknown = room
+            unknown.addPathCross()
+
+            # this function adds the storage section
+            def addStorageSquare(roomToAdd,offset,itemType=None):
                 for x in (1,3,5,):
                     for y in range(1,6):
                         roomToAdd.addInputSlot((x+offset[0],y+offset[1],0),itemType)
                 for x in (2,4,):
                     for y in range(1,6):
                         roomToAdd.walkingSpace.add((x+offset[0],y+offset[1],0))
-            addStorage(scrapStorage,(0,0,0),"Scrap")
-            addStorage(scrapStorage,(6,0,0),"Scrap")
-            addStorage(scrapStorage,(0,6,0),"Scrap")
-            addStorage(scrapStorage,(6,6,0),"Scrap")
+
+            # this function adds the workshop section
+            def addWorkshopSquare(roomToAdd,offset,machines=None):
+                for y in (2,4,):
+                    for x in range(1,6):
+                        roomToAdd.walkingSpace.add((x+offset[0],y+offset[1],0))
+
+                machineCounter = 0
+                for machine in machines:
+                    rowheight = machineCounter*2+1
+
+                    neededItems = src.items.rawMaterialLookup.get(machine)
+                    if not neededItems:
+                        neededItems = ["MetalBars"]
+
+                    if neededItems[0] == "MetalBars":
+                        roomToAdd.addInputSlot((1+offset[0],rowheight+offset[1],0),"Scrap")
+                        item = src.items.itemMap["ScrapCompactor"]()
+                        item.charges = 0
+                        roomToAdd.addItem(item,(2+offset[0],rowheight+offset[1],0))
+
+                    roomToAdd.addInputSlot((3+offset[0],rowheight+offset[1],0),neededItems[0])
+                    item = src.items.itemMap["Machine"]()
+                    item.setToProduce(machine)
+                    item.charges = 0
+                    roomToAdd.addItem(item,(4+offset[0],rowheight+offset[1],0))
+                    roomToAdd.addOutputSlot((5+offset[0],rowheight+offset[1],0),machine)
+
+                    machineCounter += 1
+
+                    for room in rooms:
+                        room.sources.append(((roomToAdd.xPosition,roomToAdd.yPosition),machine))
+
+            def addGhulSquare(roomToAdd,offset):
+                for x in range(1,6):
+                    roomToAdd.walkingSpace.add((x+offset[0],3+offset[1],0))
+
+                roomToAdd.addInputSlot((1+offset[0],2+offset[1],0),"Corpse",{"maxAmount":2})
+                reanimator = src.items.itemMap["CorpseAnimator"]()
+                reanimator.commands["born"] = "j"
+                roomToAdd.addItem(reanimator,(2+offset[0],2+offset[1],0))
+                roomToAdd.addInputSlot((5+offset[0],2+offset[1],0),"Corpse",{"maxAmount":2})
+
+                roomToAdd.addInputSlot((1+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
+                reanimator = src.items.itemMap["CorpseAnimator"]()
+                reanimator.commands["born"] = "j"
+                roomToAdd.addItem(reanimator,(2+offset[0],4+offset[1],0))
+                command = src.items.itemMap["Command"]()
+                command.bolted = True
+                command.extraName = "run inventory command line"
+                command.command = "s2a"+"jd"*4+"j"+"awjaj"
+                roomToAdd.addItem(command,(3+offset[0],4+offset[1],0))
+                roomToAdd.addInputSlot((5+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
+
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1179,8 +1235,8 @@ class BackToTheRoots(BasicPhase):
             )
             generalStorage = room
             generalStorage.addPathCross()
-            addStorage(generalStorage,(0,0,0),"MetalBars")
-            addStorage(generalStorage,(6,0,0),None)
+            addStorageSquare(generalStorage,(6,0,0),None)
+            addStorageSquare(generalStorage,(6,6,0),"ScrapCompactor")
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1193,7 +1249,11 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
-            scrapStorage5 = room
+            generalProduction1 = room
+            #addWorkshopSquare(generalProduction1,(0,0,0),machines=["GooFlask","Rod","Connector"])
+            #addWorkshopSquare(generalProduction1,(0,6,0),machines=["ScrapCompactor","Sheet","Rod"])
+            #addWorkshopSquare(generalProduction1,(6,0,0),machines=["ScrapCompactor","Sheet","Rod"])
+            addGhulSquare(generalProduction1,(6,6,0))
             room.addPathCross()
             rooms.append(room)
 
@@ -1208,6 +1268,7 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage6 = room
+            #addWorkshopSquare(scrapStorage6,(0,0,0),machines=["Tank","Tank","Tank"])
             room.addPathCross()
             rooms.append(room)
 
@@ -1222,6 +1283,10 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage7 = room
+            addStorageSquare(scrapStorage7,(0,0,0),"Scrap")
+            addStorageSquare(scrapStorage7,(0,6,0),"Scrap")
+            addStorageSquare(scrapStorage7,(6,0,0),"Scrap")
+            addGhulSquare(scrapStorage7,(6,6,0))
             room.addPathCross()
             rooms.append(room)
 
@@ -1321,47 +1386,31 @@ class BackToTheRoots(BasicPhase):
             for room in rooms:
                 room.sources.append((scrapFieldpos,"Scrap"))
                 room.sources.append(((scrapProcessing.xPosition,scrapProcessing.yPosition),"MetalBars"))
+                room.sources.append(((workshop.xPosition,workshop.yPosition),"Corpse"))
 
             for y in (7,8):
                 for x in (7,8,9,10,11):
                     basicMetalWorkshop.addInputSlot((x,y,0),"Scrap")
 
+            machines = ["Sheet","Armor","Rod","ScrapCompactor","Bolt"]
+            counter = 0
             for y in (2,4,6,8,10):
                 basicMetalWorkshop.addInputSlot((1,y,0),"Scrap")
                 scrapCompactor = src.items.itemMap["ScrapCompactor"]()
                 scrapCompactor.charges = 0
+                basicMetalWorkshop.addInputSlot((3,y,0),"MetalBars")
                 basicMetalWorkshop.addItem(scrapCompactor,(2,y,0))
-                basicMetalWorkshop.addOutputSlot((5,y,0),"Scrap")
+                basicMetalWorkshop.addOutputSlot((5,y,0),machines[counter])
 
-            if random.random() > 0.2 or 1==1:
                 machine = src.items.itemMap["Machine"]()
-                machine.setToProduce("Sheet")
+                machine.setToProduce(machines[counter])
                 machine.charges = 0
-                basicMetalWorkshop.addItem(machine,(4,2,0))
+                basicMetalWorkshop.addItem(machine,(4,y,0))
 
-            if random.random() > 0.4 or 1==1:
-                machine = src.items.itemMap["Machine"]()
-                machine.setToProduce("Armor")
-                machine.charges = 0
-                basicMetalWorkshop.addItem(machine,(4,4,0))
+                for room in rooms:
+                    room.sources.append(((basicMetalWorkshop.xPosition,basicMetalWorkshop.yPosition),machines[counter]))
 
-            if random.random() > 0.3 or 1==1:
-                machine = src.items.itemMap["Machine"]()
-                machine.setToProduce("Rod")
-                machine.charges = 0
-                basicMetalWorkshop.addItem(machine,(4,6,0))
-
-            if random.random() > 0.2 or 1==1:
-                machine = src.items.itemMap["Machine"]()
-                machine.setToProduce("ScrapCompactor")
-                machine.charges = 0
-                basicMetalWorkshop.addItem(machine,(4,8,0))
-
-            if random.random() > 0.5 or 1==1:
-                machine = src.items.itemMap["Machine"]()
-                machine.setToProduce("Bolt")
-                machine.charges = 0
-                basicMetalWorkshop.addItem(machine,(4,10,0))
+                counter += 1
 
             ghul = src.characters.Ghul()
             ghul.faction = "city #%s"%(cityCounter,)
@@ -1373,8 +1422,7 @@ class BackToTheRoots(BasicPhase):
             basicMetalWorkshop.addCharacter(ghul,9,11)
             ghul.runCommandString("j")
 
-            corpse = src.items.itemMap["Corpse"]()
-            basicMetalWorkshop.addItem(corpse,(7,1,0))
+            basicMetalWorkshop.addInputSlot((7,1,0),"Corpse",{"maxAmount":2})
 
             for y in range(0,13):
                 basicMetalWorkshop.walkingSpace.add((6,y,0))
@@ -1401,8 +1449,30 @@ class BackToTheRoots(BasicPhase):
             command.command = "3a4sj4w3dj"
             basicMetalWorkshop.addItem(command,(9,2,0))
 
-            corpse = src.items.itemMap["Corpse"]()
-            basicMetalWorkshop.addItem(corpse,(10,1,0))
+            basicMetalWorkshop.addInputSlot((10,1,0),"Corpse",{"maxAmount":2})
+
+            basicMetalWorkshop.addInputSlot((7,11,0),"Corpse",{"maxAmount":2})
+
+            reanimator = src.items.itemMap["CorpseAnimator"]()
+            reanimator.commands["born"] = "j"
+            basicMetalWorkshop.addItem(reanimator,(8,11,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "wj"
+            basicMetalWorkshop.addItem(command,(9,11,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "2dw"+"Kwa"*5+"www"+"dKs"*5+"5a4s4d"+"sjwd"+"Js"*0+"aaj"
+            basicMetalWorkshop.addItem(command,(9,10,0))
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "w4as"+("5a"+"Lw"*10+"5dww")*5+"9s4ds"
+            basicMetalWorkshop.addItem(command,(10,11,0))
+
+            basicMetalWorkshop.addInputSlot((11,11,0),"Corpse",{"maxAmount":2})
 
             machine = src.items.itemMap["GrowthTank"]()
             workshop.addItem(machine,(2,2,0))
@@ -1436,6 +1506,28 @@ class BackToTheRoots(BasicPhase):
                 for x in (7,8,9,10,11):
                     crystalWorkshop.addInputSlot((x,y,0),"Scrap")
 
+            for y in range(4,9):
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+                corpse = src.items.itemMap["Corpse"]()
+                workshop.addItem(corpse,(1,y,0))
+
+                workshop.addOutputSlot((1,y,0),"Corpse")
+                workshop.walkingSpace.add((2,y,0))
+
+
             crystalWorkshop.addItem(scrapCompactor,(2,10,0))
 
             ghul = src.characters.Ghul()
@@ -1448,9 +1540,7 @@ class BackToTheRoots(BasicPhase):
             crystalWorkshop.addCharacter(ghul,9,11)
             ghul.runCommandString("j")
 
-
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(7,1,0))
+            crystalWorkshop.addInputSlot((7,1,0),"Corpse",{"maxAmount":2})
 
             reanimator = src.items.itemMap["CorpseAnimator"]()
             reanimator.commands["born"] = "j"
@@ -1466,8 +1556,7 @@ class BackToTheRoots(BasicPhase):
             command.command = "3a4sj4w3dj"
             crystalWorkshop.addItem(command,(9,2,0))
 
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(10,1,0))
+            crystalWorkshop.addInputSlot((10,1,0),"Corpse",{"maxAmount":2})
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1476,15 +1565,11 @@ class BackToTheRoots(BasicPhase):
             command.command = produceCrystalsCommand+activateCrystalCommand
             crystalWorkshop.addItem(command,(6,6,0))
 
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(7,11,0))
+            crystalWorkshop.addInputSlot((7,11,0),"Corpse",{"maxAmount":2})
 
             reanimator = src.items.itemMap["CorpseAnimator"]()
             reanimator.commands["born"] = "j"
             crystalWorkshop.addItem(reanimator,(8,11,0))
-
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(7,11,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1511,22 +1596,7 @@ class BackToTheRoots(BasicPhase):
             command.command = 30*"Js"
             crystalWorkshop.addItem(command,(11,10,0))
 
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
-            corpse = src.items.itemMap["Corpse"]()
-            crystalWorkshop.addItem(corpse,(11,11,0))
+            crystalWorkshop.addInputSlot((11,11,0),"Corpse",{"maxAmount":2})
 
             for y in range(0,13):
                 crystalWorkshop.walkingSpace.add((6,y,0))
@@ -1539,21 +1609,8 @@ class BackToTheRoots(BasicPhase):
                 for x in range(7,12):
                     crystalWorkshop.walkingSpace.add((x,y,0))
 
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
+            workshop.addInputSlot((4,1,0),"Corpse",{"maxAmount":2})
+            workshop.walkingSpace.add((5,1,0))
             
             machine = src.items.itemMap["CorpseAnimator"]()
             machine.commands["born"] = "j"
@@ -1563,110 +1620,39 @@ class BackToTheRoots(BasicPhase):
             machine.commands = ["ssdj", "s3dwj", "s3dsj"]
             workshop.addItem(machine,(8,2,0))
 
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(9,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(9,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(9,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(9,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(9,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(9,4,0))
+            workshop.addInputSlot((9,4,0),"Corpse",{"maxAmount":2})
+            workshop.walkingSpace.add((9,5,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdaaaass"+"15d15dj"
             workshop.addItem(command,(10,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,4,0))
 
+            workshop.addInputSlot((11,4,0),"Corpse",{"maxAmount":2})
+            workshop.walkingSpace.add((11,5,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdssaaaass"+"15w15w15dj"
             workshop.addItem(command,(10,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(11,2,0))
+
+            workshop.addInputSlot((11,2,0),"Corpse",{"maxAmount":2})
+            workshop.walkingSpace.add((11,3,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdwjsajdsjw"+"15w"+"j"+"15s"+"j"
             workshop.addItem(command,(6,6,0))
-            if random.random() > 0.5:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(7,6,0))
+            workshop.addInputSlot((7,6,0),"Corpse",{"maxAmount":2})
+            workshop.walkingSpace.add((8,6,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
             command.command = "Kdwjsajdsjw"+"15w"+"j"+"15s"+"j"
             workshop2.addItem(command,(6,6,0))
 
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop2.addItem(corpse,(7,6,0))
+            workshop2.addInputSlot((7,6,0),"Corpse",{"maxAmount":2})
+            workshop2.walkingSpace.add((8,6,0))
 
             machine = src.items.itemMap["CorpseAnimator"]()
             machine.commands["born"] = "j"
@@ -1676,21 +1662,8 @@ class BackToTheRoots(BasicPhase):
             machine.commands = ["ssdj", "s3dwj", "s3dsj"]
             workshop.addItem(machine,(8,2,0))
 
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                workshop.addItem(corpse,(4,1,0))
+            workshop.addInputSlot((4,1,0),"Corpse",{"maxAmount":2})
+            workshop.walkingSpace.add((4,2,0))
             
             machine = src.items.itemMap["CorpseAnimator"]()
             machine.commands["born"] = "j"
@@ -1723,15 +1696,11 @@ class BackToTheRoots(BasicPhase):
             command.bolted = True
             command.command = "ggKdKsKa"
             guardRoom.addItem(command,(6,7,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                guardRoom.addItem(corpse,(6,8,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                guardRoom.addItem(corpse,(5,7,0))
-            if random.random() > 0.5 or 1==1:
-                corpse = src.items.itemMap["Corpse"]()
-                guardRoom.addItem(corpse,(7,7,0))
+            guardRoom.addInputSlot((6,8,0),"Corpse",{"maxAmount":2})
+            guardRoom.addInputSlot((5,7,0),"Corpse",{"maxAmount":2})
+            guardRoom.addInputSlot((7,7,0),"Corpse",{"maxAmount":2})
+            guardRoom.walkingSpace.add((5,8,0))
+            guardRoom.walkingSpace.add((7,8,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1854,10 +1823,17 @@ class BackToTheRoots(BasicPhase):
             #src.gamestate.gamestate.mainChar = ghul
             #placedMainChar = True
 
+            leader = self.genNPC(cityCounter,citylocation)
+            leader.registers["ATTNPOSx"] = 5
+            leader.registers["ATTNPOSy"] = 3
+            mainRoom.addCharacter(leader,7,3)
+            leader.rank = 3
+
             counter = 1
             for pos in self.specialItemSlotPositions:
                 slotItem = src.items.itemMap["SpecialItemSlot"]()
                 slotItem.itemID = counter
+                slotItem.faction = leader.faction
                 if counter == cityCounter:
                     slotItem.hasItem = True
                 backGuardRoom.addItem(slotItem,(pos[0],pos[1],0))
@@ -1865,12 +1841,6 @@ class BackToTheRoots(BasicPhase):
 
             slotItem = src.items.itemMap["SpecialItem"]()
             slotItem.itemID = cityCounter
-
-            leader = self.genNPC(cityCounter,citylocation)
-            leader.registers["ATTNPOSx"] = 5
-            leader.registers["ATTNPOSy"] = 3
-            mainRoom.addCharacter(leader,7,3)
-            leader.rank = 3
 
             leader.faction = "city #%s"%(cityCounter,)
             self.leaders[citylocation] = leader
@@ -2071,6 +2041,28 @@ class BackToTheRoots(BasicPhase):
         self.startTutorial()
 
         self.checkRespawn()
+        self.checkTutorialEnd()
+
+    def checkTutorialEnd(self):
+        terrain = src.gamestate.gamestate.terrainMap[6][7]
+
+        endTutorial = False
+        if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
+            room = src.gamestate.gamestate.mainChar.container
+            if room.container == src.gamestate.gamestate.terrainMap[6][7]:
+                for citylocation in self.citylocations:
+                    if not self.leaders[citylocation].faction == src.gamestate.gamestate.mainChar.faction:
+                        continue
+
+                    if (room.xPosition,room.yPosition) == citylocation:
+                        endTutorial = True
+
+        if endTutorial:
+            self.startNewEpoch()
+        else:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "checkTutorialEnd"})
+            terrain.addEvent(event)
 
     def startTutorial(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
@@ -2081,27 +2073,35 @@ i'm MarxMustermann and since this game is very much work in progress i'll give y
 
 The goal of this game is to become a city leader and to collect all special items.
 
-The path to to be city leader is by completing quests and getting promotions. Your goal is to reach rank 3.
+The path to be city leader is by completing quests and getting promotions. Your goal is to reach rank 3.
 
-Each of the special items are currently in one city and you are going to steal them.
+Each of the special items are currently in one city and you are going to obtain them.
 
 = press space to continue =
 
 """)
         showText("""
-Let's get to the basics first. The game is a top-down view of a play area.
-You can move around, activate items and fight enemies
+most important thing first:
+go to the command center to end/skip the tutorial
+
+For the tutorial:
+The game is a top-down view of a play area.
+You can move around, activate items and fight enemies.
+There is more to it, but that will be explained later.
 
 you are represented by a golden @
+
+try moving around a bit by using
+
+w to move up/north
+a to move left/west
+s to move down/south
+d to move right/east
 
 = press space to continue =
 
 """)
         # spawn into 
-
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
-        event.setCallback({"container": self, "method": "almostStartNewEpoch"})
-        terrain.addEvent(event)
 
     def almostStartNewEpoch(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]

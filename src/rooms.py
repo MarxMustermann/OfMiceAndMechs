@@ -1,8 +1,3 @@
-"""
-eeeeeeend room related code belong here
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-much of this code is currenty not in use and needs to be reintegrated
-"""
 
 # import basic libs
 import json
@@ -727,86 +722,6 @@ class Room(src.saveing.Saveable):
                         "chracter is rendered outside of room"
                     )
 
-            """
-            # draw quest markers
-            # bad code: should be an overlay
-            if src.gamestate.gamestate.mainChar.room == self:
-                if len(src.gamestate.gamestate.mainChar.quests):
-                    # show the questmarker every second turn for blinking effect
-                    if not self.shownQuestmarkerLastRender:
-                        self.shownQuestmarkerLastRender = True
-
-                        # mark the target of each quest
-                        # bad code: does not work with meta quests
-                        for quest in src.gamestate.gamestate.mainChar.quests:
-                            if not quest.active:
-                                continue
-
-                            # mark secondary quest targets using background colour
-                            try:
-                                import urwid
-
-                                display = chars[quest.dstY][quest.dstX]
-                                chars[quest.dstY][
-                                    quest.dstX
-                                ] = src.canvas.displayChars.questTargetMarker
-                                if isinstance(display, int):
-                                    display = src.canvas.displayChars.indexedMapping[
-                                        display
-                                    ]
-                                if isinstance(display, str):
-                                    display = (
-                                        urwid.AttrSpec("default", "black"),
-                                        display,
-                                    )
-                                chars[quest.dstY][quest.dstX] = (
-                                    urwid.AttrSpec(display[0].foreground, "#323"),
-                                    display[1],
-                                )
-                            except:
-                                pass
-
-                            # mark primary quest target with the target marker
-                            try:
-                                chars[src.gamestate.gamestate.mainChar.quests[0].dstY][
-                                    src.gamestate.gamestate.mainChar.quests[0].dstX
-                                ] = src.canvas.displayChars.questTargetMarker
-                            except:
-                                pass
-
-                        # highlight the path to the quest target using background color
-                        try:
-                            path = self.calculatePath(
-                                src.gamestate.gamestate.mainChar.xPosition,
-                                src.gamestate.gamestate.mainChar.yPosition,
-                                src.gamestate.gamestate.mainChar.quests[0].dstX,
-                                src.gamestate.gamestate.mainChar.quests[0].dstY,
-                                self.walkingPath,
-                            )
-                            for item in path:
-                                import urwid
-
-                                display = chars[item[1]][item[0]]
-                                if isinstance(display, int):
-                                    display = src.canvas.displayChars.indexedMapping[
-                                        display
-                                    ]
-                                if isinstance(display, str):
-                                    display = (
-                                        urwid.AttrSpec("default", "black"),
-                                        display,
-                                    )
-                                chars[item[1]][item[0]] = (
-                                    urwid.AttrSpec(display[0].foreground, "#333"),
-                                    display[1],
-                                )
-                        except:
-                            pass
-                    #  don't show the questmarker every second turn for blinking effect
-                    else:
-                        self.shownQuestmarkerLastRender = False
-            """
-
             # draw main char
             if src.gamestate.gamestate.mainChar in self.characters:
                 if src.gamestate.gamestate.mainChar.yPosition < len(
@@ -814,11 +729,6 @@ class Room(src.saveing.Saveable):
                 ) and src.gamestate.gamestate.mainChar.xPosition < len(
                     chars[src.gamestate.gamestate.mainChar.yPosition]
                 ):
-                    """
-                    chars[src.gamestate.gamestate.mainChar.yPosition][
-                        src.gamestate.gamestate.mainChar.xPosition
-                    ] = src.gamestate.gamestate.mainChar.display
-                    """
                     chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 else:
                     src.logger.debugMessages.append(
@@ -845,28 +755,7 @@ class Room(src.saveing.Saveable):
                 ):
                     chars[item.yPosition][item.xPosition] = item.render()
 
-        # cache rendering result
-        self.lastRender = chars
-
         return chars
-
-    # bad code: game is always redrawing
-    def forceRedraw(self):
-        """
-        drop rendering cache
-        """
-
-        self.lastRender = None
-
-    # bad code: game is always redrawing
-    def requestRedraw(self):
-        """
-        maybe drop rendering cache
-        """
-
-        # if not self.hidden:
-        if 1 == 1:
-            self.lastRender = None
 
     def addCharacter(self, character, x, y, noRegister=False, forceRegister=False):
         """

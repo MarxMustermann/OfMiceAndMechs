@@ -128,11 +128,6 @@ class WorldBuildingPhase(src.saveing.Saveable):
             name: the name of the phase
             seed: rng seed
         """
-        self.attributesToStore = super().attributesToStore[:]
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
 
         super().__init__()
 
@@ -173,7 +168,6 @@ class BasicPhase(src.saveing.Saveable):
             name: the name of the phase
             seed: rng seed
         """
-        self.attributesToStore = super().attributesToStore[:]
         self.callbacksToStore = []
         self.objectsToStore = []
         self.tupleDictsToStore = []

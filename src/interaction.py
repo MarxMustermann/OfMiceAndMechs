@@ -2671,12 +2671,6 @@ class SubMenu(src.saveing.Saveable):
             targetParamName: name of the parameter the selection should be stored in
         """
 
-        self.attributesToStore = super().attributesToStore[:]
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
-
         self.stealAllKeys = False
         self.state = None
         self.options = {}

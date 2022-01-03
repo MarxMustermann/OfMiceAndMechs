@@ -26,8 +26,6 @@ class Character(src.saveing.Saveable):
 
     charType = "Character"
     disabled = False
-    objectsToStore = []
-    attributesToStore = []
     superior = None
     rank = None
 
@@ -61,6 +59,7 @@ class Character(src.saveing.Saveable):
             characterId: osolete, to be removed
             seed: rng seed
         """
+
         super().__init__()
 
         if name is None and seed:
@@ -161,10 +160,8 @@ class Character(src.saveing.Saveable):
 
             self.id = uuid.uuid4().hex
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            # mark attributes for saving
-            self.attributesToStore.extend(
+        # mark attributes for saving
+        self.attributesToStore.extend(
                 [
                     "gotBasicSchooling",
                     "gotMovementSchooling",
@@ -208,13 +205,13 @@ class Character(src.saveing.Saveable):
                     "huntkilling",
                     "guarding",
                     "faction",
+                    "rank",
                 ]
             )
 
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("serveQuest")
-            self.objectsToStore.append("room")
+        self.objectsToStore.append("serveQuest")
+        self.objectsToStore.append("room")
+        self.objectsToStore.append("superior")
 
         # bad code: story specific state
         self.serveQuest = None
@@ -1950,7 +1947,6 @@ class Mouse(Character):
     """
 
     charType = "Mouse"
-    attributesToStore = []
 
     def __init__(
         self,
@@ -1987,13 +1983,11 @@ class Mouse(Character):
             characterId=characterId,
         )
         self.vanished = False
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
-                [
-                    "vanished",
-                ]
-            )
+        self.attributesToStore.extend(
+            [
+                "vanished",
+            ]
+        )
 
         self.personality["autoAttackOnCombatSuccess"] = 1
         self.personality["abortMacrosOnAttack"] = True
@@ -2022,7 +2016,6 @@ class Monster(Character):
     """
 
     charType = "Monster"
-    attributesToStore = []
 
     def __init__(
         self,
@@ -2060,13 +2053,12 @@ class Monster(Character):
             characterId=characterId,
         )
         self.phase = 1
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
-                [
-                    "phase",
-                ]
-            )
+        self.attributesToStore.extend(
+            [
+                "phase",
+            ]
+        )
+
         self.faction = "monster"
 
         self.solvers.extend(["NaiveMurderQuest"])
@@ -2299,9 +2291,6 @@ class Guardian(Character):
     a class for a generic monster
     """
 
-    charType = "Guardian"
-    attributesToStore = []
-
     def __init__(
         self,
         display="🝆~",
@@ -2309,7 +2298,7 @@ class Guardian(Character):
         yPosition=0,
         quests=[],
         automated=True,
-        name="Mouse",
+        name="Guardian",
         creator=None,
         characterId=None,
     ):
@@ -2340,6 +2329,8 @@ class Guardian(Character):
         self.faction = "monster"
 
         self.solvers.extend(["NaiveMurderQuest"])
+        self.charType = "Guardian"
+
 
     # bad code: specific code in generic class
     def die(self, reason=None, addCorpse=True):
@@ -2442,7 +2433,6 @@ class Exploder(Monster):
     """
 
     charType = "Exploder"
-    attributesToStore = []
 
     def __init__(
         self,
@@ -2480,9 +2470,7 @@ class Exploder(Monster):
         )
 
         self.explode = True
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["explode"])
+        self.attributesToStore.extend(["explode"])
 
     def render(self):
         """

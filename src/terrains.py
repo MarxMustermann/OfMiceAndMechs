@@ -61,7 +61,6 @@ class Terrain(src.saveing.Saveable):
             noContent: flag to generate terrain empty
         """
 
-        self.attributesToStore = super().attributesToStore[:]
         self.callbacksToStore = []
         self.objectsToStore = []
         self.tupleDictsToStore = []

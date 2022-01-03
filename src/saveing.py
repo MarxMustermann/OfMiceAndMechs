@@ -70,17 +70,19 @@ class Saveable(object):
     attributes that should be saved need to be registered as such
     """
 
-    attributesToStore = ["id"]
-    callbacksToStore = []
-    objectsToStore = []
-    tupleDictsToStore = []
-    tupleListsToStore = []
-
     def doInit2(self):
         super().__init__()
         pass
 
     def __init__(self):
+        self.attributesToStore = []
+        self.callbacksToStore = []
+        self.objectsToStore = []
+        self.tupleDictsToStore = []
+        self.tupleListsToStore = []
+
+        self.attributesToStore.append("id")
+
         """
         basic state setting
         """
@@ -254,6 +256,7 @@ class Saveable(object):
                     # set callback to None
                     setattr(self, callbackName, None)
 
+        print("set up objects")
         # set objects
         for objectName in self.objectsToStore:
             if objectName in state:

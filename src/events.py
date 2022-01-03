@@ -19,7 +19,6 @@ class Event(src.saveing.Saveable):
     """
 
     type = "Event"
-    attributesToStore = []
 
     def __init__(self, tick):
         """
@@ -31,10 +30,7 @@ class Event(src.saveing.Saveable):
 
         super().__init__()
 
-        if not self.attributesToStore:
-            # set meta information for saving
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["tick", "type"])
+        self.attributesToStore.extend(["tick", "type"])
 
         self.tick = tick
 
@@ -74,8 +70,6 @@ class RunCallbackEvent(Event):
     the event for calling a callback
     """
 
-    callbacksToStore = []
-
     def __init__(self, tick):
         """
         initialises internal state
@@ -89,9 +83,7 @@ class RunCallbackEvent(Event):
         self.callback = None
 
         # set meta information for saving
-        if not self.callbacksToStore:
-            self.callbacksToStore.extend(super().callbacksToStore)
-            self.callbacksToStore.append("callback")
+        self.callbacksToStore.append("callback")
 
     def setCallback(self, callback):
         """

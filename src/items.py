@@ -29,7 +29,6 @@ class Item(src.saveing.Saveable):
 
     """
 
-    attributesToStore = []
     type = "Item"
 
     # flags for traits
@@ -61,7 +60,6 @@ class Item(src.saveing.Saveable):
     applyMap = {}
 
     def callInit(self):
-        self.attributesToStore = []
         super().__init__()
 
     def __init__(self, display=None, name="unkown", seed=0, noId=False):
@@ -100,10 +98,7 @@ class Item(src.saveing.Saveable):
         # properties for traits
         self.commands = {}
 
-        if not self.attributesToStore:
-            # set meta information for saving
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "seed",
                     "xPosition",

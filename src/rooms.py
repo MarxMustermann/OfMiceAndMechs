@@ -52,7 +52,6 @@ class Room(src.saveing.Saveable):
             seed: the rng seed
 
         """
-        self.attributesToStore = super().attributesToStore[:]
         self.callbacksToStore = []
         self.objectsToStore = []
         self.tupleDictsToStore = []
@@ -63,6 +62,8 @@ class Room(src.saveing.Saveable):
         self.buildSites = []
 
         super().__init__()
+
+        self.tupleListsToStore.append("walkingSpace")
 
         self.container = None
 

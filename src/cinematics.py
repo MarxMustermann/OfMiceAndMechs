@@ -25,12 +25,6 @@ class BasicCinematic(src.saveing.Saveable):
         basic state setting and id generation
         """
 
-        self.attributesToStore = super().attributesToStore[:]
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
-
         super().__init__()
 
         # initialize basic state

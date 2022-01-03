@@ -6,7 +6,6 @@ class Scrap(src.items.Item):
     ingame item serving as a source of metal
     """
 
-    attributesToStore = []
     type = "Scrap"
     bolted = False
     name = "scrap"

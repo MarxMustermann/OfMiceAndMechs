@@ -7,7 +7,6 @@ class Door(src.items.Item):
     """
 
     type = "Door"
-    attributesToStore = []
     name = "door"
     walkable = False
     description = "Used to enter and leave rooms."
@@ -24,9 +23,7 @@ class Door(src.items.Item):
         self.bio = bio
 
         # set metadata for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "bio",
                 ]

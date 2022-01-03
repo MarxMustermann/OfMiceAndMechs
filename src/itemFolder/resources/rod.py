@@ -7,7 +7,6 @@ class Rod(src.items.Item):
     """
 
     type = "Rod"
-    attributesToStore = []
 
     name = "rod"
     description = "used to build items"
@@ -23,9 +22,7 @@ class Rod(src.items.Item):
         super().__init__(display=src.canvas.displayChars.rod)
 
         self.baseDamage = int(random.triangular(4,21,10))
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "baseDamage",
                 ]

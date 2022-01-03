@@ -24,15 +24,6 @@ class Character(src.saveing.Saveable):
     this is the class for characters meaning both npc and pcs.
     """
 
-    charType = "Character"
-    disabled = False
-    superior = None
-    rank = None
-
-    showThinking = False
-    showGotCommand = False
-    showGaveCommand = False
-
     def __init__(
         self,
         display=None,
@@ -59,6 +50,15 @@ class Character(src.saveing.Saveable):
             characterId: osolete, to be removed
             seed: rng seed
         """
+        self.charType = "Character"
+        self.disabled = False
+        self.superior = None
+        self.rank = None
+
+        self.showThinking = False
+        self.showGotCommand = False
+        self.showGaveCommand = False
+
 
         super().__init__()
 
@@ -1946,7 +1946,6 @@ class Mouse(Character):
     the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
     """
 
-    charType = "Mouse"
 
     def __init__(
         self,
@@ -1982,6 +1981,7 @@ class Mouse(Character):
             creator=creator,
             characterId=characterId,
         )
+        self.charType = "Mouse"
         self.vanished = False
         self.attributesToStore.extend(
             [
@@ -2014,8 +2014,6 @@ class Monster(Character):
     """
     a class for a generic monster
     """
-
-    charType = "Monster"
 
     def __init__(
         self,
@@ -2052,6 +2050,8 @@ class Monster(Character):
             creator=creator,
             characterId=characterId,
         )
+        self.charType = "Monster"
+
         self.phase = 1
         self.attributesToStore.extend(
             [
@@ -2432,8 +2432,6 @@ class Exploder(Monster):
     a monster that explodes on death
     """
 
-    charType = "Exploder"
-
     def __init__(
         self,
         display="🝆~",
@@ -2468,6 +2466,8 @@ class Exploder(Monster):
             creator=creator,
             characterId=characterId,
         )
+
+        self.charType = "Exploder"
 
         self.explode = True
         self.attributesToStore.extend(["explode"])
@@ -2649,6 +2649,8 @@ class Ghul(Character):
         self.solvers.append("NaiveActivateQuest")
         self.solvers.append("NaiveMurderQuest")
 
+        self.charType = "Ghul"
+
     def getOwnAction(self):
         self.hasOwnAction = 0
         return "."
@@ -2668,6 +2670,7 @@ characterMap = {
     "Mouse": Mouse,
     "Spider": Spider,
     "CollectorSpider": CollectorSpider,
+    "Ghul": Ghul,
 }
 
 
@@ -2678,5 +2681,6 @@ def getCharacterFromState(state):
 
     character = characterMap[state["type"]](characterId=state["id"])
     src.saveing.loadingRegistry.register(character)
+    src.interaction.multi_chars.add(character)
     character.setState(state)
     return character

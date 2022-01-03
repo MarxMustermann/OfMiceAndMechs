@@ -7,7 +7,6 @@ class Sorter(src.items.Item):
     """
 
     type = "Sorter"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -29,9 +28,7 @@ Matching items will be moved to the south and non matching items will be moved t
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["coolDown", "coolDownTimer"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer"])
 
     def apply(self, character):
         """

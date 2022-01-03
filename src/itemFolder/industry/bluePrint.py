@@ -7,7 +7,6 @@ class BluePrint(src.items.Item):
     """
 
     type = "BluePrint"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -30,9 +29,7 @@ After loading the blueprint the machine machine is able to produce a machine tha
         self.baseName = self.name
         self.level = 1
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["endProduct", "level"])
+        self.attributesToStore.extend(["endProduct", "level"])
 
         self.setDescription()
 

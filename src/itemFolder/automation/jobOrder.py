@@ -9,8 +9,6 @@ class JobOrder(src.items.Item):
     """
 
     type = "JobOrder"
-    attributesToStore = []
-    applyOptions = []
 
     def __init__(self, autoRun=True):
         """
@@ -32,9 +30,7 @@ class JobOrder(src.items.Item):
         self.error = {}
         self.taskName = ""
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "done",
                     "information",
@@ -45,9 +41,7 @@ class JobOrder(src.items.Item):
             )
 
         # set up interaction menu
-        if not self.applyOptions:
-            self.applyOptions.extend(super().applyOptions)
-            self.applyOptions.extend(
+        self.applyOptions.extend(
                 [
                     ("runJobOrder", "run job order macro"),
                     ("runSingleStep", "run single step"),

@@ -7,7 +7,6 @@ class Sword(src.items.Item):
     """
 
     type = "Sword"
-    attributesToStore = []
 
     name = "sword"
     description = "used to hit people"
@@ -23,9 +22,7 @@ class Sword(src.items.Item):
         super().__init__(display="wt")
 
         self.baseDamage = int(random.triangular(40,210,100))
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "baseDamage",
                 ]

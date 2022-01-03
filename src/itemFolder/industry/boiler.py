@@ -9,8 +9,6 @@ class Boiler(src.items.Item):
     """
 
     type = "Boiler"
-    attributesToStore = []
-    objectsToStore = []
 
     def __init__(self):
         """
@@ -25,14 +23,10 @@ class Boiler(src.items.Item):
         self.name = "boiler"
 
         # set metadata for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["isBoiling", "isHeated"])
+        self.attributesToStore.extend(["isBoiling", "isHeated"])
 
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("startBoilingEvent")
-            self.objectsToStore.append("stopBoilingEvent")
+        self.objectsToStore.append("startBoilingEvent")
+        self.objectsToStore.append("stopBoilingEvent")
 
 
     def startHeatingUp(self):

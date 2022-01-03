@@ -8,7 +8,6 @@ class Corpse(src.items.Item):
     """
 
     type = "Corpse"
-    attributesToStore = []
     name = "corpse"
     description = "something dead"
     usageInfo = """
@@ -27,9 +26,7 @@ can be processed in a corpse shredder
 
         super().__init__(display=src.canvas.displayChars.corpse)
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["activated", "charges"])
+        self.attributesToStore.extend(["activated", "charges"])
 
     def getLongInfo(self):
         """

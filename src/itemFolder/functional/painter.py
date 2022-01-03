@@ -6,7 +6,6 @@ class Painter(src.items.Item):
     """
 
     type = "Painter"
-    attributesToStore = []
 
     """
     call superclass constructor with modified paramters and set some state
@@ -27,9 +26,7 @@ A painter. it can be used to draw markers on the floor
         self.paintIndex = 0
     
         # set up meta information for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["activated"])
+        self.attributesToStore.extend(["activated"])
 
     def render(self):
         """

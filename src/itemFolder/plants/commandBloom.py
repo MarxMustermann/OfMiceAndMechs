@@ -7,7 +7,6 @@ class CommandBloom(src.items.Item):
     """
 
     type = "CommandBloom"
-    attributesToStore = []
     walkable = True
     bolted = True
     charges = 0
@@ -35,9 +34,7 @@ class CommandBloom(src.items.Item):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "charges",
                     "numCoal",

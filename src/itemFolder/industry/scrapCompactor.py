@@ -6,7 +6,6 @@ class ScrapCompactor(src.items.Item):
     """
 
     type = "ScrapCompactor"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -25,9 +24,7 @@ class ScrapCompactor(src.items.Item):
         self.level = 1
         self.commands = {}
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level","commands"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level","commands"])
 
     def apply(self, character):
         """

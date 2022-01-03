@@ -6,10 +6,6 @@ class GooFaucet(src.items.Item):
     """
 
     type = "GooFaucet"
-    attributesToStore = []
-    objectsToStore = []
-    commandOptions = []
-    applyOptions = []
 
     def __init__(self):
         """
@@ -27,23 +23,17 @@ class GooFaucet(src.items.Item):
         self.balance = 0
         self.character = None
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "balance",
                     "commands",
                 ]
             )
 
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("character")
+        self.objectsToStore.append("character")
 
         # set up interaction menu
-        if not self.applyOptions:
-            self.applyOptions.extend(super().applyOptions)
-            self.applyOptions.extend(
+        self.applyOptions.extend(
                 [
                     ("drink", "drink from the faucet"),
                     ("fillFlask", "fill goo flask"),
@@ -59,9 +49,7 @@ class GooFaucet(src.items.Item):
         }
 
         self.runsCommands = True
-        if not self.commandOptions:
-            self.attributesToStore.extend(super().commandOptions)
-            self.commandOptions = [
+        self.commandOptions = [
                 ("balanceTooLow", "balance too low"),
             ]
 

@@ -6,7 +6,6 @@ class AutoTutor(src.items.Item):
     """
 
     type = "AutoTutor"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -43,9 +42,7 @@ class AutoTutor(src.items.Item):
         self.initialChallengeDone = False
         self.challengeInfo = {}
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "gooChallengeDone",
                     "metalbarChallengeDone",

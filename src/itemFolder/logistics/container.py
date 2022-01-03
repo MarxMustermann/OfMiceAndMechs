@@ -6,7 +6,6 @@ class Container(src.items.Item):
     """
 
     type = "Container"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -33,9 +32,7 @@ Activate the container and select the option "unload items" to unload the items.
         self.maxItems = 10
         self.level = 1
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["charges", "maxCharges", "level"])
+        self.attributesToStore.extend(["charges", "maxCharges", "level"])
 
     def getLongInfo(self):
         """

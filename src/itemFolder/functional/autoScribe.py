@@ -7,7 +7,6 @@ class AutoScribe(src.items.Item):
     """
 
     type = "AutoScribe"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -31,9 +30,7 @@ The original command will be outputted to the south.
 The level of the copied command is the minimum level of the input command, sheet and the auto scribe itself.
 """
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["coolDown", "coolDownTimer", "level"])
+        self.attributesToStore.extend(["coolDown", "coolDownTimer", "level"])
 
     def apply(self, character):
         """

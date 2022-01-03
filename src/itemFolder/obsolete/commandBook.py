@@ -3,7 +3,6 @@ import src
 
 class CommandBook(src.items.Item):
     type = "CommandBook"
-    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -20,9 +19,7 @@ class CommandBook(src.items.Item):
 
         self.contents = []
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["contents"])
+        self.attributesToStore.extend(["contents"])
 
     def getState(self):
         state = super().getState()

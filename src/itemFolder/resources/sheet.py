@@ -7,7 +7,6 @@ class Sheet(src.items.Item):
     """
 
     type = "Sheet"
-    attributesToStore = []
     bolted = False
     walkable = True
     recording = False
@@ -42,9 +41,7 @@ Sheets are also needed as resource to create a blueprint in the blueprinter mach
 
         super().__init__(display=src.canvas.displayChars.sheet)
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["recording", "level"])
+        self.attributesToStore.extend(["recording", "level"])
 
     def getLongInfo(self):
         """

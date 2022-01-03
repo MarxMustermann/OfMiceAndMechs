@@ -6,7 +6,6 @@ import src
 
 class BackTracker(src.items.Item):
     type = "BackTracker"
-    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -17,9 +16,7 @@ class BackTracker(src.items.Item):
 
         self.name = "back tracker"
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["command"])
+        self.attributesToStore.extend(["command"])
 
         self.tracking = False
         self.tracked = None

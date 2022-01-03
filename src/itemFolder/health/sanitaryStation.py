@@ -8,7 +8,6 @@ class SanitaryStation(src.items.Item):
     """
 
     type = "SanitaryStation"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -27,9 +26,7 @@ class SanitaryStation(src.items.Item):
         self.satiationThreshold = 100
         self.frustrationThreshold = 10000
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "commands",
                     "healthThreshold",

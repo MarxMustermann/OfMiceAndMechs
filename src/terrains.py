@@ -656,12 +656,6 @@ class Terrain(src.saveing.Saveable):
 
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
-                if char == src.gamestate.gamestate.mainChar:
-                    print("changed tile %s"%(direction,))
-                    print((char.xPosition-1,char.yPosition,char.zPosition))
-                    print(self.getPositionWalkable((char.xPosition-1,char.yPosition,char.zPosition)))
-                    print(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
-                #while self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)):
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
         elif direction == "east":
             if char.xPosition % 15 == 13:
@@ -680,12 +674,6 @@ class Terrain(src.saveing.Saveable):
                 char.addMessage(char)
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
-                if char == src.gamestate.gamestate.mainChar:
-                    print("changed tile %s"%(direction,))
-                    print((char.xPosition+1,char.yPosition,char.zPosition))
-                    print(self.getPositionWalkable((char.xPosition+1,char.yPosition,char.zPosition)))
-                    print(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
-                #while self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)):
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
         elif direction == "north":
             if char.yPosition % 15 == 1:
@@ -704,12 +692,6 @@ class Terrain(src.saveing.Saveable):
                 char.addMessage(char)
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
-                if char == src.gamestate.gamestate.mainChar:
-                    print("changed tile %s"%(direction,))
-                    print((char.xPosition,char.yPosition-1,char.zPosition))
-                    print(self.getPositionWalkable((char.xPosition,char.yPosition-1,char.zPosition)))
-                    print(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
-                #while self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)):
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
         elif direction == "south":
             if char.yPosition % 15 == 13:
@@ -728,11 +710,6 @@ class Terrain(src.saveing.Saveable):
                 char.addMessage(char)
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
-                if char == src.gamestate.gamestate.mainChar:
-                    print("changed tile %s"%(direction,))
-                    print((char.xPosition,char.yPosition+1,char.zPosition))
-                    print(self.getPositionWalkable((char.xPosition,char.yPosition+1,char.zPosition)))
-                    print(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
                 #while self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)):
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
         """

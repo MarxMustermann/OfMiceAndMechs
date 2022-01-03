@@ -7,7 +7,6 @@ class Tree(src.items.Item):
     """
 
     type = "Tree"
-    attributesToStore = []
     bolted = True
     walkable = False
     numMaggots = 0
@@ -27,9 +26,7 @@ class Tree(src.items.Item):
         except:
             self.lastUse = -100000
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
+        self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
 
     def regenerateMaggots(self):
         """

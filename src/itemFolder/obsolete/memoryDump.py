@@ -3,7 +3,6 @@ import src
 
 class MemoryDump(src.items.Item):
     type = "MemoryDump"
-    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -18,9 +17,7 @@ class MemoryDump(src.items.Item):
         self.name = "memory dump"
         self.baseName = self.name
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["macros"])
+        self.attributesToStore.extend(["macros"])
 
         self.setDescription()
 

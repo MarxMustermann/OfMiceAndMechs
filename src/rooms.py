@@ -54,8 +54,6 @@ class Room(src.saveing.Saveable):
 
         super().__init__()
 
-        self.tupleListsToStore.append("walkingSpace")
-
         self.container = None
 
         # initialize attributes
@@ -427,6 +425,17 @@ class Room(src.saveing.Saveable):
         except:
             pass
 
+        state["walkingSpace"] = list(self.walkingSpace)
+        state["inputSlots"] = []
+        for inputSlot in self.inputSlots:
+            state["inputSlots"].append([list(inputSlot[0]),inputSlot[1],inputSlot[2]])
+        state["outputSlots"] = []
+        for outputSlot in self.outputSlots:
+            state["outputSlots"].append([list(outputSlot[0]),outputSlot[1],outputSlot[2]])
+        state["buildSites"] = []
+        for buildSites in self.buildSites:
+            state["buildSites"].append([list(buildSites[0]),buildSites[1]])
+
         # store the substates
         state["objType"] = self.objType
 
@@ -471,6 +480,20 @@ class Room(src.saveing.Saveable):
 
         super().setState(state)
 
+        self.walkingSpace = set()
+        for walkingSpace in state["walkingSpace"]:
+            self.walkingSpace.add(tuple(walkingSpace))
+        self.inputSlots = []
+        for inputSlot in state["inputSlots"]:
+            self.inputSlots.append((tuple(inputSlot[0]),inputSlot[1],inputSlot[2]))
+        self.outputSlots = []
+        for outputSlot in state["outputSlots"]:
+            self.outputSlots.append((tuple(outputSlot[0]),outputSlot[1],outputSlot[2]))
+        self.buildSites = []
+        for buildSites in state["buildSites"]:
+            self.buildSites.append((tuple(buildSites[0]),buildSites[1]))
+
+
         self.walkingAccess = []
         for item in state["walkingAccess"]:
             self.walkingAccess.append((item[0], item[1]))
@@ -483,34 +506,6 @@ class Room(src.saveing.Saveable):
                 item = src.items.getItemFromState(itemState)
                 self.addItem(item, item.getPosition())
 
-        # update changed chars
-        if "changedChars" in state:
-            for char in self.characters:
-                if char.id in state["changedChars"]:
-                    char.setState(state["charStates"][char.id])
-
-        # remove chars
-        if "removedChars" in state:
-            for char in self.characters[:]:
-                if char.id in state["removedChars"]:
-                    self.removeCharacter(char)
-
-        # add new chars
-        if "newChars" in state:
-            for charId in state["newChars"]:
-                charState = state["charStates"][charId]
-                char = src.characters.Character()
-                char.setState(charState)
-                src.saveing.loadingRegistry.register(char)
-                self.addCharacter(char, charState["xPosition"], charState["yPosition"])
-
-        # add new events
-        if "newEvents" in state:
-            for eventId in state["newEvents"]:
-                eventState = state["eventStates"][eventId]
-                event = src.events.getEventFromState(eventState)
-                self.addEvent(event)
-
         if "eventIds" in state:
             for eventId in state["eventIds"]:
                 eventState = state["eventStates"][eventId]
@@ -522,10 +517,8 @@ class Room(src.saveing.Saveable):
                 charState = state["characterStates"][charId]
                 if "xPosition" not in charState or "yPosition" not in charState:
                     continue
-                char = src.characters.Character()
-                char.setState(charState)
-                src.saveing.loadingRegistry.register(char)
-                self.addCharacter(char, charState["xPosition"], charState["yPosition"])
+                char = src.characters.getCharacterFromState(charState)
+                self.characters.append(char)
 
     def getResistance(self):
         """
@@ -646,7 +639,7 @@ class Room(src.saveing.Saveable):
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if not "city" in character.faction or not character.charType == "Character":
+                    if not "city" in character.faction or not character.charType in ("Character","Ghul"):
                         chars[character.yPosition][character.xPosition] = character.display
                     else:
                         if not isinstance(character,src.characters.Ghul):

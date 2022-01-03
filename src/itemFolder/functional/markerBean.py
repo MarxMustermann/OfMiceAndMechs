@@ -6,7 +6,6 @@ class MarkerBean(src.items.Item):
     """
 
     type = "MarkerBean"
-    attributesToStore = []
 
     """
     call superclass constructor with modified paramters and set some state
@@ -26,9 +25,7 @@ use the marker bean to activate it
 """
 
         # set up meta information for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["activated"])
+        self.attributesToStore.extend(["activated"])
 
     def render(self):
         """

@@ -8,7 +8,6 @@ this doesn't hold objects but spawns them
 
 class Pile(src.items.Item):
     type = "Pile"
-    attributesToStore = []
 
     """
     call superclass constructor with modified paramters and set some state
@@ -29,9 +28,7 @@ class Pile(src.items.Item):
         self.name = "pile"
 
         # set metadata for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["numContained"])
+        self.attributesToStore.extend(["numContained"])
 
     """
     take from the pile

@@ -694,7 +694,6 @@ class BackToTheRoots(BasicPhase):
             if foundEnemyCity:
                 continue
 
-            print("city at %s"%(pos,))
             self.citylocations.append(pos)
             numCities += 1
         self.citylocations.remove((7,7))
@@ -2038,6 +2037,7 @@ class BackToTheRoots(BasicPhase):
         self.checkTutorialEnd()
 
     def checkTutorialEnd(self):
+        print("check Turorial end")
         terrain = src.gamestate.gamestate.terrainMap[6][7]
 
         endTutorial = False
@@ -2191,7 +2191,6 @@ press space to continue"""%(self.gatherTime,))
         print("rewarding npc")
 
     def startNewEpoch(self):
-        print("starting new epoch")
         src.gamestate.gamestate.mainChar.addMessage("starting new epoch")
 
         specialItemPositions = {}
@@ -2201,7 +2200,6 @@ press space to continue"""%(self.gatherTime,))
         locatedItems = []
         missingItemMap = {}
         for cityLocation in self.citylocations:
-            print("handling city #%s %s"%(self.cityIds[cityLocation],cityLocation,))
 
             terrain = src.gamestate.gamestate.terrainMap[6][7]
             foundRoom = None
@@ -2257,11 +2255,6 @@ press space to continue"""%(self.gatherTime,))
              
             itemToFetch = random.choice(candidates)
             toFetchMap[cityLocation] = itemToFetch
-            print("selected item #%s for this epoch"%(itemToFetch,))
-
-        print("has item map:")
-        for cityLocation in self.citylocations:
-            print("city at %s has items %s "%(cityLocation,hasItemMap[cityLocation],))
 
         def gatherNPC(char):
             newQuest = src.quests.StandAttention()
@@ -2366,7 +2359,6 @@ the current reputation is:
 press space to continue"""%(reputationTree))
 
 
-            print("found leader")
             if cityLeader.dead:
                 print("leader dead")
                 continue
@@ -2380,7 +2372,6 @@ press space to continue"""%(reputationTree))
                 counter = 0
                 for subordinate in cityLeader.subordinates:
                     if subordinate.dead == True:
-                        print("found dead subleader")
                         foundSubleaderReplacement = subordinate
                         break
                     counter += 1
@@ -2392,7 +2383,6 @@ press space to continue"""%(reputationTree))
 
                 if foundSubleaderReplacement:
                     cityLeader.subordinates[counter] = newNPC
-                    print("added replacement subleader in slot %s"%(counter,))
 
                     mainRoom.addCharacter(newNPC,4+counter*3,4)
 
@@ -2415,13 +2405,11 @@ press space to continue"""%(reputationTree))
                             maxReputation = char.reputation
 
                 counter = cityLeader.subordinates.index(selectedSubLeader)
-                print("subleader index %s"%(counter,))
 
                 foundSubsubleaderReplacement = None
                 counter2 = 0
                 for subsubordinate in selectedSubLeader.subordinates:
                     if subsubordinate.dead == True:
-                        print("found dead subsubleader")
                         foundSubsubleaderReplacement = subsubordinate
                         break
                     counter2 += 1
@@ -2433,7 +2421,6 @@ press space to continue"""%(reputationTree))
 
                 if foundSubsubleaderReplacement:
                     selectedSubLeader.subordinates[counter2] = newNPC
-                    print("added replacement subsubleader in slot %s/%s"%(counter,counter2,))
 
                     mainRoom.addCharacter(newNPC,3+counter*3+counter2,5)
 
@@ -2456,13 +2443,11 @@ press space to continue"""%(reputationTree))
                             maxReputation = char.reputation
 
                 counter2 = selectedSubLeader.subordinates.index(selectedSubsubLeader)
-                print("subsubleader index %s"%(counter2,))
 
                 foundWorkerReplacement = None
                 counter3 = 0
                 for worker in selectedSubsubLeader.subordinates:
                     if worker.dead == True:
-                        print("found dead worker")
                         foundWorkerReplacement = worker
                         break
                     counter3 += 1
@@ -2474,7 +2459,6 @@ press space to continue"""%(reputationTree))
 
                 if foundWorkerReplacement:
                     selectedSubsubLeader.subordinates[counter3] = newNPC
-                    print("added replacement worker in slot %s/%s/%s"%(counter,counter2,counter3,))
 
                     mainRoom.addCharacter(newNPC,3+counter*3+counter2,7+counter3)
 
@@ -2540,7 +2524,6 @@ press space to continue"""%(reputationTree))
                     candidates.append(subordinate)
 
                 if not candidates:
-                    print("no subordinate to promote")
                     continue
 
                 maxReputation = None
@@ -2579,7 +2562,6 @@ press space to continue"""%(reputationTree))
                     candidates.append(subordinate)
 
                 if not candidates:
-                    print("no subsubordinate to promote")
                     continue
 
                 maxReputation = None
@@ -2611,9 +2593,7 @@ press space to continue"""%(reputationTree))
                     candidates.append(subordinate)
 
                 if not candidates:
-                    print("no worker to promote")
                     continue
-                print("promoting worker")
 
                 maxReputation = 0
                 for char in candidates:
@@ -2775,24 +2755,19 @@ the current reputation is:
 press space to continue"""%(reputationTree))
 
 
-        print("fetch map:")
         for cityLocation in self.citylocations:
             if not cityLocation in toFetchMap or not toFetchMap[cityLocation]:
                 self.leaderQuests[cityLocation].setPriorityObtain(7,(7,7),epochLength=self.epochLength)
                 continue
-            print("city at %s needs item #%s from %s"%(cityLocation,toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]]))
             self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=self.epochLength)
 
-        print("schedule next epoch")
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "endEpoch"})
         terrain.addEvent(event)
 
         locatedItems.sort()
-        print("located items: %s"%(locatedItems,))
 
     def endEpoch(self):
-        print("finished epoch")
         self.startNewEpoch()
 
 class BaseBuilding(BasicPhase):
@@ -3149,9 +3124,6 @@ class Siege(BasicPhase):
         molds.append((src.items.itemMap["Mold"](),(159, 116, 0)))
         molds.append((src.items.itemMap["Mold"](),(138, 108, 0)))
         molds.append((src.items.itemMap["Mold"](),(145, 115, 0)))
-
-        print("test")
-        print(len(src.items.itemMap))
 
         positions = [
             (187, 37, 0),

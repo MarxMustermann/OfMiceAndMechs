@@ -6,7 +6,6 @@ import src
 
 class Drill(src.items.Item):
     type = "Drill"
-    attributesToStore = []
 
     """
     call superclass constructor with modified parameters
@@ -23,9 +22,7 @@ class Drill(src.items.Item):
         self.name = "drill"
         self.baseName = self.name
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 ["coolDown", "coolDownTimer", "isBroken", "isCleaned"]
             )
 

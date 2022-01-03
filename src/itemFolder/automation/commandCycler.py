@@ -3,7 +3,6 @@ import src
 
 class CommandCycler(src.items.Item):
     type = "CommandCycler"
-    attributesToStore = []
 
     """  
     call superclass constructor with modified parameters
@@ -17,9 +16,7 @@ class CommandCycler(src.items.Item):
         self.commands = []
         self.commandIndex = 0
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["command","commandIndex"])
+        self.attributesToStore.extend(["command","commandIndex"])
 
     def apply(self, character):
         super().apply(character)

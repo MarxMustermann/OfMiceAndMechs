@@ -8,7 +8,6 @@ class Furnace(src.items.Item):
     """
 
     type = "Furnace"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -27,9 +26,7 @@ Place the furnace next to a boiler to be able to heat up the boiler with this fu
 """
 
         # set metadata for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["activated"])
+        self.attributesToStore.extend(["activated"])
 
     def apply(self, character):
         """

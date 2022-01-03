@@ -238,8 +238,6 @@ class Saveable(object):
                 try:
                     setattr(self, attribute, state[attribute])
                 except:
-                    print(attribute)
-                    print(self)
                     pass
 
         # set callbacks
@@ -256,7 +254,6 @@ class Saveable(object):
                     # set callback to None
                     setattr(self, callbackName, None)
 
-        print("set up objects")
         # set objects
         for objectName in self.objectsToStore:
             if objectName in state:

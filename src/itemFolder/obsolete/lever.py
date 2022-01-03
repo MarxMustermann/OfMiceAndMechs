@@ -7,7 +7,6 @@ item for letting characters trigger something
 
 class Lever(src.items.Item):
     type = "Lever"
-    attributesToStore = []
 
     """
     straightforward state initialization
@@ -24,9 +23,7 @@ class Lever(src.items.Item):
         self.bolted = True
 
         # set metadata for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["activated"])
+        self.attributesToStore.extend(["activated"])
 
     """
     pull the lever!

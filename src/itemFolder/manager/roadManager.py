@@ -9,8 +9,6 @@ class RoadManager(src.items.Item):
 
 
     type = "RoadManager"
-    attributesToStore = []
-    tupleDictsToStore = []
 
     def __init__(self):
         """
@@ -30,9 +28,7 @@ class RoadManager(src.items.Item):
         self.pathsToCenter = {}
         self.pathsFromCenter = {}
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "center",
                     "connections",
@@ -40,9 +36,7 @@ class RoadManager(src.items.Item):
                 ]
             )
 
-        if not self.tupleDictsToStore:
-            self.tupleDictsToStore.extend(super().tupleDictsToStore)
-            self.tupleDictsToStore.extend(
+        self.tupleDictsToStore.extend(
                 [
                     "roadNetwork",
                     "centerDirection",

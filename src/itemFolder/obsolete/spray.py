@@ -7,7 +7,6 @@ steam sprayer used as a prop in the vat
 
 class Spray(src.items.Item):
     type = "Spray"
-    attributesToStore = []
 
     """
     call superclass constructor with modified parameters and set some state
@@ -24,9 +23,7 @@ class Spray(src.items.Item):
         self.name = "spray"
 
         # set up meta information for saving
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["direction"])
+        self.attributesToStore.extend(["direction"])
 
     def render(self):
         """

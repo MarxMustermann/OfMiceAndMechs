@@ -6,8 +6,6 @@ class CorpseAnimator(src.items.Item):
     """
 
     type = "CorpseAnimator"
-    attributesToStore = []
-    commandOptions = []
 
     def __init__(self, filled=False):
         """
@@ -28,13 +26,9 @@ Activate a filled corpse animator to spawn a ghul
         self.runsCommands = True
         self.filled = filled
         self.commands = {}
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["filled", "commands"])
+        self.attributesToStore.extend(["filled", "commands"])
 
-        if not self.commandOptions:
-            self.attributesToStore.extend(super().commandOptions)
-            self.commandOptions = [
+        self.commandOptions = [
                 ("born", "set command for newly animated ghuls"),
             ]
 

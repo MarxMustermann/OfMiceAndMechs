@@ -6,8 +6,6 @@ class GrowthTank(src.items.Item):
     """
 
     type = "GrowthTank"
-    attributesToStore = []
-    commandOptions = []
 
     def __init__(self, filled=False):
         """
@@ -31,13 +29,9 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         self.runsCommands = True
         self.filled = filled
         self.commands = {}
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["filled", "commands"])
+        self.attributesToStore.extend(["filled", "commands"])
 
-        if not self.commandOptions:
-            self.attributesToStore.extend(super().commandOptions)
-            self.commandOptions = [
+        self.commandOptions = [
                 ("born", "set command for newly born npcs"),
             ]
 

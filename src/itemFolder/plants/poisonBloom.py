@@ -6,7 +6,6 @@ class PoisonBloom(src.items.Item):
     """
 
     type = "PoisonBloom"
-    attributesToStore = []
     name = "poison bloom"
     description = "Its spore sacks shriveled and are covered in green slime"
     usageInfo = """
@@ -23,9 +22,7 @@ You can eat it to die.
 
         super().__init__(display=src.canvas.displayChars.poisonBloom)
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["dead"])
+        self.attributesToStore.extend(["dead"])
 
     def apply(self, character):
         """

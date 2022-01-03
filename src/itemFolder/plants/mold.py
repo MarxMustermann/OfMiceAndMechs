@@ -9,7 +9,6 @@ class Mold(src.items.Item):
     """
 
     type = "Mold"
-    attributesToStore = []
     charges = 2
     walkable = True
     name = "mold"
@@ -24,9 +23,7 @@ you can eat it to gain 2 satiation.
         """
 
         super().__init__(display=src.canvas.displayChars.moss)
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["charges"])
+        self.attributesToStore.extend(["charges"])
 
     def apply(self, character):
         """

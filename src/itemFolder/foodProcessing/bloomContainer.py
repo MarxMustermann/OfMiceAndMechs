@@ -7,7 +7,6 @@ class BloomContainer(src.items.Item):
     """
 
     type = "BloomContainer"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -33,9 +32,7 @@ Activate the bloom container and select the option "unload bloom" to unload the 
         self.maxCharges = 15
         self.level = 1
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["charges", "maxCharges", "level"])
+        self.attributesToStore.extend(["charges", "maxCharges", "level"])
 
     def getLongInfo(self):
         """

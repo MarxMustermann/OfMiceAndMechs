@@ -8,7 +8,6 @@ class HiveMind(src.items.Item):
     """
 
     type = "HiveMind"
-    attributesToStore = []
     name = "command bloom"
     createdAt = 0
     walkable = True
@@ -39,9 +38,7 @@ class HiveMind(src.items.Item):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 ["lastMoldClear", "charges", "lastExpansion", "createdAt", "faction"]
             )
 

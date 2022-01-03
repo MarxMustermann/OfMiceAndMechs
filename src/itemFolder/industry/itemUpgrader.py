@@ -7,7 +7,6 @@ class ItemUpgrader(src.items.Item):
     """
     
     type = "ItemUpgrader"
-    attributesToStore = []
 
     def __init__(self):
         """
@@ -26,9 +25,7 @@ If the upgrade fails the remains of the item will be placed to the south.
         self.charges = 3
         self.level = 1
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["charges", "level"])
+        self.attributesToStore.extend(["charges", "level"])
 
     def apply(self, character):
         """

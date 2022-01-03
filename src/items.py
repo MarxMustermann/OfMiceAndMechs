@@ -1066,7 +1066,6 @@ def getItemFromState(state):
     """
 
     # create blank item
-    print(state)
     item = itemMap[state["type"]]()
 
     # load state into item

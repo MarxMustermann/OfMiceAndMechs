@@ -9,8 +9,6 @@ class QuestArtwork(src.items.Item):
     """
 
     type = "QuestArtwork"
-    attributesToStore = []
-    applyOptions = []
 
     def __init__(self):
         """
@@ -21,9 +19,7 @@ class QuestArtwork(src.items.Item):
 
         self.name = "quest artwork"
 
-        if not self.applyOptions:
-            self.applyOptions.extend(super().applyOptions)
-            self.applyOptions.extend(
+        self.applyOptions.extend(
                 [
                     ("returnQuest", "return quest"),
                     ("getQuest", "get quest"),
@@ -35,9 +31,7 @@ class QuestArtwork(src.items.Item):
         }
         self.numQuestsGiven = 0
 
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "numQuestsGiven",
                 ]

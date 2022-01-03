@@ -8,8 +8,6 @@ class RoomManager(src.items.Item):
     """
 
     type = "RoomManager"
-    attributesToStore = []
-    tupleDictsToStore = []
     applyOptions = {}
 
     def __init__(self, name="RoomManager", noId=False):
@@ -46,9 +44,7 @@ class RoomManager(src.items.Item):
         }
 
         # set up saving information
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(
+        self.attributesToStore.extend(
                 [
                     "cityBuilderPos",
                     "machineMachinePos",
@@ -63,9 +59,7 @@ class RoomManager(src.items.Item):
                     "itemPositions",
                 ]
             )
-        if not self.tupleDictsToStore:
-            self.tupleDictsToStore.extend(super().tupleDictsToStore)
-            self.tupleDictsToStore.extend(
+        self.tupleDictsToStore.extend(
                 [
                     "itemSlotUsage",
                     "dependencies",

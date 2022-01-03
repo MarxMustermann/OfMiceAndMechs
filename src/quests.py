@@ -1214,8 +1214,6 @@ class GatherScrap(MetaQuestSequence):
         super().triggerCompletionCheck()
 
     def solver(self, character):
-        if character == src.gamestate.gamestate.mainChar:
-            print("ran gather scrap solver")
 
         self.triggerCompletionCheck(character)
 
@@ -1227,9 +1225,6 @@ class GatherScrap(MetaQuestSequence):
             if items[-1].type == "Scrap":
                 character.runCommandString("k"*min(10-len(character.inventory),items[-1].amount))
                 return
-
-        if character == src.gamestate.gamestate.mainChar:
-            print("start djiasktra")
 
         # check for direct scrap
         foundScrap = None
@@ -1254,18 +1249,12 @@ class GatherScrap(MetaQuestSequence):
                         break
 
                 if character.container.getPositionWalkable(newPos) and not newPos in pathMap:
-                    if character == src.gamestate.gamestate.mainChar:
-                        print("added newPos")
-                        print(newPos)
                     toCheckFrom.append(newPos)
                     pathMap[newPos] = pathMap[oldPos]+[direction]
             if foundScrap:
                 break
 
         if foundScrap:
-            if character == src.gamestate.gamestate.mainChar:
-                print("foundScrap")
-                print(pathMap[foundScrap[0]])
             command = ""
 
             for step in pathMap[foundScrap[0]]:
@@ -5809,7 +5798,6 @@ class GoToTile(Quest):
         super().assignToCharacter(character)
 
     def reCheckPath(self,extraInfo=None):
-        print("reCheckPath triggered")
         if not self.character:
             return
 
@@ -6195,8 +6183,6 @@ class GoHome(MetaQuestSequence):
         self.generateSubquests(character)
 
         if self.subQuests:
-            if character == src.gamestate.gamestate.mainChar:
-                print("has subquests")
             return super().solver(character)
 
         character.runCommandString(self.getSolvingCommandString(character))

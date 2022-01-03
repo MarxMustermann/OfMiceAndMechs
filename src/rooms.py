@@ -379,7 +379,6 @@ class Room(src.saveing.Saveable):
             info: additional info
         """
 
-        self.requestRedraw()
         if not tag == "default":
             if tag not in self.listeners:
                 return
@@ -527,8 +526,6 @@ class Room(src.saveing.Saveable):
                 char.setState(charState)
                 src.saveing.loadingRegistry.register(char)
                 self.addCharacter(char, charState["xPosition"], charState["yPosition"])
-
-        self.forceRedraw()
 
     def getResistance(self):
         """
@@ -1136,7 +1133,6 @@ class Room(src.saveing.Saveable):
 
         # change own state
         self.timeIndex += 1
-        self.requestRedraw()
 
         # log events that were not handled properly
         while self.events and self.timeIndex > self.events[0].tick:

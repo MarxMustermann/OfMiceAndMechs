@@ -61,11 +61,6 @@ class Terrain(src.saveing.Saveable):
             noContent: flag to generate terrain empty
         """
 
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
-
         self.noPlacementTiles = []
         self.scrapFields = []
 
@@ -610,6 +605,8 @@ class Terrain(src.saveing.Saveable):
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
+            if not char.terrain:
+                return
             try:
                 char.terrain.characters.remove(char)
             except:
@@ -2470,6 +2467,11 @@ class Terrain(src.saveing.Saveable):
         Returns:
             semi serialised state
         """
+
+        print("get stat terrain")
+        print(self.noPlacementTiles)
+        print(self.scrapFields)
+
 
         roomIds = []
         roomStates = {}

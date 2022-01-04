@@ -173,7 +173,6 @@ class EndQuestEvent(Event):
     (doesn't actually do that)
     """
 
-    callbacksToStore = []
     type = "EndQuestEvent"
 
     def __init__(self, tick, callback=None):
@@ -189,9 +188,7 @@ class EndQuestEvent(Event):
         self.callback = callback
 
         # set meta information for saving
-        if not self.callbacksToStore:
-            self.callbacksToStore.extend(super().callbacksToStore)
-            self.callbacksToStore.append("callback")
+        self.callbacksToStore.append("callback")
 
     def handleEvent(self):
         """

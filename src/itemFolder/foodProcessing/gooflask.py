@@ -3,7 +3,6 @@ import src
 
 class GooFlask(src.items.Item):
     type = "GooFlask"
-    attributesToStore = []
 
     def __init__(self,uses=0):
         """

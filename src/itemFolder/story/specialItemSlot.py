@@ -23,6 +23,9 @@ class SpecialItemSlot(src.items.Item):
         self.hasItem = False
         self.faction = None
 
+        self.attributesToStore.extend([
+            "strength","itemID","hasItem","faction"])
+
     def apply(self, character):
         """
         handle a chracter trying to unlock the item

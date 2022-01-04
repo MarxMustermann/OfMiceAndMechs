@@ -589,11 +589,11 @@ class BackToTheRoots(BasicPhase):
         super().__init__("BackToTheRoots", seed=seed)
 
         self.specialItemSlotPositions = [(1,1),(2,1),(3,1),(4,1),(5,1),(7,1),(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
-        self.leaderQuests = {}
+        self.leaderQuests = {} # to save
         self.citylocations = []
         self.cityIds = {}
         self.cityNPCCounters = {}
-        self.leaders = {}
+        self.leaders = {} # to save
         self.scoreTracker = {}
 
         self.startDelay = int(random.random()*0)+3000
@@ -601,6 +601,13 @@ class BackToTheRoots(BasicPhase):
         self.firstEpoch = True
         self.npcCounter = 0
         self.gatherTime = 300
+
+        self.attributesToStore.extend([
+            "startDelay","epochLength","firstEpoch","npcCounter","gatherTime"
+            ])
+        self.tupleListsToStore.extend([
+            "specialItemSlotPositions","citylocations"])
+        self.tupleDictsToStore.extend(["cityIds","cityNPCCounters","scoreTracker"])
 
     def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
         self.npcCounter += 1
@@ -618,11 +625,11 @@ class BackToTheRoots(BasicPhase):
                 "Moritz","Maximillian","Gundula","Renate","Udo","Fritz","Susanne","Guido"])
 
         mainNameCore = random.choice([
-                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben",
+                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten",
                 ])
 
         postfix = random.choice([
-                "brecher","wurst","schmidt","maier","bach","burg","fried","treu","kraft"
+                "brecher","wurst","schmidt","maier","bach","burg","fried","treu","kraft","schmied","hans","schimmel",
                 ])
 
         npc.name = firstName+" "+mainNameCore+postfix
@@ -667,6 +674,51 @@ class BackToTheRoots(BasicPhase):
         npc.personality["abortMacrosOnAttack"] = False
         npc.personality["doIdleAction"] = False
         return npc
+
+    def getState(self):
+        state = super().getState()
+
+        #self.leaderQuests = {} # to save
+        #self.leaders = {} # to save
+
+        convertedLeaderMap = []
+        for (key,value) in self.leaders.items():
+            if value:
+                value = value.id
+            convertedLeaderMap.append([list(key),value])
+        state["leaders"] = convertedLeaderMap
+
+        convertedLeaderQuestsMap = []
+        for (key,value) in self.leaderQuests.items():
+            if value:
+                value = value.id
+            convertedLeaderQuestsMap.append([list(key),value])
+        state["leaderQuests"] = convertedLeaderQuestsMap
+
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+
+        if "leaders" in state:
+            self.leaders = {}
+            for entry in state["leaders"]:
+                def setValue(value, key):
+                    self.leaders[key] = value
+
+                newKey = tuple(entry[0])
+                src.saveing.loadingRegistry.callWhenAvailable(entry[1], setValue, newKey)
+                self.leaders[newKey] = None
+
+        if "leaderQuests" in state:
+            self.leaderQuests = {}
+            for entry in state["leaderQuests"]:
+                def setValue(value, key):
+                    self.leaderQuests[key] = value
+
+                newKey = tuple(entry[0])
+                src.saveing.loadingRegistry.callWhenAvailable(entry[1], setValue, newKey)
+                self.leaderQuests[newKey] = None
 
     def start(self, seed=0):
         """
@@ -950,7 +1002,7 @@ class BackToTheRoots(BasicPhase):
                     yPos = int(random.random()*13+1)*15+int(random.random()*13+1)
                     foundCity = None
                     for cityLocation in self.citylocations:
-                        if abs(xPos//15-cityLocation[0])+abs(yPos//15-cityLocation[1]) < 3:
+                        if abs(xPos//15-cityLocation[0])+abs(yPos//15-cityLocation[1]) < 4:
                             foundCity = cityLocation
                             break
 
@@ -1102,6 +1154,10 @@ class BackToTheRoots(BasicPhase):
             scrapProcessing = room
             rooms.append(room)
 
+            for x in (4,8):
+                for y in range(1,12):
+                    scrapProcessing.walkingSpace.add((x,y,0))
+
             for x in (1,5,9):
                 for y in (1,3,5,7,9):
                     scrapProcessing.addInputSlot((x,y,0),"Scrap")
@@ -1143,7 +1199,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]+2),
                     "roomType": "WorkshopRoom",
-                    "doors": "0,6 12,6",
+                    "doors": "0,6 12,6 6,0",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
@@ -1228,15 +1284,17 @@ class BackToTheRoots(BasicPhase):
             )
             generalStorage = room
             generalStorage.addPathCross()
+            addStorageSquare(generalStorage,(0,0,0),None)
             addStorageSquare(generalStorage,(6,0,0),None)
-            addStorageSquare(generalStorage,(6,6,0),"ScrapCompactor")
+            addStorageSquare(generalStorage,(0,6,0),None)
+            addStorageSquare(generalStorage,(6,6,0),None)
             rooms.append(room)
 
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+2,citylocation[1]+1),
                     "roomType": "WorkshopRoom",
-                    "doors": "6,0 6,12",
+                    "doors": "6,0 6,12 0,6",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
@@ -1269,7 +1327,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0]+2,citylocation[1]-1),
                     "roomType": "WorkshopRoom",
-                    "doors": "6,0 6,12",
+                    "doors": "6,0 6,12 0,6",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
@@ -1318,7 +1376,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]-1),
                     "roomType": "TrapRoom",
-                    "doors": "0,6 6,12",
+                    "doors": "0,6 6,12 12,6",
                     "faction": "city #%s"%(cityCounter,),
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1334,7 +1392,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]+1),
                     "roomType": "EmptyRoom",
-                    "doors": "6,0 0,6",
+                    "doors": "6,0 0,6 6,12 12,6",
                     "offset": [1,1],
                     "size": [13, 13],
                     },
@@ -1471,15 +1529,15 @@ class BackToTheRoots(BasicPhase):
             workshop.addItem(machine,(2,2,0))
 
             machine = src.items.itemMap["BloomShredder"]()
-            workshop.addItem(machine,(2,10,0))
+            workshop.addItem(machine,(3,10,0))
 
             machine = src.items.itemMap["BioPress"]()
-            workshop.addItem(machine,(4,10,0))
+            workshop.addItem(machine,(3,10,0))
 
             machine = src.items.itemMap["GooProducer"]()
-            workshop.addItem(machine,(6,10,0))
-            machine = src.items.itemMap["GooDispenser"]()
             workshop.addItem(machine,(7,10,0))
+            machine = src.items.itemMap["GooDispenser"]()
+            workshop.addItem(machine,(8,10,0))
 
             for pos in [(2,2,0),(2,4,0),(2,6,0),(2,8,0),(2,10,0)]:
                 crystalWorkshop.addInputSlot((pos[0]-1,pos[1],pos[2]),"Scrap")
@@ -1689,11 +1747,11 @@ class BackToTheRoots(BasicPhase):
             command.bolted = True
             command.command = "ggKdKsKa"
             guardRoom.addItem(command,(6,7,0))
-            guardRoom.addInputSlot((6,8,0),"Corpse",{"maxAmount":2})
-            guardRoom.addInputSlot((5,7,0),"Corpse",{"maxAmount":2})
-            guardRoom.addInputSlot((7,7,0),"Corpse",{"maxAmount":2})
-            guardRoom.walkingSpace.add((5,8,0))
-            guardRoom.walkingSpace.add((7,8,0))
+            #guardRoom.addInputSlot((6,8,0),"Corpse",{"maxAmount":2})
+            #guardRoom.addInputSlot((5,7,0),"Corpse",{"maxAmount":2})
+            #guardRoom.addInputSlot((7,7,0),"Corpse",{"maxAmount":2})
+            #guardRoom.walkingSpace.add((5,8,0))
+            #guardRoom.walkingSpace.add((7,8,0))
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -2037,7 +2095,6 @@ class BackToTheRoots(BasicPhase):
         self.checkTutorialEnd()
 
     def checkTutorialEnd(self):
-        print("check Turorial end")
         terrain = src.gamestate.gamestate.terrainMap[6][7]
 
         endTutorial = False
@@ -2302,7 +2359,7 @@ The commands are given out any moment. Wait a few moments more and be ready to r
 press space to continue""")
                     self.firstEpoch = False
                 else:
-                    rowwidth = 15
+                    rowwidth = 17
 
                     infogrid = []
                     for i in range(0,9*6*2):
@@ -2311,7 +2368,7 @@ press space to continue""")
                     def getname(character):
                         if character.dead:
                             return ""
-                        name = character.name
+                        name = character.name.split(" ")[0][0]+". "+character.name.split(" ")[1]
                         if character == src.gamestate.gamestate.mainChar:
                             name = "== "+name+" =="
                         return name
@@ -2603,7 +2660,7 @@ press space to continue"""%(reputationTree))
 
                 worker.runCommandString("w"*(worker.yPosition-5))
                 worker.rank = 5
-                worker.inventory.append(src.items.itemMap["GooFlask"](uses = 100))
+                worker.inventory.append(src.items.itemMap["GooFlask"](uses = 10))
 
                 worker.superior = subsubLeader
                 subsubLeader.subordinates.insert(subLeaderInsertIndex,worker)
@@ -2706,7 +2763,16 @@ press space to continue"""%(forcePromoted,toKill))
     press space to continue""")
                             self.firstEpoch = False
                         else:
-                            rowwidth = 15
+                            def getname(character):
+                                if character.dead:
+                                    return ""
+                                name = character.name.split(" ")[0][0]+". "+character.name.split(" ")[1]
+                                if character == src.gamestate.gamestate.mainChar:
+                                    name = "== "+name+" =="
+                                return name
+
+                            
+                            rowwidth = 17
 
                             infogrid = []
                             for i in range(0,9*6*2):
@@ -2716,14 +2782,14 @@ press space to continue"""%(forcePromoted,toKill))
                             row2Counter = 0
                             row3Counter = 0
                             for subleader in cityLeader.subordinates:
-                                infogrid[2*9+1+row2Counter*3] = subleader.name+" "*(rowwidth-len(subleader.name))
+                                infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
                                 infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
                                 for subsubleader in subleader.subordinates:
-                                    infogrid[4*9+row3Counter] = subsubleader.name+" "*(rowwidth-len(subsubleader.name))
+                                    infogrid[4*9+row3Counter] = getname(subsubleader)+" "*(rowwidth-len(getname(subsubleader)))
                                     infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
                                     lineCounter = 0
                                     for worker in subsubleader.subordinates:
-                                        infogrid[(2+1+lineCounter)*2*9+row3Counter] = worker.name+" "*(rowwidth-len(worker.name))
+                                        infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
                                         infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
                                         lineCounter += 1
                                     row3Counter += 1

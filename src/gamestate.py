@@ -180,6 +180,7 @@ class GameState(src.saveing.Saveable):
         self.gameWon = state["gameWon"]
         self.currentPhase = phasesByName[state["currentPhase"]["name"]]()
         self.currentPhase.setState(state["currentPhase"])
+        src.saveing.loadingRegistry.register(self.currentPhase)
         self.tick = state["tick"]
         self.initialSeed = state["initialSeed"]
 
@@ -242,10 +243,12 @@ class GameState(src.saveing.Saveable):
         if "yPosition" in state["mainChar"]:
             yPosition = state["mainChar"]["yPosition"]
         if "room" in state["mainChar"] and state["mainChar"]["room"]:
-            for room in terrain.rooms:
-                if room.id == state["mainChar"]["room"]:
-                    room.addCharacter(self.mainChar, xPosition, yPosition)
-                    break
+            for line in self.terrainMap:
+                for terrain in line:
+                    for room in terrain.rooms:
+                        if room.id == state["mainChar"]["room"]:
+                            room.addCharacter(self.mainChar, xPosition, yPosition)
+                            break
         else:
             terrain.addCharacter(self.mainChar, xPosition, yPosition)
         self.mainChar.setState(state["mainChar"])

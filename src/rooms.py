@@ -125,6 +125,12 @@ class Room(src.saveing.Saveable):
             ]
         )
 
+        self.objectsToStore.extend(
+                [
+                    "container"
+                ]
+        )
+
     def addBuildSite(self,position,specification):
         self.buildSites.append((position,specification))
 
@@ -435,6 +441,9 @@ class Room(src.saveing.Saveable):
         state["buildSites"] = []
         for buildSites in self.buildSites:
             state["buildSites"].append([list(buildSites[0]),buildSites[1]])
+        state["sources"] = []
+        for source in self.sources:
+            state["sources"].append([list(source[0]),source[1]])
 
         # store the substates
         state["objType"] = self.objType
@@ -492,6 +501,9 @@ class Room(src.saveing.Saveable):
         self.buildSites = []
         for buildSites in state["buildSites"]:
             self.buildSites.append((tuple(buildSites[0]),buildSites[1]))
+        self.sources = []
+        for sources in state["sources"]:
+            self.sources.append((tuple(sources[0]),sources[1]))
 
 
         self.walkingAccess = []
@@ -759,6 +771,7 @@ class Room(src.saveing.Saveable):
 
         self.characters.append(character)
         character.room = self
+        #character.terrain = None
         character.xPosition = x
         character.yPosition = y
         character.path = []
@@ -816,6 +829,10 @@ class Room(src.saveing.Saveable):
 
             item.container = self
             item.setPosition(pos)
+
+            for buildSite in self.buildSites:
+                if pos == buildSite[0] and item.type == buildSite[1]:
+                    self.buildSites.remove(buildSite)
 
             if pos in self.itemByCoordinates:
                 self.itemByCoordinates[pos].insert(0, item)
@@ -1447,6 +1464,7 @@ XXX
             item = itemPair[0]
             if item.type == "Door" or item.type == "Chute":
                 self.walkingAccess.append((item.xPosition, item.yPosition))
+                self.walkingSpace.add((item.xPosition,item.yPosition,0))
 
     def setState(self, state):
         """
@@ -1471,6 +1489,7 @@ class GrowRoom(EmptyRoom):
 """
 
 class WorkshopRoom(EmptyRoom):
+
     def __init__(
         self,
         xPosition=None,
@@ -1484,6 +1503,7 @@ class WorkshopRoom(EmptyRoom):
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "WR")
 
         self.walkingSpace = set()
+        self.objType = "WorkshopRoom"
 
     def render(self):
         chars = super().render()
@@ -1496,6 +1516,21 @@ class TrapRoom(EmptyRoom):
     maxElectricalCharges = 500
     chargeStrength = 1
     faction = "Trap"
+    objType = "TrapRoom"
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
+
+        self.attributesToStore.extend(["faction","chargeStrength","maxElectricalCharges","electricalCharges"])
 
     def moveCharacterDirection(self, character, direction):
         oldPos = character.getPosition()
@@ -1520,18 +1555,6 @@ class TrapRoom(EmptyRoom):
 
         return item
 
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        offsetX=None,
-        offsetY=None,
-        desiredPosition=None,
-        bio=False,
-    ):
-        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
-        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
-
     def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
         super().reconfigure(sizeX,sizeY,items,bio,doorPos)
 
@@ -1544,10 +1567,13 @@ class TrapRoom(EmptyRoom):
         shocker = src.items.itemMap["Shocker"]()
         self.addItem(shocker,(10,10,0))
 
-        self.addOutputSlot((1,1,0),None)
-        self.addOutputSlot((1,2,0),"Corpse")
+        for x in range(1,12):
+            for y in range(1,12):
+                self.walkingSpace.add((x,y,0))
 
 class DungeonRoom(Room):
+    objType = "DungeonRoom"
+
     def __init__(
         self,
         ):
@@ -1579,6 +1605,7 @@ class StaticRoom(EmptyRoom):
     """
     the rooms used in dungeons
     """
+    objType = "StaticRoom"
 
     def __init__(
         self,

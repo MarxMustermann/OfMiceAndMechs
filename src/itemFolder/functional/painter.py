@@ -22,7 +22,7 @@ A painter. it can be used to draw markers on the floor
 """
         self.usageInfo = """
 """
-        self.paintModes = ["scrapin","walkingSpace","delete"]
+        self.paintModes = ["scrapin","walkingSpace","delete","buildSite"]
         self.paintIndex = 0
     
         # set up meta information for saving
@@ -55,6 +55,8 @@ A painter. it can be used to draw markers on the floor
         if isinstance(character.container,src.rooms.Room):
             if self.paintModes[self.paintIndex] == "scrapin":
                 character.container.addInputSlot(character.getPosition(),"Scrap")
+            if self.paintModes[self.paintIndex] == "buildSite":
+                character.container.addBuildSite(character.getPosition(),"ScrapCompactor")
             if self.paintModes[self.paintIndex] == "walkingSpace":
                 character.container.walkingSpace.add(character.getPosition())
             if self.paintModes[self.paintIndex] == "delete":

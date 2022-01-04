@@ -709,27 +709,8 @@ class MetaQuestSequence(Quest):
                     thing = getQuestFromState(thingState)
                     self.subQuests.append(thing)
                     self.startWatching(self.subQuests[-1], self.recalculate)
-
-            # update changed quests
-            if "changed" in state["subQuests"]:
-                for thing in self.subQuests:
-                    if thing.id in state["subQuests"]["states"]:
-                        thing.setState(state["subQuests"]["states"][thing.id])
-
-            # remove quests
-            if "removed" in state["subQuests"]:
-                for thing in self.subQuests:
-                    if thing.id in state["subQuests"]["removed"]:
-                        self.subQuests.remove(thing)
-
-            # add new quests
-            if "new" in state["subQuests"]:
-                for thingId in state["subQuests"]["new"]:
-                    thingState = state["subQuests"]["states"][thingId]
-                    thing = getQuestFromState(thingState)
-                    thing.setState(thingState)
-                    self.subQuests.append(thing)
-                    self.startWatching(self.subQuests[-1], self.recalculate)
+        print(state)
+        print(self.subQuests)
 
         # listen to subquests
         if len(self.subQuests):
@@ -1124,7 +1105,7 @@ class RestockRoom(MetaQuestSequence):
                     if foundDirectDrop[1] == (0,1):
                         return "Js"*10
                     if foundDirectDrop[1] == (0,0):
-                        return "l"*min(self.getNumDrops(character),)
+                        return "l"*self.getNumDrops(character)
 
             foundNeighbour = None
             for slot in inputSlots:
@@ -1294,6 +1275,8 @@ class BeUsefull(MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+
+        self.type = "BeUsefull"
     
     def triggerCompletionCheck(self,character=None):
         return
@@ -1335,25 +1318,74 @@ class BeUsefull(MetaQuestSequence):
                 return
 
         # clean up room
+        character.addMessage("clean room")
         if len(character.inventory) < 10:
+            character.addMessage("empty inventory")
             for position in room.walkingSpace:
                 items = room.getItemByPosition(position)
 
                 if not items:
                     continue
-                if items[-1].bolted:
+                if items[0].bolted:
                     continue
+
+                character.addMessage("found space")
 
                 self.addQuest(RunCommand(command="10k"))
                 self.addQuest(GoToPosition(targetPosition=position))
                 return
-
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
             storageLocation = (character.registers["HOMEx"]+2,character.registers["HOMEy"]+2)
             self.addQuest(GoToTile(targetPosition=storageLocation))
             return
+
+        # set up machines
+        if room.buildSites:
+            checkedMaterial = set()
+            for buildSite in room.buildSites:
+                if buildSite[1] in checkedMaterial:
+                    continue
+                checkedMaterial.add(buildSite[1])
+
+                hasItem = False
+                source = None
+                if character.inventory and character.inventory[-1].type == buildSite[1]:
+                    hasItem = True
+
+                if not hasItem:
+                    for candidateSource in room.sources:
+                        if not candidateSource[1] == buildSite[1]:
+                            continue
+
+                        sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                        if not sourceRoom:
+                            continue
+
+                        sourceRoom = sourceRoom[0]
+                        if not sourceRoom.getNonEmptyOutputslots(itemType=buildSite[1]):
+                            continue
+
+                        source = candidateSource
+                        break
+
+                    if not source:
+                        character.addMessage("no filled output slots")
+                        continue
+
+                if hasItem:
+                    self.addQuest(RunCommand(command="l"))
+                    self.addQuest(GoToPosition(targetPosition=buildSite[0]))
+                elif source:
+                    roomPos = (room.xPosition,room.yPosition)
+
+                    if not source[0] == roomPos:
+                        self.addQuest(GoToTile(targetPosition=roomPos))
+                    self.addQuest(FetchItems(toCollect=buildSite[1]))
+                    if not source[0] == roomPos:
+                        self.addQuest(GoToTile(targetPosition=(source[0])))
+                return
 
         # refill stockpile
         if len(character.inventory) < 11 and character.rank > 4:
@@ -1401,6 +1433,7 @@ class BeUsefull(MetaQuestSequence):
                                     continue
 
                                 source = candidateSource
+                                break
 
                             if not source:
                                 character.addMessage("no filled output slots")
@@ -1720,14 +1753,16 @@ class ObtainAllSpecialItems(Quest):
                         if worker.dead:
                             continue
                         if deadchars > 20:
+                            worker.addMessage("The losses were too high, the attack was recalled")
                             worker.addMessage("abort")
                             for quest in worker.quests:
                                 if not isinstance(worker.quests[0], Serve):
                                     continue
                                 quest.cancelOrders()
                                 self.aborted = True
-
-                        worker.addMessage("numdead "+str(deadchars))
+                                newQuest = GoHome()
+                                quest.addQuest(newQuest)
+                                break
             return False
 
         if self.resetDelegations:
@@ -5588,6 +5623,8 @@ class Serve(MetaQuestParralel):
         return
 
     def solver(self,character):
+        character.addMessage("solver Serve")
+
         if not hasattr(character,"superior") or not character.superior or character.superior.dead:
             character.die(reason="superior died")
             return
@@ -6069,6 +6106,14 @@ class GoToPosition(Quest):
         super().assignToCharacter(character)
 
     def getSolvingCommandString(self, character):
+        if character.xPosition%15 == 0:
+            return "d"
+        if character.xPosition%15 == 14:
+            return "a"
+        if character.yPosition%15 == 0:
+            return "s"
+        if character.yPosition%15 == 14:
+            return "w"
         if not self.targetPosition:
             return ".12.."
 
@@ -6301,7 +6346,6 @@ class EnterEnemyCity(MetaQuestSequence):
                 return
             if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
                 self.postHandler()
-        else:
             if not self.rewardedNearby and abs(character.xPosition//15-self.cityLocation[0])+abs(character.yPosition//15-self.cityLocation[1]) == 1:
                 character.awardReputation(amount=5, reason="getting near the enemy city", carryOver=True)
                 self.rewardedNearby = True
@@ -6563,10 +6607,12 @@ class ObtainSpecialItem(MetaQuestSequence):
                 quest.activate()
                 self.addQuest(quest)
 
+                # go near enemy city
                 quest = GoToTile(lifetime=lifetime)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
+                quest.reputationReward = 30
                 self.addQuest(quest)
 
             self.addedSubQuests = True

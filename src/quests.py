@@ -572,6 +572,8 @@ class Quest(src.saveing.Saveable):
             )
 
         # add automatic termination
+        print("activate")
+        print(self.lifetime)
         if self.lifetime and not self.lifetimeEvent:
             if self.startTick + self.lifetime < src.gamestate.gamestate.tick:
                 self.timeOut()
@@ -672,6 +674,9 @@ class MetaQuestSequence(Quest):
             return self.subQuests[0].getActiveQuests()+[self]
         else:
             return [self]
+
+    def clearSubQuests(self):
+        self.subQuests = []
 
     """
     get state as dict
@@ -986,6 +991,61 @@ class RunCommand(MetaQuestSequence):
             self.ranCommand = True
         self.triggerCompletionCheck(character)
 
+class ProtectSuperior(MetaQuestSequence):
+    def __init__(self, description="protect superior", toProtect=None):
+        questList = []
+        super().__init__(questList)
+        self.metaDescription = description
+
+        self.type = "ProtectSuperior"
+        self.lastSuperiorPos = None
+
+    def triggerCompletionCheck(self,character=None):
+        return False
+
+    def checkDoRecalc(self,character):
+        if not self.lastSuperiorPos == self.getSuperiorsTileCoordinate(character):
+            self.clearSubQuests()
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append((self.getSuperiorsTileCoordinate(character),"target"))
+        return result
+
+    def getSuperiorsTileCoordinate(self,character):
+        targetTile = None
+        if isinstance(character.superior.container,src.rooms.Room):
+            targetTile = (character.superior.container.xPosition,character.superior.container.yPosition,0)
+        else:
+            targetTile = (character.superior.xPosition//15,character.superior.yPosition//15,0)
+        return targetTile
+
+    def solver(self, character):
+        if not (character.superior or character.superior.dead):
+            self.fail()
+            return True
+
+        self.checkDoRecalc(character)
+
+        if self.subQuests:
+            return super().solver(character)
+        
+        if (character.container == character.superior.container and 
+                    character.xPosition//15 == character.superior.xPosition//15 and 
+                    character.superior.xPosition//15 == character.superior.yPosition//15):
+            for otherCharacter in character.container.characters:
+                if (character.xPosition//15 == otherCharacter.xPosition//15 and
+                       character.yPosition//15 == otherCharacter.yPosition//15 and
+                       not character.faction == otherCharacter.faction):
+                    character.runCommandString("gg")
+
+            character.runCommandString("5.")
+            return
+
+        self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
+        self.addQuest(GoToTile(targetPosition=self.lastSuperiorPos))
+        return
+
 class RestockRoom(MetaQuestSequence):
     def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None,allowAny=None):
         questList = []
@@ -1000,6 +1060,7 @@ class RestockRoom(MetaQuestSequence):
             self.setParameters({"toRestock":toRestock})
         if allowAny:
             self.setParameters({"allowAny":allowAny})
+        self.type = "RestockRoom"
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -1732,27 +1793,41 @@ class ObtainAllSpecialItems(Quest):
             deadchars = 0
             for subordinate in character.subordinates:
                 if subordinate.dead:
-                    deadchars += 1
+                    deadchars += 1+3*(1+3)
                     continue
                 for subsubordinate in subordinate.subordinates:
                     if subsubordinate.dead:
-                        deadchars += 1
+                        deadchars += 1+3
                         continue
                     for worker in subsubordinate.subordinates:
                         if worker.dead:
                             deadchars += 1
                             continue
 
-            for subordinate in character.subordinates:
-                if subordinate.dead:
-                    continue
-                for subsubordinate in subordinate.subordinates:
-                    if subsubordinate.dead:
+            if deadchars > 20:
+                for subordinate in character.subordinates:
+                    if subordinate.dead:
                         continue
-                    for worker in subsubordinate.subordinates:
-                        if worker.dead:
+                    for subsubordinate in subordinate.subordinates:
+                        if subsubordinate.dead:
                             continue
-                        if deadchars > 20:
+
+                        subsubordinate.addMessage("The losses were too high, the attack was recalled")
+                        subsubordinate.addMessage("abort")
+
+                        for quest in subsubordinate.quests:
+                            if not isinstance(subsubordinate.quests[0], Serve):
+                                continue
+                            quest.cancelOrders()
+                            self.aborted = True
+                            newQuest = GoHome()
+                            quest.addQuest(newQuest)
+                            break
+
+                        for worker in subsubordinate.subordinates:
+                            if worker.dead:
+                                continue
+
                             worker.addMessage("The losses were too high, the attack was recalled")
                             worker.addMessage("abort")
                             for quest in worker.quests:
@@ -1760,6 +1835,8 @@ class ObtainAllSpecialItems(Quest):
                                     continue
                                 quest.cancelOrders()
                                 self.aborted = True
+                                newQuest = BeUsefull()
+                                quest.addQuest(newQuest)
                                 newQuest = GoHome()
                                 quest.addQuest(newQuest)
                                 break
@@ -5773,7 +5850,7 @@ class DeliverSpecialItem(Quest):
         return command
 
 class GoToTile(Quest):
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None):
+    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.targetPosition = None
@@ -5785,6 +5862,8 @@ class GoToTile(Quest):
         self.lastPos = None
         self.lastDirection = None
         self.smallPath = None
+        self.paranoid = paranoid
+        self.sentSubordinates = False
 
         if targetPosition: 
             self.setParameters({"targetPosition":targetPosition})
@@ -5890,7 +5969,7 @@ class GoToTile(Quest):
 
         localRandom = random.Random(self.randomSeed)
         if isinstance(character.container, src.rooms.Room):
-            if localRandom.random() < 0.5:
+            if not self.paranoid and localRandom.random() < 0.5:
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
@@ -5928,6 +6007,13 @@ class GoToTile(Quest):
                     self.lastDirection = direction
                 else:
                     direction = path[-1]
+
+            if self.paranoid:
+                if not self.sentSubordinates and character.subordinates:
+                    self.sentSubordinates = True
+                    command = "QSNSecureTile\n%s,%s\nlifetime:20; ."%(tilePos[0]+direction[0],tilePos[1]+direction[1],)
+                    return command
+                self.sentSubordinates = False
 
             if direction == (1,0):
                 if charPos == (12,6,0):
@@ -5975,7 +6061,7 @@ class GoToTile(Quest):
                 return command
             return ".15.."
         else:
-            if localRandom.random() < 0.5:
+            if not self.paranoid and localRandom.random() < 0.5:
                 for otherCharacter in character.container.characters:
                     if not (otherCharacter.xPosition//15 == character.xPosition//15 and otherCharacter.yPosition//15 == character.yPosition//15):
                         continue
@@ -6025,6 +6111,13 @@ class GoToTile(Quest):
                     self.lastDirection = direction
                 else:
                     direction = path[-1]
+
+            if self.paranoid:
+                if not self.sentSubordinates and character.subordinates:
+                    self.sentSubordinates = True
+                    command = "QSNSecureTile\n%s,%s\nlifetime:20; ."%(tilePos[0]+direction[0],tilePos[1]+direction[1],)
+                    return command
+                self.sentSubordinates = False
 
             if direction == (1,0):
                 if charPos == (13,7,0):
@@ -6080,6 +6173,16 @@ class GoToTile(Quest):
                 return command
             return ".17.."
         return ".20.."
+
+class SecureTile(GoToTile):
+    def __init__(self, description="secure tile", toSecure=None):
+        questList = []
+        super().__init__(questList)
+        self.metaDescription = description
+        self.type = "SecureTile"
+
+    def triggerCompletionCheck(self,character=None):
+        return False
 
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None,targetPosition=None):
@@ -6352,7 +6455,7 @@ class EnterEnemyCity(MetaQuestSequence):
 
     def timeOut(self):
         if not self.rewardedNearby:
-            self.character.revokeReputation(amount=20, reason="not getting near the enemy city")
+            self.character.revokeReputation(amount=5, reason="not getting near the enemy city")
         super().timeOut()
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
@@ -6494,7 +6597,7 @@ class ObtainSpecialItem(MetaQuestSequence):
 
     hasParams = True
 
-    def __init__(self, description="obtain special item", creator=None, lifetime=None):
+    def __init__(self, description="obtain special item", creator=None, lifetime=None, paranoid=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -6506,6 +6609,7 @@ class ObtainSpecialItem(MetaQuestSequence):
         self.addedSubQuests = False
         self.resetDelegations = False
         self.initialLifetime = lifetime
+        self.paranoid = paranoid
 
         # save initial state and register
         self.type = "ObtainSpecialItem"
@@ -6515,6 +6619,11 @@ class ObtainSpecialItem(MetaQuestSequence):
         parameters.append({"name":"itemLocation","type":"coordinate"})
         parameters.append({"name":"itemID","type":"int"})
         return parameters
+
+    def triggerCompletionCheck(self):
+        if not self.addedSubQuests:
+            return
+        super().triggerCompletionCheck()
 
     def getOptionalParameters(self):
         result = super().getOptionalParameters()
@@ -6535,18 +6644,20 @@ class ObtainSpecialItem(MetaQuestSequence):
         self.didDelegate = False
 
     def activate(self):
-        self.generateSubquests(self.character)
         return super().activate()
 
-    def generateSubquests(self,character):
+    def generateSubquests(self,character,strategy=None):
         if self.addedSubQuests and not len(self.subQuests):
             self.fail()
             return False
         if not self.addedSubQuests:
-            if character.rank < 6:
+            if character.rank < 6 and not strategy == "diy":
                 quest = BeUsefull()
                 self.addQuest(quest)
             else:
+                if character.rank < 6:
+                    self.paranoid = True
+
                 if random.random() < 0.6 and 1==0:
                     quest = BeUsefull()
                     quest.assignToCharacter(character)
@@ -6576,7 +6687,7 @@ class ObtainSpecialItem(MetaQuestSequence):
                 quest = GoHome()
                 self.addQuest(quest)
 
-                quest = GoToTile()
+                quest = GoToTile(paranoid=self.paranoid)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -6601,14 +6712,14 @@ class ObtainSpecialItem(MetaQuestSequence):
                 quest.activate()
 
                 # enter the city
-                quest = GoToTile(lifetime=lifetime)
+                quest = GoToTile(lifetime=lifetime,paranoid=self.paranoid)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1])})
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
 
                 # go near enemy city
-                quest = GoToTile(lifetime=lifetime)
+                quest = GoToTile(lifetime=lifetime,paranoid=self.paranoid)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -6623,10 +6734,17 @@ class ObtainSpecialItem(MetaQuestSequence):
                 self.generateSubquests(character)
                 return super().solver(character)
             
+            if character.rank == 5 and random.random() < 0.3:
+                command = ".QSNProtectSuperior\n ."
+                character.runCommandString(command)
+                self.didDelegate = True
+                self.generateSubquests(character,strategy="diy")
+                return False
+
             command = ".QSNObtainSpecialItem\n%s\n%s,%s\nlifetime:%s; ."%(self.itemID,self.itemLocation[0],self.itemLocation[1],self.initialLifetime,)
             character.runCommandString(command)
 
-            if not character.rank < 5:
+            if not character.rank < 4:
                 command = ".QSNBeUsefull\nlifetime:%s; ."%(self.initialLifetime,)
                 character.runCommandString(command)
 
@@ -6726,6 +6844,9 @@ questMap = {
     "BeUsefull": BeUsefull,
     "GrabSpecialItem": GrabSpecialItem,
     "StandAttention": StandAttention,
+    "ProtectSuperior": ProtectSuperior,
+    "SecureTile": SecureTile,
+    "GoToTile": GoToTile,
 }
 
 def getQuestFromState(state):

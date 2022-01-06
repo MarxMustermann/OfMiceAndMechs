@@ -1090,7 +1090,7 @@ class Character(src.saveing.Saveable):
             text += " for " + reason
         self.addMessage(text)
 
-        if carryOver and self.superior:
+        if carryOver and hasattr(self,"superior") and self.superior:
             newAmount = amount//4
             self.superior.awardReputation(amount=newAmount,fraction=fraction,reason=reason,carryOver=carryOver)
 
@@ -1292,6 +1292,12 @@ class Character(src.saveing.Saveable):
 
         if src.gamestate.gamestate.mainChar == self:
             src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('../Downloads/bss.ogg'))
+
+        # notify nearby characters
+        if self.container:
+            for otherCharacter in self.container.characters:
+                if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
+                    otherCharacter.changed("character died on tile",{"deadChar":self})
 
         # replace character with corpse
         if self.container:
@@ -1754,6 +1760,11 @@ class Character(src.saveing.Saveable):
             else:
                 sound.set_volume(0.2)
                 src.interaction.pygame2.mixer.Channel(2).play(sound)
+
+        if tag == "character died on tile":
+            if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
+                reutation = 0
+                self.awardReputation(amount=2,reason="enemy died on tile",carryOver=True)
 
         if src.gamestate.gamestate.mainChar == self and tag == "changedTile":
             src.interaction.pygame2.mixer.Channel(7).pause()

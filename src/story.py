@@ -625,11 +625,13 @@ class BackToTheRoots(BasicPhase):
                 "Moritz","Maximillian","Gundula","Renate","Udo","Fritz","Susanne","Guido"])
 
         mainNameCore = random.choice([
-                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten",
+                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten","Felsen",
+                "Feuer","Glut",
                 ])
 
         postfix = random.choice([
                 "brecher","wurst","schmidt","maier","bach","burg","fried","treu","kraft","schmied","hans","schimmel",
+                "hauer","schläger","feind",
                 ])
 
         npc.name = firstName+" "+mainNameCore+postfix
@@ -644,6 +646,7 @@ class BackToTheRoots(BasicPhase):
         # add basic set of abilities in openworld phase
         npc.questsDone = [
             "BeUsefull",
+            "GoToTile",
         ]
 
         npc.solvers = [
@@ -1002,7 +1005,7 @@ class BackToTheRoots(BasicPhase):
                     yPos = int(random.random()*13+1)*15+int(random.random()*13+1)
                     foundCity = None
                     for cityLocation in self.citylocations:
-                        if abs(xPos//15-cityLocation[0])+abs(yPos//15-cityLocation[1]) < 4:
+                        if abs(xPos//15-cityLocation[0])+abs(yPos//15-cityLocation[1]) < 5:
                             foundCity = cityLocation
                             break
 
@@ -2447,7 +2450,7 @@ press space to continue"""%(reputationTree))
                     newNPC.assignQuest(quest, active=True)
                     newNPC.superior = cityLeader
                     newNPC.rank = 4
-                    newNPC.inventory.append(src.items.itemMap["GooFlask"](uses=100))
+                    newNPC.inventory.insert(0,src.items.itemMap["GooFlask"](uses=100))
 
                     newNPC.addMessage("added as replacement 2nd tier officer")
                     continue
@@ -2485,7 +2488,7 @@ press space to continue"""%(reputationTree))
                     newNPC.assignQuest(quest, active=True)
                     newNPC.superior = selectedSubLeader
                     newNPC.rank = 5
-                    newNPC.inventory.append(src.items.itemMap["GooFlask"](uses=100))
+                    newNPC.inventory.insert(0,src.items.itemMap["GooFlask"](uses=100))
 
                     newNPC.addMessage("added as replacement 2nd tier officer")
                     continue
@@ -2592,7 +2595,7 @@ press space to continue"""%(reputationTree))
                 serveQuest = subLeader.quests[0]
                 subLeader.quests.remove(serveQuest)
                 subLeader.rank = 3
-                subLeader.inventory.append(src.items.itemMap["GooFlask"](uses = 100))
+                subLeader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
 
                 subLeader.quests.append(cityLeader.quests[0])
                 subLeader.runCommandString("w")
@@ -2629,7 +2632,7 @@ press space to continue"""%(reputationTree))
 
                 subsubLeader.runCommandString("w")
                 subsubLeader.rank = 4
-                subsubLeader.inventory.append(src.items.itemMap["GooFlask"](uses = 100))
+                subsubLeader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
                 oldSubordinatesSubsubLeader = subsubLeader.subordinates
                 subsubLeader.subordinates = []
 
@@ -2660,7 +2663,7 @@ press space to continue"""%(reputationTree))
 
                 worker.runCommandString("w"*(worker.yPosition-5))
                 worker.rank = 5
-                worker.inventory.append(src.items.itemMap["GooFlask"](uses = 10))
+                worker.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 10))
 
                 worker.superior = subsubLeader
                 subsubLeader.subordinates.insert(subLeaderInsertIndex,worker)
@@ -2717,7 +2720,7 @@ press space to continue"""%(reputationTree))
                     character.subordinates = oldBoss.subordinates
                     character.rank = oldBoss.rank
                     character.reputation = character.reputation//10
-                    character.inventory.append(src.items.itemMap["GooFlask"](uses=100))
+                    character.inventory.insert(0,src.items.itemMap["GooFlask"](uses=100))
 
                     oldBoss.superior = character
                     oldBoss.rank = oldRank

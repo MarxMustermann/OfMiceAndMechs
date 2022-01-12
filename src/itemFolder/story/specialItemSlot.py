@@ -48,7 +48,7 @@ class SpecialItemSlot(src.items.Item):
 
                 self.hasItem = True
                 character.addMessage("you add the special item")
-                character.awardReputation(1000,carryOver=True)
+                character.awardReputation(1000,carryOver=False)
             else:
                 character.addMessage("you need to have special item #%s in your inventory"%(self.itemID,))
         else:

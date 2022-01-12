@@ -609,7 +609,7 @@ class BackToTheRoots(BasicPhase):
             "specialItemSlotPositions","citylocations"])
         self.tupleDictsToStore.extend(["cityIds","cityNPCCounters","scoreTracker"])
 
-    def genNPC(self, cityCounter, citylocation, flaskUses=100, spawnArmor=True, spawnWeapon=True):
+    def genNPC(self, cityCounter, citylocation, flaskUses=10, spawnArmor=False, spawnWeapon=False):
         self.npcCounter += 1
 
         npc = src.characters.Character()
@@ -630,8 +630,8 @@ class BackToTheRoots(BasicPhase):
                 ])
 
         postfix = random.choice([
-                "brecher","wurst","schmidt","maier","bach","burg","fried","treu","kraft","schmied","hans","schimmel",
-                "hauer","schläger","feind",
+                "brecher","wurst","schmidt","maier","bach","burg","treu","kraft","schmied","hans","schimmel",
+                "hauer","schläger","feind","kranz","fels",
                 ])
 
         npc.name = firstName+" "+mainNameCore+postfix
@@ -1234,11 +1234,25 @@ class BackToTheRoots(BasicPhase):
                     if not neededItems:
                         neededItems = ["MetalBars"]
 
-                    if neededItems[0] == "MetalBars":
+                    if len(neededItems) > 1:
+                        1/0
+                    elif neededItems[0] == "MetalBars":
                         roomToAdd.addInputSlot((1+offset[0],rowheight+offset[1],0),"Scrap")
-                        item = src.items.itemMap["ScrapCompactor"]()
+                        roomToAdd.addBuildSite((2+offset[0],rowheight+offset[1],0),"ScrapCompactor")
+                    else:
+                        subMachine = neededItems[0]
+                        item = src.items.itemMap["Machine"]()
+                        item.setToProduce(subMachine)
                         item.charges = 0
                         roomToAdd.addItem(item,(2+offset[0],rowheight+offset[1],0))
+
+                        subNeededItems = src.items.rawMaterialLookup.get(subMachine)
+                        if not subNeededItems:
+                            subNeededItems = ["MetalBars"]
+
+                        if len(subNeededItems) > 1:
+                            1/0
+                        roomToAdd.addInputSlot((1+offset[0],rowheight+offset[1],0),subNeededItems[0])
 
                     roomToAdd.addInputSlot((3+offset[0],rowheight+offset[1],0),neededItems[0])
                     item = src.items.itemMap["Machine"]()
@@ -1248,29 +1262,85 @@ class BackToTheRoots(BasicPhase):
                     roomToAdd.addOutputSlot((5+offset[0],rowheight+offset[1],0),machine)
 
                     machineCounter += 1
+                    neededItems = src.items.rawMaterialLookup.get(machine)
 
                     for room in rooms:
                         room.sources.append(((roomToAdd.xPosition,roomToAdd.yPosition),machine))
 
-            def addGhulSquare(roomToAdd,offset):
+            def addBigWorkshopSquare(roomToAdd,offset,machines=None):
                 for x in range(1,6):
                     roomToAdd.walkingSpace.add((x+offset[0],3+offset[1],0))
+                for position in ((1,2),(1,1),(2,1),(4,1),(5,1),(5,2),(5,4),(5,5),(4,5),(2,5),(1,5),(1,4)):
+                    roomToAdd.walkingSpace.add((position[0]+offset[0],position[1]+offset[1],0))
 
-                roomToAdd.addInputSlot((1+offset[0],2+offset[1],0),"Corpse",{"maxAmount":2})
-                reanimator = src.items.itemMap["CorpseAnimator"]()
-                reanimator.commands["born"] = "j"
-                roomToAdd.addItem(reanimator,(2+offset[0],2+offset[1],0))
-                roomToAdd.addInputSlot((5+offset[0],2+offset[1],0),"Corpse",{"maxAmount":2})
+                machineCounter = 0
+                for machine in machines:
+                    item = src.items.itemMap["Machine"]()
+                    item.setToProduce(machine)
+                    item.charges = 0
+                    pos = (3,2,0)
+                    if machineCounter == 1:
+                        pos = (3,4,0)
+                    roomToAdd.addItem(item,(pos[0]+offset[0],pos[1]+offset[1],0))
+
+                    neededItems = src.items.rawMaterialLookup.get(machine)
+                    if not neededItems:
+                        neededItems = ["MetalBars"]
+
+                    if len(neededItems) > 2:
+                        1/0
+
+                    pos = (3,1,0)
+                    if machineCounter == 1:
+                        pos = (3,5,0)
+                    roomToAdd.addInputSlot((pos[0]+offset[0],pos[1]+offset[1],0),neededItems[0])
+
+                    if len(neededItems) > 1:
+                        pos = (2,2,0)
+                        if machineCounter == 1:
+                            pos = (2,4,0)
+                        roomToAdd.addInputSlot((pos[0]+offset[0],pos[1]+offset[1],0),neededItems[1])
+
+                    pos = (4,2,0)
+                    if machineCounter == 1:
+                        pos = (4,4,0)
+                    roomToAdd.addOutputSlot((pos[0]+offset[0],pos[1]+offset[1],0),machine)
+
+                    machineCounter += 1
+
+            def addGhulSquare(roomToAdd,offset,corpseInInventory=True):
+                for x in range(1,6):
+                    roomToAdd.walkingSpace.add((x+offset[0],3+offset[1],0))
 
                 roomToAdd.addInputSlot((1+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
                 reanimator = src.items.itemMap["CorpseAnimator"]()
                 reanimator.commands["born"] = "j"
                 roomToAdd.addItem(reanimator,(2+offset[0],4+offset[1],0))
+
                 command = src.items.itemMap["Command"]()
                 command.bolted = True
-                command.extraName = "run inventory command line"
-                command.command = "s2a"+"jd"*4+"j"+"awjaj"
+                command.extraName = "initialise ghul"
+                if corpseInInventory:
+                    command.command = "d"+10*"Kd"+"j"
+                else:
+                    command.command = "d"+"j"
                 roomToAdd.addItem(command,(3+offset[0],4+offset[1],0))
+
+                command = src.items.itemMap["Command"]()
+                command.bolted = True
+                command.extraName = "repeat command line"
+                if corpseInInventory:
+                    command.command = ""
+                else:
+                    command.command = "JdJd"
+                command.command += "dsjawj"
+                roomToAdd.addItem(command,(4+offset[0],4+offset[1],0))
+
+                command = src.items.itemMap["Command"]()
+                command.bolted = True
+                command.extraName = "run command line"
+                command.command = "aj"*4+"4d"
+                roomToAdd.addItem(command,(5+offset[0],5+offset[1],0))
                 roomToAdd.addInputSlot((5+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
 
             rooms.append(room)
@@ -1304,10 +1374,6 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             generalProduction1 = room
-            #addWorkshopSquare(generalProduction1,(0,0,0),machines=["GooFlask","Rod","Connector"])
-            #addWorkshopSquare(generalProduction1,(0,6,0),machines=["ScrapCompactor","Sheet","Rod"])
-            #addWorkshopSquare(generalProduction1,(6,0,0),machines=["ScrapCompactor","Sheet","Rod"])
-            addGhulSquare(generalProduction1,(6,6,0))
             room.addPathCross()
             rooms.append(room)
 
@@ -1322,7 +1388,6 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage6 = room
-            #addWorkshopSquare(scrapStorage6,(0,0,0),machines=["Tank","Tank","Tank"])
             room.addPathCross()
             rooms.append(room)
 
@@ -1340,7 +1405,35 @@ class BackToTheRoots(BasicPhase):
             addStorageSquare(scrapStorage7,(0,0,0),"Scrap")
             addStorageSquare(scrapStorage7,(0,6,0),"Scrap")
             addStorageSquare(scrapStorage7,(6,0,0),"Scrap")
-            addGhulSquare(scrapStorage7,(6,6,0))
+            addGhulSquare(scrapStorage7,(6,6,0),corpseInInventory=False)
+
+            commandCycler = src.items.itemMap["CommandCycler"]()
+            scrapStorage7.addItem(commandCycler,(7,7,0))
+
+            commandCycler.commands.append("a2w"+2*("aa"+5*"sKaKd"+"5w")+"4d"+"3s5d"+7*"Js"+"4aw")
+            commandCycler.commands.append("a2w"+2*("aa"+5*"wKaKd"+"5s")+"4d"+"3s5d"+7*"Js"+"4aw")
+            commandCycler.commands.append("a2w"+2*("dd"+5*"wKaKd"+"5s")+"4a"+"3s5d"+7*"Js"+"4aw")
+
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "ddwwaawJwsddssaa"
+            command.extraName = "fetch scrap"
+            scrapStorage7.addItem(command,(7,11,0))
+
+            commandCycler = src.items.itemMap["CommandCycler"]()
+            scrapStorage7.addItem(commandCycler,(9,7,0))
+
+            commandCycler.commands.append("3a2w"+"15s"+"ww5aLwLsLwLs5dww5aLwLsLwLs5d4s"+"15w"+"3s5d"+9*"Js"+"2aw")
+            commandCycler.commands.append("3a2w"+"15s"+"ss5aLwLsLwLs5dss5aLwLsLwLs5d4w"+"15w"+"3s5d"+9*"Js"+"2aw")
+            commandCycler.commands.append("3a2w"+"15s"+"wwdLwLsLwLsawwdLwLsLwLsa4s"+"15w"+"3s5d"+9*"Js"+"2aw")
+            commandCycler.commands.append("3a2w"+"15a15s"+5*"dLwLs"+"5a"+"15w15d"+"3s5d"+12*"Js"+"2aw")
+            
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "dwwwJwsssa"
+            command.extraName = "supply scrap"
+            scrapStorage7.addItem(command,(8,11,0))
+
             room.addPathCross()
             rooms.append(room)
 
@@ -1404,6 +1497,65 @@ class BackToTheRoots(BasicPhase):
             workshop2 = room
             rooms.append(room)
 
+            addWorkshopSquare(scrapStorage6,(0,0,0),machines=["Rod","Rod","Rod"])
+            addWorkshopSquare(scrapStorage6,(0,6,0),machines=["Armor","Armor","Armor"])
+            addWorkshopSquare(scrapStorage6,(6,0,0),machines=["Bolt","Bolt","Bolt"])
+            addGhulSquare(scrapStorage6,(6,6,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "a5w"+"4s4aJwJsddJwJsddww4aJwddJwddww"+"5sd"
+            command.extraName = "produce items southwest"
+            scrapStorage6.addItem(command,(7,11,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "aa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sdd"
+            command.extraName = "produce items northwest"
+            scrapStorage6.addItem(command,(8,11,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.extraName = "produce items northeast"
+            command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
+            scrapStorage6.addItem(command,(9,11,0))
+
+            addWorkshopSquare(generalProduction1,(0,0,0),machines=["MemoryCell","Connector","Case"])
+            addWorkshopSquare(generalProduction1,(0,6,0),machines=["Frame","puller","pusher"])
+            addWorkshopSquare(generalProduction1,(6,0,0),machines=["Heater","Tank","Rod"])
+            addGhulSquare(generalProduction1,(6,6,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "a5w"+"4s4aJwJsddJwJsddww4aJwddJwddww"+"5sd"
+            command.extraName = "produce items southwest"
+            generalProduction1.addItem(command,(7,11,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "aa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sdd"
+            command.extraName = "produce items northwest"
+            generalProduction1.addItem(command,(8,11,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.extraName = "produce items northeast"
+            command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
+            generalProduction1.addItem(command,(9,11,0))
+
+            addWorkshopSquare(unknown,(0,0,0),machines=["ScrapCompactor","ScrapCompactor","ScrapCompactor"])
+            addWorkshopSquare(unknown,(6,0,0),machines=["GooFlask","CorpseAnimator","CommandCycler"])
+            addBigWorkshopSquare(unknown,(0,6,0),machines=["Wall","Wall"])
+            addGhulSquare(unknown,(6,6,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "a5w"+"3s3aJwJs3d3w"+"5sd"
+            command.extraName = "produce items southwest"
+            unknown.addItem(command,(7,11,0))
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "aa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sdd"
+            command.extraName = "produce items northwest"
+            unknown.addItem(command,(8,11,0))
+            command = src.items.itemMap["Command"]()
+            command.extraName = "produce items northeast"
+            command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
+            unknown.addItem(command,(9,11,0))
+
             painter = src.items.itemMap["Painter"]()
             basicMetalWorkshop.addItem(painter,(1,1,0))
 
@@ -1465,6 +1617,31 @@ class BackToTheRoots(BasicPhase):
                     room.sources.append(((basicMetalWorkshop.xPosition,basicMetalWorkshop.yPosition),machines[counter]))
 
                 counter += 1
+
+            scrap = src.items.itemMap["Scrap"](amount=10)
+            basicMetalWorkshop.addItem(scrap,(1,6,0))
+            scrap = src.items.itemMap["Scrap"](amount=10)
+            basicMetalWorkshop.addItem(scrap,(1,4,0))
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            scrapStorage6.addCharacter(ghul,9,10)
+            ghul.runCommandString("j")
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            scrapStorage7.addCharacter(ghul,9,10)
+            ghul.runCommandString("j")
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            generalProduction1.addCharacter(ghul,9,10)
+            ghul.runCommandString("j")
+
+            ghul = src.characters.Ghul()
+            ghul.faction = "city #%s"%(cityCounter,)
+            unknown.addCharacter(ghul,9,10)
+            ghul.runCommandString("j")
 
             ghul = src.characters.Ghul()
             ghul.faction = "city #%s"%(cityCounter,)
@@ -1839,40 +2016,8 @@ class BackToTheRoots(BasicPhase):
             machine = src.items.itemMap["AutoTutor"]()
             workshop2.addItem(machine,(2,4,0))
 
-            """
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,8,4)
-            ghul.runCommandString("j")
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,4)
-            ghul.runCommandString("j")
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,2)
-            ghul.runCommandString("j")
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,2)
-            ghul.runCommandString("8.j")
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,2)
-            ghul.runCommandString("60.j")
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,2)
-            ghul.runCommandString("100.j")
-            ghul = src.characters.Ghul()
-            """
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,2)
-            ghul.runCommandString("120.j")
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            workshop.addCharacter(ghul,10,2)
-            ghul.runCommandString("132.j")
+            for room in rooms:
+                room.addRandomItems()
 
             #src.gamestate.gamestate.mainChar = ghul
             #placedMainChar = True
@@ -1911,7 +2056,7 @@ class BackToTheRoots(BasicPhase):
                 subleader = self.genNPC(cityCounter,citylocation)
                 subleader.registers["ATTNPOSx"] = 3+i*3
                 subleader.registers["ATTNPOSy"] = 4
-                mainRoom.addCharacter(subleader,4+i*3,4)
+                mainRoom.addCharacter(subleader,3+i*3,4)
 
                 leader.subordinates.append(subleader)
 
@@ -1924,7 +2069,7 @@ class BackToTheRoots(BasicPhase):
                     subsubleader = self.genNPC(cityCounter,citylocation)
                     subsubleader.registers["ATTNPOSx"] = 2+i*3+j
                     subsubleader.registers["ATTNPOSy"] = 5
-                    random.choice(rooms).addCharacter(subsubleader, random.randint(1,11), random.randint(1,11))
+                    mainRoom.addCharacter(subsubleader, 2+i*3+j, 5)
 
                     subleader.subordinates.append(subsubleader)
 
@@ -1941,18 +2086,11 @@ class BackToTheRoots(BasicPhase):
 
                     for k in range(0,3):
                         spawnArmor = False
-                        if k == 0:
-                            spawnArmor = True
-
                         spawnWeapon = False
-                        if k in (0,1,):
-                            spawnWeapon = True
-
                         worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)+10,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
                         worker.registers["ATTNPOSx"] = 2+i*3+j
                         worker.registers["ATTNPOSy"] = 7+k
-                        #mainRoom.addCharacter(worker,3+i*3+j,7+k)
-                        random.choice(rooms).addCharacter(worker, random.randint(1,11), random.randint(1,11))
+                        mainRoom.addCharacter(worker,2+i*3+j,7+k)
                         subsubleader.subordinates.append(worker)
 
                         quest = src.quests.Serve(superior=subsubleader)
@@ -2045,17 +2183,19 @@ class BackToTheRoots(BasicPhase):
             enemy.faction = leader.faction
             mainRoom.addCharacter(enemy, xPos, yPos)
 
-        src.gamestate.gamestate.mainChar.runCommandString("~~", clear=True)
-        src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
-        src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
-        src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
-        src.gamestate.gamestate.mainChar.personality["avoidItems"] = False
+        mainChar = src.gamestate.gamestate.mainChar
+        mainChar.runCommandString("~~", clear=True)
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+        mainChar.personality["avoidItems"] = False
+
         """
-        src.gamestate.gamestate.mainChar.health = 1000000
-        src.gamestate.gamestate.mainChar.maxHealth = 1000000
-        src.gamestate.gamestate.mainChar.baseDamage = 10000
-        src.gamestate.gamestate.mainChar.satiation = 1000000
-        src.gamestate.gamestate.mainChar.reputation = 1000000
+        mainChar.health = 1000000
+        mainChar.maxHealth = 1000000
+        mainChar.baseDamage = 10000
+        mainChar.satiation = 1000000
+        mainChar.reputation = 1000000
         """
         
         src.gamestate.gamestate.mainChar.solvers = [
@@ -2237,15 +2377,22 @@ press space to continue"""%(self.gatherTime,))
                         if worker.faction == src.gamestate.gamestate.mainChar.faction:
                             foundCityNPCs.append(worker)
 
-        if random.random() > 0.3 and foundCityNPCs:
+        if foundCityNPCs:
             src.gamestate.gamestate.mainChar = random.choice(foundCityNPCs)
-        elif foundCityNPCs:
+        elif foundNPCs:
             src.gamestate.gamestate.mainChar = random.choice(foundNPCs)
         else:
             print("you lost the game")
             1/0
 
         src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
+
+        mainChar = src.gamestate.gamestate.mainChar
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+        mainChar.personality["avoidItems"] = False
+
 
     def rewardNPCDirect(self,character):
         print("rewarding npc")
@@ -2328,11 +2475,34 @@ press space to continue"""%(self.gatherTime,))
             cityLeader = self.leaders[cityLocation]
             gatherNPC(cityLeader)
             for subleader in cityLeader.subordinates:
+                if subleader.dead:
+                    continue
                 gatherNPC(subleader)
                 for subsubleader in subleader.subordinates:
+                    if subsubleader.dead:
+                        continue
                     gatherNPC(subsubleader)
                     for worker in subsubleader.subordinates:
+                        if worker.dead:
+                            continue
                         gatherNPC(worker)
+
+        if not self.firstEpoch:
+            for cityLocation in self.citylocations:
+                cityLeader = self.leaders[cityLocation]
+                cityLeader.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
+                for subleader in cityLeader.subordinates:
+                    if subleader.dead:
+                        continue
+                    subleader.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
+                    for subsubleader in subleader.subordinates:
+                        if subsubleader.dead:
+                            continue
+                        subsubleader.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
+                        for worker in subsubleader.subordinates:
+                            if worker.dead:
+                                continue
+                            worker.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
 
         for cityLocation in self.citylocations:
             numNpcs = len(hasItemMap[cityLocation])*50
@@ -2353,15 +2523,7 @@ press space to continue"""%(self.gatherTime,))
             cityLeader = self.leaders[cityLocation]
 
             if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                if self.firstEpoch and 1==0:
-                    showText("""
-A new epoch has started and the attack on the enemy city is about to start.
-
-The commands are given out any moment. Wait a few moments more and be ready to roll!
-
-press space to continue""")
-                    self.firstEpoch = False
-                else:
+                if 1==1:
                     rowwidth = 17
 
                     infogrid = []
@@ -2410,6 +2572,7 @@ workers:      """+"%s   "*9+"""
 """
                     reputationTree = reputationTree%tuple(infogrid)
 
+                    showText("""spacer""")
                     showText("""
 a new epoch has started!
 
@@ -2655,9 +2818,9 @@ press space to continue"""%(reputationTree))
                 if not candidates:
                     continue
 
-                maxReputation = 0
+                maxReputation = None
                 for char in candidates:
-                    if char.reputation >= maxReputation:
+                    if maxReputation == None or char.reputation > maxReputation:
                         worker = char
                         maxReputation = char.reputation
 
@@ -2690,12 +2853,10 @@ press space to continue"""%(reputationTree))
                 for subordinate in cityLeader.subordinates:
                     if subordinate.dead:
                         continue
-                    if subordinate.reputation > 800:
-                        toForcePromote.append(subordinate)
                     for subsubordinate in subordinate.subordinates:
                         if subsubordinate.dead:
                             continue
-                        if subsubordinate.reputation > 800:
+                        if subsubordinate.reputation > 8000:
                             toForcePromote.append(subsubordinate)
                         for worker in subsubordinate.subordinates:
                             if worker.dead:
@@ -2752,20 +2913,18 @@ toKill: %s
 
 press space to continue"""%(forcePromoted,toKill))
 
+            print("step 6.7.9")
+            print(src.gamestate.gamestate.mainChar.subordinates)
+
             if toKill or forcePromoted:
-                for cityLocation in self.citylocations:
                     cityLeader = self.leaders[cityLocation]
-
+                    print("cityLeaderc")
+                    print(cityLeader)
                     if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                        if self.firstEpoch and 1==0:
-                            showText("""
-    A new epoch has started and the attack on the enemy city is about to start.
+                        print("cityLeader")
+                        print(cityLeader)
 
-    The commands are given out any moment. Wait a few moments more and be ready to roll!
-
-    press space to continue""")
-                            self.firstEpoch = False
-                        else:
+                        if 1==1:
                             def getname(character):
                                 if character.dead:
                                     return ""
@@ -2818,16 +2977,19 @@ workers:      """+"%s   "*9+"""
                             showText("""
 a new epoch has started!
 
-the current reputation is:
+the new reputation is:
 %s
 
 press space to continue"""%(reputationTree))
 
+        print("step 6.8")
+        print(src.gamestate.gamestate.mainChar.subordinates)
 
         for cityLocation in self.citylocations:
             if not cityLocation in toFetchMap or not toFetchMap[cityLocation]:
                 self.leaderQuests[cityLocation].setPriorityObtain(7,(7,7),epochLength=self.epochLength)
                 continue
+            print("set prio %s for %s"%(toFetchMap[cityLocation], cityLocation,))
             self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=self.epochLength)
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
@@ -2835,6 +2997,13 @@ press space to continue"""%(reputationTree))
         terrain.addEvent(event)
 
         locatedItems.sort()
+
+        print("step 7")
+        print(src.gamestate.gamestate.mainChar.subordinates)
+
+
+        if self.firstEpoch:
+            self.firstEpoch = False
 
     def endEpoch(self):
         self.startNewEpoch()

@@ -87,6 +87,7 @@ class Door(src.items.Item):
         Parameters:
             character: the character closing the door
         """
+        return
 
         self.walkable = False
 

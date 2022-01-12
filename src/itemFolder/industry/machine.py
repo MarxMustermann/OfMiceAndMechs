@@ -159,10 +159,18 @@ Activate the machine to produce.
                 resourcesFound.append(item)
                 resourcesNeeded.remove(item.type)
 
+        for item in self.container.getItemByPosition(
+            (self.xPosition, self.yPosition+1, self.zPosition)
+        ):
+            if item.type in resourcesNeeded:
+                resourcesFound.append(item)
+                resourcesNeeded.remove(item.type)
+
+
         # refuse production without resources
         if resourcesNeeded:
             character.addMessage(
-                "missing resources (place left/west or up/north): %s"
+                "missing resources (place left/west or up/north or down/south): %s"
                 % (", ".join(resourcesNeeded))
             )
             self.runCommand("material %s" % (resourcesNeeded[0]), character)
@@ -237,7 +245,8 @@ Activate the machine to produce.
 
         #HACK: sound effect
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('../Downloads/data_sound_Basic_menu_error.ogg'))
+            #src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('../Downloads/data_sound_Basic_menu_error.ogg'))
+            pass
         self.runCommand("success", character)
 
     def getLongInfo(self):

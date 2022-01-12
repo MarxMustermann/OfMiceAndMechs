@@ -37,78 +37,39 @@ Activate it to trigger a exlosion.
 
         character.addMessage("the bomb starts to fizzle")
         event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick+random.randint(1,4)
+            #src.gamestate.gamestate.tick+random.randint(1,4)+delay
+            src.gamestate.gamestate.tick+1
         )
         event.setCallback({"container": self, "method": "destroy"})
         self.container.addEvent(event)
 
     def destroy(self, generateScrap=True):
         """
-        handle this item getting destroyed
-        by exploding
+        destroy the item
+        
+        Parameters:
+            generateScrap: flag to toggle leaving residue
         """
 
-        xPosition = self.xPosition
-        yPosition = self.yPosition
-        zPosition = self.zPosition
-        container = self.container
+        if not self.xPosition or not self.yPosition:
+            return
 
-        super().destroy()
+        offsets = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
+        random.shuffle(offsets)
 
-        if xPosition:
+        delay = 1
+        if isinstance(self.container,src.rooms.Room):
+            delay = 2
+
+        for offset in offsets[:-1]:
             new = src.items.itemMap["Explosion"]()
-            new.bolted = False
-            container.addItem(new,(xPosition,yPosition,zPosition))
+            self.container.addItem(new,(self.xPosition-offset[0],self.yPosition-offset[1],self.zPosition))
             event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1
+                src.gamestate.gamestate.tick + delay
             )
             event.setCallback({"container": new, "method": "explode"})
-            container.addEvent(event)
+            self.container.addEvent(event)
 
-            new = src.items.itemMap["Explosion"]()
-            new.bolted = False
-            container.addItem(new,(xPosition-1,yPosition,zPosition))
-            event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1
-            )
-            event.setCallback({"container": new, "method": "explode"})
-            container.addEvent(event)
-
-            new = src.items.itemMap["Explosion"]()
-            new.bolted = False
-            container.addItem(new,(xPosition,yPosition-1,zPosition))
-            event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1
-            )
-            event.setCallback({"container": new, "method": "explode"})
-            container.addEvent(event)
-
-            new = src.items.itemMap["Explosion"]()
-            new.bolted = False
-            container.addItem(new,(xPosition+1,yPosition,zPosition))
-            event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1
-            )
-            event.setCallback({"container": new, "method": "explode"})
-            container.addEvent(event)
-
-            new = src.items.itemMap["Explosion"]()
-            new.bolted = False
-            container.addItem(new,(xPosition,yPosition+1,zPosition))
-            event = src.events.RunCallbackEvent(
-                src.gamestate.gamestate.tick + 1
-            )
-            event.setCallback({"container": new, "method": "explode"})
-            container.addEvent(event)
-
-        """
-        if xPosition and yPosition:
-            for item in self.container.itemByCoordinates[(xPosition,yPosition)]:
-                if item == self:
-                    continue
-                if item.type == "Explosion":
-                    continue
-                item.destroy()
-        """
+        super().destroy(generateScrap=False)
 
 src.items.addType(Bomb)

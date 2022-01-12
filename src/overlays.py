@@ -106,7 +106,7 @@ class NPCsOverlay(object):
                   character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
                 continue
         
-            if not "city" in character.faction or not character.charType == "Character":
+            if not "city" in character.faction or not character.charType in ("Character","Ghul",):
                 try:
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
                 except:

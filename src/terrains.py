@@ -634,8 +634,6 @@ class Terrain(src.saveing.Saveable):
             return
 
         if direction == "west":
-            if char == src.gamestate.gamestate.mainChar:
-                char.addMessage("moved west")
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
                     direction = "south"
@@ -649,7 +647,6 @@ class Terrain(src.saveing.Saveable):
                         char.runCommandString("aa")
                         pass
                 char.addMessage("a force field pushes you")
-                char.addMessage(char)
 
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
@@ -668,7 +665,6 @@ class Terrain(src.saveing.Saveable):
                         char.runCommandString("dd")
                         pass
                 char.addMessage("a force field pushes you")
-                char.addMessage(char)
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
@@ -686,7 +682,6 @@ class Terrain(src.saveing.Saveable):
                         char.runCommandString("ww")
                         pass
                 char.addMessage("a force field pushes you")
-                char.addMessage(char)
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
@@ -704,7 +699,6 @@ class Terrain(src.saveing.Saveable):
                         char.runCommandString("ss")
                         pass
                 char.addMessage("a force field pushes you")
-                char.addMessage(char)
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
                 #while self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)):
@@ -904,8 +898,8 @@ class Terrain(src.saveing.Saveable):
                         continue
 
                 char.messages.append("*thump*")
-                char.collidedWith(other)
-                other.collidedWith(char)
+                char.collidedWith(other,actor=char)
+                other.collidedWith(char,actor=char)
                 return
 
             # move the character
@@ -1704,7 +1698,7 @@ class Terrain(src.saveing.Saveable):
         for item in items[:]:
             self.removeItem(item, recalculate=False)
 
-    def addItem(self, item, pos):
+    def addItem(self, item, pos, actor=None):
         """
         add item to terrain
 
@@ -1713,9 +1707,9 @@ class Terrain(src.saveing.Saveable):
             pos: the position to add the item to
         """
 
-        self.addItems([(item, pos)])
+        self.addItems([(item, pos)],actor=actor)
 
-    def addItems(self, items, recalculate=True):
+    def addItems(self, items, recalculate=True, actor=None):
         """
         add items to terrain and add them to internal datastructures
 

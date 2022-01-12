@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class ItemUpgrader(src.items.Item):
     """

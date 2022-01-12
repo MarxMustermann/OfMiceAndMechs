@@ -144,6 +144,35 @@ class Room(src.saveing.Saveable):
             extraInfo = {}
         self.inputSlots.append((position,itemType,extraInfo))
 
+    def addRandomItems(self):
+        for inputSlot in self.inputSlots:
+            if not inputSlot[1]:
+                continue
+            if inputSlot[1] == "Scrap":
+                item = src.items.itemMap[inputSlot[1]](amount=5)
+                item.bolted = False
+                self.addItem(item,inputSlot[0])
+                continue
+            
+            item = src.items.itemMap[inputSlot[1]]()
+            item.bolted = False
+            self.addItem(item,inputSlot[0])
+
+        for outputSlot in self.outputSlots:
+            if not outputSlot[1]:
+                continue
+            
+            for i in range(1,5):
+                item = src.items.itemMap[outputSlot[1]]()
+                item.bolted = False
+                self.addItem(item,outputSlot[0])
+
+        """
+        for buildSite in self.buildSites[:]:
+            item = src.items.itemMap[buildSite[1]]()
+            self.addItem(item,buildSite[0])
+        """
+
     def getNonEmptyOutputslots(self,itemType=None):
         result = []
         for outputSlot in self.outputSlots:
@@ -794,7 +823,7 @@ class Room(src.saveing.Saveable):
         self.characters.remove(character)
         character.room = None
 
-    def addItem(self, item, pos):
+    def addItem(self, item, pos, actor=None):
         """
         add a item to the room
 
@@ -803,9 +832,9 @@ class Room(src.saveing.Saveable):
             pos: the position to add the item on
         """
 
-        self.addItems([(item, pos)])
+        self.addItems([(item, pos)], actor=actor)
 
-    def addItems(self, items):
+    def addItems(self, items, actor=None):
         """
         add items to the room
 
@@ -833,6 +862,7 @@ class Room(src.saveing.Saveable):
             for buildSite in self.buildSites:
                 if pos == buildSite[0] and item.type == buildSite[1]:
                     self.buildSites.remove(buildSite)
+                    item.bolted = True
 
             if pos in self.itemByCoordinates:
                 self.itemByCoordinates[pos].insert(0, item)
@@ -1144,20 +1174,6 @@ class Room(src.saveing.Saveable):
         # change own state
         self.timeIndex += 1
 
-        # log events that were not handled properly
-        while self.events and self.timeIndex > self.events[0].tick:
-            event = self.events[0]
-            src.logger.debugMessages.append(
-                "something went wrong and event" + str(event) + "was skipped"
-            )
-            self.events.remove(event)
-
-        # handle events
-        while self.events and self.timeIndex == self.events[0].tick:
-            event = self.events[0]
-            event.handleEvent()
-            self.events.remove(event)
-
         # do next step new
         # bad code: sneakily disabled the mechanism for delaying calculations
         if not self.hidden or 1 == 1:
@@ -1171,6 +1187,15 @@ class Room(src.saveing.Saveable):
         # do next step later
         else:
             self.delayedTicks += 1
+
+        # log events that were not handled properly
+        while self.events and self.events[0].tick <= src.gamestate.gamestate.tick:
+            event = self.events[0]
+            if event.tick < src.gamestate.gamestate.tick:
+                1/0
+
+            event.handleEvent()
+            self.events.remove(event)
 
     # bad code: should do something or be deleted
     def calculatePathMap(self):
@@ -1544,14 +1569,18 @@ class TrapRoom(EmptyRoom):
                 if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
                     character.hurt(self.chargeStrength,reason="the floor shocks you")
                     self.electricalCharges -= 1
+                    character.awardReputation(amount=2,reason="discharging a trap room",carryOver=True)
 
                     if src.gamestate.gamestate.mainChar in self.characters:
+                        pass
+                        """
                         sound = src.interaction.pygame2.mixer.Sound('../Downloads/electroShock.ogg')
                         if src.gamestate.gamestate.mainChar == character:
                             src.interaction.pygame2.mixer.Channel(6).play(sound)
                         else:
                             sound.set_volume(0.5)
                             src.interaction.pygame2.mixer.Channel(6).play(sound)
+                        """
 
         return item
 
@@ -1570,6 +1599,18 @@ class TrapRoom(EmptyRoom):
         for x in range(1,12):
             for y in range(1,12):
                 self.walkingSpace.add((x,y,0))
+
+    def addItems(self, items, actor=None):
+        for itemPair in items:
+            if not self.getItemByPosition(itemPair[1]):
+                self.electricalCharges -= 1
+                if isinstance(actor,src.characters.Character) and not actor.dead:
+                    if actor.faction == self.faction:
+                        actor.revokeReputation(amount=2,reason="discharging a trap room",carryOver=True)
+                    else:
+                        actor.awardReputation(amount=2,reason="discharging a trap room",carryOver=True)
+
+        super().addItems(items, actor=actor)
 
 class DungeonRoom(Room):
     objType = "DungeonRoom"

@@ -244,6 +244,11 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def freeWillDecison(self,options,weights,localRandom=random):
+        if self == src.gamestate.gamestate.mainChar:
+            return [input(str(options)+" "+str(weights))]
+        return localRandom.choices(options,weights=weights)
+
     def startGuarding(self,numTicks):
         self.guarding = numTicks
         self.hasOwnAction += 1
@@ -380,7 +385,7 @@ class Character(src.saveing.Saveable):
             for character in potentialTargets:
                 if character.getPosition() == tuple(newPos):
                     self.addMessage("the bolt hits somebody for 20 damage")
-                    character.hurt(20,reason="got hit by a bolt")
+                    character.hurt(20,reason="got hit by a bolt",actor=character)
                     return
 
             newPos[0] += shift[0]
@@ -530,7 +535,7 @@ class Character(src.saveing.Saveable):
         self.jobOrders.append(jobOrder)
         self.runCommandString("Jj.j")
 
-    def hurt(self, damage, reason=None):
+    def hurt(self, damage, reason=None, actor=None):
         if self.disabled:
             self.disabled = False
         """
@@ -544,15 +549,15 @@ class Character(src.saveing.Saveable):
         if reason == "attacked":
             if self.aggro < 20:
                 self.aggro += 5
-            if self.personality.get("abortMacrosOnAttack"):
+            if self.personality.get("abortMacrosOnAttack") and not self.macroState["submenue"]:
                 self.clearCommandString()
-            if self.personality.get("autoCounterAttack"):
+            if self.personality.get("autoCounterAttack") and not self.macroState["submenue"]:
                 self.runCommandString("m")
-            if self.personality.get("autoRun"):
+            if self.personality.get("autoRun") and not self.macroState["submenue"]:
                 self.runCommandString(random.choice(["a", "w", "s", "d"]))
 
             self.numAttackedWithoutResponse += 1
-            damage += self.numAttackedWithoutResponse
+            #damage += self.numAttackedWithoutResponse
 
         if self.armor:
             damageAbsorbtion = self.armor.getArmorValue(reason)
@@ -600,24 +605,21 @@ class Character(src.saveing.Saveable):
             self.numAttackedWithoutResponse = 0
 
         baseDamage = self.baseDamage
-        randomBonus = self.randomBonus
-        bonusMultiplier = self.bonusMultiplier
 
         if self.weapon:
             baseDamage = self.weapon.baseDamage
-            randomBonus = 7
 
         if self.combatMode == "agressive":
             bonusMultiplier += 2
 
-        damage = baseDamage + random.randint(0, randomBonus) * bonusMultiplier
-        target.hurt(damage, reason="attacked")
+        damage = baseDamage
+        target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
             "you attack the enemy for %s damage, the enemy has %s health left"
             % (damage, target.health)
         )
 
-        if self.personality.get("autoAttackOnCombatSuccess"):
+        if self.personality.get("autoAttackOnCombatSuccess") and not self.submenue and not self.charState["submenue"]:
             self.runCommandString(
                 "m" * self.personality.get("autoAttackOnCombatSuccess")
             )
@@ -639,7 +641,7 @@ class Character(src.saveing.Saveable):
         self.addMessage("you heal for %s and have %s health" % (amount, self.health))
 
     # bad code: only works in a certain room type
-    def collidedWith(self, other):
+    def collidedWith(self, other, actor=None):
         """
         handle collision with another character
         Parameters:
@@ -651,6 +653,8 @@ class Character(src.saveing.Saveable):
             if self.personality.get("attacksEnemiesOnContact"):
                 self.messages.append("attack!")
                 self.runCommandString("m")
+                if self == actor:
+                    self.timeTaken -= 0.70
         else:
             if self.personality.get("annoyenceByNpcCollisions"):
                 self.frustration += self.personality.get("annoyenceByNpcCollisions")
@@ -1091,7 +1095,8 @@ class Character(src.saveing.Saveable):
         self.addMessage(text)
 
         if carryOver and hasattr(self,"superior") and self.superior:
-            newAmount = amount//4
+            #newAmount = amount//4
+            newAmount = amount
             self.superior.awardReputation(amount=newAmount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     def revokeReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
@@ -1108,14 +1113,15 @@ class Character(src.saveing.Saveable):
         if fraction and self.reputation:
             totalAmount += self.reputation // fraction
         self.reputation -= totalAmount
-        if self.watched:
-            text = "you lost %i reputation" % totalAmount
-            if reason:
-                text += " for " + reason
-            self.addMessage(text)
 
-        if carryOver and self.superior:
-            newAmount = amount//4
+        text = "you lost %i reputation" % totalAmount
+        if reason:
+            text += " for " + reason
+        self.addMessage(text)
+
+        if carryOver and hasattr(self,"superior") and self.superior:
+            #newAmount = amount//4
+            newAmount = amount
             self.superior.revokeReputation(amount=newAmount,fraction=fraction,reason=reason,carryOver=carryOver)
 
     # obsolete: reintegrate
@@ -1291,7 +1297,8 @@ class Character(src.saveing.Saveable):
         self.lastTerrain = self.terrain
 
         if src.gamestate.gamestate.mainChar == self:
-            src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('../Downloads/bss.ogg'))
+            #src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('../Downloads/bss.ogg'))
+            pass
 
         # notify nearby characters
         if self.container:
@@ -1558,15 +1565,16 @@ class Character(src.saveing.Saveable):
         self.inventory.remove(item)
 
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob_ruckwarts.ogg')
-            src.interaction.pygame2.mixer.Channel(6).play(sound)
+            #sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob_ruckwarts.ogg')
+            #src.interaction.pygame2.mixer.Channel(6).play(sound)
+            pass
 
         if foundScrap and item.type == "Scrap":
             foundScrap.amount += item.amount
             foundScrap.setWalkable()
         else:
             # add item to floor
-            self.container.addItem(item, position)
+            self.container.addItem(item, position, actor=self)
 
     def examine(self, item):
         """
@@ -1752,6 +1760,8 @@ class Character(src.saveing.Saveable):
         """
 
         if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
+            pass
+            """
             #src.interaction.pygame2.mixer.Channel(1).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
             sound = src.interaction.pygame2.mixer.Sound('../Downloads/wip.ogg')
             if src.gamestate.gamestate.mainChar == self:
@@ -1760,12 +1770,14 @@ class Character(src.saveing.Saveable):
             else:
                 sound.set_volume(0.2)
                 src.interaction.pygame2.mixer.Channel(2).play(sound)
+            """
 
         if tag == "character died on tile":
             if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
                 reutation = 0
                 self.awardReputation(amount=2,reason="enemy died on tile",carryOver=True)
 
+        """
         if src.gamestate.gamestate.mainChar == self and tag == "changedTile":
             src.interaction.pygame2.mixer.Channel(7).pause()
 
@@ -1782,6 +1794,7 @@ class Character(src.saveing.Saveable):
                 src.interaction.pygame2.mixer.Channel(7).unpause()
             else:
                 src.interaction.pygame2.mixer.Channel(7).pause()
+        """
 
         # do nothing if nobody listens
         if tag not in self.listeners:
@@ -2563,7 +2576,7 @@ class Spider(Monster):
             return
         self.container.addListener(self.test,"entered room")
 
-    def hurt(self, damage, reason=None):
+    def hurt(self, damage, reason=None, actor=None):
         if reason == "acid burns":
             super().heal(damage, reason=reason)
         else:
@@ -2670,8 +2683,8 @@ class Ghul(Character):
         self.addMessage("ghuls don't heal")
         return
 
-    def hurt(self, damage, reason=None):
-        super().hurt(min(1,damage//2),reason=reason)
+    def hurt(self, damage, reason=None, actor=None):
+        super().hurt(min(1,damage//2),reason=reason,actor=actor)
 
 characterMap = {
     "Character": Character,

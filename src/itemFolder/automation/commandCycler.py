@@ -21,7 +21,7 @@ class CommandCycler(src.items.Item):
     def apply(self, character):
         super().apply(character)
 
-        if self.commands is None:
+        if not self.commands:
             character.addMessage(
                 "no task found"
             )

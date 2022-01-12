@@ -53,13 +53,6 @@ class LandMine(src.items.Item):
         if not self.xPosition or not self.yPosition:
             return
 
-        new = src.items.itemMap["Explosion"]()
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
-
         offsets = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
         random.shuffle(offsets)
 

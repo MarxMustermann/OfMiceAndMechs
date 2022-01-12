@@ -25,7 +25,7 @@ Activate a filled corpse animator to spawn a ghul
 
         self.runsCommands = True
         self.filled = filled
-        self.commands = {}
+        self.commands = {"born":"j"}
         self.attributesToStore.extend(["filled", "commands"])
 
         self.commandOptions = [

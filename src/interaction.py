@@ -58,7 +58,7 @@ def advanceGame():
             ):
                 event = specificTerrain.events[0]
                 if event.tick < src.gamestate.gamestate.tick:
-                    continue
+                    1/0
                 event.handleEvent()
                 specificTerrain.events.remove(event)
 
@@ -562,7 +562,7 @@ type the macro name you want to record to
     return (1,key)
 
 def checkStaggered(char):
-    if char.staggered:
+    if char.staggered and 1==0: # HACK: disabled staggering
         char.staggered -= 1
         char.addMessage("you are still staggered")
         return
@@ -2695,6 +2695,7 @@ class SubMenu(src.saveing.Saveable):
                 "type",
                 "query",
                 "lockOptions",
+                "selection",
             ]
         )
         self.callbacksToStore.extend(["followUp"])
@@ -3615,7 +3616,7 @@ class CharacterInfoMenu(SubMenu):
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"
 
-    def __init__(self, questType, assignTo, activeChar):
+    def __init__(self, questType, assignTo, activeChar=None):
         self.requiredParams = None
         self.questParams = {}
         self.questType = questType
@@ -3647,7 +3648,12 @@ class CreateQuestMenu(SubMenu):
             elif param["type"] == "string":
                 self.questParams[param["name"]] = rawParameter
             elif param["type"] == "coordinate":
-                self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1])) 
+                try:
+                    self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0) 
+                except:
+                    print(rawParameter)
+                    print(self.quest)
+                    return True
             self.submenu = None
 
         if self.requiredParams == None:
@@ -3663,8 +3669,6 @@ class CreateQuestMenu(SubMenu):
         if not self.requiredParams and key == " ":
             for char in self.assignTo:
                 quest = self.questType()
-                print(self.questParams)
-                print(self.optionalParams)
                 quest.setParameters(self.questParams)
                 foundQuest = None
                 for targetQuest in char.quests:
@@ -3727,7 +3731,7 @@ class AdvancedQuestMenu(SubMenu):
 
     type = "AdvancedQuestMenu"
 
-    def __init__(self,activeChar):
+    def __init__(self,activeChar=None):
         """
         set up internal state
         """
@@ -3754,15 +3758,16 @@ class AdvancedQuestMenu(SubMenu):
             return True
 
         # start rendering
-        header.set_text(
-            (urwid.AttrSpec("default", "default"), "\nadvanced Quest management\n")
-        )
-        out = "\n"
-        #if self.character:
-        #    out += "character: " + str(self.character.name) + "\n"
-        if self.quest:
-            out += "quest: " + str(self.quest) + "\n"
-        out += "\n"
+        if not noRender:
+            header.set_text(
+                (urwid.AttrSpec("default", "default"), "\nadvanced Quest management\n")
+            )
+            out = "\n"
+            #if self.character:
+            #    out += "character: " + str(self.character.name) + "\n"
+            if self.quest:
+                out += "quest: " + str(self.quest) + "\n"
+            out += "\n"
 
         # let the player select the character to assign the quest to
         if self.state is None:
@@ -3788,7 +3793,7 @@ class AdvancedQuestMenu(SubMenu):
                     # add the main players subordinates as target
                     for char in self.activeChar.subordinates:
                         options.append((char, char.name))
-                    self.setOptions("whom to give the order to: ", options)
+                    self.setOptions("whom to give the order to: \n(press S for all subordinates)", options)
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
@@ -3825,7 +3830,7 @@ class AdvancedQuestMenu(SubMenu):
                             continue
 
                         options.append((value, key))
-                    self.setOptions("what type of quest:", options)
+                    self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
@@ -3844,6 +3849,9 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == "questByName":
             if key == "enter":
                 self.state = "parameter selection"
+                if not self.selection in src.quests.questMap:
+                    print(self.selection)
+                    return True
                 self.quest = src.quests.questMap[self.selection]
                 self.selection = None
                 self.lockOptions = True
@@ -3857,7 +3865,8 @@ class AdvancedQuestMenu(SubMenu):
                 else:
                     self.selection += key
 
-                main.set_text((urwid.AttrSpec("default", "default"), self.selection+"\n\n%s"%(self.activeChar.questsDone)))
+                if not noRender:
+                    main.set_text((urwid.AttrSpec("default", "default"), self.selection+"\n\n%s"%(self.activeChar.questsDone)))
                 return False
 
         # let the player select the parameters for the quest
@@ -4195,7 +4204,11 @@ def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
 
     # render the quests
     if len(char.quests):
-        nextstep = "next step: %s \n"%(char.getActiveQuest().getSolvingCommandString(char),)
+        solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
+        if solvingCommangString:
+            solvingCommangString = solvingCommangString.replace("\n","\\n")
+
+        nextstep = "next step: %s \n"%(solvingCommangString,)
         if asList:
             txt.append(nextstep)
         else:
@@ -5392,13 +5405,11 @@ def gameLoop(loop, user_data=None):
                             or key[0] in ("lagdetection", "lagdetection_")
                         ):
                             if len(state["commandKeyQueue"]):
-                                #key = state["commandKeyQueue"][0]
-                                #state["commandKeyQueue"].remove(key)
                                 key = state["commandKeyQueue"].pop()
                             else:
                                 key = ("~", [])
 
-                        while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or char == src.gamestate.gamestate.mainChar) and char.timeTaken < 1:
+                        while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead)) and char.timeTaken < 1:
                             if char.huntkilling:
                                 processInput(
                                         (char.doHuntKill(),["norecord"]),

@@ -407,6 +407,7 @@ class Terrain(src.saveing.Saveable):
                 "xPosition",
             ]
         )
+        self.tupleListsToStore.append("scrapFields")
 
     def randomAddItems(self, items):
         for item in items:
@@ -2421,7 +2422,7 @@ class Terrain(src.saveing.Saveable):
         room.yPosition = newPosition[1]
 
     # bad code: should be in saveable
-    def setState(self, state, tick=0):
+    def setState(self, state):
         """
         set state from dict
 
@@ -2429,6 +2430,7 @@ class Terrain(src.saveing.Saveable):
             state: the state to set
             tick: obsolete, ignore
         """
+        super().setState(state)
 
         for roomId in state["roomIds"]:
             room = src.rooms.getRoomFromState(state["roomStates"][roomId], terrain=self)
@@ -2461,11 +2463,6 @@ class Terrain(src.saveing.Saveable):
         Returns:
             semi serialised state
         """
-
-        print("get stat terrain")
-        print(self.noPlacementTiles)
-        print(self.scrapFields)
-
 
         roomIds = []
         roomStates = {}

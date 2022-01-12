@@ -277,7 +277,7 @@ mainChar = None
 
 if not loaded:
     gamestate.gamestate.setup(phase=args.phase, seed=seed)
-    terrain = gamestate.gamestate.terrain
+    terrain = gamestate.gamestate.terrainMap[7][7]
     interaction.lastTerrain = terrain
 
 # set up the splash screen

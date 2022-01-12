@@ -221,6 +221,7 @@ class Quest(src.saveing.Saveable):
         self.attributesToStore.append("completed")
         self.attributesToStore.append("reputationReward")
         self.attributesToStore.append("lifetime")
+        self.attributesToStore.append("description")
         self.attributesToStore.extend(["dstX", "dstY"])
         self.callbacksToStore.append("endTrigger")
         self.objectsToStore.append("character")
@@ -6289,6 +6290,9 @@ class GoToPosition(Quest):
         self.hasListener = False
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
+        self.type = "GoToPosition"
+
+        self.tuplesToStore.append("targetPosition")
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -6377,6 +6381,8 @@ class GoHome(MetaQuestSequence):
         self.hasListener = False
         self.addedSubQuests = False
         self.paranoid = paranoid
+        self.cityLocation = None
+        self.tuplesToStore.append("cityLocation")
 
     def triggerCompletionCheck(self, character=None):
         if not character:
@@ -6980,6 +6986,7 @@ questMap = {
     "GoToTile": GoToTile,
     "Equip": Equip,
     "RestockRoom": RestockRoom,
+    "GoToPosition": GoToPosition,
 }
 
 def getQuestFromState(state):

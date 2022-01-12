@@ -80,6 +80,7 @@ class Saveable(object):
         self.objectsToStore = []
         self.tupleDictsToStore = []
         self.tupleListsToStore = []
+        self.tuplesToStore = []
 
         self.attributesToStore.append("id")
 
@@ -179,6 +180,11 @@ class Saveable(object):
 
                 state[tupleListName] = convertedList
 
+        # store tuples
+        for tupleName in self.tuplesToStore:
+            if hasattr(self, tupleName):
+                state[tupleName] = list(getattr(self,tupleName))
+
         # store attributes
         for attribute in self.attributesToStore:
             if hasattr(self, attribute):
@@ -226,11 +232,18 @@ class Saveable(object):
 
         for tupleListName in self.tupleListsToStore:
             if tupleListName in state:
+                print("--tupleList--")
+                print(tupleListName)
                 convertedList = []
                 for item in state[tupleListName]:
                     convertedList.append(tuple(item))
 
                 setattr(self, tupleListName, convertedList)
+                print(convertedList)
+
+        for tupleName in self.tuplesToStore:
+            if tupleName in state:
+                setattr(self, tupleName, tuple(state[tupleName]))
 
         # set attributes
         for attribute in self.attributesToStore:

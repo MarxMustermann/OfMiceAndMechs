@@ -1051,9 +1051,8 @@ class Character(src.saveing.Saveable):
                     chatOptions.append(option)
             self.basicChatOptions = chatOptions
 
-        # add new events
-        if "newEvents" in state:
-            for eventId in state["newEvents"]:
+        if "eventIds" in state:
+            for eventId in state["eventIds"]:
                 eventState = state["eventStates"][eventId]
                 event = src.events.getEventFromState(eventState)
                 self.addEvent(event)

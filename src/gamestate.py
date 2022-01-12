@@ -85,9 +85,9 @@ class GameState(src.saveing.Saveable):
         self.openingCinematic = None
 
         self.terrainMap = []
-        for y in range(0, 30):
+        for y in range(0, 15):
             line = []
-            for x in range(0, 30):
+            for x in range(0, 15):
                 if x == 15 and y == 15:
                     thisTerrain = self.terrainType(seed=seed)
                     self.terrain = thisTerrain

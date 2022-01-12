@@ -2699,8 +2699,7 @@ class SubMenu(src.saveing.Saveable):
             ]
         )
         self.callbacksToStore.extend(["followUp"])
-        self.initialState = self.getState()
-        self.id = uuid.uuid4().hex
+        self.id = str(random.random())
 
         self.escape = False
 
@@ -3616,7 +3615,7 @@ class CharacterInfoMenu(SubMenu):
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"
 
-    def __init__(self, questType, assignTo, activeChar=None):
+    def __init__(self, questType=None, assignTo=None, activeChar=None):
         self.requiredParams = None
         self.questParams = {}
         self.questType = questType
@@ -3628,6 +3627,13 @@ class CreateQuestMenu(SubMenu):
         self.parameterName = None
         self.parameterValue = None
         self.activeChar = activeChar
+
+        self.attributesToStore.extend(
+                [ "requiredParams","questParams","questType","stealAllKeys","parameterName","parameterValue"])
+        self.objectsToStore.append("activeChar")
+        self.objectsToStore.append("quest")
+        self.objectsToStore.append("submenu")
+        self.objectListsToStore.append("assignTo")
 
     def handleKey(self, key, noRender=False):
         # exit submenu
@@ -3741,6 +3747,7 @@ class AdvancedQuestMenu(SubMenu):
         self.questParams = {}
         self.activeChar = activeChar
         super().__init__()
+        self.objectsToStore.append("activeChar")
 
     def handleKey(self, key, noRender=False):
         """
@@ -5554,6 +5561,7 @@ subMenuMap = {
     "TextMenu": TextMenu,
     "MapMenu": MapMenu,
     "OneKeystrokeMenu": OneKeystrokeMenu,
+    "CreateQuestMenu": CreateQuestMenu,
 }
 
 def getSubmenuFromState(state):
@@ -5568,5 +5576,6 @@ def getSubmenuFromState(state):
 
     subMenu = subMenuMap[state["type"]]()
     subMenu.setState(state)
+    print(state)
     src.saveing.loadingRegistry.register(subMenu)
     return subMenu

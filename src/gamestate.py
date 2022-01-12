@@ -206,7 +206,7 @@ class GameState(src.saveing.Saveable):
 
         # load the terrain
         global terrain
-        self.terrain = self.terrainMap[15][15]
+        self.terrain = self.terrainMap[7][7]
         terrain = self.terrain
 
         print("checking for terrain")

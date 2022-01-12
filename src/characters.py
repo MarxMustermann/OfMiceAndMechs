@@ -206,6 +206,7 @@ class Character(src.saveing.Saveable):
                     "guarding",
                     "faction",
                     "rank",
+                    "messages",
                 ]
             )
 

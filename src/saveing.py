@@ -47,7 +47,7 @@ class LoadingRegistry(object):
         """
 
         if thingId in self.registered:
-            if param:
+            if not param == None:
                 callback(self.registered[thingId], param)
             else:
                 callback(self.registered[thingId])
@@ -78,6 +78,7 @@ class Saveable(object):
         self.attributesToStore = []
         self.callbacksToStore = []
         self.objectsToStore = []
+        self.objectListsToStore = []
         self.tupleDictsToStore = []
         self.tupleListsToStore = []
         self.tuplesToStore = []
@@ -210,6 +211,19 @@ class Saveable(object):
             else:
                 state[objectName] = None
 
+        print(self.objectListsToStore)
+        for objectListName in self.objectListsToStore:
+            print(objectListName)
+            if hasattr(self, objectListName):
+                convertedList = []
+                for item in getattr(self,objectListName):
+                    if hasattr(self, objectName) and getattr(self, objectName):
+                        convertedList.append(item.id)
+                    else:
+                        convertedList.append(None)
+
+                state[objectListName] = convertedList
+                print(state[objectListName])
         return state
 
     def setState(self, state):
@@ -268,6 +282,45 @@ class Saveable(object):
                     setattr(self, callbackName, None)
 
         # set objects
+        for objectName in self.objectsToStore:
+            if objectName in state:
+                if state[objectName]:
+                    def setValue(value, name):
+                        """
+                        set value of an attribute
+
+                        Parameters:
+                            value: the value to set
+                            name: the name of the attriute to set
+                        """
+
+                        setattr(self, name, value)
+
+                    loadingRegistry.callWhenAvailable(
+                        state[objectName], setValue, objectName
+                    )
+                else:
+                    setattr(self, objectName, None)
+
+        # set objects
+        for objectListName in self.objectListsToStore:
+            if objectListName in state:
+                convertedList = []
+                for item in state[objectListName]:
+                    convertedList.append(None)
+
+                index = 0
+                for item in state[objectListName]:
+                    def setValue(value, index):
+                        convertedList[index] = value
+
+                    loadingRegistry.callWhenAvailable(
+                        item, setValue, index
+                    )
+
+                    index += 1
+                setattr(self,objectListName,convertedList)
+
         for objectName in self.objectsToStore:
             if objectName in state:
                 if state[objectName]:

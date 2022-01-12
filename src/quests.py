@@ -6717,6 +6717,11 @@ class ObtainSpecialItem(MetaQuestSequence):
         # save initial state and register
         self.type = "ObtainSpecialItem"
     
+        self.attributesToStore.extend([
+            "itemID","didDelegate","didItemCheck","addedSubQuests",
+            "resetDelegations","initialLifetime","paranoid","strategy"])
+        self.tuplesToStore.append("itemLocation")
+
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()
         parameters.append({"name":"itemLocation","type":"coordinate"})

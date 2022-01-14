@@ -350,8 +350,9 @@ class Item(src.saveing.Saveable):
         
         if src.gamestate.gamestate.mainChar in character.container.characters:
             #src.interaction.pygame2.mixer.Channel(4).play(src.interaction.pygame2.mixer.Sound('../Downloads/Soft_Airy_Swish.ogg'))
-            sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob2.ogg')
-            src.interaction.pygame2.mixer.Channel(4).play(sound)
+            #sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob2.ogg')
+            #src.interaction.pygame2.mixer.Channel(4).play(sound)
+            pass
 
         # gather the actions
         actions = self.gatherPickupActions()

@@ -46,21 +46,7 @@ def advanceGame():
     """
     for row in src.gamestate.gamestate.terrainMap:
         for specificTerrain in row:
-            for character in specificTerrain.characters:
-                character.advance()
-
-            for room in specificTerrain.rooms:
-                room.advance()
-
-            while (
-                specificTerrain.events
-                and specificTerrain.events[0].tick <= src.gamestate.gamestate.tick
-            ):
-                event = specificTerrain.events[0]
-                if event.tick < src.gamestate.gamestate.tick:
-                    1/0
-                event.handleEvent()
-                specificTerrain.events.remove(event)
+            specificTerrain.advance()
 
     for item in src.gamestate.gamestate.extraRoots:
         for character in item.characters:
@@ -3641,7 +3627,7 @@ class CreateQuestMenu(SubMenu):
             return True
 
         if not self.quest:
-            self.quest = self.questType()
+            self.quest = src.quests.questMap[self.questType]()
 
         if self.submenu:
             if not self.submenu.handleKey(key, noRender=noRender):
@@ -3650,7 +3636,12 @@ class CreateQuestMenu(SubMenu):
             
             rawParameter = self.submenu.text
             if param["type"] == "int":
-                self.questParams[param["name"]] = int(rawParameter)
+                try:
+                    self.questParams[param["name"]] = int(rawParameter)
+                except:
+                    print(rawParameter)
+                    print(self.quest)
+                    return True
             elif param["type"] == "string":
                 self.questParams[param["name"]] = rawParameter
             elif param["type"] == "coordinate":
@@ -3674,7 +3665,10 @@ class CreateQuestMenu(SubMenu):
 
         if not self.requiredParams and key == " ":
             for char in self.assignTo:
-                quest = self.questType()
+                if char == None or char.dead:
+                    continue
+
+                quest = src.quests.questMap[self.questType]()
                 quest.setParameters(self.questParams)
                 foundQuest = None
                 for targetQuest in char.quests:
@@ -3799,6 +3793,8 @@ class AdvancedQuestMenu(SubMenu):
 
                     # add the main players subordinates as target
                     for char in self.activeChar.subordinates:
+                        if char == None:
+                            continue
                         options.append((char, char.name))
                     self.setOptions("whom to give the order to: \n(press S for all subordinates)", options)
 
@@ -3836,7 +3832,7 @@ class AdvancedQuestMenu(SubMenu):
                         if key.startswith("Naive"):
                             continue
 
-                        options.append((value, key))
+                        options.append((value.type, key))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection
@@ -3859,7 +3855,7 @@ class AdvancedQuestMenu(SubMenu):
                 if not self.selection in src.quests.questMap:
                     print(self.selection)
                     return True
-                self.quest = src.quests.questMap[self.selection]
+                self.quest = self.selection
                 self.selection = None
                 self.lockOptions = True
                 self.questParams = {}
@@ -3878,7 +3874,7 @@ class AdvancedQuestMenu(SubMenu):
 
         # let the player select the parameters for the quest
         if self.state == "parameter selection":
-            if self.quest == src.quests.EnterRoomQuestMeta:
+            if self.quest == "EnterRoomQuestMeta":
 
                 # set up the options
                 if not self.options and not self.getSelection():
@@ -3907,7 +3903,7 @@ class AdvancedQuestMenu(SubMenu):
                 else:
                     return False
 
-            elif self.quest == src.quests.StoreCargo:
+            elif self.quest == "StoreCargo":
 
                 # set up the options for selecting the cargo room
                 if "cargoRoom" not in self.questParams:

@@ -28,7 +28,7 @@ class LoadingRegistry(object):
             callback = self.delayedCalls[thing.id][counter]
             param = self.params[thing.id][counter]
 
-            if param:
+            if not param == None:
                 callback(thing, param)
             else:
                 callback(thing)
@@ -174,7 +174,14 @@ class Saveable(object):
         # store tuple dicts
         for tupleListName in self.tupleListsToStore:
             if hasattr(self, tupleListName):
+                print("-tupleListName-")
+                print(tupleListName)
                 tupleList = getattr(self, tupleListName)
+                print(tupleList)
+                if tupleList == None:
+                    state[tupleListName] = None
+                    continue
+
                 convertedList = []
                 for item in tupleList:
                     convertedList.append(list(item))
@@ -184,7 +191,13 @@ class Saveable(object):
         # store tuples
         for tupleName in self.tuplesToStore:
             if hasattr(self, tupleName):
+                value = getattr(self,tupleName)
+                if value == None:
+                    state[tupleName] = None
+                    continue
                 state[tupleName] = list(getattr(self,tupleName))
+            else:
+                state[tupleName] = None
 
         # store attributes
         for attribute in self.attributesToStore:
@@ -216,14 +229,17 @@ class Saveable(object):
             print(objectListName)
             if hasattr(self, objectListName):
                 convertedList = []
-                for item in getattr(self,objectListName):
-                    if hasattr(self, objectName) and getattr(self, objectName):
+                items = getattr(self,objectListName)
+                if items == None:
+                    state[objectListName] = None
+                    continue
+                for item in items:
+                    if not item == None:
                         convertedList.append(item.id)
                     else:
                         convertedList.append(None)
 
                 state[objectListName] = convertedList
-                print(state[objectListName])
         return state
 
     def setState(self, state):
@@ -245,9 +261,14 @@ class Saveable(object):
                 setattr(self, tupleDictName, convertedDict)
 
         for tupleListName in self.tupleListsToStore:
+            print("--tupleList--")
+            print("o"+tupleListName)
             if tupleListName in state:
-                print("--tupleList--")
-                print(tupleListName)
+                items = state[tupleListName]
+                if items == None:
+                    setattr(self, tupleListName, None)
+                    continue
+
                 convertedList = []
                 for item in state[tupleListName]:
                     convertedList.append(tuple(item))
@@ -257,7 +278,11 @@ class Saveable(object):
 
         for tupleName in self.tuplesToStore:
             if tupleName in state:
-                setattr(self, tupleName, tuple(state[tupleName]))
+                value = state[tupleName]
+                if value == None:
+                    setattr(self, tupleName, None)
+                    continue
+                setattr(self, tupleName, tuple(value))
 
         # set attributes
         for attribute in self.attributesToStore:

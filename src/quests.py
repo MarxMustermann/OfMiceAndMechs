@@ -865,9 +865,6 @@ class MetaQuestSequence(Quest):
 
         # smooth over impossible state
         if not self.active:
-            src.interaction.debugMessages.append(
-                "triggerCompletionCheck called on inactive " + str(self)
-            )
             return
 
         # remove completed quests
@@ -1307,6 +1304,10 @@ class GatherScrap(MetaQuestSequence):
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
+
+        self.tuplesToStore.append("targetPosition")
+
+        self.type = "GatherScrap"
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -5961,7 +5962,19 @@ class GoToTile(Quest):
         if targetPosition: 
             self.setParameters({"targetPosition":targetPosition})
 
+        self.attributesToStore.extend([
+            "hasListener","paranoid","sentSubordinates" ])
+
+        self.tupleListsToStore.extend([
+            "path", "smallPath" ])
+
+        self.tuplesToStore.extend([
+            "targetPosition","expectedPosition","lastPos","lastDirection"])
+
+        self.type = "GoToTile"
+
     def getQuestMarkersSmall(self,character):
+        print("get small markers")
         self.getSolvingCommandString(character)
         result = super().getQuestMarkersSmall(character)
         if self.smallPath:
@@ -5975,6 +5988,7 @@ class GoToTile(Quest):
         return result
 
     def getQuestMarkersTile(self,character):
+        print("get big markers")
         result = super().getQuestMarkersTile(character)
         self.getSolvingCommandString(character)
         if self.expectedPosition:
@@ -6039,6 +6053,13 @@ class GoToTile(Quest):
             return False
         else:
             return True
+
+    def setState(self,state):
+        super().setState(state)
+
+        if self.hasListener:
+            if self.character:
+                self.character.addListener(self.wrapedTriggerCompletionCheck, "moved")
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -6326,7 +6347,7 @@ class GoToPosition(Quest):
             if not command:
                 (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom,tryHard=True)
             if not command:
-                return ".19.."
+                return None
             return command
         else:
             charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
@@ -6335,7 +6356,7 @@ class GoToPosition(Quest):
             if not command:
                 (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,tryHard=True)
             if not command:
-                return ".19.."
+                return None
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -6363,6 +6384,7 @@ class GoToPosition(Quest):
             character.runCommandString(commandString)
             return False
         else:
+            self.fail()
             return True
 
     def getRequiredParameters(self):
@@ -6377,11 +6399,14 @@ class GoHome(MetaQuestSequence):
         self.metaDescription = description
         # save initial state and register
         self.type = "GoHome"
-        self.itemID = None
         self.hasListener = False
         self.addedSubQuests = False
         self.paranoid = paranoid
         self.cityLocation = None
+
+        self.attributesToStore.extend([
+            "hasListener","addedSubQuests","paranoid"])
+
         self.tuplesToStore.append("cityLocation")
 
     def triggerCompletionCheck(self, character=None):
@@ -6453,6 +6478,12 @@ class GoHome(MetaQuestSequence):
                 return "a"
             return "..."
 
+    def setState(self,state):
+        super().setState(state)
+        
+        if self.character and self.hasListener:
+            self.character.addListener(self.wrapedTriggerCompletionCheck, "moved")
+
 class GrabSpecialItem(Quest):
     def __init__(self, description="grab special item", creator=None,lifetime=None):
         questList = []
@@ -6462,6 +6493,9 @@ class GrabSpecialItem(Quest):
         self.type = "GrabSpecialItem"
         self.itemID = None
         self.hasListener = False
+
+        self.attributesToStore.extend([
+            "itemID","hasListener"])
 
     def triggerCompletionCheck(self, character=None):
         if not character:
@@ -6536,6 +6570,10 @@ class EnterEnemyCity(MetaQuestSequence):
         self.hasListener = False
         self.centerFailCounter = 0
         self.rewardedNearby = False
+
+        self.attributesToStore.extend([
+            "rewardedNearby","centerFailCounter","hasListener"])
+        self.tuplesToStore.extend(["cityLocation"])
 
     def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
@@ -6992,6 +7030,7 @@ questMap = {
     "Equip": Equip,
     "RestockRoom": RestockRoom,
     "GoToPosition": GoToPosition,
+    "GatherScrap": GatherScrap,
 }
 
 def getQuestFromState(state):

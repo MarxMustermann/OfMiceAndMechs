@@ -2362,16 +2362,16 @@ press space to continue"""%(self.gatherTime,))
         foundCityNPCs = []
         for cityLocation in self.citylocations:
             cityLeader = self.leaders[cityLocation]
-            if cityLeader.dead == True:
+            if cityLeader == None or cityLeader.dead == True:
                 continue
             for subleader in cityLeader.subordinates:
-                if subleader.dead == True:
+                if subleader == None or subleader.dead == True:
                     continue
                 for subsubleader in subleader.subordinates:
-                    if subsubleader.dead == True:
+                    if subsubleader == None or subsubleader.dead == True:
                         continue
                     for worker in subsubleader.subordinates:
-                        if worker.dead == True:
+                        if worker == None or worker.dead == True:
                             continue
                         foundNPCs.append(worker)
                         if worker.faction == src.gamestate.gamestate.mainChar.faction:
@@ -2475,15 +2475,15 @@ press space to continue"""%(self.gatherTime,))
             cityLeader = self.leaders[cityLocation]
             gatherNPC(cityLeader)
             for subleader in cityLeader.subordinates:
-                if subleader.dead:
+                if subleader == None or subleader.dead:
                     continue
                 gatherNPC(subleader)
                 for subsubleader in subleader.subordinates:
-                    if subsubleader.dead:
+                    if subsubleader == None or subsubleader.dead:
                         continue
                     gatherNPC(subsubleader)
                     for worker in subsubleader.subordinates:
-                        if worker.dead:
+                        if worker == None or worker.dead:
                             continue
                         gatherNPC(worker)
 
@@ -2492,15 +2492,15 @@ press space to continue"""%(self.gatherTime,))
                 cityLeader = self.leaders[cityLocation]
                 cityLeader.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
                 for subleader in cityLeader.subordinates:
-                    if subleader.dead:
+                    if subleader == None or subleader.dead:
                         continue
                     subleader.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
                     for subsubleader in subleader.subordinates:
-                        if subsubleader.dead:
+                        if subsubleader == None or subsubleader.dead:
                             continue
                         subsubleader.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
                         for worker in subsubleader.subordinates:
-                            if worker.dead:
+                            if worker == None or worker.dead:
                                 continue
                             worker.awardReputation(amount=10,reason="survived the epoch",carryOver=True)
 
@@ -2531,7 +2531,7 @@ press space to continue"""%(self.gatherTime,))
                         infogrid.append(" "*rowwidth)
 
                     def getname(character):
-                        if character.dead:
+                        if character == None or character.dead:
                             return ""
                         name = character.name.split(" ")[0][0]+". "+character.name.split(" ")[1]
                         if character == src.gamestate.gamestate.mainChar:

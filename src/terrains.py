@@ -409,6 +409,23 @@ class Terrain(src.saveing.Saveable):
         )
         self.tupleListsToStore.append("scrapFields")
 
+    def advance(self):
+        for character in self.characters:
+            character.advance()
+
+        for room in self.rooms:
+            room.advance()
+
+        while (
+            self.events
+            and self.events[0].tick <= src.gamestate.gamestate.tick
+        ):
+            event = self.events[0]
+            if event.tick < src.gamestate.gamestate.tick:
+                1/0
+            event.handleEvent()
+            self.events.remove(event)
+
     def randomAddItems(self, items):
         for item in items:
             pos = (random.randint(15,210),random.randint(15,210),0)

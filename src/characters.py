@@ -213,6 +213,7 @@ class Character(src.saveing.Saveable):
         self.objectsToStore.append("serveQuest")
         self.objectsToStore.append("room")
         self.objectsToStore.append("superior")
+        self.objectListsToStore.append("subordinates")
 
         # bad code: story specific state
         self.serveQuest = None

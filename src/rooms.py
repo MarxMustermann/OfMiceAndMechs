@@ -728,8 +728,10 @@ class Room(src.saveing.Saveable):
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
                     if foundMainchar:
+                        print("check for quest")
                         activeQuest = foundMainchar.getActiveQuest()
                         if activeQuest:
+                            print(activeQuest)
                             for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                                 pos = marker[0]
                                 try:

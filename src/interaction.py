@@ -5372,66 +5372,9 @@ def gameLoop(loop, user_data=None):
 
                 removeChars = []
                 for char in multi_chars:
-                    if char.dead and not char == src.gamestate.gamestate.mainChar:
-                        removeChars.append(char)
-                    if char.stasis:
-                        continue
-                    if char.disabled:
-                        continue
+                    #advanceChar(char,removeChars)
+                    pass
 
-                    if (
-                        len(cinematics.cinematicQueue)
-                        and not char == src.gamestate.gamestate.mainChar
-                    ):
-                        continue
-
-                    state = char.macroState
-
-                    # do random action
-                    if not len(state["commandKeyQueue"]):
-                        #if not char == src.gamestate.gamestate.mainChar:
-                        char.startIdling()
-
-                    """
-                    while len(state["commandKeyQueue"]) > 1000:
-                        state["commandKeyQueue"].pop()
-                    """
-
-                    while len(char.messages) > 100:
-                        char.messages = char.messages[-100:]
-
-                    if len(state["commandKeyQueue"]):
-                        key = state["commandKeyQueue"][-1]
-                        while (
-                            isinstance(key[0], list)
-                            or isinstance(key[0], tuple)
-                            or key[0] in ("lagdetection", "lagdetection_")
-                        ):
-                            if len(state["commandKeyQueue"]):
-                                key = state["commandKeyQueue"].pop()
-                            else:
-                                key = ("~", [])
-
-                        while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead)) and char.timeTaken < 1:
-                            if char.huntkilling:
-                                processInput(
-                                        (char.doHuntKill(),["norecord"]),
-                                        charState=state, noAdvanceGame=True, char=char)
-                            elif char.hasOwnAction > 0:
-                                processInput(
-                                        (char.getOwnAction(),["norecord"]),
-                                        charState=state, noAdvanceGame=True, char=char)
-                            elif state["commandKeyQueue"]:
-                                key = state["commandKeyQueue"].pop()
-                                processInput(
-                                    key, charState=state, noAdvanceGame=True, char=char
-                                )
-                            else:
-                                if tcod:
-                                    renderGameDisplay()
-                                    getTcodEvents()
-
-                        char.timeTaken -= 1
                 multi_chars.update(new_chars)
                 new_chars = set()
 
@@ -5454,6 +5397,67 @@ def gameLoop(loop, user_data=None):
 
     loop.set_alarm_in(0.001, gameLoop)
 
+def advanceChar(char,removeChars):
+    if char.dead and not char == src.gamestate.gamestate.mainChar:
+        removeChars.append(char)
+    if char.stasis:
+        return
+    if char.disabled:
+        return
+
+    if (
+        len(cinematics.cinematicQueue)
+        and not char == src.gamestate.gamestate.mainChar
+    ):
+        return
+
+    state = char.macroState
+
+    # do random action
+    if not len(state["commandKeyQueue"]):
+        #if not char == src.gamestate.gamestate.mainChar:
+        char.startIdling()
+
+    """
+    while len(state["commandKeyQueue"]) > 1000:
+        state["commandKeyQueue"].pop()
+    """
+
+    while len(char.messages) > 100:
+        char.messages = char.messages[-100:]
+
+    if len(state["commandKeyQueue"]):
+        key = state["commandKeyQueue"][-1]
+        while (
+            isinstance(key[0], list)
+            or isinstance(key[0], tuple)
+            or key[0] in ("lagdetection", "lagdetection_")
+        ):
+            if len(state["commandKeyQueue"]):
+                key = state["commandKeyQueue"].pop()
+            else:
+                key = ("~", [])
+
+        while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead)) and char.timeTaken < 1:
+            if char.huntkilling:
+                processInput(
+                        (char.doHuntKill(),["norecord"]),
+                        charState=state, noAdvanceGame=True, char=char)
+            elif char.hasOwnAction > 0:
+                processInput(
+                        (char.getOwnAction(),["norecord"]),
+                        charState=state, noAdvanceGame=True, char=char)
+            elif state["commandKeyQueue"]:
+                key = state["commandKeyQueue"].pop()
+                processInput(
+                    key, charState=state, noAdvanceGame=True, char=char
+                )
+            else:
+                if tcod:
+                    renderGameDisplay()
+                    getTcodEvents()
+
+        char.timeTaken -= 1
 
 loop = None
 

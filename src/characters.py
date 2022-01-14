@@ -1612,6 +1612,8 @@ class Character(src.saveing.Saveable):
         if self.stasis or self.dead or self.disabled:
             return
 
+        src.interaction.advanceChar(self,[])
+
         #HACK: sound effect
         """
         if src.gamestate.gamestate.mainChar == self and src.gamestate.gamestate.tick%4 == 1:

@@ -14,10 +14,12 @@ class SpecialItem(src.items.Item):
         """
 
         super().__init__(display="!!")
-        self.name = "special item slot"
+        self.name = "special item"
 
         self.walkable = True
         self.bolted = False
         self.itemID = None
+
+        self.attributesToStore.append("itemID")
 
 src.items.addType(SpecialItem)

@@ -1612,7 +1612,7 @@ class Character(src.saveing.Saveable):
         if self.stasis or self.dead or self.disabled:
             return
 
-        src.interaction.advanceChar(self,[])
+        #src.interaction.advanceChar(self,[])
 
         #HACK: sound effect
         """

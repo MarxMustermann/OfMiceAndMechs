@@ -1052,6 +1052,7 @@ rawMaterialLookup = {
     "AutoFarmer": ["FloorPlate", "MemoryCell", "Connector"],
     "UniformStockpileManager": ["Case", "MemoryCell", "Connector"],
     "TypedStockpileManager": ["Case", "MemoryCell", "Connector"],
+    "Sword": ["Rod"],
 }
 
 

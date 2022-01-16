@@ -1153,8 +1153,8 @@ class Terrain(src.saveing.Saveable):
 
         return paths.get(targetPos)
 
-    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None):
-        path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom)
+    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None):
+        path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -1164,7 +1164,7 @@ class Terrain(src.saveing.Saveable):
         return (command,path)
 
 
-    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None):
+    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None):
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -1225,7 +1225,7 @@ class Terrain(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
+                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)) and not newPos == targetPos:
                     continue
 
                 if not tryHard:

@@ -1032,13 +1032,6 @@ class BackToTheRoots(BasicPhase):
         for citylocation in self.citylocations:
             currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
             
-            scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-            currentTerrain.addItem(scrapCompactor,(107, 92, 0))
-            
-            machine = src.items.itemMap["Machine"]()
-            machine.setToProduce("Sheet")
-            currentTerrain.addItem(machine,(109, 92, 0))
-
             architect = src.items.itemMap["ArchitectArtwork"]()
             currentTerrain.addItem(architect,(124, 110, 0))
 
@@ -1063,6 +1056,8 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
+
+            mainRoom.addItem(architect,(3,1,0))
 
             rooms = []
 
@@ -1137,11 +1132,27 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             productionRoom = room
-            for pos in [(2,2,0),(4,3,0),(2,4,0),(4,5,0)]:
-                machine = src.items.itemMap["Machine"]()
-                machine.setToProduce("Sheet")
-                machine.charges = 0
-                productionRoom.addItem(machine,pos)
+            productionRoom.floorPlan["inputSlots"] = []
+            productionRoom.floorPlan["buildSites"] = []
+            productionRoom.floorPlan["outputSlots"] = []
+
+            for y in (1,3,5,7,9,11,):
+                productionRoom.floorPlan["inputSlots"].append(((2,y,0),"Scrap"))
+                productionRoom.floorPlan["buildSites"].append(((3,y,0),"ScrapCompactor"))
+                productionRoom.floorPlan["outputSlots"].append(((4,y,0),"MetalBars"))
+
+            productionRoom.floorPlan["storageSlots"] = []
+            for y in (1,3,5,7,9,11,):
+                for x in range(7,12):
+                    productionRoom.floorPlan["storageSlots"].append(((x,y,0),"Scrap"))
+            productionRoom.floorPlan["walkingSpace"] = []
+            for y in range(1,12):
+                productionRoom.floorPlan["walkingSpace"].append((6,y,0))
+            for y in (2,4,6,8,10,):
+                for x in range(1,12):
+                    if x == 6:
+                        continue
+                    productionRoom.floorPlan["walkingSpace"].append((x,y,0))
             rooms.append(room)
 
             room = architect.doAddRoom(
@@ -1171,9 +1182,7 @@ class BackToTheRoots(BasicPhase):
                     scrapProcessing.walkingSpace.add((x+1,y+1,0))
                     scrapProcessing.walkingSpace.add((x+2,y+1,0))
 
-                reanimator = src.items.itemMap["CorpseAnimator"]()
-                reanimator.commands["born"] = "j"
-                scrapProcessing.addItem(reanimator,(x,11,0))
+                scrapProcessing.addBuildSite((x,11,0),"CorpseAnimator")
 
                 if not x==1:
                     command = src.items.itemMap["Command"]()
@@ -1212,10 +1221,15 @@ class BackToTheRoots(BasicPhase):
             unknown.addPathCross()
 
             # this function adds the storage section
-            def addStorageSquare(roomToAdd,offset,itemType=None):
+            def addStorageSquare(roomToAdd,offset,itemType=None,inputSquare=False,outputSquare=False):
                 for x in (1,3,5,):
                     for y in range(1,6):
-                        roomToAdd.addInputSlot((x+offset[0],y+offset[1],0),itemType)
+                        if inputSquare:
+                            roomToAdd.addInputSlot((x+offset[0],y+offset[1],0),itemType)
+                        elif outputSquare:
+                            roomToAdd.addOutputSlot((x+offset[0],y+offset[1],0),itemType)
+                        else:
+                            roomToAdd.addStorageSlot((x+offset[0],y+offset[1],0),itemType)
                 for x in (2,4,):
                     for y in range(1,6):
                         roomToAdd.walkingSpace.add((x+offset[0],y+offset[1],0))
@@ -1313,9 +1327,7 @@ class BackToTheRoots(BasicPhase):
                     roomToAdd.walkingSpace.add((x+offset[0],3+offset[1],0))
 
                 roomToAdd.addInputSlot((1+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
-                reanimator = src.items.itemMap["CorpseAnimator"]()
-                reanimator.commands["born"] = "j"
-                roomToAdd.addItem(reanimator,(2+offset[0],4+offset[1],0))
+                roomToAdd.addBuildSite((2+offset[0],4+offset[1],0),"CorpseAnimator")
 
                 command = src.items.itemMap["Command"]()
                 command.bolted = True
@@ -1361,7 +1373,21 @@ class BackToTheRoots(BasicPhase):
             addStorageSquare(generalStorage,(6,0,0),None)
             addStorageSquare(generalStorage,(0,6,0),None)
             addStorageSquare(generalStorage,(6,6,0),None)
+
+            for i in range(0,10):
+                painter = src.items.itemMap["Painter"]()
+                generalStorage.addItem(painter,(1,1,0))
+
             rooms.append(room)
+
+            for room in rooms:
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Corpse"))
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"ScrapCompactor"))
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Rod"))
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Armor"))
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"MetalBars"))
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Sword"))
+                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Painter"))
 
             room = architect.doAddRoom(
                 {
@@ -1402,9 +1428,9 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapStorage7 = room
-            addStorageSquare(scrapStorage7,(0,0,0),"Scrap")
-            addStorageSquare(scrapStorage7,(0,6,0),"Scrap")
-            addStorageSquare(scrapStorage7,(6,0,0),"Scrap")
+            addStorageSquare(scrapStorage7,(0,0,0),"Scrap",inputSquare=True)
+            addStorageSquare(scrapStorage7,(0,6,0),"Scrap",inputSquare=True)
+            addStorageSquare(scrapStorage7,(6,0,0),"Scrap",inputSquare=True)
             addGhulSquare(scrapStorage7,(6,6,0),corpseInInventory=False)
 
             commandCycler = src.items.itemMap["CommandCycler"]()
@@ -1425,7 +1451,7 @@ class BackToTheRoots(BasicPhase):
 
             commandCycler.commands.append("3a2w"+"15s"+"ww5aLwLsLwLs5dww5aLwLsLwLs5d4s"+"15w"+"3s5d"+9*"Js"+"2aw")
             commandCycler.commands.append("3a2w"+"15s"+"ss5aLwLsLwLs5dss5aLwLsLwLs5d4w"+"15w"+"3s5d"+9*"Js"+"2aw")
-            commandCycler.commands.append("3a2w"+"15s"+"wwdLwLsLwLsawwdLwLsLwLsa4s"+"15w"+"3s5d"+9*"Js"+"2aw")
+            #commandCycler.commands.append("3a2w"+"15s"+"wwdLwLsLwLsawwdLwLsLwLsa4s"+"15w"+"3s5d"+9*"Js"+"2aw")
             commandCycler.commands.append("3a2w"+"15a15s"+5*"dLwLs"+"5a"+"15w15d"+"3s5d"+12*"Js"+"2aw")
             
             command = src.items.itemMap["Command"]()
@@ -1499,7 +1525,7 @@ class BackToTheRoots(BasicPhase):
 
             addWorkshopSquare(scrapStorage6,(0,0,0),machines=["Rod","Rod","Rod"])
             addWorkshopSquare(scrapStorage6,(0,6,0),machines=["Armor","Armor","Armor"])
-            addWorkshopSquare(scrapStorage6,(6,0,0),machines=["Bolt","Bolt","Bolt"])
+            addWorkshopSquare(scrapStorage6,(6,0,0),machines=["Sword","Sword","Sword"])
             addGhulSquare(scrapStorage6,(6,6,0))
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1517,7 +1543,7 @@ class BackToTheRoots(BasicPhase):
             command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
             scrapStorage6.addItem(command,(9,11,0))
 
-            addWorkshopSquare(generalProduction1,(0,0,0),machines=["MemoryCell","Connector","Case"])
+            addWorkshopSquare(generalProduction1,(0,0,0),machines=["Painter","Connector","Case"])
             addWorkshopSquare(generalProduction1,(0,6,0),machines=["Frame","puller","pusher"])
             addWorkshopSquare(generalProduction1,(6,0,0),machines=["Heater","Tank","Rod"])
             addGhulSquare(generalProduction1,(6,6,0))
@@ -2027,6 +2053,7 @@ class BackToTheRoots(BasicPhase):
             leader.registers["ATTNPOSy"] = 3
             mainRoom.addCharacter(leader,7,3)
             leader.rank = 3
+            leader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
 
             counter = 1
             for pos in self.specialItemSlotPositions:
@@ -2057,6 +2084,7 @@ class BackToTheRoots(BasicPhase):
                 subleader.registers["ATTNPOSx"] = 3+i*3
                 subleader.registers["ATTNPOSy"] = 4
                 mainRoom.addCharacter(subleader,3+i*3,4)
+                subleader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
 
                 leader.subordinates.append(subleader)
 
@@ -2070,6 +2098,7 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.registers["ATTNPOSx"] = 2+i*3+j
                     subsubleader.registers["ATTNPOSy"] = 5
                     mainRoom.addCharacter(subsubleader, 2+i*3+j, 5)
+                    subsubleader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
 
                     subleader.subordinates.append(subsubleader)
 
@@ -2393,7 +2422,6 @@ press space to continue"""%(self.gatherTime,))
         mainChar.personality["autoCounterAttack"] = False
         mainChar.personality["avoidItems"] = False
 
-
     def rewardNPCDirect(self,character):
         print("rewarding npc")
 
@@ -2541,16 +2569,47 @@ press space to continue"""%(self.gatherTime,))
                     infogrid[4] = cityLeader.name+" "*(rowwidth-len(cityLeader.name))
                     row2Counter = 0
                     row3Counter = 0
-                    for subleader in cityLeader.subordinates:
-                        infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
-                        infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
-                        for subsubleader in subleader.subordinates:
-                            infogrid[4*9+row3Counter] = getname(subsubleader)+" "*(rowwidth-len(getname(subsubleader)))
-                            infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
+
+                    cityLeaderSubordinates = cityLeader.subordinates
+                    while len(cityLeaderSubordinates) < 3:
+                        cityLeaderSubordinates.append(None)
+
+                    for subleader in cityLeaderSubordinates:
+                        
+                        if subleader and not subleader.dead:
+                            infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
+                            infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
+                            subleaderSubordinates = subleader.subordinates
+                        else:
+                            infogrid[2*9+1+row2Counter*3] = " "*rowwidth
+                            infogrid[3*9+1+row2Counter*3] = " "*rowwidth
+                            subleaderSubordinates = [None,None,None]
+
+                        while len(subleaderSubordinates) < 3:
+                            subleaderSubordinates.append(None)
+
+                        for subsubleader in subleaderSubordinates:
+
+                            if subleader and not subleader.dead:
+                                infogrid[4*9+row3Counter] = getname(subsubleader)+" "*(rowwidth-len(getname(subsubleader)))
+                                infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
+                                subsubleaderSubordinates = subsubleader.subordinates
+                            else:
+                                infogrid[4*9+row3Counter] = " "*rowwidth
+                                infogrid[5*9+row3Counter] = " "*rowwidth
+                                subsubleaderSubordinates = [None,None,None]
+
+                            while len(subsubleaderSubordinates) < 3:
+                                subsubleaderSubordinates.append(None)
+
                             lineCounter = 0
-                            for worker in subsubleader.subordinates:
-                                infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
-                                infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
+                            for worker in subsubleaderSubordinates:
+                                if subleader and not subleader.dead:
+                                    infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
+                                    infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
+                                else:
+                                    infogrid[(2+1+lineCounter)*2*9+row3Counter] = " "*rowwidth
+                                    infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = " "*rowwidth
                                 lineCounter += 1
                             row3Counter += 1
                         row2Counter += 1
@@ -2826,7 +2885,7 @@ press space to continue"""%(reputationTree))
 
                 worker.runCommandString("w"*(worker.yPosition-5))
                 worker.rank = 5
-                worker.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 10))
+                worker.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
 
                 worker.superior = subsubLeader
                 subsubLeader.subordinates.insert(subLeaderInsertIndex,worker)
@@ -2913,20 +2972,13 @@ toKill: %s
 
 press space to continue"""%(forcePromoted,toKill))
 
-            print("step 6.7.9")
-            print(src.gamestate.gamestate.mainChar.subordinates)
-
             if toKill or forcePromoted:
                     cityLeader = self.leaders[cityLocation]
-                    print("cityLeaderc")
-                    print(cityLeader)
                     if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                        print("cityLeader")
-                        print(cityLeader)
 
                         if 1==1:
                             def getname(character):
-                                if character.dead:
+                                if character == None or character.dead:
                                     return ""
                                 name = character.name.split(" ")[0][0]+". "+character.name.split(" ")[1]
                                 if character == src.gamestate.gamestate.mainChar:
@@ -2941,18 +2993,45 @@ press space to continue"""%(forcePromoted,toKill))
                                 infogrid.append(" "*rowwidth)
 
                             infogrid[4] = cityLeader.name+" "*(rowwidth-len(cityLeader.name))
+
+                            cityLeaderSubordinates = cityLeader.subordinates
+                            while len(cityLeaderSubordinates) < 3:
+                                cityLeaderSubordinates.append(None)
+
                             row2Counter = 0
                             row3Counter = 0
-                            for subleader in cityLeader.subordinates:
-                                infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
-                                infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
-                                for subsubleader in subleader.subordinates:
-                                    infogrid[4*9+row3Counter] = getname(subsubleader)+" "*(rowwidth-len(getname(subsubleader)))
-                                    infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
+                            for subleader in cityLeaderSubordinates:
+                                if subleader and not subleader.dead:
+                                    infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
+                                    infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
+                                    subleaderSubordinates = subleader.subordinates
+                                else:
+                                    subleaderSubordinates = [None,None,None]
+                        
+                                while len(subleaderSubordinates) < 3:
+                                    subleaderSubordinates.append(None)
+
+                                for subsubleader in subleaderSubordinates:
+                                    if subsubleader and not subsubleader.dead:
+                                        infogrid[4*9+row3Counter] = getname(subsubleader)+" "*(rowwidth-len(getname(subsubleader)))
+                                        infogrid[5*9+row3Counter] = str(subsubleader.reputation)+" "*(rowwidth-len(str(subsubleader.reputation)))
+                                        subsubleaderSubordinates = subsubleader.subordinates
+                                    else:
+                                        infogrid[4*9+row3Counter] = " "*rowwidth
+                                        infogrid[5*9+row3Counter] = " "*rowwidth
+                                        subsubleaderSubordinates = [None,None,None]
                                     lineCounter = 0
-                                    for worker in subsubleader.subordinates:
-                                        infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
-                                        infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
+
+                                    while len(subsubleaderSubordinates) < 3:
+                                        subsubleaderSubordinates.append(None)
+                                        
+                                    for worker in subsubleaderSubordinates:
+                                        if worker and not worker.dead:
+                                            infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
+                                            infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
+                                        else:
+                                            infogrid[(2+1+lineCounter)*2*9+row3Counter] = " "*rowwidth
+                                            infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = " "*rowwidth
                                         lineCounter += 1
                                     row3Counter += 1
                                 row2Counter += 1
@@ -2982,14 +3061,10 @@ the new reputation is:
 
 press space to continue"""%(reputationTree))
 
-        print("step 6.8")
-        print(src.gamestate.gamestate.mainChar.subordinates)
-
         for cityLocation in self.citylocations:
             if not cityLocation in toFetchMap or not toFetchMap[cityLocation]:
                 self.leaderQuests[cityLocation].setPriorityObtain(7,(7,7),epochLength=self.epochLength)
                 continue
-            print("set prio %s for %s"%(toFetchMap[cityLocation], cityLocation,))
             self.leaderQuests[cityLocation].setPriorityObtain(toFetchMap[cityLocation],specialItemPositions[toFetchMap[cityLocation]],epochLength=self.epochLength)
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
@@ -2997,10 +3072,6 @@ press space to continue"""%(reputationTree))
         terrain.addEvent(event)
 
         locatedItems.sort()
-
-        print("step 7")
-        print(src.gamestate.gamestate.mainChar.subordinates)
-
 
         if self.firstEpoch:
             self.firstEpoch = False

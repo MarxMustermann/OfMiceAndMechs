@@ -51,6 +51,8 @@ class Room(src.saveing.Saveable):
         self.inputSlots = []
         self.outputSlots = []
         self.buildSites = []
+        self.storageSlots = []
+        self.floorPlan = {}
 
         super().__init__()
 
@@ -122,6 +124,7 @@ class Room(src.saveing.Saveable):
                 "steamGeneration",
                 "isContainment",
                 "timeIndex",
+                "floorPlan",
             ]
         )
 
@@ -131,8 +134,10 @@ class Room(src.saveing.Saveable):
                 ]
         )
 
-    def addBuildSite(self,position,specification):
-        self.buildSites.append((position,specification))
+    def addBuildSite(self,position,specification,extraInfo=None):
+        if extraInfo == None:
+            extraInfo = {}
+        self.buildSites.append((position,specification,extraInfo))
 
     def addOutputSlot(self,position,itemType,extraInfo=None):
         if extraInfo == None:
@@ -143,6 +148,11 @@ class Room(src.saveing.Saveable):
         if extraInfo == None:
             extraInfo = {}
         self.inputSlots.append((position,itemType,extraInfo))
+
+    def addStorageSlot(self,position,itemType,extraInfo=None):
+        if extraInfo == None:
+            extraInfo = {}
+        self.storageSlots.append((position,itemType,extraInfo))
 
     def addRandomItems(self):
         for inputSlot in self.inputSlots:
@@ -183,10 +193,24 @@ class Room(src.saveing.Saveable):
             if not items:
                 continue
 
-            if not itemType and items[-1].type == itemType:
+            if itemType and not items[-1].type == itemType:
                 continue
 
             result.append(outputSlot)
+
+        for storageSlot in self.storageSlots:
+            if itemType and not storageSlot[1] == None and not storageSlot[1] == itemType:
+                continue
+
+            items = self.getItemByPosition(storageSlot[0])
+            if not items:
+                continue
+
+            if itemType and not items[-1].type == itemType:
+                continue
+
+            result.append(storageSlot)
+
         return result
 
     def getEmptyInputslots(self,itemType=None,allowAny=False):
@@ -218,10 +242,37 @@ class Room(src.saveing.Saveable):
             if len(items) < maxAmount:
                 result.append(inputSlot)
 
+        for storageSlot in self.storageSlots:
+            if (itemType and not storageSlot[1] == itemType) and (not allowAny or  not storageSlot[1] == None):
+                continue
+            
+            items = self.getItemByPosition(storageSlot[0])
+            if not items:
+                result.append(storageSlot)
+                continue
+
+            if (itemType and not items[-1].type == itemType):
+                continue
+
+            if items[-1].type == "Scrap":
+                if items[-1].amount < 15:
+                    result.append(storageSlot)
+                continue
+
+            if not items[-1].walkable:
+                continue
+
+            maxAmount = storageSlot[2].get("maxAmount")
+            if not maxAmount:
+                maxAmount = 20
+
+            if len(items) < maxAmount:
+                result.append(storageSlot)
+
         return result
 
-    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False):
-        path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard)
+    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False):
+        path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -230,7 +281,7 @@ class Room(src.saveing.Saveable):
                 command += movementMap[offset]
         return (command,path)
 
-    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False):
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False):
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -291,11 +342,8 @@ class Room(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 0 or newPos[1] < 0:
                     continue
 
-                if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2])):
+                if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2])) and (not ignoreEndBlocked or not newPos == targetPos):
                     continue
-
-                #if self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)):
-                #    continue
 
                 if not costMap.get(newPos) == None:
                     continue
@@ -467,9 +515,12 @@ class Room(src.saveing.Saveable):
         state["outputSlots"] = []
         for outputSlot in self.outputSlots:
             state["outputSlots"].append([list(outputSlot[0]),outputSlot[1],outputSlot[2]])
+        state["storageSlots"] = []
+        for storageSlot in self.storageSlots:
+            state["storageSlots"].append([list(storageSlot[0]),storageSlot[1],storageSlot[2]])
         state["buildSites"] = []
-        for buildSites in self.buildSites:
-            state["buildSites"].append([list(buildSites[0]),buildSites[1]])
+        for buildSite in self.buildSites:
+            state["buildSites"].append([list(buildSite[0]),buildSite[1]])
         state["sources"] = []
         for source in self.sources:
             state["sources"].append([list(source[0]),source[1]])
@@ -527,6 +578,9 @@ class Room(src.saveing.Saveable):
         self.outputSlots = []
         for outputSlot in state["outputSlots"]:
             self.outputSlots.append((tuple(outputSlot[0]),outputSlot[1],outputSlot[2]))
+        self.storageSlots = []
+        for storageSlot in state["storageSlots"]:
+            self.storageSlots.append((tuple(storageSlot[0]),storageSlot[1],storageSlot[2]))
         self.buildSites = []
         for buildSites in state["buildSites"]:
             self.buildSites.append((tuple(buildSites[0]),buildSites[1]))
@@ -660,6 +714,10 @@ class Room(src.saveing.Saveable):
             for entry in self.outputSlots:
                 pos = entry[0]
                 chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
+
+            for entry in self.storageSlots:
+                pos = entry[0]
+                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
 
             for entry in self.buildSites:
                 pos = entry[0]

@@ -1048,7 +1048,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom = architect.doAddRoom(
                 {
                     "coordinate": citylocation,
-                    "roomType": "EmptyRoom",
+                    "roomType": "ComandCenter",
                     "faction": "city #%s"%(cityCounter,),
                     "doors": "6,12",
                     "offset": [1,1],
@@ -1057,9 +1057,28 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
 
+            rooms = []
+
+
+            cityBuilder = src.items.itemMap["CityBuilder2"]()
+            mainRoom.addItem(cityBuilder,(7,1,0))
+            mainRoom.rooms = rooms
+
             mainRoom.addItem(architect,(3,1,0))
 
-            rooms = []
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]+2,citylocation[1]),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 6,12",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            scrapStorage6 = room
+            mainRoom.workshopRooms.append(scrapStorage6)
+            rooms.append(room)
 
             room = architect.doAddRoom(
                 {
@@ -1097,7 +1116,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]),
-                    "roomType": "WorkshopRoom",
+                    "roomType": "EmptyRoom",
                     "faction": "city #%s"%(cityCounter,),
                     "doors": "6,0 6,12",
                     "offset": [1,1],
@@ -1111,7 +1130,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]-1,citylocation[1]),
-                    "roomType": "WorkshopRoom",
+                    "roomType": "EmptyRoom",
                     "doors": "6,0 6,12",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1123,42 +1142,8 @@ class BackToTheRoots(BasicPhase):
 
             room = architect.doAddRoom(
                 {
-                    "coordinate": (citylocation[0]-1,citylocation[1]+2),
-                    "roomType": "WorkshopRoom",
-                    "doors": "6,0 12,6",
-                    "offset": [1,1],
-                    "size": [13, 13],
-                    },
-                None,
-            )
-            productionRoom = room
-            productionRoom.floorPlan["inputSlots"] = []
-            productionRoom.floorPlan["buildSites"] = []
-            productionRoom.floorPlan["outputSlots"] = []
-
-            for y in (1,3,5,7,9,11,):
-                productionRoom.floorPlan["inputSlots"].append(((2,y,0),"Scrap"))
-                productionRoom.floorPlan["buildSites"].append(((3,y,0),"ScrapCompactor"))
-                productionRoom.floorPlan["outputSlots"].append(((4,y,0),"MetalBars"))
-
-            productionRoom.floorPlan["storageSlots"] = []
-            for y in (1,3,5,7,9,11,):
-                for x in range(7,12):
-                    productionRoom.floorPlan["storageSlots"].append(((x,y,0),"Scrap"))
-            productionRoom.floorPlan["walkingSpace"] = []
-            for y in range(1,12):
-                productionRoom.floorPlan["walkingSpace"].append((6,y,0))
-            for y in (2,4,6,8,10,):
-                for x in range(1,12):
-                    if x == 6:
-                        continue
-                    productionRoom.floorPlan["walkingSpace"].append((x,y,0))
-            rooms.append(room)
-
-            room = architect.doAddRoom(
-                {
                     "coordinate": (citylocation[0],citylocation[1]+2),
-                    "roomType": "WorkshopRoom",
+                    "roomType": "EmptyRoom",
                     "doors": "12,6 0,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1166,46 +1151,8 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             scrapProcessing = room
+            mainRoom.emptyRooms.append(scrapProcessing)
             rooms.append(room)
-
-            for x in (4,8):
-                for y in range(1,12):
-                    scrapProcessing.walkingSpace.add((x,y,0))
-
-            for x in (1,5,9):
-                for y in (1,3,5,7,9):
-                    scrapProcessing.addInputSlot((x,y,0),"Scrap")
-                    scrapProcessing.addBuildSite((x+1,y,0),"ScrapCompactor")
-                    scrapProcessing.addOutputSlot((x+2,y,0),"MetalBars")
-
-                    scrapProcessing.walkingSpace.add((x,y+1,0))
-                    scrapProcessing.walkingSpace.add((x+1,y+1,0))
-                    scrapProcessing.walkingSpace.add((x+2,y+1,0))
-
-                scrapProcessing.addBuildSite((x,11,0),"CorpseAnimator")
-
-                if not x==1:
-                    command = src.items.itemMap["Command"]()
-                    command.bolted = True
-                    command.command = 4*"Jwaawwdd"+"Jw"+"2a8s2d"+"j"
-                    scrapProcessing.addItem(command,(x+1,10,0))
-                else:
-                    command = src.items.itemMap["Command"]()
-                    command.bolted = True
-                    command.command = 4*"Jwddwwaa"+"Jw"+"2d8s2a"+"j"
-                    scrapProcessing.addItem(command,(x+1,10,0))
-
-                command = src.items.itemMap["Command"]()
-                command.bolted = True
-                command.command = "Kdwj"
-                scrapProcessing.addItem(command,(x+1,11,0))
-
-                ghul = src.characters.Ghul()
-                ghul.faction = "city #%s"%(cityCounter,)
-                scrapProcessing.addCharacter(ghul,x+1,11)
-                ghul.runCommandString("j")
-
-                scrapProcessing.addInputSlot((x+2,11,0),"Corpse",{"maxAmount":2})
 
             room = architect.doAddRoom(
                 {
@@ -1217,8 +1164,9 @@ class BackToTheRoots(BasicPhase):
                     },
                 None,
             )
+
             unknown = room
-            unknown.addPathCross()
+            mainRoom.workshopRooms.append(unknown)
 
             # this function adds the storage section
             def addStorageSquare(roomToAdd,offset,itemType=None,inputSquare=False,outputSquare=False):
@@ -1360,7 +1308,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+2,citylocation[1]+2),
-                    "roomType": "WorkshopRoom",
+                    "roomType": "StorageRoom",
                     "doors": "6,0 0,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1368,26 +1316,9 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             generalStorage = room
-            generalStorage.addPathCross()
-            addStorageSquare(generalStorage,(0,0,0),None)
-            addStorageSquare(generalStorage,(6,0,0),None)
-            addStorageSquare(generalStorage,(0,6,0),None)
-            addStorageSquare(generalStorage,(6,6,0),None)
-
-            for i in range(0,10):
-                painter = src.items.itemMap["Painter"]()
-                generalStorage.addItem(painter,(1,1,0))
-
+            mainRoom.storageRooms.append(generalStorage)
             rooms.append(room)
 
-            for room in rooms:
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Corpse"))
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"ScrapCompactor"))
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Rod"))
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Armor"))
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"MetalBars"))
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Sword"))
-                room.sources.insert(0,((generalStorage.xPosition,generalStorage.yPosition),"Painter"))
 
             room = architect.doAddRoom(
                 {
@@ -1400,27 +1331,13 @@ class BackToTheRoots(BasicPhase):
                 None,
             )
             generalProduction1 = room
-            room.addPathCross()
-            rooms.append(room)
-
-            room = architect.doAddRoom(
-                {
-                    "coordinate": (citylocation[0]+2,citylocation[1]),
-                    "roomType": "WorkshopRoom",
-                    "doors": "6,0 6,12",
-                    "offset": [1,1],
-                    "size": [13, 13],
-                    },
-                None,
-            )
-            scrapStorage6 = room
-            room.addPathCross()
+            mainRoom.workshopRooms.append(generalProduction1)
             rooms.append(room)
 
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+2,citylocation[1]-1),
-                    "roomType": "WorkshopRoom",
+                    "roomType": "EmptyRoom",
                     "doors": "6,0 6,12 0,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1523,67 +1440,19 @@ class BackToTheRoots(BasicPhase):
             workshop2 = room
             rooms.append(room)
 
-            addWorkshopSquare(scrapStorage6,(0,0,0),machines=["Rod","Rod","Rod"])
-            addWorkshopSquare(scrapStorage6,(0,6,0),machines=["Armor","Armor","Armor"])
-            addWorkshopSquare(scrapStorage6,(6,0,0),machines=["Sword","Sword","Sword"])
-            addGhulSquare(scrapStorage6,(6,6,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "a5w"+"4s4aJwJsddJwJsddww4aJwddJwddww"+"5sd"
-            command.extraName = "produce items southwest"
-            scrapStorage6.addItem(command,(7,11,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "aa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sdd"
-            command.extraName = "produce items northwest"
-            scrapStorage6.addItem(command,(8,11,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.extraName = "produce items northeast"
-            command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
-            scrapStorage6.addItem(command,(9,11,0))
-
-            addWorkshopSquare(generalProduction1,(0,0,0),machines=["Painter","Connector","Case"])
-            addWorkshopSquare(generalProduction1,(0,6,0),machines=["Frame","puller","pusher"])
-            addWorkshopSquare(generalProduction1,(6,0,0),machines=["Heater","Tank","Rod"])
-            addGhulSquare(generalProduction1,(6,6,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "a5w"+"4s4aJwJsddJwJsddww4aJwddJwddww"+"5sd"
-            command.extraName = "produce items southwest"
-            generalProduction1.addItem(command,(7,11,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "aa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sdd"
-            command.extraName = "produce items northwest"
-            generalProduction1.addItem(command,(8,11,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.extraName = "produce items northeast"
-            command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
-            generalProduction1.addItem(command,(9,11,0))
-
-            addWorkshopSquare(unknown,(0,0,0),machines=["ScrapCompactor","ScrapCompactor","ScrapCompactor"])
-            addWorkshopSquare(unknown,(6,0,0),machines=["GooFlask","CorpseAnimator","CommandCycler"])
-            addBigWorkshopSquare(unknown,(0,6,0),machines=["Wall","Wall"])
-            addGhulSquare(unknown,(6,6,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "a5w"+"3s3aJwJs3d3w"+"5sd"
-            command.extraName = "produce items southwest"
-            unknown.addItem(command,(7,11,0))
-            command = src.items.itemMap["Command"]()
-            command.bolted = True
-            command.command = "aa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sdd"
-            command.extraName = "produce items northwest"
-            unknown.addItem(command,(8,11,0))
-            command = src.items.itemMap["Command"]()
-            command.extraName = "produce items northeast"
-            command.command = "aaa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sddd"
-            unknown.addItem(command,(9,11,0))
-
-            painter = src.items.itemMap["Painter"]()
-            basicMetalWorkshop.addItem(painter,(1,1,0))
+            room = architect.doAddRoom(
+                {
+                    "coordinate": (citylocation[0]-1,citylocation[1]+2),
+                    "roomType": "WorkshopRoom",
+                    "doors": "6,0 12,6",
+                    "offset": [1,1],
+                    "size": [13, 13],
+                    },
+                None,
+            )
+            productionRoom = room
+            mainRoom.workshopRooms.append(productionRoom)
+            rooms.append(room)
 
             command = src.items.itemMap["Command"]()
             command.bolted = True
@@ -1651,22 +1520,7 @@ class BackToTheRoots(BasicPhase):
 
             ghul = src.characters.Ghul()
             ghul.faction = "city #%s"%(cityCounter,)
-            scrapStorage6.addCharacter(ghul,9,10)
-            ghul.runCommandString("j")
-
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
             scrapStorage7.addCharacter(ghul,9,10)
-            ghul.runCommandString("j")
-
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            generalProduction1.addCharacter(ghul,9,10)
-            ghul.runCommandString("j")
-
-            ghul = src.characters.Ghul()
-            ghul.faction = "city #%s"%(cityCounter,)
-            unknown.addCharacter(ghul,9,10)
             ghul.runCommandString("j")
 
             ghul = src.characters.Ghul()
@@ -1730,6 +1584,8 @@ class BackToTheRoots(BasicPhase):
             basicMetalWorkshop.addItem(command,(10,11,0))
 
             basicMetalWorkshop.addInputSlot((11,11,0),"Corpse",{"maxAmount":2})
+
+            mainRoom.emptyRooms.append(workshop)
 
             machine = src.items.itemMap["GrowthTank"]()
             workshop.addItem(machine,(2,2,0))

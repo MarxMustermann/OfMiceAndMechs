@@ -5081,7 +5081,9 @@ def getTcodEvents():
                     else:
                         translatedKey = "v"
                 if key == tcod.event.KeySym.w:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
+                        translatedKey = "ctrl w"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                         translatedKey = "W"
                     else:
                         translatedKey = "w"

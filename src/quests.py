@@ -1336,6 +1336,7 @@ class RestockRoom(MetaQuestSequence):
                 return "..23.."
 
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+            character.addMessage(inputSlots)
 
             # find neighboured input fields
             foundDirectDrop = None
@@ -1387,6 +1388,8 @@ class RestockRoom(MetaQuestSequence):
                     if not neighbour in room.walkingSpace:
                         continue
                     foundNeighbour = (neighbour,direction)
+                    break
+                if foundNeighbour:
                     break
 
             if not foundNeighbour:
@@ -1627,8 +1630,8 @@ class BeUsefull(MetaQuestSequence):
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
-            storageLocation = (character.registers["HOMEx"]+2,character.registers["HOMEy"]+2)
-            self.addQuest(GoToTile(targetPosition=storageLocation))
+            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
             return
 
         # officer work

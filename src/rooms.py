@@ -177,12 +177,6 @@ class Room(src.saveing.Saveable):
                 item.bolted = False
                 self.addItem(item,outputSlot[0])
 
-        """
-        for buildSite in self.buildSites[:]:
-            item = src.items.itemMap[buildSite[1]]()
-            self.addItem(item,buildSite[0])
-        """
-
     def getNonEmptyOutputslots(self,itemType=None):
         result = []
         for outputSlot in self.outputSlots:
@@ -270,6 +264,9 @@ class Room(src.saveing.Saveable):
                 result.append(storageSlot)
 
         return result
+
+    def getPosition(self):
+        return (self.xPosition,self.yPosition,0)
 
     def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False):
         path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked)
@@ -1495,6 +1492,52 @@ XXX
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "ER")
         self.sources = []
 
+    def spawnPlaned(self):
+        if self.floorPlan:
+            if "inputSlots" in self.floorPlan:
+                self.inputSlots.extend(self.floorPlan["inputSlots"])
+            if "outputSlots" in self.floorPlan:
+                self.outputSlots.extend(self.floorPlan["outputSlots"])
+            if "storageSlots" in self.floorPlan:
+                self.storageSlots.extend(self.floorPlan["storageSlots"])
+            if "buildSites" in self.floorPlan:
+                self.buildSites.extend(self.floorPlan["buildSites"])
+            if "walkingSpace" in self.floorPlan:
+                self.walkingSpace.update(self.floorPlan["walkingSpace"])
+            self.floorPlan = None
+            return
+
+        if self.buildSites:
+            for buildSite in self.buildSites[:]:
+                item = src.items.itemMap[buildSite[1]]()
+                if item.type == "Command":
+                    item.command = buildSite[2].get("command")
+                self.addItem(item,buildSite[0])
+            return
+
+    def spawnGhuls(self,character):
+        for item in self.itemsOnFloor:
+            if item.bolted and item.type == "CorpseAnimator":
+                item.filled = True
+                item.apply(character)
+
+    def resetDirect(self):
+        self.inputSlots = []
+        self.outputSlots = []
+        self.storageSlots = []
+        self.buildSites = []
+        self.walkingSpace = {(0,6),(6,0),(12,6),(6,12)}
+
+        for item in self.itemsOnFloor[:]:
+            if item.xPosition == 0 or item.yPosition == 0:
+                continue
+            if item.xPosition == 12 or item.yPosition == 12:
+                continue
+            self.removeItem(item)
+
+    def doBasicSetup(self):
+        self.addPathCross()
+
     def addPathCross(self):
         for x in range(1,12):
             self.walkingSpace.add((x,6,0))
@@ -1573,6 +1616,37 @@ XXX
 class GrowRoom(EmptyRoom):
 """
 
+class StorageRoom(EmptyRoom):
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "SG")
+
+        self.objType = "StorageRoom"
+
+    def doBasicSetup(self):
+        super().doBasicSetup()
+
+    def addStorageSquare(self,offset,itemType=None,inputSquare=False,outputSquare=False):
+        for x in (1,3,5,):
+            for y in range(1,6):
+                if inputSquare:
+                    self.addInputSlot((x+offset[0],y+offset[1],0),itemType)
+                elif outputSquare:
+                    self.addOutputSlot((x+offset[0],y+offset[1],0),itemType)
+                else:
+                    self.addStorageSlot((x+offset[0],y+offset[1],0),itemType)
+        for x in (2,4,):
+            for y in range(1,6):
+                self.walkingSpace.add((x+offset[0],y+offset[1],0))
+
 class WorkshopRoom(EmptyRoom):
 
     def __init__(
@@ -1585,15 +1659,153 @@ class WorkshopRoom(EmptyRoom):
         bio=False,
     ):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
-        self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "WR")
+        self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "WP")
 
-        self.walkingSpace = set()
         self.objType = "WorkshopRoom"
 
-    def render(self):
-        chars = super().render()
+    def doBasicSetup(self):
+        super().doBasicSetup()
 
-        return chars
+    def addGhulSquare(self,offset,corpseInInventory=True):
+        for x in range(1,6):
+            self.walkingSpace.add((x+offset[0],3+offset[1],0))
+
+        self.addInputSlot((1+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
+        self.addBuildSite((2+offset[0],4+offset[1],0),"CorpseAnimator")
+
+        command = src.items.itemMap["Command"]()
+        command.bolted = True
+        command.extraName = "initialise ghul"
+        if corpseInInventory:
+            command.command = "d"+10*"Kd"+"j"
+        else:
+            command.command = "d"+"j"
+        self.addItem(command,(3+offset[0],4+offset[1],0))
+
+        command = src.items.itemMap["Command"]()
+        command.bolted = True
+        command.extraName = "repeat command line"
+        if corpseInInventory:
+            command.command = ""
+        else:
+            command.command = "JdJd"
+        command.command += "dsjawj"
+        self.addItem(command,(4+offset[0],4+offset[1],0))
+
+        command = src.items.itemMap["Command"]()
+        command.bolted = True
+        command.extraName = "run command line"
+        command.command = "aj"*4+"4d"
+        self.addItem(command,(5+offset[0],5+offset[1],0))
+        self.addInputSlot((5+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
+
+    def addWorkshopSquare(self,offset,machines=None):
+        for y in (2,4,):
+            for x in range(1,6):
+                self.walkingSpace.add((x+offset[0],y+offset[1],0))
+
+        machineCounter = 0
+        for machine in machines:
+            rowheight = machineCounter*2+1
+
+            neededItems = src.items.rawMaterialLookup.get(machine)
+            if not neededItems:
+                neededItems = ["MetalBars"]
+
+            if len(neededItems) > 1:
+                1/0
+            elif neededItems[0] == "MetalBars":
+                self.addInputSlot((1+offset[0],rowheight+offset[1],0),"Scrap")
+                self.addBuildSite((2+offset[0],rowheight+offset[1],0),"ScrapCompactor")
+            else:
+                subMachine = neededItems[0]
+                item = src.items.itemMap["Machine"]()
+                item.setToProduce(subMachine)
+                item.charges = 0
+                self.addItem(item,(2+offset[0],rowheight+offset[1],0))
+
+                subNeededItems = src.items.rawMaterialLookup.get(subMachine)
+                if not subNeededItems:
+                    subNeededItems = ["MetalBars"]
+
+                if len(subNeededItems) > 1:
+                    1/0
+                self.addInputSlot((1+offset[0],rowheight+offset[1],0),subNeededItems[0])
+
+            self.addInputSlot((3+offset[0],rowheight+offset[1],0),neededItems[0])
+            item = src.items.itemMap["Machine"]()
+            item.setToProduce(machine)
+            item.charges = 0
+            self.addItem(item,(4+offset[0],rowheight+offset[1],0))
+            self.addOutputSlot((5+offset[0],rowheight+offset[1],0),machine)
+
+            machineCounter += 1
+            neededItems = src.items.rawMaterialLookup.get(machine)
+
+    def addBigWorkshopSquare(self,offset,machines=None):
+        for x in range(1,6):
+            self.walkingSpace.add((x+offset[0],3+offset[1],0))
+        for position in ((1,2),(1,1),(2,1),(4,1),(5,1),(5,2),(5,4),(5,5),(4,5),(2,5),(1,5),(1,4)):
+            self.walkingSpace.add((position[0]+offset[0],position[1]+offset[1],0))
+
+        machineCounter = 0
+        for machine in machines:
+            item = src.items.itemMap["Machine"]()
+            item.setToProduce(machine)
+            item.charges = 0
+            pos = (3,2,0)
+            if machineCounter == 1:
+                pos = (3,4,0)
+            self.addItem(item,(pos[0]+offset[0],pos[1]+offset[1],0))
+
+            neededItems = src.items.rawMaterialLookup.get(machine)
+            if not neededItems:
+                neededItems = ["MetalBars"]
+
+            if len(neededItems) > 2:
+                1/0
+
+            pos = (3,1,0)
+            if machineCounter == 1:
+                pos = (3,5,0)
+            self.addInputSlot((pos[0]+offset[0],pos[1]+offset[1],0),neededItems[0])
+
+            if len(neededItems) > 1:
+                pos = (2,2,0)
+                if machineCounter == 1:
+                    pos = (2,4,0)
+                self.addInputSlot((pos[0]+offset[0],pos[1]+offset[1],0),neededItems[1])
+
+            pos = (4,2,0)
+            if machineCounter == 1:
+                pos = (4,4,0)
+            self.addOutputSlot((pos[0]+offset[0],pos[1]+offset[1],0),machine)
+
+            machineCounter += 1
+
+class ComandCenter(EmptyRoom):
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "CC")
+
+        self.rooms = []
+        self.workshopRooms = []
+        self.emptyRooms = []
+        self.storageRooms = []
+
+        self.walkingSpace = set()
+        self.objType = "ComandCenter"
+
+        self.objectListsToStore.append("rooms")
 
 class TrapRoom(EmptyRoom):
 
@@ -3308,165 +3520,6 @@ XXXXXXXXXX
 
 
 """
-storage for storing items in an accessible way
-"""
-
-
-class StorageRoom(Room):
-    objType = "StorageRoom"
-
-    """
-    create room, set storage order 
-    """
-
-    def __init__(
-        self,
-        xPosition=None,
-        yPosition=None,
-        offsetX=None,
-        offsetY=None,
-        desiredPosition=None,
-    ):
-        self.roomLayout = """
-XXXXXXXXXX
-X        X
-X........$
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-X        X
-XXXXXXXXXX
-"""
-        self.storedItems = []
-        self.storageSpace = []
-
-        super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
-        )
-        self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
-        self.name = "StorageRoom"
-
-        # determine what positions should be used for storage
-        counter = 0
-        for j in range(1, 2):
-            for i in range(1, self.sizeX - 1):
-                self.storageSpace.append((i, j))
-        i = self.sizeX - 2
-        offset = 2
-        while i > 1:
-            for j in range(3, self.sizeY - 1):
-                self.storageSpace.append((i, j))
-            i -= offset
-            if offset == 1:
-                offset = 2
-            else:
-                offset = 1
-
-        # map items on storage space
-        # bad code: no items to place
-        counter = 0
-        for item in self.storedItems:
-            item.xPosition = self.storageSpace[counter][0]
-            item.yPosition = self.storageSpace[counter][1]
-            item.bolted = False
-            counter += 1
-
-        # actually add the items
-        self.addItems(self.storedItems)
-
-    """
-    use specialised pathfinding
-    bad code: doesn't work properly
-    """
-
-    def calculatePath(self, x, y, dstX, dstY, walkingPath):
-        # handle impossible state
-        if dstY is None or dstX is None:
-            src.logger.debugMessages.append("pathfinding without target")
-            return []
-
-        path = []
-
-        # go to secondary path
-        if y not in (1, 2) and x not in (2, 5, 8, 3, 6):
-            if x in (2, 5, 8):
-                x = x - 1
-            elif x in (3, 6):
-                x = x + 1
-            path.append((x, y))
-
-        # go to main path
-        while y < 2:
-            y = y + 1
-            path.append((x, y))
-        while y > 2:
-            y = y - 1
-            path.append((x, y))
-
-        # go main path to secondary path
-        tmpDstX = dstX
-        if dstX in (2, 5, 8, 3, 6) and dstY not in (1, 2):
-            if dstX in (2, 5, 8):
-                tmpDstX = dstX - 1
-            elif dstX in (3, 6):
-                tmpDstX = dstX + 1
-        while x < tmpDstX:
-            x = x + 1
-            path.append((x, y))
-        while x > tmpDstX:
-            x = x - 1
-            path.append((x, y))
-
-        # go to end of secondary path
-        while y < dstY:
-            y = y + 1
-            path.append((x, y))
-        while y > dstY:
-            y = y - 1
-            path.append((x, y))
-
-        # go to end of path
-        while x < dstX:
-            x = x + 1
-            path.append((x, y))
-        while x > dstX:
-            x = x - 1
-            path.append((x, y))
-        import src.gameMath as gameMath
-
-        return gameMath.removeLoops(path)
-
-    """
-    add items and manage storage spaces
-    """
-
-    def addItems(self, items):
-        super().addItems(items)
-        for item in items:
-            pos = (item.xPosition, item.yPosition)
-            if pos in self.storageSpace:
-                self.storedItems.append(item)
-                self.storageSpace.remove(pos)
-
-    """
-    remove item and manage storage spaces
-    """
-
-    def removeItem(self, item):
-        if item in self.storedItems:
-            self.storedItems.remove(item)
-            pos = (item.xPosition, item.yPosition)
-            self.storageSpace.append(pos)
-        super().removeItem(item)
-
-
-"""
 the room where characters are grown and born
 """
 
@@ -4270,6 +4323,7 @@ roomMap = {
     "ScrapStorage": ScrapStorage,
     "TrapRoom": TrapRoom,
     "WorkshopRoom": WorkshopRoom,
+    "ComandCenter": ComandCenter,
 }
 
 

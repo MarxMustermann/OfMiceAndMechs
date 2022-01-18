@@ -1983,6 +1983,8 @@ class Terrain(src.saveing.Saveable):
                 if not entry:
                     continue
                 item = entry[0]
+                if not item.xPosition or not item.yPosition:
+                    continue
 
                 if (item.xPosition < coordinateOffset[1] or item.xPosition > coordinateOffset[1]+size[1] or
                     item.yPosition < coordinateOffset[0] or item.yPosition > coordinateOffset[0]+size[0]):

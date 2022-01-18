@@ -136,19 +136,13 @@ class CityBuilder2(src.items.Item):
 
         self.prefabs["ScrapToMetalBars"].append(floorPlan)
 
-        self.prefabs["ScrapToMetalBars"] = []
-
-        with open("data/floorPlans/scrapToMetalbars1.json") as fileHandle:
-            rawFloorplan = json.load(fileHandle)    
-        floorPlan = self.getFloorPlanFromDict(rawFloorplan)
-        print(floorPlan)
-        self.prefabs["ScrapToMetalBars"].append(floorPlan)
-
-        with open("data/floorPlans/scrapToMetalbars2.json") as fileHandle:
-            rawFloorplan = json.load(fileHandle)    
-        floorPlan = self.getFloorPlanFromDict(rawFloorplan)
-        print(floorPlan)
-        self.prefabs["ScrapToMetalBars"].append(floorPlan)
+        scrapToMetalBarsPrefabPaths = ["scrapToMetalbars1.json","scrapToMetalbars2.json"]
+        for path in scrapToMetalBarsPrefabPaths:
+            with open("data/floorPlans/"+path) as fileHandle:
+                rawFloorplan = json.load(fileHandle)    
+            floorPlan = self.getFloorPlanFromDict(rawFloorplan)
+            print(floorPlan)
+            self.prefabs["ScrapToMetalBars"].append(floorPlan)
 
     def getFloorPlanFromDict(self,rawFloorplan):
         converted = {}

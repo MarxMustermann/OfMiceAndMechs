@@ -574,6 +574,282 @@ class Dungeon(BasicPhase):
             "DropQuestMeta",
         ]
 
+class PrefabDesign(BasicPhase):
+
+    def __init__(self, seed=0):
+        super().__init__("PrefabDesign", seed=seed)
+
+    def advance(self):
+        print("advance story")
+        self.saveFloorPlan()
+
+    def generateFloorPlan(self):
+        import copy
+        floorPlan = {}
+        floorPlan["buildSites"] = []
+        floorPlan["inputSlots"] = self.toBuildRoom.inputSlots[:]
+        floorPlan["outputSlots"] = self.toBuildRoom.outputSlots[:]
+        floorPlan["storageSlots"] = self.toBuildRoom.storageSlots[:]
+        floorPlan["walkingSpace"] = copy.deepcopy(self.toBuildRoom.walkingSpace)
+
+        toDelete = []
+        for item in self.toBuildRoom.itemsOnFloor:
+            pos = item.getPosition()
+            if pos[0] == 0 or pos[0] == 12 or pos[1] == 0 or pos[1] == 12:
+                continue
+            extraInfos = {}
+            if item.type == "Scrap":
+                floorPlan["inputSlots"].append((pos,item.type,{}))
+                continue
+            if item.type == "Corpse":
+                floorPlan["inputSlots"].append((pos,item.type,{"maxAmount":2}))
+                continue
+            if item.type == "MetalBars":
+                floorPlan["outputSlots"].append((pos,item.type,{}))
+                continue
+            if item.type == "ScrapCompactor":
+                floorPlan["outputSlots"].append(((pos[0]+1,pos[1],pos[2]),"MetalBars",{}))
+                floorPlan["inputSlots"].append(((pos[0]-1,pos[1],pos[2]),"Scrap",{}))
+            if item.type == "Command":
+                extraInfos["command"] = item.command
+                floorPlan["walkingSpace"].add(item.getPosition())
+            floorPlan["buildSites"].append((pos,item.type,extraInfos))
+
+        if not floorPlan["buildSites"]:
+            del floorPlan["buildSites"]
+
+        for item in floorPlan["walkingSpace"]:
+            if item[0] == 0 or item[0] == 12 or item[1] == 0 or item[1] == 12:
+                toDelete.append(item)
+        for item in toDelete:
+            floorPlan["walkingSpace"].remove(item)
+
+        for x in range(1,12):
+            for y in range(1,12):
+                pos = (x,y,0)
+                fillIn = True
+                if "inputSlots" in floorPlan:
+                    for inputSlot in floorPlan["inputSlots"]:
+                        if inputSlot[0] == pos:
+                            fillIn = False
+                if "outputSlots" in floorPlan:
+                    for outputSlot in floorPlan["outputSlots"]:
+                        if outputSlot[0] == pos:
+                            fillIn = False
+                if "storageSlots" in floorPlan:
+                    for storageSlot in floorPlan["storageSlots"]:
+                        if storageSlot[0] == pos:
+                            fillIn = False
+                if "buildSites" in floorPlan:
+                    for buildSite in floorPlan["buildSites"]:
+                        if buildSite[0] == pos:
+                            fillIn = False
+                if "walkingSpace" in floorPlan:
+                    if pos in floorPlan["walkingSpace"]:
+                        fillIn = False
+                if fillIn:
+                    floorPlan["walkingSpace"].add(pos)
+
+        return floorPlan
+
+    def saveFloorPlan(self):
+        floorPlan = self.generateFloorPlan()
+        print(floorPlan)
+        converted = self.convertFloorPlanToDict(floorPlan)
+        print(converted)
+
+        with open("floorPlan.json","w") as fileHandle:
+            import json
+            json.dump(converted,fileHandle,indent=4)
+
+        import copy
+        if self.toBuildRoomClone:
+            self.toBuildRoomClone.container.removeRoom(self.toBuildRoomClone)
+        self.toBuildRoomClone = self.architect.doAddRoom(
+            {
+                "coordinate": (7,6),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.toBuildRoomClone.floorPlan = copy.deepcopy(floorPlan)
+        self.toBuildRoomClone.spawnPlaned()
+        self.toBuildRoomClone.spawnPlaned()
+        self.toBuildRoomClone.addRandomItems()
+        self.toBuildRoomClone.spawnGhuls(src.gamestate.gamestate.mainChar)
+
+        if self.toBuildRoomClone2:
+            self.toBuildRoomClone2.container.removeRoom(self.toBuildRoomClone2)
+        self.toBuildRoomClone2 = self.architect.doAddRoom(
+            {
+                "coordinate": (7,8),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.toBuildRoomClone2.floorPlan = copy.deepcopy(floorPlan)
+        self.toBuildRoomClone2.spawnPlaned()
+
+    def convertFloorPlanToDict(self,floorPlan):
+        converted = {}
+        if "buildSites" in floorPlan:
+            buildSites = []
+            for item in floorPlan["buildSites"]:
+                buildSites.append([list(item[0]),item[1],item[2]])
+            converted["buildSites"] = buildSites
+        if "inputSlots" in floorPlan:
+            inputSlots = []
+            for item in floorPlan["inputSlots"]:
+                inputSlots.append([list(item[0]),item[1],item[2]])
+            converted["inputSlots"] = inputSlots
+        if "outputSlots" in floorPlan:
+            outputSlots = []
+            for item in floorPlan["outputSlots"]:
+                outputSlots.append([list(item[0]),item[1],item[2]])
+            converted["outputSlots"] = outputSlots
+        if "storageSlots" in floorPlan:
+            outputSlots = []
+            for item in floorPlan["storageSlots"]:
+                outputSlots.append([list(item[0]),item[1],item[2]])
+            converted["storageSlots"] = outputSlots
+        if "walkingSpace" in floorPlan:
+            walkingSpace = []
+            for item in floorPlan["walkingSpace"]:
+                walkingSpace.append(list(item))
+            converted["walkingSpace"] = walkingSpace
+        return converted
+
+    def start(self,seed=None):
+
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addItem(architect,(124, 110, 0))
+        self.architect = architect
+        rooms = []
+
+        toBuildRoom = architect.doAddRoom(
+            {
+                "coordinate": (7,7),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.toBuildRoom = toBuildRoom
+        storageRoom = architect.doAddRoom(
+            {
+                "coordinate": (6,7),
+                "roomType": "EmptyRoom",
+                "doors": "12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.storageRoom = storageRoom
+        storageRoom2 = architect.doAddRoom(
+            {
+                "coordinate": (8,7),
+                "roomType": "EmptyRoom",
+                "doors": "0,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.storageRoom2 = storageRoom2
+
+        self.toBuildRoomClone = None
+        self.toBuildRoomClone2 = None
+
+        for x in range(1,6):
+            for y in range(1,6):
+                item = src.items.itemMap["ScrapCompactor"]()
+                storageRoom.addItem(item,(x,y,0))
+        for x in range(7,12):
+            for y in range(1,6):
+                item = src.items.itemMap["ScrapCompactor"]()
+                storageRoom.addItem(item,(x,y,0))
+        for x in range(7,12):
+            for y in range(7,12):
+                for i in range(1,10):
+                    item = src.items.itemMap["Corpse"]()
+                    storageRoom.addItem(item,(x,y,0))
+
+        for x in range(1,6):
+            for y in range(1,6):
+                for i in range(1,10):
+                    item = src.items.itemMap["MetalBars"]()
+                    storageRoom2.addItem(item,(x,y,0))
+        for x in range(7,12):
+            for y in range(1,6):
+                item = src.items.itemMap["Scrap"](amount=20)
+                storageRoom2.addItem(item,(x,y,0))
+        for x in range(1,6):
+            for y in range(7,12):
+                for i in range(1,10):
+                    item = src.items.itemMap["Sheet"]()
+                    storageRoom2.addItem(item,(x,y,0))
+
+        for y in range(7,12):
+            item = src.items.itemMap["CorpseAnimator"]()
+            storageRoom.addItem(item,(1,y,0))
+
+        item = src.items.itemMap["Painter"]()
+        item.paintMode = "inputSlot"
+        item.itemType = "Scrap"
+        storageRoom.addItem(item,(3,11,0))
+
+        item = src.items.itemMap["Painter"]()
+        item.paintMode = "outputSlot"
+        item.itemType = "MetalBars"
+        storageRoom.addItem(item,(3,10,0))
+
+        item = src.items.itemMap["Painter"]()
+        item.paintMode = "walkingSpace"
+        storageRoom.addItem(item,(3,9,0))
+
+        item = src.items.itemMap["Painter"]()
+        item.paintMode = "delete"
+        storageRoom.addItem(item,(3,8,0))
+
+        item = src.items.itemMap["FunctionTrigger"]()
+        item.function = {"container":self,"method":"advance"}
+        storageRoom.addItem(item,(3,7,0))
+
+        mainChar = src.characters.Character()
+        storageRoom.addCharacter(mainChar,6,6)
+        src.gamestate.gamestate.mainChar = mainChar
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest",
+            "NaiveDropQuest",
+            "NaiveMurderQuest",
+            "DropQuestMeta",
+            "DeliverSpecialItem",
+        ]
+        mainChar.godMode = True
+
 class BackToTheRoots(BasicPhase):
     """
     """
@@ -8764,3 +9040,5 @@ def registerPhases():
     phasesByName["Tour"] = Tour
     phasesByName["BaseBuilding"] = BaseBuilding
     phasesByName["BackToTheRoots"] = BackToTheRoots
+    phasesByName["BuildBase"] = BaseBuilding
+    phasesByName["PrefabDesign"] = PrefabDesign

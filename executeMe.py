@@ -128,6 +128,10 @@ if not shouldLoad:
                 "Tour",
                 "Tour",
             ),
+            (
+                "PrefabDesign",
+                "PrefabDesign",
+            ),
         ]
 
         text = "\n"
@@ -171,6 +175,9 @@ if not shouldLoad:
     elif scenario == "BackToTheRoots":
         args.terrain = "nothingness"
         args.phase = "BackToTheRoots"
+    elif scenario == "PrefabDesign":
+        args.terrain = "nothingness"
+        args.phase = "PrefabDesign"
 
 # set rendering mode
 if not args.nourwid:

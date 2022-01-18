@@ -1,6 +1,7 @@
 import src
 import random
 import copy
+import json
 
 class CityBuilder2(src.items.Item):
     """
@@ -134,6 +135,49 @@ class CityBuilder2(src.items.Item):
             floorPlan["inputSlots"].append(((x+2,11,0),"Corpse",{"maxAmount":2}))
 
         self.prefabs["ScrapToMetalBars"].append(floorPlan)
+
+        self.prefabs["ScrapToMetalBars"] = []
+
+        with open("data/floorPlans/scrapToMetalbars1.json") as fileHandle:
+            rawFloorplan = json.load(fileHandle)    
+        floorPlan = self.getFloorPlanFromDict(rawFloorplan)
+        print(floorPlan)
+        self.prefabs["ScrapToMetalBars"].append(floorPlan)
+
+        with open("data/floorPlans/scrapToMetalbars2.json") as fileHandle:
+            rawFloorplan = json.load(fileHandle)    
+        floorPlan = self.getFloorPlanFromDict(rawFloorplan)
+        print(floorPlan)
+        self.prefabs["ScrapToMetalBars"].append(floorPlan)
+
+    def getFloorPlanFromDict(self,rawFloorplan):
+        converted = {}
+        if "buildSites" in rawFloorplan:
+            buildSites = []
+            for item in rawFloorplan["buildSites"]:
+                buildSites.append((tuple(item[0]),item[1],item[2]))
+            converted["buildSites"] = buildSites
+        if "inputSlots" in rawFloorplan:
+            inputSlots = []
+            for item in rawFloorplan["inputSlots"]:
+                inputSlots.append((tuple(item[0]),item[1],item[2]))
+            converted["inputSlots"] = inputSlots
+        if "outputSlots" in rawFloorplan:
+            outputSlots = []
+            for item in rawFloorplan["outputSlots"]:
+                outputSlots.append((tuple(item[0]),item[1],item[2]))
+            converted["outputSlots"] = outputSlots
+        if "storageSlots" in rawFloorplan:
+            outputSlots = []
+            for item in rawFloorplan["storageSlots"]:
+                outputSlots.append((tuple(item[0]),item[1],item[2]))
+            converted["storageSlots"] = outputSlots
+        if "walkingSpace" in rawFloorplan:
+            walkingSpace = []
+            for item in rawFloorplan["walkingSpace"]:
+                walkingSpace.append(tuple(item))
+            converted["walkingSpace"] = walkingSpace
+        return converted
 
     def apply(self,character):
         prefabsToPlace = ["ScrapToMetalBars","ScrapToMetalBars"]

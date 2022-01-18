@@ -41,7 +41,18 @@ A painter. it can be used to draw markers on the floor
         Returns:
             how the item should currently be rendered
         """
-        return src.canvas.displayChars.markerBean_inactive
+        if self.paintMode == "inputSlot":
+            return "xi"
+        if self.paintMode == "outputSlot":
+            return "xo"
+        if self.paintMode == "storageSlot":
+            return "xs"
+        if self.paintMode == "walkingSpace":
+            return "xw"
+        if self.paintMode == "buildSite":
+            return "xb"
+        if self.paintMode == "delete":
+            return "xd"
 
     def configure(self, character):
        self.submenue = src.interaction.OneKeystrokeMenu(

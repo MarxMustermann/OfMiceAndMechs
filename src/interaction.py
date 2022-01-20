@@ -5183,7 +5183,7 @@ def renderGameDisplay():
     if char.health == 0:
         healthDisplay = "---------------"
     else:
-        healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate)+((urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
+        healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
 
     if char.satiation == 0:
         satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved")
@@ -5199,7 +5199,7 @@ def renderGameDisplay():
         "    satiation: " , satiationDisplay
     ]
 
-    footer.set_text((urwid.AttrSpec("default", "default"), text))
+    footer.set_text(text)
 
     def stringifyUrwid(inData):
         outData = ""
@@ -5211,6 +5211,48 @@ def renderGameDisplay():
             if isinstance(item, str):
                 outData += item
         return outData
+
+    def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None):
+        if not internalOffset:
+            internalOffset = [0,0]
+
+        if not color:
+            color = ((255,255,255),(0,0,0))
+
+        if isinstance(inData,str):
+            counter = 0
+            for line in inData.split("\n"):
+                skipPrint = False
+                toPrint = line
+                if size:
+                    print(size)
+                    print(line)
+                    if internalOffset[0] > size[0]:
+                        skipPrint = True
+                    if internalOffset[1] > size[1]:
+                        skipPrint = True
+
+                    if not skipPrint:
+                        toPrint = line[:size[0]-internalOffset[0]]
+                
+                if not skipPrint:
+                    tcodConsole.print(x=offset[0]+internalOffset[0],y=offset[1]+internalOffset[1],string=toPrint,fg=color[0],bg=color[1])
+
+                if counter > 0:
+                    internalOffset[0] = 0
+                    internalOffset[1] += 1
+                internalOffset[0] += len(line)
+                counter += 1
+
+
+        if isinstance(inData,tuple):
+            printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size)
+
+        if isinstance(inData,list):
+            for item in inData:
+                printUrwidToTcod(item,offset,color,internalOffset,size)
+        
+        #footertext = stringifyUrwid(inData)
 
     # render the game
     if not src.gamestate.gamestate.mainChar.specialRender or tcodConsole:
@@ -5303,8 +5345,9 @@ def renderGameDisplay():
                         canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
 
                     if uiElement["type"] == "healthInfo":
-                        footertext = stringifyUrwid(footer.get_text())
-                        tcodConsole.print(x=uiElement["offset"][0]+uiElement["width"]//2-len(footertext)//2,y=uiElement["offset"][1],string=footertext,fg=(255,255,255),bg=(0,0,0))
+                        offset = (uiElement["offset"][0]+41-len(stringifyUrwid(footer.get_text()))//2,uiElement["offset"][1])
+                        width = uiElement["width"]
+                        printUrwidToTcod(footer.get_text(),offset,size=(width,100))
                     if uiElement["type"] == "indicators":
                         indicators = "m mc me q v"
                         tcodConsole.print(x=uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,y=uiElement["offset"][1],string=indicators,fg=(255,255,255),bg=(0,0,0))
@@ -5315,8 +5358,6 @@ def renderGameDisplay():
                             chars = src.gamestate.gamestate.rememberedMenu.render(src.gamestate.gamestate.mainChar)
                             size = uiElement["size"]
                             offset = uiElement["offset"]
-                            if isinstance(chars,list):
-                                chars = stringifyUrwid(chars)
                             if isinstance(chars,str):
                                 counter = 0
                                 for line in chars.split("\n"):
@@ -5325,14 +5366,13 @@ def renderGameDisplay():
                                     if counter > size[1]:
                                         break
                             else:
-                                1/0
+                                printUrwidToTcod(chars,offset,size=size)
+
                     if uiElement["type"] == "rememberedMenu2":
                         if src.gamestate.gamestate.rememberedMenu2:
                             chars = src.gamestate.gamestate.rememberedMenu2.render(src.gamestate.gamestate.mainChar)
                             size = uiElement["size"]
                             offset = uiElement["offset"]
-                            if isinstance(chars,list):
-                                chars = stringifyUrwid(chars)
                             if isinstance(chars,str):
                                 counter = 0
                                 for line in chars.split("\n"):
@@ -5341,8 +5381,7 @@ def renderGameDisplay():
                                     if counter > size[1]:
                                         break
                             else:
-                                1/0
-                            
+                                printUrwidToTcod(chars,offset,size=size)
                             
 
                 if not src.gamestate.gamestate.mainChar.specialRender:

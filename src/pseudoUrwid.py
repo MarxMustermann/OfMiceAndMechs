@@ -39,10 +39,14 @@ class AttrSpec(object):
             color.append(convertValue(self.fg[1]))
             color.append(convertValue(self.fg[2]))
             color.append(convertValue(self.fg[3]))
-        elif self.fg == "black":
+        elif self.fg in "black":
             color.append(0)
             color.append(0)
             color.append(0)
+        elif self.fg in ("white","default"):
+            color.append(255)
+            color.append(255)
+            color.append(255)
         else:
             color.append(None)
             color.append(None)
@@ -52,7 +56,7 @@ class AttrSpec(object):
             color.append(convertValue(self.bg[1]))
             color.append(convertValue(self.bg[2]))
             color.append(convertValue(self.bg[3]))
-        elif self.bg == "black":
+        elif self.bg in ("black","default"):
             color.append(0)
             color.append(0)
             color.append(0)

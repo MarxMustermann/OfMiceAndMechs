@@ -5183,21 +5183,21 @@ def renderGameDisplay():
     if char.health == 0:
         healthDisplay = "---------------"
     else:
-        healthDisplay = "x"*healthRate+"."*(15-healthRate)
+        healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate)+((urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
 
     if char.satiation == 0:
-        satiationDisplay = "starved"
+        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved")
     elif char.satiation < 200:
-        satiationDisplay = "starving"
+        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving")
     elif char.satiation < 400:
-        satiationDisplay = "hungry"
+        satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry")
     else:
-        satiationDisplay = "satiated"
+        satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated")
 
-    text += (
-        "health: " + healthDisplay +
-        "    satiation: " + satiationDisplay
-    )
+    text = [
+        "health: " , healthDisplay ,
+        "    satiation: " , satiationDisplay
+    ]
 
     footer.set_text((urwid.AttrSpec("default", "default"), text))
 

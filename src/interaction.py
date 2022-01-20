@@ -5218,15 +5218,21 @@ def renderGameDisplay():
 
         if not color:
             color = ((255,255,255),(0,0,0))
+        if color[0] == (None,None,None):
+            color = ((255,255,255),color[1])
+        if color[1] == (None,None,None):
+            color = (color[0],(0,0,0))
 
         if isinstance(inData,str):
             counter = 0
             for line in inData.split("\n"):
+                if counter > 0:
+                    internalOffset[0] = 0
+                    internalOffset[1] += 1
+
                 skipPrint = False
                 toPrint = line
                 if size:
-                    print(size)
-                    print(line)
                     if internalOffset[0] > size[0]:
                         skipPrint = True
                     if internalOffset[1] > size[1]:
@@ -5238,9 +5244,6 @@ def renderGameDisplay():
                 if not skipPrint:
                     tcodConsole.print(x=offset[0]+internalOffset[0],y=offset[1]+internalOffset[1],string=toPrint,fg=color[0],bg=color[1])
 
-                if counter > 0:
-                    internalOffset[0] = 0
-                    internalOffset[1] += 1
                 internalOffset[0] += len(line)
                 counter += 1
 
@@ -5421,6 +5424,7 @@ def renderGameDisplay():
             screen_height = 51
             offsetLeft = max(screen_width//2-width//2,1)
             offsetTop = max(screen_height//2-height//2,1)
+
             counter = offsetTop
             tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
@@ -5430,7 +5434,7 @@ def renderGameDisplay():
             tcodConsole.print(x=offsetLeft, y=counter, string="|`"+" "*width+".|",fg=(255,255,255),bg=(0,0,0))
             counter += 1
             for line in plainText.split("\n"):
-                tcodConsole.print(x=offsetLeft, y=counter, string="| "+line+" "*(width-len(line))+" |",fg=(255,255,255),bg=(0,0,0))
+                tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 counter += 1
             tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+",|",fg=(255,255,255),bg=(0,0,0))
             counter += 1
@@ -5438,6 +5442,8 @@ def renderGameDisplay():
             tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
 
+            #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
+            printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
             tcodContext.present(tcodConsole)
 
 def gameLoop(loop, user_data=None):

@@ -51,12 +51,13 @@ class AttrSpec(object):
             color.append(None)
             color.append(None)
             color.append(None)
+            print("pseudourwidfg")
             print(self.fg)
         if self.bg[0] == "#":
             color.append(convertValue(self.bg[1]))
             color.append(convertValue(self.bg[2]))
             color.append(convertValue(self.bg[3]))
-        elif self.bg in ("black","default"):
+        elif self.bg in ("black","default",""):
             color.append(0)
             color.append(0)
             color.append(0)
@@ -64,6 +65,7 @@ class AttrSpec(object):
             color.append(None)
             color.append(None)
             color.append(None)
+            print("pseudourwidbg")
             print(self.bg)
         return tuple(color)
 

@@ -2186,6 +2186,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom.addCharacter(leader,7,3)
             leader.rank = 3
             leader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
+            cityBuilder.apply(leader)
 
             counter = 1
             for pos in self.specialItemSlotPositions:
@@ -2736,7 +2737,7 @@ press space to continue"""%(self.gatherTime,))
 
                             lineCounter = 0
                             for worker in subsubleaderSubordinates:
-                                if subleader and not subleader.dead:
+                                if worker and not worker.dead:
                                     infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
                                     infogrid[((2+1+lineCounter)*2+1)*9+row3Counter] = str(worker.reputation)+" "*(rowwidth-len(str(worker.reputation)))
                                 else:
@@ -2861,8 +2862,8 @@ press space to continue"""%(reputationTree))
                 foundWorkerReplacement = None
                 counter3 = 0
                 for worker in selectedSubsubLeader.subordinates:
-                    if worker.dead == True:
-                        foundWorkerReplacement = worker
+                    if not worker or worker.dead == True:
+                        foundWorkerReplacement = True
                         break
                     counter3 += 1
 

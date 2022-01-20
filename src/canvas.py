@@ -328,7 +328,7 @@ class Canvas(object):
         # set pixel
         self.chars[x][y] = char
 
-    def printTcod(self, console, offsetY, offsetX, warning):
+    def printTcod(self, console, offsetX, offsetY, warning):
 
         def stringifyUrwid(inData):
             outData = ""
@@ -341,13 +341,9 @@ class Canvas(object):
                     outData += item
             return outData
 
-        if warning:
-            console.print(x=0,y=offsetY,bg=(255,0,0),string=(" "*200+"\n")*60)
-
         y = offsetY
         out = []
         for line in self.chars:
-            y += 1
             x = offsetX
             for char in line:
                 mapped = None
@@ -382,6 +378,7 @@ class Canvas(object):
                     console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
                     numPrinted += 1
                 x += 1
+            y += 1
 
     # bad code: urwid specific code should be in one place not everywhere
     def getUrwirdCompatible(self, warning=False):

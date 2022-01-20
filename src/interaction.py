@@ -131,6 +131,18 @@ def setUpTcod():
     pygame2.mixer.init()
     pygame2.init()
 
+    """
+    if not context.sdl_window_p:
+        return
+    fullscreen = tcod.lib.SDL_GetWindowFlags(context.sdl_window_p) & (
+        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+    )
+    tcod.lib.SDL_SetWindowFullscreen(
+        context.sdl_window_p,
+        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+    )
+    """
+
 def setUpUrwid():
     """
     initialise console based rendering
@@ -4090,6 +4102,8 @@ def renderHeader(character):
         character: the character to use to get the information from
     """
 
+    return ""
+
     # render the sections to display
     questSection = renderQuests(maxQuests=2)
     messagesSection = renderMessages(character)
@@ -4649,12 +4663,10 @@ def render(char):
     ):
         chars = src.gamestate.gamestate.mainChar.room.render()
     else:
-        mapChars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
+        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
         miniMapChars = []
-        if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank and src.gamestate.gamestate.mainChar.rank < 6 or 1==1:
-            miniMapChars = thisTerrain.renderTiles()
 
-        text = []
+        '''
         if hasattr(src.gamestate.gamestate.mainChar,"rank") and src.gamestate.gamestate.mainChar.rank and src.gamestate.gamestate.mainChar.rank < 5 or 1==1:
             if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
                 text.append(src.gamestate.gamestate.mainChar.container.name)
@@ -4702,7 +4714,7 @@ def render(char):
             chars[y].extend(mapChars[y])
 
             y += 1
-
+        '''
 
     # place rendering in screen
     canvas = src.canvas.Canvas(
@@ -5113,46 +5125,43 @@ def getTcodEvents():
 def renderGameDisplay():
 
     text = ""
-    for cmd in reversed(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]):
-        item = cmd[0]
-        if (
-            isinstance(item, list)
-            or isinstance(item, tuple)
-            or item in ("lagdetection", "lagdetection_")
-        ):
-            continue
-        text += str(cmd[0])
 
-    weaponString = "0"
-    if src.gamestate.gamestate.mainChar.weapon:
-        weaponString = str(src.gamestate.gamestate.mainChar.weapon.baseDamage)
-    armorString = "0"
-    if src.gamestate.gamestate.mainChar.armor:
-        armorString = str(src.gamestate.gamestate.mainChar.armor.armorValue)
+    char = src.gamestate.gamestate.mainChar
+
+    if char.room:
+        thisTerrain = char.room.terrain
+    else:
+        thisTerrain = char.terrain
+
+
+    global lastTerrain
+    if thisTerrain:
+        lastTerrain = thisTerrain
+    else:
+        thisTerrain = lastTerrain
+
+    stepSize = char.maxHealth/15
+    healthRate = int(char.health/stepSize)
+
+    if char.health == 0:
+        healthDisplay = "---------------"
+    else:
+        healthDisplay = "x"*healthRate+"."*(15-healthRate)
+
+    if char.satiation == 0:
+        satiationDisplay = "starved"
+    elif char.satiation < 200:
+        satiationDisplay = "starving"
+    elif char.satiation < 400:
+        satiationDisplay = "hungry"
+    else:
+        satiationDisplay = "satiated"
+
     text += (
-        "\nsatiation: "
-        + str(src.gamestate.gamestate.mainChar.satiation)+";"
-        + " health: "
-        + str(src.gamestate.gamestate.mainChar.health)+";"
-        + " weapon: "
-        + weaponString+";"
-        + " armor: "
-        + armorString+";"
-        + " tick: "
-        + str(src.gamestate.gamestate.tick)+";"
-        + " mode: "
-        + str(src.gamestate.gamestate.mainChar.hasOwnAction)+";"
-        + " len(commandKeyQueue): "
-        + str(len(src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]))+";"
+        "health: " + healthDisplay +
+        "    satiation: " + satiationDisplay
     )
-    text += (
-        " space: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition%15,src.gamestate.gamestate.mainChar.yPosition%15,)
-        + " tile: %s/%s"%(src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15,)
-        )
-    if src.gamestate.gamestate.mainChar.container:
-        text += (
-            " terrain: %s/%s"%(src.gamestate.gamestate.mainChar.container.xPosition,src.gamestate.gamestate.mainChar.container.yPosition,)
-            )
+
     footer.set_text((urwid.AttrSpec("default", "default"), text))
 
     def stringifyUrwid(inData):
@@ -5167,7 +5176,7 @@ def renderGameDisplay():
         return outData
 
     # render the game
-    if not src.gamestate.gamestate.mainChar.specialRender:
+    if not src.gamestate.gamestate.mainChar.specialRender or tcodConsole:
 
         skipRender = True
 
@@ -5204,7 +5213,6 @@ def renderGameDisplay():
 
             # render map
             # bad code: display mode specific code
-            canvas = render(src.gamestate.gamestate.mainChar)
             if not src.gamestate.gamestate.mainChar.godMode and (
                 src.gamestate.gamestate.mainChar.satiation < 300
                 or src.gamestate.gamestate.mainChar.health < 30
@@ -5212,31 +5220,16 @@ def renderGameDisplay():
                 warning = True
             else:
                 warning = False
-            main.set_text(
-                (
-                    urwid.AttrSpec("#999", "black"),
-                    canvas.getUrwirdCompatible(warning=warning),
-                )
-            )
-            if useTiles:
-                canvas.setPygameDisplay(pydisplay, pygame, tileSize)
             header.set_text(
                 (
                     urwid.AttrSpec("default", "default"),
                     renderHeader(src.gamestate.gamestate.mainChar),
                 )
             )
-            if tcodConsole:
-                tcodConsole.clear()
-                counter = 0
-                for line in stringifyUrwid(header.get_text()).split("\n"):
-                    tcodConsole.print(x=1, y=counter, string=line)
-                    counter += 1
-                canvas.printTcod(tcodConsole,counter,0,warning=warning)
-                footertext = stringifyUrwid(footer.get_text())
-                tcodConsole.print(x=0,y=48,string=" "*(170-len(footertext))+footertext)
-                tcodContext.present(tcodConsole)
             if useTiles:
+                canvas = render(src.gamestate.gamestate.mainChar)
+                canvas.setPygameDisplay(pydisplay, pygame, tileSize)
+
                 w, h = pydisplay.get_size()
 
                 font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
@@ -5253,7 +5246,63 @@ def renderGameDisplay():
                 tw, th = font.size(plainText)
                 pydisplay.blit(text, (w - tw - 8, h - th - 8))
                 pygame.display.update()
-    else:
+            if tcodConsole:
+                tcodConsole.clear()
+
+                """
+                uiElements = [
+                        {"type":"gameMap","offset":(20,2)},
+                        {"type":"miniMap","offset":(2,2)},
+                        {"type":"healthInfo","offset":(40,45),"width":82},
+                        {"type":"indicators","offset":(40,46),"width":82},
+                        {"type":"text","offset":(74,47), "text":"press ? for help"},
+                        ]
+                """
+                uiElements = [
+                        {"type":"gameMap","offset":(20,7)},
+                        {"type":"miniMap","offset":(2,2)},
+                        {"type":"healthInfo","offset":(40,2),"width":82},
+                        {"type":"indicators","offset":(40,3),"width":82},
+                        {"type":"text","offset":(74,4), "text":"press ? for help"},
+                        ]
+
+                for uiElement in uiElements:
+                    if uiElement["type"] == "gameMap":
+                        canvas = render(src.gamestate.gamestate.mainChar)
+                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
+                    if uiElement["type"] == "miniMap":
+                        miniMapChars = thisTerrain.renderTiles()
+                        canvas = src.canvas.Canvas(
+                            size=(15, 15),
+                            chars=miniMapChars,
+                            coordinateOffset=(0,0),
+                            shift=(0,0),
+                            displayChars=src.canvas.displayChars,
+                            tileMapping=None,
+                        )
+                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
+
+                    if uiElement["type"] == "healthInfo":
+                        footertext = stringifyUrwid(footer.get_text())
+                        tcodConsole.print(x=uiElement["offset"][0]+uiElement["width"]//2-len(footertext)//2,y=uiElement["offset"][1],string=footertext,fg=(255,255,255),bg=(0,0,0))
+                    if uiElement["type"] == "indicators":
+                        indicators = "m mc me q v"
+                        tcodConsole.print(x=uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,y=uiElement["offset"][1],string=indicators,fg=(255,255,255),bg=(0,0,0))
+                    if uiElement["type"] == "text":
+                        tcodConsole.print(x=uiElement["offset"][0],y=uiElement["offset"][1],string=uiElement["text"],fg=(255,255,255),bg=(0,0,0))
+
+                if not src.gamestate.gamestate.mainChar.specialRender:
+                    tcodContext.present(tcodConsole)
+            if not useTiles and not tcodConsole:
+                main.set_text(
+                    (
+                        urwid.AttrSpec("#999", "black"),
+                        canvas.getUrwirdCompatible(warning=warning),
+                    )
+                )
+
+                canvas = render(src.gamestate.gamestate.mainChar)
+    if src.gamestate.gamestate.mainChar.specialRender:
         if useTiles:
             pydisplay.fill((0, 0, 0))
             font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
@@ -5267,14 +5316,35 @@ def renderGameDisplay():
 
             pygame.display.update()
         if tcodConsole:
-            tcodConsole.clear()
             plainText = stringifyUrwid(main.get_text())
-            counter = 0
+            height = 0
+            width = 0
             for line in plainText.split("\n"):
-                tcodConsole.print(x=1, y=counter, string=line)
+                height += 1
+                width = max(width,len(line))
+
+            screen_width = 200
+            screen_width = 150
+            screen_height = 51
+            offsetLeft = max(screen_width//2-width//2,1)
+            offsetTop = max(screen_height//2-height//2,1)
+            counter = offsetTop
+            tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft-1, y=counter, string="-+-"+"-"*width+"-+-",fg=(255,255,255),bg=(0,0,0))
+            counter += 1
+            tcodConsole.print(x=offsetLeft, y=counter, string="|`"+" "*width+".|",fg=(255,255,255),bg=(0,0,0))
+            counter += 1
+            for line in plainText.split("\n"):
+                tcodConsole.print(x=offsetLeft, y=counter, string="| "+line+" "*(width-len(line))+" |",fg=(255,255,255),bg=(0,0,0))
                 counter += 1
+            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+",|",fg=(255,255,255),bg=(0,0,0))
+            counter += 1
+            tcodConsole.print(x=offsetLeft-1, y=counter, string="-+-"+"-"*width+"-+-",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
+
             tcodContext.present(tcodConsole)
-            tcodConsole.print(x=0,y=59,string=stringifyUrwid(footer.get_text()))
 
 def gameLoop(loop, user_data=None):
     """

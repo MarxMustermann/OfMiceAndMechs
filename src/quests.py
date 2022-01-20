@@ -1004,34 +1004,40 @@ class Equip(MetaQuestSequence):
                 return
             room = character.container
 
-            source = None
             for itemType in toSearchFor:
-                for candidate in room.sources:
-                    if not candidate[1] == itemType:
-                        continue
-
-                    sourceRoom = room.container.getRoomByPosition(candidate[0])
-                    if not sourceRoom:
-                        continue
-
-                    sourceRoom = sourceRoom[0]
-                    sourceSlots = sourceRoom.getNonEmptyOutputslots(itemType=itemType)
-                    if not sourceSlots:
-                        continue
-
-                    character.addMessage(candidate)
-
-                    source = candidate
+                sourceSlots = room.getNonEmptyOutputslots(itemType=itemType)
+                if sourceSlots:
                     break
-                if source:
-                    break
-            if not source:
-                character.runCommandString(".14.")
-                return
 
-            if not (room.xPosition,room.yPosition) == source[0]:
-                self.addQuest(GoToTile(targetPosition=source[0]))
-                return
+            if not sourceSlots:
+                source = None
+                for itemType in toSearchFor:
+                    for candidate in room.sources:
+                        if not candidate[1] == itemType:
+                            continue
+
+                        sourceRoom = room.container.getRoomByPosition(candidate[0])
+                        if not sourceRoom:
+                            continue
+
+                        sourceRoom = sourceRoom[0]
+                        sourceSlots = sourceRoom.getNonEmptyOutputslots(itemType=itemType)
+                        if not sourceSlots:
+                            continue
+
+                        character.addMessage(candidate)
+
+                        source = candidate
+                        break
+                    if source:
+                        break
+                if not source:
+                    character.runCommandString(".14.")
+                    return
+
+                if not (room.xPosition,room.yPosition) == source[0]:
+                    self.addQuest(GoToTile(targetPosition=source[0]))
+                    return
 
             character.addMessage(sourceSlots)
             self.addQuest(RunCommand(command="j"))
@@ -7140,7 +7146,7 @@ class ObtainSpecialItem(MetaQuestSequence):
                 quest.activate()
                 self.addQuest(quest)
 
-                quest = Equip(lifetime=200)
+                quest = Equip(lifetime=300)
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
@@ -7167,7 +7173,7 @@ class ObtainSpecialItem(MetaQuestSequence):
                 print(strategy)
             
             if strategy == "attack enemy city":
-                command = ".QSNEquip\nlifetime:200; ."
+                command = ".QSNEquip\nlifetime:300; ."
                 character.runCommandString(command)
 
                 command = ".QSNProtectSuperior\n ."

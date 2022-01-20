@@ -1876,6 +1876,12 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         char.setInterrupt = True
         return
 
+    if key in ("ESC","lESC",):
+        src.gamestate.gamestate.rememberedMenu = None
+        return
+    if key in ("rESC",):
+        src.gamestate.gamestate.rememberedMenu2 = None
+        return
     if key in ("esc",):
         options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
                    ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
@@ -3169,6 +3175,9 @@ class QuestMenu(SubMenu):
         self.offsetX = 0
         self.questIndex = 0
         super().__init__()
+    
+    def render(self, char):
+        return renderQuests(char=self.char, asList=True, questIndex=self.questIndex)
 
     # overrides the superclasses method completely
     def handleKey(self, key, noRender=False):
@@ -3184,6 +3193,13 @@ class QuestMenu(SubMenu):
 
         # exit submenu
         if key == "esc":
+            return True
+        if key in ("ESC","lESC",):
+            src.gamestate.gamestate.rememberedMenu = self
+            print(key)
+            return True
+        if key in ("rESC",):
+            src.gamestate.gamestate.rememberedMenu2 = self
             return True
 
         # scrolling
@@ -3232,7 +3248,7 @@ class QuestMenu(SubMenu):
         )
         self.persistentText = []
         self.persistentText.append(
-            renderQuests(char=self.char, asList=True, questIndex=self.questIndex)
+            self.render(self.char)
         )
 
         self.lockOptions = False
@@ -3530,7 +3546,6 @@ class InputMenu(SubMenu):
 
         return False
 
-
 # bad code: should be abstracted
 # bad code: uses global function to render
 class CharacterInfoMenu(SubMenu):
@@ -3544,23 +3559,9 @@ class CharacterInfoMenu(SubMenu):
         self.char = char
         super().__init__()
 
-    def handleKey(self, key, noRender=False):
-        """
-        show the attributes and ignore keystrokes
-
-        Parameters:
-            key: the key pressed
-            noRender: flag to skip rendering
-        Returns:
-            returns True when done
-        """
-
-        # exit the submenu
-        if key == "esc":
-            return True
-
-        char = self.char
-
+    def render(self,char):
+        if char.dead:
+            return ""
         text = char.getDetailedInfo() + "\n\n"
 
         text += "\n"
@@ -3577,7 +3578,8 @@ class CharacterInfoMenu(SubMenu):
             baseDamage = char.weapon.baseDamage
 
         text += "internal id: %s\n" % (char,)
-        text += "numChars: %s\n" % (len(char.container.characters))
+        if char.container:
+            text += "numChars: %s\n" % (len(char.container.characters))
         text += "lastJobOrder: %s\n" % char.lastJobOrder
         text += "weapon: %s\n" % baseDamage
         text += "armor: %s\n" % armorValue
@@ -3604,6 +3606,34 @@ class CharacterInfoMenu(SubMenu):
         text += "NUM INVENTORY ITEMs - %s" % (len(char.inventory)) + "\n"
         char.setRegisterValue("frustration", char.frustration)
         text += "frustration: %s\n" % char.frustration
+
+        return text
+
+    def handleKey(self, key, noRender=False):
+        """
+        show the attributes and ignore keystrokes
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # exit the submenu
+        if key == "esc":
+            return True
+        if key in ("ESC","lESC",):
+            src.gamestate.gamestate.rememberedMenu = self
+            print(key)
+            return True
+        if key in ("rESC",):
+            src.gamestate.gamestate.rememberedMenu2 = self
+            return True
+
+        char = self.char
+
+        text = self.render(char)
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
@@ -4936,7 +4966,14 @@ def getTcodEvents():
                 if key == tcod.event.KeySym.HASH:
                     translatedKey = "#"
                 if key == tcod.event.KeySym.ESCAPE:
-                    translatedKey = "esc"
+                    if event.mod in (tcod.event.Modifier.RSHIFT,):
+                        translatedKey = "rESC"
+                    elif event.mod in (tcod.event.Modifier.LSHIFT,):
+                        translatedKey = "lESC"
+                    elif event.mod in (tcod.event.Modifier.SHIFT,):
+                        translatedKey = "ESC"
+                    else:
+                        translatedKey = "esc"
                 if key == tcod.event.KeySym.N1:
                     translatedKey = "1"
                 if key == tcod.event.KeySym.N2:
@@ -5249,24 +5286,7 @@ def renderGameDisplay():
             if tcodConsole:
                 tcodConsole.clear()
 
-                """
-                uiElements = [
-                        {"type":"gameMap","offset":(20,2)},
-                        {"type":"miniMap","offset":(2,2)},
-                        {"type":"healthInfo","offset":(40,45),"width":82},
-                        {"type":"indicators","offset":(40,46),"width":82},
-                        {"type":"text","offset":(74,47), "text":"press ? for help"},
-                        ]
-                """
-                uiElements = [
-                        {"type":"gameMap","offset":(20,7)},
-                        {"type":"miniMap","offset":(2,2)},
-                        {"type":"healthInfo","offset":(40,2),"width":82},
-                        {"type":"indicators","offset":(40,3),"width":82},
-                        {"type":"text","offset":(74,4), "text":"press ? for help"},
-                        ]
-
-                for uiElement in uiElements:
+                for uiElement in src.gamestate.gamestate.uiElements:
                     if uiElement["type"] == "gameMap":
                         canvas = render(src.gamestate.gamestate.mainChar)
                         canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
@@ -5290,6 +5310,40 @@ def renderGameDisplay():
                         tcodConsole.print(x=uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,y=uiElement["offset"][1],string=indicators,fg=(255,255,255),bg=(0,0,0))
                     if uiElement["type"] == "text":
                         tcodConsole.print(x=uiElement["offset"][0],y=uiElement["offset"][1],string=uiElement["text"],fg=(255,255,255),bg=(0,0,0))
+                    if uiElement["type"] == "rememberedMenu":
+                        if src.gamestate.gamestate.rememberedMenu:
+                            chars = src.gamestate.gamestate.rememberedMenu.render(src.gamestate.gamestate.mainChar)
+                            size = uiElement["size"]
+                            offset = uiElement["offset"]
+                            if isinstance(chars,list):
+                                chars = stringifyUrwid(chars)
+                            if isinstance(chars,str):
+                                counter = 0
+                                for line in chars.split("\n"):
+                                    tcodConsole.print(x=offset[0],y=offset[1]+counter,string=line[:size[0]],fg=(255,255,255),bg=(0,0,0))
+                                    counter += 1
+                                    if counter > size[1]:
+                                        break
+                            else:
+                                1/0
+                    if uiElement["type"] == "rememberedMenu2":
+                        if src.gamestate.gamestate.rememberedMenu2:
+                            chars = src.gamestate.gamestate.rememberedMenu2.render(src.gamestate.gamestate.mainChar)
+                            size = uiElement["size"]
+                            offset = uiElement["offset"]
+                            if isinstance(chars,list):
+                                chars = stringifyUrwid(chars)
+                            if isinstance(chars,str):
+                                counter = 0
+                                for line in chars.split("\n"):
+                                    tcodConsole.print(x=offset[0],y=offset[1]+counter,string=line[:size[0]],fg=(255,255,255),bg=(0,0,0))
+                                    counter += 1
+                                    if counter > size[1]:
+                                        break
+                            else:
+                                1/0
+                            
+                            
 
                 if not src.gamestate.gamestate.mainChar.specialRender:
                     tcodContext.present(tcodConsole)
@@ -5331,6 +5385,7 @@ def renderGameDisplay():
             counter = offsetTop
             tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft-1, y=counter, string="-+-"+"-"*width+"-+-",fg=(255,255,255),bg=(0,0,0))
             counter += 1
             tcodConsole.print(x=offsetLeft, y=counter, string="|`"+" "*width+".|",fg=(255,255,255),bg=(0,0,0))

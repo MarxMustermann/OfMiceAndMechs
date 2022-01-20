@@ -1149,7 +1149,7 @@ class Character(src.saveing.Saveable):
         """
 
         return (
-            "\nname: "
+            "name: "
             + str(self.name)
             + "\nroom: "
             + str(self.room)

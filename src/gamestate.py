@@ -35,6 +35,29 @@ class GameState(src.saveing.Saveable):
         self.stopGameInTicks = None
         self.extraRoots = []
 
+        """
+        self.uiElements = [
+                {"type":"gameMap","offset":(20,2)},
+                {"type":"miniMap","offset":(2,2)},
+                {"type":"healthInfo","offset":(40,45),"width":82},
+                {"type":"indicators","offset":(40,46),"width":82},
+                {"type":"text","offset":(74,47), "text":"press ? for help"},
+                ]
+        """
+
+        self.uiElements = [
+                        {"type":"gameMap","offset":(20,7)},
+                        {"type":"miniMap","offset":(2,2)},
+                        {"type":"healthInfo","offset":(40,2),"width":82},
+                        {"type":"indicators","offset":(40,3),"width":82},
+                        {"type":"text","offset":(74,4), "text":"press ? for help"},
+                        {"type":"rememberedMenu","offset":(2,18),"size":(36,80)},
+                        {"type":"rememberedMenu2","offset":(126,2),"size":(36,80)},
+                        ]
+        self.rememberedMenu = None
+        self.rememberedMenu2 = None
+
+
     # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):
         """

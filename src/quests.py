@@ -213,6 +213,7 @@ class Quest(src.saveing.Saveable):
         self.reputationReward = 0
         self.watched = []
         self.randomSeed = None
+        self.autoSolve = False
 
         # set up saving
         # bad code: extend would be better
@@ -1902,6 +1903,7 @@ class FetchItems(MetaQuestSequence):
     def setParameters(self,parameters):
         if "toCollect" in parameters and "toCollect" in parameters:
             self.toCollect = parameters["toCollect"]
+            self.metaDescription += " "+self.toCollect
         if "amount" in parameters and "amount" in parameters:
             self.amount = parameters["amount"]
         if "returnToTile" in parameters and "returnToTile" in parameters:
@@ -1953,6 +1955,7 @@ class FetchItems(MetaQuestSequence):
 
             character.addMessage("failes fetching items")
             self.fail()
+            self.postHandler()
         return
 
     def getSource(self):
@@ -6598,18 +6601,22 @@ class GoToPosition(Quest):
             if not command:
                 (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom,tryHard=True,ignoreEndBlocked=self.ignoreEndBlocked)
             if not command:
-                self.fail()
                 return None
             return command
         else:
             charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
             tilePos = (character.xPosition//15,character.yPosition//15,character.zPosition//15)
+
             (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,ignoreEndBlocked=self.ignoreEndBlocked)
+            if character == src.gamestate.gamestate.mainChar:
+                print("calcpath")
+                print((tilePos,charPos,self.targetPosition))
+                print((command,self.smallPath))
             if not command:
                 (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,tryHard=True,ignoreEndBlocked=self.ignoreEndBlocked)
             if not command:
-                self.fail()
                 return None
+            return command
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -6619,10 +6626,14 @@ class GoToPosition(Quest):
         if not self.active:
             return
         if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
+            if character == src.gamestate.gamestate.mainChar:
+                print("completed1")
+                print(self.targetPosition)
             self.postHandler()
             return True
         if self.ignoreEndBlocked:
             if abs(character.xPosition%15-self.targetPosition[0])+abs(character.yPosition%15-self.targetPosition[1]) == 1:
+                print("completed2")
                 self.postHandler()
                 return True
         return False
@@ -6636,6 +6647,8 @@ class GoToPosition(Quest):
         return super().setParameters(parameters)
 
     def solver(self, character):
+        if character == src.gamestate.gamestate.mainChar:
+            print("solver")
         self.triggerCompletionCheck(character)
         commandString = self.getSolvingCommandString(character)
         self.randomSeed = random.random()
@@ -6643,6 +6656,7 @@ class GoToPosition(Quest):
             character.runCommandString(commandString)
             return False
         else:
+            print("fail to move")
             self.fail()
             return True
 

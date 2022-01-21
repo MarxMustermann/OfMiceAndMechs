@@ -59,6 +59,8 @@ class Character(src.saveing.Saveable):
         self.showGotCommand = False
         self.showGaveCommand = False
 
+        self.rememberedMenu = []
+        self.rememberedMenu2 = []
 
         super().__init__()
 

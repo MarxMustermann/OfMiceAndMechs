@@ -1877,10 +1877,18 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         return
 
     if key in ("ESC","lESC",):
-        src.gamestate.gamestate.rememberedMenu = None
+        if char.rememberedMenu:
+            menu = char.rememberedMenu.pop()
+            char.macroState["submenue"] = menu
+            char.macroState["submenue"].handleKey("~", noRender=False)
+            char.specialRender = True
         return
     if key in ("rESC",):
-        src.gamestate.gamestate.rememberedMenu2 = None
+        if char.rememberedMenu2:
+            menu = char.rememberedMenu2.pop()
+            char.macroState["submenue"] = menu
+            char.macroState["submenue"].handleKey("~", noRender=False)
+            char.specialRender = True
         return
     if key in ("esc",):
         options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
@@ -2479,6 +2487,10 @@ press key for advanced drop
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):
         charState["submenue"] = CharacterInfoMenu(char=char)
+
+    # open the character information
+    if key in ("x",):
+        charState["submenue"] = MessagesMenu(char=char)
 
     # open the help screen
     if key in (commandChars.show_help,):
@@ -3195,11 +3207,10 @@ class QuestMenu(SubMenu):
         if key == "esc":
             return True
         if key in ("ESC","lESC",):
-            src.gamestate.gamestate.rememberedMenu = self
-            print(key)
+            self.char.rememberedMenu.append(self)
             return True
         if key in ("rESC",):
-            src.gamestate.gamestate.rememberedMenu2 = self
+            self.char.rememberedMenu2.append(self)
             return True
 
         # scrolling
@@ -3312,6 +3323,9 @@ class InventoryMenu(SubMenu):
         super().__init__()
         self.footerText = "press j to activate, press l to drop, press esc to exit"
 
+    def render(self,char=None):
+        return renderInventory()
+
     def handleKey(self, key, noRender=False):
         """
         show the inventory
@@ -3403,6 +3417,12 @@ class InventoryMenu(SubMenu):
             # exit the submenu
             if key == "esc":
                 return True
+            if key in ("ESC","lESC",):
+                self.char.rememberedMenu.append(self)
+                return True
+            if key in ("rESC",):
+                self.char.rememberedMenu2.append(self)
+                return True
 
             if key == "j":
                 if not len(self.char.inventory):
@@ -3440,7 +3460,7 @@ class InventoryMenu(SubMenu):
             # bad code: uses global function
             self.persistentText = (
                 urwid.AttrSpec("default", "default"),
-                renderInventory(),
+                self.render(),
             )
 
             # show the render
@@ -3546,6 +3566,51 @@ class InputMenu(SubMenu):
 
         return False
 
+class MessagesMenu(SubMenu):
+    def render(self,char):
+        try:
+            return "\n".join(char.messages[-46:])
+        except:
+            print(char.messages)
+            1/0
+            return 
+
+    type = "MessagesMenu"
+
+    def __init__(self, char=None):
+        self.char = char
+        super().__init__()
+
+    def handleKey(self, key, noRender=False):
+        """
+        show the attributes and ignore keystrokes
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # exit the submenu
+        if key == "esc":
+            return True
+        if key in ("ESC","lESC",):
+            self.char.rememberedMenu.append(self)
+            return True
+        if key in ("rESC",):
+            self.char.rememberedMenu2.append(self)
+            return True
+
+        char = self.char
+
+        text = "(oldest message top)\n\n"+self.render(char)
+
+        # show info
+        header.set_text((urwid.AttrSpec("default", "default"), "messages"))
+        main.set_text((urwid.AttrSpec("default", "default"), [text]))
+        header.set_text((urwid.AttrSpec("default", "default"), ""))
+
 # bad code: should be abstracted
 # bad code: uses global function to render
 class CharacterInfoMenu(SubMenu):
@@ -3624,11 +3689,10 @@ class CharacterInfoMenu(SubMenu):
         if key == "esc":
             return True
         if key in ("ESC","lESC",):
-            src.gamestate.gamestate.rememberedMenu = self
-            print(key)
+            self.char.rememberedMenu.append(self)
             return True
         if key in ("rESC",):
-            src.gamestate.gamestate.rememberedMenu2 = self
+            self.char.rememberedMenu2.append(self)
             return True
 
         char = self.char
@@ -4257,7 +4321,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
 
         nextstep = "next step: %s \n"%(solvingCommangString,)
         if asList:
-            txt.append(nextstep)
+            txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
         else:
             txt += nextstep
 
@@ -4799,6 +4863,9 @@ def keyboardListener(key):
             src.gamestate.gamestate.mainChar.interactionState["ifCondition"].clear()
             src.gamestate.gamestate.mainChar.interactionState["ifParam1"].clear()
             src.gamestate.gamestate.mainChar.interactionState["ifParam2"].clear()
+        activeQuest = src.gamestate.gamestate.mainChar.getActiveQuest()
+        if activeQuest and activeQuest.autoSolve:
+            activeQuest.autoSolve = False
 
     elif key == "ctrl t":
         if src.gamestate.gamestate.gameHalted:
@@ -4947,6 +5014,24 @@ def getTcodEvents():
 
     if lastcheck < time.time()-0.05:
         for event in events:
+            if isinstance(event,tcod.event.MouseButtonDown):
+                tcodContext.convert_event(event)
+                clickPos = (event.tile.x,event.tile.y)
+                if src.gamestate.gamestate.clickMap:
+                    if not clickPos in src.gamestate.gamestate.clickMap:
+                        continue
+
+                    value = src.gamestate.gamestate.clickMap[clickPos]
+                    print("clickmapped")
+                    print(value)
+                    print(event)
+                    if isinstance(value,str) or isinstance(value,list):
+                        src.gamestate.gamestate.mainChar.runCommandString(value,nativeKey=True)
+                    elif isinstance(value,dict):
+                        src.saveing.Saveable.callIndirect(None,value)
+                    else:
+                        1/0
+
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 translatedKey = None
@@ -5159,7 +5244,13 @@ def getTcodEvents():
                 keyboardListener(translatedKey)
                 lastcheck = time.time()
 
+class ActionMeta(object):
+    def __init__(self, payload=None,content=None):
+        self.payload = payload
+        self.content = content
+
 def renderGameDisplay():
+    src.gamestate.gamestate.clickMap = {}
 
     text = ""
 
@@ -5210,9 +5301,11 @@ def renderGameDisplay():
                 outData += stringifyUrwid(item)
             if isinstance(item, str):
                 outData += item
+            if isinstance(item, ActionMeta):
+                outData += item.content
         return outData
 
-    def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None):
+    def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
         if not internalOffset:
             internalOffset = [0,0]
 
@@ -5242,18 +5335,25 @@ def renderGameDisplay():
                         toPrint = line[:size[0]-internalOffset[0]]
                 
                 if not skipPrint:
-                    tcodConsole.print(x=offset[0]+internalOffset[0],y=offset[1]+internalOffset[1],string=toPrint,fg=color[0],bg=color[1])
+                    x = offset[0]+internalOffset[0]
+                    y = offset[1]+internalOffset[1]
+                    if actionMeta:
+                        src.gamestate.gamestate.clickMap[(x,y)] = actionMeta
+                    tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
                 internalOffset[0] += len(line)
                 counter += 1
 
 
         if isinstance(inData,tuple):
-            printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size)
+            printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
 
         if isinstance(inData,list):
             for item in inData:
-                printUrwidToTcod(item,offset,color,internalOffset,size)
+                printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta)
+
+        if isinstance(inData, ActionMeta):
+            printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload)
         
         #footertext = stringifyUrwid(inData)
 
@@ -5352,39 +5452,36 @@ def renderGameDisplay():
                         width = uiElement["width"]
                         printUrwidToTcod(footer.get_text(),offset,size=(width,100))
                     if uiElement["type"] == "indicators":
-                        indicators = "m mc me q v"
-                        tcodConsole.print(x=uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,y=uiElement["offset"][1],string=indicators,fg=(255,255,255),bg=(0,0,0))
+                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")]
+
+                        x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
+                        y = uiElement["offset"][1]
+
+                        printUrwidToTcod(indicators,(x,y),size=(uiElement["width"],1))
+
                     if uiElement["type"] == "text":
                         tcodConsole.print(x=uiElement["offset"][0],y=uiElement["offset"][1],string=uiElement["text"],fg=(255,255,255),bg=(0,0,0))
                     if uiElement["type"] == "rememberedMenu":
-                        if src.gamestate.gamestate.rememberedMenu:
-                            chars = src.gamestate.gamestate.rememberedMenu.render(src.gamestate.gamestate.mainChar)
+                        if src.gamestate.gamestate.mainChar.rememberedMenu:
+                            chars = []
+                            counter = 0
+                            for menu in reversed(src.gamestate.gamestate.mainChar.rememberedMenu):
+                                chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                                chars.extend(menu.render(src.gamestate.gamestate.mainChar))
+                                counter += 1
                             size = uiElement["size"]
                             offset = uiElement["offset"]
-                            if isinstance(chars,str):
-                                counter = 0
-                                for line in chars.split("\n"):
-                                    tcodConsole.print(x=offset[0],y=offset[1]+counter,string=line[:size[0]],fg=(255,255,255),bg=(0,0,0))
-                                    counter += 1
-                                    if counter > size[1]:
-                                        break
-                            else:
-                                printUrwidToTcod(chars,offset,size=size)
+                            printUrwidToTcod(chars,offset,size=size)
 
                     if uiElement["type"] == "rememberedMenu2":
-                        if src.gamestate.gamestate.rememberedMenu2:
-                            chars = src.gamestate.gamestate.rememberedMenu2.render(src.gamestate.gamestate.mainChar)
+                        if src.gamestate.gamestate.mainChar.rememberedMenu2:
+                            chars = []
+                            for menu in reversed(src.gamestate.gamestate.mainChar.rememberedMenu2):
+                                chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                                chars.extend(menu.render(src.gamestate.gamestate.mainChar))
                             size = uiElement["size"]
                             offset = uiElement["offset"]
-                            if isinstance(chars,str):
-                                counter = 0
-                                for line in chars.split("\n"):
-                                    tcodConsole.print(x=offset[0],y=offset[1]+counter,string=line[:size[0]],fg=(255,255,255),bg=(0,0,0))
-                                    counter += 1
-                                    if counter > size[1]:
-                                        break
-                            else:
-                                printUrwidToTcod(chars,offset,size=size)
+                            printUrwidToTcod(chars,offset,size=size)
                             
 
                 if not src.gamestate.gamestate.mainChar.specialRender:
@@ -5428,17 +5525,24 @@ def renderGameDisplay():
             counter = offsetTop
             tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
+            src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
+            tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
+            src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
+            tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
+            src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
+
             tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
-            tcodConsole.print(x=offsetLeft-1, y=counter, string="-+-"+"-"*width+"-+-",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
             counter += 1
-            tcodConsole.print(x=offsetLeft, y=counter, string="|`"+" "*width+".|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
             counter += 1
             for line in plainText.split("\n"):
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 counter += 1
-            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+",|",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
             counter += 1
-            tcodConsole.print(x=offsetLeft-1, y=counter, string="-+-"+"-"*width+"-+-",fg=(255,255,255),bg=(0,0,0))
+            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
             tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
 
@@ -5629,6 +5733,9 @@ def advanceChar(char,removeChars):
                 processInput(
                     key, charState=state, noAdvanceGame=True, char=char
                 )
+
+                if not state["commandKeyQueue"] and char.getActiveQuest() and char.getActiveQuest().autoSolve:
+                    char.runCommandString("+")
             else:
                 if tcod:
                     renderGameDisplay()
@@ -5753,6 +5860,5 @@ def getSubmenuFromState(state):
 
     subMenu = subMenuMap[state["type"]]()
     subMenu.setState(state)
-    print(state)
     src.saveing.loadingRegistry.register(subMenu)
     return subMenu

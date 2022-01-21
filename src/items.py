@@ -59,10 +59,12 @@ class Item(src.saveing.Saveable):
     applyOptions = []
     applyMap = {}
 
+    name = "unknown"
+
     def callInit(self):
         super().__init__()
 
-    def __init__(self, display=None, name="unkown", seed=0, noId=False):
+    def __init__(self, display=None, name=None, seed=0, noId=False):
         """
         the constructor
 
@@ -78,7 +80,7 @@ class Item(src.saveing.Saveable):
 
         self.doOwnInit(display=display,name=name,seed=seed,noId=noId)
 
-    def doOwnInit(self,display=None, name="unkown", seed=0, noId=False):
+    def doOwnInit(self,display=None, name=None, seed=0, noId=False):
         if display:
             self.display = display
         else:
@@ -86,7 +88,8 @@ class Item(src.saveing.Saveable):
 
         # basic information
         self.seed = seed
-        self.name = name
+        if name:
+            self.name = name
 
         # storage for other entities listening to changes
         self.listeners = {"default": []}

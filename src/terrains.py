@@ -409,6 +409,34 @@ class Terrain(src.saveing.Saveable):
         )
         self.tupleListsToStore.append("scrapFields")
 
+    def handleFloorClick(self,extraInfo):
+        print("handleFloorClick")
+        print(extraInfo)
+
+        charPos = (src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15,0)
+        newPos = (extraInfo["pos"][0]//15,extraInfo["pos"][1]//15,0)
+        smallNewPos = (extraInfo["pos"][0]%15,extraInfo["pos"][1]%15,0)
+
+        if src.gamestate.gamestate.mainChar.container == self and charPos == newPos:
+            quest = src.quests.GoToPosition(targetPosition=smallNewPos)
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+        else:
+            quest = src.quests.GoToPosition(targetPosition=smallNewPos)
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            quest = src.quests.GoToTile(targetPosition=newPos)
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+
     def advance(self):
         for character in self.characters:
             character.advance()
@@ -2050,6 +2078,11 @@ class Terrain(src.saveing.Saveable):
                 except:
                     continue
 
+                actionMeta = None
+                if isinstance(display,src.interaction.ActionMeta):
+                    actionMeta = display
+                    display = display.content
+
                 if isinstance(display,int):
                     display = src.canvas.displayChars.indexedMapping[display]
                 if isinstance(display,str):
@@ -2062,6 +2095,10 @@ class Terrain(src.saveing.Saveable):
                     display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
                 else:
                     display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                if actionMeta:
+                    actionMeta.content = display
+                    display = actionMeta
 
                 chars[pos[1]][pos[0]] = display
             pass
@@ -2610,11 +2647,9 @@ class Nothingness(Terrain):
                         continue
 
                 if not self.hidden:
-                    if not i % 7 and not j % 12 and not (i + j) % 3:
-                        # paint grass at pseudo random location
-                        line.append(src.canvas.displayChars.grass)
-                    else:
-                        line.append(displayChar)
+                    display = displayChar
+                    display = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i)}},content=display)
+                    line.append(display)
                 else:
                     line.append(src.canvas.displayChars.void)
             chars.append(line)

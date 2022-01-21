@@ -668,6 +668,31 @@ class Room(src.saveing.Saveable):
         path = src.gameMath.calculatePath(x, y, dstX, dstY, walkingPath)
         return path
 
+    def handleFloorClick(self,extraInfo):
+        print("handleFloorClick")
+        print(extraInfo)
+
+        if src.gamestate.gamestate.mainChar.container == self:
+            quest = src.quests.GoToPosition(targetPosition=(extraInfo["pos"]))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+        else:
+            quest = src.quests.GoToPosition(targetPosition=(extraInfo["pos"]))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            print(self.xPosition,self.yPosition)
+            quest = src.quests.GoToTile(targetPosition=(self.xPosition,self.yPosition,0))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+
     def render(self):
         """
         render the room
@@ -691,7 +716,7 @@ class Room(src.saveing.Saveable):
                 subChars = []
                 for j in range(0, self.sizeX):
                     if fixedChar:
-                        subChars.append(fixedChar)
+                        subChars.append(src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i,0)}},content=fixedChar))
                     else:
                         subChars.append(
                             self.floorDisplay[
@@ -702,23 +727,28 @@ class Room(src.saveing.Saveable):
 
             # draw path
             for pos in self.walkingSpace:
-                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
+                display = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
+                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
 
             for entry in self.inputSlots:
                 pos = entry[0]
-                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
+                display= (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
+                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
 
             for entry in self.outputSlots:
                 pos = entry[0]
-                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
+                display = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
+                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
 
             for entry in self.storageSlots:
                 pos = entry[0]
-                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
+                display = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
+                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
 
             for entry in self.buildSites:
                 pos = entry[0]
-                chars[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#88f", "black"), ";;")
+                display = (src.interaction.urwid.AttrSpec("#88f", "black"), ";;")
+                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
 
             # draw items
             for item in self.itemsOnFloor:
@@ -793,6 +823,12 @@ class Room(src.saveing.Saveable):
                                     display = chars[pos[1]][pos[0]]
                                 except:
                                     continue
+
+                                actionMeta = None
+                                if isinstance(display,src.interaction.ActionMeta):
+                                    actionMeta = display
+                                    display = display.content
+
                                 if isinstance(display,int):
                                     display = src.canvas.displayChars.indexedMapping[display]
                                 if isinstance(display,str):
@@ -803,6 +839,10 @@ class Room(src.saveing.Saveable):
                                 else:
                                     if not isinstance(display[0],tuple):
                                         display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                                if actionMeta:
+                                    actionMeta.content = display
+                                    display = actionMeta
 
                                 chars[pos[1]][pos[0]] = display
                 else:

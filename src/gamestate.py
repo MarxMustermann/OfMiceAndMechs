@@ -51,12 +51,12 @@ class GameState(src.saveing.Saveable):
                         {"type":"healthInfo","offset":(40,2),"width":82},
                         {"type":"indicators","offset":(40,3),"width":82},
                         {"type":"text","offset":(74,4), "text":"press ? for help"},
+                        {"type":"guiButtons","offset":(40,4),"width":82},
                         {"type":"rememberedMenu","offset":(2,18),"size":(36,80)},
                         {"type":"rememberedMenu2","offset":(126,2),"size":(36,80)},
                         ]
-        self.rememberedMenu = None
-        self.rememberedMenu2 = None
 
+        self.clickMap = {}
 
     # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):

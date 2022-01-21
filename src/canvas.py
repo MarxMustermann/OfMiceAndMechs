@@ -347,6 +347,12 @@ class Canvas(object):
             x = offsetX
             for char in line:
                 mapped = None
+
+                actionMeta = None
+                if isinstance(char, src.interaction.ActionMeta):
+                    actionMeta = char.payload
+                    char = char.content
+
                 if isinstance(char, int):
                     mapped = self.displayChars.indexedMapping[char]
                 else:
@@ -376,6 +382,9 @@ class Canvas(object):
                     text = text.replace("┓","+")
                     text = text.replace("┛","+")
                     console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
+                    if actionMeta:
+                        src.gamestate.gamestate.clickMap[(2*x+numPrinted,y)] = actionMeta
+                        src.gamestate.gamestate.clickMap[(2*x+numPrinted+1,y)] = actionMeta
                     numPrinted += 1
                 x += 1
             y += 1

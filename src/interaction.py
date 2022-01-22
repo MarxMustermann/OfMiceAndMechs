@@ -5014,7 +5014,7 @@ def getTcodEvents():
 
     if lastcheck < time.time()-0.05:
         for event in events:
-            if isinstance(event,tcod.event.MouseButtonDown):
+            if isinstance(event,tcod.event.MouseButtonDown) or isinstance(event,tcod.event.MouseButtonUp):
                 tcodContext.convert_event(event)
                 clickPos = (event.tile.x,event.tile.y)
                 if src.gamestate.gamestate.clickMap:
@@ -5028,9 +5028,17 @@ def getTcodEvents():
                     if isinstance(value,str) or isinstance(value,list):
                         src.gamestate.gamestate.mainChar.runCommandString(value,nativeKey=True)
                     elif isinstance(value,dict):
+                        if not "params" in value:
+                            value["params"] = {}
+                        value["params"]["event"] = event
+                        print(value)
                         src.saveing.Saveable.callIndirect(None,value)
                     else:
                         1/0
+
+                if isinstance(event,tcod.event.MouseButtonUp):
+                    print("killing menu")
+                    src.gamestate.gamestate.dragState = None
 
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -5338,7 +5346,8 @@ def renderGameDisplay():
                     x = offset[0]+internalOffset[0]
                     y = offset[1]+internalOffset[1]
                     if actionMeta:
-                        src.gamestate.gamestate.clickMap[(x,y)] = actionMeta
+                        for i in range(0,len(toPrint)):
+                            src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
                     tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
                 internalOffset[0] += len(line)
@@ -5448,6 +5457,8 @@ def renderGameDisplay():
                         canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
 
                     if uiElement["type"] == "healthInfo":
+                        if src.gamestate.gamestate.dragState:
+                            continue
                         offset = (uiElement["offset"][0]+41-len(stringifyUrwid(footer.get_text()))//2,uiElement["offset"][1])
                         width = uiElement["width"]
                         printUrwidToTcod(footer.get_text(),offset,size=(width,100))

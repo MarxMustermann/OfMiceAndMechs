@@ -248,8 +248,11 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+        self.freeWillDecison = False
+
     def freeWillDecison(self,options,weights,localRandom=random):
         if self == src.gamestate.gamestate.mainChar:
+            self.freeWillDecison = [(options,weights)]
             return [input(str(options)+" "+str(weights))]
         return localRandom.choices(options,weights=weights)
 

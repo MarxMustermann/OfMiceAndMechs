@@ -34,6 +34,7 @@ class GameState(src.saveing.Saveable):
         self.gameHalted = False
         self.stopGameInTicks = None
         self.extraRoots = []
+        self.dragState = None
 
         """
         self.uiElements = [

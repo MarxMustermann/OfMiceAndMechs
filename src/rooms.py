@@ -668,19 +668,74 @@ class Room(src.saveing.Saveable):
         path = src.gameMath.calculatePath(x, y, dstX, dstY, walkingPath)
         return path
 
+    def handleAddActionSelection(self,extraInfo):
+        print("handleAddActionSelection")
+        print(extraInfo)
+
+        quest = src.quests.RunCommand(command=extraInfo["selected"])
+        quest.autoSolve = True
+        quest.activate()
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+
+        quest = src.quests.GoToPosition(targetPosition=(src.gamestate.gamestate.dragState["start"]["pos"]))
+        quest.autoSolve = True
+        quest.activate()
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+
+        src.gamestate.gamestate.mainChar.runCommandString("~")
+
+        src.gamestate.gamestate.dragState = {}
+
     def handleFloorClick(self,extraInfo):
         print("handleFloorClick")
         print(extraInfo)
+        event = extraInfo["event"]
 
-        if src.gamestate.gamestate.mainChar.container == self:
-            quest = src.quests.GoToPosition(targetPosition=(extraInfo["pos"]))
+        if isinstance(event,src.interaction.tcod.event.MouseButtonDown):
+            #src.gamestate.gamestate.mainChar.addMessage("should start draggin")
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+            src.gamestate.gamestate.dragState = {}
+            src.gamestate.gamestate.dragState["start"] = {"container":self,"pos":extraInfo["pos"]}
+            return
+        else:
+            src.gamestate.gamestate.dragState["end"] = {"container":self,"pos":extraInfo["pos"]}
+
+        dragState = src.gamestate.gamestate.dragState
+        src.gamestate.gamestate.dragState = {}
+        #src.gamestate.gamestate.mainChar.addMessage("should stop draggin")
+
+        if dragState["end"]["container"] == self:
+            quest = src.quests.GoToPosition(targetPosition=(dragState["end"]["pos"]))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
         else:
-            quest = src.quests.GoToPosition(targetPosition=(extraInfo["pos"]))
+            quest = src.quests.GoToPosition(targetPosition=(dragState["end"]["pos"]))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            print(self.xPosition,self.yPosition)
+            quest = src.quests.GoToTile(targetPosition=(self.xPosition,self.yPosition,0))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+
+        if dragState["start"]["container"] == self:
+            quest = src.quests.GoToPosition(targetPosition=(dragState["start"]["pos"]))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
+            src.gamestate.gamestate.mainChar.runCommandString("~")
+        else:
+            quest = src.quests.GoToPosition(targetPosition=(dragState["start"]["pos"]))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
@@ -753,7 +808,8 @@ class Room(src.saveing.Saveable):
             # draw items
             for item in self.itemsOnFloor:
                 try:
-                    chars[item.yPosition][item.xPosition] = item.render()
+                    display = item.render()
+                    chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                 except:
                     src.logger.debugMessages.append("room drawing failed")
 
@@ -862,6 +918,21 @@ class Room(src.saveing.Saveable):
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"
                     )
+
+            if src.gamestate.gamestate.dragState:
+                if src.gamestate.gamestate.dragState["start"]["container"] == self:
+                    pos = src.gamestate.gamestate.dragState["start"]["pos"]
+                    chars[pos[1]][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+
+                    chars[pos[1]-1][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"e"}},content="ee")
+                    chars[pos[1]-1][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"j"}},content="jj")
+                    chars[pos[1]-1][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"k"}},content="kk")
+                    chars[pos[1]-1][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"l"}},content="ll")
+                    chars[pos[1]-1][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"."}},content="..")
 
         # show dummy of the room
         else:

@@ -786,6 +786,24 @@ class PrefabDesign(BasicPhase):
         self.toBuildRoomClone2.floorPlan = copy.deepcopy(floorPlan)
         self.toBuildRoomClone2.spawnPlaned()
 
+        if self.toBuildRoomClone4:
+            self.toBuildRoomClone4.container.removeRoom(self.toBuildRoomClone4)
+        self.toBuildRoomClone4 = self.architect.doAddRoom(
+            {
+                "coordinate": (8,6),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.toBuildRoomClone4.floorPlan = copy.deepcopy(floorPlan)
+        self.toBuildRoomClone4.spawnPlaned()
+        self.toBuildRoomClone4.spawnPlaned()
+        self.toBuildRoomClone4.spawnGhuls(src.gamestate.gamestate.mainChar)
+
+
     def convertFloorPlanToDict(self,floorPlan):
         converted = {}
         if "buildSites" in floorPlan:
@@ -860,6 +878,7 @@ class PrefabDesign(BasicPhase):
         self.toBuildRoomClone = None
         self.toBuildRoomClone2 = None
         self.toBuildRoomClone3 = None
+        self.toBuildRoomClone4 = None
 
         for x in range(1,6):
             for y in range(1,6):

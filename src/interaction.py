@@ -5252,6 +5252,10 @@ def getTcodEvents():
                 keyboardListener(translatedKey)
                 lastcheck = time.time()
 
+class UiAnchor(object):
+    def __init__(self,tag=""):
+        pass
+
 class ActionMeta(object):
     def __init__(self, payload=None,content=None):
         self.payload = payload

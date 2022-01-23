@@ -48,7 +48,7 @@ parser.add_argument(
     action="store_true",
     help="spawn a tile based view of the map (requires pygame)",
 )
-parser.add_argument("--nourwid", action="store_true", help="do not show shell based")
+parser.add_argument("--urwid", action="store_true", help="do shell based")
 parser.add_argument("-ts", "--tileSize", type=int, help="the base size of tiles")
 parser.add_argument("-T", "--terrain", type=str, help="select the terrain")
 parser.add_argument("-s", "--seed", type=str, help="select the seed of a new game")
@@ -59,7 +59,7 @@ parser.add_argument(
     "-S", "--speed", type=int, help="set the speed of the game to a fixed speed"
 )
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
-parser.add_argument("-tcod", "--tcod", action="store_true", help="use tcod renderer")
+parser.add_argument("-notcod", "--notcod", action="store_true", help="do not use tcod renderer")
 args = parser.parse_args()
 
 ################################################################################
@@ -68,6 +68,27 @@ args = parser.parse_args()
 #
 ################################################################################
 
+if not args.notcod:
+    import tcod
+
+    screen_width = 50
+    screen_height = 25
+
+    tileset = tcod.tileset.load_tilesheet(
+        "Acorntileset2.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+
+    context = tcod.context.new_terminal(
+        screen_width,
+        screen_height,
+        tileset=tileset,
+        title="OfMiceAndMechs",
+        vsync=True,
+            )
+    root_console = tcod.Console(screen_width, screen_height, order="F")
+
+gameIndex = None
+
 # load the gamestate
 loaded = False
 if args.load:
@@ -75,34 +96,62 @@ if args.load:
 elif args.noload:
     shouldLoad = False
 else:
-    load = input("load saved game? (Y/n)")
-    if load.lower() == "n":
-        shouldLoad = False
+    if args.notcod:
+        load = input("load saved game? (Y/n)")
+        if load.lower() == "n":
+            shouldLoad = False
+        else:
+            shouldLoad = True
     else:
-        shouldLoad = True
+        try:
+            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+                saves = rawState["saves"]
+        except:
+            saves = [0,0,0,0,0,0,0,0,0,0]
+
+        y = 2
+        for i in range(0,10):
+            if not saves[i]:
+                root_console.print(x=3,y=2+i,string="%s: new game"%(i,))
+            else:
+                root_console.print(x=3,y=2+i,string="%s: load game"%(i,))
+
+        context.present(root_console)
+
+        index = None
+        while index == None:
+            foundEvent = False
+            events = tcod.event.get()
+            for event in events:
+                context.convert_event(event)
+                if isinstance(event,tcod.event.MouseButtonUp):
+                    index = event.tile.y-2
+                if isinstance(event, tcod.event.Quit):
+                    raise SystemExit()
+            context.present(root_console)
+
+        if saves[index]:
+            shouldLoad = True
+            gameIndex = index
+        else:
+            shouldLoad = False
+            gameIndex = index
 
 if not shouldLoad:
     if not args.scenario:
         scenarios = [
             (
-                "story1",
-                "story mode (old+broken)",
-            ),
-            (
-                "story2",
-                "story mode (new)",
+                "BackToTheRoots",
+                "main game",
             ),
             (
                 "siege",
-                "siege",
+                "(siege)",
             ),
             (
                 "basebuilding",
-                "basebuilding",
-            ),
-            (
-                "BackToTheRoots",
-                "BackToTheRoots",
+                "(basebuilding)",
             ),
             (
                 "survival",
@@ -117,20 +166,16 @@ if not shouldLoad:
                 "dungeon",
             ),
             (
-                "WorldBuildingPhase",
-                "WorldBuildingPhase",
-            ),
-            (
                 "RoguelikeStart",
                 "RoguelikeStart",
             ),
             (
-                "Tour",
-                "Tour",
+                "PrefabDesign",
+                "PrefabDesign",
             ),
             (
-                "PrefabDesign",
-                "PrefabDesign",
+                "Tour",
+                "Tour",
             ),
         ]
 
@@ -143,8 +188,31 @@ if not shouldLoad:
             )
             counter += 1
 
-        scenarioNum = input("select scenario (type number)\n\n%s\n\n" % (text,))
-        scenario = scenarios[int(scenarioNum)][0]
+        if args.notcod:
+            scenarioNum = input("select scenario (type number)\n\n%s\n\n" % (text,))
+            scenario = scenarios[int(scenarioNum)][0]
+        else:
+            root_console.clear()
+            root_console.print(x=3,y=2,string=text)
+            while 1:
+                foundEvent = False
+                events = tcod.event.get()
+                for event in events:
+                    if isinstance(event,tcod.event.MouseButtonUp):
+                        context.convert_event(event)
+                        index = event.tile.y-3
+                        foundEvent = True
+                        scenario = scenarios[index][0]
+
+                    if isinstance(event,tcod.event.KeyDown):
+                        if event.sym == tcod.event.KeySym.m:
+                            scenario = scenarios[0][0]
+                            foundEvent = True
+                        
+                context.present(root_console)
+                if foundEvent:
+                    break
+            print(scenario)
     else:
         scenario = args.scenario
 
@@ -179,13 +247,16 @@ if not shouldLoad:
         args.terrain = "nothingness"
         args.phase = "PrefabDesign"
 
+if not args.notcod:
+    pass
+
 # set rendering mode
-if not args.nourwid:
+if args.urwid:
     if args.unicode:
         displayChars = canvas.DisplayMapping("unicode")
     else:
         displayChars = canvas.DisplayMapping("pureASCII")
-elif args.tcod:
+elif not args.notcod:
     if args.unicode:
         displayChars = canvas.DisplayMapping("unicode")
     else:
@@ -206,7 +277,7 @@ else:
 
     seed = random.randint(1, 100000)
 
-if args.nourwid:
+if not args.urwid:
     interaction.nourwid = True
 
     import src.pseudoUrwid
@@ -222,13 +293,13 @@ else:
     characters.urwid = urwid
     interaction.setUpUrwid()
 
-if args.tcod:
+if not args.notcod:
     interaction.setUpTcod()
 
 story.registerPhases()
 
 # create and load the gamestate
-gamestate.setup()
+gamestate.setup(gameIndex)
 
 interaction.debug = args.debug
 logger.setup(interaction.debug)
@@ -374,11 +445,11 @@ else:
 ################################################################################
 
 # start the interaction loop of the underlying library
-if not args.nourwid:
+if args.urwid:
     input("game ready. press enter to start")
     interaction.loop.run()
 
-if args.nourwid:
+if not args.urwid:
     while 1:
         interaction.gameLoop(None, None)
 

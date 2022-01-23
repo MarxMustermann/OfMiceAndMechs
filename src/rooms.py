@@ -53,6 +53,7 @@ class Room(src.saveing.Saveable):
         self.buildSites = []
         self.storageSlots = []
         self.floorPlan = {}
+        self.sources = []
 
         super().__init__()
 
@@ -268,8 +269,9 @@ class Room(src.saveing.Saveable):
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
 
-    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False):
-        path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked)
+    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None):
+        if path == None:
+            path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -1435,7 +1437,6 @@ XXXXXXXXXXXXX
         flask3 = src.items.itemMap["GooFlask"]()
         flask3.uses = 100
         itemsToAdd.append((flask3,(10,4,0)))
-        self.doors[0].walkable = True
 
         self.machinemachine = src.items.itemMap["MachineMachine"]()
         itemsToAdd.append((self.machinemachine,(4,4,0)))
@@ -1485,6 +1486,9 @@ XXXXXXXXXXXXX
         itemsToAdd.append((bluePrint,(4, 3, 0)))
         self.addItems(itemsToAdd)
 
+        self.sizeX = 13
+        self.sizeY = 13
+        self.walkingAccess = []
 
         for item in self.doors:
             item.walkable = True
@@ -1535,7 +1539,7 @@ XXXXXXXXXXX
         super().__init__(
             self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
-        self.doors[0].walkable = True
+        self.walkingAccess = []
 
         healingstation = src.items.itemMap["HealingStation"]()
         corpseShredder = src.items.itemMap["CorpseShredder"]()

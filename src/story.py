@@ -251,9 +251,6 @@ class BasicPhase(src.saveing.Saveable):
                 )
             self.mainCharRoom.secondOfficer.reputation = 100
 
-        # save initial state
-        src.gamestate.gamestate.save()
-
     def assignPlayerQuests(self):
         """
         helper function to properly hook player quests
@@ -502,8 +499,6 @@ class OpenWorld(BasicPhase):
         #          "DropQuestMeta",
         #        ]
 
-        src.gamestate.gamestate.save()
-
 class Dungeon(BasicPhase):
     """
     game mode ment to offer dungeon crawling
@@ -614,6 +609,101 @@ class PrefabDesign(BasicPhase):
                 extraInfos["command"] = item.command
                 floorPlan["walkingSpace"].add(item.getPosition())
             floorPlan["buildSites"].append((pos,item.type,extraInfos))
+
+        blockedPositions = []
+        for x in range(0,13):
+            for y in (0,13):
+                blockedPositions.append((x,y,0))
+        for y in range(0,13):
+            for x in (0,13):
+                blockedPositions.append((x,y,0))
+
+        placedScrapCompactor = False
+        placedCorpseAnimator = False
+        scrapCompactorPositions = []
+        corpseAnimatorPositions = []
+        corpseStockpilePositions = []
+        commandPositions = []
+        for buildSite in floorPlan["buildSites"]:
+            if buildSite[1] == "ScrapCompactor":
+                placedScrapCompactor = True
+                scrapCompactorPositions.append(buildSite[0])
+            if buildSite[1] == "CorpseAnimator":
+                placedCorpseAnimator = True
+                corpseAnimatorPositions.append(buildSite[0])
+            if buildSite[1] == "Command":
+                commandPositions.append(buildSite[0])
+                continue
+            blockedPositions.append(buildSite[0])
+        for inputSlot in floorPlan["inputSlots"]:
+            if inputSlot[1] == "Corpse":
+                corpseStockpilePositions.append(inputSlot[0])
+            blockedPositions.append(inputSlot[0])
+        for outputSlot in floorPlan["outputSlots"]:
+            blockedPositions.append(outputSlot[0])
+        for storageSlot in floorPlan["storageSlots"]:
+            blockedPositions.append(storageSlot[0])
+
+        import copy
+        if self.toBuildRoomClone3:
+            self.toBuildRoomClone3.container.removeRoom(self.toBuildRoomClone3)
+        self.toBuildRoomClone3 = self.architect.doAddRoom(
+            {
+                "coordinate": (6,6),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+
+        for pos in blockedPositions:
+            self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
+
+        # add a scrap compactor
+        if not placedScrapCompactor:
+            pos = (random.randint(2,11),random.randint(2,11),0)
+            floorPlan["outputSlots"].append(((pos[0]+1,pos[1],pos[2]),"MetalBars",{}))
+            floorPlan["inputSlots"].append(((pos[0]-1,pos[1],pos[2]),"Scrap",{}))
+            floorPlan["buildSites"].append((pos,"ScrapCompactor",{}))
+
+            self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),(pos[0]+1,pos[1],pos[2]))
+            self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),(pos[0]-1,pos[1],pos[2]))
+            self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
+
+            scrapCompactorPositions.append(pos)
+
+        # add a corpse animator
+        if not placedCorpseAnimator:
+            pos = (random.randint(2,11),random.randint(2,11),0)
+            floorPlan["buildSites"].append((pos,"CorpseAnimator",{}))
+            self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
+
+            corpseAnimatorPositions.append(pos)
+
+        if not corpseStockpilePositions:
+            pos = (random.randint(2,11),random.randint(2,11),0)
+            floorPlan["inputSlots"].append((pos,"Corpse",{"maxAmount":2}))
+            corpseStockpilePositions.append(pos)
+            self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
+
+        for corpseAnimatorPos in corpseAnimatorPositions:
+            commandPos = (corpseAnimatorPos[0]+1,corpseAnimatorPos[1],corpseAnimatorPos[2])
+            if not commandPos in commandPositions:
+                command = ""
+                lastPos = commandPos
+                for compactorPos in scrapCompactorPositions:
+                    newPos = (compactorPos[0],compactorPos[1]-1,compactorPos[2])
+                    command += self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)[0]+"Js"
+                    lastPos = newPos
+
+                feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
+                command += self.toBuildRoomClone3.getPathCommandTile(lastPos,feedingPos)[0]
+                commandReturn = self.toBuildRoomClone3.getPathCommandTile(feedingPos,commandPos)[0]
+                command = command + ((len(command)+len(commandReturn))//13+1)*"Js"+commandReturn
+                command += "j"
+                floorPlan["buildSites"].append((commandPos,"Command",{"command":command}))
 
         if not floorPlan["buildSites"]:
             del floorPlan["buildSites"]
@@ -769,6 +859,7 @@ class PrefabDesign(BasicPhase):
 
         self.toBuildRoomClone = None
         self.toBuildRoomClone2 = None
+        self.toBuildRoomClone3 = None
 
         for x in range(1,6):
             for y in range(1,6):
@@ -3237,8 +3328,8 @@ class BaseBuilding(BasicPhase):
         showText("build a base.\n\npress space to continue")
 
         mainChar = src.gamestate.gamestate.mainChar
-        mainChar.terrain = src.gamestate.gamestate.terrain
-        src.gamestate.gamestate.terrain.addCharacter(
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
             src.gamestate.gamestate.mainChar, 124, 109
         )
 
@@ -3268,7 +3359,7 @@ class BaseBuilding(BasicPhase):
         item.godMode = True
         items.append((item, (15 * 8 + 8, 15 * 8 + 10, 0)))
 
-        src.gamestate.gamestate.terrain.addItems(items)
+        currentTerrain.addItems(items)
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3448,7 +3539,7 @@ class BaseBuilding(BasicPhase):
         item.setToProduce("Case")
         items.append((item, (15 * 8 + 10, 15 * 7 + 9, 0)))
 
-        src.gamestate.gamestate.terrain.addItems(items)
+        currentTerrain.addItems(items)
 
         for x in range(1,6):
             for y in range(1,6):
@@ -3493,12 +3584,13 @@ class Siege(BasicPhase):
             "\n\n * press ? for help\n\n * press a to move left/west\n * press w to move up/north\n * press s to move down/south\n * press d to move right/east\n\npress space to continue\n\n"
         )
 
-        src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
-        src.gamestate.gamestate.terrain.addCharacter(
+        src.gamestate.gamestate.setTerrain(src.terrains.GameplayTest(),(7,7))
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
             src.gamestate.gamestate.mainChar, 124, 109
         )
 
-        self.miniBase = src.gamestate.gamestate.terrain.rooms[0]
+        self.miniBase = currentTerrain.rooms[0]
 
         """
         import json
@@ -3554,7 +3646,7 @@ class Siege(BasicPhase):
                     amount = max(30-(bigX+bigY)*2,0)
                     for i in range(0, amount):
                         pos = (bigX * 15 + random.randint(1, 13),bigY * 15 + random.randint(1, 13),0)
-                        if src.gamestate.gamestate.terrain.getItemByPosition(pos):
+                        if currentTerrain.getItemByPosition(pos):
                             continue
                         molds.append(
                             (
@@ -3603,7 +3695,7 @@ class Siege(BasicPhase):
 
         for pos in positions:
             commandBloom = src.items.itemMap["CommandBloom"]()
-            src.gamestate.gamestate.terrain.addItem(commandBloom,pos)
+            currentTerrain.addItem(commandBloom,pos)
             if pos in ((187, 112, 0), (172, 112, 0), (157, 112, 0), (142, 112, 0)):
                 commandBloom.masterCommand = "13a9kj"
             molds.append(
@@ -3654,19 +3746,19 @@ class Siege(BasicPhase):
                     (pos[0] - 2, pos[1] - 2, pos[2]),
                 )
             )
-            src.gamestate.gamestate.terrain.addItem(
+            currentTerrain.addItem(
                 src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
             )
-            src.gamestate.gamestate.terrain.addItem(
+            currentTerrain.addItem(
                 src.items.itemMap["CommandBloom"](),(pos[0] - 6, pos[1], pos[2])
             )
-            src.gamestate.gamestate.terrain.addItem(
+            currentTerrain.addItem(
                 src.items.itemMap["CommandBloom"](),(pos[0] + 6, pos[1], pos[2])
             )
-            src.gamestate.gamestate.terrain.addItem(
+            currentTerrain.addItem(
                 src.items.itemMap["CommandBloom"](),(pos[0], pos[1] - 6, pos[2])
             )
-            src.gamestate.gamestate.terrain.addItem(
+            currentTerrain.addItem(
                 src.items.itemMap["CommandBloom"](),(pos[0], pos[1] + 6, pos[2])
             )
             molds.append(
@@ -3694,7 +3786,7 @@ class Siege(BasicPhase):
                 )
             )
 
-        src.gamestate.gamestate.terrain.addItems(molds)
+        currentTerrain.addItems(molds)
         for mold in molds:
             mold[0].startSpawn()
 
@@ -3718,7 +3810,7 @@ class Siege(BasicPhase):
                 "WaitQuest",
             ]
             crawler.runCommandString("jj",clear=True)
-            src.gamestate.gamestate.terrain.addCharacter(crawler, pos[0], pos[1])
+            currentTerrain.addCharacter(crawler, pos[0], pos[1])
 
         src.gamestate.gamestate.mainChar.addListener(self.checkRoomEnteredMain)
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
@@ -3765,8 +3857,6 @@ class Siege(BasicPhase):
         self.mainChar.personality["abortMacrosOnAttack"] = False
         self.mainChar.personality["autoCounterAttack"] = False
 
-        src.gamestate.gamestate.save()
-
     def checkRoomEnteredMain(self):
         """
         handle the main character entering rooms
@@ -3803,22 +3893,23 @@ class DesertSurvival(BasicPhase):
 
         src.cinematics.showCinematic("staring desert survival Scenario.")
 
-        src.gamestate.gamestate.terrain.heatmap[3][7] = 1
-        src.gamestate.gamestate.terrain.heatmap[4][7] = 1
-        src.gamestate.gamestate.terrain.heatmap[5][7] = 1
-        src.gamestate.gamestate.terrain.heatmap[6][7] = 1
+        src.gamestate.gamestate.setTerrain(src.terrains.Desert(),(7,7))
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.heatmap[3][7] = 1
+        currentTerrain.heatmap[4][7] = 1
+        currentTerrain.heatmap[5][7] = 1
+        currentTerrain.heatmap[6][7] = 1
 
         # place character in wakeup room
-        if src.gamestate.gamestate.terrain.wakeUpRoom:
-            self.mainCharRoom = src.gamestate.gamestate.terrain.wakeUpRoom
+        if currentTerrain.wakeUpRoom:
+            self.mainCharRoom = currentTerrain.wakeUpRoom
             self.mainCharRoom.addCharacter(src.gamestate.gamestate.mainChar, 2, 4)
         # place character on terrain
         else:
             src.gamestate.gamestate.mainChar.xPosition = 65
             src.gamestate.gamestate.mainChar.yPosition = 111
             src.gamestate.gamestate.mainChar.reputation = 100
-            src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
-            src.gamestate.gamestate.terrain.addCharacter(
+            currentTerrain.addCharacter(
                 src.gamestate.gamestate.mainChar, 65, 111
             )
 
@@ -3886,11 +3977,11 @@ class DesertSurvival(BasicPhase):
 
             reservedTiles.append((x, y))
 
-            self.workshop = src.rooms.EmptyRoom(x, y, 2, 3, creator=self)
+            self.workshop = src.rooms.EmptyRoom(x, y, 2, 3)
             self.workshop.reconfigure(11, 8)
             break
 
-        scrap = src.items.itemMap["Scrap"](2, 5, creator=self, amount=10)
+        scrap = src.items.itemMap["Scrap"](2, 5, amount=10)
         self.workshop.addItems([scrap])
         sunscreen = src.items.itemMap["SunScreen"](9, 4, creator=self)
         self.workshop.addItems([sunscreen])
@@ -3919,7 +4010,7 @@ class DesertSurvival(BasicPhase):
         sheet = src.items.itemMap["Sheet"](7, 1, creator=self)
         sheet.bolted = False
         self.workshop.addItems([sheet])
-        src.gamestate.gamestate.terrain.addRooms([self.workshop])
+        currentTerrain.addRooms([self.workshop])
 
         while 1:
             x = random.randint(1, 14)
@@ -3933,7 +4024,7 @@ class DesertSurvival(BasicPhase):
             self.workshop.reconfigure(8, 8)
             break
 
-        src.gamestate.gamestate.terrain.doSandStorm()
+        currentTerrain.doSandStorm()
 
 # NIY: not done and not integrated
 # obsolete: maybe just delete and rebuild
@@ -4825,7 +4916,6 @@ class BrainTestingPhase(BasicPhase):
         }
         self.cinematic = cinematic
         src.cinematics.cinematicQueue.append(cinematic)
-        src.gamestate.gamestate.save()
 
     """
     show fluff and fail phase
@@ -5140,8 +5230,6 @@ class WakeUpPhase(BasicPhase):
 
         # add trigger
         showGame(1, trigger={"container": self, "method": "playerEject"})
-
-        src.gamestate.gamestate.save()
 
     """
     spawn players body and place trigger
@@ -5527,8 +5615,6 @@ class BasicMovementTraining(BasicPhase):
             trigger={"container": self, "method": "fetchDrink"},
             container=src.gamestate.gamestate.mainChar.serveQuest,
         )
-
-        src.gamestate.gamestate.save()
 
     """
     make the main char fetch the bottle
@@ -6097,7 +6183,6 @@ class BoilerRoomWelcome(BasicPhase):
     def wrapUpBasicSchooling(self):
         src.gamestate.gamestate.mainChar.gotBasicSchooling = True
         self.doSteamengineExplaination()
-        src.gamestate.gamestate.save()
 
     """
     greet player and trigger next function
@@ -6122,7 +6207,6 @@ class BoilerRoomWelcome(BasicPhase):
 
     def wrapUpSteamengineExplaination(self):
         self.doCoalDelivery()
-        src.gamestate.gamestate.save()
 
     """
     explain how the steam engine work and continue
@@ -6204,7 +6288,6 @@ class BoilerRoomWelcome(BasicPhase):
         )  # bad code: this cinematic is a hack
         cinematic.endTrigger = self.wrapUpSteamengineExplaination
         src.cinematics.cinematicQueue.append(cinematic)
-        src.gamestate.gamestate.save()
 
     """
     advance the game
@@ -6219,7 +6302,6 @@ class BoilerRoomWelcome(BasicPhase):
 
     def wrapUpCoalDelivery(self):
         self.doFurnaceFirering()
-        src.gamestate.gamestate.save()
 
     """
     fake a coal delivery
@@ -6335,7 +6417,6 @@ class BoilerRoomWelcome(BasicPhase):
 
     def wrapUpFurnaceFirering(self):
         self.doWrapUp()
-        src.gamestate.gamestate.save()
 
     """
     make a npc fire a furnace 
@@ -6513,9 +6594,6 @@ class BoilerRoomWelcome(BasicPhase):
             StartNextPhaseEvent(src.gamestate.gamestate.tick + 1)
         )
 
-        # save the game
-        src.gamestate.gamestate.save()
-
     """
     start next phase
     """
@@ -6640,7 +6718,6 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
             def setPlayerState():
                 src.gamestate.gamestate.mainChar.gotInteractionSchooling = True
-                src.gamestate.gamestate.save()
 
             quest.endTrigger = setPlayerState
             questList.append(quest)
@@ -6693,7 +6770,6 @@ class BoilerRoomInteractionTraining(BasicPhase):
 
         # assign first quest
         src.gamestate.gamestate.mainChar.assignQuest(questList[0], active=True)
-        src.gamestate.gamestate.save()
 
     """
     start next phase
@@ -6970,7 +7046,6 @@ class FurnaceCompetition(BasicPhase):
             )
 
         startCompetitionPlayer()
-        src.gamestate.gamestate.save()
 
     """
     evaluate results and branch phases
@@ -7068,7 +7143,6 @@ class FindWork(BasicPhase):
         }
         self.cinematic = cinematic
         src.cinematics.cinematicQueue.append(cinematic)
-        src.gamestate.gamestate.save()
 
     """
     show fluff and show intro
@@ -7775,7 +7849,6 @@ class LabPhase(BasicPhase):
 
         # assign player quest
         src.gamestate.gamestate.mainChar.assignQuest(questList[0])
-        src.gamestate.gamestate.save()
 
     """
     move on to next phase
@@ -7840,7 +7913,6 @@ class VatPhase(BasicPhase):
 
         # assign player quest
         src.gamestate.gamestate.mainChar.assignQuest(quest, active=True)
-        src.gamestate.gamestate.save()
 
     """
     take away floor permit to make escape harder
@@ -7913,7 +7985,6 @@ class MachineRoomPhase(BasicPhase):
         # assign player quest
         src.gamestate.gamestate.mainChar.assignQuest(questList[0])
 
-        src.gamestate.gamestate.save()
 
     """
     win the game
@@ -8045,8 +8116,6 @@ class Tutorial(BasicPhase):
         self.miniBase.firstOfficer.silent = True
 
         self.dupPrevention = False
-
-        src.gamestate.gamestate.save()
 
     def scrapTest1(self):
         if self.dupPrevention:
@@ -8450,8 +8519,8 @@ class RoguelikeStart(BasicPhase):
         self.mainChar = src.gamestate.gamestate.mainChar
         self.mainChar.xPosition = 15*7+6
         self.mainChar.yPosition = 15*7+7
-        self.mainChar.terrain = src.gamestate.gamestate.terrain
-        src.gamestate.gamestate.terrain.addCharacter(
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
             self.mainChar, self.mainChar.xPosition, self.mainChar.yPosition
         )
 
@@ -8462,9 +8531,9 @@ class RoguelikeStart(BasicPhase):
         architect.bolted = False
         architect.godMode = True
         items.append((architect, (15 * 7 + 8, 15 * 7 + 7, 0)))
-        src.gamestate.gamestate.terrain.addItems(items)
+        currentTerrain.addItems(items)
         architect.generateMaze()
-        src.gamestate.gamestate.terrain.removeItem(architect)
+        currentTerrain.removeItem(architect)
 
         self.mainChar.solvers = [
             "SurviveQuest",
@@ -8604,8 +8673,6 @@ class Testing_1(BasicPhase):
         self.miniBase.firstOfficer.silent = True
 
         self.dupPrevention = False
-
-        src.gamestate.gamestate.save()
 
     def scrapTest1(self):
         if self.dupPrevention:

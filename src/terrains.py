@@ -2980,9 +2980,6 @@ class GameplayTest(Terrain):
             for item in toRemove:
                 self.removeItem(item, recalculate=False)
 
-            # save internal state
-            self.initialState = self.getState()
-
     def paintFloor(self,size=None,coordinateOffset=None):
         """
         paint floor with minimal variation to ease perception of movement

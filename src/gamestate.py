@@ -21,7 +21,7 @@ class GameState(src.saveing.Saveable):
     the container for all of the gamestate
     """
 
-    def __init__(self):
+    def __init__(self,gameIndex):
         """
         basic state setting with some initialization
         """
@@ -35,6 +35,8 @@ class GameState(src.saveing.Saveable):
         self.stopGameInTicks = None
         self.extraRoots = []
         self.dragState = None
+        self.gameIndex = gameIndex
+        self.initialSeed = None
 
         """
         self.uiElements = [
@@ -122,6 +124,11 @@ class GameState(src.saveing.Saveable):
                 line.append(thisTerrain)
             self.terrainMap.append(line)
 
+    def setTerrain(self,terrain,pos):
+        self.terrainMap[pos[1]][pos[0]] = terrain
+        terrain.xPosition = pos[0]
+        terrain.yPosition = pos[1]
+
     # bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
     def save(self):
         """
@@ -131,24 +138,33 @@ class GameState(src.saveing.Saveable):
         # get state as dictionary
         state = self.getState()
 
-        with open("gamestate/successSeed.json", "w") as successSeedFile:
-            successSeedFile.write(json.dumps({"successSeed": self.successSeed}))
-
         from shutil import copyfile
 
         try:
-            copyfile("gamestate/gamestate.json", "gamestate/gamestate_backup.json")
+            copyfile("gamestate/gamestate_%s.json"%(self.gameIndex,), "gamestate/gamestate_%s_backup.json"%(self.gameIndex,))
         except:
             pass
 
-        if not state["gameWon"]:
+        try:
             gamedump = json.dumps(state, indent=4, sort_keys=True)
-        else:
-            gamedump = json.dumps("Winning is no fun at all")
+        except:
+            print(gamedump)
 
         # write the savefile
-        with open("gamestate/gamestate.json", "w") as saveFile:
+        with open("gamestate/gamestate_%s.json"%(self.gameIndex,), "w") as saveFile:
             saveFile.write(gamedump)
+
+        try:
+            # register the save
+            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+        except:
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+
+        saves = rawState["saves"]
+        saves[self.gameIndex] = "taken"
+        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+            json.dump(rawState,globalInfoFile)
 
     # bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
     def load(self):
@@ -160,13 +176,13 @@ class GameState(src.saveing.Saveable):
         """
 
         # handle missing savefile
-        if not os.path.isfile("gamestate/gamestate.json"):
+        if not os.path.isfile("gamestate/gamestate_%s.json"%(self.gameIndex,)):
             src.logger.debugMessages.append("no gamestate found - NOT LOADING")
             print("no gamestate found")
             return False
 
         # load state from disc
-        with open("gamestate/gamestate.json") as saveFile:
+        with open("gamestate/gamestate_%s.json"%(self.gameIndex,)) as saveFile:
             rawstate = saveFile.read()
 
             # handle special gamestates
@@ -355,10 +371,10 @@ class GameState(src.saveing.Saveable):
 
         return state
 
-def setup():
+def setup(gameIndex):
     """
     initialises the game state 
     """
 
     global gamestate
-    gamestate = GameState()
+    gamestate = GameState(gameIndex)

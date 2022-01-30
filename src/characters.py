@@ -1606,7 +1606,7 @@ class Character(src.saveing.Saveable):
         # notify listeners
         self.changed("examine", item)
 
-    def advance(self):
+    def advance(self,advanceMacros=False):
         """
         advance the character one tick
         """
@@ -1614,7 +1614,8 @@ class Character(src.saveing.Saveable):
         if self.stasis or self.dead or self.disabled:
             return
 
-        #src.interaction.advanceChar(self,[])
+        if advanceMacros:
+            src.interaction.advanceChar(self,[])
 
         #HACK: sound effect
         """

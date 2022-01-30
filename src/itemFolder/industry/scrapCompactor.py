@@ -75,13 +75,17 @@ class ScrapCompactor(src.items.Item):
                         scrap = item
                         break
 
+        tick = src.gamestate.gamestate.tick
+        if self.container and isinstance(self.container,src.rooms.Room):
+            tick = self.container.timeIndex
+
         if (
-            src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown
+            tick < self.coolDownTimer + self.coolDown
             and not self.charges
         ):
             character.addMessage(
                 "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+                % (self.coolDown - (tick - self.coolDownTimer),)
             )
             self.runCommand("cooldown", character)
             return
@@ -112,7 +116,7 @@ class ScrapCompactor(src.items.Item):
         if self.charges:
             self.charges -= 1
         else:
-            self.coolDownTimer = src.gamestate.gamestate.tick
+            self.coolDownTimer = tick
 
         character.addMessage("you produce a metal bar")
 
@@ -165,8 +169,11 @@ After using this machine you need to wait %s ticks till you can use this machine
             self.coolDown,
         )
 
+        tick = src.gamestate.gamestate.tick
+        if self.container and isinstance(self.container,src.rooms.Room):
+            tick = self.container.timeIndex
         coolDownLeft = self.coolDown - (
-            src.gamestate.gamestate.tick - self.coolDownTimer
+            tick - self.coolDownTimer
         )
         if coolDownLeft > 0:
             text += """

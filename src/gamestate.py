@@ -49,7 +49,7 @@ class GameState(src.saveing.Saveable):
         """
 
         self.uiElements = [
-                        {"type":"gameMap","offset":(20,7)},
+                        {"type":"gameMap","offset":(20,6)},
                         {"type":"miniMap","offset":(2,2)},
                         {"type":"healthInfo","offset":(40,2),"width":82},
                         {"type":"indicators","offset":(40,3),"width":82},
@@ -159,7 +159,7 @@ class GameState(src.saveing.Saveable):
             with open("gamestate/globalInfo.json", "r") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
 
         saves = rawState["saves"]
         saves[self.gameIndex] = "taken"

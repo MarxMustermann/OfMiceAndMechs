@@ -1,4 +1,5 @@
 import src
+import json
 
 class Painter(src.items.Item):
     """
@@ -84,8 +85,41 @@ A painter. it can be used to draw markers on the floor
            return
 
         if self.submenue.keyPressed == "e":
-           self.character.addMessage("NIY")
+           self.submenue = src.interaction.InputMenu(
+               "type in the name of the extra parameter you want to set",
+               targetParamName="name",
+                                       )
+           self.character.macroState["submenue"] = self.submenue
+           self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo1","params":{"character":self.character}}
            return
+
+    def addExtraInfo1(self,extraInfo):
+        self.submenue = src.interaction.InputMenu(
+               "type in the type of the extra parameter you want to set (empty for string)",
+               targetParamName="type",
+                                       )
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":extraInfo}
+        return
+
+    def addExtraInfo2(self,extraInfo):
+        self.submenue = src.interaction.InputMenu(
+               "type in the value of the extra parameter you want to set",
+               targetParamName="value",
+                                       )
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo3","params":extraInfo}
+        return
+
+    def addExtraInfo3(self,extraInfo):
+        value = extraInfo["value"]
+        if extraInfo["type"] in ("int","integer"):
+            value = int(value)
+        if extraInfo["type"] in ("json",):
+            print(value)
+            print(extraInfo)
+            value = json.loads(value)
+        self.paintExtraInfo[extraInfo["name"]] = value
 
     def setMode(self):
         self.paintMode = self.submenue.text
@@ -129,5 +163,26 @@ A painter. it can be used to draw markers on the floor
                         character.container.storageSlots.remove(storageSlot)
 
         character.addMessage("you paint a marking on the floor")
+        character.addMessage(str(self.paintExtraInfo))
+
+    def getLongInfo(self):
+        """
+        generate simple text description
+
+        Returns:
+            the decription text
+        """
+
+        text = super().getLongInfo()
+        text += """
+
+mode: %s
+type: %s
+extraInfo: %s
+""" % (
+            self.paintMode,self.paintType,self.paintExtraInfo,
+        )
+
+        return text
 
 src.items.addType(Painter)

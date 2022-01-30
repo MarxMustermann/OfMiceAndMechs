@@ -19,6 +19,8 @@ import config
 import src.gamestate
 
 import random
+import requests
+import json
 
 phasesByName = None
 
@@ -574,9 +576,55 @@ class PrefabDesign(BasicPhase):
     def __init__(self, seed=0):
         super().__init__("PrefabDesign", seed=seed)
 
+        self.stats = {}
+
     def advance(self):
         print("advance story")
-        self.saveFloorPlan()
+        floorPlan = self.generateFloorPlan()
+        self.saveFloorPlan(floorPlan)
+        self.spawnRooms(floorPlan)
+
+        ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
+        if ticksPerBar > 15:
+            showText("""
+your room produces a MetalBar every %s ticks on average. Beat 15 ticks to be able to use your room in the main game"""%(ticksPerBar,))
+            return
+
+        converted = self.convertFloorPlanToDict(floorPlan)
+
+        try:
+            # register the save
+            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+        except:
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
+
+        rawState["customPrefabs"].append(converted)
+
+        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+            json.dump(rawState,globalInfoFile)
+
+        showText("""
+your room produces a MetalBar every %s ticks on average. This room is now available as in basebuilding mode"""%(ticksPerBar,),trigger={"container": self, "method": "askFloorPlan","params":{"floorPlan":converted}})
+
+    def askFloorPlan(self,extraParams):
+        options = [("yes", "Yes"), ("no", "No")]
+        submenu = src.interaction.SelectionMenu(
+            "Do you want to donate the room?\n\nSelect \"Yes\" to make the rooms design public domain and upload the room.\nThis will require an internet connection", options,
+            targetParamName="upload",
+        )
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "uploadFloorPlan",
+            "params": extraParams
+        }
+
+    def uploadFloorPlan(self,extraParams):
+        if extraParams["upload"] == "yes":
+
+            requests.post("http://ofmiceandmechs.com/floorPlanDump.php",{"floorPlan":json.dumps(extraParams["floorPlan"])})
+
 
     def generateFloorPlan(self):
         import copy
@@ -612,10 +660,10 @@ class PrefabDesign(BasicPhase):
 
         blockedPositions = []
         for x in range(0,13):
-            for y in (0,13):
+            for y in (0,12):
                 blockedPositions.append((x,y,0))
         for y in range(0,13):
-            for x in (0,13):
+            for x in (0,12):
                 blockedPositions.append((x,y,0))
 
         placedScrapCompactor = False
@@ -663,7 +711,22 @@ class PrefabDesign(BasicPhase):
 
         # add a scrap compactor
         if not placedScrapCompactor:
-            pos = (random.randint(2,11),random.randint(2,11),0)
+            pos = (random.randint(1,12),random.randint(1,12),0)
+            if pos in blockedPositions or (pos[0]+1,pos[1],pos[2]) in blockedPositions or (pos[0]-1,pos[1],pos[2]) in blockedPositions or (pos[0],pos[1]-1,pos[2]) in blockedPositions:
+                for x in range(1,12):
+                    for y in range(1,12):
+                        pos = (x,y,0)
+                        if pos in blockedPositions or (pos[0]+1,pos[1],pos[2]) in blockedPositions or (pos[0]-1,pos[1],pos[2]) in blockedPositions or (pos[0],pos[1]-1,pos[2]) in blockedPositions:
+                            pos = None
+                        if pos:
+                            break
+                    if pos:
+                        break
+
+            if pos == None:
+                src.gamestate.gamestate.mainChar.addMessage("no room to place scrap compactor")
+                return
+
             floorPlan["outputSlots"].append(((pos[0]+1,pos[1],pos[2]),"MetalBars",{}))
             floorPlan["inputSlots"].append(((pos[0]-1,pos[1],pos[2]),"Scrap",{}))
             floorPlan["buildSites"].append((pos,"ScrapCompactor",{}))
@@ -672,21 +735,62 @@ class PrefabDesign(BasicPhase):
             self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),(pos[0]-1,pos[1],pos[2]))
             self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
 
+            blockedPositions.append((pos[0]+1,pos[1],pos[2]))
+            blockedPositions.append((pos[0]-1,pos[1],pos[2]))
+            blockedPositions.append((pos[0],pos[1]-1,pos[2]))
+            blockedPositions.append(pos)
+
             scrapCompactorPositions.append(pos)
 
         # add a corpse animator
         if not placedCorpseAnimator:
-            pos = (random.randint(2,11),random.randint(2,11),0)
+            pos = (random.randint(1,12),random.randint(1,12),0)
+            if pos in blockedPositions or (pos[0]+1,pos[1],pos[2]) in blockedPositions:
+                for x in range(1,12):
+                    for y in range(1,12):
+                        pos = (x,y,0)
+                        if pos in blockedPositions or (pos[0]+1,pos[1],pos[2]) in blockedPositions:
+                            pos = None
+                        if pos:
+                            break
+                    if pos:
+                        break
+
+            if pos == None:
+                src.gamestate.gamestate.mainChar.addMessage("no room to place corpse animator")
+                return
+
             floorPlan["buildSites"].append((pos,"CorpseAnimator",{}))
             self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
+
+            blockedPositions.append(pos)
+            blockedPositions.append((pos[0]+1,pos[1],pos[2]))
 
             corpseAnimatorPositions.append(pos)
 
         if not corpseStockpilePositions:
-            pos = (random.randint(2,11),random.randint(2,11),0)
+            pos = (random.randint(1,12),random.randint(1,12),0)
+            if pos in blockedPositions or (pos[0],pos[1]-1,pos[2]) in blockedPositions:
+                for x in range(1,12):
+                    for y in range(1,12):
+                        pos = (x,y,0)
+                        if pos in blockedPositions or (pos[0],pos[1]-1,pos[2]) in blockedPositions:
+                            pos = None
+                        if pos:
+                            break
+                    if pos:
+                        break
+
+
+            if pos == None:
+                src.gamestate.gamestate.mainChar.addMessage("no room to place corpse stockpile")
+                return
+
             floorPlan["inputSlots"].append((pos,"Corpse",{"maxAmount":2}))
             corpseStockpilePositions.append(pos)
             self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
+
+            blockedPositions.append(pos)
 
         for corpseAnimatorPos in corpseAnimatorPositions:
             commandPos = (corpseAnimatorPos[0]+1,corpseAnimatorPos[1],corpseAnimatorPos[2])
@@ -695,8 +799,12 @@ class PrefabDesign(BasicPhase):
                 lastPos = commandPos
                 for compactorPos in scrapCompactorPositions:
                     newPos = (compactorPos[0],compactorPos[1]-1,compactorPos[2])
-                    command += self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)[0]+"Js"
-                    lastPos = newPos
+                    (moveComand,path) = self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)
+                    if path:
+                        command += moveComand+"Js"
+                        lastPos = newPos
+                    else:
+                        src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on %s"%(compactorPos,))
 
                 feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
                 command += self.toBuildRoomClone3.getPathCommandTile(lastPos,feedingPos)[0]
@@ -704,6 +812,7 @@ class PrefabDesign(BasicPhase):
                 command = command + ((len(command)+len(commandReturn))//13+1)*"Js"+commandReturn
                 command += "j"
                 floorPlan["buildSites"].append((commandPos,"Command",{"command":command}))
+                blockedPositions.append(commandPos)
 
         if not floorPlan["buildSites"]:
             del floorPlan["buildSites"]
@@ -742,8 +851,10 @@ class PrefabDesign(BasicPhase):
 
         return floorPlan
 
-    def saveFloorPlan(self):
-        floorPlan = self.generateFloorPlan()
+    def saveFloorPlan(self,floorPlan):
+        if not floorPlan:
+            src.gamestate.gamestate.mainChar.addMessage("no floor plan generated")
+            return
         print(floorPlan)
         converted = self.convertFloorPlanToDict(floorPlan)
         print(converted)
@@ -752,6 +863,9 @@ class PrefabDesign(BasicPhase):
             import json
             json.dump(converted,fileHandle,indent=4)
 
+        self.stats["current"] = {}
+
+    def spawnRooms(self, floorPlan):
         import copy
         if self.toBuildRoomClone:
             self.toBuildRoomClone.container.removeRoom(self.toBuildRoomClone)
@@ -771,6 +885,57 @@ class PrefabDesign(BasicPhase):
         self.toBuildRoomClone.addRandomItems()
         self.toBuildRoomClone.spawnGhuls(src.gamestate.gamestate.mainChar)
 
+        if self.toBuildRoomClone4:
+            self.toBuildRoomClone4.container.removeRoom(self.toBuildRoomClone4)
+        self.toBuildRoomClone4 = self.architect.doAddRoom(
+            {
+                "coordinate": (8,8),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.toBuildRoomClone4.floorPlan = copy.deepcopy(floorPlan)
+        self.toBuildRoomClone4.spawnPlaned()
+        self.toBuildRoomClone4.spawnPlaned()
+        self.toBuildRoomClone4.spawnGhuls(src.gamestate.gamestate.mainChar)
+
+        self.spawnMaintanenceNPCs(self.toBuildRoomClone4)
+
+        self.stats["current"]["1500"] = {"produced":0}
+
+        for i in range(0,1500):
+            self.toBuildRoomClone4.advance(advanceMacros=True)
+            self.handleMaintanenceNPCs(self.toBuildRoomClone4)
+
+        if self.toBuildRoomClone6:
+            self.toBuildRoomClone6.container.removeRoom(self.toBuildRoomClone6)
+        self.toBuildRoomClone6 = self.architect.doAddRoom(
+            {
+                "coordinate": (6,8),
+                "roomType": "EmptyRoom",
+                "doors": "0,6 12,6",
+                "offset": [1,1],
+                "size": [13, 13],
+                },
+            None,
+        )
+        self.toBuildRoomClone6.floorPlan = copy.deepcopy(floorPlan)
+        self.toBuildRoomClone6.spawnPlaned()
+        self.toBuildRoomClone6.spawnPlaned()
+        self.toBuildRoomClone6.addRandomItems()
+        self.toBuildRoomClone6.spawnGhuls(src.gamestate.gamestate.mainChar)
+
+        self.spawnMaintanenceNPCs(self.toBuildRoomClone6)
+
+        self.stats["current"]["15000"] = {"produced":0}
+
+        for i in range(0,15000):
+            self.toBuildRoomClone6.advance(advanceMacros=True)
+            self.handleMaintanenceNPCs(self.toBuildRoomClone6)
+
         if self.toBuildRoomClone2:
             self.toBuildRoomClone2.container.removeRoom(self.toBuildRoomClone2)
         self.toBuildRoomClone2 = self.architect.doAddRoom(
@@ -786,9 +951,9 @@ class PrefabDesign(BasicPhase):
         self.toBuildRoomClone2.floorPlan = copy.deepcopy(floorPlan)
         self.toBuildRoomClone2.spawnPlaned()
 
-        if self.toBuildRoomClone4:
-            self.toBuildRoomClone4.container.removeRoom(self.toBuildRoomClone4)
-        self.toBuildRoomClone4 = self.architect.doAddRoom(
+        if self.toBuildRoomClone5:
+            self.toBuildRoomClone5.container.removeRoom(self.toBuildRoomClone5)
+        self.toBuildRoomClone5 = self.architect.doAddRoom(
             {
                 "coordinate": (8,6),
                 "roomType": "EmptyRoom",
@@ -798,11 +963,67 @@ class PrefabDesign(BasicPhase):
                 },
             None,
         )
-        self.toBuildRoomClone4.floorPlan = copy.deepcopy(floorPlan)
-        self.toBuildRoomClone4.spawnPlaned()
-        self.toBuildRoomClone4.spawnPlaned()
-        self.toBuildRoomClone4.spawnGhuls(src.gamestate.gamestate.mainChar)
+        self.toBuildRoomClone5.floorPlan = copy.deepcopy(floorPlan)
+        self.toBuildRoomClone5.spawnPlaned()
+        self.toBuildRoomClone5.spawnPlaned()
+        self.toBuildRoomClone5.spawnGhuls(src.gamestate.gamestate.mainChar)
+        
+        self.spawnMaintanenceNPCs()
+        self.maintananceLoop()
 
+    def spawnMaintanenceNPCs(self,room=None):
+        if not room:
+            room = self.toBuildRoomClone5
+
+        charCount = 0
+        for character in room.characters:
+            if isinstance(character,src.characters.Ghul):
+                continue
+            charCount += 1
+
+        if charCount < 5:
+            character = src.characters.Character(3,3)
+            character.runCommandString("*********")
+            room.addCharacter(character,0,6)
+            for i in range(0,10):
+                character.inventory.append(src.items.itemMap["Scrap"]())
+
+
+            quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Scrap")
+            quest.activate()
+            quest.assignToCharacter(character)
+            character.quests.append(quest)
+            quest = src.quests.GoToPosition(targetPosition=(0,6,0))
+            quest.assignToCharacter(character)
+            character.quests.append(quest)
+
+        if charCount < 5:
+            character = src.characters.Character(3,3)
+            character.runCommandString("*********")
+            room.addCharacter(character,0,6)
+            for i in range(0,10):
+                character.inventory.append(src.items.itemMap["Corpse"]())
+
+            quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Corpse")
+            quest.activate()
+            quest.assignToCharacter(character)
+            character.quests.append(quest)
+            quest = src.quests.GoToPosition(targetPosition=(0,6,0))
+            quest.assignToCharacter(character)
+            character.quests.append(quest)
+
+        if charCount < 5:
+            character = src.characters.Character(3,3)
+            character.runCommandString("*********")
+            room.addCharacter(character,0,6)
+
+            quest = src.quests.FetchItems(targetPosition=(room.xPosition,room.yPosition,0),toCollect="MetalBars")
+            quest.activate()
+            quest.assignToCharacter(character)
+            character.quests.append(quest)
+            quest = src.quests.GoToPosition(targetPosition=(0,6,0))
+            quest.assignToCharacter(character)
+            character.quests.append(quest)
 
     def convertFloorPlanToDict(self,floorPlan):
         converted = {}
@@ -833,7 +1054,60 @@ class PrefabDesign(BasicPhase):
             converted["walkingSpace"] = walkingSpace
         return converted
 
+    def maintananceLoop(self):
+        self.handleMaintanenceNPCs(self.toBuildRoomClone4)
+        self.handleMaintanenceNPCs(self.toBuildRoomClone5)
+        self.handleMaintanenceNPCs(self.toBuildRoomClone6)
+
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+        event.setCallback({"container": self, "method": "maintananceLoop"})
+        terrain.addEvent(event)
+
+
+    def handleMaintanenceNPCs(self, room=None):
+        if room == None:
+            room = self.toBuildRoomClone5
+
+        for npc in room.characters[:]:
+            if isinstance(npc,src.characters.Ghul):
+                continue
+            if len(npc.quests) > 1:
+                continue
+            if not npc.xPosition == 0 or not npc.yPosition == 6:
+                continue
+
+            if room == self.toBuildRoomClone4:
+                for item in npc.inventory:
+                    if not item.type == "MetalBars":
+                        continue
+                    self.stats["current"]["1500"]["produced"] += 1
+            if room == self.toBuildRoomClone6:
+                for item in npc.inventory:
+                    if not item.type == "MetalBars":
+                        continue
+                    self.stats["current"]["15000"]["produced"] += 1
+            room.removeCharacter(npc)
+            npc.die()
+
+        if room.timeIndex%15 == 0:
+            self.spawnMaintanenceNPCs(room)
+
     def start(self,seed=None):
+        showText("""
+Hello,
+
+in this mode you can build rooms to use in other modes. Currently only rooms that process scrap into metal bars can be built.
+
+Use the items to build a room in the center and use the "pc" item to see how well your room performs.
+
+If your room performs well enough you can upload your room and maybe it will be included in the main game.
+
+I hope you have fun.
+
+-- press space to continue --
+""")
+
 
         architect = src.items.itemMap["ArchitectArtwork"]()
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
@@ -879,6 +1153,8 @@ class PrefabDesign(BasicPhase):
         self.toBuildRoomClone2 = None
         self.toBuildRoomClone3 = None
         self.toBuildRoomClone4 = None
+        self.toBuildRoomClone5 = None
+        self.toBuildRoomClone6 = None
 
         for x in range(1,6):
             for y in range(1,6):
@@ -1447,6 +1723,7 @@ class BackToTheRoots(BasicPhase):
 
 
             cityBuilder = src.items.itemMap["CityBuilder2"]()
+            cityBuilder.architect = architect
             mainRoom.addItem(cityBuilder,(7,1,0))
             mainRoom.rooms = rooms
 
@@ -2296,7 +2573,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom.addCharacter(leader,7,3)
             leader.rank = 3
             leader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
-            cityBuilder.apply(leader)
+            cityBuilder.configure(leader)
 
             counter = 1
             for pos in self.specialItemSlotPositions:
@@ -3415,11 +3692,15 @@ class BaseBuilding(BasicPhase):
             "DropQuestMeta",
         ]
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
+        src.gamestate.gamestate.mainChar.godMode = True
+        src.gamestate.gamestate.mainChar.faction = "city test"
 
-        architect.doAddScrapfield(9, 7, 80)
+        """
+        architect.doAddScrapfield(10, 8, 280)
         architect.doAddScrapfield(10, 6, 280)
         architect.doAddScrapfield(10, 7, 280)
-        architect.doAddScrapfield(10, 8, 280)
+        """
+        architect.doAddScrapfield(9, 7, 280)
 
         mainRoom = architect.doAddRoom(
                 {
@@ -3432,146 +3713,65 @@ class BaseBuilding(BasicPhase):
                 None,
            )
 
-        commonsStorage = architect.doAddRoom(
-                {
-                       "coordinate": (7,6),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        toolsStorage = architect.doAddRoom(
-                {
-                       "coordinate": (6,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-            )
-        machineStorage = architect.doAddRoom(
-                {
-                       "coordinate": (7,8),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-            )
-        architect.doAddRoom(
-                {
-                       "coordinate": (6,6),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-            )
-        architect.doAddRoom(
-                {
-                       "coordinate": (6,8),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-            )
-        
-        for x in range(1,6):
-            for y in range(1,6):
-                for i in range(1,6):
-                    item = src.items.itemMap["Sheet"]()
-                    commonsStorage.addItem(item,(x,y,0))
+        cityBuilder = src.items.itemMap["CityBuilder2"]()
+        cityBuilder.bolted = True
+        cityBuilder.godMode = True
+        cityBuilder.architect = architect
+        cityBuilder.scrapFields = currentTerrain.scrapFields
+        for scrapField in cityBuilder.scrapFields:
+            mainRoom.sources.append((scrapField,"Scrap"))
+        mainRoom.addItem(cityBuilder, (6, 6, 0))
 
-        for x in range(7,12):
-            for y in range(1,6):
-                for i in range(1,6):
-                    item = src.items.itemMap["GooFlask"]()
-                    item.uses = 100
-                    commonsStorage.addItem(item,(x,y,0))
+        tradingArtwork = src.items.itemMap["TradingArtwork2"]()
+        cityBuilder.bolted = True
+        mainRoom.addItem(tradingArtwork, (9, 9, 0))
+        tradingArtwork.configure(src.gamestate.gamestate.mainChar)
 
-        for y in range(1,6):
-            item = src.items.itemMap["GrowthTank"]()
-            item.filled = True
-            item.commands["born"] = "-aJf-j"
-            mainRoom.addItem(item,(1,y,0))
+        mainRoom.addInputSlot((7,8,0),"Scrap")
+        mainRoom.addInputSlot((8,7,0),"Scrap")
+        mainRoom.addInputSlot((9,8,0),"MetalBars")
 
-            item = src.items.itemMap["Command"]()
-            item.command = "dj"*3+"3aj"
-            mainRoom.addItem(item,(2,y,0))
+        mainRoom.addOutputSlot((11,8,0),"MetalBars")
+        mainRoom.addOutputSlot((11,7,0),"ScrapCompactor")
+        mainRoom.addOutputSlot((11,9,0),"Painter")
+        mainRoom.addOutputSlot((11,10,0),"Sheet")
+        mainRoom.addOutputSlot((10,11,0),"CorpseAnimator")
+        mainRoom.addOutputSlot((9,11,0),"Corpse")
+        mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        item = src.items.itemMap["Command"]()
-        item.command = "dkd4s28d10j13awwaJs.ssjdss13a4w2a"
-        mainRoom.addItem(item,(4,2,0))
+        for i in range(0,10):
+            item = src.items.itemMap["Painter"]()
+            mainRoom.addItem(item,(11,9,0))
 
-        item = src.items.itemMap["GooFlask"]()
-        item.uses = 100
-        mainRoom.addItem(item,(5,2,0))
+        mainRoom.addStorageSlot((1,7,0),None)
+        mainRoom.addStorageSlot((1,8,0),None)
+        mainRoom.addStorageSlot((1,9,0),None)
+        mainRoom.addStorageSlot((1,10,0),None)
 
-        item = src.items.itemMap["Command"]()
-        item.command = "djd3s15dwwaJs.sjdss3asaLsdJsdKsaw3dwwdJs.jass13a3waa"
-        mainRoom.addItem(item,(4,3,0))
+        mainRoom.walkingSpace.add((7,7,0))
+        mainRoom.walkingSpace.add((10,7,0))
+        mainRoom.walkingSpace.add((10,8,0))
+        mainRoom.walkingSpace.add((10,9,0))
+        mainRoom.walkingSpace.add((10,10,0))
+        mainRoom.walkingSpace.add((9,10,0))
+        mainRoom.walkingSpace.add((8,10,0))
+        mainRoom.walkingSpace.add((7,10,0))
 
-        item = src.items.itemMap["GooFlask"]()
-        item.uses = 100
-        mainRoom.addItem(item,(5,3,0))
+        mainRoom.sources.append((mainRoom.getPosition(),"ScrapCompactor"))
+        mainRoom.sources.append((mainRoom.getPosition(),"MetalBars"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Painter"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Sheet"))
+        mainRoom.sources.append((mainRoom.getPosition(),"CorpseAnimator"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Corpse"))
+        mainRoom.sources.append((mainRoom.getPosition(),"ScratchPlate"))
 
+        mainRoom.addRandomItems()
 
-        roadManager.doClearPaths(9,7)
-
-        items = []
-
-        item = src.items.itemMap["ItemCollector"]()
-        item.bolted = True
-        items.append((item, (15 * 9 + 7, 15 * 7 + 7, 0)))
-
-        item = src.items.itemMap["UniformStockpileManager"]()
-        item.bolted = True
-        items.append((item, (15 * 8 + 6, 15 * 7 + 6, 0)))
-
-        item = src.items.itemMap["UniformStockpileManager"]()
-        item.bolted = True
-        items.append((item, (15 * 8 + 8, 15 * 7 + 6, 0)))
-
-        item = src.items.itemMap["ScrapCompactor"]()
-        item.bolted = True
-        items.append((item, (15 * 8 + 4, 15 * 7 + 9, 0)))
-
-        item = src.items.itemMap["Machine"]()
-        item.bolted = True
-        item.setToProduce("Rod")
-        items.append((item, (15 * 8 + 6, 15 * 7 + 9, 0)))
-
-        item = src.items.itemMap["Machine"]()
-        item.bolted = True
-        item.setToProduce("Frame")
-        items.append((item, (15 * 8 + 8, 15 * 7 + 9, 0)))
-
-        item = src.items.itemMap["Machine"]()
-        item.bolted = True
-        item.setToProduce("Case")
-        items.append((item, (15 * 8 + 10, 15 * 7 + 9, 0)))
-
-        currentTerrain.addItems(items)
-
-        for x in range(1,6):
-            for y in range(1,6):
-                item = src.items.itemMap["ScrapCompactor"]()
-                item.bolted = False
-                machineStorage.addItem(item,(x,y,0))
-
-        for x in range(7,12):
-            for y in range(1,6):
-                item = src.items.itemMap["UniformStockpileManager"]()
-                item.bolted = False
-                machineStorage.addItem(item,(x,y,0))
-
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"})
+        cityBuilder.spawnRank3(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank4(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
 
 class Siege(BasicPhase):
     """

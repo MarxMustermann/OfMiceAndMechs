@@ -55,11 +55,6 @@ class Item(src.saveing.Saveable):
     tasks = []
     container = None
 
-    commandOptions = []
-    applyOptions = []
-    applyMap = {}
-
-    name = "unknown"
 
     def callInit(self):
         super().__init__()
@@ -76,6 +71,12 @@ class Item(src.saveing.Saveable):
         """
         #super().__init__()
 
+        self.commandOptions = []
+        self.applyOptions = []
+        self.applyMap = {}
+        self.settings = {}
+
+        self.name = "unknown"
         self.callInit()
 
         self.doOwnInit(display=display,name=name,seed=seed,noId=noId)
@@ -321,12 +322,12 @@ class Item(src.saveing.Saveable):
             return
 
         # apply restrictions
-        if self.bolted and not character.godMode:
+        if self.bolted:
             character.addMessage("you cannot pick up bolted items")
             return
 
         # do the pick up
-        character.addMessage("you pick up a %s" % self.type)
+        character.addMessage("you piiiiick up a %s" % self.type)
         self.container.removeItem(self)
         character.addToInventory(self)
 
@@ -386,6 +387,17 @@ class Item(src.saveing.Saveable):
                 key,
                 value,
             ) in self.commands.items():
+                text += "%s: %s\n" % (
+                    key,
+                    value,
+                )
+            text += "\n"
+        if self.settings:
+            text += "settings: \n"
+            for (
+                key,
+                value,
+            ) in self.settings.items():
                 text += "%s: %s\n" % (
                     key,
                     value,

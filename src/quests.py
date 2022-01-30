@@ -1070,6 +1070,9 @@ class RunCommand(MetaQuestSequence):
 
         return
 
+    def getSolvingCommandString(self,character,dryRun=True):
+        return self.command
+
     def solver(self, character):
         self.activate()
         self.triggerCompletionCheck(character)
@@ -1187,8 +1190,14 @@ class DrawFloorPlan(MetaQuestSequence):
 
             walkingSpace = character.container.floorPlan["walkingSpace"].pop()
 
+            if walkingSpace[0] == 0 or walkingSpace[0] == 12 or walkingSpace[1] == 0 or walkingSpace[1] == 12:
+                return
             self.addQuest(RunCommand(command="ljk"))
             self.addQuest(GoToPosition(targetPosition=walkingSpace))
+
+            if painter.paintExtraInfo:
+                self.addQuest(RunCommand(command="lcck"))
+
             return
 
         if character.container.floorPlan.get("inputSlots"):
@@ -1206,6 +1215,10 @@ class DrawFloorPlan(MetaQuestSequence):
 
             self.addQuest(RunCommand(command="ljk"))
             self.addQuest(GoToPosition(targetPosition=inputSlot[0]))
+
+            if painter.paintExtraInfo:
+                self.addQuest(RunCommand(command="lcck"))
+
             return
 
         if character.container.floorPlan.get("outputSlots"):
@@ -1223,6 +1236,10 @@ class DrawFloorPlan(MetaQuestSequence):
 
             self.addQuest(RunCommand(command="ljk"))
             self.addQuest(GoToPosition(targetPosition=outputSlot[0]))
+
+            if painter.paintExtraInfo:
+                self.addQuest(RunCommand(command="lcck"))
+
             return
 
         if character.container.floorPlan.get("storageSlots"):
@@ -1235,28 +1252,54 @@ class DrawFloorPlan(MetaQuestSequence):
             if not painter.paintType == storageSlot[1]:
                 self.addQuest(RunCommand(command="lct%s\nk"%(storageSlot[1],)))
                 return
-
+            
             character.container.floorPlan["storageSlots"].pop()
 
             self.addQuest(RunCommand(command="ljk"))
             self.addQuest(GoToPosition(targetPosition=storageSlot[0]))
+
+            if painter.paintExtraInfo:
+                self.addQuest(RunCommand(command="lcck"))
+
             return
 
         if character.container.floorPlan.get("buildSites"):
-            if not painter.paintMode == "buildSite":
-                self.addQuest(RunCommand(command="lcmbuildSite\nk"))
-                return
 
             buildingSite = character.container.floorPlan["buildSites"][-1]
-
-            if not painter.paintType == buildingSite[1]:
-                self.addQuest(RunCommand(command="lct%s\nk"%(buildingSite[1],)))
-                return
 
             character.container.floorPlan["buildSites"].pop()
 
             self.addQuest(RunCommand(command="ljk"))
             self.addQuest(GoToPosition(targetPosition=buildingSite[0]))
+
+            for (key,value) in buildingSite[2].items():
+                valueType = ""
+                if key == "command":
+                    value = "".join(value)
+
+                if key == "commands":
+                    value = json.dumps(value)
+                    valueType = "json"
+
+                if key == "settings":
+                    value = json.dumps(value)
+                    valueType = "json"
+
+
+                if isinstance(value,int):
+                    valueType = "int"
+
+                self.addQuest(RunCommand(command="lce%s\n%s\n%s\nk"%(key,valueType,value)))
+
+            if not painter.paintMode == "buildSite":
+                self.addQuest(RunCommand(command="lcmbuildSite\nk"))
+
+            if not painter.paintType == buildingSite[1]:
+                self.addQuest(RunCommand(command="lct%s\nk"%(buildingSite[1],)))
+
+            if painter.paintExtraInfo:
+                self.addQuest(RunCommand(command="lcck"))
+
             return
 
         character.container.floorPlan = None
@@ -1307,10 +1350,12 @@ class RestockRoom(MetaQuestSequence):
                     break
             if not foundNeighbour:
                 character.addMessage("no neighbour")
+                print("no drop slots")
                 self.postHandler()
                 return
 
-        if self.getNumDrops(character) < 1:
+        if not self.getNumDrops(character):
+            print("no drops")
             self.postHandler()
             return
         return
@@ -1319,8 +1364,6 @@ class RestockRoom(MetaQuestSequence):
         numDrops = 0
         for item in reversed(character.inventory):
             if not item.type == self.toRestock:
-                break
-            if item == character.inventory[0]:
                 break
             numDrops += 1
         return numDrops
@@ -1343,6 +1386,7 @@ class RestockRoom(MetaQuestSequence):
                 return "..23.."
 
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+            random.shuffle(inputSlots)
             character.addMessage(inputSlots)
 
             # find neighboured input fields
@@ -1602,6 +1646,18 @@ class BeUsefull(MetaQuestSequence):
                 character.runCommandString("gg")
                 return
 
+        """
+        # go to other room
+        if random.random() < 0.3:
+            directions = [(-1,0),(1,0),(0,-1),(0,1)]
+            random.shuffle(directions)
+            for direction in directions:
+                newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
+                if room.container.getRoomByPosition(newPos):
+                    self.addQuest(GoToTile(targetPosition=newPos))
+                    return
+        """
+
         # clear inventory local
         if len(character.inventory) > 1:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
@@ -1610,9 +1666,9 @@ class BeUsefull(MetaQuestSequence):
                 return
 
         # clean up room
-        if len(character.inventory) < 10:
+        if not room.floorPlan and len(character.inventory) < 10:
             character.addMessage("empty inventory")
-            for position in room.walkingSpace:
+            for position in random.sample(room.walkingSpace,len(room.walkingSpace)):
                 items = room.getItemByPosition(position)
 
                 if not items:
@@ -1637,31 +1693,52 @@ class BeUsefull(MetaQuestSequence):
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
+            if not "HOMEx" in character.registers:
+                return
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
             self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
             return
 
         # officer work
-        if character.rank < 6 and character.rank > 3:
+        if character.rank == None or character.rank == 3:
             # set up machines
             if room.floorPlan:
                 self.addQuest(DrawFloorPlan())
                 return
+
+
+        if character.rank == None or character.rank == 4 and not room.floorPlan:
+            for item in random.sample(room.itemsOnFloor,len(room.itemsOnFloor)):
+                if not item.bolted:
+                    continue
+                if item.type == "ScratchPlate":
+                    if item.hasScratch():
+                        continue
+                    self.addQuest(RunCommand(command="jsj"))
+                    self.addQuest(GoToPosition(targetPosition=item.getPosition()))
+                    return
+
             if room.buildSites:
                 checkedMaterial = set()
+                #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
                 for buildSite in room.buildSites:
+                    if "reservedTill" in buildSite[2] and buildSite[2]["reservedTill"] > room.timeIndex:
+                        continue
                     if buildSite[1] in checkedMaterial:
                         continue
                     checkedMaterial.add(buildSite[1])
 
+                    neededItem = buildSite[1]
+                    if buildSite[1] == "Command":
+                        neededItem = "Sheet"
                     hasItem = False
                     source = None
-                    if character.inventory and character.inventory[-1].type == buildSite[1]:
+                    if character.inventory and character.inventory[-1].type == neededItem:
                         hasItem = True
 
                     if not hasItem:
                         for candidateSource in room.sources:
-                            if not candidateSource[1] == buildSite[1]:
+                            if not candidateSource[1] == neededItem:
                                 continue
 
                             sourceRoom = room.container.getRoomByPosition(candidateSource[0])
@@ -1669,7 +1746,7 @@ class BeUsefull(MetaQuestSequence):
                                 continue
 
                             sourceRoom = sourceRoom[0]
-                            if not sourceRoom.getNonEmptyOutputslots(itemType=buildSite[1]):
+                            if not sourceRoom.getNonEmptyOutputslots(itemType=neededItem):
                                 continue
 
                             source = candidateSource
@@ -1680,26 +1757,33 @@ class BeUsefull(MetaQuestSequence):
                             continue
 
                     if hasItem:
+                        if buildSite[1] == "Command":
+                            print(buildSite)
+                            if "command" in buildSite[2]:
+                                self.addQuest(RunCommand(command="jjssj%s\n"%(buildSite[2]["command"])))
+                            else:
+                                self.addQuest(RunCommand(command="jjssj.\n"))
                         self.addQuest(RunCommand(command="l"))
                         self.addQuest(GoToPosition(targetPosition=buildSite[0]))
+                        buildSite[2]["reservedTill"] = room.timeIndex+100
                     elif source:
                         roomPos = (room.xPosition,room.yPosition)
 
                         if not source[0] == roomPos:
                             self.addQuest(GoToTile(targetPosition=roomPos))
-                        self.addQuest(FetchItems(toCollect=buildSite[1],amount=1))
+                        self.addQuest(FetchItems(toCollect=neededItem,amount=1))
                         if not source[0] == roomPos:
                             self.addQuest(GoToTile(targetPosition=(source[0])))
                     return
 
         # refill stockpile
-        if len(character.inventory) < 11 and character.rank > 4:
+        if len(character.inventory) < 11 and (character.rank == None or character.rank > 4):
             if hasattr(room,"inputSlots"):
                 emptyInputSlots = room.getEmptyInputslots()
                 if emptyInputSlots:
                     checkedTypes = set()
 
-                    for inputSlot in emptyInputSlots:
+                    for inputSlot in random.sample(emptyInputSlots,len(emptyInputSlots)):
                         if inputSlot[1] == None:
                             continue
                         if inputSlot[1] in checkedTypes:
@@ -1707,11 +1791,11 @@ class BeUsefull(MetaQuestSequence):
                         checkedTypes.add(inputSlot[1])
 
                         if inputSlot[1] == "Scrap":
-                            if character.rank < 6:
+                            if not character.rank == None and not character.rank == 6:
                                 continue
                             if not room.sources:
                                 continue
-                            for potentialSource in room.sources:
+                            for potentialSource in random.sample(room.sources,len(room.sources)):
                                 if potentialSource[1] == "Scrap":
                                     source = potentialSource
                                     break
@@ -1720,6 +1804,9 @@ class BeUsefull(MetaQuestSequence):
                             self.addQuest(GatherScrap(targetPosition=source[0]))
                             self.addQuest(GoToTile(targetPosition=(source[0])))
                             return
+
+                        if not character.rank == None and not character.rank == 5:
+                            continue
 
                         hasItem = False
                         if character.inventory and character.inventory[-1].type == inputSlot[1]:
@@ -1750,7 +1837,7 @@ class BeUsefull(MetaQuestSequence):
                         self.addQuest(RestockRoom(toRestock=inputSlot[1]))
 
                         if not hasItem:
-                            roomPos = (room.xPosition,room.yPosition)
+                            roomPos = (room.xPosition,room.yPosition,0)
                             if not source[0] == roomPos:
                                 self.addQuest(GoToTile(targetPosition=roomPos))
                             self.addQuest(FetchItems(toCollect=inputSlot[1]))
@@ -1916,11 +2003,17 @@ class FetchItems(MetaQuestSequence):
         return parameters
 
     def triggerCompletionCheck(self,character=None):
+        if character == src.gamestate.gamestate.mainChar:
+            print("triggerCompletionCheck fetch1")
+
         if not character:
             return
 
         if self.subQuests:
             return
+        if character == src.gamestate.gamestate.mainChar:
+            print("triggerCompletionCheck fetch2")
+
 
         if self.collectedItems:
             if self.tileToReturnTo:
@@ -1944,14 +2037,29 @@ class FetchItems(MetaQuestSequence):
             self.collectedItems = True
             return
 
+        if character == src.gamestate.gamestate.mainChar:
+            print("triggerCompletionCheck fetch3")
+
+
         if isinstance(character.container,src.rooms.Room):
+            if character == src.gamestate.gamestate.mainChar:
+                print("triggerCompletionCheck fetch4")
             character.addMessage(self.toCollect)
             outputSlots = character.container.getNonEmptyOutputslots(itemType=self.toCollect)
+            random.shuffle(outputSlots)
+            if character == src.gamestate.gamestate.mainChar:
+                print(outputSlots)
             if outputSlots:
                 return
 
-            if not self.getSource():
+            if character == src.gamestate.gamestate.mainChar:
+                print("triggerCompletionCheck fetch5")
+
+            if self.getSource():
                 return
+
+            if character == src.gamestate.gamestate.mainChar:
+                print("triggerCompletionCheck fetch6")
 
             character.addMessage("failes fetching items")
             self.fail()
@@ -1985,8 +2093,6 @@ class FetchItems(MetaQuestSequence):
 
         if self.subQuests:
             return super().getSolvingCommandString(character,dryRun=dryRun)
-
-        self.triggerCompletionCheck(character)
 
         if isinstance(character.container,src.rooms.Room):
             room = character.container
@@ -2058,6 +2164,8 @@ class FetchItems(MetaQuestSequence):
 
         if self.subQuests:
             return super().solver(character)
+
+        self.triggerCompletionCheck(character)
 
         if self.collectedItems and self.tileToReturnTo:
             charPos = None

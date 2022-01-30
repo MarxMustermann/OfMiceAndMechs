@@ -410,6 +410,9 @@ class Terrain(src.saveing.Saveable):
         self.tupleListsToStore.append("scrapFields")
 
     def handleFloorClick(self,extraInfo):
+        if not src.gamestate.gamestate.mainChar.quests:
+            return
+
         print("handleFloorClick")
         print(extraInfo)
 

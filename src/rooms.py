@@ -184,7 +184,9 @@ class Room(src.saveing.Saveable):
             if itemType and not outputSlot[1] == itemType:
                 continue
 
+            print(outputSlot[0])
             items = self.getItemByPosition(outputSlot[0])
+            print(items)
             if not items:
                 continue
 
@@ -691,6 +693,9 @@ class Room(src.saveing.Saveable):
         src.gamestate.gamestate.dragState = {}
 
     def handleFloorClick(self,extraInfo):
+        if not src.gamestate.gamestate.mainChar.quests:
+            return
+
         print("handleFloorClick")
         print(extraInfo)
         event = extraInfo["event"]
@@ -1025,19 +1030,36 @@ class Room(src.saveing.Saveable):
                 self.boilers.append(item)
             if item.type == "Furnace":
                 self.furnaces.append(item)
+            if item.type == "Scrap":
+                itemList = self.itemByCoordinates.get(pos)
+                if itemList and itemList[-1].type == "Scrap":
+                    itemList[-1].amount += item.amount
+                    continue
 
             item.container = self
             item.setPosition(pos)
-
-            for buildSite in self.buildSites:
-                if pos == buildSite[0] and item.type == buildSite[1]:
-                    self.buildSites.remove(buildSite)
-                    item.bolted = True
 
             if pos in self.itemByCoordinates:
                 self.itemByCoordinates[pos].insert(0, item)
             else:
                 self.itemByCoordinates[pos] = [item]
+
+            for buildSite in self.buildSites:
+                if pos == buildSite[0] and item.type == buildSite[1]:
+                    self.buildSites.remove(buildSite)
+                    item.bolted = True
+                    if buildSite[2].get("commands"):
+                        src.gamestate.gamestate.mainChar.addMessage("set commands for:")
+                        print(item) 
+                        print(buildSite) 
+                        if not item.commands:
+                            item.commands = {}
+                        item.commands.update(buildSite[2].get("commands"))
+                    if buildSite[2].get("settings"):
+                        if not item.commands:
+                            item.settings = {}
+                        item.settings.update(buildSite[2].get("settings"))
+
 
     def removeItem(self, item):
         """
@@ -1336,7 +1358,7 @@ class Room(src.saveing.Saveable):
             if type(event) == eventType:
                 self.events.remove(event)
 
-    def advance(self):
+    def advance(self,advanceMacros=False):
         """
         advance the room one step
         """
@@ -1353,7 +1375,7 @@ class Room(src.saveing.Saveable):
 
             # advance each character
             for character in self.characters:
-                character.advance()
+                character.advance(advanceMacros=advanceMacros)
         # do next step later
         else:
             self.delayedTicks += 1
@@ -1616,7 +1638,10 @@ XXX
             if "storageSlots" in self.floorPlan:
                 self.storageSlots.extend(self.floorPlan["storageSlots"])
             if "buildSites" in self.floorPlan:
-                self.buildSites.extend(self.floorPlan["buildSites"])
+                for buildSite in self.floorPlan["buildSites"]:
+                    if buildSite[2].get("command"):
+                        buildSite[2]["command"] = "".join(buildSite[2]["command"])
+                    self.buildSites.append(buildSite)
             if "walkingSpace" in self.floorPlan:
                 self.walkingSpace.update(self.floorPlan["walkingSpace"])
             self.floorPlan = None
@@ -1626,7 +1651,11 @@ XXX
             for buildSite in self.buildSites[:]:
                 item = src.items.itemMap[buildSite[1]]()
                 if item.type == "Command":
-                    item.command = buildSite[2].get("command")
+                    item.command = "".join(buildSite[2].get("command"))
+                if buildSite[2].get("commands"):
+                    item.commands = buildSite[2].get("commands")
+                if buildSite[2].get("settings"):
+                    item.settings = buildSite[2].get("settings")
                 self.addItem(item,buildSite[0])
             return
 

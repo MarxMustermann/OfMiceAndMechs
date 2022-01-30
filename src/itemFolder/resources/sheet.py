@@ -212,6 +212,7 @@ This is a level %s item
             )
         )
         options.append(("store", "store macro from memory"))
+        options.append(("text", "type in comand"))
         self.submenue = src.interaction.SelectionMenu(
             "select how to get the commands content", options
         )
@@ -227,6 +228,8 @@ This is a level %s item
             self.recordAndstore()
         elif self.submenue.selection == "store":
             self.storeFromMacro()
+        elif self.submenue.selection == "text":
+            self.storeFromText()
 
     def recordAndstore(self):
         """
@@ -235,6 +238,31 @@ This is a level %s item
 
         self.recording = True
         self.character.runCommandString("-a")
+
+    def storeFromText(self):
+        self.submenue = src.interaction.InputMenu(
+            "Type the command in",
+        )
+        self.character.macroState["submenue"] = self.submenue
+        self.character.macroState["submenue"].followUp = {"container":self,"method":"storeText","params":{"character":self.character}}
+
+    def storeText(self,extraInfo):
+        character = extraInfo["character"]
+        command = src.items.itemMap["Command"]()
+        command.setPayload(extraInfo["text"])
+
+        self.character.addMessage("you created a written command")
+
+        if self.container:
+            container = self.container
+            pos = self.getPosition()
+            self.container.removeItem(self)
+            container.addItem(command, pos)
+        else:
+            if self in self.character.inventory:
+                self.character.inventory.append(command)
+                self.character.inventory.remove(self)
+
 
     def storeFromMacro(self):
         """

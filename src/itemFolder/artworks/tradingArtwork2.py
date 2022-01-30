@@ -42,7 +42,7 @@ class TradingArtwork2(src.items.Item):
                 "recieve": [
                     ["MetalBars", 1],
                 ],
-                "autoTrade":True
+                "autoTrade":False
             },
             {
                 "name": "trade for corpse",
@@ -52,6 +52,17 @@ class TradingArtwork2(src.items.Item):
                 "recieve": [
                     ["Corpse", 1],
                 ],
+                "autoTrade":True
+            },
+            {
+                "name": "trade for corpse",
+                "give": [
+                    ["MetalBars", 1],
+                ],
+                "recieve": [
+                    ["Corpse", 1],
+                ],
+                "numOffered": 30,
                 "autoTrade":True
             },
             {
@@ -312,13 +323,10 @@ class TradingArtwork2(src.items.Item):
         if character:
             character.addMessage("you did the trade %s" % (trade["name"],))
 
-        src.gamestate.gamestate.mainChar.addMessage("did trade")
-        src.gamestate.gamestate.mainChar.addMessage(trade)
         if "numOffered" in trade:
             trade["numOffered"] -= 1
             if trade["numOffered"] == 0:
                 self.availableTrades.remove(trade)
-        src.gamestate.gamestate.mainChar.addMessage(trade)
 
         return True
 

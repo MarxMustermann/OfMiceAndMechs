@@ -182,7 +182,7 @@ class CityBuilder2(src.items.Item):
                     "spawnRankUnranked": self.spawnRankUnranked,
                         }
 
-    def addRoom(self,position):
+    def addRoom(self,position,addEnemyRoom=True):
         room = self.architect.doAddRoom(
             {
                 "coordinate": position,
@@ -196,6 +196,9 @@ class CityBuilder2(src.items.Item):
 
         for item in self.scrapFields:
             room.sources.append((item,"Scrap"))
+
+        if addEnemyRoom:
+            self.addEnemyRoomFromMap({"coordinate":(random.randint(2,11),random.randint(2,11))})
 
         room.sources.append((self.container.getPosition(),"ScrapCompactor"))
         room.sources.append((self.container.getPosition(),"MetalBars"))
@@ -230,6 +233,16 @@ class CityBuilder2(src.items.Item):
         self.container.addCharacter(char,6,6)
         char.runCommandString("********")
         char.godMode = True
+
+    def addEnemyRoomFromMap(self,params):
+        room = self.addRoom(params["coordinate"],addEnemyRoom=False)
+
+        for i in range(0,random.randint(2,8)):
+            enemy = src.characters.Monster()
+            enemy.godMode = True
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
     def addScrapCompactorFromMap(self,params):
         """
@@ -326,6 +339,22 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character},
                     },
                     "description":"add scrapcompactor prefab",
+                }
+                functionMap[(x,y)]["e"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addEnemyRoomFromMap",
+                        "params":{"character":character,"type":"random"},
+                    },
+                    "description":"add enemy room",
+                }
+                functionMap[(x,y)]["s"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addStorageRoomFromMap",
+                        "params":{"character":character,"type":"random"},
+                    },
+                    "description":"add storage room",
                 }
 
 

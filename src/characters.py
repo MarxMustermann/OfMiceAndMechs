@@ -467,7 +467,7 @@ class Character(src.saveing.Saveable):
             message: the message
         """
 
-        self.messages.append(message)
+        self.messages.append(str(message))
 
     def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None):
         """

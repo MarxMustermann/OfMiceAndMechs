@@ -1695,7 +1695,10 @@ class BeUsefull(MetaQuestSequence):
         if len(character.inventory) > 6:
             if not "HOMEx" in character.registers:
                 return
+            print((character.registers["HOMEx"],character.registers["HOMEy"]))
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            if not homeRoom.storageRooms:
+                return
             self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
             return
 

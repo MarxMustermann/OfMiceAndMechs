@@ -126,7 +126,10 @@ A painter. it can be used to draw markers on the floor
         self.character.addMessage("you set the mode to %s"%(self.paintMode,))
 
     def setType(self):
-        self.paintType = self.submenue.text
+        if self.paintType == "None":
+            self.paintType = None
+        else:
+            self.paintType = self.submenue.text
         self.character.addMessage("you set the type to %s"%(self.paintType,))
 
     def apply(self, character):

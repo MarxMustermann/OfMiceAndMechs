@@ -20,12 +20,13 @@ class CityBuilder2(src.items.Item):
 
         super().__init__(display="CC", name=name)
 
-        self.prefabs = {"ScrapToMetalBars":[]}
+        self.prefabs = {"ScrapToMetalBars":[],"storage":[]}
 
         self.architect = None
         self.plotPool = []
         self.reservedPlots = []
         self.scrapFields = []
+        self.workshopRooms = []
 
         self.generateFloorPlans()
 
@@ -153,6 +154,29 @@ class CityBuilder2(src.items.Item):
             floorPlan = self.getFloorPlanFromDict(rawFloorplan)
             self.prefabs["ScrapToMetalBars"].append(floorPlan)
 
+        floorPlan = {}
+        floorPlan["storageSlots"] = []
+        floorPlan["walkingSpace"] = set()
+        for startPos in ((1,1),(1,5),(1,9,),(7,1),(7,5),(7,9,)):
+            floorPlan["storageSlots"].append(((0+startPos[0],startPos[1],0),None,{}))
+            floorPlan["storageSlots"].append(((1+startPos[0],startPos[1],0),None,{}))
+            floorPlan["storageSlots"].append(((2+startPos[0],startPos[1],0),None,{}))
+            floorPlan["storageSlots"].append(((3+startPos[0],startPos[1],0),None,{}))
+            floorPlan["storageSlots"].append(((4+startPos[0],startPos[1],0),None,{}))
+            floorPlan["walkingSpace"].add((0+startPos[0],startPos[1]+1,0))
+            floorPlan["walkingSpace"].add((1+startPos[0],startPos[1]+1,0))
+            floorPlan["walkingSpace"].add((2+startPos[0],startPos[1]+1,0))
+            floorPlan["walkingSpace"].add((3+startPos[0],startPos[1]+1,0))
+            floorPlan["walkingSpace"].add((4+startPos[0],startPos[1]+1,0))
+            floorPlan["storageSlots"].append(((0+startPos[0],startPos[1]+2,0),None,{}))
+            floorPlan["storageSlots"].append(((1+startPos[0],startPos[1]+2,0),None,{}))
+            floorPlan["storageSlots"].append(((2+startPos[0],startPos[1]+2,0),None,{}))
+            floorPlan["storageSlots"].append(((3+startPos[0],startPos[1]+2,0),None,{}))
+            floorPlan["storageSlots"].append(((4+startPos[0],startPos[1]+2,0),None,{}))
+        for y in range(1,12):
+            floorPlan["walkingSpace"].add((6,y,0))
+        self.prefabs["storage"].append(floorPlan)
+
         try:
             with open("gamestate/globalInfo.json", "r") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
@@ -171,6 +195,7 @@ class CityBuilder2(src.items.Item):
                                                                 ("spawnRank4", "spawn rank 4"),
                                                                 ("spawnRank3", "spawn rank 3"),
                                                                 ("spawnRankUnranked", "spawn unranked"),
+                                                                ("addProductionLine", "add production line"),
                         ]
                         )
         self.applyMap = {
@@ -180,13 +205,14 @@ class CityBuilder2(src.items.Item):
                     "spawnRank4": self.spawnRank4,
                     "spawnRank3": self.spawnRank3,
                     "spawnRankUnranked": self.spawnRankUnranked,
+                    "addProductionLine": self.addProductionLine,
                         }
 
-    def addRoom(self,position,addEnemyRoom=True):
+    def addRoom(self,position,addEnemyRoom=True,roomType="EmptyRoom"):
         room = self.architect.doAddRoom(
             {
                 "coordinate": position,
-                "roomType": "EmptyRoom",
+                "roomType": roomType,
                 "doors": "6,0 0,6 6,12 12,6",
                 "offset": [1,1],
                 "size": [13, 13],
@@ -197,8 +223,8 @@ class CityBuilder2(src.items.Item):
         for item in self.scrapFields:
             room.sources.append((item,"Scrap"))
 
-        if addEnemyRoom:
-            self.addEnemyRoomFromMap({"coordinate":(random.randint(2,11),random.randint(2,11))})
+        #if addEnemyRoom:
+        #    self.addEnemyRoomFromMap({"coordinate":(random.randint(2,11),random.randint(2,11))})
 
         room.sources.append((self.container.getPosition(),"ScrapCompactor"))
         room.sources.append((self.container.getPosition(),"MetalBars"))
@@ -221,8 +247,19 @@ class CityBuilder2(src.items.Item):
     def spawnRankUnranked(self,character):
         self.spawnRank(None,character)
 
+    def addProductionLine(self,character):
+        if not self.workshopRooms:
+            character.addMessage("no workshop rooms available")
+            return
+        character.addMessage("trying to add production line")
+        room = self.workshopRooms.pop()
+        self.addWorkshop(["Rod","Sword","Armor","Sheet","Bolt","Rod","Sword","Armor","Rod"],[],room)
+        room.sources.append((room.getPosition(),"Rod"))
+
     def spawnRank(self,rank,actor):
         char = src.characters.Character()
+        char.registers["HOMEx"] = self.container.xPosition
+        char.registers["HOMEy"] = self.container.yPosition
         quest = src.quests.BeUsefull()
         quest.assignToCharacter(char)
         quest.activate()
@@ -253,17 +290,30 @@ class CityBuilder2(src.items.Item):
             params: parameters given from the interaction menu
         """
 
-        if not "type" in params:
-            self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
-            character.macroState["submenue"] = {"container":self,"method":addScrapCompactorFromMap,"params":params}
+        character = params["character"]
 
+        if not "type" in params:
+            params["type"] = "random"
+            character.addMessage("spawned submenu")
+            character.addMessage(params)
+            options = []
+            index = 0
+            for item in self.prefabs["ScrapToMetalBars"]:
+                index += 1
+                options.append((index,"prefab%s"%(index,)))
+            submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}
+            return
+
+        if params["type"] == "random":
+            params["type"] = random.randint(1,len(self.prefabs["ScrapToMetalBars"]))
 
         character = params["character"]
 
         room = self.addRoom(params["coordinate"])
 
-        floorPlan = copy.deepcopy(random.choice(self.prefabs["ScrapToMetalBars"]))
-
+        floorPlan = copy.deepcopy(self.prefabs["ScrapToMetalBars"][params["type"]-1])
         room.resetDirect()
         room.floorPlan = floorPlan 
 
@@ -274,9 +324,29 @@ class CityBuilder2(src.items.Item):
 
         self.container.sources.append((room.getPosition(),"MetalBars"))
 
-    def addStorageFromMap(self,params):
-        #floorPlan = copy.deepcopy(random.choice(self.prefabs["Storage"]))
-        pass
+    def addWorkshopRoomFromMap(self,params):
+        room = self.addRoom(params["coordinate"],roomType="WorkshopRoom")
+        self.workshopRooms.append(room)
+
+    def addStorageRoomFromMap(self,params):
+        room = self.addRoom(params["coordinate"])
+        """
+        room.addStorageSlot((3,3,0),None)
+        room.addStorageSlot((4,3,0),None)
+        room.addStorageSlot((5,3,0),None)
+        room.addStorageSlot((6,3,0),None)
+
+        room.walkingSpace.add((3,4,0))
+        room.walkingSpace.add((4,4,0))
+        room.walkingSpace.add((5,4,0))
+        room.walkingSpace.add((6,4,0))
+        """
+
+        floorPlan = copy.deepcopy(random.choice(self.prefabs["storage"]))
+        room.resetDirect()
+        room.floorPlan = floorPlan 
+
+        self.container.storageRooms.append(room)
 
     def addRoomFromMap(self,params):
         """
@@ -348,7 +418,15 @@ class CityBuilder2(src.items.Item):
                     },
                     "description":"add enemy room",
                 }
-                functionMap[(x,y)]["s"] = {
+                functionMap[(x,y)]["W"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addWorkshopRoomFromMap",
+                        "params":{"character":character,"type":"random"},
+                    },
+                    "description":"add workshopp room",
+                }
+                functionMap[(x,y)]["S"] = {
                     "function": {
                         "container":self,
                         "method":"addStorageRoomFromMap",
@@ -427,6 +505,73 @@ class CityBuilder2(src.items.Item):
                 walkingSpace.append(tuple(item))
             converted["walkingSpace"] = walkingSpace
         return converted
+
+    def addWorkshop(self,smallMachinesToAdd,bigMachinesToAdd,room):
+
+        if not smallMachinesToAdd and not bigMachinesToAdd:
+            return
+
+        room.addGhulSquare((6,6,0))
+
+        newOutputs = []
+
+        if smallMachinesToAdd:
+            newOutputs.extend(smallMachinesToAdd[0:3])
+            room.addWorkshopSquare((0,6,0),machines=smallMachinesToAdd[0:3])
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "a5w"+"4s4aJwJsddJwJsddww4aJwddJwddww"+"5sd"
+            command.extraName = "produce items southwest"
+            room.addItem(command,(7,11,0))
+            smallMachinesToAdd = smallMachinesToAdd[3:]
+        elif bigMachinesToAdd:
+            newOutputs.extend(bigMachinesToAdd[0:2])
+            room.addBigWorkshopSquare((0,6,0),machines=bigMachinesToAdd[0:2])
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "a5w"+"3s3aJwJs3d3w"+"5sd"
+            command.extraName = "produce items southwest"
+            room.addItem(command,(7,11,0))
+            bigMachinesToAdd = bigMachinesToAdd[2:]
+
+        if smallMachinesToAdd:
+            newOutputs.extend(smallMachinesToAdd[0:3])
+            room.addWorkshopSquare((6,0,0),machines=smallMachinesToAdd[0:3])
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "aa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sdd"
+            command.extraName = "produce items northeast"
+            room.addItem(command,(8,11,0))
+            smallMachinesToAdd = smallMachinesToAdd[3:]
+        elif bigMachinesToAdd:
+            newOutputs.extend(bigMachinesToAdd[0:2])
+            room.addBigWorkshopSquare((6,0,0),machines=bigMachinesToAdd[0:2])
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "aa5w"+"3w3dJwJs3a3s"+"5sdd"
+            command.extraName = "produce items northeast"
+            room.addItem(command,(8,11,0))
+            bigMachinesToAdd = bigMachinesToAdd[2:]
+
+        if smallMachinesToAdd:
+            newOutputs.extend(smallMachinesToAdd[0:3])
+            room.addWorkshopSquare((0,0,0),machines=smallMachinesToAdd[0:3])
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.extraName = "produce items northwest"
+            command.command = "aaa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sddd"
+            room.addItem(command,(9,11,0))
+            smallMachinesToAdd = smallMachinesToAdd[3:]
+        elif bigMachinesToAdd:
+            newOutputs.extend(bigMachinesToAdd[0:2])
+            room.addBigWorkshopSquare((0,0,0),machines=bigMachinesToAdd[0:2])
+            command = src.items.itemMap["Command"]()
+            command.bolted = True
+            command.command = "aaa5w"+"3w3aJwJs3d3s"+"5sddd"
+            command.extraName = "produce items northwest"
+            room.addItem(command,(9,11,0))
+            bigMachinesToAdd = bigMachinesToAdd[2:]
+
 
     def configure(self,character):
 

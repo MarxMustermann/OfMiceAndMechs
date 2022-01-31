@@ -1160,52 +1160,63 @@ I hope you have fun.
             for y in range(1,6):
                 item = src.items.itemMap["ScrapCompactor"]()
                 storageRoom.addItem(item,(x,y,0))
+                item.bolted = False
         for x in range(7,12):
             for y in range(1,6):
                 item = src.items.itemMap["ScrapCompactor"]()
                 storageRoom.addItem(item,(x,y,0))
+                item.bolted = False
         for x in range(7,12):
             for y in range(7,12):
                 for i in range(1,10):
                     item = src.items.itemMap["Corpse"]()
                     storageRoom.addItem(item,(x,y,0))
+                    item.bolted = False
 
         for x in range(1,6):
             for y in range(1,6):
                 for i in range(1,10):
                     item = src.items.itemMap["MetalBars"]()
                     storageRoom2.addItem(item,(x,y,0))
+                    item.bolted = False
         for x in range(7,12):
             for y in range(1,6):
                 item = src.items.itemMap["Scrap"](amount=20)
                 storageRoom2.addItem(item,(x,y,0))
+                item.bolted = False
         for x in range(1,6):
             for y in range(7,12):
                 for i in range(1,10):
                     item = src.items.itemMap["Sheet"]()
                     storageRoom2.addItem(item,(x,y,0))
+                    item.bolted = False
 
         for y in range(7,12):
             item = src.items.itemMap["CorpseAnimator"]()
             storageRoom.addItem(item,(1,y,0))
+            item.bolted = False
 
         item = src.items.itemMap["Painter"]()
         item.paintMode = "inputSlot"
         item.itemType = "Scrap"
         storageRoom.addItem(item,(3,11,0))
+        item.bolted = False
 
         item = src.items.itemMap["Painter"]()
         item.paintMode = "outputSlot"
         item.itemType = "MetalBars"
         storageRoom.addItem(item,(3,10,0))
+        item.bolted = False
 
         item = src.items.itemMap["Painter"]()
         item.paintMode = "walkingSpace"
         storageRoom.addItem(item,(3,9,0))
+        item.bolted = False
 
         item = src.items.itemMap["Painter"]()
         item.paintMode = "delete"
         storageRoom.addItem(item,(3,8,0))
+        item.bolted = False
 
         item = src.items.itemMap["FunctionTrigger"]()
         item.function = {"container":self,"method":"advance"}
@@ -3712,6 +3723,9 @@ class BaseBuilding(BasicPhase):
                 },
                 None,
            )
+        src.gamestate.gamestate.mainChar.registers["HOMEx"] = 7
+        src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
+        mainRoom.storageRooms = []
 
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.bolted = True

@@ -2696,6 +2696,7 @@ class SubMenu(src.saveing.Saveable):
         self.persistentText = ""
         self.footerText = "press w / s to move selection up / down, press enter / j / k to select, press esc to exit"
         self.followUp = None
+        self.done = False
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -2817,6 +2818,12 @@ class SubMenu(src.saveing.Saveable):
         Returns:
             returns True when done
         """
+
+        if not self.options:
+            self.done = True
+            return True
+        if self.done:
+            return True
 
         # exit submenu
         if key == "esc":
@@ -5825,9 +5832,10 @@ def gameLoop(loop, user_data=None):
         #    print("tick time %s for %s"%(endTime-startTime,origTick,))
 
         #profiler.dump_stats("tmpFolder/tick%s"%(origTick,))
-        
-        if time.time()-startTime < 0.09999:
-            time.sleep(0.1-(time.time()-startTime))
+
+        endTime = time.time()
+        if endTime-startTime < 0.09999:
+            time.sleep(0.1-(endTime-startTime))
 
     else:
         continousOperation = 0

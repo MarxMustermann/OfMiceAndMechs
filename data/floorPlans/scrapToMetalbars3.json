@@ -336,12 +336,21 @@
             "Command",
             {
                 "command": [
+                    "a",
+                    "j",
+                    "j",
+                    "d",
                     "s",
                     "j",
                     "w",
                     "j"
                 ]
             }
+        ],
+        [
+	   [4,5,0],
+	   "ScratchPlate",
+       	   {"commands":{"noscratch":"jjddKsaaaJsJsd"},"settings":{"scratchThreashold":500}}
         ],
         [
             [
@@ -558,6 +567,11 @@
             }
         ],
         [
+	   [7,5,0],
+	   "ScratchPlate",
+       	   {"commands":{"noscratch":"jjaKs3dJsJs2a"},"settings":{"scratchThreashold":500}}
+        ],
+        [
             [
                 8,
                 5,
@@ -569,8 +583,7 @@
                     "s",
                     "j",
                     "w",
-                    "j",
-                    "o"
+                    "j"
                 ]
             }
         ]

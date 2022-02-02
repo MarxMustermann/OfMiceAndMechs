@@ -23,6 +23,7 @@ class CityBuilder2(src.items.Item):
         self.prefabs = {"ScrapToMetalBars":[],"storage":[]}
 
         self.architect = None
+        self.questArtwork = None
         self.plotPool = []
         self.reservedPlots = []
         self.scrapFields = []

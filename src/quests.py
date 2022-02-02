@@ -40,10 +40,26 @@ class MurderQuest2(src.saveing.Saveable):
         self.character = None
         self.information = None
         self.watched = []
+        self.autoSolve = False
 
         # set id
         self.attributesToStore.extend(["completed", "active", "information", "type"])
         self.objectsToStore.extend(["character", "toKill"])
+
+    def getActiveQuest(self):
+        return self
+
+    def getActiveQuests(self):
+        return [self]
+
+    def getQuestMarkersSmall(self,character):
+        return []
+
+    def getQuestMarkersTile(self,character):
+        return []
+
+    def getSolvingCommandString(self,character):
+        return ""
 
     def setState(self, state):
         """

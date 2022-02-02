@@ -3734,6 +3734,10 @@ class BaseBuilding(BasicPhase):
         src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
         mainRoom.storageRooms = []
 
+        questArtwork = src.items.itemMap["QuestArtwork"]()
+        questArtwork.bolted = True
+        mainRoom.addItem(questArtwork, (1, 4, 0))
+
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.bolted = True
         cityBuilder.godMode = True

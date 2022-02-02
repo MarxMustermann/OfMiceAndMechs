@@ -328,6 +328,12 @@ class CityBuilder2(src.items.Item):
         room = self.addRoom(params["coordinate"],roomType="WorkshopRoom")
         self.workshopRooms.append(room)
 
+    def addTrapRoomFromMap(self,params):
+        room = self.addRoom(params["coordinate"],roomType="TrapRoom")
+
+    def addTeleporterRoomFromMap(self,params):
+        room = self.addRoom(params["coordinate"],roomType="TeleporterRoom")
+
     def addStorageRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"])
         """
@@ -425,6 +431,22 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character,"type":"random"},
                     },
                     "description":"add workshopp room",
+                }
+                functionMap[(x,y)]["t"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addTrapRoomFromMap",
+                        "params":{"character":character,"type":"random"},
+                    },
+                    "description":"add trap room",
+                }
+                functionMap[(x,y)]["T"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addTeleporterRoomFromMap",
+                        "params":{"character":character,"type":"random"},
+                    },
+                    "description":"add teleporter room",
                 }
                 functionMap[(x,y)]["S"] = {
                     "function": {

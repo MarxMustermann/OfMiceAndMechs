@@ -28,3 +28,5 @@ A Winch. It is useless.
 
 """
         return text
+
+src.items.addType(Winch)

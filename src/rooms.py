@@ -102,6 +102,10 @@ class Room(src.saveing.Saveable):
         self.seed = seed
         self.displayChar = (src.interaction.urwid.AttrSpec("#343", "black"), "RR")
 
+        self.sizeX = 0
+        self.sizeY = 0
+
+
         # set id
         import uuid
 
@@ -184,9 +188,7 @@ class Room(src.saveing.Saveable):
             if itemType and not outputSlot[1] == itemType:
                 continue
 
-            print(outputSlot[0])
             items = self.getItemByPosition(outputSlot[0])
-            print(items)
             if not items:
                 continue
 
@@ -673,8 +675,6 @@ class Room(src.saveing.Saveable):
         return path
 
     def handleAddActionSelection(self,extraInfo):
-        print("handleAddActionSelection")
-        print(extraInfo)
 
         quest = src.quests.RunCommand(command=extraInfo["selected"])
         quest.autoSolve = True
@@ -696,8 +696,6 @@ class Room(src.saveing.Saveable):
         if not src.gamestate.gamestate.mainChar.quests:
             return
 
-        print("handleFloorClick")
-        print(extraInfo)
         event = extraInfo["event"]
 
         if isinstance(event,src.interaction.tcod.event.MouseButtonDown):
@@ -726,7 +724,6 @@ class Room(src.saveing.Saveable):
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-            print(self.xPosition,self.yPosition)
             quest = src.quests.GoToTile(targetPosition=(self.xPosition,self.yPosition,0))
             quest.autoSolve = True
             quest.activate()
@@ -747,7 +744,6 @@ class Room(src.saveing.Saveable):
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-            print(self.xPosition,self.yPosition)
             quest = src.quests.GoToTile(targetPosition=(self.xPosition,self.yPosition,0))
             quest.autoSolve = True
             quest.activate()
@@ -876,10 +872,8 @@ class Room(src.saveing.Saveable):
                             chars[character.yPosition][character.xPosition][0].bg = "#855"
                             character.showGaveCommand = False
                     if foundMainchar:
-                        print("check for quest")
                         activeQuest = foundMainchar.getActiveQuest()
                         if activeQuest:
-                            print(activeQuest)
                             for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                                 pos = marker[0]
                                 try:
@@ -1050,8 +1044,6 @@ class Room(src.saveing.Saveable):
                     item.bolted = True
                     if buildSite[2].get("commands"):
                         src.gamestate.gamestate.mainChar.addMessage("set commands for:")
-                        print(item) 
-                        print(buildSite) 
                         if not item.commands:
                             item.commands = {}
                         item.commands.update(buildSite[2].get("commands"))
@@ -1951,6 +1943,25 @@ class ComandCenter(EmptyRoom):
 
         self.objectListsToStore.append("rooms")
 
+class TeleporterRoom(EmptyRoom):
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TT")
+
+    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+        super().reconfigure(sizeX,sizeY,items,bio,doorPos)
+
+        teleporterArtwork = src.items.itemMap["TeleporterArtwork"]()
+        self.addItem(teleporterArtwork,(6,6,0))
+
 class TrapRoom(EmptyRoom):
 
     electricalCharges = 0
@@ -2281,16 +2292,16 @@ XXXXXXXXXX
         self.name = "Boilerroom"
 
         # generate special items
-        self.lever1 = src.items.Lever(1, 5, "engine control")
-        self.lever2 = src.items.Lever(8, 5, "boarding alarm")
-        coalPile1 = src.items.Pile(8, 3, "coal Pile1", src.items.Coal)
-        coalPile2 = src.items.Pile(8, 4, "coal Pile2", src.items.Coal)
-        coalPile3 = src.items.Pile(1, 3, "coal Pile1", src.items.Coal)
-        coalPile4 = src.items.Pile(1, 4, "coal Pile2", src.items.Coal)
+        self.lever1 = src.items.itemMap["Lever"]("engine control")
+        self.lever2 = src.items.itemMap["Lever"]("boarding alarm")
+        #coalPile1 = src.items.itemMap["Pile"]("coal Pile1", src.items.itemMap["Coal"])
+        #coalPile2 = src.items.itemMap["Pile"]("coal Pile2", src.items.itemMap["Coal"])
+        #coalPile3 = src.items.itemMap["Pile"]("coal Pile1", src.items.itemMap["Coal"])
+        #coalPile4 = src.items.itemMap["Pile"]("coal Pile2", src.items.itemMap["Coal"])
 
         # actually add items
         self.addItems(
-            [self.lever1, self.lever2, coalPile1, coalPile2, coalPile3, coalPile4]
+            [(self.lever1,(1,5,0)), (self.lever2,(8,5,0))]#, (coalPile1,(8, 3, 0)), (coalPile2,(8, 4,0)), (coalPile3,(1, 3,0)), (coalPile4,(1, 4,0))]
         )
 
         self.furnaceQuest = None
@@ -2486,8 +2497,10 @@ XXXXXXXXXXX
         self.name = "Infanteryquarters"
 
         # make personal military personal
-        self.firstOfficer.isMilitary = True
-        self.secondOfficer.isMilitary = True
+        if self.firstOfficer:
+            self.firstOfficer.isMilitary = True
+        if self.secondOfficer:
+            self.secondOfficer.isMilitary = True
         self.onMission = False
 
         # set up monitoring for doors
@@ -2666,27 +2679,28 @@ XXXXX$XXXX
         )
 
         # add special items
-        self.gooDispenser = src.items.GooDispenser(6, 7)
-        self.addItems([self.gooDispenser])
+        self.gooDispenser = src.items.itemMap["GooDispenser"]()
+        self.addItem(self.gooDispenser,(6,7,0))
         self.name = "vat processing"
 
-        firstOfficerDialog = {
-            "dialogName": "Do you need some help?",
-            "chat": src.chats.ConfigurableChat,
-            "params": {
-                "text": "yes. I regulary have to request new goo Flasks, since the workers sometimes drop them. Collect them for me.",
-                "info": [],
-            },
-        }
-        firstOfficerDialog["params"]["info"].append(
-            {
-                "name": "I have a goo flask for you",
-                "text": "gret. Give it to me",
-                "type": "text",
-                "trigger": {"container": self, "method": "removeGooFlask"},
+        if self.firstOfficer:
+            firstOfficerDialog = {
+                "dialogName": "Do you need some help?",
+                "chat": src.chats.ConfigurableChat,
+                "params": {
+                    "text": "yes. I regulary have to request new goo Flasks, since the workers sometimes drop them. Collect them for me.",
+                    "info": [],
+                },
             }
-        )
-        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+            firstOfficerDialog["params"]["info"].append(
+                {
+                    "name": "I have a goo flask for you",
+                    "text": "gret. Give it to me",
+                    "type": "text",
+                    "trigger": {"container": self, "method": "removeGooFlask"},
+                }
+            )
+            self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
     def removeGooFlask(self):
         toRemove = None
@@ -3188,9 +3202,13 @@ XXXXXXXXXX
         )
 
         # bad code: the markers are not used anywhere
-        self.bean = src.items.MarkerBean(4, 2)
-        beanPile = src.items.Pile(4, 1, "markerPile", src.items.MarkerBean)
-        self.addItems([self.bean, beanPile])
+        self.bean = src.items.itemMap["MarkerBean"]()
+        self.addItem(self.bean, (4, 2, 0))
+        #beanPile = src.items.itemMap["Pile"]("markerPile", src.items.itemMap["MarkerBean"])
+        #self.addItem(beanPile, (4, 1, 0))
+
+        self.sizeX = 10
+        self.sizeY = 10
 
         self.name = "Challenge"
 
@@ -3202,117 +3220,119 @@ XXXXXXXXXX
                 continue
             item.bolted = False
 
-        self.firstOfficer.basicChatOptions.append(
-            {
-                "dialogName": "I need to leave this room, can you help?",
+        if self.firstOfficer:
+            self.firstOfficer.basicChatOptions.append(
+                {
+                    "dialogName": "I need to leave this room, can you help?",
+                    "chat": src.chats.ConfigurableChat,
+                    "params": {"text": "yes", "info": []},
+                }
+            )
+            self.secondOfficer.basicChatOptions.append(
+                {
+                    "dialogName": "I need to leave this room, can you help?",
+                    "chat": src.chats.ConfigurableChat,
+                    "params": {"text": "I dont know how to help you with this", "info": []},
+                }
+            )
+
+            firstOfficerDialog = {
+                "dialogName": "Do you need more equipment?",
                 "chat": src.chats.ConfigurableChat,
                 "params": {"text": "yes", "info": []},
             }
-        )
-        self.secondOfficer.basicChatOptions.append(
-            {
-                "dialogName": "I need to leave this room, can you help?",
-                "chat": src.chats.ConfigurableChat,
-                "params": {"text": "I dont know how to help you with this", "info": []},
-            }
-        )
-
-        firstOfficerDialog = {
-            "dialogName": "Do you need more equipment?",
-            "chat": src.chats.ConfigurableChat,
-            "params": {"text": "yes", "info": []},
-        }
-        firstOfficerDialog["params"]["info"].append(
-            {
-                "name": "I want to use my tokens",
-                "text": "Done",
-                "type": "text",
-                "trigger": {"container": self, "method": "removeTokensFirstOfficer"},
-            }
-        )
-        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-
-        secondOfficerDialog = {
-            "dialogName": "Do you need more equipment?",
-            "chat": src.chats.ConfigurableChat,
-            "params": {"text": "yes", "info": []},
-        }
-
-        self.secondOfficerRemovesPipes = False
-        self.secondOfficerRemovesGooFlasks = False
-        self.secondOfficerRemovesTokens = False
-
-        self.secondOfficerRemovesPipes = True
-        if seed % 3 == 2 or seed % 7 == 0:
-            self.secondOfficerRemovesGooFlasks = True
-        if seed % 2 == 0 or seed % 5 == 2:
-            self.secondOfficerRemovesTokens = True
-
-        if self.secondOfficerRemovesPipes:
-            secondOfficerDialog["params"]["info"].append(
-                {
-                    "name": "Please take my pipes",
-                    "text": "Offer accepted",
-                    "type": "text",
-                    "trigger": {
-                        "container": self,
-                        "method": "removePipesSecondOfficer",
-                    },
-                }
-            )
-        if self.secondOfficerRemovesGooFlasks:
-            secondOfficerDialog["params"]["info"].append(
-                {
-                    "name": "Please take my goo flasks",
-                    "text": "Offer accepted",
-                    "type": "text",
-                    "trigger": {
-                        "container": self,
-                        "method": "removeGooFlaskSecondOfficer",
-                    },
-                }
-            )
-        if self.secondOfficerRemovesTokens:
-            secondOfficerDialog["params"]["info"].append(
+            firstOfficerDialog["params"]["info"].append(
                 {
                     "name": "I want to use my tokens",
                     "text": "Done",
                     "type": "text",
+                    "trigger": {"container": self, "method": "removeTokensFirstOfficer"},
+                }
+            )
+            self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+
+        if self.secondOfficer:
+            secondOfficerDialog = {
+                "dialogName": "Do you need more equipment?",
+                "chat": src.chats.ConfigurableChat,
+                "params": {"text": "yes", "info": []},
+            }
+
+            self.secondOfficerRemovesPipes = False
+            self.secondOfficerRemovesGooFlasks = False
+            self.secondOfficerRemovesTokens = False
+
+            self.secondOfficerRemovesPipes = True
+            if seed % 3 == 2 or seed % 7 == 0:
+                self.secondOfficerRemovesGooFlasks = True
+            if seed % 2 == 0 or seed % 5 == 2:
+                self.secondOfficerRemovesTokens = True
+
+            if self.secondOfficerRemovesPipes:
+                secondOfficerDialog["params"]["info"].append(
+                    {
+                        "name": "Please take my pipes",
+                        "text": "Offer accepted",
+                        "type": "text",
+                        "trigger": {
+                            "container": self,
+                            "method": "removePipesSecondOfficer",
+                        },
+                    }
+                )
+            if self.secondOfficerRemovesGooFlasks:
+                secondOfficerDialog["params"]["info"].append(
+                    {
+                        "name": "Please take my goo flasks",
+                        "text": "Offer accepted",
+                        "type": "text",
+                        "trigger": {
+                            "container": self,
+                            "method": "removeGooFlaskSecondOfficer",
+                        },
+                    }
+                )
+            if self.secondOfficerRemovesTokens:
+                secondOfficerDialog["params"]["info"].append(
+                    {
+                        "name": "I want to use my tokens",
+                        "text": "Done",
+                        "type": "text",
+                        "trigger": {
+                            "container": self,
+                            "method": "removeTokensSecondOfficer",
+                        },
+                    }
+                )
+            secondOfficerDialog["params"]["info"].append(
+                {
+                    "name": "Take anything you like",
+                    "text": "Offer accepted",
+                    "type": "text",
                     "trigger": {
                         "container": self,
-                        "method": "removeTokensSecondOfficer",
+                        "method": "removeEverythingSecondOfficer",
                     },
                 }
             )
-        secondOfficerDialog["params"]["info"].append(
-            {
-                "name": "Take anything you like",
-                "text": "Offer accepted",
-                "type": "text",
-                "trigger": {
-                    "container": self,
-                    "method": "removeEverythingSecondOfficer",
-                },
-            }
-        )
-        self.secondOfficer.basicChatOptions.append(secondOfficerDialog)
+            self.secondOfficer.basicChatOptions.append(secondOfficerDialog)
 
         items = []
         yPosition = 1
-        item = src.items.Furnace(1, yPosition)
-        items.append(item)
+        item = src.items.itemMap["Furnace"]()
+        items.append((item,(1, yPosition,0)))
         yPosition += 2
         if seed % 5 == 3:
-            item = src.items.Furnace(1, yPosition)
-            items.append(item)
+            item = src.items.itemMap["Furnace"]()
+            items.append((item,(1, yPosition,0)))
             yPosition += 2
         if seed % 3 == 1:
-            item = src.items.Furnace(1, yPosition)
-            items.append(item)
+            item = src.items.itemMap["Furnace"]()
+            items.append((item,(1, yPosition,0)))
             yPosition += 2
         if seed % 2 == 1:
-            item = src.items.Furnace(1, yPosition)
-            items.append(item)
+            item = src.items.itemMap["Furnace"]()
+            items.append((item,(1, yPosition,0)))
             yPosition += 2
         self.addItems(items)
 
@@ -3327,7 +3347,7 @@ XXXXXXXXXX
             yPosition = 9 + (counter + seed + xPosition) % 17 % 4
 
             if counter in [2, 5]:
-                item = src.items.GooFlask(xPosition, yPosition)
+                item = src.items.itemMap["GooFlask"]()
                 item.charges = 1
             if (xPosition, yPosition) in positions:
                 seed = seed + 1
@@ -3335,29 +3355,30 @@ XXXXXXXXXX
             else:
                 positions.append((xPosition, yPosition))
             if counter in [1]:
-                item = src.items.GooFlask(xPosition, yPosition)
+                item = src.items.itemMap["GooFlask"]()
                 item.charges = 1
             elif counter % 5 == 1:
                 if counter % 3 == 0:
-                    token = src.items.Token(xPosition, yPosition)
-                    self.addItems([token])
-                item = src.items.Pipe(xPosition, yPosition)
+                    token = src.items.itemMap["Token"](xPosition, yPosition)
+                    self.addItem(token,(xPosition, yPosition,0))
+                item = src.items.itemMap["Pipe"]()
             else:
                 if counter % 7 == 5:
-                    token = src.items.Token(xPosition, yPosition)
-                    self.addItems([token])
-                item = src.items.Wall(xPosition, yPosition)
+                    token = src.items.itemMap["Token"](xPosition, yPosition)
+                    self.addItem(token,(xPosition, yPosition,0))
+                item = src.items.itemMap["Wall"]()
             item.bolted = False
-            self.labyrinthWalls.append(item)
+            self.labyrinthWalls.append((item,(xPosition, yPosition,0)))
             counter += 1
         self.addItems(self.labyrinthWalls)
 
-        numItems = seed % 9
-        counter = 0
-        while counter < numItems:
-            item = src.items.GooFlask(None, None)
-            self.secondOfficer.inventory.append(item)
-            counter += 1
+        if self.secondOfficer:
+            numItems = seed % 9
+            counter = 0
+            while counter < numItems:
+                item = src.items.itemMap["GooFlask"]()
+                self.secondOfficer.inventory.append(item)
+                counter += 1
 
     def removePipesSecondOfficer(self):
         toRemove = []
@@ -3456,9 +3477,11 @@ XXXXXXXXXX
         )
 
         # bad code: the markers are not used anywhere
-        bean = src.items.MarkerBean(1, 2)
-        beanPile = src.items.Pile(1, 1, "markerPile", src.items.MarkerBean)
-        self.addItems([bean, beanPile])
+        bean = src.items.itemMap["MarkerBean"]()
+        #beanPile = src.items.Pile(1, 1, "markerPile", src.items.MarkerBean)
+        self.addItems([(bean,(1,2,0))])#, beanPile])
+        self.sizeX = 10
+        self.sizeY = 14
 
         self.name = "Lab"
 
@@ -3517,6 +3540,9 @@ XXXXXXXXXX
         self.name = "CargoRoom"
         self.discovered = False
 
+        self.sizeX = 10
+        self.sizeY = 13
+
         # generate items with the supplied item types
         self.storedItems = []
         counter = 0
@@ -3536,24 +3562,18 @@ XXXXXXXXXX
         if seed % 5 == 3:
             xPosition = 1 + seed // 3 % (self.sizeX - 2)
             yPosition = 1 + seed // 3 % (self.sizeY - 2)
-            item = src.items.GooFlask()
-            item.xPosition = xPosition
-            item.yPosition = yPosition
-            self.addItems([item])
+            item = src.items.itemMap["GooFlask"]()
+            self.addItem(item,(xPosition,yPosition,0))
         if seed % 5 == 3:
             xPosition = 1 + seed // 6 % (self.sizeX - 2)
             yPosition = 1 + seed // 6 % (self.sizeY - 2)
-            item = src.items.GooFlask()
-            item.xPosition = xPosition
-            item.yPosition = yPosition
-            self.addItems([item])
+            item = src.items.itemMap["GooFlask"]()
+            self.addItem(item,(xPosition,yPosition,0))
         if seed % 2 == 1:
             xPosition = 1 + seed // 1 % (self.sizeX - 2)
             yPosition = 1 + seed // 1 % (self.sizeY - 2)
-            item = src.items.GooFlask()
-            item.xPosition = xPosition
-            item.yPosition = yPosition
-            self.addItems([item])
+            item = src.items.itemMap["GooFlask"]()
+            self.addItem(item,(xPosition,yPosition,0))
 
         npc = src.characters.Character(
                 xPosition=4, yPosition=4, seed=self.yPosition + self.offsetY + 4 * 12
@@ -3573,11 +3593,13 @@ XXXXXXXXXX
 
         # map items to storage spaces
         counter = 0
+        toAdd = []
         for item in self.storedItems:
             item.xPosition = self.storageSpace[counter][0]
             item.yPosition = self.storageSpace[counter][1]
             item.mayContainMice = True
             item.bolted = False
+            toAdd.append((item,(item.xPosition,item.yPosition,0)))
             counter += 1
 
         # add mice inhabiting the room on about every fifth room
@@ -3660,7 +3682,7 @@ XXXXXXXXXX
                 item.addListener(foundNest, "activated")
 
         # actually add the items
-        self.addItems(self.storedItems)
+        self.addItems(toAdd)
 
 
 """
@@ -3697,11 +3719,11 @@ XXXXXXXX
         self.name = "WakeUpRoom"
 
         # generate special items
-        self.lever1 = src.items.Lever(3, 1, "training lever")
-        self.objectDispenser = src.items.OjectDispenser(4, 1)
-        self.gooDispenser = src.items.GooDispenser(5, 9)
-        self.furnace = src.items.Furnace(4, 9)
-        self.pile = src.items.Pile(6, 9)
+        self.lever1 = src.items.itemMap["Lever"]("training lever")
+        self.objectDispenser = src.items.itemMap["ObjectDispenser"]()
+        self.gooDispenser = src.items.itemMap["GooDispenser"]()
+        self.furnace = src.items.itemMap["Furnace"]()
+        self.pile = src.items.itemMap["Pile"]()
 
         """
         create goo flask
@@ -3716,18 +3738,18 @@ XXXXXXXX
         # actually add items
         self.addItems(
             [
-                self.lever1,
-                self.gooDispenser,
-                self.objectDispenser,
-                self.furnace,
-                self.pile,
+                (self.lever1,(3,1,0)),
+                (self.gooDispenser,(4,1,0)),
+                (self.objectDispenser,(5,9,0)),
+                (self.furnace,(4,9,0)),
+                (self.pile,(6,9,0)),
             ]
         )
 
         # watch growth tanks and door
         # bad code: should be a quest
         for item in self.itemsOnFloor:
-            if isinstance(item, src.items.GrowthTank):
+            if isinstance(item, src.items.itemMap["GrowthTank"]):
 
                 def forceNewnamespace(
                     var,
@@ -3738,7 +3760,7 @@ XXXXXXXX
                     return callHandler
 
                 item.addListener(forceNewnamespace(item), "activated")
-            if isinstance(item, src.items.Door):
+            if isinstance(item, src.items.itemMap["Door"]):
                 item.addListener(self.handleDoorOpening, "activated")
 
         # start spawning hoppers periodically
@@ -3891,12 +3913,12 @@ XXXXXXXXXXX
         self.addCharacter(npc, 2, 3)
 
         self.trainingItems = []
-        item = src.items.Wall(1, 1)
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.trainingItems.append(item)
-        item = src.items.Pipe(9, 1)
+        self.trainingItems.append((item,(1,1,0)))
+        item = src.items.itemMap["Pipe"]()
         item.bolted = False
-        self.trainingItems.append(item)
+        self.trainingItems.append((item,(9,1,0)))
         self.addItems(self.trainingItems)
 
         # assign hopper duty to hoppers
@@ -3994,27 +4016,28 @@ XXXXXXXXXXX
         )
         self.name = "Mech Command Centre"
 
-        self.firstOfficer.name = "Cpt. " + self.firstOfficer.name
+        if self.firstOfficer:
+            self.firstOfficer.name = "Cpt. " + self.firstOfficer.name
 
-        firstOfficerDialog = {
-            "dialogName": "Tell me more about the Commandchain",
-            "chat": src.chats.ConfigurableChat,
-            "params": {
-                "text": "I am the Captain and control everything that happens on this mech.\n%s is my second in command\n%s is handling logistics\n%s is coordinating the hopper\n%s is head of the military"
-                % ("", "", "", ""),
-                "info": [],
-            },
-        }
-        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
-        self.firstOfficer.basicChatOptions.append(
-            {"dialogName": "I want to be captain", "chat": src.chats.CaptainChat}
-        )
-        self.firstOfficer.basicChatOptions.append(
-            {
-                "dialogName": "I want to be your second in command",
-                "chat": src.chats.CaptainChat2,
+            firstOfficerDialog = {
+                "dialogName": "Tell me more about the Commandchain",
+                "chat": src.chats.ConfigurableChat,
+                "params": {
+                    "text": "I am the Captain and control everything that happens on this mech.\n%s is my second in command\n%s is handling logistics\n%s is coordinating the hopper\n%s is head of the military"
+                    % ("", "", "", ""),
+                    "info": [],
+                },
             }
-        )
+            self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+            self.firstOfficer.basicChatOptions.append(
+                {"dialogName": "I want to be captain", "chat": src.chats.CaptainChat}
+            )
+            self.firstOfficer.basicChatOptions.append(
+                {
+                    "dialogName": "I want to be your second in command",
+                    "chat": src.chats.CaptainChat2,
+                }
+            )
 
         npcA = src.characters.Character(
             name="A",
@@ -4123,55 +4146,56 @@ XXXXX$XXXXX
         self.name = "MetalWorkshop"
 
         # add production machines
-        self.artwork = src.items.ProductionArtwork(4, 1)
-        self.compactor = src.items.ScrapCompactor(6, 1)
-        self.addItems([self.artwork, self.compactor])
+        self.artwork = src.items.itemMap["ProductionArtwork"]()
+        self.compactor = src.items.itemMap["ScrapCompactor"]()
+        self.addItems([(self.artwork,(4,1,0)), (self.compactor,(6,1,0))])
 
         # add some produced items
         self.producedItems = []
-        item = src.items.Wall(9, 4)
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.producedItems.append(item)
-        item = src.items.Wall(9, 6)
+        self.producedItems.append((item,(9, 4, 0)))
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.producedItems.append(item)
-        item = src.items.Wall(9, 3)
+        self.producedItems.append((item,(9, 6, 0)))
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.producedItems.append(item)
-        item = src.items.Wall(9, 7)
+        self.producedItems.append((item,(9, 3, 0)))
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.producedItems.append(item)
-        item = src.items.Wall(9, 2)
+        self.producedItems.append((item,(9, 7, 0)))
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.producedItems.append(item)
-        item = src.items.Wall(9, 8)
+        self.producedItems.append((item,(9, 2, 0)))
+        item = src.items.itemMap["Wall"]()
         item.bolted = False
-        self.producedItems.append(item)
+        self.producedItems.append((item,(9, 8, 0)))
         self.addItems(self.producedItems)
 
-        firstOfficerDialog = {
-            "dialogName": "Do you need some help?",
-            "chat": src.chats.ConfigurableChat,
-            "params": {"text": "no", "info": []},
-        }
-        if seed % 5 == 0:
-            firstOfficerDialog["params"]["info"].append(
-                {
-                    "name": "Please give me reputation anyway.",
-                    "text": "Ok",
-                    "type": "text",
-                    "trigger": {"container": self, "method": "dispenseFreeReputation"},
-                }
-            )
-        else:
-            firstOfficerDialog["params"]["info"].append(
-                {
-                    "name": "Please give me reputation anyway.",
-                    "text": "no",
-                    "type": "text",
-                }
-            )
-        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+        if self.firstOfficer:
+            firstOfficerDialog = {
+                "dialogName": "Do you need some help?",
+                "chat": src.chats.ConfigurableChat,
+                "params": {"text": "no", "info": []},
+            }
+            if seed % 5 == 0:
+                firstOfficerDialog["params"]["info"].append(
+                    {
+                        "name": "Please give me reputation anyway.",
+                        "text": "Ok",
+                        "type": "text",
+                        "trigger": {"container": self, "method": "dispenseFreeReputation"},
+                    }
+                )
+            else:
+                firstOfficerDialog["params"]["info"].append(
+                    {
+                        "name": "Please give me reputation anyway.",
+                        "text": "no",
+                        "type": "text",
+                    }
+                )
+            self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
     def dispenseFreeReputation(self):
         src.gamestate.gamestate.mainChar.reputation += 100
@@ -4221,15 +4245,16 @@ XXXXX$XXXXX
         )
         self.name = "HuntersLodge"
 
-        firstOfficerDialog = {
-            "dialogName": "Do you need some help?",
-            "chat": src.chats.ConfigurableChat,
-            "params": {
-                "text": "indeed. Anybody reporting mice nests will be rewarded",
-                "info": [],
-            },
-        }
-        self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
+        if self.firstOfficer:
+            firstOfficerDialog = {
+                "dialogName": "Do you need some help?",
+                "chat": src.chats.ConfigurableChat,
+                "params": {
+                    "text": "indeed. Anybody reporting mice nests will be rewarded",
+                    "info": [],
+                },
+            }
+            self.firstOfficer.basicChatOptions.append(firstOfficerDialog)
 
     def rewardNestFind(self, params):
         src.gamestate.gamestate.mainChar.awardReputation(
@@ -4312,6 +4337,9 @@ XXXXX$XXXXX
         )
         self.name = "Construction Site"
 
+        self.sizeX = 11
+        self.sizeY = 10
+
         # get a map of items that need to be placed
         itemsToPlace = {}
         x = -1
@@ -4325,18 +4353,18 @@ XXXXX$XXXXX
                     y += 1
                     continue
                 if char == "#":
-                    itemsToPlace[(x, y)] = src.items.Pipe
+                    itemsToPlace[(x, y)] = src.items.itemMap["Pipe"]
                 if char == "X":
-                    itemsToPlace[(x, y)] = src.items.Wall
+                    itemsToPlace[(x, y)] = src.items.itemMap["Wall"]
                 y += 1
             x += 1
 
         # add markers for items
         itemstoAdd = []
         for (position, itemType) in itemsToPlace.items():
-            item = src.items.MarkerBean(position[1], position[0])
-            item.apply(self.firstOfficer)
-            itemstoAdd.append(item)
+            item = src.items.itemMap["MarkerBean"]()
+            #item.apply(self.firstOfficer)
+            itemstoAdd.append((item,(position[1], position[0],0)))
         self.addItems(itemstoAdd)
 
         buildorder = []
@@ -4466,6 +4494,7 @@ roomMap = {
     "GameTestingRoom": GameTestingRoom,
     "ScrapStorage": ScrapStorage,
     "TrapRoom": TrapRoom,
+    "TeleporterRoom": TeleporterRoom,
     "WorkshopRoom": WorkshopRoom,
     "ComandCenter": ComandCenter,
 }

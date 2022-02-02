@@ -4451,16 +4451,10 @@ class GetQuest(MetaQuestSequence):
 
         # smooth over impossible state
         if not self.active:
-            src.interaction.debugMessages.append(
-                "triggerCompletionCheck called on inactive quest: " + str(self)
-            )
             return
 
         # check completion condition
         if not self.quest:
-            src.interaction.debugMessages.append(
-                "triggerCompletionCheck called on quest without quest: " + str(self)
-            )
             super().triggerCompletionCheck()
             return
 

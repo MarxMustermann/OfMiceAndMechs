@@ -3644,6 +3644,13 @@ class BaseBuilding(BasicPhase):
         item.uses = 100
         mainChar.inventory.append(item)
 
+        src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,1))
+        src.gamestate.gamestate.setTerrain(src.terrains.Nothingness(),(1,2))
+        src.gamestate.gamestate.setTerrain(src.terrains.GameplayTest(),(1,3))
+        src.gamestate.gamestate.setTerrain(src.terrains.ScrapField(),(1,4))
+        src.gamestate.gamestate.setTerrain(src.terrains.Desert(),(1,5))
+        src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,6))
+
         item = src.items.itemMap["ItemCollector"]()
         mainChar.inventory.append(item)
 
@@ -3781,11 +3788,11 @@ class BaseBuilding(BasicPhase):
 
         mainRoom.addRandomItems()
 
-        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"})
-        cityBuilder.spawnRank3(src.gamestate.gamestate.mainChar)
-        cityBuilder.spawnRank4(src.gamestate.gamestate.mainChar)
-        cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
-        cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
+        #cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"})
+        #cityBuilder.spawnRank3(src.gamestate.gamestate.mainChar)
+        #cityBuilder.spawnRank4(src.gamestate.gamestate.mainChar)
+        #cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
+        #cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
 
 class Siege(BasicPhase):
     """

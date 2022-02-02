@@ -136,3 +136,5 @@ can be used to chain rooms together. Place it next to one or more rooms and acti
 
 """
         return text
+
+src.items.addType(Chain)

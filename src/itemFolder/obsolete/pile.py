@@ -86,3 +86,5 @@ A Pile. Use it to take coal from it
 
 """
         return text
+
+src.items.addType(Pile)

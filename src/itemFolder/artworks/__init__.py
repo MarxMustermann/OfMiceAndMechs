@@ -15,3 +15,4 @@ import src.itemFolder.artworks.questArtwork
 import src.itemFolder.artworks.resourceTerminal
 import src.itemFolder.artworks.tradingArtwork
 import src.itemFolder.artworks.tradingArtwork2
+import src.itemFolder.artworks.teleporterArtwork

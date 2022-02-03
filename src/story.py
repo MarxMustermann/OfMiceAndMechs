@@ -3644,12 +3644,12 @@ class BaseBuilding(BasicPhase):
         item.uses = 100
         mainChar.inventory.append(item)
 
-        src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,1))
-        src.gamestate.gamestate.setTerrain(src.terrains.Nothingness(),(1,2))
-        src.gamestate.gamestate.setTerrain(src.terrains.GameplayTest(),(1,3))
-        src.gamestate.gamestate.setTerrain(src.terrains.ScrapField(),(1,4))
-        src.gamestate.gamestate.setTerrain(src.terrains.Desert(),(1,5))
-        src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,6))
+        #src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,1))
+        #src.gamestate.gamestate.setTerrain(src.terrains.Nothingness(),(1,2))
+        #src.gamestate.gamestate.setTerrain(src.terrains.GameplayTest(),(1,3))
+        #src.gamestate.gamestate.setTerrain(src.terrains.ScrapField(),(1,4))
+        #src.gamestate.gamestate.setTerrain(src.terrains.Desert(),(1,5))
+        #src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,6))
 
         item = src.items.itemMap["ItemCollector"]()
         mainChar.inventory.append(item)
@@ -3772,6 +3772,13 @@ class BaseBuilding(BasicPhase):
         mainRoom.addStorageSlot((1,8,0),None)
         mainRoom.addStorageSlot((1,9,0),None)
         mainRoom.addStorageSlot((1,10,0),None)
+        mainRoom.addStorageSlot((1,11,0),None)
+
+        mainRoom.walkingSpace.add((2,7,0))
+        mainRoom.walkingSpace.add((2,8,0))
+        mainRoom.walkingSpace.add((2,9,0))
+        mainRoom.walkingSpace.add((2,10,0))
+        mainRoom.walkingSpace.add((2,11,0))
 
         mainRoom.walkingSpace.add((7,7,0))
         mainRoom.walkingSpace.add((10,7,0))

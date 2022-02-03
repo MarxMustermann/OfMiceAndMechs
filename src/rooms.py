@@ -1803,42 +1803,51 @@ class WorkshopRoom(EmptyRoom):
         super().doBasicSetup()
 
     def addGhulSquare(self,offset,corpseInInventory=True):
+        if not "walkingSpace" in self.floorPlan:
+            self.floorPlan["walkingSpace"] = set()
+        if not "buildSites" in self.floorPlan:
+            self.floorPlan["buildSites"] = []
+        if not "inputSlots" in self.floorPlan:
+            self.floorPlan["inputSlots"] = []
+        if not "outputSlots" in self.floorPlan:
+            self.floorPlan["outputSlots"] = []
+
         for x in range(1,6):
-            self.walkingSpace.add((x+offset[0],3+offset[1],0))
+            self.floorPlan["walkingSpace"].add((x+offset[0],3+offset[1],0))
 
-        self.addInputSlot((1+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
-        self.addBuildSite((2+offset[0],4+offset[1],0),"CorpseAnimator")
+        self.floorPlan["inputSlots"].append(((1+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2}))
+        self.floorPlan["buildSites"].append(((2+offset[0],4+offset[1],0),"CorpseAnimator",{}))
 
-        command = src.items.itemMap["Command"]()
-        command.bolted = True
-        command.extraName = "initialise ghul"
         if corpseInInventory:
-            command.command = "d"+10*"Kd"+"j"
+            command = "d"+10*"Kd"+"j"
         else:
-            command.command = "d"+"j"
-        self.addItem(command,(3+offset[0],4+offset[1],0))
+            command = "d"+"j"
+        self.floorPlan["buildSites"].append(((3+offset[0],4+offset[1],0),"Command",{"extraName":"initialise ghul","command":command}))
 
-        command = src.items.itemMap["Command"]()
-        command.bolted = True
-        command.extraName = "repeat command line"
         if corpseInInventory:
-            command.command = ""
+            command = ""
         else:
-            command.command = "JdJd"
-        command.command += "dsjawj"
-        self.addItem(command,(4+offset[0],4+offset[1],0))
+            command = "JdJd"
+        command += "dsjawj"
+        self.floorPlan["buildSites"].append(((4+offset[0],4+offset[1],0),"Command",{"extraName":"repeat command line","command":command}))
 
-        command = src.items.itemMap["Command"]()
-        command.bolted = True
-        command.extraName = "run command line"
-        command.command = "aj"*4+"4d"
-        self.addItem(command,(5+offset[0],5+offset[1],0))
-        self.addInputSlot((5+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2})
+        command = "aj"*4+"4d"
+        self.floorPlan["buildSites"].append(((5+offset[0],5+offset[1],0),"Command",{"extraName":"run command line","command":command}))
+        self.floorPlan["inputSlots"].append(((5+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2}))
 
     def addWorkshopSquare(self,offset,machines=None):
+        if not "walkingSpace" in self.floorPlan:
+            self.floorPlan["walkingSpace"] = set()
+        if not "buildSites" in self.floorPlan:
+            self.floorPlan["buildSites"] = []
+        if not "inputSlots" in self.floorPlan:
+            self.floorPlan["inputSlots"] = []
+        if not "outputSlots" in self.floorPlan:
+            self.floorPlan["outputSlots"] = []
+
         for y in (2,4,):
             for x in range(1,6):
-                self.walkingSpace.add((x+offset[0],y+offset[1],0))
+                self.floorPlan["walkingSpace"].add((x+offset[0],y+offset[1],0))
 
         machineCounter = 0
         for machine in machines:
@@ -1851,8 +1860,8 @@ class WorkshopRoom(EmptyRoom):
             if len(neededItems) > 1:
                 1/0
             elif neededItems[0] == "MetalBars":
-                self.addInputSlot((1+offset[0],rowheight+offset[1],0),"Scrap")
-                self.addBuildSite((2+offset[0],rowheight+offset[1],0),"ScrapCompactor")
+                self.floorPlan["inputSlots"].append(((1+offset[0],rowheight+offset[1],0),"Scrap",{}))
+                self.floorPlan["buildSites"].append(((2+offset[0],rowheight+offset[1],0),"ScrapCompactor",{}))
             else:
                 subMachine = neededItems[0]
                 item = src.items.itemMap["Machine"]()
@@ -1866,14 +1875,14 @@ class WorkshopRoom(EmptyRoom):
 
                 if len(subNeededItems) > 1:
                     1/0
-                self.addInputSlot((1+offset[0],rowheight+offset[1],0),subNeededItems[0])
+                self.floorPlan["inputSlots"].append(((1+offset[0],rowheight+offset[1],0),subNeededItems[0],{}))
 
-            self.addInputSlot((3+offset[0],rowheight+offset[1],0),neededItems[0])
+            self.floorPlan["inputSlots"].append(((3+offset[0],rowheight+offset[1],0),neededItems[0],{}))
             item = src.items.itemMap["Machine"]()
             item.setToProduce(machine)
             item.charges = 0
             self.addItem(item,(4+offset[0],rowheight+offset[1],0))
-            self.addOutputSlot((5+offset[0],rowheight+offset[1],0),machine)
+            self.floorPlan["outputSlots"].append(((5+offset[0],rowheight+offset[1],0),machine,{}))
 
             machineCounter += 1
             neededItems = src.items.rawMaterialLookup.get(machine)

@@ -961,6 +961,8 @@ class MetaQuestSequence(Quest):
     def solver(self, character):
         if len(self.subQuests):
             self.subQuests[0].solver(character)
+        else:
+            self.triggerCompletionCheck()
 
     """
     deactivate self and first subquest
@@ -1323,12 +1325,12 @@ class DrawFloorPlan(MetaQuestSequence):
         return
 
 class RestockRoom(MetaQuestSequence):
-    def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None,allowAny=None):
+    def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None,allowAny=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.toRestock = None
-        self.allowAny = False
+        self.allowAny = allowAny
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
@@ -1356,7 +1358,10 @@ class RestockRoom(MetaQuestSequence):
 
             character.addMessage("triggerCompletionCheck")
             foundNeighbour = None
-            for slot in room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny):
+            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+            print("inputSlots")
+            print(inputSlots)
+            for slot in inputSlots:
                 character.addMessage("found input slot")
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
@@ -1662,6 +1667,43 @@ class BeUsefull(MetaQuestSequence):
                 character.runCommandString("gg")
                 return
 
+        if character.isMilitary:
+            if not character.weapon or not character.armor:
+                self.addQuest(Equip(lifetime=1000))
+                return
+            for item in room.itemsOnFloor:
+                if not item.bolted:
+                    continue
+                if item.type == "QuestArtwork":
+                    character.addMessage("should do a quest now")
+                    if item.getPosition() == (character.xPosition-1,character.yPosition,0):
+                        self.addQuest(RunCommand(command="Ja.j"))
+                        return
+                    if item.getPosition() == (character.xPosition+1,character.yPosition,0):
+                        self.addQuest(RunCommand(command="Jd.j"))
+                        return
+                    if item.getPosition() == (character.xPosition,character.yPosition-1,0):
+                        self.addQuest(RunCommand(command="Jw.j"))
+                        return
+                    if item.getPosition() == (character.xPosition,character.yPosition+1,0):
+                        self.addQuest(RunCommand(command="Js.j"))
+                        return
+                    character.addMessage("go get quest")
+                    quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True)
+                    quest.active = True
+                    quest.assignToCharacter(character)
+                    self.addQuest(quest)
+                    return
+            directions = [(-1,0),(1,0),(0,-1),(0,1)]
+            random.shuffle(directions)
+            for direction in directions:
+                newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
+                if room.container.getRoomByPosition(newPos):
+                    self.addQuest(GoToTile(targetPosition=newPos))
+                    return
+            return
+
+
         """
         # go to other room
         if random.random() < 0.3:
@@ -1677,6 +1719,8 @@ class BeUsefull(MetaQuestSequence):
         # clear inventory local
         if len(character.inventory) > 1:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+            print("emptyInputSlots")
+            print(emptyInputSlots)
             if emptyInputSlots:
                 self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
                 return
@@ -6410,7 +6454,14 @@ class GoToTile(Quest):
             return False
         if not self.active:
             return
-        if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
+        if isinstance(character.container,src.rooms.Room):
+            print("----------")
+            print(character.container.getPosition())
+            print(self.targetPosition)
+            if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
+                self.postHandler()
+                return True
+        elif character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
             self.postHandler()
             return True
         return False
@@ -6418,6 +6469,7 @@ class GoToTile(Quest):
     def solver(self, character):
         self.activate()
         self.assignToCharacter(character)
+        self.triggerCompletionCheck(character)
         commandString = self.getSolvingCommandString(character,dryRun=False)
         self.randomSeed = random.random()
         if commandString:
@@ -6476,7 +6528,7 @@ class GoToTile(Quest):
             if not path:
                 basePath = character.container.container.getPath(tilePos,targetPos,localRandom=localRandom)
                 if not basePath:
-                    return ".14.."
+                    return ".14..."
                 path = list(reversed(basePath))
 
             if not dryRun:
@@ -6671,7 +6723,24 @@ class SecureTile(GoToTile):
         self.type = "SecureTile"
 
     def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        if isinstance(character.container,src.rooms.Room):
+            if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
+                foundEnemy = None
+                for enemy in character.container.characters:
+                    if enemy.faction == character.faction:
+                        continue
+                    foundEnemy = enemy
+                if not foundEnemy:
+                    self.postHandler()
+                    return True
         return False
+
+    def solver(self,character):
+        self.triggerCompletionCheck(character)
+        super().solver(character)
 
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEnd=False,ignoreEndBlocked=False):

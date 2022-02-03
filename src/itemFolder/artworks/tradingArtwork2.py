@@ -31,7 +31,6 @@ class TradingArtwork2(src.items.Item):
                 "recieve": [
                     ["MetalBars", 1],
                 ],
-                "numOffered": 30,
                 "autoTrade":True
             },
             {

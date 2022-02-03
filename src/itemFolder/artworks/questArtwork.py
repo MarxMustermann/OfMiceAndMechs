@@ -21,12 +21,10 @@ class QuestArtwork(src.items.Item):
 
         self.applyOptions.extend(
                 [
-                    ("returnQuest", "return quest"),
                     ("getQuest", "get quest"),
                 ]
             )
         self.applyMap = {
-            "returnQuest": self.returnQuest,
             "getQuest": self.getQuest,
         }
         self.numQuestsGiven = 0
@@ -37,62 +35,28 @@ class QuestArtwork(src.items.Item):
                 ]
             )
 
-    def returnQuest(self, character):
-        """
-        return finished quest and get reward
-
-        Parameters:
-            character: the character returning the quest
-        """
-
-        foundQuests = []
-        for quest in character.quests:
-            if quest.completed:
-                foundQuests.append(quest)
-
-        if not foundQuests:
-            character.addMessage("no quest finished")
-            return
-
-        for quest in foundQuests:
-            character.quests.remove(quest)
-            item = src.items.itemMap["GooFlask"]()
-            item.uses = 100
-            character.inventory.append(item)
-            character.addMessage("quest reward issued: GooFlask")
-
     def getQuest(self, character):
-        """
-        assigns a quest to a character
-        currenty generates the quest
+        for room in self.container.container.rooms:
+            for target in room.characters:
+                if target.faction == character.faction:
+                    continue
+                containerQuest = src.quests.MetaQuestSequence()
+                quest = src.quests.GoToTile()
+                quest.setParameters({"targetPosition":(self.container.xPosition,self.container.yPosition)})
+                quest.assignToCharacter(character)
+                containerQuest.addQuest(quest)
+                quest = src.quests.SecureTile()
+                quest.setParameters({"targetPosition":(room.xPosition,room.yPosition)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                containerQuest.addQuest(quest)
+                containerQuest.assignToCharacter(character)
+                containerQuest.activate()
 
-        Parameters:
-            character: the character asking for a quest
-        """
-
-        if len(character.quests) > 2:
-            character.addMessage("too many quests")
-            return
-
-        self.numQuestsGiven += 1
-
-        bigX = random.randint(1, 13)
-        bigY = random.randint(1, 13)
-        x = bigX * 15 + random.randint(1, 13)
-        y = bigY * 15 + random.randint(1, 13)
-        enemy = src.characters.Monster(x, y)
-        enemy.health = 10 + self.numQuestsGiven + random.randint(1, 100)
-        enemy.baseDamage = self.numQuestsGiven // 5 + random.randint(1, 10)
-        enemy.godMode = True
-        terrain = self.getTerrain()
-        terrain.addCharacter(enemy, x, y)
-        quest = src.quests.MurderQuest2()
-        quest.setTarget(enemy)
-        quest.information = "lastSeen: %s/%s" % (
-            bigX,
-            bigY,
-        )
-        character.assignQuest(quest)
-        character.addMessage("quest was assigned")
+                character.quests[0].addQuest(containerQuest)
+                character.addMessage("quest assigned")
+                return
+        character.addMessage("no quest assigned")
+        return
 
 src.items.addType(QuestArtwork)

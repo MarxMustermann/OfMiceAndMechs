@@ -61,4 +61,30 @@ class ScratchPlate(src.items.Item):
             self.runCommand("noscratch",character)
             return
 
+    def getLongInfo(self):
+        """
+        returns a longer than normal description of the item
+
+        Returns:
+            the description
+        """
+
+        text = super().getLongInfo()
+
+        text += """
+
+lastScratch: %s
+""" % (
+            self.lastActivation
+            )
+
+        text += """
+
+hasScratch: %s
+""" % (
+            self.hasScratch()
+        )
+
+        return text
+
 src.items.addType(ScratchPlate)

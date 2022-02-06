@@ -249,8 +249,8 @@ class Character(src.saveing.Saveable):
         self.yPosition = yPosition
 
     def freeWillDecison(self,options,weights,localRandom=random):
-        if self == src.gamestate.gamestate.mainChar:
-            return [input(str(options)+" "+str(weights))]
+        #if self == src.gamestate.gamestate.mainChar:
+        #    return [input(str(options)+" "+str(weights))]
         return localRandom.choices(options,weights=weights)
 
     def startGuarding(self,numTicks):
@@ -1297,7 +1297,7 @@ class Character(src.saveing.Saveable):
         self.lastTerrain = self.terrain
 
         if src.gamestate.gamestate.mainChar == self:
-            #src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('../Downloads/bss.ogg'))
+            src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('./sounds/playerDeath.ogg'))
             pass
 
         # notify nearby characters
@@ -1565,8 +1565,8 @@ class Character(src.saveing.Saveable):
         self.inventory.remove(item)
 
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            #sound = src.interaction.pygame2.mixer.Sound('../Downloads/blob_ruckwarts.ogg')
-            #src.interaction.pygame2.mixer.Channel(6).play(sound)
+            sound = src.interaction.pygame2.mixer.Sound('./sounds/itemDropped.ogg')
+            src.interaction.pygame2.mixer.Channel(6).play(sound)
             pass
 
         if foundScrap and item.type == "Scrap":
@@ -1763,41 +1763,35 @@ class Character(src.saveing.Saveable):
         """
 
         if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
-            pass
-            """
-            #src.interaction.pygame2.mixer.Channel(1).play(src.interaction.pygame2.mixer.Sound('../Downloads/Confirm8-Bit.ogg'))
-            sound = src.interaction.pygame2.mixer.Sound('../Downloads/wip.ogg')
+            sound = src.interaction.pygame2.mixer.Sound('./sounds/step.ogg')
             if src.gamestate.gamestate.mainChar == self:
                 sound.set_volume(0.3)
                 src.interaction.pygame2.mixer.Channel(1).play(sound)
             else:
                 sound.set_volume(0.2)
                 src.interaction.pygame2.mixer.Channel(2).play(sound)
-            """
 
         if tag == "character died on tile":
             if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
                 reutation = 0
                 self.awardReputation(amount=2,reason="enemy died on tile",carryOver=True)
 
-        """
         if src.gamestate.gamestate.mainChar == self and tag == "changedTile":
             src.interaction.pygame2.mixer.Channel(7).pause()
 
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
             if isinstance(info[1],src.rooms.WorkshopRoom):
-                sound = src.interaction.pygame2.mixer.Sound('../Downloads/lufter_effekt.ogg')
+                sound = src.interaction.pygame2.mixer.Sound('./sounds/workshopRoom.ogg')
                 sound.set_volume(0.3)
                 src.interaction.pygame2.mixer.Channel(7).play(sound,loops=-1)
                 src.interaction.pygame2.mixer.Channel(7).unpause()
             elif isinstance(info[1],src.rooms.TrapRoom):
-                sound = src.interaction.pygame2.mixer.Sound('../Downloads/electroRoom.ogg')
+                sound = src.interaction.pygame2.mixer.Sound('./sounds/electroRoom.ogg')
                 sound.set_volume(0.3)
                 src.interaction.pygame2.mixer.Channel(7).play(sound,loops=-1)
                 src.interaction.pygame2.mixer.Channel(7).unpause()
             else:
                 src.interaction.pygame2.mixer.Channel(7).pause()
-        """
 
         # do nothing if nobody listens
         if tag not in self.listeners:

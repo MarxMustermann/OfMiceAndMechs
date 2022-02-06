@@ -1868,7 +1868,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]),
-                    "roomType": "EmptyRoom",
+                    "roomType": "WorkshopRoom",
                     "faction": "city #%s"%(cityCounter,),
                     "doors": "6,0 6,12",
                     "offset": [1,1],
@@ -1882,7 +1882,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]-1,citylocation[1]),
-                    "roomType": "EmptyRoom",
+                    "roomType": "WorkshopRoom",
                     "doors": "6,0 6,12",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1895,7 +1895,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0],citylocation[1]+2),
-                    "roomType": "EmptyRoom",
+                    "roomType": "WorkshopRoom",
                     "doors": "12,6 0,6",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1909,7 +1909,7 @@ class BackToTheRoots(BasicPhase):
             room = architect.doAddRoom(
                 {
                     "coordinate": (citylocation[0]+1,citylocation[1]+2),
-                    "roomType": "WorkshopRoom",
+                    "roomType": "EmptyRoom",
                     "doors": "0,6 12,6 6,0",
                     "offset": [1,1],
                     "size": [13, 13],

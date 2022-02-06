@@ -5182,7 +5182,7 @@ def getTcodEvents():
                         print(value)
                         src.saveing.Saveable.callIndirect(None,value)
                     else:
-                        1/0
+                        value()
 
                 if isinstance(event,tcod.event.MouseButtonUp):
                     print("killing menu")
@@ -5615,7 +5615,24 @@ def renderGameDisplay():
                         width = uiElement["width"]
                         printUrwidToTcod(footer.get_text(),offset,size=(width,100))
                     if uiElement["type"] == "indicators":
-                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")]
+                        autoIndicator = ActionMeta(content="*",payload="*")
+                        if src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] or (src.gamestate.gamestate.mainChar.getActiveQuest() and src.gamestate.gamestate.mainChar.getActiveQuest().autoSolve):
+                            def test():
+                                src.gamestate.gamestate.mainChar.clearCommandString()
+                                src.gamestate.gamestate.mainChar.macroState["loop"] = []
+                                src.gamestate.gamestate.mainChar.macroState["replay"].clear()
+                                src.gamestate.gamestate.mainChar.huntkilling = False
+                                if "ifCondition" in src.gamestate.gamestate.mainChar.interactionState:
+                                    src.gamestate.gamestate.mainChar.interactionState["ifCondition"].clear()
+                                    src.gamestate.gamestate.mainChar.interactionState["ifParam1"].clear()
+                                    src.gamestate.gamestate.mainChar.interactionState["ifParam2"].clear()
+                                activeQuest = src.gamestate.gamestate.mainChar.getActiveQuest()
+                                if activeQuest and activeQuest.autoSolve:
+                                    activeQuest.autoSolve = False
+                                src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                            autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
+                        indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator]
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
                         y = uiElement["offset"][1]

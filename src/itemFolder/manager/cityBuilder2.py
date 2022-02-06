@@ -31,6 +31,7 @@ class CityBuilder2(src.items.Item):
 
         self.generateFloorPlans()
         self.enemyRoomCounter = 0
+        self.cityLeader = None
 
     def generateFloorPlans(self):
         # scrap => metal bar processing
@@ -266,11 +267,23 @@ class CityBuilder2(src.items.Item):
                 otherRoom.sources.append((room.getPosition(),item))
 
     def spawnRank(self,rank,actor,isMilitary=False):
+        if not rank == 3:
+            if not self.cityLeader:
+                actor.addMessage("no rank 3 to hook into")
+                return
+
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
         char.isMilitary = isMilitary
         char.personality["abortMacrosOnAttack"] = False
+
+        if rank == 3:
+            if not self.cityLeader or self.cityLeader.dead:
+                self.cityLeader = char
+        if rank == 4:
+            self.cityLeader.subordinates.append(char)
+
         quest = src.quests.BeUsefull()
         quest.assignToCharacter(char)
         quest.activate()

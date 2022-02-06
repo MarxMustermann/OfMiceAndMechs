@@ -613,9 +613,6 @@ class Character(src.saveing.Saveable):
         if self.weapon:
             baseDamage = self.weapon.baseDamage
 
-        if self.combatMode == "agressive":
-            bonusMultiplier += 2
-
         damage = baseDamage
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(

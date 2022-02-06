@@ -2131,7 +2131,7 @@ comment:
             self.character.macroState["submenue"] = self.submenue
         elif selection == "interaction":
             self.submenue = src.interaction.TextMenu(
-                "\n\n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press j to activate \n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n"
+                "\n\n * press k to pick up\n * press l to drop\n * press i to view inventory\n * press @ to view your stats\n * press j to activate \n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n"
             )
             self.character.macroState["submenue"] = self.submenue
         elif selection == "machines":

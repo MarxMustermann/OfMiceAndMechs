@@ -668,9 +668,12 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
 
         placedScrapCompactor = False
         placedCorpseAnimator = False
+        placedScratchPlate = False
         scrapCompactorPositions = []
         corpseAnimatorPositions = []
         corpseStockpilePositions = []
+        scratchPlatePositions = []
+        scratchPlate = None
         commandPositions = []
         for buildSite in floorPlan["buildSites"]:
             if buildSite[1] == "ScrapCompactor":
@@ -681,6 +684,11 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
                 corpseAnimatorPositions.append(buildSite[0])
             if buildSite[1] == "Command":
                 commandPositions.append(buildSite[0])
+                continue
+            if buildSite[1] == "ScratchPlate":
+                placedScratchPlate = True
+                scratchPlatePositions.append(buildSite[0])
+                scratchPlate = buildSite
                 continue
             blockedPositions.append(buildSite[0])
         for inputSlot in floorPlan["inputSlots"]:
@@ -792,6 +800,46 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
 
             blockedPositions.append(pos)
 
+        if not scratchPlatePositions:
+            pos = (random.randint(1,12),random.randint(1,12),0)
+            if pos in blockedPositions:
+                for x in range(1,12):
+                    for y in range(1,12):
+                        pos = (x,y,0)
+                        if pos in blockedPositions or (pos[0],pos[1]-1,pos[2]) in blockedPositions:
+                            pos = None
+                        if pos:
+                            break
+                    if pos:
+                        break
+
+
+            if pos == None:
+                src.gamestate.gamestate.mainChar.addMessage("no room to place scratch plate")
+                return
+
+            scratchPlatePositions.append(pos)
+
+            placedScratchPlate = True
+            blockedPositions.append(pos)
+
+            buildSite = (pos,"ScratchPlate",{})
+            floorPlan["buildSites"].append(buildSite)
+            scratchPlate = buildSite
+
+        if not "commands" in scratchPlate[2]:
+            feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
+            scratchPlatePos = (scratchPlatePositions[0][0],scratchPlatePositions[0][1],scratchPlatePositions[0][2])
+            corpseAnimatorPos = (corpseAnimatorPositions[0][0]+1,corpseAnimatorPositions[0][1],corpseAnimatorPositions[0][2])
+
+            pathToFeeder = self.toBuildRoomClone3.getPathCommandTile(scratchPlatePos,feedingPos)[0]
+            pathToAnimator = self.toBuildRoomClone3.getPathCommandTile(feedingPos,corpseAnimatorPos)[0]
+            pathToStart = self.toBuildRoomClone3.getPathCommandTile(corpseAnimatorPos,scratchPlatePos)[0]
+            scratchPlate[2]["commands"] = {"noscratch":"jj"+pathToFeeder+"Ks"+pathToAnimator+"JaJa"+pathToStart}
+
+        if not "settings" in scratchPlate[2]:
+            scratchPlate[2]["settings"] = {"scratchThreashold":1000}
+
         for corpseAnimatorPos in corpseAnimatorPositions:
             commandPos = (corpseAnimatorPos[0]+1,corpseAnimatorPos[1],corpseAnimatorPos[2])
             if not commandPos in commandPositions:
@@ -807,10 +855,16 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
                         src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on %s"%(compactorPos,))
 
                 feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
-                command += self.toBuildRoomClone3.getPathCommandTile(lastPos,feedingPos)[0]
-                commandReturn = self.toBuildRoomClone3.getPathCommandTile(feedingPos,commandPos)[0]
-                command = command + ((len(command)+len(commandReturn))//13+1)*"Js"+commandReturn
-                command += "j"
+                scratchPlatePos = (scratchPlatePositions[0][0],scratchPlatePositions[0][1],scratchPlatePositions[0][2])
+
+                pathToFeeder = self.toBuildRoomClone3.getPathCommandTile(lastPos,feedingPos)[0]
+                pathToScratchPlate = self.toBuildRoomClone3.getPathCommandTile(feedingPos,scratchPlatePos)[0]
+                pathToStart = self.toBuildRoomClone3.getPathCommandTile(scratchPlatePos,commandPos)[0]
+
+                activateCommand = ((len(command)+len(pathToFeeder)+len(pathToScratchPlate)+len(pathToStart))//13+5)*"Js"
+
+                command = command + pathToFeeder + activateCommand + pathToScratchPlate + "jj" + pathToStart + "j"
+
                 floorPlan["buildSites"].append((commandPos,"Command",{"command":command}))
                 blockedPositions.append(commandPos)
 
@@ -1195,6 +1249,30 @@ I hope you have fun.
             item = src.items.itemMap["CorpseAnimator"]()
             storageRoom.addItem(item,(1,y,0))
             item.bolted = False
+
+        item = src.items.itemMap["ScratchPlate"]()
+        storageRoom.addItem(item,(5,11,0))
+        item.bolted = False
+
+        item = src.items.itemMap["ScratchPlate"]()
+        storageRoom.addItem(item,(5,11,0))
+        item.bolted = False
+
+        item = src.items.itemMap["ScratchPlate"]()
+        storageRoom.addItem(item,(5,11,0))
+        item.bolted = False
+
+        item = src.items.itemMap["ScratchPlate"]()
+        storageRoom.addItem(item,(5,11,0))
+        item.bolted = False
+
+        item = src.items.itemMap["ScratchPlate"]()
+        storageRoom.addItem(item,(5,11,0))
+        item.bolted = False
+
+        item = src.items.itemMap["ScratchPlate"]()
+        storageRoom.addItem(item,(5,11,0))
+        item.bolted = False
 
         item = src.items.itemMap["Painter"]()
         item.paintMode = "inputSlot"
@@ -4116,7 +4194,7 @@ class Siege(BasicPhase):
 
         if self.mainChar.room and self.mainChar.room == self.miniBase:
             showText(
-                "\n\nUse the auto tutor for more information. The autotutor is represented by iD\n\n * press j to activate \n * press k to pick up\n * press l to pick up\n * press i to view inventory\n * press @ to view your stats\n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\npress space to continue\n\n"
+                "\n\nUse the auto tutor for more information. The autotutor is represented by iD\n\n * press j to activate \n * press k to pick up\n * press l to drop\n * press i to view inventory\n * press @ to view your stats\n * press e to examine\n * press ? for help\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with them\n\npress space to continue\n\n"
             )
             src.gamestate.gamestate.mainChar.delListener(self.checkRoomEnteredMain)
 

@@ -4,8 +4,9 @@ pygame.mixer.pre_init()
 pygame.mixer.init()
 pygame.init()
 
-sound = pygame.mixer.Sound('./sounds/itemDropped.ogg')
-pygame.mixer.Channel(6).play(sound)
+with open('./sounds/itemDropped.ogg') as soundFile:
+    sound = pygame.mixer.Sound(file=soundFile)
+    pygame.mixer.Channel(6).play(sound)
 
 import time
 time.sleep(5)

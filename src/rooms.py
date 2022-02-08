@@ -923,17 +923,20 @@ class Room(src.saveing.Saveable):
             if src.gamestate.gamestate.dragState:
                 if src.gamestate.gamestate.dragState["start"]["container"] == self:
                     pos = src.gamestate.gamestate.dragState["start"]["pos"]
-                    chars[pos[1]][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    try:
+                        chars[pos[1]][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                        chars[pos[1]][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                        chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                        chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                        chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
 
-                    chars[pos[1]-1][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"e"}},content="ee")
-                    chars[pos[1]-1][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"j"}},content="jj")
-                    chars[pos[1]-1][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"k"}},content="kk")
-                    chars[pos[1]-1][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"l"}},content="ll")
-                    chars[pos[1]-1][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"."}},content="..")
+                        chars[pos[1]-1][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"e"}},content="ee")
+                        chars[pos[1]-1][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"j"}},content="jj")
+                        chars[pos[1]-1][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"k"}},content="kk")
+                        chars[pos[1]-1][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"l"}},content="ll")
+                        chars[pos[1]-1][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"."}},content="..")
+                    except:
+                        pass
 
         # show dummy of the room
         else:

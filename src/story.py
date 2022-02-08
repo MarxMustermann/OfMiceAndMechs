@@ -585,11 +585,6 @@ class PrefabDesign(BasicPhase):
         self.spawnRooms(floorPlan)
 
         ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
-        if ticksPerBar > 15:
-            showText("""
-your room produces a MetalBar every %s ticks on average. Beat 15 ticks to be able to use your room in the main game"""%(ticksPerBar,))
-            return
-
         converted = self.convertFloorPlanToDict(floorPlan)
 
         try:

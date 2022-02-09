@@ -116,8 +116,6 @@ A painter. it can be used to draw markers on the floor
         if extraInfo["type"] in ("int","integer"):
             value = int(value)
         if extraInfo["type"] in ("json",):
-            print(value)
-            print(extraInfo)
             value = json.loads(value)
         self.paintExtraInfo[extraInfo["name"]] = value
 

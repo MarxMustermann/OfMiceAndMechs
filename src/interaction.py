@@ -5162,6 +5162,15 @@ def getTcodEvents():
 
     if lastcheck < time.time()-0.05:
         for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                print(event)
+                print(event.type)
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+                if event.type == "WINDOWEXPOSED":
+                    renderGameDisplay()
             if isinstance(event,tcod.event.MouseButtonDown):# or isinstance(event,tcod.event.MouseButtonUp):
                 tcodContext.convert_event(event)
                 clickPos = (event.tile.x,event.tile.y)

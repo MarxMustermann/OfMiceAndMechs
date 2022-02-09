@@ -730,8 +730,6 @@ class MetaQuestSequence(Quest):
                     thing = getQuestFromState(thingState)
                     self.subQuests.append(thing)
                     self.startWatching(self.subQuests[-1], self.recalculate)
-        print(state)
-        print(self.subQuests)
 
         # listen to subquests
         if len(self.subQuests):
@@ -1359,8 +1357,6 @@ class RestockRoom(MetaQuestSequence):
             character.addMessage("triggerCompletionCheck")
             foundNeighbour = None
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
-            print("inputSlots")
-            print(inputSlots)
             for slot in inputSlots:
                 character.addMessage("found input slot")
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
@@ -1371,12 +1367,10 @@ class RestockRoom(MetaQuestSequence):
                     break
             if not foundNeighbour:
                 character.addMessage("no neighbour")
-                print("no drop slots")
                 self.postHandler()
                 return
 
         if not self.getNumDrops(character):
-            print("no drops")
             self.postHandler()
             return
         return
@@ -1719,8 +1713,6 @@ class BeUsefull(MetaQuestSequence):
         # clear inventory local
         if len(character.inventory) > 1:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
-            print("emptyInputSlots")
-            print(emptyInputSlots)
             if emptyInputSlots:
                 self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
                 return
@@ -1755,7 +1747,6 @@ class BeUsefull(MetaQuestSequence):
         if len(character.inventory) > 6:
             if not "HOMEx" in character.registers:
                 return
-            print((character.registers["HOMEx"],character.registers["HOMEy"]))
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
             if not homeRoom.storageRooms:
                 return
@@ -1821,7 +1812,6 @@ class BeUsefull(MetaQuestSequence):
 
                     if hasItem:
                         if buildSite[1] == "Command":
-                            print(buildSite)
                             if "command" in buildSite[2]:
                                 self.addQuest(RunCommand(command="jjssj%s\n"%(buildSite[2]["command"])))
                             else:
@@ -2066,17 +2056,12 @@ class FetchItems(MetaQuestSequence):
         return parameters
 
     def triggerCompletionCheck(self,character=None):
-        if character == src.gamestate.gamestate.mainChar:
-            print("triggerCompletionCheck fetch1")
 
         if not character:
             return
 
         if self.subQuests:
             return
-        if character == src.gamestate.gamestate.mainChar:
-            print("triggerCompletionCheck fetch2")
-
 
         if self.collectedItems:
             if self.tileToReturnTo:
@@ -2100,29 +2085,15 @@ class FetchItems(MetaQuestSequence):
             self.collectedItems = True
             return
 
-        if character == src.gamestate.gamestate.mainChar:
-            print("triggerCompletionCheck fetch3")
-
-
         if isinstance(character.container,src.rooms.Room):
-            if character == src.gamestate.gamestate.mainChar:
-                print("triggerCompletionCheck fetch4")
             character.addMessage(self.toCollect)
             outputSlots = character.container.getNonEmptyOutputslots(itemType=self.toCollect)
             random.shuffle(outputSlots)
-            if character == src.gamestate.gamestate.mainChar:
-                print(outputSlots)
             if outputSlots:
                 return
 
-            if character == src.gamestate.gamestate.mainChar:
-                print("triggerCompletionCheck fetch5")
-
             if self.getSource():
                 return
-
-            if character == src.gamestate.gamestate.mainChar:
-                print("triggerCompletionCheck fetch6")
 
             character.addMessage("failes fetching items")
             self.fail()
@@ -2363,7 +2334,6 @@ class ObtainAllSpecialItems(Quest):
         if self.resetDelegations:
             for npc in character.subordinates:
                 if not npc or not npc.quests or not isinstance(npc.quests[0], Serve):
-                    print("bad quest setup detected")
                     continue
                 serveQuest = npc.quests[0]
                 serveQuest.subQuests = []
@@ -6390,7 +6360,6 @@ class GoToTile(Quest):
         self.type = "GoToTile"
 
     def getQuestMarkersSmall(self,character):
-        print("get small markers")
         self.getSolvingCommandString(character)
         result = super().getQuestMarkersSmall(character)
         if self.smallPath:
@@ -6404,7 +6373,6 @@ class GoToTile(Quest):
         return result
 
     def getQuestMarkersTile(self,character):
-        print("get big markers")
         result = super().getQuestMarkersTile(character)
         self.getSolvingCommandString(character)
         if self.expectedPosition:
@@ -6455,9 +6423,6 @@ class GoToTile(Quest):
         if not self.active:
             return
         if isinstance(character.container,src.rooms.Room):
-            print("----------")
-            print(character.container.getPosition())
-            print(self.targetPosition)
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
                 self.postHandler()
                 return True
@@ -6798,10 +6763,6 @@ class GoToPosition(Quest):
             tilePos = (character.xPosition//15,character.yPosition//15,character.zPosition//15)
 
             (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,ignoreEndBlocked=self.ignoreEndBlocked)
-            if character == src.gamestate.gamestate.mainChar:
-                print("calcpath")
-                print((tilePos,charPos,self.targetPosition))
-                print((command,self.smallPath))
             if not command:
                 (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,tryHard=True,ignoreEndBlocked=self.ignoreEndBlocked)
             if not command:
@@ -6816,15 +6777,10 @@ class GoToPosition(Quest):
         if not self.active:
             return
         if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
-            if character == src.gamestate.gamestate.mainChar:
-                print("completed1")
-                print(self.targetPosition)
             self.postHandler()
             return True
         if self.ignoreEndBlocked:
             if abs(character.xPosition%15-self.targetPosition[0])+abs(character.yPosition%15-self.targetPosition[1]) == 1:
-                print("completed2")
-                self.postHandler()
                 return True
         return False
 
@@ -6837,8 +6793,6 @@ class GoToPosition(Quest):
         return super().setParameters(parameters)
 
     def solver(self, character):
-        if character == src.gamestate.gamestate.mainChar:
-            print("solver")
         self.triggerCompletionCheck(character)
         commandString = self.getSolvingCommandString(character)
         self.randomSeed = random.random()
@@ -6846,7 +6800,6 @@ class GoToPosition(Quest):
             character.runCommandString(commandString)
             return False
         else:
-            print("fail to move")
             self.fail()
             return True
 
@@ -7372,10 +7325,6 @@ class ObtainSpecialItem(MetaQuestSequence):
             else:
                 strategy = "unknown"
 
-            if character == src.gamestate.gamestate.mainChar:
-                print("strategy")
-                print(strategy)
-            
             if strategy == "attack enemy city":
                 command = ".QSNEquip\nlifetime:300; ."
                 character.runCommandString(command)

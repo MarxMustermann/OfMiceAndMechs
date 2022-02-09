@@ -5165,8 +5165,6 @@ def getTcodEvents():
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent):
-                print(event)
-                print(event.type)
                 if event.type == "WINDOWCLOSE":
                     raise SystemExit()
                 if event.type == "WINDOWEXPOSED":
@@ -5179,22 +5177,17 @@ def getTcodEvents():
                         continue
 
                     value = src.gamestate.gamestate.clickMap[clickPos]
-                    print("clickmapped")
-                    print(value)
-                    print(event)
                     if isinstance(value,str) or isinstance(value,list):
                         src.gamestate.gamestate.mainChar.runCommandString(value,nativeKey=True)
                     elif isinstance(value,dict):
                         if not "params" in value:
                             value["params"] = {}
                         value["params"]["event"] = event
-                        print(value)
                         src.saveing.Saveable.callIndirect(None,value)
                     else:
                         value()
 
                 if isinstance(event,tcod.event.MouseButtonUp):
-                    print("killing menu")
                     src.gamestate.gamestate.dragState = None
 
             if isinstance(event,tcod.event.KeyDown):

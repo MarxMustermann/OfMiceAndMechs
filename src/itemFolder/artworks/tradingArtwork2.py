@@ -346,6 +346,8 @@ tradingHistory:
         return text
 
     def autoTrade(self):
+        if not self.container:
+            return
         event = src.events.RunCallbackEvent(self.container.timeIndex + 1)
         event.setCallback({"container": self, "method": "autoTrade"})
         self.container.addEvent(event)

@@ -3315,19 +3315,6 @@ class Desert(Terrain):
         return super().moveCharacterDirection(char, direction)
 
 
-class Ruin(Nothingness):
-
-    objType = "Ruin"
-
-    def __init__(self, seed=0, noContent=False):
-        super().__init__(
-            seed=seed, noContent=noContent
-        )
-
-        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-        scrapCompactor.bolted = False
-        self.addItem(scrapCompactor,(15*7+7,15*7+7,0))
-
 class Base(Nothingness):
 
     objType = "Base"
@@ -3336,6 +3323,46 @@ class Base(Nothingness):
         super().__init__(
             seed=seed, noContent=noContent
         )
+
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        self.addItem(architect,(1,1,0))
+
+        mainRoom = architect.doAddRoom({
+                 "coordinate": (7,7),
+                 "roomType": "EmptyRoom",
+                 "doors": "0,6 6,0 12,6 6,12",
+                 "offset": [1,1],
+                 "size": [13, 13],
+                },
+            None,
+            )
+
+        cityBuilder = src.items.itemMap["CityBuilder2"]()
+        cityBuilder.bolted = True
+        cityBuilder.godMode = True
+        cityBuilder.architect = architect
+        cityBuilder.scrapFields = self.scrapFields
+        for scrapField in cityBuilder.scrapFields:
+            mainRoom.sources.append((scrapField,"Scrap"))
+        mainRoom.addItem(cityBuilder, (6, 6, 0))
+
+        architect.doAddScrapfield(9, 7, 280)
+
+class Ruin(Base):
+    objType = "Ruin"
+
+    def __init__(self, seed=0, noContent=False):
+        super().__init__(
+            seed=seed, noContent=noContent
+        )
+
+        mainRoom = self.getRoomByPosition((7,7,0))[0]
+        for item in mainRoom.itemsOnFloor:
+            item.destroy()
+
+        for room in self.rooms:
+            for i in range(0,4):
+                room.damage()
 
 class ScrapField(Terrain):
     """

@@ -253,7 +253,7 @@ class CityBuilder2(src.items.Item):
     def spawnMilitary(self,character):
         self.spawnRank(None,character,isMilitary=True)
 
-    def addProductionLine(self,character):
+    def addProductionLine(self,character,instaSpawn=True):
         if not self.workshopRooms:
             character.addMessage("no workshop rooms available")
             return
@@ -264,6 +264,11 @@ class CityBuilder2(src.items.Item):
         for item in items:
             for otherRoom in self.container.container.rooms:
                 otherRoom.sources.append((room.getPosition(),item))
+
+        if instaSpawn:
+            room.spawnPlaned()
+            room.spawnPlaned()
+            room.addRandomItems()
 
     def spawnRank(self,rank,actor,isMilitary=False):
         if not rank == 3:

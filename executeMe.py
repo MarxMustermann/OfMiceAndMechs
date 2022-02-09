@@ -208,6 +208,9 @@ if not shouldLoad:
                         if event.sym == tcod.event.KeySym.m:
                             scenario = scenarios[0][0]
                             foundEvent = True
+
+                    if isinstance(event, tcod.event.Quit):
+                        raise SystemExit()
                         
                 context.present(root_console)
                 if foundEvent:

@@ -3400,7 +3400,13 @@ class Base(Nothingness):
 
         mainRoom.addRandomItems()
 
-        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"})
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"},instaSpawn=True)
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,6),"type":"random"},instaSpawn=True)
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,8),"type":"random"},instaSpawn=True)
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,8)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,6)})
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
         cityBuilder.spawnRank3(src.gamestate.gamestate.mainChar)
         cityBuilder.spawnRank4(src.gamestate.gamestate.mainChar)
         cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
@@ -3428,6 +3434,11 @@ class Ruin(Base):
         for room in self.rooms:
             for character in room.characters[:]:
                 character.die(reason="explosion")
+            for item in room.itemsOnFloor[:]:
+                item.charges = 0
+                item.bolted = False
+                if random.random() > 0.3:
+                    item.destroy()
 
 class ScrapField(Terrain):
     """

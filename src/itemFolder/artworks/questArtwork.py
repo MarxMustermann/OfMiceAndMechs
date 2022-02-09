@@ -56,6 +56,7 @@ class QuestArtwork(src.items.Item):
                 character.quests[0].addQuest(containerQuest)
                 character.addMessage("quest assigned")
                 return
+
         character.addMessage("no quest assigned")
         return
 

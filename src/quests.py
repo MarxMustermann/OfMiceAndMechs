@@ -1848,10 +1848,15 @@ class BeUsefull(MetaQuestSequence):
                                 continue
                             if not room.sources:
                                 continue
+                            source = None
                             for potentialSource in random.sample(room.sources,len(room.sources)):
                                 if potentialSource[1] == "Scrap":
                                     source = potentialSource
                                     break
+
+                            if source == None:
+                                continue
+
                             self.addQuest(RestockRoom(toRestock="Scrap"))
                             self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
                             self.addQuest(GatherScrap(targetPosition=source[0]))

@@ -327,7 +327,7 @@ class Item(src.saveing.Saveable):
             return
 
         # do the pick up
-        character.addMessage("you piiiiick up a %s" % self.type)
+        character.addMessage("you pick up a %s" % self.type)
         self.container.removeItem(self)
         character.addToInventory(self)
 

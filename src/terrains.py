@@ -3337,6 +3337,8 @@ class Base(Nothingness):
             None,
             )
 
+        architect.doAddScrapfield(9, 7, 280)
+
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.bolted = True
         cityBuilder.godMode = True
@@ -3346,7 +3348,63 @@ class Base(Nothingness):
             mainRoom.sources.append((scrapField,"Scrap"))
         mainRoom.addItem(cityBuilder, (6, 6, 0))
 
-        architect.doAddScrapfield(9, 7, 280)
+        tradingArtwork = src.items.itemMap["TradingArtwork2"]()
+        cityBuilder.bolted = True
+        mainRoom.addItem(tradingArtwork, (9, 9, 0))
+        tradingArtwork.configure(src.gamestate.gamestate.mainChar)
+
+        mainRoom.addInputSlot((7,8,0),"Scrap")
+        mainRoom.addInputSlot((8,7,0),"Scrap")
+        mainRoom.addInputSlot((9,8,0),"MetalBars")
+
+        mainRoom.addOutputSlot((11,8,0),"MetalBars")
+        mainRoom.addOutputSlot((11,7,0),"ScrapCompactor")
+        mainRoom.addOutputSlot((11,9,0),"Painter")
+        mainRoom.addOutputSlot((11,10,0),"Sheet")
+        mainRoom.addOutputSlot((10,11,0),"CorpseAnimator")
+        mainRoom.addOutputSlot((9,11,0),"Corpse")
+        mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
+
+        for i in range(0,10):
+            item = src.items.itemMap["Painter"]()
+            mainRoom.addItem(item,(11,9,0))
+
+        mainRoom.addStorageSlot((1,7,0),None)
+        mainRoom.addStorageSlot((1,8,0),None)
+        mainRoom.addStorageSlot((1,9,0),None)
+        mainRoom.addStorageSlot((1,10,0),None)
+        mainRoom.addStorageSlot((1,11,0),None)
+
+        mainRoom.walkingSpace.add((2,7,0))
+        mainRoom.walkingSpace.add((2,8,0))
+        mainRoom.walkingSpace.add((2,9,0))
+        mainRoom.walkingSpace.add((2,10,0))
+        mainRoom.walkingSpace.add((2,11,0))
+
+        mainRoom.walkingSpace.add((7,7,0))
+        mainRoom.walkingSpace.add((10,7,0))
+        mainRoom.walkingSpace.add((10,8,0))
+        mainRoom.walkingSpace.add((10,9,0))
+        mainRoom.walkingSpace.add((10,10,0))
+        mainRoom.walkingSpace.add((9,10,0))
+        mainRoom.walkingSpace.add((8,10,0))
+        mainRoom.walkingSpace.add((7,10,0))
+
+        mainRoom.sources.append((mainRoom.getPosition(),"ScrapCompactor"))
+        mainRoom.sources.append((mainRoom.getPosition(),"MetalBars"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Painter"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Sheet"))
+        mainRoom.sources.append((mainRoom.getPosition(),"CorpseAnimator"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Corpse"))
+        mainRoom.sources.append((mainRoom.getPosition(),"ScratchPlate"))
+
+        mainRoom.addRandomItems()
+
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"})
+        cityBuilder.spawnRank3(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank4(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
 
 class Ruin(Base):
     objType = "Ruin"
@@ -3363,6 +3421,13 @@ class Ruin(Base):
         for room in self.rooms:
             for i in range(0,4):
                 room.damage()
+
+        for character in self.characters[:]:
+            character.die(reason="explosion")
+
+        for room in self.rooms:
+            for character in room.characters[:]:
+                character.die(reason="explosion")
 
 class ScrapField(Terrain):
     """

@@ -310,7 +310,7 @@ class CityBuilder2(src.items.Item):
         item.bolted = False
         room.addItem(item,(random.randint(2,11),random.randint(2,11),0))
 
-    def addScrapCompactorFromMap(self,params):
+    def addScrapCompactorFromMap(self,params,instaSpawn=False):
         """
         handle a character having selected building a room
         and adding a task to the items task list
@@ -346,10 +346,11 @@ class CityBuilder2(src.items.Item):
         room.resetDirect()
         room.floorPlan = floorPlan 
 
-        #room.spawnPlaned()
-        #room.spawnPlaned()
-        #room.addRandomItems()
-        #room.spawnGhuls(character)
+        if instaSpawn:
+            room.spawnPlaned()
+            room.spawnPlaned()
+            room.addRandomItems()
+            room.spawnGhuls(character)
 
         self.container.sources.append((room.getPosition(),"MetalBars"))
 

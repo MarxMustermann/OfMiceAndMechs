@@ -3654,7 +3654,7 @@ class InputMenu(SubMenu):
             returns True when done
         """
 
-        if key == "enter" and not self.escape or len(self.text) > 15 * 15:
+        if key == "enter" and not self.escape:
             if self.followUp:
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:self.text})
             return True

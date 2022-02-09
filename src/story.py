@@ -3783,6 +3783,8 @@ class BaseBuilding(BasicPhase):
         #src.gamestate.gamestate.setTerrain(src.terrains.ScrapField(),(1,4))
         #src.gamestate.gamestate.setTerrain(src.terrains.Desert(),(1,5))
         #src.gamestate.gamestate.setTerrain(src.terrains.TutorialTerrain(),(1,6))
+        src.gamestate.gamestate.setTerrain(src.terrains.Ruin(),(1,7))
+        src.gamestate.gamestate.setTerrain(src.terrains.Base(),(1,8))
 
         item = src.items.itemMap["ItemCollector"]()
         mainChar.inventory.append(item)

@@ -847,13 +847,22 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
                 command = ""
                 lastPos = commandPos
                 for compactorPos in scrapCompactorPositions:
+                    #print("generating path for scrap compactor")
                     newPos = (compactorPos[0],compactorPos[1]-1,compactorPos[2])
                     (moveComand,path) = self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)
                     if path:
                         command += moveComand+"Js"
                         lastPos = newPos
                     else:
-                        src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on %s"%(compactorPos,))
+                        #print("generating path from north failed, try south")
+                        newPos = (compactorPos[0],compactorPos[1]+1,compactorPos[2])
+                        (moveComand,path) = self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)
+                        if path:
+                            command += moveComand+"Jw"
+                            lastPos = newPos
+                        else:
+                            #print("generating path from north and south failed, giving up")
+                            src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on %s"%(compactorPos,))
 
                 feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
                 scratchPlatePos = (scratchPlatePositions[0][0],scratchPlatePositions[0][1],scratchPlatePositions[0][2])

@@ -150,7 +150,6 @@ class CityBuilder2(src.items.Item):
 
         self.prefabs["ScrapToMetalBars"] = []
         scrapToMetalBarsPrefabPaths = ["scrapToMetalbars1.json","scrapToMetalbars2.json","scrapToMetalbars3.json"]
-        scrapToMetalBarsPrefabPaths = ["scrapToMetalbars3.json"]
         for path in scrapToMetalBarsPrefabPaths:
             with open("data/floorPlans/"+path) as fileHandle:
                 rawFloorplan = json.load(fileHandle)    

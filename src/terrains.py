@@ -3315,6 +3315,28 @@ class Desert(Terrain):
         return super().moveCharacterDirection(char, direction)
 
 
+class Ruin(Nothingness):
+
+    objType = "Ruin"
+
+    def __init__(self, seed=0, noContent=False):
+        super().__init__(
+            seed=seed, noContent=noContent
+        )
+
+        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+        scrapCompactor.bolted = False
+        self.addItem(scrapCompactor,(15*7+7,15*7+7,0))
+
+class Base(Nothingness):
+
+    objType = "Base"
+
+    def __init__(self, seed=0, noContent=False):
+        super().__init__(
+            seed=seed, noContent=noContent
+        )
+
 class ScrapField(Terrain):
     """
     big pile of scrap
@@ -3804,6 +3826,8 @@ terrainMap = {
     "GameplayTest": GameplayTest,
     "ScrapField": ScrapField,
     "Desert": Desert,
+    "Ruin": Ruin,
+    "Base": Base,
 }
 
 def getTerrainFromState(state):

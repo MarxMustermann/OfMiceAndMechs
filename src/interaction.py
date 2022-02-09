@@ -4714,10 +4714,10 @@ class TextMenu(SubMenu):
             "esc",
             "enter",
             "space",
-            "j",
+            " ",
         ):
             if self.followUp:
-                self.followUp()
+                self.callIndirect(self.followUp)
             return True
 
         if not noRender:

@@ -599,8 +599,16 @@ class PrefabDesign(BasicPhase):
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-        showText("""
-your room produces a MetalBar every %s ticks on average. This room is now available as in basebuilding mode"""%(ticksPerBar,),trigger={"container": self, "method": "askFloorPlan","params":{"floorPlan":converted}})
+        submenu = src.interaction.TextMenu("""
+your room produces a MetalBar every %s ticks on average. This room is now available as in basebuilding mode"""%(ticksPerBar,))
+
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "askFloorPlan",
+            "params": {"container": self, "method": "askFloorPlan","params":{"floorPlan":converted}}
+        }
+
 
     def askFloorPlan(self,extraParams):
         options = [("yes", "Yes"), ("no", "No")]
@@ -617,9 +625,7 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
 
     def uploadFloorPlan(self,extraParams):
         if extraParams["upload"] == "yes":
-
             requests.post("http://ofmiceandmechs.com/floorPlanDump.php",{"floorPlan":json.dumps(extraParams["floorPlan"])})
-
 
     def generateFloorPlan(self):
         import copy

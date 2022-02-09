@@ -21,6 +21,7 @@ import src.gamestate
 import random
 import requests
 import json
+import copy
 
 phasesByName = None
 
@@ -577,15 +578,24 @@ class PrefabDesign(BasicPhase):
         super().__init__("PrefabDesign", seed=seed)
 
         self.stats = {}
+        self.floorPlan = None
 
     def advance(self):
         print("advance story")
-        floorPlan = self.generateFloorPlan()
-        self.saveFloorPlan(floorPlan)
-        self.spawnRooms(floorPlan)
+        self.askAction()
+        return
 
-        ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
-        converted = self.convertFloorPlanToDict(floorPlan)
+    def runFloorplanGeneration(self):
+        self.floorPlan = self.generateFloorPlan()
+        self.saveFloorPlan(self.floorPlan)
+        self.spawnRooms(self.floorPlan)
+        return
+
+    def addFloorPlan(self):
+        if not self.floorPlan:
+            return
+
+        converted = self.convertFloorPlanToDict(self.floorPlan)
 
         try:
             # register the save
@@ -600,17 +610,36 @@ class PrefabDesign(BasicPhase):
             json.dump(rawState,globalInfoFile)
 
         submenu = src.interaction.TextMenu("""
-your room produces a MetalBar every %s ticks on average. This room is now available as in basebuilding mode"""%(ticksPerBar,))
+the floorplan is available in basebuilder mode and main game now""")
 
+    def askAction(self):
+        options = [("generateFloorPlan", "generate floor plan"), ("simulateUsage", "simulate usage"), ("submitFloorPlan", "submit floor plan"), ("addFloorPlan", "add floor plan to loadable prefabs"),("donateFloorPlan", "donate floor plan")]
+        submenu = src.interaction.SelectionMenu(
+            "what do you want to do?", options,
+        )
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
             "container": self,
-            "method": "askFloorPlan",
-            "params": {"container": self, "method": "askFloorPlan","params":{"floorPlan":converted}}
+            "method": "runAction",
+            "params": {}
         }
 
+    def runAction(self,extraParams):
+        if not "selection" in extraParams:
+            return
 
-    def askFloorPlan(self,extraParams):
+        if extraParams["selection"] == "generateFloorPlan":
+            self.runFloorplanGeneration()
+        if extraParams["selection"] == "simulateUsage":
+            self.simulateUsage()
+        if extraParams["selection"] == "addFloorPlan":
+            self.addFloorPlan()
+        if extraParams["selection"] == "donateFloorPlan":
+            self.donateFloorPlan()
+        print("run action")
+        print(extraParams)
+
+    def donateFloorPlan(self):
         options = [("yes", "Yes"), ("no", "No")]
         submenu = src.interaction.SelectionMenu(
             "Do you want to donate the room?\n\nSelect \"Yes\" to make the rooms design public domain and upload the room.\nThis will require an internet connection", options,
@@ -620,12 +649,15 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
             "container": self,
             "method": "uploadFloorPlan",
-            "params": extraParams
+            "params": {}
         }
 
     def uploadFloorPlan(self,extraParams):
+        if not self.floorPlan:
+            return
         if extraParams["upload"] == "yes":
-            requests.post("http://ofmiceandmechs.com/floorPlanDump.php",{"floorPlan":json.dumps(extraParams["floorPlan"])})
+            converted = self.convertFloorPlanToDict(self.floorPlan)
+            requests.post("http://ofmiceandmechs.com/floorPlanDump.php",{"floorPlan":json.dumps(converted)})
 
     def generateFloorPlan(self):
         import copy
@@ -919,9 +951,7 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
         if not floorPlan:
             src.gamestate.gamestate.mainChar.addMessage("no floor plan generated")
             return
-        print(floorPlan)
         converted = self.convertFloorPlanToDict(floorPlan)
-        print(converted)
 
         with open("floorPlan.json","w") as fileHandle:
             import json
@@ -930,7 +960,6 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
         self.stats["current"] = {}
 
     def spawnRooms(self, floorPlan):
-        import copy
         if self.toBuildRoomClone:
             self.toBuildRoomClone.container.removeRoom(self.toBuildRoomClone)
         self.toBuildRoomClone = self.architect.doAddRoom(
@@ -948,6 +977,14 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
         self.toBuildRoomClone.spawnPlaned()
         self.toBuildRoomClone.addRandomItems()
         self.toBuildRoomClone.spawnGhuls(src.gamestate.gamestate.mainChar)
+
+        return
+
+    def simulateUsage(self):
+        if not self.floorPlan:
+            return
+
+        floorPlan = self.floorPlan
 
         if self.toBuildRoomClone4:
             self.toBuildRoomClone4.container.removeRoom(self.toBuildRoomClone4)
@@ -1034,6 +1071,12 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
         
         self.spawnMaintanenceNPCs()
         self.maintananceLoop()
+
+        ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
+        submenu = src.interaction.TextMenu("""
+your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
+
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
     def spawnMaintanenceNPCs(self,room=None):
         if not room:
@@ -1145,12 +1188,14 @@ your room produces a MetalBar every %s ticks on average. This room is now availa
                 for item in npc.inventory:
                     if not item.type == "MetalBars":
                         continue
-                    self.stats["current"]["1500"]["produced"] += 1
+                    if self.stats:
+                        self.stats["current"]["1500"]["produced"] += 1
             if room == self.toBuildRoomClone6:
                 for item in npc.inventory:
                     if not item.type == "MetalBars":
                         continue
-                    self.stats["current"]["15000"]["produced"] += 1
+                    if self.stats:
+                        self.stats["current"]["15000"]["produced"] += 1
             room.removeCharacter(npc)
             npc.die()
 

@@ -253,7 +253,7 @@ class CityBuilder2(src.items.Item):
     def spawnMilitary(self,character):
         self.spawnRank(None,character,isMilitary=True)
 
-    def addProductionLine(self,character,instaSpawn=True):
+    def addProductionLine(self,character,instaSpawn=False):
         if not self.workshopRooms:
             character.addMessage("no workshop rooms available")
             return

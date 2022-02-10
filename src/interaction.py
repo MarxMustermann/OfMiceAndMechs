@@ -130,6 +130,7 @@ def setUpTcod():
     pygame2.mixer.pre_init()
     pygame2.mixer.init()
     pygame2.init()
+    pygame2.display.quit()
 
     """
     if not context.sdl_window_p:

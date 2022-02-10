@@ -3456,6 +3456,9 @@ class Ruin(Base):
 
         for room in self.rooms:
             level = 3-(abs(room.yPosition-7)+abs(room.xPosition-7))
+            if level < 0:
+                continue
+
             for i in range(0,level):
                 enemy = src.characters.Monster()
                 room.addCharacter(enemy,random.randint(2,13),random.randint(2,13))
@@ -3464,8 +3467,8 @@ class Ruin(Base):
                 enemy.baseDamage = 10+level
                 enemy.runCommandString("_g")
 
-        for i in range(0,8):
-            mainRoom.addItem(src.items.itemMap["GlassCrystal"](),(random.randint(2,13),random.randint(2,13),0))
+            for i in range(0,2**level):
+                room.addItem(src.items.itemMap["GlassCrystal"](),(random.randint(2,13),random.randint(2,13),0))
 
 class ScrapField(Terrain):
     """

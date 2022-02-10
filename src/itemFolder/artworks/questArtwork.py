@@ -53,7 +53,10 @@ class QuestArtwork(src.items.Item):
                 containerQuest.assignToCharacter(character)
                 containerQuest.activate()
 
-                character.quests[0].addQuest(containerQuest)
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    character.quests[0].addQuest(containerQuest)
+                else:
+                    character.quests.insert(0,containerQuest)
                 character.addMessage("quest assigned")
                 return
 
@@ -65,7 +68,10 @@ class QuestArtwork(src.items.Item):
                     quest.assignToCharacter(character)
                     quest.activate()
 
-                    character.quests[0].addQuest(quest)
+                    if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                        character.quests[0].addQuest(quest)
+                    else:
+                        character.quests.insert(0,quest)
                     character.addMessage("quest assigned")
                     return
 

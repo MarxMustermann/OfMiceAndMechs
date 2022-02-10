@@ -2021,6 +2021,17 @@ class GatherItems(Quest):
         character.runCommandString(".30.")
         return False
 
+class LootRuin(MetaQuestSequence):
+    def __init__(self, description="loot ruin", creator=None, targetPosition=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+
+        if targetPosition:
+            self.setParameters({"targetPosition":targetPosition})
+
+    def triggerCompletionCheck(self,character=None):
+        return False
+
 class FetchItems(MetaQuestSequence):
     def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True):
         questList = []

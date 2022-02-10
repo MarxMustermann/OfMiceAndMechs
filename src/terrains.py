@@ -3464,6 +3464,8 @@ class Ruin(Base):
                 enemy.baseDamage = 10+level
                 enemy.runCommandString("_g")
 
+        for i in range(0,8):
+            mainRoom.addItem(src.items.itemMap["GlassCrystal"](),(random.randint(2,13),random.randint(2,13),0))
 
 class ScrapField(Terrain):
     """

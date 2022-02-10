@@ -57,6 +57,18 @@ class QuestArtwork(src.items.Item):
                 character.addMessage("quest assigned")
                 return
 
+        for line in src.gamestate.gamestate.terrainMap:
+            for terrain in line:
+                if isinstance(terrain,src.terrains.Ruin):
+                    quest = src.quests.LootRuin()
+                    quest.setParameters({"targetPosition":(terrain.xPosition,terrain.yPosition)})
+                    quest.assignToCharacter(character)
+                    quest.activate()
+
+                    character.quests[0].addQuest(quest)
+                    character.addMessage("quest assigned")
+                    return
+
         character.addMessage("no quest assigned")
         return
 

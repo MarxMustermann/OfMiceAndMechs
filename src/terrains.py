@@ -3454,6 +3454,17 @@ class Ruin(Base):
                 if random.random() > 0.3:
                     item.destroy()
 
+        for room in self.rooms:
+            level = 3-(abs(room.yPosition-7)+abs(room.xPosition-7))
+            for i in range(0,level):
+                enemy = src.characters.Monster()
+                room.addCharacter(enemy,random.randint(2,13),random.randint(2,13))
+                enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+                enemy.health = 100+3*level
+                enemy.baseDamage = 10+level
+                enemy.runCommandString("_g")
+
+
 class ScrapField(Terrain):
     """
     big pile of scrap

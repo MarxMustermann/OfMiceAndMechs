@@ -125,7 +125,7 @@ else:
             events = tcod.event.get()
             for event in events:
                 context.convert_event(event)
-                if isinstance(event,tcod.event.MouseButtonUp):
+                if isinstance(event, tcod.event.MouseButtonUp):
                     index = event.tile.y-2
                 if isinstance(event, tcod.event.Quit):
                     raise SystemExit()
@@ -218,6 +218,9 @@ if not shouldLoad:
             print(scenario)
     else:
         scenario = args.scenario
+
+    if not args.notcod:
+        context.close()
 
     if scenario == "siege":
         args.terrain = "test"

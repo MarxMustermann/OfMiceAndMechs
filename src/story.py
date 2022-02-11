@@ -3749,7 +3749,7 @@ press space to continue"""%(reputationTree))
 
 class Tutorials(BasicPhase):
     def __init__(self, seed=0):
-        super().__init__("BaseBuilding", seed=seed)
+        super().__init__("Tutorials", seed=seed)
 
     def start(self, seed=0):
         """
@@ -3778,12 +3778,148 @@ class Tutorials(BasicPhase):
         )
 
     def startTutorial(self,extraInfo):
+        if not "tutorialToStart" in extraInfo:
+            self.restartTutorial()
+            return
+
         if extraInfo["tutorialToStart"] == "BackToTheRoots":
             nextPhase = BackToTheRoots()
             nextPhase.start()
             return
 
+        if extraInfo["tutorialToStart"] == "BasicUsageTutorial":
+            nextPhase = BasicUsageTutorial()
+            nextPhase.start()
+            return
+
         submenu = src.interaction.TextMenu("NIY")
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "restartTutorial",
+        }
+
+    def restartTutorial(self):
+        nextPhase = Tutorials()
+        nextPhase.start()
+
+class BasicUsageTutorial(BasicPhase):
+    """
+    """
+
+    def __init__(self, seed=0):
+        super().__init__("BasicUsageTutorial", seed=seed)
+
+    def start(self, seed=0):
+        text = """
+This tutorial will explain the basic interaction with the program.
+
+it will explain:
+
+ * the help menu
+ * movement
+ * how to pick things up
+ * how to show the inventory
+ * how to drop things
+ * how to activate things
+ * how to dock menus
+
+press space to start
+"""
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestHelp",
+        }
+
+    def tutorialExplainTestHelp(self):
+        text = """
+The game offers a relatively big list of systems to explore.
+How these system works should be explained in the ingame help.
+If you only remember one thing. Remember that the help function exists.
+The keybindings are also shown there.
+
+Please open and close the help menu.
+Do that by pressing z to open the help menu and pressing ESC to close it again.
+
+press space when you are ready.
+"""
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestMovement",
+        }
+
+    def tutorialExplainTestMovement(self):
+        text = """
+        explain + test movement
+        """
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestPickUp",
+        }
+
+    def tutorialExplainTestPickUp(self):
+        text = """
+        explain + test pick up
+        """
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestInventory",
+        }
+
+    def tutorialExplainTestInventory(self):
+        text = """
+        explain + test inventory usage
+        """
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestDrop",
+        }
+
+    def tutorialExplainTestDrop(self):
+        text = """
+        explain + test drop
+        """
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestActivate",
+        }
+
+    def tutorialExplainTestActivate(self):
+        text = """
+        explain + test activate
+        """
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainTestDocking",
+        }
+
+    def tutorialExplainTestDocking(self):
+        text = """
+        explain + test inventory docking
+        """
+
+        submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
             "container": self,
@@ -9548,3 +9684,4 @@ def registerPhases():
     phasesByName["BuildBase"] = BaseBuilding
     phasesByName["PrefabDesign"] = PrefabDesign
     phasesByName["Tutorials"] = Tutorials
+    phasesByName["BasicUsageTutorial"] = BasicUsageTutorial

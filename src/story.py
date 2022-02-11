@@ -3747,6 +3747,13 @@ press space to continue"""%(reputationTree))
     def endEpoch(self):
         self.startNewEpoch()
 
+class Tutorials(BasicPhase):
+    def __init__(self, seed=0):
+        super().__init__("BaseBuilding", seed=seed)
+
+    def start(self, seed=0):
+        showText("NIY!")
+
 class BaseBuilding(BasicPhase):
     """
     """
@@ -9500,3 +9507,4 @@ def registerPhases():
     phasesByName["BackToTheRoots"] = BackToTheRoots
     phasesByName["BuildBase"] = BaseBuilding
     phasesByName["PrefabDesign"] = PrefabDesign
+    phasesByName["Tutorials"] = Tutorials

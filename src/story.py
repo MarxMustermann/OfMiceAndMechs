@@ -3752,13 +3752,47 @@ class Tutorials(BasicPhase):
         super().__init__("BaseBuilding", seed=seed)
 
     def start(self, seed=0):
-        showText("NIY!")
+        """
+            basic usage: movement + basic UI + item management
+            fighting: some explanaition on fighting + arena?
+            industry: how things are produced
+            ghuls: how to use ghuls and commands
+        """
+        options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("BackToTheRoots","start main game")]
+        submenu = src.interaction.SelectionMenu(
+            "what do you want to know more about?\n(press w/s to change selection. press enter/space/d/j to select)", options,
+            targetParamName="tutorialToStart",
+        )
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "startTutorial",
+            "params": {}
+        }
 
         mainChar = src.gamestate.gamestate.mainChar
+
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         currentTerrain.addCharacter(
             src.gamestate.gamestate.mainChar, 124, 109
         )
+
+    def startTutorial(self,extraInfo):
+        if extraInfo["tutorialToStart"] == "BackToTheRoots":
+            nextPhase = BackToTheRoots()
+            nextPhase.start()
+            return
+
+        submenu = src.interaction.TextMenu("NIY")
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "restartTutorial",
+        }
+
+    def restartTutorial(self):
+        nextPhase = Tutorials()
+        nextPhase.start()
 
 class BaseBuilding(BasicPhase):
     """

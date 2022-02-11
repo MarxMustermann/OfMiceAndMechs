@@ -448,21 +448,21 @@ if not args.debug and not interaction.submenue and not loaded:
     press space to continue
 
 """
-    openingCinematic = cinematics.TextCinematic(text, rusty=True, scrolling=True)
-    cinematics.cinematicQueue.insert(0, openingCinematic)
-    gamestate.gamestate.openingCinematic = openingCinematic
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
-        0, (".", ["norecord"])
-    )
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
-        0, (".", ["norecord"])
-    )
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
-        0, (".", ["norecord"])
-    )
-    gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
-        0, (".", ["norecord"])
-    )
+    #openingCinematic = cinematics.TextCinematic(text, rusty=True, scrolling=True)
+    #cinematics.cinematicQueue.insert(0, openingCinematic)
+    #gamestate.gamestate.openingCinematic = openingCinematic
+    #gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+    #    0, (".", ["norecord"])
+    #)
+    #gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+    #    0, (".", ["norecord"])
+    #)
+    #gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+    #    0, (".", ["norecord"])
+    #)
+    #gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
+    #    0, (".", ["norecord"])
+    #)
 else:
     gamestate.gamestate.openingCinematic = None
 

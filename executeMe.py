@@ -71,7 +71,7 @@ args = parser.parse_args()
 if not args.notcod:
     import tcod
 
-    screen_width = 50
+    screen_width = 100
     screen_height = 25
 
     tileset = tcod.tileset.load_tilesheet(
@@ -146,6 +146,10 @@ if not shouldLoad:
                 "main game",
             ),
             (
+                "Tutorials",
+                "tutorials",
+            ),
+            (
                 "siege",
                 "(siege)",
             ),
@@ -192,30 +196,81 @@ if not shouldLoad:
             scenarioNum = input("select scenario (type number)\n\n%s\n\n" % (text,))
             scenario = scenarios[int(scenarioNum)][0]
         else:
+
+            #print("offer the player the option to start playing now or do something more specific") 
             root_console.clear()
-            root_console.print(x=3,y=2,string=text)
+            root_console.print(x=3,y=2,string="play now\nstart specific scenario")
+
             while 1:
                 foundEvent = False
                 events = tcod.event.get()
                 for event in events:
                     if isinstance(event,tcod.event.MouseButtonUp):
                         context.convert_event(event)
-                        index = event.tile.y-3
-                        foundEvent = True
-                        scenario = scenarios[index][0]
-
-                    if isinstance(event,tcod.event.KeyDown):
-                        if event.sym == tcod.event.KeySym.m:
-                            scenario = scenarios[0][0]
+                        mainSelection = event.tile.y-2
+                        if mainSelection in (0,1,):
                             foundEvent = True
+                        print(mainSelection)
 
-                    if isinstance(event, tcod.event.Quit):
-                        raise SystemExit()
-                        
                 context.present(root_console)
                 if foundEvent:
                     break
-            print(scenario)
+
+            if mainSelection == 0:
+                #print("confirming that the player wants to start the main game")
+                root_console.clear()
+                root_console.print(x=3,y=2,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\n\nstart tutorials\nstart game\n")
+
+                while 1:
+                    foundEvent = False
+                    events = tcod.event.get()
+
+                    for event in events:
+                        if isinstance(event,tcod.event.MouseButtonUp):
+                            context.convert_event(event)
+                            confirmSelection = event.tile.y-5
+                            print(confirmSelection)
+                            if confirmSelection in (0,1,):
+                                foundEvent = True
+
+                    context.present(root_console)
+                    if foundEvent:
+                        break
+
+                if confirmSelection == 0:
+                    print("should load tutorial")
+                    scenario = "Tutorials"
+
+                if confirmSelection == 1:
+                    print("should load main game")
+                    scenario = "BackToTheRoots"
+
+            elif mainSelection == 1:
+                #print("offering the player to start a specific scenario")
+                root_console.clear()
+                root_console.print(x=3,y=2,string=text)
+                while 1:
+                    foundEvent = False
+                    events = tcod.event.get()
+                    for event in events:
+                        if isinstance(event,tcod.event.MouseButtonUp):
+                            context.convert_event(event)
+                            index = event.tile.y-3
+                            foundEvent = True
+                            scenario = scenarios[index][0]
+
+                        if isinstance(event,tcod.event.KeyDown):
+                            if event.sym == tcod.event.KeySym.m:
+                                scenario = scenarios[0][0]
+                                foundEvent = True
+
+                        if isinstance(event, tcod.event.Quit):
+                            raise SystemExit()
+                            
+                    context.present(root_console)
+                    if foundEvent:
+                        break
+                print(scenario)
     else:
         scenario = args.scenario
 
@@ -253,6 +308,10 @@ if not shouldLoad:
     elif scenario == "PrefabDesign":
         args.terrain = "nothingness"
         args.phase = "PrefabDesign"
+    elif scenario == "Tutorials":
+        args.terrain = "nothingness"
+        args.phase = "Tutorials"
+    print("game parameters set to %s %s"%(args.terrain, args.phase,))
 
 if not args.notcod:
     pass

@@ -1188,14 +1188,18 @@ your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
                 for item in npc.inventory:
                     if not item.type == "MetalBars":
                         continue
-                    if self.stats:
+                    try:
                         self.stats["current"]["1500"]["produced"] += 1
+                    except:
+                        pass
             if room == self.toBuildRoomClone6:
                 for item in npc.inventory:
                     if not item.type == "MetalBars":
                         continue
-                    if self.stats:
+                    try:
                         self.stats["current"]["15000"]["produced"] += 1
+                    except:
+                        pass
             room.removeCharacter(npc)
             npc.die()
 

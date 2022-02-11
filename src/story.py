@@ -3834,6 +3834,43 @@ press space to start
             "method": "tutorialExplainHelp",
         }
 
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+        src.gamestate.gamestate.mainChar.godMode = True
+        src.gamestate.gamestate.mainChar.inventory = []
+
     def tutorialExplainHelp(self):
         mainChar = src.gamestate.gamestate.mainChar
 
@@ -3900,43 +3937,108 @@ press space when you are ready
             event.setCallback({"container": self, "method": "tutorialCheckMovement","params":extraInfo})
             mainChar.container.addEvent(event)
         else:
-            self.tutorialExplainTestPickUp()
+            self.tutorialExplainPickUp()
 
-    def tutorialExplainTestPickUp(self):
+    def tutorialExplainPickUp(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
         text = """
-        explain + test pick up
+great. That seems to work out fine.
+
+now lets pick some stuff up.
+This is more complicated that it seems and there a 3 ways to do that.
+
+ * move onto a small item and press k
+ * move against a big item and press k directly afterwards
+ * move next to an item and press K and a direction (wasd) afterwards
+
+I spawned 4 pieces of scrap and a wall nearby. Pick them up to proceed.
+
+remember to press z if you forget the keybindings
+        """
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        characterPos = mainChar.getPosition()
+        baseX = characterPos[0]//15
+        baseY = characterPos[1]//15
+
+        for i in range(0,4):
+            scrap = src.items.itemMap["Scrap"](amount=1)
+            mainChar.container.addItem(scrap,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
+        wall = src.items.itemMap["Wall"]()
+        wall.bolted = False
+        mainChar.container.addItem(wall,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
+
+        self.tutorialCheckPickUp()
+
+    def tutorialCheckPickUp(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        numScrapFound = 0
+        numWallFound = 0
+        for item in mainChar.inventory:
+            if item.type == "Scrap":
+                numScrapFound += 1
+            if item.type == "Wall":
+                numWallFound += 1
+
+        if not (numScrapFound > 3 and numWallFound > 0):
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckPickUp"})
+            mainChar.container.addEvent(event)
+        else:
+            self.tutorialExplainInventory()
+
+    def tutorialExplainInventory(self):
+        text = """
+all the items you have collected go into your inventory.
+
+You can open your inventory by pressing i and close it by pressing ESC.
+
+I trust that you will be able to handle that.
+
+other menus you can open are:
+ c for character overview
+ q for quests
+ x for the message log
+
+press space to continue with dropping items.
         """
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
             "container": self,
-            "method": "tutorialExplainTestInventory",
+            "method": "tutorialExplainDrop",
         }
 
-    def tutorialExplainTestInventory(self):
+    def tutorialExplainDrop(self):
         text = """
-        explain + test inventory usage
-        """
+dropping an item can also be done in multiple ways.
+
+you can
+ * press l to drop an item where you stand
+ * press L and direction (wasd) afterwards to drop an item nearby
+ * use the inventory menu to drop a specific item
+
+now drop the items onto the floor again."""
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "tutorialExplainTestDrop",
-        }
 
-    def tutorialExplainTestDrop(self):
-        text = """
-        explain + test drop
-        """
+        self.tutorialCheckDrop()
 
-        submenu = src.interaction.TextMenu(text)
-        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "tutorialExplainTestActivate",
-        }
+    def tutorialCheckDrop(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        if src.gamestate.gamestate.mainChar.inventory:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckDrop"})
+            mainChar.container.addEvent(event)
+        else:
+            self.tutorialExplainTestActivate()
 
     def tutorialExplainTestActivate(self):
         text = """

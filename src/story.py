@@ -3760,7 +3760,7 @@ class Tutorials(BasicPhase):
         """
         options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("BackToTheRoots","start main game")]
         submenu = src.interaction.SelectionMenu(
-            "what do you want to know more about?\n(press w/s to change selection. press enter/space/d/j to select)", options,
+            "what do you want to know more about?\n(press w/s to change selection. press enter/space/d/j to select)\n", options,
             targetParamName="tutorialToStart",
         )
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3831,33 +3831,47 @@ press space to start
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
             "container": self,
-            "method": "tutorialExplainTestHelp",
+            "method": "tutorialExplainHelp",
         }
 
-    def tutorialExplainTestHelp(self):
-        text = """
+    def tutorialExplainHelp(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        """
 The game offers a relatively big list of systems to explore.
 How these system works should be explained in the ingame help.
-If you only remember one thing. Remember that the help function exists.
-The keybindings are also shown there.
+"""
+        text = """
+The keybindings are shown with some other information in the help menu.
+If you only remember one thing, remember that the help menu exists.
 
-Please open and close the help menu.
-Do that by pressing z to open the help menu and pressing ESC to close it again.
+You can open the help menu by:
+* pressing z
+* clicking the "press z for help" on the top of the screen
+* pressing ESC to open the main menu and selecting help
+
+Please open the help menu and close it again by pressing ESC or clicking the X in the subwindow.
 
 press space when you are ready.
 """
-
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "tutorialExplainTestMovement",
-        }
 
-    def tutorialExplainTestMovement(self):
+        mainChar.addListener(self.checkTutorialHelpOpened, "openedHelp")
+
+    def checkTutorialHelpOpened(self):
+        print("open event did happen")
+
+        mainChar = src.gamestate.gamestate.mainChar
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+        event.setCallback({"container": self, "method": "tutorialExplainTestMovement"})
+        mainChar.container.addEvent(event)
+
+    def tutorialExplainMovement(self):
         text = """
         explain + test movement
-        """
+"""
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu

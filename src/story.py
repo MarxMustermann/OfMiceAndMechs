@@ -4023,6 +4023,8 @@ you can
  * press L and direction (wasd) afterwards to drop an item nearby
  * use the inventory menu to drop a specific item
 
+The item picked up last is the item that will be dropped when pressing l or L
+
 now drop the items onto the floor again."""
 
         submenu = src.interaction.TextMenu(text)
@@ -4041,28 +4043,150 @@ now drop the items onto the floor again."""
             self.tutorialExplainTestActivate()
 
     def tutorialExplainTestActivate(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
         text = """
-        explain + test activate
+other important interaction methods a are activating and examining items.
+
+It mostly works like picking up or dropping items.
+
+ * press j to activate an item you stand on
+ * walk against a big item and press j to activate it
+ * press J and a direction (wasd) to activate a nearby item
+ * use the inventory menu to activate a specific item
+
+ * press e to examine an item 
+ * walk against a big item and press e to examine it
+ * press E and a direction (wasd) to examine a nearby item
+
+Activating items is obviously important.
+Examining an item often gives instructions how to use an item.
+So remember to examine items you don't understand.
+
+i dropped a combination lock nearby.
+examine it and activate it.
         """
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "tutorialExplainTestDocking",
-        }
 
-    def tutorialExplainTestDocking(self):
+        mainChar.addListener(self.checkTutorialHelpOpened, "openedHelp")
+
+        storyItem = src.items.itemMap["FunctionTrigger"]()
+        storyItem.bolted = False
+        storyItem.walkable = True
+        storyItem.description = "combination lock"
+        storyItem.name = "combination lock"
+        storyItem.usageInfo = "activate the item and input the code 3798"
+        storyItem.display = "cl"
+        storyItem.function = {"container":self,"method":"getActivateCode"}
+        
+        characterPos = mainChar.getPosition()
+        baseX = characterPos[0]//15
+        baseY = characterPos[1]//15
+
+        mainChar.container.addItem(storyItem,(baseX*15+7,baseY*15+7,0))
+
+    def getActivateCode(self):
+        submenu = src.interaction.InputMenu("Enter the code:")
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+                "container": self,
+                "method": "checkActivateCode",
+                "params":{}
+            }
+
+    def checkActivateCode(self, extraInfo):
+        if not "text" in extraInfo or not extraInfo["text"] == "3798":
+            submenu = src.interaction.TextMenu("wrong code - examine the combination lock for instructions. press z to view keybindings")
+            src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+            return
+        self.tutorialExplainDocking()
+
+    def tutorialExplainDocking(self):
+        mainChar = src.gamestate.gamestate.mainChar
         text = """
-        explain + test inventory docking
-        """
+that worked, awesome. 
+
+I'm sure you noticed that opening and closing the inventory can get annoying fast.
+To solve this the game offers you to dock menus to the left and right of the game map.
+
+To do this you first open the inventory menu.
+Then you press the < arrow of the subwindow or left shift + ESC to dock the window to the left.
+Pressing the > arrow of the subwindow or right shift + ESC will dock the window to the right.
+
+please dock the inventory and fill it with 10 items to see how it works
+"""
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        characterPos = mainChar.getPosition()
+        baseX = characterPos[0]//15
+        baseY = characterPos[1]//15
+
+        for i in range(0,30):
+            scrap = src.items.itemMap["Scrap"](amount=1)
+            mainChar.container.addItem(scrap,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
+
+        self.checkDocking()
+
+    def checkDocking(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        if (mainChar.rememberedMenu or mainChar.rememberedMenu2) and len(mainChar.inventory) > 9:
+            self.tutorialExplainUndocking()
+            return
+        else:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "checkDocking"})
+            mainChar.container.addEvent(event)
+
+    def tutorialExplainUndocking(self):
+
+        text = """
+One last but pretty important thing and you are done with the tutorial.
+
+to undock menus press the < or > shown above them or
+press left shift + ESC to undock left or
+press right shift + ESC to undock right
+
+undock and close all menus to continue
+"""
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        self.checkUndocking()
+
+    def checkUndocking(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        if not (mainChar.rememberedMenu or mainChar.rememberedMenu2):
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "complete"})
+            mainChar.container.addEvent(event)
+            return
+        else:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "checkUndocking"})
+            mainChar.container.addEvent(event)
+
+    def complete(self):
+
+        text = """
+that was the basic usage. Thanks for participating.
+
+Good luck on your adventures and maybe see you in another tutorial
+
+press space to return to tutorial selection
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "restartTutorial",
-        }
+                "container": self,
+                "method": "restartTutorial",
+            }
 
     def restartTutorial(self):
         nextPhase = Tutorials()

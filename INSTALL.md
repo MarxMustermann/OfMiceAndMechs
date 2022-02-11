@@ -1,15 +1,16 @@
 # installation
 
-known-dependencies: 
-
-* python3
-* python3-urwid
-* mplayer (for music)
-* pygame for python3 (for tile based mode)
-
 ## how to install and run the game 
 
-install the dependencies and run the executeMe.py file
+install the dependencies and run the executeMe.py file or
+Dowload zip from http://ofmiceandmechs.com/ and double click exceuteMe.exe
+
+## dependencies
+
+* python3
+* pygame for python3 (for tile based mode)
+* python3-tcod
+
 
 ### debian based sytems
 
@@ -27,4 +28,5 @@ install the dependencies and run the executeMe.py file
 * for tile based:
   * sudo apt-get python3-pip
   * sudo pip3 install pygame
-  * run with: python3 executeMe.py -t
+  * sudo pip3 install tcod
+  * run with: python3 executeMe.py

@@ -17,10 +17,10 @@ If you contribute and want to be listed, add yourself here.
   * https://www.python.org/
 * python3-urwid
   * http://urwid.org/
-* mplayer (for music)
-  * https://mplayerhq.hu/design7/news.html
-* pygame for python3 (for tile based mode)
+* pygame for python3 (for tile based mode and sound)
   * https://www.pygame.org/news
+* python3-tcod
+  * https://github.com/libtcod/python-tcod  (thanks alot @HexDecimal for maintaining it)
 
 thanks at everybody involved for creating and maintaining the tech needed to build more tech.
 
@@ -29,15 +29,3 @@ thanks at everybody involved for creating and maintaining the tech needed to bui
 A huge thanks to everybody releasing under CC! And big thanks the https://freemusicarchive.org/ for hosting the music. Since everybody can use the music i took and used it without asking, so it cannot be assumed that the artists like, endorse or even know about the game.
 
 Background music By:
-
-### Diezel Tea
-
-https://diezeltea.bandcamp.com/
-
-* startup and background music #1
-  * Track: Kilikia (Original Mix)
-  * Album: Kilikia
-
-* background music #2
-  * Track: Arzni (Part 1) [ft. Sam Khachatourian]
-  * Album: Arzni

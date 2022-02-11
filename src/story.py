@@ -3754,6 +3754,12 @@ class Tutorials(BasicPhase):
     def start(self, seed=0):
         showText("NIY!")
 
+        mainChar = src.gamestate.gamestate.mainChar
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+
 class BaseBuilding(BasicPhase):
     """
     """

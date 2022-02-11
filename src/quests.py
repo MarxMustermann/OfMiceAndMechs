@@ -2025,6 +2025,7 @@ class LootRuin(MetaQuestSequence):
     def __init__(self, description="loot ruin", creator=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator)
+        self.metaDescription = description
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})

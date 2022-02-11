@@ -3846,9 +3846,10 @@ The keybindings are shown with some other information in the help menu.
 If you only remember one thing, remember that the help menu exists.
 
 You can open the help menu by:
-* pressing z
-* clicking the "press z for help" on the top of the screen
-* pressing ESC to open the main menu and selecting help
+
+ * pressing z
+ * clicking the "press z for help" on the top of the screen
+ * pressing ESC to open the main menu and selecting help
 
 Please open the help menu and close it again by pressing ESC or clicking the X in the subwindow.
 
@@ -3860,25 +3861,46 @@ press space when you are ready.
         mainChar.addListener(self.checkTutorialHelpOpened, "openedHelp")
 
     def checkTutorialHelpOpened(self):
-        print("open event did happen")
-
         mainChar = src.gamestate.gamestate.mainChar
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
-        event.setCallback({"container": self, "method": "tutorialExplainTestMovement"})
+        event.setCallback({"container": self, "method": "tutorialExplainMovement"})
         mainChar.container.addEvent(event)
 
     def tutorialExplainMovement(self):
-        text = """
-        explain + test movement
-"""
+        mainChar = src.gamestate.gamestate.mainChar
 
+        text = """
+ok, great. Now lets get to something more exciting.
+
+you can move around by using the wasd keys.
+
+ * w = move a step north
+ * a = move a step west
+ * s = move a step south
+ * d = move a step east
+
+please move around a bit now.
+
+press space when you are ready
+"""
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "tutorialExplainTestPickUp",
-        }
+        self.tutorialCheckMovement({"count":0,"lastPos":list(mainChar.getPosition())})
+
+    def tutorialCheckMovement(self,extraInfo=None):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        if not tuple(extraInfo["lastPos"]) == mainChar.getPosition():
+            extraInfo["count"] += 1
+        extraInfo["lastPos"] = list(mainChar.getPosition())
+
+        if extraInfo["count"] < 15:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckMovement","params":extraInfo})
+            mainChar.container.addEvent(event)
+        else:
+            self.tutorialExplainTestPickUp()
 
     def tutorialExplainTestPickUp(self):
         text = """

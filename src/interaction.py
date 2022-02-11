@@ -1963,7 +1963,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         char.macroState["submenue"].followUp = trigger
         key = "."
 
-    if key in ("z",):
+    if key in ("y",):
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             header.set_text((urwid.AttrSpec("default", "default"), "observe"))
             main.set_text(
@@ -2474,7 +2474,7 @@ press key for advanced drop
         charState["submenue"] = QuestMenu()
 
     # open help menu
-    if key in (commandChars.show_help,"H"):
+    if key in (commandChars.show_help,"z"):
         charState["submenue"] = HelpMenu()
 
     # open inventory
@@ -5394,7 +5394,7 @@ def getTcodEvents():
                     if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
                         translatedKey = "Z"
                     else:
-                        translatedKey = "Z"
+                        translatedKey = "z"
 
                 if translatedKey == None:
                     print(event)
@@ -5643,7 +5643,7 @@ def renderGameDisplay():
                         printUrwidToTcod(indicators,(x,y),size=(uiElement["width"],1))
 
                     if uiElement["type"] == "text":
-                        tcodConsole.print(x=uiElement["offset"][0],y=uiElement["offset"][1],string=uiElement["text"],fg=(255,255,255),bg=(0,0,0))
+                        printUrwidToTcod(uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu":
                         if src.gamestate.gamestate.mainChar.rememberedMenu:
                             chars = []

@@ -2476,6 +2476,7 @@ press key for advanced drop
     # open help menu
     if key in (commandChars.show_help,"z"):
         charState["submenue"] = HelpMenu()
+        char.changed("openedHelp")
 
     # open inventory
     if key in (commandChars.show_inventory,):

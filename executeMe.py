@@ -220,7 +220,8 @@ if not shouldLoad:
         scenario = args.scenario
 
     if not args.notcod:
-        context.close()
+        #context.close()
+        pass
 
     if scenario == "siege":
         args.terrain = "test"

@@ -1831,12 +1831,14 @@ class WorkshopRoom(EmptyRoom):
             command = ""
         else:
             command = "JdJd"
-        command += "dsjawj"
+        command += "sdjawwaajjddsj"
         self.floorPlan["buildSites"].append(((4+offset[0],4+offset[1],0),"Command",{"extraName":"repeat command line","command":command}))
 
         command = "aj"*4+"4d"
         self.floorPlan["buildSites"].append(((5+offset[0],5+offset[1],0),"Command",{"extraName":"run command line","command":command}))
         self.floorPlan["inputSlots"].append(((5+offset[0],4+offset[1],0),"Corpse",{"maxAmount":2}))
+
+        self.floorPlan["buildSites"].append(((2+offset[0],3+offset[1],0),"ScratchPlate",{"commands":{"noscratch":"jjaKsdJsJs"},"settings":{"scratchThreashold":1000}}))
 
     def addWorkshopSquare(self,offset,machines=None):
         if not "walkingSpace" in self.floorPlan:

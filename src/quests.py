@@ -6806,6 +6806,7 @@ class GoToPosition(Quest):
             return True
         if self.ignoreEndBlocked:
             if abs(character.xPosition%15-self.targetPosition[0])+abs(character.yPosition%15-self.targetPosition[1]) == 1:
+                self.postHandler()
                 return True
         return False
 

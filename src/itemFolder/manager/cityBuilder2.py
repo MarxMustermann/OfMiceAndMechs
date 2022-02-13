@@ -200,7 +200,9 @@ class CityBuilder2(src.items.Item):
                                                                 ("spawnRank3", "spawn rank 3"),
                                                                 ("spawnMilitary", "spawn military"),
                                                                 ("spawnRankUnranked", "spawn unranked"),
-                                                                ("addProductionLine", "add production line"),
+                                                                ("spawnSet", "spawn set"),
+                                                                ("addProductionLine1", "add weapon production line"),
+                                                                ("addProductionLine2", "add crystal compactor production line"),
                         ]
                         )
         self.applyMap = {
@@ -209,8 +211,10 @@ class CityBuilder2(src.items.Item):
                     "spawnRank5": self.spawnRank5,
                     "spawnRank4": self.spawnRank4,
                     "spawnRank3": self.spawnRank3,
+                    "spawnSet": self.spawnSet,
                     "spawnRankUnranked": self.spawnRankUnranked,
-                    "addProductionLine": self.addProductionLine,
+                    "addProductionLine1": self.addProductionLine1,
+                    "addProductionLine2": self.addProductionLine2,
                     "spawnMilitary": self.spawnMilitary,
                         }
 
@@ -277,6 +281,15 @@ class CityBuilder2(src.items.Item):
 
         return room
 
+    def spawnSet(self,character):
+        self.spawnRank(3,character)
+        for i in range(0,3):
+            self.spawnRank(4,character)
+        for i in range(0,9):
+            self.spawnRank(5,character)
+        for i in range(0,9*3):
+            self.spawnRank(6,character)
+
     def spawnRank6(self,character):
         self.spawnRank(6,character)
     def spawnRank5(self,character):
@@ -290,13 +303,24 @@ class CityBuilder2(src.items.Item):
     def spawnMilitary(self,character):
         self.spawnRank(None,character,isMilitary=True)
 
-    def addProductionLine(self,character,instaSpawn=False):
+    def addProductionLine1(self,character,instaSpawn=False):
+        toAdd = ["Rod","Sword","Armor","Sheet","Bolt","Rod","Sword","Armor","Rod"]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
+    def addProductionLine2(self,character,instaSpawn=False):
+        toAdd = ["CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor"]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
+    def addProductionLine(self,character,instaSpawn=False,toAdd=None):
         if not self.workshopRooms:
             character.addMessage("no workshop rooms available")
             return
         character.addMessage("trying to add production line")
         room = self.workshopRooms.pop()
-        items = ["Rod","Sword","Armor","Sheet","Bolt","Rod","Sword","Armor","Rod"]
+        if not toAdd:
+            items = ["Rod","Sword","Armor","Sheet","Bolt","Rod","Sword","Armor","Rod"]
+        else:
+            items = toAdd
         self.addWorkshop(items,[],room)
         for item in items:
             for otherRoom in self.container.container.rooms:

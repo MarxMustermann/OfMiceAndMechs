@@ -4655,28 +4655,28 @@ class MapMenu(SubMenu):
             return True
 
         # show rendered map
-        mapText = ""
+        mapText = []
         for y in range(0, 15):
+            mapText.append([])
             for x in range(0, 15):
                 if (x,y) == self.cursor:
-                    mapText += "██"
+                    mapText[-1].append("██")
                 else:
-                    mapText += ""+self.mapContent[y][x]
-            mapText += "\n"
+                    mapText[-1].append(self.mapContent[y][x])
+            mapText[-1].append("\n")
 
-        mapText += "\n press wasd to move cursor %s"%(self.cursor,)
+        mapText.append("\n press wasd to move cursor %s"%(self.cursor,))
 
         mappedFunctions = self.functionMap.get(self.cursor, {})
         for (key,item) in mappedFunctions.items():
-            mapText += "\n press %s to %s"%(key,item["description"],)
+            mapText.append("\n press %s to %s"%(key,item["description"],))
 
-        mapText += self.extraText
+        mapText.append(self.extraText)
 
         if not noRender:
             # show info
             header.set_text((urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = ""
-            self.persistentText += mapText
+            self.persistentText = mapText
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
 

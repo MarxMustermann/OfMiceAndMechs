@@ -1718,6 +1718,45 @@ class BeUsefull(MetaQuestSequence):
                     return
         """
 
+        if hasattr(room,"electricalCharges"):
+            if room.electricalCharges < room.maxElectricalCharges:
+                foundCharger = None
+                for item in room.itemsOnFloor:
+                    if not item.bolted:
+                        continue
+                    if not item.type == "Shocker":
+                        continue
+                    foundCharger = item
+
+                if character.inventory and character.inventory[-1].type == "CrystalCompressor":
+                    chargerPos = foundCharger.getPosition()
+                    characterPos = character.getPosition()
+                    if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Ja"))
+                    elif chargerPos == (characterPos[0]+1,characterPos[1],characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Jd"))
+                    elif chargerPos == (characterPos[0],characterPos[1]-1,characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Jw"))
+                    elif chargerPos == (characterPos[0],characterPos[1]+1,characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Js"))
+                    else:
+                        self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
+                    return
+
+                if foundCharger:
+                    source = None
+                    for sourceCandidate in room.sources:
+                        if not sourceCandidate[1] == "CrystalCompressor":
+                           continue 
+                        source = sourceCandidate
+                    character.addMessage("should reload Trap room now")
+                    self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
+                    self.addQuest(GoToTile(targetPosition=room.getPosition()))
+                    self.addQuest(FetchItems(toCollect="CrystalCompressor"))
+                    self.addQuest(GoToTile(targetPosition=source[0]))
+                    return
+                
+
         # clear inventory local
         if len(character.inventory) > 1:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)

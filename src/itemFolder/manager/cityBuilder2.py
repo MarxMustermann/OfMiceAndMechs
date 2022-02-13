@@ -411,6 +411,7 @@ class CityBuilder2(src.items.Item):
 
     def addTrapRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TrapRoom")
+        room.faction = params["character"].faction
 
     def addTeleporterRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TeleporterRoom")

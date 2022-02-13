@@ -1749,12 +1749,13 @@ class BeUsefull(MetaQuestSequence):
                         if not sourceCandidate[1] == "CrystalCompressor":
                            continue 
                         source = sourceCandidate
-                    character.addMessage("should reload Trap room now")
-                    self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
-                    self.addQuest(GoToTile(targetPosition=room.getPosition()))
-                    self.addQuest(FetchItems(toCollect="CrystalCompressor"))
-                    self.addQuest(GoToTile(targetPosition=source[0]))
-                    return
+                    if source:
+                        character.addMessage("should reload Trap room now")
+                        self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
+                        self.addQuest(GoToTile(targetPosition=room.getPosition()))
+                        self.addQuest(FetchItems(toCollect="CrystalCompressor"))
+                        self.addQuest(GoToTile(targetPosition=source[0]))
+                        return
                 
 
         # clear inventory local

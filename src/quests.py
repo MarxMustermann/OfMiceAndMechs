@@ -1762,7 +1762,7 @@ class BeUsefull(MetaQuestSequence):
             return
 
         # officer work
-        if character.rank == None or character.rank == 3:
+        if character.rank == None or character.rank in (3,4,):
             # set up machines
             if room.floorPlan:
                 self.addQuest(DrawFloorPlan())

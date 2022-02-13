@@ -203,6 +203,7 @@ class CityBuilder2(src.items.Item):
                                                                 ("spawnSet", "spawn set"),
                                                                 ("addProductionLine1", "add weapon production line"),
                                                                 ("addProductionLine2", "add crystal compactor production line"),
+                                                                ("addProductionLine3", "add scrapcompactor production line"),
                         ]
                         )
         self.applyMap = {
@@ -215,6 +216,7 @@ class CityBuilder2(src.items.Item):
                     "spawnRankUnranked": self.spawnRankUnranked,
                     "addProductionLine1": self.addProductionLine1,
                     "addProductionLine2": self.addProductionLine2,
+                    "addProductionLine3": self.addProductionLine3,
                     "spawnMilitary": self.spawnMilitary,
                         }
 
@@ -308,7 +310,11 @@ class CityBuilder2(src.items.Item):
         self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
 
     def addProductionLine2(self,character,instaSpawn=False):
-        toAdd = ["CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor","CrystalCompactor"]
+        toAdd = ["CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor"]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
+    def addProductionLine3(self,character,instaSpawn=False):
+        toAdd = ["ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor"]
         self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
 
     def addProductionLine(self,character,instaSpawn=False,toAdd=None):

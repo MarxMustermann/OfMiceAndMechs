@@ -455,7 +455,7 @@ class CityBuilder2(src.items.Item):
         room.spawnPlaned()
         room.addRandomItems()
 
-    def setConnectionsFromMap(self,params):
+    def setConnectionsFromMap(self,params,noFurtherInteraction=False):
         character = params["character"]
         if not "selection" in params:
             params["selection"] = None
@@ -484,6 +484,9 @@ class CityBuilder2(src.items.Item):
             room.removeItem(oldItem)
             room.addItem(newItem,positions[0])
 
+        if noFurtherInteraction:
+            return
+
         options = []
         options.append(("w","toggle north"))
         options.append(("a","toggle west"))
@@ -495,7 +498,7 @@ class CityBuilder2(src.items.Item):
         character.macroState["submenue"].followUp = {"container":self,"method":"setConnectionsFromMap","params":params}
         return
 
-    def addStorageRoomFromMap(self,params):
+    def addStorageRoomFromMap(self,params,instaSpawn=False):
         room = self.addRoom(params["coordinate"])
         """
         room.addStorageSlot((3,3,0),None)
@@ -525,6 +528,11 @@ class CityBuilder2(src.items.Item):
             otherRoom.sources.insert(0,(pos,"MetalBars"))
             otherRoom.sources.insert(0,(pos,"Sword"))
             otherRoom.sources.insert(0,(pos,"Painter"))
+
+        if instaSpawn:
+            room.spawnPlaned()
+            room.spawnPlaned()
+            room.addRandomItems()
 
     def addRoomFromMap(self,params):
         """

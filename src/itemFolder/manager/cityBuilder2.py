@@ -446,6 +446,15 @@ class CityBuilder2(src.items.Item):
     def addTeleporterRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TeleporterRoom")
 
+    def magicAdvanceRoomFromMap(self,params):
+        character = params["character"]
+
+        room = self.container.container.getRoomByPosition(params["coordinate"])[0]
+
+        room.spawnPlaned()
+        room.spawnPlaned()
+        room.addRandomItems()
+
     def setConnectionsFromMap(self,params):
         character = params["character"]
         if not "selection" in params:
@@ -637,6 +646,14 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character},
                     },
                     "description":"set connections",
+                }
+                functionMap[(x,y)]["m"] = {
+                    "function": {
+                        "container":self,
+                        "method":"magicAdvanceRoomFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"magic advance room",
                 }
 
 

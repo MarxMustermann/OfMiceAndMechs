@@ -33,6 +33,8 @@ class CityBuilder2(src.items.Item):
         self.enemyRoomCounter = 0
         self.cityLeader = None
 
+        self.charges = 0
+
     def generateFloorPlans(self):
         # scrap => metal bar processing
         floorPlan = {}
@@ -213,11 +215,46 @@ class CityBuilder2(src.items.Item):
                         }
 
     def addRoom(self,position,addEnemyRoom=True,roomType="EmptyRoom"):
+
+        if self.container.container.getRoomByPosition(position):
+            return
+        
+        offsets = ((-1,0),(1,0),(0,-1),(0,1))
+        foundNeighbours = []
+        for offset in offsets:
+            if self.container.container.getRoomByPosition((position[0]+offset[0],position[1]+offset[1])):
+                foundNeighbours.append(offset)
+
+        if not foundNeighbours:
+            doors = "6,0 0,6 6,12 12,6"
+        else:
+            doors = []
+            for foundNeighbour in foundNeighbours:
+                if foundNeighbour == (-1,0):
+                    doors.append("0,6")
+                    reversePos = (12,6,0)
+                elif foundNeighbour == (1,0):
+                    doors.append("12,6")
+                    reversePos = (0,6,0)
+                elif foundNeighbour == (0,-1):
+                    doors.append("6,0")
+                    reversePos = (6,12,0)
+                elif foundNeighbour == (0,1):
+                    doors.append("6,12")
+                    reversePos = (6,0,0)
+                neighbourRoom = self.container.container.getRoomByPosition((position[0]+foundNeighbour[0],position[1]+foundNeighbour[1]))[0]
+                wall = neighbourRoom.getItemByPosition(reversePos)[0]
+                neighbourRoom.removeItem(wall)
+                door = src.items.itemMap["Door"]()
+                door.walkable = True
+                neighbourRoom.addItem(door,reversePos)
+            doors = " ".join(doors)
+
         room = self.architect.doAddRoom(
             {
                 "coordinate": position,
                 "roomType": roomType,
-                "doors": "6,0 0,6 6,12 12,6",
+                "doors": doors,
                 "offset": [1,1],
                 "size": [13, 13],
             },
@@ -315,6 +352,15 @@ class CityBuilder2(src.items.Item):
         item.bolted = False
         room.addItem(item,(random.randint(2,11),random.randint(2,11),0))
 
+    def addActiveEnemies(self,params):
+
+        for i in range(0,10):
+            enemy = src.characters.Monster()
+            enemy.godMode = True
+            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
+            enemy.runCommandString("_g")
+            self.container.container.addCharacter(enemy,params["coordinate"][0]*15+random.randint(2,11),params["coordinate"][1]*15+random.randint(2,11))
+            
     def addScrapCompactorFromMap(self,params,instaSpawn=False):
         """
         handle a character having selected building a room
@@ -368,6 +414,46 @@ class CityBuilder2(src.items.Item):
 
     def addTeleporterRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TeleporterRoom")
+
+    def setConnectionsFromMap(self,params):
+        character = params["character"]
+        if not "selection" in params:
+            params["selection"] = None
+
+        if params["selection"] == "done":
+            return
+
+        room = self.container.container.getRoomByPosition(params["coordinate"])[0]
+
+        if params["selection"] in ("w","a","s","d",):
+            if params["selection"] == "w":
+                positions = [(6,0,0),(6,12,0)]
+            if params["selection"] == "a":
+                positions = [(0,6,0),(12,6,0)]
+            if params["selection"] == "s":
+                positions = [(6,12,0),(6,0,0)]
+            if params["selection"] == "d":
+                positions = [(12,6,0),(0,6,0)]
+
+            oldItem = room.getItemByPosition(positions[0])[0]
+            if oldItem.walkable:
+                newItem = src.items.itemMap["Wall"]()
+            else:
+                newItem = src.items.itemMap["Door"]()
+                newItem.walkable = True
+            room.removeItem(oldItem)
+            room.addItem(newItem,positions[0])
+
+        options = []
+        options.append(("w","toggle north"))
+        options.append(("a","toggle west"))
+        options.append(("s","toggle south"))
+        options.append(("d","toggle east"))
+        options.append(("done","done"))
+        submenue = src.interaction.SelectionMenu("What do you want to do?",options)
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"setConnectionsFromMap","params":params}
+        return
 
     def addStorageRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"])
@@ -433,6 +519,9 @@ class CityBuilder2(src.items.Item):
                     char = "  "
                 mapContent[x].append(char)
 
+        for room in self.container.container.rooms:
+            mapContent[room.yPosition][room.xPosition] = room.displayChar
+
         functionMap = {}
 
         for x in range(1,12):
@@ -470,6 +559,14 @@ class CityBuilder2(src.items.Item):
                     },
                     "description":"add enemy room",
                 }
+                functionMap[(x,y)]["E"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addActiveEnemies",
+                        "params":{"character":character,"type":"random"},
+                    },
+                    "description":"add active enemies",
+                }
                 functionMap[(x,y)]["W"] = {
                     "function": {
                         "container":self,
@@ -501,6 +598,14 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character,"type":"random"},
                     },
                     "description":"add storage room",
+                }
+                functionMap[(x,y)]["x"] = {
+                    "function": {
+                        "container":self,
+                        "method":"setConnectionsFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"set connections",
                 }
 
 

@@ -972,6 +972,14 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].deactivate()
         super().deactivate()
 
+class ClearTerrain(MetaQuestSequence):
+    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+
+    def triggerCompletionCheck(self,character=None):
+        return False
+
 class Equip(MetaQuestSequence):
     def __init__(self, description="equip", creator=None, command=None, lifetime=None):
         questList = []
@@ -7467,6 +7475,7 @@ questMap = {
     "RestockRoom": RestockRoom,
     "GoToPosition": GoToPosition,
     "GatherScrap": GatherScrap,
+    "ClearTerrain": ClearTerrain,
 }
 
 def getQuestFromState(state):

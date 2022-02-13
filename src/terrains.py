@@ -3426,6 +3426,147 @@ class Base(Nothingness):
         cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
         cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
 
+class Base2(Nothingness):
+
+    objType = "Base2"
+
+    def __init__(self, seed=0, noContent=False):
+        super().__init__(
+            seed=seed, noContent=noContent
+        )
+
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        self.addItem(architect,(1,1,0))
+
+        mainRoom = architect.doAddRoom({
+                 "coordinate": (7,7),
+                 "roomType": "EmptyRoom",
+                 "doors": "0,6 6,0 12,6 6,12",
+                 "offset": [1,1],
+                 "size": [13, 13],
+                },
+            None,
+            )
+
+        architect.doAddScrapfield(8, 5, 280)
+
+        cityBuilder = src.items.itemMap["CityBuilder2"]()
+        cityBuilder.bolted = True
+        cityBuilder.godMode = True
+        cityBuilder.architect = architect
+        cityBuilder.scrapFields = self.scrapFields
+        for scrapField in cityBuilder.scrapFields:
+            mainRoom.sources.append((scrapField,"Scrap"))
+        mainRoom.addItem(cityBuilder, (1, 5, 0))
+
+        tradingArtwork = src.items.itemMap["TradingArtwork2"]()
+        cityBuilder.bolted = True
+        mainRoom.addItem(tradingArtwork, (1, 9, 0))
+        tradingArtwork.configure(src.gamestate.gamestate.mainChar)
+
+        mainRoom.addInputSlot((5,11,0),"Scrap")
+        mainRoom.addInputSlot((4,11,0),"Scrap")
+        mainRoom.addInputSlot((3,11,0),"MetalBars")
+
+        mainRoom.addOutputSlot((11,8,0),"MetalBars")
+        mainRoom.addOutputSlot((11,7,0),"ScrapCompactor")
+        mainRoom.addOutputSlot((11,9,0),"Painter")
+        mainRoom.addOutputSlot((11,10,0),"Sheet")
+        mainRoom.addOutputSlot((10,11,0),"CorpseAnimator")
+        mainRoom.addOutputSlot((9,11,0),"Corpse")
+        mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
+
+        for i in range(0,10):
+            item = src.items.itemMap["Painter"]()
+            mainRoom.addItem(item,(11,9,0))
+
+        mainRoom.addStorageSlot((1,7,0),None)
+        mainRoom.addStorageSlot((1,8,0),None)
+        mainRoom.addStorageSlot((1,9,0),None)
+        mainRoom.addStorageSlot((1,10,0),None)
+        mainRoom.addStorageSlot((1,11,0),None)
+
+        mainRoom.walkingSpace.add((2,7,0))
+        mainRoom.walkingSpace.add((2,8,0))
+        mainRoom.walkingSpace.add((2,9,0))
+        mainRoom.walkingSpace.add((2,10,0))
+        mainRoom.walkingSpace.add((2,11,0))
+        mainRoom.walkingSpace.add((5,10,0))
+        mainRoom.walkingSpace.add((4,10,0))
+        mainRoom.walkingSpace.add((3,10,0))
+
+        mainRoom.walkingSpace.add((7,7,0))
+        mainRoom.walkingSpace.add((10,7,0))
+        mainRoom.walkingSpace.add((10,8,0))
+        mainRoom.walkingSpace.add((10,9,0))
+        mainRoom.walkingSpace.add((10,10,0))
+        mainRoom.walkingSpace.add((9,10,0))
+        mainRoom.walkingSpace.add((8,10,0))
+        mainRoom.walkingSpace.add((7,10,0))
+
+        mainRoom.sources.append((mainRoom.getPosition(),"ScrapCompactor"))
+        mainRoom.sources.append((mainRoom.getPosition(),"MetalBars"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Painter"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Sheet"))
+        mainRoom.sources.append((mainRoom.getPosition(),"CorpseAnimator"))
+        mainRoom.sources.append((mainRoom.getPosition(),"Corpse"))
+        mainRoom.sources.append((mainRoom.getPosition(),"ScratchPlate"))
+
+        mainRoom.addRandomItems()
+        mainRoom.storageRooms = []
+
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,7)})
+        cityBuilder.addProductionLine1(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine2(src.gamestate.gamestate.mainChar,instaSpawn=True)
+
+        cityBuilder.addTrapRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,6)})
+        cityBuilder.addTrapRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,6)})
+        cityBuilder.addTrapRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,6)})
+
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,8)})
+        cityBuilder.addProductionLine3(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,8)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,8)})
+        cityBuilder.addProductionLine1(src.gamestate.gamestate.mainChar,instaSpawn=True)
+
+        cityBuilder.addStorageRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,9)},instaSpawn=True)
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,9),"type":"random"},instaSpawn=True)
+        cityBuilder.addTeleporterRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,9)})
+
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,6),"selection":"w"},noFurtherInteraction=True)
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,6),"selection":"s"},noFurtherInteraction=True)
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,7),"selection":"w"},noFurtherInteraction=True)
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,7),"selection":"a"},noFurtherInteraction=True)
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,7),"selection":"d"},noFurtherInteraction=True)
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,7),"selection":"d"},noFurtherInteraction=True)
+        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"selection":"a"},noFurtherInteraction=True)
+        """
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"},instaSpawn=True)
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,6),"type":"random"},instaSpawn=True)
+        cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,8),"type":"random"},instaSpawn=True)
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,8)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,7)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,6)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,5)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,9)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(5,7)})
+        cityBuilder.addWorkshopRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(9,5)})
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.addProductionLine(src.gamestate.gamestate.mainChar,instaSpawn=True)
+        cityBuilder.spawnRank3(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank4(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
+        """
+
 class Ruin(Base):
     objType = "Ruin"
 
@@ -3961,6 +4102,7 @@ terrainMap = {
     "Desert": Desert,
     "Ruin": Ruin,
     "Base": Base,
+    "Base2": Base2,
 }
 
 def getTerrainFromState(state):

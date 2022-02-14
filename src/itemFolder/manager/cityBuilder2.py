@@ -438,10 +438,12 @@ class CityBuilder2(src.items.Item):
     def addWorkshopRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="WorkshopRoom")
         self.workshopRooms.append(room)
+        return room
 
     def addTrapRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TrapRoom")
         room.faction = params["character"].faction
+        return room
 
     def addTeleporterRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TeleporterRoom")
@@ -533,6 +535,7 @@ class CityBuilder2(src.items.Item):
             room.spawnPlaned()
             room.spawnPlaned()
             room.addRandomItems()
+        return room
 
     def addRoomFromMap(self,params):
         """

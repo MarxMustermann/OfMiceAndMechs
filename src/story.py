@@ -1884,6 +1884,7 @@ class BackToTheRoots(BasicPhase):
             cityBuilder.architect = architect
             mainRoom.addItem(cityBuilder,(7,1,0))
             mainRoom.rooms = rooms
+            cityBuilder.registerRoom(mainRoom)
 
             mainRoom.addItem(architect,(3,1,0))
 

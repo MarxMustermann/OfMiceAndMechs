@@ -2157,42 +2157,6 @@ class BackToTheRoots(BasicPhase):
 
     def startTutorial(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
-        showText("""
-Hello,
-
-i'm MarxMustermann and since this game is very much work in progress i'll give you a short intro:
-
-The goal of this game is to become a city leader and to collect all special items.
-
-The path to be city leader is by completing quests and getting promotions. Your goal is to reach rank 3.
-
-Each of the special items are currently in one city and you are going to obtain them.
-
-= press space to continue =
-
-""")
-        showText("""
-most important thing first:
-go to the command center to end/skip the tutorial
-
-For the tutorial:
-The game is a top-down view of a play area.
-You can move around, activate items and fight enemies.
-There is more to it, but that will be explained later.
-
-you are represented by a golden @
-
-try moving around a bit by using
-
-w to move up/north
-a to move left/west
-s to move down/south
-d to move right/east
-
-= press space to continue =
-
-""")
-        # spawn into 
 
     def almostStartNewEpoch(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
@@ -2215,32 +2179,6 @@ d to move right/east
                     for worker in subsubleader.subordinates:
                         gatherNPC(worker)
 
-        showText("""
-In %s ticks a new epoch will begin and the attack on the enemy city will finally happen!
-
-Hurry to the assembly hall and recieve your orders to be able to participate in the battle.
-
-
-imortant UI elements:
-You now got the quest to stand attention in the assembly hall.
-You can see your quests in the upper left corner of the screen.
-
-The topmost line of this quest screen shows a proposed solution for the current quest.
-The shown solution is a series of keystrokes. For example a solution of "13d" means you should move 13 steps east.
-If you press + the proposed solution is run automatically on your character.
-If you dislike the proposed solution press # to reroll the solution.
-
-
-
-
-Important Hint:
-* The NPCs in the attack run by using quest solvers
-* strictly following quest solutions will lead to average results compared to your peers
-* rerolling a solution might not always lead to a different result
-* use the + key to get around faster 
-
-
-press space to continue"""%(self.gatherTime,))
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.gatherTime)
         event.setCallback({"container": self, "method": "startNewEpoch"})
         terrain.addEvent(event)

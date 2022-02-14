@@ -1740,7 +1740,10 @@ class BeUsefull(MetaQuestSequence):
                     elif chargerPos == (characterPos[0],characterPos[1]+1,characterPos[2]):
                         self.addQuest(RunCommand(command=10*"Js"))
                     else:
-                        self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
+                        quest = GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True)
+                        quest.activate()
+                        quest.assignToCharacter(character)
+                        self.addQuest(quest)
                     return
 
                 if foundCharger:

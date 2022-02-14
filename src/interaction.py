@@ -587,7 +587,6 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         and charState["submenue"].stealAllKeys
         and (key not in ("|", ">", "<") and not charState["submenue"].escape)
     ):
-        char.timeTaken -= 0.99
 
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
@@ -2635,6 +2634,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     # render submenus
     if charState["submenue"]:
+        char.timeTaken -= 0.99
 
         # set flag to not render the game
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:

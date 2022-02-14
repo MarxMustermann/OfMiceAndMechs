@@ -32,6 +32,7 @@ class CityBuilder2(src.items.Item):
         self.generateFloorPlans()
         self.enemyRoomCounter = 0
         self.cityLeader = None
+        self.rooms = []
 
         self.charges = 0
 
@@ -219,6 +220,9 @@ class CityBuilder2(src.items.Item):
                     "addProductionLine3": self.addProductionLine3,
                     "spawnMilitary": self.spawnMilitary,
                         }
+        
+    def registerRoom(self,room):
+        self.rooms.append(room)
 
     def addRoom(self,position,addEnemyRoom=True,roomType="EmptyRoom"):
 
@@ -269,6 +273,8 @@ class CityBuilder2(src.items.Item):
 
         for item in self.scrapFields:
             room.sources.append((item,"Scrap"))
+
+        self.rooms.append(room)
 
         #if addEnemyRoom:
         #    self.addEnemyRoomFromMap({"coordinate":(random.randint(2,11),random.randint(2,11))})
@@ -329,7 +335,7 @@ class CityBuilder2(src.items.Item):
             items = toAdd
         self.addWorkshop(items,[],room)
         for item in items:
-            for otherRoom in self.container.container.rooms:
+            for otherRoom in self.rooms:
                 otherRoom.sources.append((room.getPosition(),item))
 
         if instaSpawn:
@@ -520,7 +526,7 @@ class CityBuilder2(src.items.Item):
 
         self.container.storageRooms.append(room)
 
-        for otherRoom in self.container.container.rooms:
+        for otherRoom in self.rooms:
             pos = room.getPosition()
             otherRoom.sources.insert(0,(pos,"Corpse"))
             otherRoom.sources.insert(0,(pos,"Frame"))
@@ -570,7 +576,7 @@ class CityBuilder2(src.items.Item):
                     char = "  "
                 mapContent[x].append(char)
 
-        for room in self.container.container.rooms:
+        for room in self.rooms:
             mapContent[room.yPosition][room.xPosition] = room.displayChar
 
         functionMap = {}
@@ -843,7 +849,7 @@ class CityBuilder2(src.items.Item):
                 painter = src.items.itemMap["Painter"]()
                 room.addItem(painter,(1,1,0))
 
-            for otherRoom in self.container.rooms:
+            for otherRoom in self.rooms:
                 pos = room.getPosition()
                 otherRoom.sources.insert(0,(pos,"Corpse"))
                 otherRoom.sources.insert(0,(pos,"Frame"))
@@ -938,7 +944,7 @@ class CityBuilder2(src.items.Item):
 
             pos = room.getPosition()
             for machine in newOutputs:
-                for otherRoom in self.container.rooms:
+                for otherRoom in self.rooms:
                     otherRoom.sources.append((pos,machine))
 
 src.items.addType(CityBuilder2)

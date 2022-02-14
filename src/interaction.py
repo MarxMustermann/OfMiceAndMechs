@@ -77,7 +77,8 @@ class AbstractedDisplay(object):
 tcodConsole = None
 tcodContext = None
 tcod = None
-pygame2 = None
+soundloader = None
+tcodAudio = None
 def setUpTcod():
     import tcod as internalTcod
     global tcod
@@ -121,16 +122,14 @@ def setUpTcod():
 
     context.present(root_console)
 
-    # also set up sound
-    import pygame
+    import tcod.sdl.audio as audio
+    import soundfile as sf
 
-    global pygame2
-    pygame2 = pygame
+    global soundloader
+    soundloader = sf
 
-    pygame2.mixer.pre_init()
-    pygame2.mixer.init()
-    pygame2.init()
-    pygame2.display.quit()
+    global tcodAudio
+    tcodAudio = audio
 
     """
     if not context.sdl_window_p:

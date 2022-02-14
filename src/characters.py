@@ -1297,8 +1297,15 @@ class Character(src.saveing.Saveable):
         self.lastTerrain = self.terrain
 
         if src.gamestate.gamestate.mainChar == self:
-            src.interaction.pygame2.mixer.Channel(5).play(src.interaction.pygame2.mixer.Sound('./sounds/playerDeath.ogg'))
-            pass
+            try:
+                sound_clip, samplerate = src.interaction.soundloader.read('sounds/playerDeath.ogg',dtype='float32')
+                device = src.interaction.tcodAudio.open()
+                device.queue_audio(sound_clip)
+
+                mixer = src.interaction.tcodAudio.BasicMixer(device)
+                mixer.play(sound_clip)
+            except:
+                pass
 
         # notify nearby characters
         if self.container:
@@ -1565,9 +1572,15 @@ class Character(src.saveing.Saveable):
         self.inventory.remove(item)
 
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            sound = src.interaction.pygame2.mixer.Sound('./sounds/itemDropped.ogg')
-            src.interaction.pygame2.mixer.Channel(6).play(sound)
-            pass
+            try:
+                sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemDropped.ogg',dtype='float32')
+                device = src.interaction.tcodAudio.open()
+                device.queue_audio(sound_clip)
+
+                mixer = src.interaction.tcodAudio.BasicMixer(device)
+                mixer.play(sound_clip)
+            except:
+                pass
 
         if foundScrap and item.type == "Scrap":
             foundScrap.amount += item.amount
@@ -1763,35 +1776,39 @@ class Character(src.saveing.Saveable):
         """
 
         if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
-            sound = src.interaction.pygame2.mixer.Sound('./sounds/step.ogg')
-            if src.gamestate.gamestate.mainChar == self:
-                sound.set_volume(0.3)
-                src.interaction.pygame2.mixer.Channel(1).play(sound)
-            else:
-                sound.set_volume(0.2)
-                src.interaction.pygame2.mixer.Channel(2).play(sound)
+                sound_clip, samplerate = src.interaction.soundloader.read('sounds/step.ogg',dtype='float32')
+                device = src.interaction.tcodAudio.open()
+                device.queue_audio(sound_clip)
+
+                mixer = src.interaction.tcodAudio.BasicMixer(device)
+                mixer.play(sound_clip)
 
         if tag == "character died on tile":
             if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
                 reutation = 0
                 self.awardReputation(amount=2,reason="enemy died on tile",carryOver=True)
 
-        if src.gamestate.gamestate.mainChar == self and tag == "changedTile":
-            src.interaction.pygame2.mixer.Channel(7).pause()
-
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
             if isinstance(info[1],src.rooms.WorkshopRoom):
-                sound = src.interaction.pygame2.mixer.Sound('./sounds/workshopRoom.ogg')
-                sound.set_volume(0.3)
-                src.interaction.pygame2.mixer.Channel(7).play(sound,loops=-1)
-                src.interaction.pygame2.mixer.Channel(7).unpause()
+                try:
+                    sound_clip, samplerate = src.interaction.soundloader.read('sounds/workshopRoom.ogg',dtype='float32')
+                    device = src.interaction.tcodAudio.open()
+                    device.queue_audio(sound_clip)
+
+                    mixer = src.interaction.tcodAudio.BasicMixer(device)
+                    mixer.play(sound_clip)
+                except:
+                    pass
             elif isinstance(info[1],src.rooms.TrapRoom):
-                sound = src.interaction.pygame2.mixer.Sound('./sounds/electroRoom.ogg')
-                sound.set_volume(0.3)
-                src.interaction.pygame2.mixer.Channel(7).play(sound,loops=-1)
-                src.interaction.pygame2.mixer.Channel(7).unpause()
-            else:
-                src.interaction.pygame2.mixer.Channel(7).pause()
+                try:
+                    sound_clip, samplerate = src.interaction.soundloader.read('sounds/electroRoom.ogg',dtype='float32')
+                    device = src.interaction.tcodAudio.open()
+                    device.queue_audio(sound_clip)
+
+                    mixer = src.interaction.tcodAudio.BasicMixer(device)
+                    mixer.play(sound_clip)
+                except:
+                    pass
 
         # do nothing if nobody listens
         if tag not in self.listeners:

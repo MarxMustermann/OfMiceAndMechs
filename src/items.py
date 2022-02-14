@@ -353,8 +353,12 @@ class Item(src.saveing.Saveable):
         """
         
         if src.gamestate.gamestate.mainChar in character.container.characters:
-            sound = src.interaction.pygame2.mixer.Sound('./sounds/itemPickedUp.ogg')
-            src.interaction.pygame2.mixer.Channel(4).play(sound)
+            sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemPickedUp.ogg',dtype='float32')
+            device = src.interaction.tcodAudio.open()
+            device.queue_audio(sound_clip)
+
+            mixer = src.interaction.tcodAudio.BasicMixer(device)
+            mixer.play(sound_clip)
             pass
 
         # gather the actions

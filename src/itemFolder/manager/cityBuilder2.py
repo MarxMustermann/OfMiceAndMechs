@@ -476,12 +476,16 @@ class CityBuilder2(src.items.Item):
         if params["selection"] in ("w","a","s","d",):
             if params["selection"] == "w":
                 positions = [(6,0,0),(6,12,0)]
+                otherRoom = (0,-1)
             if params["selection"] == "a":
                 positions = [(0,6,0),(12,6,0)]
+                otherRoom = (-1,0)
             if params["selection"] == "s":
                 positions = [(6,12,0),(6,0,0)]
+                otherRoom = (0,1)
             if params["selection"] == "d":
                 positions = [(12,6,0),(0,6,0)]
+                otherRoom = (1,0)
 
             oldItem = room.getItemByPosition(positions[0])[0]
             if oldItem.walkable:
@@ -491,6 +495,18 @@ class CityBuilder2(src.items.Item):
                 newItem.walkable = True
             room.removeItem(oldItem)
             room.addItem(newItem,positions[0])
+
+            roomList = self.container.container.getRoomByPosition((params["coordinate"][0]+otherRoom[0],params["coordinate"][1]+otherRoom[1]))
+            if roomList:
+                otherRoom = roomList[0]
+                oldItem = otherRoom.getItemByPosition(positions[1])[0]
+                if oldItem.walkable:
+                    newItem = src.items.itemMap["Wall"]()
+                else:
+                    newItem = src.items.itemMap["Door"]()
+                    newItem.walkable = True
+                otherRoom.removeItem(oldItem)
+                otherRoom.addItem(newItem,positions[1])
 
         if noFurtherInteraction:
             return

@@ -199,7 +199,7 @@ if not shouldLoad:
 
             #print("offer the player the option to start playing now or do something more specific") 
             root_console.clear()
-            root_console.print(x=3,y=2,string="play now\nstart specific scenario")
+            root_console.print(x=3,y=0,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\nplay now\ndo tutorials\nstart specific scenario")
 
             while 1:
                 foundEvent = False
@@ -208,45 +208,23 @@ if not shouldLoad:
                     if isinstance(event,tcod.event.MouseButtonUp):
                         context.convert_event(event)
                         mainSelection = event.tile.y-2
-                        if mainSelection in (0,1,):
+                        if mainSelection in (0,1,2):
                             foundEvent = True
-                        print(mainSelection)
 
                 context.present(root_console)
                 if foundEvent:
                     break
 
             if mainSelection == 0:
-                #print("confirming that the player wants to start the main game")
-                root_console.clear()
-                root_console.print(x=3,y=2,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\n\nstart tutorials\nstart game\n")
-
-                while 1:
-                    foundEvent = False
-                    events = tcod.event.get()
-
-                    for event in events:
-                        if isinstance(event,tcod.event.MouseButtonUp):
-                            context.convert_event(event)
-                            confirmSelection = event.tile.y-5
-                            print(confirmSelection)
-                            if confirmSelection in (0,1,):
-                                foundEvent = True
-
-                    context.present(root_console)
-                    if foundEvent:
-                        break
-
-                if confirmSelection == 0:
-                    print("should load tutorial")
-                    scenario = "Tutorials"
-
-                if confirmSelection == 1:
-                    print("should load main game")
-                    scenario = "BackToTheRoots"
+                #print("loading main game")
+                scenario = "BackToTheRoots"
 
             elif mainSelection == 1:
-                #print("offering the player to start a specific scenario")
+                #print("loading tutorial")
+                scenario = "Tutorials"
+
+            elif mainSelection == 2:
+                print("offering the player to start a specific scenario")
                 root_console.clear()
                 root_console.print(x=3,y=2,string=text)
                 while 1:

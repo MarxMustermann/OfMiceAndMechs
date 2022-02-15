@@ -683,6 +683,8 @@ class Terrain(src.saveing.Saveable):
             return
 
         if direction == "west":
+            if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
+                return
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
                     direction = "south"
@@ -701,6 +703,8 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
         elif direction == "east":
+            if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
+                return
             if char.xPosition % 15 == 13:
                 if char.yPosition % 15 < 7:
                     direction = "south"
@@ -718,6 +722,8 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
         elif direction == "north":
+            if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
+                return
             if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
                     direction = "east"
@@ -735,6 +741,8 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
         elif direction == "south":
+            if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
+                return
             if char.yPosition % 15 == 13:
                 if char.xPosition % 15 < 7:
                     direction = "east"

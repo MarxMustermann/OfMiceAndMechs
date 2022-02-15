@@ -245,8 +245,7 @@ Activate the machine to produce.
 
         #HACK: sound effect
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('./sounds/machineUsed.ogg'))
-            pass
+            src.interaction.playSound("machineUsed","machines")
         self.runCommand("success", character)
 
     def getLongInfo(self):

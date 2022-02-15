@@ -141,8 +141,7 @@ class ScrapCompactor(src.items.Item):
 
         #HACK: sound effect
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            src.interaction.pygame2.mixer.Channel(0).play(src.interaction.pygame2.mixer.Sound('./sounds/scrapcompactorUsed.ogg'))
-            pass
+            src.interaction.playSound("scrapcompactorUsed","machines")
         self.runCommand("success", character)
 
     def getLongInfo(self):

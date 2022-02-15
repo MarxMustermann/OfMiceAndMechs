@@ -1297,15 +1297,7 @@ class Character(src.saveing.Saveable):
         self.lastTerrain = self.terrain
 
         if src.gamestate.gamestate.mainChar == self:
-            try:
-                sound_clip, samplerate = src.interaction.soundloader.read('sounds/playerDeath.ogg',dtype='float32')
-                device = src.interaction.tcodAudio.open()
-                device.queue_audio(sound_clip)
-
-                mixer = src.interaction.tcodAudio.BasicMixer(device)
-                mixer.play(sound_clip)
-            except:
-                pass
+            src.interaction.playSound("playerDeath","importantActions")
 
         # notify nearby characters
         if self.container:
@@ -1572,15 +1564,7 @@ class Character(src.saveing.Saveable):
         self.inventory.remove(item)
 
         if src.gamestate.gamestate.mainChar in self.container.characters:
-            try:
-                sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemDropped.ogg',dtype='float32')
-                device = src.interaction.tcodAudio.open()
-                device.queue_audio(sound_clip)
-
-                mixer = src.interaction.tcodAudio.BasicMixer(device)
-                mixer.play(sound_clip)
-            except:
-                pass
+            src.interaction.playSound("itemDropped","actions")
 
         if foundScrap and item.type == "Scrap":
             foundScrap.amount += item.amount
@@ -1776,12 +1760,7 @@ class Character(src.saveing.Saveable):
         """
 
         if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
-                sound_clip, samplerate = src.interaction.soundloader.read('sounds/step.ogg',dtype='float32')
-                device = src.interaction.tcodAudio.open()
-                device.queue_audio(sound_clip)
-
-                mixer = src.interaction.tcodAudio.BasicMixer(device)
-                mixer.play(sound_clip)
+            src.interaction.playSound("step","steps")
 
         if tag == "character died on tile":
             if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
@@ -1790,25 +1769,9 @@ class Character(src.saveing.Saveable):
 
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
             if isinstance(info[1],src.rooms.WorkshopRoom):
-                try:
-                    sound_clip, samplerate = src.interaction.soundloader.read('sounds/workshopRoom.ogg',dtype='float32')
-                    device = src.interaction.tcodAudio.open()
-                    device.queue_audio(sound_clip)
-
-                    mixer = src.interaction.tcodAudio.BasicMixer(device)
-                    mixer.play(sound_clip)
-                except:
-                    pass
+                src.interaction.playSound("workshopRoom","roomMusic",loop=True)
             elif isinstance(info[1],src.rooms.TrapRoom):
-                try:
-                    sound_clip, samplerate = src.interaction.soundloader.read('sounds/electroRoom.ogg',dtype='float32')
-                    device = src.interaction.tcodAudio.open()
-                    device.queue_audio(sound_clip)
-
-                    mixer = src.interaction.tcodAudio.BasicMixer(device)
-                    mixer.play(sound_clip)
-                except:
-                    pass
+                src.interaction.playSound("electroRoom","roomMusic",loop=True)
 
         # do nothing if nobody listens
         if tag not in self.listeners:

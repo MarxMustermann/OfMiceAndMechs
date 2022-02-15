@@ -353,13 +353,7 @@ class Item(src.saveing.Saveable):
         """
         
         if src.gamestate.gamestate.mainChar in character.container.characters:
-            sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemPickedUp.ogg',dtype='float32')
-            device = src.interaction.tcodAudio.open()
-            device.queue_audio(sound_clip)
-
-            mixer = src.interaction.tcodAudio.BasicMixer(device)
-            mixer.play(sound_clip)
-            pass
+            src.interaction.playSound("itemPickedUp","actions")
 
         # gather the actions
         actions = self.gatherPickupActions()

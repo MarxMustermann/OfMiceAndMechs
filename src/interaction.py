@@ -79,6 +79,19 @@ tcodContext = None
 tcod = None
 soundloader = None
 tcodAudio = None
+tcodAudioDevice = None
+tcodMixer = None
+sounds = {}
+
+def playSound(soundName,channelName,loop=False):
+    channel = src.interaction.tcodMixer.get_channel(channelName)
+    if not channel.busy:
+        src.interaction.tcodMixer.play(sounds[soundName])
+
+def playSound(soundName,channelName,loop=False):
+    if not tcodAudioDevice.queued_samples > 10:
+        tcodAudioDevice.queue_audio(sounds[soundName])
+
 def setUpTcod():
     import tcod as internalTcod
     global tcod
@@ -128,8 +141,35 @@ def setUpTcod():
     global soundloader
     soundloader = sf
 
+    global sounds
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/step.ogg',dtype='float32')
+    sounds["step"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/scrapcompactorUsed.ogg',dtype='float32')
+    sounds["scrapcompactorUsed"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/machineUsed.ogg',dtype='float32')
+    sounds["machineUsed"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/workshopRoom.ogg',dtype='float32')
+    sounds["workshopRoom"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/electroRoom.ogg',dtype='float32')
+    sounds["electroRoom"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/playerDeath.ogg',dtype='float32')
+    sounds["playerDeath"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemDropped.ogg',dtype='float32')
+    sounds["itemDropped"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemPickedUp.ogg',dtype='float32')
+    sounds["itemPickedUp"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/machineUsed.ogg',dtype='float32')
+    sounds["machineUsed"] = sound_clip
+
     global tcodAudio
     tcodAudio = audio
+
+    global tcodMixer
+    global tcodAudioDevice
+    device = src.interaction.tcodAudio.open()
+    tcodAudioDevice = device
+    mixer = src.interaction.tcodAudio.BasicMixer(device)
+    tcodMixer = mixer
 
     """
     if not context.sdl_window_p:

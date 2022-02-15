@@ -199,7 +199,7 @@ if not shouldLoad:
 
             #print("offer the player the option to start playing now or do something more specific") 
             root_console.clear()
-            root_console.print(x=3,y=0,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\nplay now\ndo tutorials\nstart specific scenario")
+            root_console.print(x=3,y=2,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\n\nplay now\ndo tutorials\nstart specific scenario")
 
             while 1:
                 foundEvent = False
@@ -207,7 +207,7 @@ if not shouldLoad:
                 for event in events:
                     if isinstance(event,tcod.event.MouseButtonUp):
                         context.convert_event(event)
-                        mainSelection = event.tile.y-2
+                        mainSelection = event.tile.y-5
                         if mainSelection in (0,1,2):
                             foundEvent = True
 

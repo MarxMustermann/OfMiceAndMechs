@@ -205,6 +205,7 @@ class CityBuilder2(src.items.Item):
                                                                 ("addProductionLine1", "add weapon production line"),
                                                                 ("addProductionLine2", "add crystal compactor production line"),
                                                                 ("addProductionLine3", "add scrapcompactor production line"),
+                                                                ("spawnCity", "spawn City"),
                         ]
                         )
         self.applyMap = {
@@ -213,12 +214,13 @@ class CityBuilder2(src.items.Item):
                     "spawnRank5": self.spawnRank5,
                     "spawnRank4": self.spawnRank4,
                     "spawnRank3": self.spawnRank3,
+                    "spawnMilitary": self.spawnMilitary,
                     "spawnSet": self.spawnSet,
                     "spawnRankUnranked": self.spawnRankUnranked,
                     "addProductionLine1": self.addProductionLine1,
                     "addProductionLine2": self.addProductionLine2,
                     "addProductionLine3": self.addProductionLine3,
-                    "spawnMilitary": self.spawnMilitary,
+                    "spawnCity": self.spawnCity,
                         }
         
     def registerRoom(self,room):
@@ -342,6 +344,49 @@ class CityBuilder2(src.items.Item):
             room.spawnPlaned()
             room.spawnPlaned()
             room.addRandomItems()
+
+    def spawnCity(self,character):
+        if len(self.rooms) > 1:
+            character.addMessage("need to remove old city first")
+
+        citylocation = self.container.getPosition()
+        self.addRoom((citylocation[0],citylocation[1]+1))
+        
+        guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
+        guardRoom.electricalCharges = int(random.random()*30)+300
+        guardRoom.chargeStrength = 20
+
+        self.addScrapCompactorFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character,"type":"random"})
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})
+        self.addTeleporterRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
+
+        generalStorage = self.addStorageRoomFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
+        for i in range(1,10):
+            generalStorage.addItem(src.items.itemMap["Painter"](),(1,1,0))
+
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]+1),"character":character})
+        
+        self.addScrapCompactorFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+1),"character":character,"type":"random"},instaSpawn=True)
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+2),"character":character})
+
+        guardRoom2 = self.addTrapRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]-1),"character":character})
+        guardRoom2.electricalCharges = int(random.random()*30)+30
+        guardRoom2.chargeStrength = 5
+
+        guardRoom3 = self.addTrapRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]-1),"character":character})
+        guardRoom3.electricalCharges = int(random.random()*30)+30
+        guardRoom3.chargeStrength = 5
+
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-1),"selection":"w"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]),"selection":"w"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]),"selection":"d"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]),"selection":"a"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]+1),"selection":"d"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]+1),"selection":"a"},noFurtherInteraction=True)
+
+        self.addProductionLine1(character,instaSpawn=True)
+        self.addProductionLine2(character,instaSpawn=True)
+        self.addProductionLine3(character,instaSpawn=True)
 
     def spawnRank(self,rank,actor,isMilitary=False):
         if not rank == 3:
@@ -688,7 +733,6 @@ class CityBuilder2(src.items.Item):
                     },
                     "description":"magic advance room",
                 }
-
 
         for scrapField in self.scrapFields:
             plot = scrapField

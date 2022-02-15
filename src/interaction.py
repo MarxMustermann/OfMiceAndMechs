@@ -86,11 +86,7 @@ sounds = {}
 def playSound(soundName,channelName,loop=False):
     channel = src.interaction.tcodMixer.get_channel(channelName)
     if not channel.busy:
-        src.interaction.tcodMixer.play(sounds[soundName])
-
-def playSound(soundName,channelName,loop=False):
-    if not tcodAudioDevice.queued_samples > 10:
-        tcodAudioDevice.queue_audio(sounds[soundName])
+        channel.play(sounds[soundName])
 
 def setUpTcod():
     import tcod as internalTcod
@@ -169,6 +165,7 @@ def setUpTcod():
     device = src.interaction.tcodAudio.open()
     tcodAudioDevice = device
     mixer = src.interaction.tcodAudio.BasicMixer(device)
+    mixer.start()
     tcodMixer = mixer
 
     """

@@ -3543,12 +3543,9 @@ class Base2(Nothingness):
         cityBuilder.addTeleporterRoomFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,9)})
 
         cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,6),"selection":"w"},noFurtherInteraction=True)
-        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,6),"selection":"s"},noFurtherInteraction=True)
         cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,7),"selection":"w"},noFurtherInteraction=True)
         cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,7),"selection":"a"},noFurtherInteraction=True)
         cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(7,7),"selection":"d"},noFurtherInteraction=True)
-        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(6,7),"selection":"d"},noFurtherInteraction=True)
-        cityBuilder.setConnectionsFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"selection":"a"},noFurtherInteraction=True)
         """
         cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,7),"type":"random"},instaSpawn=True)
         cityBuilder.addScrapCompactorFromMap({"character":src.gamestate.gamestate.mainChar,"coordinate":(8,6),"type":"random"},instaSpawn=True)

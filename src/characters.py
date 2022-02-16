@@ -62,6 +62,8 @@ class Character(src.saveing.Saveable):
         self.rememberedMenu = []
         self.rememberedMenu2 = []
 
+        self.duties = []
+
         super().__init__()
 
         if name is None and seed:

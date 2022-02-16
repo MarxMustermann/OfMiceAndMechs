@@ -408,6 +408,10 @@ class CityBuilder2(src.items.Item):
         if rank == 4:
             self.cityLeader.subordinates.append(char)
 
+
+        if rank == 5:
+            char.duties.append("Trapsetting")
+
         quest = src.quests.BeUsefull()
         quest.assignToCharacter(char)
         quest.activate()

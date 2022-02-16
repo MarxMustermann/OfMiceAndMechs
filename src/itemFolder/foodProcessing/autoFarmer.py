@@ -45,7 +45,7 @@ class AutoFarmer(src.items.Item):
 
         if isinstance(character, src.characters.Monster):
             #character.die()
-            self.destroy()
+            #self.destroy()
             return
 
         if len(character.inventory) > 9:
@@ -77,6 +77,7 @@ class AutoFarmer(src.items.Item):
             pos[1] -= 1
             path.append((pos[0], pos[1],0))
 
+        pluggedSprouts = 0
         foundSomething = False
         lastCharacterPosition = path[0]
         for pos in path[1:]:
@@ -84,7 +85,15 @@ class AutoFarmer(src.items.Item):
             if not items:
                 continue
             item = items[0]
-            if item.type in ("Bloom", "SickBloom", "Coal"):
+
+            if item.type in ("Bloom", "SickBloom", "Coal", "Sprout","Sprout2","Mold",):
+                if item.type in ("Mold",):
+                    continue
+                if item.type in ("Sprout","Sprout2",):
+                    if pluggedSprouts > 0:
+                        continue
+                pluggedSprouts += 1
+
                 if lastCharacterPosition[0] > pos[0]:
                     command += str(lastCharacterPosition[0] - pos[0]) + "a"
                 if lastCharacterPosition[0] < pos[0]:
@@ -106,7 +115,7 @@ class AutoFarmer(src.items.Item):
 
                 lastCharacterPosition = pos
 
-            if items[0].type in ("Bush"):
+            elif items[0].type in ("Bush"):
                 if lastCharacterPosition[0] > pos[0]:
                     command += str(lastCharacterPosition[0] - pos[0]) + "a"
                     lastDirection = "a"
@@ -123,8 +132,12 @@ class AutoFarmer(src.items.Item):
                 for i in range(0, 11):
                     command += "J" + lastDirection
                 command += lastDirection + "k"
+                lastCharacterPosition = pos
 
-            if items[0].type in ("EncrustedBush"):
+            elif items[0].type in ("EncrustedBush"):
+                break
+
+            elif not items[0].walkable:
                 break
 
         found = False

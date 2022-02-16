@@ -79,8 +79,14 @@ class Terrain(src.saveing.Saveable):
         self.initialSeed = seed
         self.seed = seed
         self.events = []
-        self.biomeInfo = {"wet": 2}
+        self.biomeInfo = {"moisture": 1}
         self.hidden = True
+
+        self.microBiomeMap = {}
+        moisture = self.biomeInfo["moisture"]
+        for x in range(1,14):
+            for y in range(1,14):
+                self.microBiomeMap[(x,y,0)] = {"moisture":moisture}
 
         # set id
         import uuid
@@ -446,6 +452,12 @@ class Terrain(src.saveing.Saveable):
 
         for room in self.rooms:
             room.advance()
+        
+        if src.gamestate.gamestate.tick//(15*15):
+            moisture = self.biomeInfo["moisture"]
+            for x in range(1,14):
+                for y in range(1,14):
+                    self.microBiomeMap[(x,y,0)]["moisture"] = moisture
 
         while (
             self.events

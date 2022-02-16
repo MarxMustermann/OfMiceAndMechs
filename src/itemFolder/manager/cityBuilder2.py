@@ -500,21 +500,48 @@ class CityBuilder2(src.items.Item):
             item = src.items.itemMap["AutoFarmer"]()
             self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+7,(params["coordinate"][1]+offset[1])*15+7,0))
 
-            for x in (2,4,6,8,10,12):
-                for y in (2,4,6,8,10,12):
+            for x in (2,4,10,12):
+                for y in (2,4,10,12):
                     item = src.items.itemMap["MoldSpore"]()
                     self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+x,(params["coordinate"][1]+offset[1])*15+y,0))
                     item.apply(params["character"])
 
         item = src.items.itemMap["Command"]()
-        item.command = "15dj13wj13aj13aj13sj13sj13dj13dj13wj13aww10d10l15a5dssj"
+        item.command = "15dj13wj13aj13aj13sj13sj13dj13dj13wj13adja"
+        item.bolted = True
         room.addItem(item,(6,6,0))
 
-        character = src.characters.Ghul()
-        character.godMode = True
-        character.faction = params["character"].faction
-        room.addCharacter(character,6,6)
-        character.runCommandString("j")
+        item = src.items.itemMap["Command"]()
+        item.command = "ww5a"+10*"Lw"+"d"+10*"Jw"+"ddJwddJwss"
+        item.bolted = True
+        room.addItem(item,(7,6,0))
+
+        item = src.items.itemMap["Command"]()
+        item.command = "wajjaaJsdddsdjaj"
+        item.bolted = True
+        room.addItem(item,(5,6,0))
+
+        corpseAnimator = src.items.itemMap["CorpseAnimator"]()
+        room.addItem(corpseAnimator,(4,6,0))
+
+        item = src.items.itemMap["BloomShredder"]()
+        room.addItem(item,(3,3,0))
+
+        item = src.items.itemMap["BioPress"]()
+        room.addItem(item,(5,3,0))
+
+        item = src.items.itemMap["GooProducer"]()
+        room.addItem(item,(7,3,0))
+        item = src.items.itemMap["GooDispenser"]()
+        room.addItem(item,(8,3,0))
+
+        for i in range(0,10):
+            item = src.items.itemMap["Corpse"]()
+            room.addItem(item,(3,6,0))
+
+        ghulFeeder = src.items.itemMap["GhulFeeder"]()
+        room.addItem(ghulFeeder,(2,6,0))
+
         return room
 
     def addWorkshopRoomFromMap(self,params):

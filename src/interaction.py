@@ -2439,27 +2439,24 @@ press key for advanced drop
         # pick up items
         # bad code: picking up should happen in character
         if key in (commandChars.pickUp,):
-            if "NaivePickupQuest" not in char.solvers and not char.godMode:
-                char.addMessage("you do not have the nessecary solver yet (pickup)")
+            if len(char.inventory) >= 10:
+                char.addMessage("you cannot carry more items")
             else:
-                if len(char.inventory) >= 10:
-                    char.addMessage("you cannot carry more items")
-                else:
-                    item = charState["itemMarkedLast"]
+                item = charState["itemMarkedLast"]
 
-                    if not item:
-                        itemList = char.container.getItemByPosition(
-                            (char.xPosition, char.yPosition, char.zPosition)
-                        )
+                if not item:
+                    itemList = char.container.getItemByPosition(
+                        (char.xPosition, char.yPosition, char.zPosition)
+                    )
 
-                        if len(itemList):
-                            item = itemList[0]
+                    if len(itemList):
+                        item = itemList[0]
 
-                    if not item:
-                        char.addMessage("no item to pick up found")
-                        return
+                if not item:
+                    char.addMessage("no item to pick up found")
+                    return
 
-                    item.pickUp(char)
+                item.pickUp(char)
 
         # open chat partner selection
         if key in (commandChars.hail,):

@@ -503,6 +503,8 @@ class CityBuilder2(src.items.Item):
         if not room:
             return
         for offset in [(-1,0),(1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)]:
+            self.clearFieldFromMap({"coordinate":(params["coordinate"][0]+offset[0],params["coordinate"][1]+offset[1])})
+
             item = src.items.itemMap["AutoFarmer"]()
             self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+7,(params["coordinate"][1]+offset[1])*15+7,0))
 

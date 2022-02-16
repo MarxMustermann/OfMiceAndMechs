@@ -89,7 +89,7 @@ you can eat it to gain 2 satiation.
                 new = src.items.itemMap["Mold"]()
                 self.container.addItem(new, newPos)
                 new.startSpawn()
-            elif len(itemList) > 0:
+            elif len(itemList) == 1:
                 if itemList[-1].type == "Mold":
                     self.charges += itemList[-1].charges // 2
                     item = itemList[-1]

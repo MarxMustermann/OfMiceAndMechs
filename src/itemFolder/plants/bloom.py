@@ -105,6 +105,13 @@ class Bloom(src.items.Item):
         """
 
         if not self.dead:
+            position = self.getPosition()
+            position = (position[0]//15,position[1]//15,0)
+            if not self.container.microBiomeMap[position]["moisture"] > 0:
+                return
+
+            self.container.microBiomeMap[position]["moisture"] -= 1
+
             new = src.items.itemMap["Mold"]()
             new.charges = 4
             self.container.addItem(new, self.getPosition())

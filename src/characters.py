@@ -117,7 +117,7 @@ class Character(src.saveing.Saveable):
         # bad code: this approach is fail, but works for now. There has to be a better way
         self.basicChatOptions = []
         self.questsDone = []
-        self.solvers = ["NaiveDropQuest"]
+        self.solvers = ["NaiveDropQuest","NaivePickUpQuest"]
         self.aliances = []
         self.stasis = False
         self.registers = {}

@@ -669,8 +669,8 @@ class CityBuilder2(src.items.Item):
 
         functionMap = {}
 
-        for x in range(1,12):
-            for y in range(1,12):
+        for x in range(1,14):
+            for y in range(1,14):
                 functionMap[(x,y)] = {}
                 functionMap[(x,y)]["r"] = {
                     "function": {

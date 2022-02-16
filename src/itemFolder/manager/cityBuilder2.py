@@ -492,6 +492,12 @@ class CityBuilder2(src.items.Item):
 
         self.container.sources.append((room.getPosition(),"MetalBars"))
 
+    def clearFieldFromMap(self,params):
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        self.container.container.addItem(architect,(1,1,0))
+        architect.doClearField(params["coordinate"][0], params["coordinate"][1])
+        self.container.container.removeItem(architect)
+
     def addFarmFromMap(self,params):
         room = self.addRoom(params["coordinate"])
         if not room:
@@ -798,6 +804,14 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character},
                     },
                     "description":"add farm",
+                }
+                functionMap[(x,y)]["D"] = {
+                    "function": {
+                        "container":self,
+                        "method":"clearFieldFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"clear field",
                 }
 
         for scrapField in self.scrapFields:

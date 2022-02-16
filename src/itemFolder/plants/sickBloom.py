@@ -78,8 +78,8 @@ class SickBloom(src.items.Item):
         
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick
-            + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick)
-            % 2500,
+            + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick) % 2500
+            + 1000,
         )
         event.setCallback({"container": self, "method": "spawn"})
         self.container.addEvent(event)

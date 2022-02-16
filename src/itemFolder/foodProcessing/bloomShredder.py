@@ -42,12 +42,12 @@ Activate the bloom shredder to produce biomass.
         targetFull = False
         if (self.xPosition + 1, self.yPosition, self.zPosition) in self.container.itemByCoordinates:
             if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition, sefl.zPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition, self.zPosition)])
                 > 15
             ):
                 targetFull = True
             for item in self.container.itemByCoordinates[
-                (self.xPosition + 1, self.yPosition)
+                (self.xPosition + 1, self.yPosition, self.zPosition)
             ]:
                 if item.walkable == False:
                     targetFull = True

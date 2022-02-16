@@ -1800,7 +1800,7 @@ class BeUsefull(MetaQuestSequence):
             if not "HOMEx" in character.registers:
                 return
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
-            if not homeRoom.storageRooms:
+            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
                 return
             self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
             return

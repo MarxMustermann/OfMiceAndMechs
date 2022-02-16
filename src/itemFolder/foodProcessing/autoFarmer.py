@@ -27,7 +27,7 @@ class AutoFarmer(src.items.Item):
             character: the character using the item
         """
 
-        if not self.terrain:
+        if not isinstance(self.container,src.terrains.Terrain):
             character.addMessage("the auto farmer cannot be used within rooms")
             return
 
@@ -44,7 +44,8 @@ class AutoFarmer(src.items.Item):
             self.bolted = True
 
         if isinstance(character, src.characters.Monster):
-            character.die()
+            #character.die()
+            self.destroy()
             return
 
         if len(character.inventory) > 9:
@@ -55,26 +56,26 @@ class AutoFarmer(src.items.Item):
         length = 1
         pos = [self.xPosition, self.yPosition]
         path = []
-        path.append((pos[0], pos[1]))
+        path.append((pos[0], pos[1],0))
         while length < 13:
             if length % 2 == 1:
                 for i in range(0, length):
                     pos[1] -= 1
-                    path.append((pos[0], pos[1]))
+                    path.append((pos[0], pos[1],0))
                 for i in range(0, length):
                     pos[0] += 1
-                    path.append((pos[0], pos[1]))
+                    path.append((pos[0], pos[1],0))
             else:
                 for i in range(0, length):
                     pos[1] += 1
-                    path.append((pos[0], pos[1]))
+                    path.append((pos[0], pos[1],0))
                 for i in range(0, length):
                     pos[0] -= 1
-                    path.append((pos[0], pos[1]))
+                    path.append((pos[0], pos[1],0))
             length += 1
         for i in range(0, length - 1):
             pos[1] -= 1
-            path.append((pos[0], pos[1]))
+            path.append((pos[0], pos[1],0))
 
         foundSomething = False
         lastCharacterPosition = path[0]
@@ -138,12 +139,12 @@ class AutoFarmer(src.items.Item):
         if lastCharacterPosition[1] < pos[1]:
             command += str(pos[1] - lastCharacterPosition[1]) + "s"
 
-        if not foundSomething:
-            command += "100."
-        command += "opx$=ww$=aa$=ss$=dd"
-        command += "opx$=ss$=aa$=ww$=dd"
-        command += "opx$=ww$=dd$=ss$=aa"
-        command += "opx$=ss$=dd$=ww$=aa"
+        #if not foundSomething:
+        #    command += "100."
+        #command += "opx$=ww$=aa$=ss$=dd"
+        #command += "opx$=ss$=aa$=ww$=dd"
+        #command += "opx$=ww$=dd$=ss$=aa"
+        #command += "opx$=ss$=dd$=ww$=aa"
 
         character.runCommandString(command)
 

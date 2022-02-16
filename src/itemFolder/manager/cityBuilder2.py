@@ -350,7 +350,7 @@ class CityBuilder2(src.items.Item):
             character.addMessage("need to remove old city first")
 
         citylocation = self.container.getPosition()
-        self.addRoom((citylocation[0],citylocation[1]+1))
+        backGuardRoom = self.addRoom((citylocation[0],citylocation[1]+1))
         
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         guardRoom.electricalCharges = int(random.random()*30)+300
@@ -387,6 +387,8 @@ class CityBuilder2(src.items.Item):
         self.addProductionLine1(character,instaSpawn=True)
         self.addProductionLine2(character,instaSpawn=True)
         self.addProductionLine3(character,instaSpawn=True)
+
+        return {"backGuardRoom":backGuardRoom}
 
     def spawnRank(self,rank,actor,isMilitary=False):
         if not rank == 3:
@@ -485,6 +487,31 @@ class CityBuilder2(src.items.Item):
             room.spawnGhuls(character)
 
         self.container.sources.append((room.getPosition(),"MetalBars"))
+
+    def addFarmFromMap(self,params):
+        room = self.addRoom(params["coordinate"])
+        if not room:
+            return
+        for offset in [(-1,0),(1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)]:
+            item = src.items.itemMap["AutoFarmer"]()
+            self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+7,(params["coordinate"][1]+offset[1])*15+7,0))
+
+            for x in (2,4,6,8,10,12):
+                for y in (2,4,6,8,10,12):
+                    item = src.items.itemMap["MoldSpore"]()
+                    self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+x,(params["coordinate"][1]+offset[1])*15+y,0))
+                    item.apply(params["character"])
+
+        item = src.items.itemMap["Command"]()
+        item.command = "15dj13wj13aj13aj13sj13sj13dj13dj13wj13aww10d10l15a5dssj"
+        room.addItem(item,(6,6,0))
+
+        character = src.characters.Ghul()
+        character.godMode = True
+        character.faction = params["character"].faction
+        room.addCharacter(character,6,6)
+        character.runCommandString("j")
+        return room
 
     def addWorkshopRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="WorkshopRoom")
@@ -732,6 +759,14 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character},
                     },
                     "description":"magic advance room",
+                }
+                functionMap[(x,y)]["f"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addFarmFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"add farm",
                 }
 
         for scrapField in self.scrapFields:

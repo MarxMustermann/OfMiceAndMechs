@@ -47,14 +47,14 @@ put it on the ground and activate it to plant it
             % 10,
         )
         event.setCallback({"container": self, "method": "spawn"})
-        self.terrain.addEvent(event)
+        self.container.addEvent(event)
 
     def spawn(self):
         """
         spawn more mold
         """
 
-        new = itemMap["Mold"]()
+        new = src.items.itemMap["Mold"]()
         self.container.addItem(new,self.getPosition())
         new.startSpawn()
         self.destroy(generateScrap=False)

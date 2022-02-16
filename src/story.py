@@ -1888,50 +1888,12 @@ class BackToTheRoots(BasicPhase):
 
             mainRoom.addItem(architect,(3,1,0))
 
-            backGuardRoom = cityBuilder.addRoom((citylocation[0],citylocation[1]+1))
-            rooms.append(backGuardRoom)
-            
-            guardRoom = cityBuilder.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":leader})
-            guardRoom.electricalCharges = int(random.random()*30)+300
-            guardRoom.chargeStrength = 20
-            rooms.append(guardRoom)
-
-            scrapFieldpos = (citylocation[0]+2,citylocation[1]-2)
-            architect.doAddScrapfield(scrapFieldpos[0],scrapFieldpos[1],1200,leavePath=True)
-
-            cityBuilder.addScrapCompactorFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":leader,"type":"random"})
-            cityBuilder.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":leader})
-            cityBuilder.addTeleporterRoomFromMap({"character":leader,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
-
-            generalStorage = cityBuilder.addStorageRoomFromMap({"character":leader,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
-            for i in range(1,10):
-                generalStorage.addItem(src.items.itemMap["Painter"](),(1,1,0))
-
-            cityBuilder.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]+1),"character":leader})
-            
-            cityBuilder.addScrapCompactorFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+1),"character":leader,"type":"random"},instaSpawn=True)
-            cityBuilder.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+2),"character":leader})
-
-            guardRoom2 = cityBuilder.addTrapRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]-1),"character":leader})
-            guardRoom2.electricalCharges = int(random.random()*30)+30
-            guardRoom2.chargeStrength = 5
-
-            guardRoom3 = cityBuilder.addTrapRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]-1),"character":leader})
-            guardRoom3.electricalCharges = int(random.random()*30)+30
-            guardRoom3.chargeStrength = 5
+            cityData = cityBuilder.spawnCity(leader)
 
             self.cityNPCCounters[citylocation] = 0
 
-            cityBuilder.setConnectionsFromMap({"character":leader,"coordinate":(citylocation[0],citylocation[1]-1),"selection":"w"},noFurtherInteraction=True)
-            cityBuilder.setConnectionsFromMap({"character":leader,"coordinate":(citylocation[0],citylocation[1]),"selection":"w"},noFurtherInteraction=True)
-            cityBuilder.setConnectionsFromMap({"character":leader,"coordinate":(citylocation[0],citylocation[1]),"selection":"d"},noFurtherInteraction=True)
-            cityBuilder.setConnectionsFromMap({"character":leader,"coordinate":(citylocation[0],citylocation[1]),"selection":"a"},noFurtherInteraction=True)
-            cityBuilder.setConnectionsFromMap({"character":leader,"coordinate":(citylocation[0],citylocation[1]+1),"selection":"d"},noFurtherInteraction=True)
-            cityBuilder.setConnectionsFromMap({"character":leader,"coordinate":(citylocation[0],citylocation[1]+1),"selection":"a"},noFurtherInteraction=True)
-
-            cityBuilder.addProductionLine1(leader,instaSpawn=True)
-            cityBuilder.addProductionLine2(leader,instaSpawn=True)
-            cityBuilder.addProductionLine3(leader,instaSpawn=True)
+            scrapFieldpos = (citylocation[0]+2,citylocation[1]-2)
+            architect.doAddScrapfield(scrapFieldpos[0],scrapFieldpos[1],1200,leavePath=True)
 
             counter = 1
             for pos in self.specialItemSlotPositions:
@@ -1940,7 +1902,7 @@ class BackToTheRoots(BasicPhase):
                 slotItem.faction = leader.faction
                 if counter == cityCounter:
                     slotItem.hasItem = True
-                backGuardRoom.addItem(slotItem,(pos[0],pos[1],0))
+                cityData["backGuardRoom"].addItem(slotItem,(pos[0],pos[1],0))
                 counter += 1
 
             slotItem = src.items.itemMap["SpecialItem"]()

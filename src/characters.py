@@ -2084,9 +2084,12 @@ class Monster(Character):
                     )
                 )
             ):
-                new = src.items.itemMap["Mold"]()
-                self.container.addItem(new, self.getPosition())
-                new.startSpawn()
+                if isinstance(self.container,src.terrains.Terrain):
+                    new = src.items.itemMap["Mold"]()
+                    self.container.addItem(new, self.getPosition())
+                    new.startSpawn()
+                else:
+                    self.container.damage()
 
             super().die(reason, addCorpse=False)
         else:

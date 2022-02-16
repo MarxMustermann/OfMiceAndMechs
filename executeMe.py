@@ -150,12 +150,16 @@ if not shouldLoad:
                 "tutorials",
             ),
             (
-                "siege",
-                "(siege)",
+                "PrefabDesign",
+                "PrefabDesign",
             ),
             (
                 "basebuilding",
-                "(basebuilding)",
+                "basebuilding",
+            ),
+            (
+                "RoguelikeStart",
+                "RoguelikeStart",
             ),
             (
                 "survival",
@@ -170,16 +174,12 @@ if not shouldLoad:
                 "dungeon",
             ),
             (
-                "RoguelikeStart",
-                "RoguelikeStart",
+                "Tour",
+                "(Tour)",
             ),
             (
-                "PrefabDesign",
-                "PrefabDesign",
-            ),
-            (
-                "Tour",
-                "Tour",
+                "siege",
+                "(siege)",
             ),
         ]
 

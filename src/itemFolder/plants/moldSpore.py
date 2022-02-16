@@ -54,6 +54,9 @@ put it on the ground and activate it to plant it
         spawn more mold
         """
 
+        if not self.container:
+            return
+
         new = src.items.itemMap["Mold"]()
         self.container.addItem(new,self.getPosition())
         new.startSpawn()

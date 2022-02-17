@@ -514,6 +514,10 @@ class CityBuilder2(src.items.Item):
                     self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+x,(params["coordinate"][1]+offset[1])*15+y,0))
                     item.apply(params["character"])
 
+        floorPlan = {}
+        floorPlan["buildSites"] = []
+        floorPlan["buildSites"].append([(4,5,0),"ScratchPlate", {"commands":{"noscratch":"jjaKsdJsJs"},"settings":{"scratchThreashold":1000}}])
+
         item = src.items.itemMap["Command"]()
         item.command = "15dj13wj13aj13aj13sj13sj13dj13dj13wj13adja"
         item.bolted = True
@@ -549,6 +553,11 @@ class CityBuilder2(src.items.Item):
 
         ghulFeeder = src.items.itemMap["GhulFeeder"]()
         room.addItem(ghulFeeder,(2,6,0))
+
+        room.floorPlan = floorPlan
+
+        room.spawnPlaned()
+        room.spawnPlaned()
 
         return room
 

@@ -127,6 +127,8 @@ else:
                 context.convert_event(event)
                 if isinstance(event, tcod.event.MouseButtonUp):
                     index = event.tile.y-2
+                    if index > 9 or index < 0:
+                        index = None
                 if isinstance(event, tcod.event.Quit):
                     raise SystemExit()
             context.present(root_console)

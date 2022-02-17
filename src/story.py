@@ -2877,6 +2877,9 @@ class Tutorials(BasicPhase):
             src.gamestate.gamestate.mainChar, 124, 109
         )
 
+
+        mainChar.runCommandString(".",nativeKey=True)
+
     def startTutorial(self,extraInfo):
         if not "tutorialToStart" in extraInfo:
             self.restartTutorial()
@@ -2974,10 +2977,6 @@ press space to start
     def tutorialExplainHelp(self):
         mainChar = src.gamestate.gamestate.mainChar
 
-        """
-The game offers a relatively big list of systems to explore.
-How these system works should be explained in the ingame help.
-"""
         text = """
 The keybindings are shown with some other information in the help menu.
 If you only remember one thing, remember that the help menu exists.
@@ -3003,6 +3002,8 @@ press space when you are ready.
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
         event.setCallback({"container": self, "method": "tutorialExplainMovement"})
         mainChar.container.addEvent(event)
+
+        mainChar.runCommandString(".",nativeKey=True)
 
     def tutorialExplainMovement(self):
         mainChar = src.gamestate.gamestate.mainChar

@@ -4615,6 +4615,7 @@ class HelpMenu(SubMenu):
 
         # exit the submenu
         if key == "esc":
+            character.changed("closedHelp")
             return True
 
         # show info

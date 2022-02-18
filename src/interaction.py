@@ -629,10 +629,10 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         noRender = True
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             noRender = False
-        done = charState["submenue"].handleKey(key, noRender=noRender)
+        done = charState["submenue"].handleKey(key, noRender=noRender, character=character)
 
         if not lastSubmenu == charState["submenue"]:
-            charState["submenue"].handleKey("~", noRender=noRender)
+            charState["submenue"].handleKey("~", noRender=noRender, character=character)
             done = False
 
         # reset rendering flags
@@ -1916,14 +1916,14 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         if char.rememberedMenu:
             menu = char.rememberedMenu.pop()
             char.macroState["submenue"] = menu
-            char.macroState["submenue"].handleKey("~", noRender=False)
+            char.macroState["submenue"].handleKey("~", noRender=False, character=character)
             char.specialRender = True
         return
     if key in ("rESC",):
         if char.rememberedMenu2:
             menu = char.rememberedMenu2.pop()
             char.macroState["submenue"] = menu
-            char.macroState["submenue"].handleKey("~", noRender=False)
+            char.macroState["submenue"].handleKey("~", noRender=False, character=character)
             char.specialRender = True
         return
     if key in ("esc",):
@@ -2679,10 +2679,10 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
         # let the submenu handle the keystroke
         lastSubmenu = charState["submenue"]
-        done = charState["submenue"].handleKey(key, noRender=noRender)
+        done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
         if not lastSubmenu == charState["submenue"]:
-            charState["submenue"].handleKey("~", noRender=noRender)
+            charState["submenue"].handleKey("~", noRender=noRender, character=char)
             done = False
 
         # reset rendering flags
@@ -2843,7 +2843,7 @@ class SubMenu(src.saveing.Saveable):
 
         return self.selection
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character=None):
         """
         show the options and allow the user to select one
 
@@ -3001,7 +3001,7 @@ class ListActionMenu(SubMenu):
         self.setOptions(text, options)
         self.actions = actions
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         handles a keypress
 
@@ -3141,7 +3141,7 @@ class SelectionMenu(SubMenu):
         super().__init__(default=default,targetParamName=targetParamName)
         self.setOptions(text, options)
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         handles a keypress
 
@@ -3163,7 +3163,7 @@ class SelectionMenu(SubMenu):
 
         # let superclass handle the actual selection
         if not self.getSelection():
-            super().handleKey(key, noRender=noRender)
+            super().handleKey(key, noRender=noRender, character=character)
 
         # stop when done
         if self.getSelection():
@@ -3219,7 +3219,7 @@ class ChatPartnerselection(SubMenu):
             else:
                 self.subMenu = None
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         set up the selection and spawn the chat 
         keystrokes after the setup will be delegated
@@ -3233,7 +3233,7 @@ class ChatPartnerselection(SubMenu):
 
         # wrap around the chat menu
         if self.subMenu:
-            return self.subMenu.handleKey(key, noRender=noRender)
+            return self.subMenu.handleKey(key, noRender=noRender, character=character)
 
         # exit the submenu
         if key == "esc":
@@ -3309,12 +3309,12 @@ class ChatPartnerselection(SubMenu):
 
         # delegate the actual selection to the super class
         if not self.getSelection():
-            super().handleKey(key, noRender=noRender)
+            super().handleKey(key, noRender=noRender, character=character)
 
         # spawn the chat submenu
         if self.getSelection():
             self.subMenu = src.chats.ChatMenu(self.selection)
-            self.subMenu.handleKey(key, noRender=noRender)
+            self.subMenu.handleKey(key, noRender=noRender, character=character)
 
         # wait for input
         else:
@@ -3334,7 +3334,7 @@ class DebugMenu(SubMenu):
         self.type = "DebugMenu"
         super().__init__()
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show some debug output
         (actually does nothing)
@@ -3375,7 +3375,7 @@ class QuestMenu(SubMenu):
         return renderQuests(char=self.char, asList=True, questIndex=self.questIndex)
 
     # overrides the superclasses method completely
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show a questlist and handle interactions
 
@@ -3509,7 +3509,7 @@ class InventoryMenu(SubMenu):
     def render(self,char=None):
         return renderInventory()
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the inventory
 
@@ -3521,7 +3521,7 @@ class InventoryMenu(SubMenu):
         """
 
         if self.subMenu:
-            self.subMenu.handleKey(key, noRender=noRender)
+            self.subMenu.handleKey(key, noRender=noRender, character=character)
             if not self.subMenu.getSelection() is None:
                 if self.activate:
                     if (
@@ -3617,7 +3617,7 @@ class InventoryMenu(SubMenu):
                     options.append([counter, item.name])
                     counter += 1
                 self.subMenu = SelectionMenu("activate what?", options)
-                self.subMenu.handleKey(".", noRender=noRender)
+                self.subMenu.handleKey(".", noRender=noRender,character=character)
                 self.activate = True
                 return False
 
@@ -3631,7 +3631,7 @@ class InventoryMenu(SubMenu):
                     options.append([counter, item.name])
                     counter += 1
                 self.subMenu = SelectionMenu("drop what?", options)
-                self.subMenu.handleKey(".", noRender=noRender)
+                self.subMenu.handleKey(".", noRender=noRender, character=character)
                 self.drop = True
                 return False
 
@@ -3678,7 +3678,7 @@ class InputMenu(SubMenu):
         self.targetParamName = targetParamName
         self.stealAllKeys = True
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         gather the input keystrokes
 
@@ -3764,7 +3764,7 @@ class MessagesMenu(SubMenu):
         self.char = char
         super().__init__()
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the attributes and ignore keystrokes
 
@@ -3857,7 +3857,7 @@ class CharacterInfoMenu(SubMenu):
 
         return text
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the attributes and ignore keystrokes
 
@@ -3910,7 +3910,7 @@ class CreateQuestMenu(SubMenu):
         self.objectsToStore.append("submenu")
         self.objectListsToStore.append("assignTo")
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         # exit submenu
         if key == "esc":
             return True
@@ -3919,7 +3919,7 @@ class CreateQuestMenu(SubMenu):
             self.quest = src.quests.questMap[self.questType]()
 
         if self.submenu:
-            if not self.submenu.handleKey(key, noRender=noRender):
+            if not self.submenu.handleKey(key, noRender=noRender, character=character):
                 return False
             param = self.requiredParams.pop()
             
@@ -3948,7 +3948,7 @@ class CreateQuestMenu(SubMenu):
         if self.requiredParams and not self.submenu:
             param = self.requiredParams[-1]
             self.submenu = src.interaction.InputMenu("%s"%(param,))
-            self.submenu.handleKey("~", noRender=noRender)
+            self.submenu.handleKey("~", noRender=noRender, character=character)
             self.stealAllKeys = True
             return False
 
@@ -4032,7 +4032,7 @@ class AdvancedQuestMenu(SubMenu):
         super().__init__()
         self.objectsToStore.append("activeChar")
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         gather the quests parameters and assign the quest
 
@@ -4089,7 +4089,7 @@ class AdvancedQuestMenu(SubMenu):
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
-                    super().handleKey(key, noRender=noRender)
+                    super().handleKey(key, noRender=noRender, character=character)
 
                 # store the character to assign the quest to
                 if self.getSelection():
@@ -4126,7 +4126,7 @@ class AdvancedQuestMenu(SubMenu):
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
-                    super().handleKey(key, noRender=noRender)
+                    super().handleKey(key, noRender=noRender, character=character)
 
                 # store the type of quest to create
                 if self.getSelection():
@@ -4181,7 +4181,7 @@ class AdvancedQuestMenu(SubMenu):
 
                 # let the superclass handle the actual selection
                 if not self.getSelection():
-                    super().handleKey(key, noRender=noRender)
+                    super().handleKey(key, noRender=noRender, character=character)
 
                 # store the parameter
                 if self.getSelection():
@@ -4208,7 +4208,7 @@ class AdvancedQuestMenu(SubMenu):
 
                     # let the superclass handle the actual selection
                     if not self.getSelection():
-                        super().handleKey(key, noRender=noRender)
+                        super().handleKey(key, noRender=noRender, character=character)
 
                     # store the parameter
                     if self.getSelection():
@@ -4231,7 +4231,7 @@ class AdvancedQuestMenu(SubMenu):
 
                     # let the superclass handle the actual selection
                     if not self.getSelection():
-                        super().handleKey(key, noRender=noRender)
+                        super().handleKey(key, noRender=noRender, character=character)
 
                     # store the parameter
                     if self.getSelection():
@@ -4269,7 +4269,7 @@ class AdvancedQuestMenu(SubMenu):
 
             # let the superclass handle the actual selection
             if not self.getSelection():
-                super().handleKey(key, noRender=noRender)
+                super().handleKey(key, noRender=noRender, character=character)
 
             if self.getSelection():
                 # instantiate quest
@@ -4602,7 +4602,7 @@ class HelpMenu(SubMenu):
 
     type = "HelpMenu"
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
 
@@ -4646,7 +4646,7 @@ class MapMenu(SubMenu):
         self.extraText = extraText
         self.cursor = (7,7)
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the map and trigger functions depending on key presses
 
@@ -4733,7 +4733,7 @@ class TextMenu(SubMenu):
         super().__init__()
         self.text = text
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the text and ignore keypresses
 
@@ -4785,7 +4785,7 @@ class OneKeystrokeMenu(SubMenu):
         self.keyPressed = ""
         self.done = False
 
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False, character = None):
         """
         show the text and quit on second keypress
 

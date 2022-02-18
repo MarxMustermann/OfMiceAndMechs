@@ -974,11 +974,56 @@ class MetaQuestSequence(Quest):
 
 class ClearTerrain(MetaQuestSequence):
     def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):
+        questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
     def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+        if not character.container:
+            return
+
+        if isinstance(character.container,src.room.rooms):
+            terrain = character.container.container
+        else:
+            terrain = character.container
+
+        for otherChar in terrain.characters:
+            if otherChar.faction == character:
+                continue
+            return
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction == character:
+                    continue
+                return
+
+        self.postHandler()
         return False
+
+    def solver(self, character):
+        if len(self.subQuests):
+            self.subQuests[0].solver(character)
+        else:
+            self.triggerCompletionCheck()
+
+            if isinstance(character.container,src.rooms.Room):
+                terrain = character.container.container
+            else:
+                terrain = character.container
+
+            for otherChar in terrain.characters:
+                if otherChar.faction == character.faction:
+                    continue
+                self.addQuest(src.quests.SecureTile(toSecure=(otherChar.xPosition//15,otherChar.yPosition//15)))
+                return
+            for room in terrain.rooms:
+                for otherChar in room.characters:
+                    if otherChar.faction == character.faction:
+                        continue
+                    self.addQuest(src.quests.SecureTile(toSecure=room.getPosition()))
+                    return
 
 class Equip(MetaQuestSequence):
     def __init__(self, description="equip", creator=None, command=None, lifetime=None):
@@ -6751,8 +6796,7 @@ class GoToTile(Quest):
 
 class SecureTile(GoToTile):
     def __init__(self, description="secure tile", toSecure=None):
-        questList = []
-        super().__init__(questList)
+        super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.type = "SecureTile"
 

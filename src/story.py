@@ -2994,16 +2994,11 @@ press space when you are ready.
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
-        mainChar.addListener(self.checkTutorialHelpOpened, "openedHelp")
+        mainChar.addListener(self.checkTutorialHelpClosed, "closedHelp")
 
-    def checkTutorialHelpOpened(self):
-        mainChar = src.gamestate.gamestate.mainChar
-
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
-        event.setCallback({"container": self, "method": "tutorialExplainMovement"})
-        mainChar.container.addEvent(event)
-
-        mainChar.runCommandString(".",nativeKey=True)
+    def checkTutorialHelpClosed(self):
+        self.tutorialExplainMovement()
+        return
 
     def tutorialExplainMovement(self):
         mainChar = src.gamestate.gamestate.mainChar
@@ -3025,6 +3020,8 @@ press space when you are ready
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         self.tutorialCheckMovement({"count":0,"lastPos":list(mainChar.getPosition())})
+
+        mainChar.runCommandString(".",nativeKey=True)
 
     def tutorialCheckMovement(self,extraInfo=None):
         mainChar = src.gamestate.gamestate.mainChar
@@ -3170,8 +3167,6 @@ examine it and activate it.
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-
-        mainChar.addListener(self.checkTutorialHelpOpened, "openedHelp")
 
         storyItem = src.items.itemMap["FunctionTrigger"]()
         storyItem.bolted = False

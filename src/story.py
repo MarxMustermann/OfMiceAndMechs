@@ -3060,6 +3060,8 @@ remember to press z if you forget the keybindings
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
+        mainChar.runCommandString(".",nativeKey=True)
+
         characterPos = mainChar.getPosition()
         baseX = characterPos[0]//15
         baseY = characterPos[1]//15
@@ -3113,6 +3115,7 @@ press space to continue with dropping items.
             "container": self,
             "method": "tutorialExplainDrop",
         }
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
     def tutorialExplainDrop(self):
         text = """
@@ -3129,6 +3132,7 @@ now drop the items onto the floor again."""
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
         self.tutorialCheckDrop()
 
@@ -3169,6 +3173,7 @@ examine it and activate it.
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
         storyItem = src.items.itemMap["FunctionTrigger"]()
         storyItem.bolted = False
@@ -3210,14 +3215,15 @@ I'm sure you noticed that opening and closing the inventory can get annoying fas
 To solve this the game offers you to dock menus to the left and right of the game map.
 
 To do this you first open the inventory menu.
-Then you press the < arrow of the subwindow or left shift + ESC to dock the window to the left.
-Pressing the > arrow of the subwindow or right shift + ESC will dock the window to the right.
+Then you click the < arrow of the subwindow or press left_shift + ESC to dock the window to the left.
+Clicking the > arrow of the subwindow or pressing right_shift + ESC will dock the window to the right.
 
 please dock the inventory and fill it with 10 items to see how it works
 """
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
         characterPos = mainChar.getPosition()
         baseX = characterPos[0]//15
@@ -3245,7 +3251,7 @@ please dock the inventory and fill it with 10 items to see how it works
         text = """
 One last but pretty important thing and you are done with the tutorial.
 
-to undock menus press the < or > shown above them or
+to undock menus click the < or > arrow of the docked menu nor
 press left shift + ESC to undock left or
 press right shift + ESC to undock right
 
@@ -3254,6 +3260,7 @@ undock and close all menus to continue
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
         self.checkUndocking()
 
@@ -3264,6 +3271,7 @@ undock and close all menus to continue
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "complete"})
             mainChar.container.addEvent(event)
+            src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
             return
         else:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
@@ -3285,6 +3293,7 @@ press space to return to tutorial selection
                 "container": self,
                 "method": "restartTutorial",
             }
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
     def restartTutorial(self):
         nextPhase = Tutorials()

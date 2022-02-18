@@ -2118,14 +2118,93 @@ class GatherItems(Quest):
         character.runCommandString(".30.")
         return False
 
+class TeleportToTerrain(MetaQuestSequence):
+    def __init__(self, description="teleport to terrain", creator=None, targetPosition=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description+" "+str(targetPosition)
+
+        if targetPosition:
+            self.setParameters({"targetPosition":targetPosition})
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+        if not character.container:
+            return
+        if isinstance(character.container,src.rooms.Room):
+            terrain = character.container.container
+        else:
+            terrain = character.container
+
+        if (terrain.xPosition, terrain.yPosition,0) == self.targetPosition:
+            self.postHandler()
+            return
+        return False
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+        return super().setParameters(parameters)
+
+    def solver(self, character):
+        if len(self.subQuests):
+            self.subQuests[0].solver(character)
+        else:
+            self.triggerCompletionCheck(character)
+
+            if isinstance(character.container,src.rooms.Room):
+                if isinstance(character.container,src.rooms.TeleporterRoom):
+                    charPos = character.getPosition()
+                    for item in character.container.itemsOnFloor:
+                        if not item.type == "TeleporterArtwork":
+                            continue
+                        itemPos = item.getPosition()
+                        teleportCommand = ".j"+str(self.targetPosition[0])+","+str(self.targetPosition[1])+"\n"
+                        if charPos == (itemPos[0]-1,itemPos[1],itemPos[2]):
+                            self.addQuest(RunCommand(command="Jd"+teleportCommand))
+                        elif charPos == (itemPos[0],itemPos[1]-1,itemPos[2]):
+                            self.addQuest(RunCommand(command="Js"+teleportCommand))
+                        elif charPos == (itemPos[0]+1,itemPos[1],itemPos[2]):
+                            self.addQuest(RunCommand(command="Ja"+teleportCommand))
+                        elif charPos == (itemPos[0],itemPos[1]+1,itemPos[2]):
+                            self.addQuest(RunCommand(command="Jw"+teleportCommand))
+                        else:
+                            print("assign")
+                            quest = GoToPosition(targetPosition=itemPos,ignoreEndBlocked=True)
+                            quest.assignToCharacter(character)
+                            quest.activate()
+                            self.addQuest(quest)
+                    return
+                terrain = character.container.container
+            else:
+                terrain = character.container
+
+            for room in terrain.rooms:
+                if not isinstance(room,src.rooms.TeleporterRoom):
+                    continue
+                quest = GoToTile(targetPosition=room.getPosition())
+                self.addQuest(quest)
+                return
+
 class LootRuin(MetaQuestSequence):
     def __init__(self, description="loot ruin", creator=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description
+        self.metaDescription = description+" "+str(targetPosition)
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+        return super().setParameters(parameters)
 
     def triggerCompletionCheck(self,character=None):
         return False
@@ -7565,6 +7644,7 @@ questMap = {
     "GoToPosition": GoToPosition,
     "GatherScrap": GatherScrap,
     "ClearTerrain": ClearTerrain,
+    "TeleportToTerrain": TeleportToTerrain,
 }
 
 def getQuestFromState(state):

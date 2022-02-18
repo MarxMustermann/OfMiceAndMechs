@@ -444,10 +444,12 @@ class CityBuilder2(src.items.Item):
         for i in range(0,10):
             enemy = src.characters.Monster()
             enemy.godMode = True
-            enemy.macroState["macros"]["g"] = ["g","g","_","g"]
-            enemy.runCommandString("_g")
             self.container.container.addCharacter(enemy,params["coordinate"][0]*15+random.randint(2,11),params["coordinate"][1]*15+random.randint(2,11))
-            
+            quest = src.quests.ClearTerrain()
+            quest.autoSolve = True
+            enemy.quests.append(quest)
+            enemy.runCommandString("**")
+
     def addScrapCompactorFromMap(self,params,instaSpawn=False):
         """
         handle a character having selected building a room

@@ -629,10 +629,10 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         noRender = True
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
             noRender = False
-        done = charState["submenue"].handleKey(key, noRender=noRender, character=character)
+        done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
         if not lastSubmenu == charState["submenue"]:
-            charState["submenue"].handleKey("~", noRender=noRender, character=character)
+            charState["submenue"].handleKey("~", noRender=noRender, character=char)
             done = False
 
         # reset rendering flags
@@ -1916,14 +1916,14 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         if char.rememberedMenu:
             menu = char.rememberedMenu.pop()
             char.macroState["submenue"] = menu
-            char.macroState["submenue"].handleKey("~", noRender=False, character=character)
+            char.macroState["submenue"].handleKey("~", noRender=False, character=char)
             char.specialRender = True
         return
     if key in ("rESC",):
         if char.rememberedMenu2:
             menu = char.rememberedMenu2.pop()
             char.macroState["submenue"] = menu
-            char.macroState["submenue"].handleKey("~", noRender=False, character=character)
+            char.macroState["submenue"].handleKey("~", noRender=False, character=char)
             char.specialRender = True
         return
     if key in ("esc",):

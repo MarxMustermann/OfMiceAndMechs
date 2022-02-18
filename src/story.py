@@ -2998,6 +2998,8 @@ press space when you are ready.
 
     def checkTutorialHelpClosed(self):
         self.tutorialExplainMovement()
+        mainChar = src.gamestate.gamestate.mainChar
+        mainChar.delListener(self.checkTutorialHelpClosed, "closedHelp")
         return
 
     def tutorialExplainMovement(self):

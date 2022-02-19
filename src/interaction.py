@@ -4626,6 +4626,36 @@ class HelpMenu(SubMenu):
 
         return False
 
+class JobByRankMenu(SubMenu):
+    """
+    the help submenue
+    """
+
+    type = "JobByRankMenu"
+
+    def handleKey(self, key, noRender=False, character = None):
+        """
+        show the help text and ignore keypresses
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # exit the submenu
+        if key in ("esc"," ",):
+            return True
+
+        # show info
+        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        self.persistentText = ""
+        self.persistentText += "test"
+        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+        return False
+
 class MapMenu(SubMenu):
     """
     a menu for triggering actions from a map
@@ -6066,6 +6096,7 @@ subMenuMap = {
     "MapMenu": MapMenu,
     "OneKeystrokeMenu": OneKeystrokeMenu,
     "CreateQuestMenu": CreateQuestMenu,
+    "JobByRankMenu": JobByRankMenu,
 }
 
 def getSubmenuFromState(state):

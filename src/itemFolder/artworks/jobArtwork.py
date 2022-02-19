@@ -112,6 +112,10 @@ class JobArtwork(src.items.Item):
             text += "%s: %s "%(duty,count)
         text += "\n"
 
+
+        self.submenue = src.interaction.JobByRankMenu(cityLeader)
+        character.macroState["submenue"] = self.submenue
+
         print(text)
         character.addMessage(text)
 

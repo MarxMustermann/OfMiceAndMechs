@@ -64,7 +64,7 @@ class QuestArtwork(src.items.Item):
             for terrain in line:
                 if isinstance(terrain,src.terrains.Ruin):
                     quest = src.quests.LootRuin()
-                    quest.setParameters({"targetPosition":(terrain.xPosition,terrain.yPosition)})
+                    quest.setParameters({"targetPosition":(terrain.xPosition,terrain.yPosition,0)})
                     quest.assignToCharacter(character)
                     quest.activate()
 

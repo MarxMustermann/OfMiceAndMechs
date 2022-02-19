@@ -1886,7 +1886,10 @@ class BackToTheRoots(BasicPhase):
             mainRoom.rooms = rooms
             cityBuilder.registerRoom(mainRoom)
 
+            jobArtwork = src.items.itemMap["JobArtwork"]()
+
             mainRoom.addItem(architect,(3,1,0))
+            mainRoom.addItem(jobArtwork,(4,1,0))
 
             cityData = cityBuilder.spawnCity(leader)
 
@@ -3444,6 +3447,9 @@ class BaseBuilding(BasicPhase):
         cityBuilder.bolted = True
         mainRoom.addItem(tradingArtwork, (9, 9, 0))
         tradingArtwork.configure(src.gamestate.gamestate.mainChar)
+
+        jobArtwork = src.items.itemMap["JobArtwork"]()
+        mainRoom.addItem(jobArtwork, (1, 3, 0))
 
         mainRoom.addInputSlot((7,8,0),"Scrap")
         mainRoom.addInputSlot((8,7,0),"Scrap")

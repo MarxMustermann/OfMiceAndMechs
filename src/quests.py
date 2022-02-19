@@ -2246,6 +2246,12 @@ class LootRuin(MetaQuestSequence):
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
+                return
+
+            quest = ClearTerrain()
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
 
 class FetchItems(MetaQuestSequence):
     def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True):

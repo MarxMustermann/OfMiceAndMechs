@@ -2201,13 +2201,32 @@ class LootRuin(MetaQuestSequence):
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
+    def triggerCompletionCheck(self,character=None):
+        return False
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
         return super().setParameters(parameters)
 
-    def triggerCompletionCheck(self,character=None):
-        return False
+    def solver(self, character):
+        if len(self.subQuests):
+            self.subQuests[0].solver(character)
+        else:
+            self.triggerCompletionCheck(character)
+
+            if isinstance(character.container,src.rooms.Room):
+                terrain = character.container.container
+            else:
+                terrain = character.container
+
+            if not (terrain.xPosition,terrain.yPosition,0) == self.targetPosition:
+                self.addQuest(TeleportToTerrain(targetPosition=self.targetPosition))
 
 class FetchItems(MetaQuestSequence):
     def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True):
@@ -7645,6 +7664,7 @@ questMap = {
     "GatherScrap": GatherScrap,
     "ClearTerrain": ClearTerrain,
     "TeleportToTerrain": TeleportToTerrain,
+    "LootRuin": LootRuin,
 }
 
 def getQuestFromState(state):

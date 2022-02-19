@@ -391,32 +391,43 @@ class CityBuilder2(src.items.Item):
         return {"backGuardRoom":backGuardRoom}
 
     def spawnRank(self,rank,actor,isMilitary=False):
-        if not rank == 3:
+        if rank == 4:
+            if not self.cityLeader or self.cityLeader.dead or len(self.cityLeader.subordinates) > 2:
+                actor.addMessage("no rank 3 to hook into")
+                return
+
+        if rank == 5:
             if not self.cityLeader or self.cityLeader.dead:
                 actor.addMessage("no rank 3 to hook into")
                 return
 
-            if rank > 4:
-                foundSubleader = None
-                for subleader in self.cityLeader.subordinates:
-                    if subleader.dead:
-                        continue
-                    if len(subleader.subordinates) > 2:
-                        continue
-                    foundSubleader = subleader
+            foundSubleader = None
+            for subleader in self.cityLeader.subordinates:
+                if subleader.dead:
+                    continue
+                if len(subleader.subordinates) > 2:
+                    continue
+                foundSubleader = subleader
 
-                if not foundSubleader:
-                    actor.addMessage("no rank 4 to hook into")
-                    return
+            if not foundSubleader:
+                actor.addMessage("no rank 4 to hook into")
+                return
 
-            if rank > 5:
-                foundSubsubleader = None
-                for subsubleader in foundSubleader.subordinates:
+        if rank == 6:
+            if not self.cityLeader or self.cityLeader.dead:
+                actor.addMessage("no rank 3 to hook into")
+                return
+
+            for subleader in self.cityLeader.subordinates:
+                if subleader.dead:
+                    continue
+
+                for subsubleader in subleader.subordinates:
                     if subsubleader.dead:
                         continue
                     if len(subsubleader.subordinates) > 2:
                         continue
-                    foundSubsubleader = subleader
+                    foundSubsubleader = subsubleader
 
                 if not foundSubsubleader:
                     actor.addMessage("no rank 5 to hook into")

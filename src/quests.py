@@ -2158,6 +2158,21 @@ class TeleportToTerrain(MetaQuestSequence):
         else:
             self.triggerCompletionCheck(character)
 
+            charPos = character.getPosition()
+            charPos = (charPos[0]%15,charPos[1]%15,charPos[2]%15)
+            if charPos == (7,0,0):
+                character.runCommandString("s")
+                return 
+            if charPos == (7,14,0):
+                character.runCommandString("w")
+                return
+            if charPos == (0,7,0):
+                character.runCommandString("d")
+                return 
+            if charPos == (14,7,0):
+                character.runCommandString("a")
+                return
+
             if isinstance(character.container,src.rooms.Room):
                 if isinstance(character.container,src.rooms.TeleporterRoom):
                     charPos = character.getPosition()
@@ -2175,7 +2190,6 @@ class TeleportToTerrain(MetaQuestSequence):
                         elif charPos == (itemPos[0],itemPos[1]+1,itemPos[2]):
                             self.addQuest(RunCommand(command="Jw"+teleportCommand))
                         else:
-                            print("assign")
                             quest = GoToPosition(targetPosition=itemPos,ignoreEndBlocked=True)
                             quest.assignToCharacter(character)
                             quest.activate()
@@ -2189,6 +2203,8 @@ class TeleportToTerrain(MetaQuestSequence):
                 if not isinstance(room,src.rooms.TeleporterRoom):
                     continue
                 quest = GoToTile(targetPosition=room.getPosition())
+                quest.assignToCharacter(character)
+                quest.activate()
                 self.addQuest(quest)
                 return
 
@@ -2226,7 +2242,10 @@ class LootRuin(MetaQuestSequence):
                 terrain = character.container
 
             if not (terrain.xPosition,terrain.yPosition,0) == self.targetPosition:
-                self.addQuest(TeleportToTerrain(targetPosition=self.targetPosition))
+                quest = TeleportToTerrain(targetPosition=self.targetPosition)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
 
 class FetchItems(MetaQuestSequence):
     def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True):

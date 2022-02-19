@@ -69,6 +69,8 @@ class QuestArtwork(src.items.Item):
                     quest.activate()
 
                     if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                        quest.assignToCharacter(character)
+                        quest.activate()
                         character.quests[0].addQuest(quest)
                     else:
                         character.quests.insert(0,quest)

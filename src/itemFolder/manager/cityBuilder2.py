@@ -292,26 +292,27 @@ class CityBuilder2(src.items.Item):
         return room
 
     def spawnSet(self,character):
-        self.spawnRank(3,character)
+        cityleader = self.spawnRank(3,character)
         for i in range(0,3):
             self.spawnRank(4,character)
         for i in range(0,9):
             self.spawnRank(5,character)
         for i in range(0,9*3):
             self.spawnRank(6,character)
+        return cityleader
 
     def spawnRank6(self,character):
-        self.spawnRank(6,character)
+        return self.spawnRank(6,character)
     def spawnRank5(self,character):
-        self.spawnRank(5,character)
+        return self.spawnRank(5,character)
     def spawnRank4(self,character):
-        self.spawnRank(4,character)
+        return self.spawnRank(4,character)
     def spawnRank3(self,character):
-        self.spawnRank(3,character)
+        return self.spawnRank(3,character)
     def spawnRankUnranked(self,character):
-        self.spawnRank(None,character)
+        return self.spawnRank(None,character)
     def spawnMilitary(self,character):
-        self.spawnRank(None,character,isMilitary=True)
+        return self.spawnRank(None,character,isMilitary=True)
 
     def addProductionLine1(self,character,instaSpawn=False):
         toAdd = ["Rod","Sword","Armor","Sheet","Bolt","Rod","Sword","Armor","Rod"]

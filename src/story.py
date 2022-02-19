@@ -3438,6 +3438,7 @@ class BaseBuilding(BasicPhase):
         for scrapField in cityBuilder.scrapFields:
             mainRoom.sources.append((scrapField,"Scrap"))
         mainRoom.addItem(cityBuilder, (6, 6, 0))
+        cityBuilder.registerRoom(mainRoom)
 
         tradingArtwork = src.items.itemMap["TradingArtwork2"]()
         cityBuilder.bolted = True

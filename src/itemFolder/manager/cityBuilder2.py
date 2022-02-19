@@ -392,9 +392,35 @@ class CityBuilder2(src.items.Item):
 
     def spawnRank(self,rank,actor,isMilitary=False):
         if not rank == 3:
-            if not self.cityLeader:
+            if not self.cityLeader or self.cityLeader.dead:
                 actor.addMessage("no rank 3 to hook into")
                 return
+
+            if rank > 4:
+                foundSubleader = None
+                for subleader in self.cityLeader.subordinates:
+                    if subleader.dead:
+                        continue
+                    if len(subleader.subordinates) > 2:
+                        continue
+                    foundSubleader = subleader
+
+                if not foundSubleader:
+                    actor.addMessage("no rank 4 to hook into")
+                    return
+
+            if rank > 5:
+                foundSubsubleader = None
+                for subsubleader in foundSubleader.subordinates:
+                    if subsubleader.dead:
+                        continue
+                    if len(subsubleader.subordinates) > 2:
+                        continue
+                    foundSubsubleader = subleader
+
+                if not foundSubsubleader:
+                    actor.addMessage("no rank 5 to hook into")
+                    return
 
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
@@ -405,12 +431,16 @@ class CityBuilder2(src.items.Item):
         if rank == 3:
             if not self.cityLeader or self.cityLeader.dead:
                 self.cityLeader = char
+
         if rank == 4:
             self.cityLeader.subordinates.append(char)
 
-
         if rank == 5:
+            foundSubleader.subordinates.append(char)
             char.duties.append("Trapsetting")
+
+        if rank == 6:
+            foundSubsubleader.subordinates.append(char)
 
         quest = src.quests.BeUsefull()
         quest.assignToCharacter(char)

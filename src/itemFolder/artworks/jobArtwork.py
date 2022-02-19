@@ -64,60 +64,8 @@ class JobArtwork(src.items.Item):
             character.addMessage("no city leader")
             return
 
-        text = ""
-
-        dutyCount = {"Trapsetting":0,"Farming":0,"Cleaning":0}
-        npcCount = 0
-        npcCount += 1
-        for duty in cityLeader.duties:
-            dutyCount[duty] += 1
-        text += "rank 3 (%s): \n"%(npcCount,)
-        for (duty,count) in dutyCount.items():
-            text += "%s: %s "%(duty,count)
-        text += "\n"
-
-        dutyCount = {"Trapsetting":0,"Farming":0,"Cleaning":0}
-        npcCount = 0
-        for subleader in cityLeader.subordinates:
-            npcCount += 1
-            for duty in subleader.duties:
-                dutyCount[duty] += 1
-        text += "rank 4 (%s): \n"%(npcCount,)
-        for (duty,count) in dutyCount.items():
-            text += "%s: %s "%(duty,count)
-        text += "\n"
-
-        dutyCount = {"Trapsetting":0,"Farming":0,"Cleaning":0}
-        npcCount = 0
-        for subleader in cityLeader.subordinates:
-            for subsubleader in subleader.subordinates:
-                npcCount += 1
-                for duty in subsubleader.duties:
-                    dutyCount[duty] += 1
-        text += "rank 5 (%s): \n"%(npcCount,)
-        for (duty,count) in dutyCount.items():
-            text += "%s: %s "%(duty,count)
-        text += "\n"
-
-        dutyCount = {"Trapsetting":0,"Farming":0,"Cleaning":0}
-        npcCount = 0
-        for subleader in cityLeader.subordinates:
-            for subsubleader in subleader.subordinates:
-                for worker in subsubleader.subordinates:
-                    npcCount += 1
-                    for duty in worker.duties:
-                        dutyCount[duty] += 1
-        text += "rank 6 (%s): \n"%(npcCount,)
-        for (duty,count) in dutyCount.items():
-            text += "%s: %s "%(duty,count)
-        text += "\n"
-
-
         self.submenue = src.interaction.JobByRankMenu(cityLeader)
         character.macroState["submenue"] = self.submenue
-
-        print(text)
-        character.addMessage(text)
 
     def showMatrix(self, character):
         character.addMessage("show matrix")

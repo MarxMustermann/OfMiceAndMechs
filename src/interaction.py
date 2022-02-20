@@ -4633,6 +4633,11 @@ class JobByRankMenu(SubMenu):
 
     type = "JobByRankMenu"
 
+    def __init__(self,cityLeader):
+        super().__init__()
+        self.cityLeader = cityLeader 
+        self.index = [0,0]
+
     def handleKey(self, key, noRender=False, character = None):
         """
         show the help text and ignore keypresses
@@ -4648,10 +4653,178 @@ class JobByRankMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
+        duties = ["Trapsetting","Farming","Cleaning","Guarding","Adventuring"]
+        if key == "w":
+            if not self.index[0] < 1:
+                self.index[0] -= 1
+        if key == "s":
+            if not self.index[0] > 2:
+                self.index[0] += 1
+        if key == "a":
+            if not self.index[1] < 1:
+                self.index[1] -= 1
+        if key == "d":
+            if not self.index[1] > len(duties)-2:
+                self.index[1] += 1
+        if key == "j":
+            if self.index[0] == 0:
+                dutyname = duties[self.index[1]]
+                if not dutyname in self.cityLeader.duties:
+                   self.cityLeader.duties.append(dutyname)
+            if self.index[0] == 1:
+                dutyname = duties[self.index[1]]
+                for subleader in self.cityLeader.subordinates:
+                    if not dutyname in subleader.duties:
+                       subleader.duties.append(dutyname)
+                       break
+            if self.index[0] == 2:
+                dutyname = duties[self.index[1]]
+                firstSubsubleaderFound = None
+                for subleader in self.cityLeader.subordinates:
+                    for subsubleader in subleader.subordinates:
+                        if not dutyname in subsubleader.duties:
+                           subsubleader.duties.append(dutyname)
+                           firstSubsubleaderFound = subsubleader
+                           break
+                    if firstSubsubleaderFound:
+                        break
+            if self.index[0] == 3:
+                dutyname = duties[self.index[1]]
+                firstWorkerFound = None
+                for subleader in self.cityLeader.subordinates:
+                    for subsubleader in subleader.subordinates:
+                        for worker in subsubleader.subordinates:
+                            if not dutyname in worker.duties:
+                               worker.duties.append(dutyname)
+                               firstWorkerFound = worker
+                               break
+                        if firstWorkerFound:
+                            break
+                    if firstWorkerFound:
+                        break
+
+        if key == "k":
+            print("should remove duty")
+            if self.index[0] == 0:
+                dutyname = duties[self.index[1]]
+                if dutyname in self.cityLeader.duties:
+                   self.cityLeader.duties.remove(dutyname)
+            if self.index[0] == 1:
+                dutyname = duties[self.index[1]]
+                for subleader in self.cityLeader.subordinates:
+                    if dutyname in subleader.duties:
+                       subleader.duties.remove(dutyname)
+                       break
+            if self.index[0] == 2:
+                dutyname = duties[self.index[1]]
+                firstSubsubleaderFound = None
+                for subleader in self.cityLeader.subordinates:
+                    for subsubleader in subleader.subordinates:
+                        if dutyname in subsubleader.duties:
+                           subsubleader.duties.remove(dutyname)
+                           firstSubsubleaderFound = subsubleader
+                           break
+                    if firstSubsubleaderFound:
+                        break
+            if self.index[0] == 3:
+                dutyname = duties[self.index[1]]
+                firstWorkerFound = None
+                for subleader in self.cityLeader.subordinates:
+                    for subsubleader in subleader.subordinates:
+                        for worker in subsubleader.subordinates:
+                            if dutyname in worker.duties:
+                               worker.duties.remove(dutyname)
+                               firstWorkerFound = worker
+                               break
+                        if firstWorkerFound:
+                            break
+                    if firstWorkerFound:
+                        break
+
+
+        cityLeader = self.cityLeader
+
+        text = "press wasd to move cursor\n\n"
+        text += "press j to increase\n"
+        text += "press k to decrease\n"
+
+        dutyCount = {}
+        for duty in duties:
+            dutyCount[duty] = 0
+        npcCount = 0
+        npcCount += 1
+        for duty in cityLeader.duties:
+            dutyCount[duty] += 1
+        text += "rank 3 (%s): \n"%(npcCount,)
+        counter = 0
+        for duty in duties:
+            count = dutyCount[duty]
+            if self.index[0] == 0 and self.index[1] == counter:
+                text += "=> "
+            text += "%s: %s "%(duty,count)
+            counter += 1
+        text += "\n"
+
+        dutyCount = {}
+        for duty in duties:
+            dutyCount[duty] = 0
+        npcCount = 0
+        for subleader in cityLeader.subordinates:
+            npcCount += 1
+            for duty in subleader.duties:
+                dutyCount[duty] += 1
+        text += "rank 4 (%s): \n"%(npcCount,)
+        counter = 0
+        for duty in duties:
+            count = dutyCount[duty]
+            if self.index[0] == 1 and self.index[1] == counter:
+                text += "=> "
+            text += "%s: %s "%(duty,count)
+            counter += 1
+        text += "\n"
+
+        dutyCount = {}
+        for duty in duties:
+            dutyCount[duty] = 0
+        npcCount = 0
+        for subleader in cityLeader.subordinates:
+            for subsubleader in subleader.subordinates:
+                npcCount += 1
+                for duty in subsubleader.duties:
+                    dutyCount[duty] += 1
+        text += "rank 5 (%s): \n"%(npcCount,)
+        counter = 0
+        for duty in duties:
+            count = dutyCount[duty]
+            if self.index[0] == 2 and self.index[1] == counter:
+                text += "=> "
+            text += "%s: %s "%(duty,count)
+            counter += 1
+        text += "\n"
+
+        dutyCount = {}
+        for duty in duties:
+            dutyCount[duty] = 0
+        npcCount = 0
+        for subleader in cityLeader.subordinates:
+            for subsubleader in subleader.subordinates:
+                for worker in subsubleader.subordinates:
+                    npcCount += 1
+                    for duty in worker.duties:
+                        dutyCount[duty] += 1
+        text += "rank 6 (%s): \n"%(npcCount,)
+        counter = 0
+        for duty in duties:
+            count = dutyCount[duty]
+            if self.index[0] == 3 and self.index[1] == counter:
+                text += "=> "
+            text += "%s: %s "%(duty,count)
+            counter += 1
+        text += "\n"
+
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
-        self.persistentText = ""
-        self.persistentText += "test"
+        self.persistentText = text
         main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False

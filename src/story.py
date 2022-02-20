@@ -3504,6 +3504,135 @@ class BaseBuilding(BasicPhase):
         #cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
         #cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
 
+class Siege2(BasicPhase):
+    """
+    """
+
+    def __init__(self, seed=0):
+        """
+        set up super class
+
+        Parameters:
+            seed: rng seed
+        """
+
+        super().__init__("BaseBuilding2", seed=seed)
+
+    def start(self, seed=0):
+        """
+        set up terrain and spawn main character
+
+        Parameters:
+            seed: rng seed
+        """
+
+        showText("build a base.\n\npress space to continue")
+
+        mainChar = src.gamestate.gamestate.mainChar
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.bolted = False
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+
+        # add basic set of abilities in openworld phase
+        src.gamestate.gamestate.mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        src.gamestate.gamestate.mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+        src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
+        src.gamestate.gamestate.mainChar.godMode = True
+        src.gamestate.gamestate.mainChar.faction = "city test"
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        src.gamestate.gamestate.mainChar.registers["HOMEx"] = 7
+        src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
+        mainRoom.storageRooms = []
+
+        cityBuilder = src.items.itemMap["CityBuilder2"]()
+        cityBuilder.architect = architect
+        mainRoom.addItem(cityBuilder,(7,1,0))
+        cityBuilder.registerRoom(mainRoom)
+
+        self.numRounds = 1
+        self.startRound()
+
+        mainChar.runCommandString(".",nativeKey=True)
+
+    def startRound(self):
+        text = ""
+        if self.numRounds == 1:
+            text = """
+you are beeing sieged and your command is to hold the position and go down in glory.
+
+Waves will appear every 1000 ticks. Each wave will be stronger than the last.
+
+Defend yourself and surive as long as possible.
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        
+        for i in range(0,self.numRounds):
+            enemy = src.characters.Monster(35,35)
+            enemy.health = 10*self.numRounds
+            enemy.baseDamage = self.numRounds
+            terrain.addCharacter(enemy, 35, 35)
+
+            quest = src.quests.ClearTerrain()
+            quest.autoSolve = True
+            enemy.quests.append(quest)
+            enemy.runCommandString("**")
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1000)
+        event.setCallback({"container": self, "method": "startRound"})
+        terrain.addEvent(event)
+
 class Siege(BasicPhase):
     """
     the phase is intended to give the player access to the true gameworld without manipulations
@@ -9048,6 +9177,7 @@ def registerPhases():
     phasesByName["Test"] = Testing_1
     phasesByName["Testing_1"] = Testing_1
     phasesByName["Siege"] = Siege
+    phasesByName["Siege2"] = Siege2
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream

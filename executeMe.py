@@ -176,6 +176,10 @@ if not shouldLoad:
                 "dungeon",
             ),
             (
+                "siege2",
+                "siege2",
+            ),
+            (
                 "Tour",
                 "(Tour)",
             ),
@@ -261,6 +265,9 @@ if not shouldLoad:
     if scenario == "siege":
         args.terrain = "test"
         args.phase = "Siege"
+    elif scenario == "siege2":
+        args.terrain = "test"
+        args.phase = "Siege2"
     elif scenario == "basebuilding":
         args.terrain = "nothingness"
         args.phase = "BaseBuilding"

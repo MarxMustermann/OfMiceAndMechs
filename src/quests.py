@@ -957,6 +957,10 @@ class MetaQuestSequence(Quest):
     """
 
     def solver(self, character):
+        # remove completed quests
+        if self.subQuests and self.subQuests[0].completed:
+            self.subQuests.remove(self.subQuests[0])
+
         if len(self.subQuests):
             self.subQuests[0].solver(character)
         else:
@@ -999,12 +1003,12 @@ class ClearTerrain(MetaQuestSequence):
                     continue
                 return
 
-        self.postHandler()
+        super().triggerCompletionCheck()
         return False
 
     def solver(self, character):
         if len(self.subQuests):
-            self.subQuests[0].solver(character)
+            return super().solver(character)
         else:
             self.triggerCompletionCheck()
 
@@ -1016,7 +1020,10 @@ class ClearTerrain(MetaQuestSequence):
             for otherChar in terrain.characters:
                 if otherChar.faction == character.faction:
                     continue
-                self.addQuest(src.quests.SecureTile(toSecure=(otherChar.xPosition//15,otherChar.yPosition//15)))
+                quest = src.quests.SecureTile(toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
                 return
             for room in terrain.rooms:
                 for otherChar in room.characters:
@@ -1024,6 +1031,7 @@ class ClearTerrain(MetaQuestSequence):
                         continue
                     self.addQuest(src.quests.SecureTile(toSecure=room.getPosition()))
                     return
+
 
 class Equip(MetaQuestSequence):
     def __init__(self, description="equip", creator=None, command=None, lifetime=None):
@@ -6918,10 +6926,11 @@ class GoToTile(Quest):
         return ".20.."
 
 class SecureTile(GoToTile):
-    def __init__(self, description="secure tile", toSecure=None):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False):
         super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.type = "SecureTile"
+        self.endWhenCleared = endWhenCleared
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -6937,11 +6946,24 @@ class SecureTile(GoToTile):
                 if not foundEnemy:
                     self.postHandler()
                     return True
+        else:
+            if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
+                foundEnemy = None
+                for enemy in character.container.characters:
+                    if not (enemy.xPosition//15 == character.xPosition//15 and enemy.yPosition//15 == character.yPosition//15):
+                        continue
+                    if enemy.faction == character.faction:
+                        continue
+                    foundEnemy = enemy
+                if not foundEnemy:
+                    self.postHandler()
+                    return True
         return False
 
     def solver(self,character):
         self.triggerCompletionCheck(character)
-        super().solver(character)
+        if not self.completed:
+            super().solver(character)
 
 class GoToPosition(Quest):
     def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEnd=False,ignoreEndBlocked=False):

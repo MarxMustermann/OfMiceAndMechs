@@ -4701,45 +4701,6 @@ class JobAsMatrixMenu(SubMenu):
                                 worker.duties.append(dutyname)
                         rowCounter += 1
 
-        if key == "k":
-            print("should remove duty")
-            if self.index[0] == 0:
-                dutyname = duties[self.index[1]]
-                if dutyname in self.cityLeader.duties:
-                   self.cityLeader.duties.remove(dutyname)
-            if self.index[0] == 1:
-                dutyname = duties[self.index[1]]
-                for subleader in self.cityLeader.subordinates:
-                    if dutyname in subleader.duties:
-                       subleader.duties.remove(dutyname)
-                       break
-            if self.index[0] == 2:
-                dutyname = duties[self.index[1]]
-                firstSubsubleaderFound = None
-                for subleader in self.cityLeader.subordinates:
-                    for subsubleader in subleader.subordinates:
-                        if dutyname in subsubleader.duties:
-                           subsubleader.duties.remove(dutyname)
-                           firstSubsubleaderFound = subsubleader
-                           break
-                    if firstSubsubleaderFound:
-                        break
-            if self.index[0] == 3:
-                dutyname = duties[self.index[1]]
-                firstWorkerFound = None
-                for subleader in self.cityLeader.subordinates:
-                    for subsubleader in subleader.subordinates:
-                        for worker in subsubleader.subordinates:
-                            if dutyname in worker.duties:
-                               worker.duties.remove(dutyname)
-                               firstWorkerFound = worker
-                               break
-                        if firstWorkerFound:
-                            break
-                    if firstWorkerFound:
-                        break
-
-
         cityLeader = self.cityLeader
 
         text = "press wasd to move cursor"
@@ -4915,7 +4876,6 @@ class JobByRankMenu(SubMenu):
                         break
 
         if key == "k":
-            print("should remove duty")
             if self.index[0] == 0:
                 dutyname = duties[self.index[1]]
                 if dutyname in self.cityLeader.duties:

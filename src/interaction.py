@@ -4626,6 +4626,217 @@ class HelpMenu(SubMenu):
 
         return False
 
+class JobAsMatrixMenu(SubMenu):
+    type = "JobAsMatrixMenu"
+
+    def __init__(self,cityLeader):
+        super().__init__()
+        self.cityLeader = cityLeader 
+        self.index = [0,0]
+
+    def handleKey(self, key, noRender=False, character = None):
+        """
+        show the help text and ignore keypresses
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # exit the submenu
+        if key in ("esc"," ",):
+            return True
+
+        duties = ["Trapsetting","Farming","Cleaning","Guarding","Adventuring"]
+        if key == "w":
+            if not self.index[0] < 1:
+                self.index[0] -= 1
+        if key == "s":
+            self.index[0] += 1
+        if key == "a":
+            if not self.index[1] < 1:
+                self.index[1] -= 1
+        if key == "d":
+            if not self.index[1] > len(duties)-2:
+                self.index[1] += 1
+        if key == "j":
+            rowCounter = 0
+            if rowCounter == self.index[0]:
+                dutyname = duties[self.index[1]]
+                if dutyname in self.cityLeader.duties:
+                    self.cityLeader.duties.remove(dutyname)
+                else:
+                    self.cityLeader.duties.append(dutyname)
+            rowCounter += 1
+
+            for subleader in self.cityLeader.subordinates:
+                if rowCounter == self.index[0]:
+                    dutyname = duties[self.index[1]]
+                    if dutyname in subleader.duties:
+                        subleader.duties.remove(dutyname)
+                    else:
+                        subleader.duties.append(dutyname)
+                rowCounter += 1
+
+            for subleader in self.cityLeader.subordinates:
+                for subsubleader in subleader.subordinates:
+                    if rowCounter == self.index[0]:
+                        dutyname = duties[self.index[1]]
+                        if dutyname in subsubleader.duties:
+                            subsubleader.duties.remove(dutyname)
+                        else:
+                            subsubleader.duties.append(dutyname)
+                    rowCounter += 1
+
+            for subleader in self.cityLeader.subordinates:
+                for subsubleader in subleader.subordinates:
+                    for worker in subsubleader.subordinates:
+                        if rowCounter == self.index[0]:
+                            dutyname = duties[self.index[1]]
+                            if dutyname in worker.duties:
+                                worker.duties.remove(dutyname)
+                            else:
+                                worker.duties.append(dutyname)
+                        rowCounter += 1
+
+        if key == "k":
+            print("should remove duty")
+            if self.index[0] == 0:
+                dutyname = duties[self.index[1]]
+                if dutyname in self.cityLeader.duties:
+                   self.cityLeader.duties.remove(dutyname)
+            if self.index[0] == 1:
+                dutyname = duties[self.index[1]]
+                for subleader in self.cityLeader.subordinates:
+                    if dutyname in subleader.duties:
+                       subleader.duties.remove(dutyname)
+                       break
+            if self.index[0] == 2:
+                dutyname = duties[self.index[1]]
+                firstSubsubleaderFound = None
+                for subleader in self.cityLeader.subordinates:
+                    for subsubleader in subleader.subordinates:
+                        if dutyname in subsubleader.duties:
+                           subsubleader.duties.remove(dutyname)
+                           firstSubsubleaderFound = subsubleader
+                           break
+                    if firstSubsubleaderFound:
+                        break
+            if self.index[0] == 3:
+                dutyname = duties[self.index[1]]
+                firstWorkerFound = None
+                for subleader in self.cityLeader.subordinates:
+                    for subsubleader in subleader.subordinates:
+                        for worker in subsubleader.subordinates:
+                            if dutyname in worker.duties:
+                               worker.duties.remove(dutyname)
+                               firstWorkerFound = worker
+                               break
+                        if firstWorkerFound:
+                            break
+                    if firstWorkerFound:
+                        break
+
+
+        cityLeader = self.cityLeader
+
+        text = "press wasd to move cursor"
+        text += "press j to enable/disable"
+
+        text += "\ncharacter   | "+" | ".join(duties)
+
+        lineCounter = 0
+        text += "\nrank 3 ----\n"
+        text += "%s: "%(cityLeader.name,)
+        rowCounter = 0
+        for duty in duties:
+            if lineCounter == self.index[0] and rowCounter == self.index[1]:
+                text += "=>"
+            else:
+                text += "  "
+            if duty in cityLeader.duties:
+                text += "X"
+            else:
+                text += " "
+            text += "|"
+            rowCounter += 1
+        lineCounter += 1
+
+        text += "\nrank 4 ----\n"
+        for subleader in cityLeader.subordinates:
+            text += "%s: "%(subleader.name,)
+            rowCounter = 0
+            for duty in duties:
+                if lineCounter == self.index[0] and rowCounter == self.index[1]:
+                    text += "=>"
+                else:
+                    text += "  "
+                if duty in subleader.duties:
+                    text += "X"
+                else:
+                    text += " "
+                text += "|"
+                rowCounter += 1
+            lineCounter += 1
+            text += "\n"
+
+        text += "rank 5 ----\n"
+        for subleader in cityLeader.subordinates:
+            for subsubleader in subleader.subordinates:
+                text += "%s: "%(subsubleader.name,)
+                rowCounter = 0
+                for duty in duties:
+                    if lineCounter == self.index[0] and rowCounter == self.index[1]:
+                        text += "=>"
+                    else:
+                        text += "  "
+                    if duty in subsubleader.duties:
+                        text += "X"
+                    else:
+                        text += " "
+                    text += "|"
+                    rowCounter += 1
+                lineCounter += 1
+                text += "\n"
+
+        text += "rank 6 ----\n"
+        for subleader in cityLeader.subordinates:
+            for subsubleader in subleader.subordinates:
+                for worker in subsubleader.subordinates:
+                    text += "%s: "%(worker.name,)
+                    rowCounter = 0
+                    for duty in duties:
+                        if lineCounter == self.index[0] and rowCounter == self.index[1]:
+                            text += "=>"
+                        else:
+                            text += "  "
+                        if duty in worker.duties:
+                            text += "X"
+                        else:
+                            text += " "
+                        text += "|"
+                        rowCounter += 1
+                    lineCounter += 1
+                    text += "\n"
+
+        """
+        for subleader in cityLeader.subordinates:
+            for subsubleader in subleader.subordinates:
+                for worker in subsubleader.subordinates:
+                    npcCount += 1
+                    for duty in worker.duties:
+                        dutyCount[duty] += 1
+        """
+
+        # show info
+        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        self.persistentText = text
+        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+        return False
+        
 class JobByRankMenu(SubMenu):
     """
     the help submenue
@@ -6270,6 +6481,7 @@ subMenuMap = {
     "OneKeystrokeMenu": OneKeystrokeMenu,
     "CreateQuestMenu": CreateQuestMenu,
     "JobByRankMenu": JobByRankMenu,
+    "JobAsMatrixMenu": JobAsMatrixMenu,
 }
 
 def getSubmenuFromState(state):

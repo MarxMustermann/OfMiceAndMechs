@@ -68,6 +68,12 @@ class JobArtwork(src.items.Item):
         character.macroState["submenue"] = self.submenue
 
     def showMatrix(self, character):
-        character.addMessage("show matrix")
+        cityLeader = self.fetchCityleader()
+        if not cityLeader:
+            character.addMessage("no city leader")
+            return
+
+        self.submenue = src.interaction.JobAsMatrixMenu(cityLeader)
+        character.macroState["submenue"] = self.submenue
 
 src.items.addType(JobArtwork)

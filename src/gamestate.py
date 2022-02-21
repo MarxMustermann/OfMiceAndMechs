@@ -37,6 +37,7 @@ class GameState(src.saveing.Saveable):
         self.dragState = None
         self.gameIndex = gameIndex
         self.initialSeed = None
+        self.timedAutoAdvance = None
 
         """
         self.uiElements = [

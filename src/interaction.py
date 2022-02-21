@@ -4614,7 +4614,7 @@ class HelpMenu(SubMenu):
         """
 
         # exit the submenu
-        if key == "esc":
+        if key in ("esc"," "):
             character.changed("closedHelp")
             return True
 
@@ -6332,7 +6332,8 @@ def advanceChar(char,removeChars):
             else:
                 if tcod:
                     renderGameDisplay()
-                    getTcodEvents()
+                    while not state["commandKeyQueue"]:
+                        getTcodEvents()
 
         char.timeTaken -= 1
 

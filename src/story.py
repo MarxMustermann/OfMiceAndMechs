@@ -2932,6 +2932,7 @@ it will explain:
 
 press space to start
 """
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -2994,15 +2995,37 @@ Please open the help menu and close it again by pressing ESC or clicking the X i
 
 press space when you are ready.
 """
+        src.gamestate.gamestate.mainChar.addMessage(text)
+
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
         mainChar.addListener(self.checkTutorialHelpClosed, "closedHelp")
 
     def checkTutorialHelpClosed(self):
-        self.tutorialExplainMovement()
-        mainChar = src.gamestate.gamestate.mainChar
-        mainChar.delListener(self.checkTutorialHelpClosed, "closedHelp")
+        self.tutorialExplainMessageLog()
+        return
+
+    def tutorialExplainMessageLog(self):
+        text = """
+Another menu that might be important is the message log.
+Press x to open it.
+
+Usually it shows the combat log and similar stuff. 
+In this tutorial it also shows the instructions this tutorial ave you.
+So press x, if you forget what you were supposed to do.
+
+press space to continue
+"""
+        src.gamestate.gamestate.mainChar.addMessage(text)
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialExplainMovement",
+        }
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
         return
 
     def tutorialExplainMovement(self):
@@ -3022,6 +3045,8 @@ please move around a bit now.
 
 press space when you are ready
 """
+        src.gamestate.gamestate.mainChar.addMessage(text)
+
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         self.tutorialCheckMovement({"count":0,"lastPos":list(mainChar.getPosition())})
@@ -3035,7 +3060,7 @@ press space when you are ready
             extraInfo["count"] += 1
         extraInfo["lastPos"] = list(mainChar.getPosition())
 
-        if extraInfo["count"] < 15:
+        if extraInfo["count"] < 10:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "tutorialCheckMovement","params":extraInfo})
             mainChar.container.addEvent(event)
@@ -3059,6 +3084,7 @@ I spawned 4 pieces of scrap and a wall nearby. Pick them up to proceed.
 
 remember to press z if you forget the keybindings
         """
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3111,6 +3137,7 @@ other menus you can open are:
 
 press space to continue with dropping items.
         """
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3132,6 +3159,7 @@ you can
 The item picked up last is the item that will be dropped when pressing l or L
 
 now drop the items onto the floor again."""
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3153,7 +3181,7 @@ now drop the items onto the floor again."""
         mainChar = src.gamestate.gamestate.mainChar
 
         text = """
-other important interaction methods a are activating and examining items.
+other important interaction methods are activating and examining items.
 
 It mostly works like picking up or dropping items.
 
@@ -3173,6 +3201,7 @@ So remember to examine items you don't understand.
 i dropped a combination lock nearby.
 examine it and activate it.
         """
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3194,7 +3223,7 @@ examine it and activate it.
         mainChar.container.addItem(storyItem,(baseX*15+7,baseY*15+7,0))
 
     def getActivateCode(self):
-        submenu = src.interaction.InputMenu("Enter the code:")
+        submenu = src.interaction.InputMenu("Enter the code:",ignoreFirst=True)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
                 "container": self,
@@ -3215,14 +3244,17 @@ examine it and activate it.
 that worked, awesome. 
 
 I'm sure you noticed that opening and closing the inventory can get annoying fast.
-To solve this the game offers you to dock menus to the left and right of the game map.
+To solve this, the game offers you to dock menus to the left and right of the game map.
 
-To do this you first open the inventory menu.
+To do this, you first open the inventory menu.
 Then you click the < arrow of the subwindow or press left_shift + ESC to dock the window to the left.
 Clicking the > arrow of the subwindow or pressing right_shift + ESC will dock the window to the right.
 
-please dock the inventory and fill it with 10 items to see how it works
+please press space and then dock the inventory menu.
+
+(the current window can't be docked)
 """
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3241,7 +3273,7 @@ please dock the inventory and fill it with 10 items to see how it works
     def checkDocking(self):
         mainChar = src.gamestate.gamestate.mainChar
 
-        if (mainChar.rememberedMenu or mainChar.rememberedMenu2) and len(mainChar.inventory) > 9:
+        if (mainChar.rememberedMenu or mainChar.rememberedMenu2):
             self.tutorialExplainUndocking()
             return
         else:
@@ -3260,9 +3292,11 @@ press right shift + ESC to undock right
 
 undock and close all menus to continue
 """
+        src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
         src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
         self.checkUndocking()
@@ -3290,6 +3324,8 @@ Good luck on your adventures and maybe see you in another tutorial
 
 press space to return to tutorial selection
 """
+        src.gamestate.gamestate.mainChar.addMessage(text)
+
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {

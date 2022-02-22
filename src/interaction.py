@@ -380,7 +380,7 @@ press key to select action
     char.interactionState["runaction"] = {}
 
 def handleActivitySelection(char):
-    char.startGuarding(10)
+    char.startGuarding(1)
     del char.interactionState["runaction"]
 
 def handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):

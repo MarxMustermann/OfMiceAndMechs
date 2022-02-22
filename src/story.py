@@ -2950,6 +2950,7 @@ press space to start
             "method": "tutorialExplainHelp",
         }
 
+
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
             "NaiveMoveQuest",
@@ -3668,6 +3669,7 @@ Defend yourself and surive as long as possible.
             enemy.health = 10*self.numRounds
             enemy.baseDamage = self.numRounds
             terrain.addCharacter(enemy, 35, 35)
+            enemy.movementSpeed = 0.3
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True

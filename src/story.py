@@ -2917,6 +2917,12 @@ class BasicUsageTutorial(BasicPhase):
         super().__init__("BasicUsageTutorial", seed=seed)
 
     def start(self, seed=0):
+        src.gamestate.gamestate.terrainMap[7][7] = src.terrains.Nothingness()
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+
         text = """
 This tutorial will explain the basic interaction with the program.
 
@@ -2935,6 +2941,9 @@ press space to start
         src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.doesOwnAction = False
+        src.gamestate.gamestate.timedAutoAdvance = 1
+
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
             "container": self,
@@ -3304,7 +3313,7 @@ undock and close all menus to continue
     def checkUndocking(self):
         mainChar = src.gamestate.gamestate.mainChar
 
-        if not (mainChar.rememberedMenu or mainChar.rememberedMenu2):
+        if not (mainChar.rememberedMenu or mainChar.rememberedMenu2) and not mainChar.macroState["submenue"]:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "complete"})
             mainChar.container.addEvent(event)
@@ -3562,8 +3571,6 @@ class Siege2(BasicPhase):
             seed: rng seed
         """
 
-        showText("build a base.\n\npress space to continue")
-
         mainChar = src.gamestate.gamestate.mainChar
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         currentTerrain.addCharacter(
@@ -3576,6 +3583,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
+        self.epochLength = 10
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3634,24 +3642,25 @@ class Siege2(BasicPhase):
         mainRoom.addItem(cityBuilder,(7,1,0))
         cityBuilder.registerRoom(mainRoom)
 
+        cityBuilder.destroy()
+
         self.numRounds = 1
         self.startRound()
+
+        text = """
+you are beeing sieged and your command is to hold the position and go down in glory.
+
+Waves will appear every %s ticks. Each wave will be stronger than the last.
+
+Defend yourself and surive as long as possible.
+"""%(self.epochLength,)
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
 
         mainChar.runCommandString(".",nativeKey=True)
 
     def startRound(self):
-        text = ""
-        if self.numRounds == 1:
-            text = """
-you are beeing sieged and your command is to hold the position and go down in glory.
-
-Waves will appear every 1000 ticks. Each wave will be stronger than the last.
-
-Defend yourself and surive as long as possible.
-"""
-        submenu = src.interaction.TextMenu(text)
-        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
         for i in range(0,self.numRounds):
@@ -3665,7 +3674,7 @@ Defend yourself and surive as long as possible.
             enemy.quests.append(quest)
             enemy.runCommandString("**")
 
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1000)
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "startRound"})
         terrain.addEvent(event)
 

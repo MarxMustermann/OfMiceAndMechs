@@ -62,6 +62,8 @@ class Character(src.saveing.Saveable):
         self.rememberedMenu = []
         self.rememberedMenu2 = []
 
+        self.movementSpeed = 1
+
         self.duties = []
 
         super().__init__()
@@ -1764,6 +1766,9 @@ class Character(src.saveing.Saveable):
         if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
             src.interaction.playSound("step","steps")
 
+        if tag == "moved":
+            self.timeTaken += self.movementSpeed-1
+
         if tag == "character died on tile":
             if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
                 reutation = 0
@@ -2063,6 +2068,8 @@ class Monster(Character):
         )
 
         self.faction = "monster"
+
+        self.movementSpeed = 0.3
 
         self.solvers.extend(["NaiveMurderQuest"])
 

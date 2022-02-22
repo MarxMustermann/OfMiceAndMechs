@@ -6236,7 +6236,7 @@ def gameLoop(loop, user_data=None):
             global continousOperation
             if (
                 src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
-            ) or runFixedTick:
+            ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance:
                 continousOperation += 1
 
                 if not len(cinematics.cinematicQueue):
@@ -6288,7 +6288,7 @@ def advanceChar(char,removeChars):
     state = char.macroState
 
     # do random action
-    if not len(state["commandKeyQueue"]):
+    if not len(state["commandKeyQueue"]) and char.doesOwnAction:
         #if not char == src.gamestate.gamestate.mainChar:
         char.startIdling()
 
@@ -6300,17 +6300,18 @@ def advanceChar(char,removeChars):
     while len(char.messages) > 100:
         char.messages = char.messages[-100:]
 
-    if len(state["commandKeyQueue"]):
-        key = state["commandKeyQueue"][-1]
-        while (
-            isinstance(key[0], list)
-            or isinstance(key[0], tuple)
-            or key[0] in ("lagdetection", "lagdetection_")
-        ):
-            if len(state["commandKeyQueue"]):
-                key = state["commandKeyQueue"].pop()
-            else:
-                key = ("~", [])
+    if len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance:
+        if state["commandKeyQueue"]:
+            key = state["commandKeyQueue"][-1]
+            while (
+                isinstance(key[0], list)
+                or isinstance(key[0], tuple)
+                or key[0] in ("lagdetection", "lagdetection_")
+            ):
+                if len(state["commandKeyQueue"]):
+                    key = state["commandKeyQueue"].pop()
+                else:
+                    key = ("~", [])
 
         while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead)) and char.timeTaken < 1:
             if char.huntkilling:
@@ -6332,8 +6333,12 @@ def advanceChar(char,removeChars):
             else:
                 if tcod:
                     renderGameDisplay()
-                    while not state["commandKeyQueue"]:
+                    startTime = time.time()
+                    while (not state["commandKeyQueue"]) and char.timeTaken < 1:
                         getTcodEvents()
+                        if src.gamestate.gamestate.timedAutoAdvance:
+                            if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:
+                                char.timeTaken += 1
 
         char.timeTaken -= 1
 

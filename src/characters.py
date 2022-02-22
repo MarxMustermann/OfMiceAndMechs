@@ -136,6 +136,7 @@ class Character(src.saveing.Saveable):
         self.submenue = None
         self.jobOrders = []
         self.hasOwnAction = 0
+        self.doesOwnAction = True
 
         self.frustration = 0
         self.aggro = 0

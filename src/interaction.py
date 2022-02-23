@@ -3752,16 +3752,20 @@ class InputMenu(SubMenu):
 class MessagesMenu(SubMenu):
     def render(self,char):
         try:
-            return "\n".join(reversed(char.messages[-46:]))
+            if self.scrollIndex:
+                return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))
+            else:
+                return "\n".join(reversed(char.messages[-46:]))
         except:
             print(char.messages)
             1/0
-            return 
+            return "error"
 
     type = "MessagesMenu"
 
     def __init__(self, char=None):
         self.char = char
+        self.scrollIndex = 0
         super().__init__()
 
     def handleKey(self, key, noRender=False, character = None):
@@ -3776,6 +3780,11 @@ class MessagesMenu(SubMenu):
         """
 
         # exit the submenu
+        if key == "a":
+            if self.scrollIndex > 0:
+                self.scrollIndex -= 1
+        if key == "d":
+            self.scrollIndex += 1
         if key == "esc":
             character.changed("closedMessages")
             return True
@@ -3788,7 +3797,7 @@ class MessagesMenu(SubMenu):
 
         char = self.char
 
-        text = "(oldest message top)\n\n"+self.render(char)
+        text = "press a/d to scroll\noldest message on top - skipping %s messages\n\n"%(self.scrollIndex,)+self.render(char)
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "messages"))

@@ -3013,6 +3013,7 @@ press space when you are ready.
         mainChar.addListener(self.checkTutorialHelpClosed, "closedHelp")
 
     def checkTutorialHelpClosed(self):
+        src.gamestate.gamestate.mainChar.delListener(self.checkTutorialHelpClosed, "closedHelp")
         self.tutorialExplainMessageLog()
         return
 
@@ -3041,6 +3042,7 @@ press space when you are ready
 
     def checkTutorialMessageLogClosed(self):
         self.tutorialExplainMovement()
+        src.gamestate.gamestate.mainChar.delListener(self.checkTutorialMessageLogClosed, "closedMessages")
         return
 
     def tutorialExplainMovement(self):
@@ -3148,7 +3150,6 @@ I trust that you will be able to handle that.
 other menus you can open are:
  c for character overview
  q for quests
- x for the message log
 
 press space to continue with dropping items.
         """

@@ -1012,6 +1012,19 @@ class ClearTerrain(MetaQuestSequence):
         else:
             self.triggerCompletionCheck()
 
+            if character.yPosition%15 == 14:
+                character.runCommandString("w")
+                return
+            if character.yPosition%15 == 0:
+                character.runCommandString("s")
+                return
+            if character.xPosition%15 == 14:
+                character.runCommandString("a")
+                return
+            if character.xPosition%15 == 0:
+                character.runCommandString("d")
+                return
+
             if isinstance(character.container,src.rooms.Room):
                 terrain = character.container.container
             else:

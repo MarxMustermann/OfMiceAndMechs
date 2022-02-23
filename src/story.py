@@ -3025,17 +3025,22 @@ Usually it shows the combat log and similar stuff.
 In this tutorial it also shows the instructions this tutorial ave you.
 So press x, if you forget what you were supposed to do.
 
-press space to continue
+Please open and close the message menu.
+
+press space when you are ready
 """
         src.gamestate.gamestate.mainChar.addMessage(text)
 
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "tutorialExplainMovement",
-        }
         src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
+
+        src.gamestate.gamestate.mainChar.addListener(self.checkTutorialMessageLogClosed, "closedMessages")
+
+        return
+
+    def checkTutorialMessageLogClosed(self):
+        self.tutorialExplainMovement()
         return
 
     def tutorialExplainMovement(self):

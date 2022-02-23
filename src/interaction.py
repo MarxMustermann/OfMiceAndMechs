@@ -3777,6 +3777,7 @@ class MessagesMenu(SubMenu):
 
         # exit the submenu
         if key == "esc":
+            character.changed("closedMessages")
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)

@@ -5546,13 +5546,28 @@ def keyboardListener(key):
         with open("roomExport.json", "w") as exportFile:
             exportFile.write(serializedState)
     elif key == "ctrl i":
+        foundChar = None
         for character in src.gamestate.gamestate.mainChar.container.characters:
             if character == src.gamestate.gamestate.mainChar:
                 continue
             if character.xPosition == src.gamestate.gamestate.mainChar.xPosition and character.yPosition == src.gamestate.gamestate.mainChar.yPosition:
-                src.gamestate.gamestate.mainChar = character
-                state = src.gamestate.gamestate.mainChar.macroState
+                foundChar = character
                 break
+
+        if not foundChar:
+            for character in src.gamestate.gamestate.mainChar.container.characters:
+                if abs(character.xPosition-src.gamestate.gamestate.mainChar.xPosition) + abs(character.yPosition-src.gamestate.gamestate.mainChar.yPosition):
+                    foundChar = character
+                    break
+
+        if not foundChar:
+            for character in src.gamestate.gamestate.mainChar.container.characters:
+                foundChar = character
+                break
+
+        if foundChar:
+            src.gamestate.gamestate.mainChar = character
+            state = src.gamestate.gamestate.mainChar.macroState
     elif src.gamestate.gamestate.gameHalted:
         if key == "M":
             # 1000 moves and then stop

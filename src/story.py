@@ -3276,25 +3276,52 @@ please press space and then dock the inventory menu.
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
         src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
 
-        characterPos = mainChar.getPosition()
-        baseX = characterPos[0]//15
-        baseY = characterPos[1]//15
-
-        for i in range(0,30):
-            scrap = src.items.itemMap["Scrap"](amount=1)
-            mainChar.container.addItem(scrap,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
-
         self.checkDocking()
 
     def checkDocking(self):
         mainChar = src.gamestate.gamestate.mainChar
 
         if (mainChar.rememberedMenu or mainChar.rememberedMenu2):
-            self.tutorialExplainUndocking()
+            self.tutorialRequestFill()
             return
         else:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "checkDocking"})
+            mainChar.container.addEvent(event)
+
+    def tutorialRequestFill(self):
+
+        text = """
+Please fill your inventory now to see it in action
+
+press space to start
+"""
+        src.gamestate.gamestate.mainChar.addMessage(text)
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
+        src.gamestate.gamestate.mainChar.runCommandString(".",nativeKey=True)
+
+        characterPos = src.gamestate.gamestate.mainChar.getPosition()
+        baseX = characterPos[0]//15
+        baseY = characterPos[1]//15
+
+        for i in range(0,30):
+            scrap = src.items.itemMap["Scrap"](amount=1)
+            src.gamestate.gamestate.mainChar.container.addItem(scrap,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
+
+        self.checkFilled()
+
+    def checkFilled(self):
+        mainChar = src.gamestate.gamestate.mainChar
+
+        if len(mainChar.inventory) > 9:
+            self.tutorialExplainUndocking()
+            return
+        else:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "checkFilled"})
             mainChar.container.addEvent(event)
 
     def tutorialExplainUndocking(self):

@@ -3752,7 +3752,7 @@ class InputMenu(SubMenu):
 class MessagesMenu(SubMenu):
     def render(self,char):
         try:
-            return "\n".join(char.messages[-46:])
+            return "\n".join(reversed(char.messages[-46:]))
         except:
             print(char.messages)
             1/0

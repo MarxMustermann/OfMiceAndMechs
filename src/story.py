@@ -3648,8 +3648,6 @@ class Siege2(BasicPhase):
         mainRoom.addItem(cityBuilder,(7,1,0))
         cityBuilder.registerRoom(mainRoom)
 
-        cityBuilder.destroy()
-
         self.numRounds = 1
         self.startRound()
 

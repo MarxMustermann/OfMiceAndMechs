@@ -129,6 +129,27 @@ else:
                     index = event.tile.y-2
                     if index > 9 or index < 0:
                         index = None
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    translatedKey = None
+                    if key == tcod.event.KeySym.N1:
+                        index = 1
+                    if key == tcod.event.KeySym.N2:
+                        index = 2
+                    if key == tcod.event.KeySym.N3:
+                        index = 3
+                    if key == tcod.event.KeySym.N4:
+                        index = 4
+                    if key == tcod.event.KeySym.N5:
+                        index = 5
+                    if key == tcod.event.KeySym.N6:
+                        index = 6
+                    if key == tcod.event.KeySym.N7:
+                        index = 7
+                    if key == tcod.event.KeySym.N8:
+                        index = 8
+                    if key == tcod.event.KeySym.N9:
+                        index = 9
                 if isinstance(event, tcod.event.Quit):
                     raise SystemExit()
             context.present(root_console)
@@ -146,57 +167,66 @@ if not shouldLoad:
             (
                 "BackToTheRoots",
                 "main game",
+                "m",
             ),
             (
                 "Tutorials",
                 "tutorials",
+                "t",
             ),
             (
                 "PrefabDesign",
                 "PrefabDesign",
+                "p",
             ),
             (
                 "basebuilding",
                 "basebuilding",
+                "b",
             ),
             (
                 "RoguelikeStart",
                 "RoguelikeStart",
+                "r",
             ),
             (
                 "survival",
                 "survival",
+                "s",
             ),
             (
                 "creative",
                 "creative mode",
+                "c",
             ),
             (
                 "dungeon",
                 "dungeon",
+                "d",
             ),
             (
                 "siege2",
                 "siege2",
+                "S",
             ),
             (
                 "Tour",
                 "(Tour)",
+                "T",
             ),
             (
                 "siege",
                 "(siege)",
+                "x",
             ),
         ]
 
         text = "\n"
-        counter = 0
         for scenario in scenarios:
             text += "%s: %s\n" % (
-                counter,
+                scenario[2],
                 scenario[1],
             )
-            counter += 1
 
         if args.notcod:
             scenarioNum = input("select scenario (type number)\n\n%s\n\n" % (text,))
@@ -205,7 +235,7 @@ if not shouldLoad:
 
             #print("offer the player the option to start playing now or do something more specific") 
             root_console.clear()
-            root_console.print(x=3,y=2,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\n\nplay now\ndo tutorials\nstart specific scenario")
+            root_console.print(x=3,y=2,string="warning: The main game might be somewhat wild and confusing to new players.\nIt is recommended to try at least some tutorials first.\n\np: play now\nt: do tutorials\ns: start specific scenario")
 
             while 1:
                 foundEvent = False
@@ -216,6 +246,19 @@ if not shouldLoad:
                         mainSelection = event.tile.y-5
                         if mainSelection in (0,1,2):
                             foundEvent = True
+
+                    if isinstance(event,tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.p:
+                            mainSelection = 0
+                            foundEvent = True
+                        if key == tcod.event.KeySym.t:
+                            mainSelection = 1
+                            foundEvent = True
+                        if key == tcod.event.KeySym.s:
+                            mainSelection = 2
+                            foundEvent = True
+                            
 
                 context.present(root_console)
                 if foundEvent:
@@ -244,16 +287,71 @@ if not shouldLoad:
                             scenario = scenarios[index][0]
 
                         if isinstance(event,tcod.event.KeyDown):
+                            translatedKey = None
                             if event.sym == tcod.event.KeySym.m:
-                                scenario = scenarios[0][0]
-                                foundEvent = True
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "M"
+                                else:
+                                    translatedKey = "m"
+                            if event.sym == tcod.event.KeySym.t:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "T"
+                                else:
+                                    translatedKey = "t"
+                            if event.sym == tcod.event.KeySym.p:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "P"
+                                else:
+                                    translatedKey = "p"
+                            if event.sym == tcod.event.KeySym.b:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "B"
+                                else:
+                                    translatedKey = "b"
+                            if event.sym == tcod.event.KeySym.r:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "R"
+                                else:
+                                    translatedKey = "r"
+                            if event.sym == tcod.event.KeySym.s:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "S"
+                                else:
+                                    translatedKey = "s"
+                            if event.sym == tcod.event.KeySym.c:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "C"
+                                else:
+                                    translatedKey = "c"
+                            if event.sym == tcod.event.KeySym.d:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "D"
+                                else:
+                                    translatedKey = "d"
+                            if event.sym == tcod.event.KeySym.x:
+                                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                                    translatedKey = "X"
+                                else:
+                                    translatedKey = "x"
+
+                            for checkScenario in scenarios:
+                                if checkScenario[2] == translatedKey:
+                                    print(checkScenario)
+                                    scenario = checkScenario[0]
+                                    foundEvent = True
+                                    print(scenario)
+                                    break
 
                         if isinstance(event, tcod.event.Quit):
                             raise SystemExit()
                             
+                        if foundEvent:
+                            break
+
                     context.present(root_console)
                     if foundEvent:
                         break
+                print("scenario")
                 print(scenario)
     else:
         scenario = args.scenario

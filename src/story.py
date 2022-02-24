@@ -3617,7 +3617,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 100
+        self.epochLength = 1000
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3708,8 +3708,9 @@ Defend yourself and surive as long as possible.
             quest.activate()
             enemy.quests.append(quest)
 
-        for room in terrain.rooms:
-            room.damage()
+            if i%5 == 4:
+                for room in terrain.rooms:
+                    room.damage()
 
         self.numRounds += 1
         

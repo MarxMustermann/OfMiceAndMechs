@@ -542,6 +542,15 @@ class CityBuilder2(src.items.Item):
         architect.doClearField(params["coordinate"][0], params["coordinate"][1])
         self.container.container.removeItem(architect)
 
+    def addScrapFieldFromMap(self,params):
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        self.container.container.addItem(architect,(1,1,0))
+        architect.doAddScrapfield(params["coordinate"][0], params["coordinate"][1],500)
+        self.container.container.removeItem(architect)
+
+        for otherRoom in self.rooms:
+            otherRoom.sources.insert(0,(params["coordinate"],"Scrap"))
+
     def addFarmFromMap(self,params):
         room = self.addRoom(params["coordinate"])
         if not room:
@@ -867,6 +876,14 @@ class CityBuilder2(src.items.Item):
                         "params":{"character":character},
                     },
                     "description":"clear field",
+                }
+                functionMap[(x,y)]["o"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addScrapFieldFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"add scrap fields",
                 }
 
         for scrapField in self.scrapFields:

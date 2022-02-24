@@ -2952,9 +2952,9 @@ class SubMenu(src.saveing.Saveable):
             for k, v in self.niceOptions.items():
                 counter += 1
                 if counter == self.selectionIndex:
-                    out += str(k) + " ->" + str(v) + "\n"
+                    out += " -> " + str(v) + "\n"
                 else:
-                    out += str(k) + " - " + str(v) + "\n"
+                    out += " -  " + str(v) + "\n"
 
             # show the rendered options
             # bad code: urwid specific code

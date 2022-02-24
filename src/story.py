@@ -3329,7 +3329,7 @@ press space to start
         text = """
 One last but pretty important thing and you are done with the tutorial.
 
-to undock menus click the < or > arrow of the docked menu nor
+to undock menus click the < or > arrow of the docked menu or
 press left shift + ESC to undock left or
 press right shift + ESC to undock right
 

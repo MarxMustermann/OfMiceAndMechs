@@ -23,7 +23,8 @@ class JobArtwork(src.items.Item):
                                                 [
                                                     ("showTree", "show tree"),
                                                     ("showRankBased", "show rank based"),
-                                                    ("showMatrix", "configure jobs"),
+                                                    ("showMatrix", "show matrix based"),
+                                                    ("showDetailed", "show character based"),
                                                 ]
                                 )
 
@@ -51,12 +52,8 @@ class JobArtwork(src.items.Item):
             character.addMessage("no city leader")
             return
 
-        text = ""
-        text += "rank 3: "
-        text += str(cityLeader.name)
-
-        character.addMessage(text)
-        print(text)
+        self.submenue = src.interaction.JobByRankMenu(cityLeader)
+        character.macroState["submenue"] = self.submenue
 
     def showRankBased(self, character):
         cityLeader = self.fetchCityleader()

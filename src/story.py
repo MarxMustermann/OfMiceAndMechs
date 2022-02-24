@@ -3617,7 +3617,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 10
+        self.epochLength = 100
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3704,9 +3704,15 @@ Defend yourself and surive as long as possible.
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
             enemy.quests.append(quest)
-            enemy.runCommandString("**")
 
+        for room in terrain.rooms:
+            room.damage()
+
+        self.numRounds += 1
+        
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "startRound"})
         terrain.addEvent(event)

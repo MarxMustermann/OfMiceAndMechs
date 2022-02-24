@@ -6312,8 +6312,14 @@ def advanceChar(char,removeChars):
 
     state = char.macroState
 
+    hasAutosolveQuest = False
+    for quest in char.getActiveQuests():
+        if not quest.autoSolve:
+            continue
+        hasAutosolveQuest = True
+
     # do random action
-    if not len(state["commandKeyQueue"]) and char.doesOwnAction:
+    if not (len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest):
         #if not char == src.gamestate.gamestate.mainChar:
         char.startIdling()
 
@@ -6325,7 +6331,7 @@ def advanceChar(char,removeChars):
     while len(char.messages) > 100:
         char.messages = char.messages[-100:]
 
-    if len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance:
+    if len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest:
         if state["commandKeyQueue"]:
             key = state["commandKeyQueue"][-1]
             while (
@@ -6338,7 +6344,7 @@ def advanceChar(char,removeChars):
                 else:
                     key = ("~", [])
 
-        while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead)) and char.timeTaken < 1:
+        while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead) or hasAutosolveQuest) and char.timeTaken < 1:
             if char.huntkilling:
                 processInput(
                         (char.doHuntKill(),["norecord"]),
@@ -6352,9 +6358,8 @@ def advanceChar(char,removeChars):
                 processInput(
                     key, charState=state, noAdvanceGame=True, char=char
                 )
-
-                if not state["commandKeyQueue"] and char.getActiveQuest() and char.getActiveQuest().autoSolve:
-                    char.runCommandString("+")
+            elif hasAutosolveQuest:
+                char.runCommandString("+")
             else:
                 if tcod:
                     renderGameDisplay()
@@ -6364,6 +6369,13 @@ def advanceChar(char,removeChars):
                         if src.gamestate.gamestate.timedAutoAdvance:
                             if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:
                                 char.timeTaken += 1
+
+            hasAutosolveQuest = False
+            for quest in char.getActiveQuests():
+                if not quest.autoSolve:
+                    continue
+        hasAutosolveQuest = True
+
 
         char.timeTaken -= 1
 

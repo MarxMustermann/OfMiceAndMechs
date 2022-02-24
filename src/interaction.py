@@ -2953,7 +2953,7 @@ class SubMenu(src.saveing.Saveable):
                 if counter == self.selectionIndex:
                     out += " -> " + str(v) + "\n"
                 else:
-                    out += " -  " + str(v) + "\n"
+                    out += "    " + str(v) + "\n"
 
             # show the rendered options
             # bad code: urwid specific code

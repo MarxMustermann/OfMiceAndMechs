@@ -3673,8 +3673,11 @@ class Siege2(BasicPhase):
 
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.architect = architect
-        mainRoom.addItem(cityBuilder,(7,1,0))
+        mainRoom.addItem(cityBuilder,(6,1,0))
         cityBuilder.registerRoom(mainRoom)
+
+        jobArtwork = src.items.itemMap["JobArtwork"]()
+        mainRoom.addItem(jobArtwork,(4,1,0))
 
         self.numRounds = 1
         self.startRound()

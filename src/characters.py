@@ -2070,8 +2070,6 @@ class Monster(Character):
 
         self.faction = "monster"
 
-        self.movementSpeed = 0.3
-
         self.solvers.extend(["NaiveMurderQuest"])
 
     # bad code: specific code in generic class

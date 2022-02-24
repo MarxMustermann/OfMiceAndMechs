@@ -73,6 +73,7 @@ class Item(src.saveing.Saveable):
 
         self.commandOptions = []
         self.applyOptions = []
+        self.ignoreAttributes = []
         self.applyMap = {}
         self.settings = {}
 
@@ -96,7 +97,6 @@ class Item(src.saveing.Saveable):
         self.listeners = {"default": []}
 
         # management for movement
-        self.lastMovementToken = None
         self.chainedTo = []
 
         # properties for traits
@@ -115,8 +115,20 @@ class Item(src.saveing.Saveable):
                     "description",
                     "commands",
                     "isStepOnActive",
+                    "settings",
                 ]
             )
+        self.objectsToStore.extend([
+            "container",
+            ])
+
+        self.tupleListsToStore.extend([
+            "commandOptions",
+            ])
+
+        self.ignoreAttributes.extend([
+            "listeners",
+            ])
 
     def doStepOnAction(self, character):
         pass
@@ -401,6 +413,34 @@ class Item(src.saveing.Saveable):
                 )
             text += "\n"
         return text
+
+    def getState(self):
+        state = super().getState()
+        convertedListeners = {}
+        if self.listeners:
+            for (key,value) in self.listeners.items():
+                if value:
+                    print(self.listeners)
+                    1/0
+                else:
+                    convertedListeners[key] = value
+        state["listeners"] = convertedListeners
+        return state
+
+    def setState(self,state):
+        super().setState(state)
+
+        if "listeners" in state:
+            convertedListeners = {}
+            if self.listeners:
+                for (key,value) in self.listeners.items():
+                    if value:
+                        print(self.listeners)
+                        1/0
+                    else:
+                        convertedListeners[key] = value
+            self.listeners = convertedListeners
+        return state
 
     def render(self):
         """

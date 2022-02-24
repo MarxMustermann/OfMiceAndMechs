@@ -80,7 +80,6 @@ class Room(src.saveing.Saveable):
         self.delayedTicks = 0
         self.events = []
         self.floorDisplay = [src.canvas.displayChars.floor]
-        self.lastMovementToken = None
         self.chainedTo = []
         self.engineStrength = 0
         self.boilers = []

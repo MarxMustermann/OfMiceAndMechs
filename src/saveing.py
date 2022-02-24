@@ -174,10 +174,7 @@ class Saveable(object):
         # store tuple dicts
         for tupleListName in self.tupleListsToStore:
             if hasattr(self, tupleListName):
-                print("-tupleListName-")
-                print(tupleListName)
                 tupleList = getattr(self, tupleListName)
-                print(tupleList)
                 if tupleList == None:
                     state[tupleListName] = None
                     continue
@@ -240,6 +237,36 @@ class Saveable(object):
                         convertedList.append(None)
 
                 state[objectListName] = convertedList
+
+        foundMissingItem = False
+        for item in vars(self):
+            if item in ["applyOptions","applyMap","display","chainedTo","ignoreAttributes"]:
+                continue
+            if item in ["attributesToStore","callbacksToStore","objectsToStore","objectListsToStore","tupleDictsToStore","tupleListsToStore","tuplesToStore"]:
+                continue
+            if hasattr(self,"attributesToStore") and item in self.attributesToStore:
+                continue
+            if hasattr(self,"callbacksToStore") and item in self.callbacksToStore:
+                continue
+            if hasattr(self,"objectsToStore") and item in self.objectsToStore:
+                continue
+            if hasattr(self,"objectListsToStore") and item in self.objectListsToStore:
+                continue
+            if hasattr(self,"tupleDictsToStore") and item in self.tupleDictsToStore:
+                continue
+            if hasattr(self,"tupleListsToStore") and item in self.tupleListsToStore:
+                continue
+            if hasattr(self,"tuplesToStore") and item in self.tuplesToStore:
+                continue
+            if hasattr(self,"ignoreAttributes") and item in self.ignoreAttributes:
+                continue
+
+            foundMissingItem = True
+            print(item)
+        if foundMissingItem:
+            print("vars")
+            print(self)
+            print(vars(self))
         return state
 
     def setState(self, state):

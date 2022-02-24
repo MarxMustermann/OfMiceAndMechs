@@ -47,7 +47,6 @@ class Terrain(src.saveing.Saveable):
         layout="",
         detailedLayout="",
         seed=0,
-        noPaths=False,
         noContent=False,
     ):
         """
@@ -57,19 +56,16 @@ class Terrain(src.saveing.Saveable):
             layout: the terrains room layout
             detailedLayout: the terrains item layout
             seed: rng seed
-            noPaths: flag to calculate no paths
             noContent: flag to generate terrain empty
         """
 
         self.noPlacementTiles = []
         self.scrapFields = []
+        self.ignoreAttributes = []
 
         super().__init__()
 
-        self.noPaths = noPaths
-
         # store terrain content
-        # self.itemsOnFloor = []
         self.characters = []
         self.rooms = []
         self.floordisplay = src.canvas.displayChars.floor
@@ -95,7 +91,6 @@ class Terrain(src.saveing.Saveable):
 
         # misc state
         self.overlay = None
-        self.alarm = False
 
         if not noContent:
             # add items
@@ -169,20 +164,6 @@ class Terrain(src.saveing.Saveable):
         # container for categories of rooms for easy access
         # bad code: should be abstracted
         roomsOnMap = []
-        self.tutorialVat = None
-        self.tutorialVatProcessing = None
-        self.tutorialMachineRoom = None
-        self.tutorialLab = None
-        self.challengeRooms = []
-        self.tutorialCargoRooms = []
-        self.tutorialStorageRooms = []
-        self.miniMechs = []
-        self.wakeUpRoom = None
-        self.militaryRooms = []
-
-        # nodes for pathfinding
-        self.watershedStart = []
-        self.superNodes = {}
 
         if not noContent:
             # add rooms
@@ -193,23 +174,6 @@ class Terrain(src.saveing.Saveable):
             for layoutline in layout.split("\n")[1:]:
                 rowCounter = 0
                 for char in layoutline:
-                    if char in (".", ",", " ", "t"):
-                        # add starting points for pathfinding
-                        self.watershedStart.extend(
-                            [
-                                (rowCounter * 15 + 1, lineCounter * 15 + 1),
-                                (rowCounter * 15 + 13, lineCounter * 15 + 1),
-                                (rowCounter * 15 + 1, lineCounter * 15 + 13),
-                                (rowCounter * 15 + 13, lineCounter * 15 + 13),
-                            ]
-                        )
-                        if char in ("."):
-                            # add starting point for higher level pathfinding
-                            self.superNodes[(rowCounter, lineCounter)] = (
-                                rowCounter * 15 + 1,
-                                lineCounter * 15 + 1,
-                            )
-
                     if char in (".", ",", " "):
                         # ignore paths
                         pass
@@ -225,16 +189,12 @@ class Terrain(src.saveing.Saveable):
                         room = src.rooms.VatFermenting(
                             rowCounter, lineCounter, 2, 2
                         )
-                        if not self.tutorialVat:
-                            self.tutorialVat = room
                         roomsOnMap.append(room)
                     elif char == "v":
                         # add vat and save first reference
                         room = src.rooms.VatProcessing(
                             rowCounter, lineCounter, 2, 2
                         )
-                        if not self.tutorialVatProcessing:
-                            self.tutorialVatProcessing = room
                         roomsOnMap.append(room)
                     elif char == "Q":
                         # add room and add to room list
@@ -242,7 +202,6 @@ class Terrain(src.saveing.Saveable):
                             rowCounter, lineCounter, 1, 2
                         )
                         roomsOnMap.append(room)
-                        self.militaryRooms.append(room)
 
                         # add terrain wide listener
                         self.addListener(room.enforceFloorPermit, "entered terrain")
@@ -258,16 +217,12 @@ class Terrain(src.saveing.Saveable):
                         room = src.rooms.TutorialMachineRoom(
                             rowCounter, lineCounter, 4, 1
                         )
-                        if not self.tutorialMachineRoom:
-                            self.tutorialMachineRoom = room
                         roomsOnMap.append(room)
                     elif char == "L":
                         # add room and add to room list
                         room = src.rooms.LabRoom(
                             rowCounter, lineCounter, 1, 1
                         )
-                        if not self.tutorialLab:
-                            self.tutorialLab = room
                         roomsOnMap.append(room)
                     elif char == "l":
                         # add room and add to room list
@@ -278,7 +233,6 @@ class Terrain(src.saveing.Saveable):
                             1,
                             seed=seed + rowCounter - 3 * lineCounter,
                         )
-                        self.challengeRooms.append(room)
                         roomsOnMap.append(room)
                     elif char == "C":
                         # generate pseudo random content type
@@ -335,7 +289,6 @@ class Terrain(src.saveing.Saveable):
                             amount=amount,
                             seed=seed + 2 * rowCounter + 5 * lineCounter // 7,
                         )
-                        self.tutorialCargoRooms.append(room)
                         roomsOnMap.append(room)
                     elif char == "h":
                         # add room and add to room list
@@ -349,7 +302,6 @@ class Terrain(src.saveing.Saveable):
                         room = src.rooms.StorageRoom(
                             rowCounter, lineCounter, 3, 0
                         )
-                        self.tutorialStorageRooms.append(room)
                     elif char == "?":
                         # add room and add to room list
                         roomsOnMap.append(
@@ -362,14 +314,12 @@ class Terrain(src.saveing.Saveable):
                         miniMech = src.rooms.MiniMech(
                             rowCounter, lineCounter, 2, 2
                         )
-                        self.miniMechs.append(miniMech)
                         roomsOnMap.append(miniMech)
                     elif char == "W":
                         # add room and add to room list
                         wakeUpRoom = src.rooms.WakeUpRoom(
                             rowCounter, lineCounter, 1, 1
                         )
-                        self.wakeUpRoom = wakeUpRoom
                         roomsOnMap.append(wakeUpRoom)
                     elif char == "m":
                         # add room and add to room list
@@ -396,9 +346,6 @@ class Terrain(src.saveing.Saveable):
                         roomsOnMap.append(room)
                     else:
                         # add starting points for pathfinding
-                        self.watershedStart.append(
-                            (rowCounter * 15 + 7, lineCounter * 15 + 7)
-                        )
                         pass
                     rowCounter += 1
                 lineCounter += 1
@@ -411,9 +358,21 @@ class Terrain(src.saveing.Saveable):
             [
                 "yPosition",
                 "xPosition",
+                "biomeInfo",
+                "seed",
             ]
         )
+        self.tupleDictsToStore.append("microBiomeMap")
         self.tupleListsToStore.append("scrapFields")
+        self.ignoreAttributes.extend([
+            "rooms",
+            "itemsByCoordinate",
+            "characters",
+            "events",
+            "roomByCoordinates",
+            "initialSeed",
+            "floordisplay",
+            ])
 
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
@@ -1318,403 +1277,6 @@ class Terrain(src.saveing.Saveable):
         character.changed()
         self.changed("entered terrain", character)
         src.interaction.new_chars.add(character)
-
-    # obsolete: debugging code for obsolete code
-    # bad code: is part visual debugging and partially looking nice, it still has to be integrated properly
-    # bad code: urwid specific code
-    # bad code: is an overlay
-    def addWatershedOverlay(self, chars):
-        """
-        paint the information for the pathfinding
-
-        Parameters:
-            chars: the current rendering to extend
-        """
-
-        import urwid
-
-        # define colors for the sections
-        colors = [
-            "#fff",
-            "#ff0",
-            "#f0f",
-            "#0ff",
-            "#f00",
-            "#0f0",
-            "#00f",
-            "#55f",
-            "#f55",
-            "#5f5",
-            "#055",
-            "#505",
-            "#550",
-        ]
-        colorByType = {}
-
-        # determine the section the player is in
-        mainCharPair = None
-        if src.gamestate.gamestate.mainChar.terrain:
-            mainCharPair = self.watershedCoordinates[
-                (
-                    src.gamestate.gamestate.mainChar.xPosition,
-                    src.gamestate.gamestate.mainChar.yPosition,
-                )
-            ][0]
-
-        # assign the colors to the sections
-        counter = 0
-        for item in self.watershedStart:
-            colorByType[item] = colors[counter % len(colors)]
-            counter += 1
-
-        # encode the distance to node as string and show instead of the normal terrain
-        for coordinate, value in self.watershedCoordinates.items():
-            if value[1] < 10:
-                display = "0" + str(value[1])
-            else:
-                display = str(value[1])
-
-            if mainCharPair == value[0]:
-                chars[coordinate[1]][coordinate[0]] = (
-                    urwid.AttrSpec("#333", "default"),
-                    display,
-                )
-            else:
-                chars[coordinate[1]][coordinate[0]] = (
-                    urwid.AttrSpec(colorByType[value[0]], "default"),
-                    display,
-                )
-
-        # mark the paths between nodes
-        counter = 3
-        for dualPair, path in self.foundPaths.items():
-            for coordinate in path:
-                if dualPair in self.applicablePaths:
-                    chars[coordinate[1]][coordinate[0]] = (
-                        urwid.AttrSpec("#888", "default"),
-                        "XX",
-                    )
-                else:
-                    chars[coordinate[1]][coordinate[0]] = (
-                        urwid.AttrSpec(colors[counter % len(colors)], "default"),
-                        "XX",
-                    )
-            counter += 1
-
-        # show pathfinding to next node
-        for newCoordinate, counter in self.obseveredCoordinates.items():
-            if counter < 10:
-                display = "0" + str(counter)
-            else:
-                display = str(counter)
-            chars[newCoordinate[1]][newCoordinate[0]] = (
-                urwid.AttrSpec("#888", "default"),
-                display,
-            )
-
-        chars[src.gamestate.gamestate.mainChar.yPosition][
-            src.gamestate.gamestate.mainChar.xPosition
-        ] = src.gamestate.gamestate.mainChar.display
-
-    # obsolete: pathfinding is not really used right now
-    def findPath(self, start, end):
-        """
-        find path between start and end coordinates
-        """
-
-        # clear pathfinding state
-        self.applicablePaths = {}
-        self.obseveredCoordinates = {}
-
-        # get start node
-        if start not in self.watershedCoordinates:
-            return
-        startPair = self.watershedCoordinates[start][0]
-
-        # get paths that can be taken from start node
-        for dualPair, path in self.foundPaths.items():
-            if startPair in dualPair:
-                self.applicablePaths[dualPair] = path
-
-        # get super node for start node
-        if startPair not in self.watershedSuperCoordinates:
-            return
-        startSuper = self.watershedSuperCoordinates[startPair]
-
-        # find path to any point an a path leading to the start node
-        entryPoint = self.mark([start])
-        if not entryPoint:
-            return
-
-        # get path from start position to start node
-        startCoordinate = Coordinate(entryPoint[0][0], entryPoint[0][1])
-        startNode = entryPoint[1][1]
-        pathToStartNode = self.foundPaths[entryPoint[1]][
-            self.foundPaths[entryPoint[1]].index((startCoordinate.x, startCoordinate.y))
-            + 1 :
-        ]
-
-        # clear pathfinding state
-        self.applicablePaths = {}
-        self.obseveredCoordinates = {}
-
-        # get end node
-        ends = (
-            end,
-            (end[0] - 1, end[1]),
-            (end[0] + 1, end[1]),
-            (end[0], end[1] - 1),
-            (end[0], end[1] + 1),
-        )
-        found = False
-        for end in ends:
-            if end in self.watershedCoordinates:
-                found = True
-                break
-
-        if not found:
-            src.logger.debugMessages.append("did not find end in watershedCoordinates")
-            return
-        endPair = self.watershedCoordinates[end][0]
-
-        # get paths that can be taken from end node
-        for dualPair, path in self.foundPaths.items():
-            if endPair in dualPair:
-                self.applicablePaths[dualPair] = path
-
-        # get super node for end node
-        if endPair not in self.watershedSuperCoordinates:
-            return
-        endSuper = self.watershedSuperCoordinates[endPair]
-
-        # find path to any point an a path leading to the end node
-        exitPoint = self.mark([end])
-        if not exitPoint:
-            src.logger.debugMessages.append("did not find exit point")
-            return
-
-        # get path from end position to end node
-        endCoordinate = Coordinate(exitPoint[0][0], exitPoint[0][1])
-        endNode = exitPoint[1][0]
-        pathToEndNode = self.foundPaths[exitPoint[1]][
-            1 : self.foundPaths[exitPoint[1]].index((endCoordinate.x, endCoordinate.y))
-            + 1
-        ]
-
-        # find path from start node to end node
-        path = []
-
-        # find path from node to node using the supernodes
-        if not startSuper[0] == endSuper[0]:
-            if endSuper[0] in self.watershedSuperNodeMap[startSuper[0]]:
-                path = self.foundSuperPathsComplete[(startSuper[0], endSuper[0])]
-            else:
-                path = (
-                    self.foundSuperPathsComplete[
-                        (startSuper[0], self.watershedSuperNodeMap[startSuper[0]][0])
-                    ]
-                    + self.foundSuperPathsComplete[
-                        (self.watershedSuperNodeMap[startSuper[0]][0], endSuper[0])
-                    ]
-                )
-            path = (
-                pathToStartNode
-                + self.findWayNodeBased(
-                    Coordinate(entryPoint[1][1][0], entryPoint[1][1][1]),
-                    Coordinate(startSuper[0][0], startSuper[0][1]),
-                )
-                + path
-            )
-            path = (
-                path
-                + self.findWayNodeBased(
-                    Coordinate(endSuper[0][0], endSuper[0][1]),
-                    Coordinate(endNode[0], endNode[1]),
-                )
-                + pathToEndNode
-            )
-        # find path directly from node to node
-        else:
-            path = (
-                pathToStartNode
-                + self.findWayNodeBased(
-                    Coordinate(startNode[0], startNode[1]),
-                    Coordinate(endNode[0], endNode[1]),
-                )
-                + pathToEndNode
-            )
-
-        # stitch together the path
-        if not entryPoint[2][0] == start:
-            entryPoint[2].reverse()
-        path = entryPoint[2] + path + exitPoint[2][1:]
-
-        # return cleaned up path
-        return src.gameMath.removeLoops(path)
-
-    # bad code: simliar to the other pathfinding
-    # obsolete: part of the obsolete pathfinding
-    def markWalkBack(
-        self, coordinate, obseveredCoordinates, pathToEntry, counter=0, limit=1000
-    ):
-        """
-        construct the path to a coordinate by walking backwards from this coordinate back to the starting point
-
-        Parameters:
-            coordinate: current coordinate
-            obseveredCoordinates: coordinates checked already
-            pathToEntry: path gathered so far
-            counter: how many iterations were done so far
-            limit: rating of the previous try
-        """
-
-        # add current coordinate
-        pathToEntry.append((coordinate[0], coordinate[1]))
-
-        found = None
-
-        # go back to position with lowest moves to start position
-        for newCoordinate in [
-            (coordinate[0] - 1, coordinate[1]),
-            (coordinate[0], coordinate[1] - 1),
-            (coordinate[0] + 1, coordinate[1]),
-            (coordinate[0], coordinate[1] + 1),
-        ]:
-            if newCoordinate not in obseveredCoordinates:
-                continue
-            if obseveredCoordinates[newCoordinate] >= limit:
-                continue
-            if (not found) or (
-                obseveredCoordinates[found] < obseveredCoordinates[newCoordinate]
-            ):
-                found = newCoordinate
-
-        # walk back till start
-        if found:
-            self.markWalkBack(
-                found,
-                obseveredCoordinates,
-                pathToEntry,
-                counter + 1,
-                obseveredCoordinates[found],
-            )
-
-    # osolete: part of the unused pahfinding
-    def mark(self, coordinates, counter=0, obseveredCoordinates={}):
-        """
-        find path to the nearest entry point to a path
-
-        Parameters:
-            coordinates: coordinates to check from
-            counter: how many tries were done so far
-            obseveredCoordinates: coordinates already checked
-        """
-
-        # limit recursion depth
-        if counter > 30:
-            return
-
-        newCoordinates = []
-        # increase radius around current position
-        if not counter == 0:
-            for coordinate in coordinates:
-                for newCoordinate in [
-                    (coordinate[0] - 1, coordinate[1]),
-                    (coordinate[0], coordinate[1] - 1),
-                    (coordinate[0] + 1, coordinate[1]),
-                    (coordinate[0], coordinate[1] + 1),
-                ]:
-                    if newCoordinate in self.nonMovablecoordinates:
-                        continue
-                    if newCoordinate in self.obseveredCoordinates:
-                        continue
-                    newCoordinates.append(newCoordinate)
-        # start from current position
-        else:
-            newCoordinates.append(coordinates[0])
-
-        # check for intersections with a path
-        for newCoordinate in newCoordinates:
-            self.obseveredCoordinates[newCoordinate] = counter
-            for dualPair, path in self.applicablePaths.items():
-                if newCoordinate in path:
-                    # get path by walking back to the start
-                    pathToEntry = []
-                    self.markWalkBack(
-                        newCoordinate, self.obseveredCoordinates, pathToEntry
-                    )
-                    return (newCoordinate, dualPair, pathToEntry)
-
-        # continue increasing the radius until path was intersected
-        if newCoordinates:
-            return self.mark(newCoordinates, counter + 1, obseveredCoordinates)
-
-    def findWayNodeBased(self, start, end):
-        """
-        find path between start and end nodes using precalculated paths between nodes
-
-        Parameters:
-            start: the start node
-            end: the end node
-
-        Returns:
-            the path found
-        """
-
-        index = 0
-        nodeMap = {}
-        neighbourNodes = []
-
-        # start with start node
-        startNode = (start.x, start.y)
-        neighbourNodes.append(startNode)
-        nodeMap[startNode] = (None, 0)
-
-        # abort because start node is end node
-        if startNode == (end.x, end.y):
-            lastNode = startNode
-
-        # mode to neighbour nodes till end node is reached
-        else:
-            lastNode = None
-            counter = 1
-            while not lastNode:
-                for neighbourNode in neighbourNodes[:]:
-                    for watershedNode in self.watershedNodeMap[neighbourNode]:
-                        if watershedNode not in neighbourNodes:
-                            neighbourNodes.append(watershedNode)
-                            nodeMap[watershedNode] = (neighbourNode, counter)
-                        if watershedNode == (end.x, end.y):
-                            lastNode = watershedNode
-                            break
-                counter += 1
-
-                if counter == 20:
-                    raise Exception(
-                        "unable to find end node from "
-                        + str(start.x)
-                        + " / "
-                        + str(start.y)
-                        + " to "
-                        + str(end.x)
-                        + " / "
-                        + str(end.y)
-                    )
-
-        # walk back to start node and stitch together path
-        outPath = []
-        if lastNode:
-            while nodeMap[lastNode][0]:
-                extension = []
-                if (lastNode, nodeMap[lastNode][0]) in self.foundPaths:
-                    extension = self.foundPaths[(lastNode, nodeMap[lastNode][0])][:-1]
-                    extension = list(reversed(extension))
-                else:
-                    extension = self.foundPaths[(nodeMap[lastNode][0], lastNode)][1:]
-                outPath = extension + outPath
-                lastNode = nodeMap[lastNode][0]
-
-        return outPath
 
     def addRooms(self, rooms):
         """
@@ -2700,13 +2262,12 @@ class Nothingness(Terrain):
             layout,
             detailedLayout,
             seed=seed,
-            noPaths=True,
             noContent=noContent,
         )
 
         if not noContent:
             # add a few items scattered around
-            self.dekoItems = []
+            dekoItems = []
             for x in range(15, 210):
                 for y in range(15, 210):
                     item = None
@@ -2717,8 +2278,8 @@ class Nothingness(Terrain):
                     if not x % 19 and not y % 27 and not (x + y) % 4:
                         item = src.items.itemMap["Scrap"](amount=10)
                     if item:
-                        self.dekoItems.append((item, (x, y, 0)))
-            self.addItems(self.dekoItems)
+                        dekoItems.append((item, (x, y, 0)))
+            self.addItems(dekoItems)
 
         self.floordisplay = src.canvas.displayChars.dirt
 
@@ -3757,7 +3318,6 @@ U  U
         self.addItems(self.scrapItems)
 
         # add base of operations
-        self.wakeUpRoom = src.rooms.MiniBase(0, 4, 0, 0)
         self.addRooms([self.wakeUpRoom])
 
 class TutorialTerrain(Terrain):
@@ -3946,27 +3506,6 @@ XXXCCCCCXXX """
             layout, detailedLayout, seed=seed, noContent=noContent
         )
 
-        # add some tasks to keep npc busy
-        self.toTransport = []
-        roomsIndices = [0, 1, 2, 3, 5, 6]
-        roadBlocks = []
-        for index in reversed(roomsIndices):
-            room = self.tutorialCargoRooms[index]
-            for item in room.storedItems:
-                self.toTransport.append((room, (item.xPosition, item.yPosition)))
-
-        # add more transport tasks to keep npcs busy
-        x = 12
-        while x > 8:
-            y = 1
-            while y < 9:
-                self.toTransport.append((self.tutorialLab, (y, x)))
-                y += 1
-            x -= 1
-
-        # add some tasks to keep npc busy
-        #self.addStorageQuest()
-
         # add scrap to be cleaned up
         self.scrapItems = [
             (src.items.itemMap["Scrap"](3),(20, 52,0)),
@@ -3980,134 +3519,6 @@ XXXCCCCCXXX """
             (src.items.itemMap["Scrap"](3),(18, 51,0)),
         ]
         self.addItems(self.scrapItems)
-
-        # move roadblock periodically
-        self.waitingRoom.addEvent(
-            src.events.EndQuestEvent(
-                4000, {"container": self, "method": "addRoadblock"}
-            )
-        )
-
-    def addStorageQuest(self):
-        """
-        add quest to move something from the lab to storage
-        """
-
-        if not self.toTransport:
-            return
-
-        task = self.toTransport.pop()
-
-        # select target room
-        roomIndices = [1, 0, 2, 5, 4]
-        room = None
-        for index in roomIndices:
-            if self.tutorialStorageRooms[index].storageSpace:
-                room = self.tutorialStorageRooms[index]
-                break
-        if not room:
-            return
-
-        # add quest to waiting room
-        quest = src.quests.MoveToStorage(
-            [task[0].itemByCoordinates[task[1]][0]], room, creator=self, lifetime=400
-        )
-        quest.reputationReward = 1
-        quest.endTrigger = {"container": self, "method": "addStorageQuest"}
-        self.waitingRoom.quests.append(quest)
-
-    def addRoadblock(self):
-        """
-        add roadblock
-        """
-
-        room = self.tutorialCargoRooms[8]
-        item = room.storedItems[-1]
-        outerQuest = src.quests.MetaQuestSequence([], creator=self)
-        innerQuest = src.quests.TransportQuest(item, (None, 127, 81), creator=self)
-
-        # bad code: should happen somewhere else
-        def moveAway():
-            """
-            move character off the placed item
-            """
-
-            outerQuest.character.yPosition -= 1
-
-        innerQuest.endTrigger = moveAway
-        outerQuest.addQuest(innerQuest)
-        self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(
-            src.events.EndQuestEvent(
-                src.gamestate.gamestate.tick + 4000,
-                {"container": self, "method": "moveRoadblockToLeft"},
-                creator=self,
-            )
-        )
-
-    # bad code: should be more abstracted
-    def moveRoadblockToLeft(self):
-        """
-        move roadblock to the left of the map
-        """
-
-        # abort if roadblock is missing
-        if (127, 81) not in self.itemByCoordinates:
-            return
-
-        item = self.itemByCoordinates[(127, 81)][0]
-        outerQuest = src.quests.MetaQuestSequence([], creator=self)
-        innerQuest = src.quests.TransportQuest(item, (None, 37, 81), creator=self)
-
-        def moveAway():
-            """
-            move character off the placed item
-            """
-
-            outerQuest.character.yPosition -= 1
-
-        innerQuest.endTrigger = moveAway
-        outerQuest.addQuest(innerQuest)
-        self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(
-            src.events.EndQuestEvent(
-                src.gamestate.gamestate.tick + 4000,
-                {"container": self, "method": "moveRoadblockToRight"},
-                creator=self,
-            )
-        )
-
-    def moveRoadblockToRight(self):
-        """
-        move roadblock to the left of the map
-        """
-
-        # abort if roadblock is missing
-        if (37, 81) not in self.itemByCoordinates:
-            return
-
-        item = self.itemByCoordinates[(37, 81)][0]
-        outerQuest = src.quests.MetaQuestSequence([], creator=self)
-        innerQuest = src.quests.TransportQuest(item, (None, 127, 81), creator=self)
-
-        def moveAway():
-            """
-            move character off the placed item
-            """
-
-            outerQuest.character.yPosition -= 1
-
-        innerQuest.endTrigger = moveAway
-        outerQuest.addQuest(innerQuest)
-        self.waitingRoom.quests.append(outerQuest)
-        self.waitingRoom.addEvent(
-            src.events.EndQuestEvent(
-                src.gamestate.gamestate.tick + 4000,
-                {"container": self, "method": "moveRoadblockToLeft"},
-                creator=self,
-            )
-        )
-
 
 # mapping from strings to all items
 # should be extendable

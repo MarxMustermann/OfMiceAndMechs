@@ -165,7 +165,6 @@ def setUpTcod():
     device = src.interaction.tcodAudio.open()
     tcodAudioDevice = device
     mixer = src.interaction.tcodAudio.BasicMixer(device)
-    mixer.start()
     tcodMixer = mixer
 
     """

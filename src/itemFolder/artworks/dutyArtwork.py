@@ -2,13 +2,12 @@ import src
 import random
 
 
-class JobArtwork(src.items.Item):
+class DutyArtwork(src.items.Item):
     """
-    ingame item that allows the player the convert ressources and
-    items by trading
+    ingame item that allows the player to set duties for npcs of that city
     """
 
-    type = "JobArtwork"
+    type = "DutyArtwork"
 
     def __init__(self):
         """
@@ -73,4 +72,4 @@ class JobArtwork(src.items.Item):
         self.submenue = src.interaction.JobAsMatrixMenu(cityLeader)
         character.macroState["submenue"] = self.submenue
 
-src.items.addType(JobArtwork)
+src.items.addType(DutyArtwork)

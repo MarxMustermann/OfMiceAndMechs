@@ -1801,10 +1801,10 @@ class BackToTheRoots(BasicPhase):
             mainRoom.rooms = rooms
             cityBuilder.registerRoom(mainRoom)
 
-            jobArtwork = src.items.itemMap["JobArtwork"]()
+            dutyArtwork = src.items.itemMap["DutyArtwork"]()
 
             mainRoom.addItem(architect,(3,1,0))
-            mainRoom.addItem(jobArtwork,(4,1,0))
+            mainRoom.addItem(dutyArtwork,(4,1,0))
 
             cityData = cityBuilder.spawnCity(leader)
 
@@ -3442,8 +3442,8 @@ class BaseBuilding(BasicPhase):
         mainRoom.addItem(tradingArtwork, (9, 9, 0))
         tradingArtwork.configure(src.gamestate.gamestate.mainChar)
 
-        jobArtwork = src.items.itemMap["JobArtwork"]()
-        mainRoom.addItem(jobArtwork, (1, 3, 0))
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        mainRoom.addItem(dutyArtwork, (1, 3, 0))
 
         mainRoom.addInputSlot((7,8,0),"Scrap")
         mainRoom.addInputSlot((8,7,0),"Scrap")
@@ -3591,8 +3591,8 @@ class Siege2(BasicPhase):
         mainRoom.addItem(cityBuilder,(7,1,0))
         cityBuilder.registerRoom(mainRoom)
 
-        jobArtwork = src.items.itemMap["JobArtwork"]()
-        mainRoom.addItem(jobArtwork,(5,1,0))
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        mainRoom.addItem(dutyArtwork,(5,1,0))
 
         self.numRounds = 1
         self.startRound()

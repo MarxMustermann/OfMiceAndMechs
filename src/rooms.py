@@ -2419,81 +2419,6 @@ XXXXXXXXXX
 
 
 """
-a room to waste cpu power. used for performance testing
-bad code: does not actually work
-"""
-
-
-class CpuWasterRoom(Room):
-    objType = "CpuWasterRoom"
-
-    """
-    create room and add patroling npcs
-    """
-
-    def __init__(self, xPosition=0, yPosition=0, offsetX=0, offsetY=0):
-        roomLayout = """
-XX$XXXXXXX
-Xv vD????X
-X?......PX
-X?.PPPP.PX
-X?.????.#X
-X?.???P.#X
-X?.?X??.#X
-X?......#X
-X? XXXXX#X
-XXXXXXXXXX
-"""
-        super().__init__(
-            roomLayout,
-            xPosition,
-            yPosition,
-            offsetX,
-            offsetY,
-            desiredPosition=None,
-        )
-        self.name = "CpuWasterRoom"
-
-        """
-        add a patrolling npc
-        """
-
-        def addNPC(x, y):
-            # generate quests
-            # bad code: replace with patrol quest since it's actually bugging
-            quest1 = src.quests.MoveQuestMeta(self, 2, 2)
-            quest2 = src.quests.MoveQuestMeta(self, 2, 7)
-            quest3 = src.quests.MoveQuestMeta(self, 7, 7)
-            quest4 = src.quests.MoveQuestMeta(self, 7, 2)
-            quest1.followUp = quest2
-            quest2.followUp = quest3
-            quest3.followUp = quest4
-
-            # add npc
-            npc = src.characters.Character(
-                xPosition=x,
-                yPosition=y,
-                seed=self.yPosition + 3 * x + self.offsetY + 4 * y,
-            )
-            self.addCharacter(npc, x, y)
-            npc.room = self
-            npc.assignQuest(quest1)
-            return npc
-
-        # add a bunch of npcs
-        addNPC(2, 2)
-        addNPC(3, 2)
-        addNPC(4, 2)
-        addNPC(5, 2)
-        addNPC(6, 2)
-        addNPC(7, 2)
-        addNPC(7, 3)
-        addNPC(7, 4)
-        addNPC(7, 5)
-        addNPC(7, 6)
-
-
-"""
 the armor plates of a mech
 """
 
@@ -2943,7 +2868,6 @@ XXXXXXXXXXXXX
 # should be extendable
 roomMap = {
     "TutorialMachineRoom": TutorialMachineRoom,
-    "CpuWasterRoom": CpuWasterRoom,
     "MechArmor": MechArmor,
     "MiniMech": MiniMech,
     "MiniBase": MiniBase,

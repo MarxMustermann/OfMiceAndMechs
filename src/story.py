@@ -185,6 +185,7 @@ class BasicPhase(src.saveing.Saveable):
         self.id = name
 
         self.attributesToStore.append("name")
+        self.attributesToStore.append("seed")
 
     def start(self, seed=0):
         """

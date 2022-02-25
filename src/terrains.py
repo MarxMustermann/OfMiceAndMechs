@@ -1265,7 +1265,6 @@ class Terrain(src.saveing.Saveable):
             else:
                 if not mapHidden and room.open and room.hidden:
                     room.hidden = False
-                    room.applySkippedAdvances()  # ensure the rooms state is up to date
                 else:
                     room.hidden = True
 
@@ -1329,7 +1328,6 @@ class Terrain(src.saveing.Saveable):
             for room in roomCandidates:
                 if room.open:
                     room.hidden = False
-                    room.applySkippedAdvances()  # ensure the rooms state is up to date
 
         # draw items on map
         if not mapHidden:

@@ -14,9 +14,9 @@ class DutyArtwork(src.items.Item):
         configure the superclass
         """
 
-        super().__init__(display="JA")
+        super().__init__(display="DA")
 
-        self.name = "job artwork"
+        self.name = "duty artwork"
                 
         self.applyOptions.extend(
                                                 [

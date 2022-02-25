@@ -85,9 +85,6 @@ class Terrain(src.saveing.Saveable):
 
         self.id = uuid.uuid4().hex
 
-        # misc state
-        self.overlay = None
-
         # container for categories of rooms for easy access
         # bad code: should be abstracted
         roomsOnMap = []
@@ -99,10 +96,14 @@ class Terrain(src.saveing.Saveable):
                 "xPosition",
                 "biomeInfo",
                 "seed",
+                "hidden"
             ]
         )
         self.tupleDictsToStore.append("microBiomeMap")
-        self.tupleListsToStore.append("scrapFields")
+        self.tupleListsToStore.extend([
+            "scrapFields",
+            "noPlacementTiles",
+            ])
         self.ignoreAttributes.extend([
             "rooms",
             "itemsByCoordinate",
@@ -111,6 +112,7 @@ class Terrain(src.saveing.Saveable):
             "roomByCoordinates",
             "initialSeed",
             "floordisplay",
+            "listeners"
             ])
 
     def handleFloorClick(self,extraInfo):
@@ -1388,10 +1390,6 @@ class Terrain(src.saveing.Saveable):
                 chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
             )
 
-        # add special overlay
-        if self.overlay:
-            self.overlay(chars)
-
         for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
             for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
@@ -1834,6 +1832,17 @@ class Terrain(src.saveing.Saveable):
             itemState = state["itemStates"][itemId]
             item = src.items.getItemFromState(itemState)
             addItems.append((item, item.getPosition()))
+
+        if "listeners" in state:
+            convertedListeners = {}
+            if self.listeners:
+                for (key,value) in self.listeners.items():
+                    if value:
+                        print(self.listeners)
+                        1/0
+                    else:
+                        convertedListeners[key] = value
+            self.listeners = convertedListeners
         self.addItems(addItems)
 
     # bad code: should be in saveable
@@ -1877,6 +1886,15 @@ class Terrain(src.saveing.Saveable):
             eventIds.append(event.id)
             eventStates[event.id] = event.getState()
 
+        convertedListeners = {}
+        if self.listeners:
+            for (key,value) in self.listeners.items():
+                if value:
+                    print(self.listeners)
+                    1/0
+                else:
+                    convertedListeners[key] = value
+        
         # generate state
         result = super().getState()
         result.update({
@@ -1890,6 +1908,7 @@ class Terrain(src.saveing.Saveable):
             "initialSeed": self.initialSeed,
             "eventIds": eventIds,
             "eventStates": eventStates,
+            "listeners" : convertedListeners,
         })
         return result
 

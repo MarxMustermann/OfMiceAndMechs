@@ -61,8 +61,6 @@ class Room(src.saveing.Saveable):
 
         # initialize attributes
         self.health = 40
-        self.desiredPosition = desiredPosition
-        self.desiredSteamGeneration = None
         self.layout = layout
         self.hidden = True
         self.itemsOnFloor = []
@@ -2279,145 +2277,6 @@ class StaticRoom(EmptyRoom):
                         character.die()
         pass
 
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# rooms below the point are not in use and need to be reintegrated
-# this will require heavy rewrites, so please ignore unless you plan to rewrite
-# the last few lines of this file are in use
-
-"""
-the machine room used in the tutorial
-bad pattern: should be abstracted
-bad code: name and classname do not agree
-"""
-
-
-class TutorialMachineRoom(Room):
-    objType = "TutorialMachineRoom"
-
-    """
-    create room and add special items
-    """
-
-    def __init__(
-        self, xPosition=0, yPosition=1, offsetX=4, offsetY=0, desiredPosition=None
-    ):
-        roomLayout = """
-X#XX$XXX#X
-X#Pv vID#X
-X#......#X
-X .@@  . X
-X .HHHH. X
-X ...... X
-XFFFFFFFFX
-XOOOOOOOOX
-X#########
-XXXXXXXXXX
-"""
-        super().__init__(
-            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
-        )
-        self.name = "Boilerroom"
-
-        # generate special items
-        self.lever1 = src.items.itemMap["Lever"]("engine control")
-        self.lever2 = src.items.itemMap["Lever"]("boarding alarm")
-        #coalPile1 = src.items.itemMap["Pile"]("coal Pile1", src.items.itemMap["Coal"])
-        #coalPile2 = src.items.itemMap["Pile"]("coal Pile2", src.items.itemMap["Coal"])
-        #coalPile3 = src.items.itemMap["Pile"]("coal Pile1", src.items.itemMap["Coal"])
-        #coalPile4 = src.items.itemMap["Pile"]("coal Pile2", src.items.itemMap["Coal"])
-
-        # actually add items
-        self.addItems(
-            [(self.lever1,(1,5,0)), (self.lever2,(8,5,0))]#, (coalPile1,(8, 3, 0)), (coalPile2,(8, 4,0)), (coalPile3,(1, 3,0)), (coalPile4,(1, 4,0))]
-        )
-
-        self.furnaceQuest = None
-
-    """
-    move from training to mocked up day to day activity
-    bad code: this should happen in story
-    """
-
-    def endTraining(self):
-
-        """
-        event for changing the requirements regulary
-        """
-
-        class ChangeRequirements(object):
-
-            """
-            state initialization
-            """
-
-            def __init__(subself, tick):
-                subself.tick = tick
-                self.loop = [0, 1, 2, 7, 4, 3, 5, 6]
-
-            """
-            change the requirement and shedule next event
-            """
-
-            def handleEvent(subself):
-                # change the requirement
-                index = self.loop.index(self.desiredSteamGeneration)
-                index += 1
-                if index < len(self.loop):
-                    src.logger.debugMessages.append(
-                        "*comlink*: changed orders. please generate "
-                        + str(self.loop[index])
-                        + " power"
-                    )
-                    self.desiredSteamGeneration = self.loop[index]
-                else:
-                    self.desiredSteamGeneration = self.loop[0]
-
-                # schedule more changes
-                self.changed()
-                self.addEvent(ChangeRequirements(self.timeIndex + 50))
-
-        # add production requirement and schedule changes
-        self.desiredSteamGeneration = 0
-        self.changed()
-        self.addEvent(ChangeRequirements(self.timeIndex + 20))
-
-    """
-    handle changed steam production/demand
-    """
-
-    def changed(self, tag="default", info=None):
-        super().changed(tag, info)
-
-        # notify vat
-        # bad code: vat should listen
-        if self.terrain:
-            self.terrain.tutorialVatProcessing.recalculate()
-
-        # bad code: should hav an else branch
-        if self.desiredSteamGeneration:
-            # reset quest for firing the furnaces
-            if not self.desiredSteamGeneration == self.steamGeneration:
-                # reset order for firing the furnaces
-                if self.secondOfficer:
-                    if self.furnaceQuest:
-                        self.furnaceQuest.deactivate()
-                        self.furnaceQuest.postHandler()
-                    self.furnaceQuest = src.quests.KeepFurnacesFiredMeta(
-                        self.furnaces[: self.desiredSteamGeneration]
-                    )
-                    self.secondOfficer.assignQuest(self.furnaceQuest, active=True)
-            # acknowledge success
-            else:
-                # bad pattern: tone is way too happy
-                src.logger.debugMessages.append(
-                    "we did it! "
-                    + str(self.desiredSteamGeneration)
-                    + " instead of "
-                    + str(self.steamGeneration)
-                )
-
-
 """
 the armor plates of a mech
 """
@@ -2867,7 +2726,6 @@ XXXXXXXXXXXXX
 # mapping from strings to all rooms
 # should be extendable
 roomMap = {
-    "TutorialMachineRoom": TutorialMachineRoom,
     "MechArmor": MechArmor,
     "MiniMech": MiniMech,
     "MiniBase": MiniBase,

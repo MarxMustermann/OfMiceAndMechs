@@ -61,7 +61,6 @@ class Room(src.saveing.Saveable):
 
         # initialize attributes
         self.health = 40
-        self.layout = layout
         self.hidden = True
         self.itemsOnFloor = []
         self.characters = []
@@ -71,29 +70,20 @@ class Room(src.saveing.Saveable):
         self.name = "Room"
         self.open = True
         self.terrain = None
-        self.shownQuestmarkerLastRender = False
         self.sizeX = None
         self.sizeY = None
         self.timeIndex = 0
-        self.delayedTicks = 0
         self.events = []
         self.floorDisplay = [src.canvas.displayChars.floor]
         self.chainedTo = []
         self.engineStrength = 0
         self.boilers = []
-        self.growthTanks = []
         self.furnaces = []
-        self.pipes = []
-        self.sprays = []
-        self.piles = []
         self.steamGeneration = 0
-        self.firstOfficer = None
-        self.secondOfficer = None
         self.offsetX = offsetX
         self.offsetY = offsetY
         self.xPosition = xPosition
         self.yPosition = yPosition
-        self.lastRender = None
         self.isContainment = False
         self.listeners = {"default": []}
         self.seed = seed
@@ -127,6 +117,10 @@ class Room(src.saveing.Saveable):
                 "isContainment",
                 "timeIndex",
                 "floorPlan",
+                "name",
+                "seed",
+                "health",
+                "hidden",
             ]
         )
 
@@ -149,6 +143,17 @@ class Room(src.saveing.Saveable):
             "sources",
             "objType",
             "walkingAccess",
+            "terrain",
+            "floorDisplay",
+            "displayChar",
+            "itemByCoordinates",
+            "listeners",
+            ])
+
+        self.objectListsToStore.extend([
+            "doors",
+            "boilers",
+            "furnaces",
             ])
 
     def addBuildSite(self,position,specification,extraInfo=None):
@@ -552,6 +557,16 @@ class Room(src.saveing.Saveable):
         state["characterIds"] = charIds
         state["characterStates"] = charStates
 
+        convertedListeners = {}
+        if self.listeners:
+            for (key,value) in self.listeners.items():
+                if value:
+                    print(self.listeners)
+                    1/0
+                else:
+                    convertedListeners[key] = value
+        state["listeners"] = convertedListeners
+
         return state
 
     # bad code: incomplete
@@ -629,6 +644,17 @@ class Room(src.saveing.Saveable):
                     continue
                 char = src.characters.getCharacterFromState(charState)
                 self.characters.append(char)
+
+        if "listeners" in state:
+            convertedListeners = {}
+            if self.listeners:
+                for (key,value) in self.listeners.items():
+                    if value:
+                        print(self.listeners)
+                        1/0
+                    else:
+                        convertedListeners[key] = value
+            self.listeners = convertedListeners
 
     def getResistance(self):
         """
@@ -770,10 +796,6 @@ class Room(src.saveing.Saveable):
         Returns:
             the rendered room
         """
-
-        # skip rendering
-        # if self.lastRender:
-        #    return self.lastRender
 
         # render room
         if not self.hidden or src.gamestate.gamestate.mainChar.room == self:
@@ -1315,17 +1337,6 @@ class Room(src.saveing.Saveable):
         character.changed()
         return None
 
-    # obsolete: not really used anymore
-    def applySkippedAdvances(self):
-        """
-        advance the room to current tick
-        """
-
-        while self.delayedTicks > 0:
-            for character in self.characters:
-                character.advance()
-            self.delayedTicks -= 1
-
     # bad code: should be in extra class
     def addEvent(self, event):
         """
@@ -1373,19 +1384,9 @@ class Room(src.saveing.Saveable):
         # change own state
         self.timeIndex += 1
 
-        # do next step new
-        # bad code: sneakily disabled the mechanism for delaying calculations
-        if not self.hidden or 1 == 1:
-            # redo delayed calculation
-            if self.delayedTicks > 0:
-                self.applySkippedAdvances()
-
-            # advance each character
-            for character in self.characters:
-                character.advance(advanceMacros=advanceMacros)
-        # do next step later
-        else:
-            self.delayedTicks += 1
+        # advance each character
+        for character in self.characters:
+            character.advance(advanceMacros=advanceMacros)
 
         # log events that were not handled properly
         while self.events and self.events[0].tick <= src.gamestate.gamestate.tick:

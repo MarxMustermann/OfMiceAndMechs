@@ -666,6 +666,9 @@ class Terrain(src.saveing.Saveable):
                     if char.faction == other.faction:
                         continue
 
+                if char.faction == other.faction:
+                    continue
+
                 char.messages.append("*thump*")
                 char.collidedWith(other,actor=char)
                 other.collidedWith(char,actor=char)

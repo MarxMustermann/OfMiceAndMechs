@@ -1259,6 +1259,8 @@ class Room(src.saveing.Saveable):
                 if character.faction.startswith("city"):
                     if character.faction == other.faction:
                         continue
+                if character.faction == other.faction:
+                    continue
 
                 character.collidedWith(other)
                 other.collidedWith(character)

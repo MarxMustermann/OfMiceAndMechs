@@ -214,6 +214,16 @@ class Character(src.saveing.Saveable):
                     "faction",
                     "rank",
                     "messages",
+                    "showThinking",
+                    "showGotCommand",
+                    "showGaveCommand",
+                    "duties",
+                    "movementSpeed",
+                    "hasOwnAction",
+                    "doesOwnAction",
+                    "aggro",
+                    "charType",
+                    "disabled",
                 ]
             )
 

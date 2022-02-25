@@ -1030,20 +1030,27 @@ class ClearTerrain(MetaQuestSequence):
             else:
                 terrain = character.container
 
-            for otherChar in terrain.characters:
-                if otherChar.faction == character.faction:
-                    continue
-                quest = src.quests.SecureTile(toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
-                quest.assignToCharacter(character)
-                quest.activate()
-                self.addQuest(quest)
-                return
-            for room in terrain.rooms:
-                for otherChar in room.characters:
-                    if otherChar.faction == character.faction:
-                        continue
-                    self.addQuest(src.quests.SecureTile(toSecure=room.getPosition()))
-                    return
+            steps = ["clearOutside","clearRooms"]
+            if random.random() < 0.3:
+                steps = ["clearRooms","clearOutside"]
+
+            for step in steps:
+                if step == "clearRooms":
+                    for otherChar in terrain.characters:
+                        if otherChar.faction == character.faction:
+                            continue
+                        quest = src.quests.SecureTile(toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                        quest.assignToCharacter(character)
+                        quest.activate()
+                        self.addQuest(quest)
+                        return
+                if step == "clearOutside":
+                    for room in terrain.rooms:
+                        for otherChar in room.characters:
+                            if otherChar.faction == character.faction:
+                                continue
+                            self.addQuest(src.quests.SecureTile(toSecure=room.getPosition()))
+                            return
 
 
 class Equip(MetaQuestSequence):
@@ -1610,7 +1617,16 @@ class GatherScrap(MetaQuestSequence):
             return
 
         if len(character.inventory) < 10:
-            return
+            foundItem = None
+            if isinstance(character.container,src.rooms.Room):
+                for item in character.container.itemsOnFloor:
+                    if item.type == "Scrap":
+                        foundItem = item
+                        break
+            else:
+                foundItem = True
+            if foundItem:
+                return
 
         super().triggerCompletionCheck()
 

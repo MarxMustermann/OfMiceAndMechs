@@ -3617,7 +3617,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 1000
+        self.epochLength = 200
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3673,11 +3673,11 @@ class Siege2(BasicPhase):
 
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.architect = architect
-        mainRoom.addItem(cityBuilder,(6,1,0))
+        mainRoom.addItem(cityBuilder,(7,1,0))
         cityBuilder.registerRoom(mainRoom)
 
         jobArtwork = src.items.itemMap["JobArtwork"]()
-        mainRoom.addItem(jobArtwork,(4,1,0))
+        mainRoom.addItem(jobArtwork,(5,1,0))
 
         self.numRounds = 1
         self.startRound()
@@ -3700,8 +3700,8 @@ Defend yourself and surive as long as possible.
         
         for i in range(0,self.numRounds):
             enemy = src.characters.Monster(35,35)
-            enemy.health = 10*self.numRounds
-            enemy.baseDamage = self.numRounds
+            enemy.health = 10*i
+            enemy.baseDamage = i
             terrain.addCharacter(enemy, 35, 35)
             enemy.movementSpeed = 0.3
 
@@ -3711,9 +3711,9 @@ Defend yourself and surive as long as possible.
             quest.activate()
             enemy.quests.append(quest)
 
-            if i%5 == 4:
-                for room in terrain.rooms:
-                    room.damage()
+        if self.numRounds%15 == 14:
+            for room in terrain.rooms:
+                room.damage()
 
         self.numRounds += 1
         

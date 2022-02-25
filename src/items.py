@@ -76,6 +76,7 @@ class Item(src.saveing.Saveable):
         self.ignoreAttributes = []
         self.applyMap = {}
         self.settings = {}
+        self.charges = 0
 
         self.name = "unknown"
         self.callInit()
@@ -116,6 +117,7 @@ class Item(src.saveing.Saveable):
                     "commands",
                     "isStepOnActive",
                     "settings",
+                    "charges",
                 ]
             )
         self.objectsToStore.extend([

@@ -542,6 +542,12 @@ class CityBuilder2(src.items.Item):
         architect.doClearField(params["coordinate"][0], params["coordinate"][1])
         self.container.container.removeItem(architect)
 
+    def addMinefieldFromMap(self,params):
+        architect = src.items.itemMap["ArchitectArtwork"]()
+        self.container.container.addItem(architect,(1,1,0))
+        architect.doAddMinefield(params["coordinate"][0], params["coordinate"][1],20)
+        self.container.container.removeItem(architect)
+
     def addScrapFieldFromMap(self,params):
         architect = src.items.itemMap["ArchitectArtwork"]()
         self.container.container.addItem(architect,(1,1,0))
@@ -854,7 +860,7 @@ class CityBuilder2(src.items.Item):
                     },
                     "description":"set connections",
                 }
-                functionMap[(x,y)]["m"] = {
+                functionMap[(x,y)]["A"] = {
                     "function": {
                         "container":self,
                         "method":"magicAdvanceRoomFromMap",
@@ -886,6 +892,15 @@ class CityBuilder2(src.items.Item):
                     },
                     "description":"add scrap fields",
                 }
+                functionMap[(x,y)]["m"] = {
+                    "function": {
+                        "container":self,
+                        "method":"addMinefieldFromMap",
+                        "params":{"character":character},
+                    },
+                    "description":"add scrap fields",
+                }
+
 
         for scrapField in self.scrapFields:
             plot = scrapField

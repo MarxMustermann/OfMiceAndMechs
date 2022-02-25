@@ -44,8 +44,6 @@ class Terrain(src.saveing.Saveable):
 
     def __init__(
         self,
-        layout="",
-        detailedLayout="",
         seed=0,
         noContent=False,
     ):
@@ -53,8 +51,6 @@ class Terrain(src.saveing.Saveable):
         set up internal state
 
         Parameters:
-            layout: the terrains room layout
-            detailedLayout: the terrains item layout
             seed: rng seed
             noContent: flag to generate terrain empty
         """
@@ -92,266 +88,9 @@ class Terrain(src.saveing.Saveable):
         # misc state
         self.overlay = None
 
-        if not noContent:
-            # add items
-            # bad code: repetitive code
-            mapItems = []
-            self.detailedLayout = detailedLayout
-            lineCounter = 0
-            for layoutline in self.detailedLayout.split("\n")[1:]:
-                rowCounter = 0
-                for char in layoutline:
-                    if char in (" ", ".", ",", "@"):
-                        pass
-                    elif char == "X":
-                        mapItems.append(
-                            (src.items.itemMap["Wall"],(rowCounter, lineCounter,0))
-                        )
-                    elif char == "#":
-                        mapItems.append(
-                            (src.items.itemMap["Pipe"],(rowCounter, lineCounter,0))
-                        )
-                    elif char == "R":
-                        pass
-                    elif char == "O":
-                        mapItems.append(
-                            (src.items.itemMap["Item"](src.canvas.displayChars.clamp_active),
-                                (rowCounter,lineCounter,0)
-                            )
-                        )
-                    elif char == "0":
-                        mapItems.append(
-                            (
-                            src.items.itemMap["Item"](src.canvas.displayChars.clamp_inactive),
-                                (rowCounter,lineCounter,0)
-                            )
-                        )
-                    elif char == "8":
-                        mapItems.append(
-                            (
-                                src.items.itemMap["Chain"](),
-                                (rowCounter, lineCounter, 0)
-                            )
-                        )
-                    elif char == "C":
-                        mapItems.append(
-                            (
-                                src.items.itemMap["Winch"](),
-                                (rowCounter, lineCounter, 0)
-                            )
-                        )
-                    elif char == "P":
-                        mapItems.append(
-                            (
-                                src.items.itemMap["Pile"](),
-                                (rowCounter, lineCounter, 0)
-                            )
-                        )
-                    else:
-                        mapItems.append(
-                            (
-                                src.items.itemMap["Item"](
-                                    src.canvas.displayChars.randomStuff2[
-                                        ((2 * rowCounter) + lineCounter) % 10
-                                    ]),
-                                (rowCounter, lineCounter, 0)
-                            )
-                        )
-                    rowCounter += 1
-                lineCounter += 1
-            self.addItems(mapItems)
-
         # container for categories of rooms for easy access
         # bad code: should be abstracted
         roomsOnMap = []
-
-        if not noContent:
-            # add rooms
-            # bad code: this should be abstracted
-            # bad code: repetitive code
-            # bad code: watershed coordinates should not be set here
-            lineCounter = 0
-            for layoutline in layout.split("\n")[1:]:
-                rowCounter = 0
-                for char in layoutline:
-                    if char in (".", ",", " "):
-                        # ignore paths
-                        pass
-                    elif char == "X":
-                        # add armor plating
-                        roomsOnMap.append(
-                            src.rooms.MechArmor(
-                                rowCounter, lineCounter, 0, 0
-                            )
-                        )
-                    elif char == "V":
-                        # add vat and save first reference
-                        room = src.rooms.VatFermenting(
-                            rowCounter, lineCounter, 2, 2
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "v":
-                        # add vat and save first reference
-                        room = src.rooms.VatProcessing(
-                            rowCounter, lineCounter, 2, 2
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "Q":
-                        # add room and add to room list
-                        room = src.rooms.InfanteryQuarters(
-                            rowCounter, lineCounter, 1, 2
-                        )
-                        roomsOnMap.append(room)
-
-                        # add terrain wide listener
-                        self.addListener(room.enforceFloorPermit, "entered terrain")
-                    elif char == "w":
-                        # add room and add to room list
-                        room = src.rooms.WaitingRoom(
-                            rowCounter, lineCounter, 1, 2
-                        )
-                        self.waitingRoom = room
-                        roomsOnMap.append(room)
-                    elif char == "M":
-                        # add room and add to room list
-                        room = src.rooms.TutorialMachineRoom(
-                            rowCounter, lineCounter, 4, 1
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "L":
-                        # add room and add to room list
-                        room = src.rooms.LabRoom(
-                            rowCounter, lineCounter, 1, 1
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "l":
-                        # add room and add to room list
-                        room = src.rooms.ChallengeRoom(
-                            rowCounter,
-                            lineCounter,
-                            3,
-                            1,
-                            seed=seed + rowCounter - 3 * lineCounter,
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "C":
-                        # generate pseudo random content type
-                        itemTypes = [src.items.itemMap["Wall"], src.items.itemMap["Pipe"]]
-                        amount = 40
-                        if not (rowCounter + seed) % 2:
-                            itemTypes.append(src.items.itemMap["Lever"])
-                            amount += 10
-                        if not (rowCounter + seed) % 3:
-                            itemTypes.append(src.items.itemMap["Furnace"])
-                            amount += 15
-                        if not (rowCounter + seed) % 4:
-                            itemTypes.append(src.items.itemMap["Chain"])
-                            amount += 20
-                        if not (rowCounter + seed) % 5:
-                            itemTypes.append(src.items.itemMap["Hutch"])
-                            amount += 7
-                        if not (rowCounter + seed) % 6:
-                            itemTypes.append(src.items.itemMap["GrowthTank"])
-                            amount += 8
-                        if not (lineCounter + seed) % 2:
-                            itemTypes.append(src.items.itemMap["Door"])
-                            amount += 15
-                        if not (lineCounter + seed) % 3:
-                            itemTypes.append(src.items.itemMap["Boiler"])
-                            amount += 10
-                        if not (lineCounter + seed) % 4:
-                            itemTypes.append(src.items.itemMap["Winch"])
-                            amount += 7
-                        if not (lineCounter + seed) % 5:
-                            itemTypes.append(src.items.itemMap["RoomControls"])
-                            amount += 7
-                        if not (lineCounter + seed) % 6:
-                            itemTypes.append(src.items.itemMap["Commlink"])
-                            amount += 7
-                        if not itemTypes:
-                            itemTypes = [
-                                src.items.itemMap["Pipe"],
-                                src.items.itemMap["Wall"],
-                                src.items.itemMap["Furnace"],
-                                src.items.itemMap["Boiler"],
-                            ]
-                            amount += 30
-                        while amount > 80:
-                            amount -= seed % 40 + 1
-
-                        # add room and add to room list
-                        room = src.rooms.CargoRoom(
-                            rowCounter,
-                            lineCounter,
-                            3,
-                            0,
-                            itemTypes=itemTypes,
-                            amount=amount,
-                            seed=seed + 2 * rowCounter + 5 * lineCounter // 7,
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "h":
-                        # add room and add to room list
-                        room = src.rooms.HuntersLodge(
-                            rowCounter, lineCounter, 3, 0
-                        )
-                        self.huntersLodge = room
-                        roomsOnMap.append(room)
-                    elif char == "U":
-                        # add room and add to room list
-                        room = src.rooms.StorageRoom(
-                            rowCounter, lineCounter, 3, 0
-                        )
-                    elif char == "?":
-                        # add room and add to room list
-                        roomsOnMap.append(
-                            src.rooms.CpuWasterRoom(
-                                rowCounter, lineCounter, 2, 2
-                            )
-                        )
-                    elif char == "t":
-                        # add room and add to room list
-                        miniMech = src.rooms.MiniMech(
-                            rowCounter, lineCounter, 2, 2
-                        )
-                        roomsOnMap.append(miniMech)
-                    elif char == "W":
-                        # add room and add to room list
-                        wakeUpRoom = src.rooms.WakeUpRoom(
-                            rowCounter, lineCounter, 1, 1
-                        )
-                        roomsOnMap.append(wakeUpRoom)
-                    elif char == "m":
-                        # add room and add to room list
-                        room = src.rooms.MetalWorkshop(
-                            rowCounter,
-                            lineCounter,
-                            1,
-                            1,
-                            seed=seed + 3 * rowCounter + 2 * lineCounter // 8,
-                        )
-                        self.metalWorkshop = room
-                        roomsOnMap.append(room)
-                    elif char == "b":
-                        # add room and add to room list
-                        room = src.rooms.ConstructionSite(
-                            rowCounter, lineCounter, 1, 1
-                        )
-                        roomsOnMap.append(room)
-                    elif char == "K":
-                        # add room and add to room list
-                        room = src.rooms.MechCommand(
-                            rowCounter, lineCounter, 1, 1
-                        )
-                        roomsOnMap.append(room)
-                    else:
-                        # add starting points for pathfinding
-                        pass
-                    rowCounter += 1
-                lineCounter += 1
-
-            # actually add the rooms to the map
-            self.addRooms(roomsOnMap)
 
         # set meta information for saving
         self.attributesToStore.extend(
@@ -2252,15 +1991,7 @@ class Nothingness(Terrain):
         """
 
 
-        # leave layout empty
-        layout = """
-        """
-        detailedLayout = """
-        """
-
         super().__init__(
-            layout,
-            detailedLayout,
             seed=seed,
             noContent=noContent,
         )
@@ -2318,13 +2049,9 @@ class GameplayTest(Terrain):
              
              
         """
-        layout = """
-        """
-        detailedLayout = """
-        """
 
         super().__init__(
-            layout, detailedLayout, seed=seed, noContent=noContent
+            seed=seed, noContent=noContent
         )
 
         self.floordisplay = src.canvas.displayChars.dirt
@@ -2624,31 +2351,8 @@ class Desert(Terrain):
 
         import random
 
-        # add only a few scattered intact rooms
-        layout = """
-             
-             
-             
-             
-             
-             
-             
-             
-     .       
-    C.       
-             
-             
-             
-             
-             
-        """
-        layout = """
-        """
-        detailedLayout = """
-        """
-
         super().__init__(
-            layout, detailedLayout, seed=seed, noContent=noContent
+            seed=seed, noContent=noContent
         )
 
         self.itemPool = []
@@ -3209,20 +2913,8 @@ class ScrapField(Terrain):
             noContent: flag to generate no content
         """
 
-        # add only a few scattered intact rooms
-        layout = """
-
-
-  U  U 
-U  U 
-     U
-  U  U
-
-        """
-        detailedLayout = """
-        """
         super().__init__(
-            layout, detailedLayout, seed=seed, noContent=noContent
+            seed=seed, noContent=noContent
         )
 
         self.floordisplay = src.canvas.displayChars.dirt
@@ -3320,190 +3012,8 @@ U  U
         # add base of operations
         self.addRooms([self.wakeUpRoom])
 
-class TutorialTerrain(Terrain):
-    """
-    the tutorial mech
-    """
-
-    objType = "TutorialTerrain"
-
-    def __init__(self, seed=0, noContent=False):
-        """
-        state initialization
-        
-        Parameters:
-            seed: rng seed
-            noContent: flag to generate no content
-        """
-
-        self.toTransport = []
-
-        # the layout for the mech
-        layout = """
-XlllllllllX
-XXXXXXXXXXX
-XVv?b?Q?vVX
-XO.t    .OX
-Xw MQKhl LX
-XW Q???Q mX
-XU.     .UX
-XU CCCCC UX
-XU CCCCCtUX
-XXXCCCCCXXX """
-        detailedLayout = """
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                    
-                                                                                                                                                                     
-               X                                           X                                                                                                         
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#           #X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               XXXXXXXXXXXX#XX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX            X               
-                  ###  ###                                                                                                                   XXXXXXXXX               
-               ####O####O####      O  O       ################           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               # R          #   R        R    #R        R #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #O          O#  O             ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            # ##          O  #O          O#XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            # #              ##           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #O          O# #               #           #XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            # #              ##          ##XX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #            ####             #O          OXXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #O          O#  O          O  ##           XXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               ##          ##  X              #           XXX#           #XX#           #XX#           #XX#           #XX#           #XX#           #X               
-               #X         RX####R        R   ##R        R                XXXXXXXXXXXXXX XXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               
-               #X          XXXX###### ########XXXX8  O                                                                                              X               
-               #X             XXXXXXX XXXXXXXXX   8                                                                                                  X               
-               #XXXXXXXXXX  X                     8                                                                                                  X              
-               ############ #X                    8                                                                                   XXXXXXXX  XXXXXX              
-               XXXXXXXXXXX  #X                    8                                                                                    X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                            #X                                                                                                         X#X          #X               
-                           ##X                                                                                                         X#X          #X               
-               XXXXXXXXXXX   X                                                                                                         X#X                           
-               #############                                                                                                           X#X          #X               
-               XXXXXXXXXXXXXXX               X#####    #######            XX             XX             XX             X               X#X           X               
-               X          X                  X   R        R#X#           #XX#           #XX#           #XX#           #X               X#X                           
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#                            X             #X#           #XX#           #XX#           #XX#           #X                            #X               
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X             #X#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X   R        RXX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#           XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#      X    XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#      X    XX               X             XX#           #XX#           #XX#           #XX#           #X               X#X          #X               
-               X#XXXXXXX    XX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX               XXX           X               
-               X#########   #X               XX           XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX           XX               XXX           X               
-               XXXXXXXXX    #X       X       X#           #XX#           #XX#           #XX#           #XX#           #X       X         X                           
-               X#      X    #X  X   XXX   X  X#           #XX#           #XX#           #XX#           #XX#           #X  X   XXX   X  X            #X               
-               X#           #X XXX  XXX  XXX X#           #XX#           #XX#           #XX#           #XX#           #X XXX  XXX  XXX X#X          #X               
-               X#      X    #X  XX   X    X  X#           #XX#           #XX#           #XX#           #XX#           #X  X    X   XX  X#X          #X               
-               X#      X    #XXXXXXX   XXXXXXX#           #XX#           #XX#           #XX#           #XX#           #XXXXXXX   XXXXXXX#           #X               
-               X#      X    #XX X XXX XXX X XX#           #XX#           #XX#           #XX#           #XX#           #XX X XXX XXX X XX#           #X               
-               X#      X    #XXXXXXX   XXXXXXX#           #XX#           #XX#           #XX#           #XX#           #XXXXXXX   XXXXXXX#           #X               
-               X#      X    #X  X    X    X  X#           #XX#           #XX#           #XX#           #XX#           #X  X    X    X  X#           #X               
-               X#      X    #X XXX  XXX  XXX X#           #XX#           #XX#           #XX#           #XX#           #X XXX  XXX  XXX X#           #X               
-               X#      X    #X  X   XXX   X  X#           #XX#           #XX#           #XX#           #XX#           #X  X   XXX   X  X#           #X               
-               XXXXXXXXX    #X       X       X#           #XX#           #XX#           #XX#           #XX#           #X       X                    #X               
-               X#############X               X#           #XX#           #XX#           #XX#           #XX#           #X               X#           #X               
-               X#XXXXXXX    #X               X# XPXX   XP #XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#XX# XPX    XPX#X               X#           #X               
-               XXXXXXXXXXXX  X               XXXXC X XXXC XXXXXXC  XXXXC XXXXXXC  XXXXC XXXXXXC XX XXC XXXXXXC X XXXC XX               XX            X               
-               X#XXXXXXXXXXX                     8      8       8      8       8      8       8      8       8      8                  X#            X               
-               XX          X                                            .                                                              XX            X               
-               X#                                                                                                                      X#            X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               X#          X                                                                                                           X#           #X               
-               XXXXXXXXXXXX#                  #              #              #              #              #                            XX            X               
-               XXXXXXXXXXXX#                 X#X           XX#X           XX#X           XX#X           XX#X           X               XX            X               
-               X                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#            X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               XXXXXXXXXXXX#                 X#X           XX#X           XX#X           XX#X           XX#X           X               XX            X               
-               XXXXXXXXXXXX#                 X#X           #X#X           #X#X           #X#X           #X#X           X               XX            X               
-               X                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#            X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#x           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               X#                            X#X           XX#X           XX#X           XX#X           XX#X           X               X#           #X               
-               XXXXXXXXXXXX#XX               X#X           XX#X           XX#X           XX#X           XX#X           X               XX            X               
-                                             X#X           #X#X           #X#X           #X#X           #X#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#X           XX#X           XX#X           XX#X           XX#X           X                                             
-                                             X#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXXX#XXXXXXXXXXXXX                                             
-"""
         super().__init__(
-            layout, detailedLayout, seed=seed, noContent=noContent
+            seed=seed, noContent=noContent
         )
 
         # add scrap to be cleaned up
@@ -3523,7 +3033,6 @@ XXXCCCCCXXX """
 # mapping from strings to all items
 # should be extendable
 terrainMap = {
-    "TutorialTerrain": TutorialTerrain,
     "Nothingness": Nothingness,
     "GameplayTest": GameplayTest,
     "ScrapField": ScrapField,

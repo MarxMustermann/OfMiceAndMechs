@@ -549,7 +549,7 @@ class CityBuilder2(src.items.Item):
         self.container.container.removeItem(architect)
 
         for otherRoom in self.rooms:
-            otherRoom.sources.insert(0,(params["coordinate"],"Scrap"))
+            otherRoom.sources.append((params["coordinate"],"Scrap"))
 
     def addFarmFromMap(self,params):
         room = self.addRoom(params["coordinate"])
@@ -718,6 +718,7 @@ class CityBuilder2(src.items.Item):
         for otherRoom in self.rooms:
             pos = room.getPosition()
             otherRoom.sources.insert(0,(pos,"Corpse"))
+            otherRoom.sources.insert(0,(pos,"Scrap"))
             otherRoom.sources.insert(0,(pos,"Frame"))
             otherRoom.sources.insert(0,(pos,"ScrapCompactor"))
             otherRoom.sources.insert(0,(pos,"Rod"))
@@ -1064,6 +1065,7 @@ class CityBuilder2(src.items.Item):
             for otherRoom in self.rooms:
                 pos = room.getPosition()
                 otherRoom.sources.insert(0,(pos,"Corpse"))
+                otherRoom.sources.insert(0,(pos,"Scrap"))
                 otherRoom.sources.insert(0,(pos,"Frame"))
                 otherRoom.sources.insert(0,(pos,"ScrapCompactor"))
                 otherRoom.sources.insert(0,(pos,"Rod"))

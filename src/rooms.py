@@ -138,6 +138,21 @@ class Room(src.saveing.Saveable):
                 ]
         )
 
+        self.ignoreAttributes = []
+        self.ignoreAttributes.extend([
+            "events",
+            "itemsOnFloor",
+            "characters",
+            "walkingSpace",
+            "inputSlots",
+            "outputSlots",
+            "storageSlots",
+            "buildSites",
+            "sources",
+            "objType",
+            "walkingAccess",
+            ])
+
     def addBuildSite(self,position,specification,extraInfo=None):
         if extraInfo == None:
             extraInfo = {}
@@ -1420,7 +1435,7 @@ class MiniBase(Room):
         """
 
         # obsolete: the room layout is practically never used
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXXXX
 X     .     X
 X     .     X
@@ -1436,7 +1451,7 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
 
         itemsToAdd = []
@@ -1539,7 +1554,7 @@ class MiniBase2(Room):
             seed: the rng seed
         """
 
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXX
 X         X
 X         X
@@ -1553,7 +1568,7 @@ X         X
 XXXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.walkingAccess = []
 
@@ -1596,13 +1611,13 @@ class EmptyRoom(Room):
             seed: the rng seed
         """
 
-        self.roomLayout = """
+        roomLayout = """
 XXX
 X.$
 XXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.bio = bio
 
@@ -2417,7 +2432,7 @@ class CpuWasterRoom(Room):
     """
 
     def __init__(self, xPosition=0, yPosition=0, offsetX=0, offsetY=0):
-        self.roomLayout = """
+        roomLayout = """
 XX$XXXXXXX
 Xv vD????X
 X?......PX
@@ -2430,7 +2445,7 @@ X? XXXXX#X
 XXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout,
+            roomLayout,
             xPosition,
             yPosition,
             offsetX,
@@ -2493,7 +2508,7 @@ class InfanteryQuarters(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XX$X&&XXXXX
 XX PPPPPPXX
 X@.......DX
@@ -2505,7 +2520,7 @@ X .......DX
 XXXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.name = "Infanteryquarters"
 
@@ -2675,7 +2690,7 @@ class VatProcessing(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXX
 XaaaaaaaaX
 #prqqrqqsX
@@ -2688,7 +2703,7 @@ Xmmmv.v.IX
 XXXXX$XXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
 
         # add special items
@@ -2752,7 +2767,7 @@ class VatFermenting(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXX
 X  Mb jjjX
 XM ......X
@@ -2765,7 +2780,7 @@ X@b......X
 XXXXX$XXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.isContainment = True
         self.floorDisplay = src.canvas.displayChars.acids
@@ -2787,7 +2802,7 @@ class MechArmor(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXXXXXX
 XX X X X X X XX
 X X X X X X X X
@@ -2805,7 +2820,7 @@ X X X X.X X X.X
 XXXXXXX$XXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "MechArmor"
@@ -2826,7 +2841,7 @@ class MiniMech(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XX$XXX
 XD..@X
 X  . X
@@ -2835,7 +2850,7 @@ Xmm.PX
 XXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.engineStrength = 0
@@ -2888,7 +2903,7 @@ class TutorialMiniBase(Room):
         desiredPosition=None,
         seed=0,
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXXXX
 X           X
 X           X
@@ -2907,7 +2922,7 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         itemList = []
         exclude1 = [src.items.Scrap]
@@ -3008,7 +3023,7 @@ class GameTestingRoom(Room):
         desiredPosition=None,
         seed=0,
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXXXX
 X           X
 X           X
@@ -3027,7 +3042,7 @@ X           X
 XXXXXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         itemList = []
         exclude1 = [src.items.Scrap]
@@ -3188,7 +3203,7 @@ class ChallengeRoom(Room):
         desiredPosition=None,
         seed=0,
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXX
 X XX  @  X
 XXXX.... X
@@ -3205,7 +3220,7 @@ $        X
 XXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout,
+            roomLayout,
             xPosition,
             yPosition,
             offsetX,
@@ -3469,7 +3484,7 @@ class LabRoom(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXX
 X     @@ X
 X ...... X
@@ -3486,7 +3501,7 @@ XFFFFFFFFX
 XXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
 
         # bad code: the markers are not used anywhere
@@ -3530,7 +3545,7 @@ class CargoRoom(Room):
         amount=80,
         seed=0,
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXX
 X        X
 X       .$
@@ -3547,7 +3562,7 @@ X        X
 XXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "CargoRoom"
@@ -3713,7 +3728,7 @@ class WakeUpRoom(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXX
 Xö    vX
 XÖ ... $
@@ -3727,7 +3742,7 @@ XÖ     X
 XXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.name = "WakeUpRoom"
 
@@ -3892,7 +3907,7 @@ class WaitingRoom(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXX
 X         X
 X  .....  X
@@ -3906,7 +3921,7 @@ XXXXXXXXXXX
 """
         self.quests = []
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.name = "WaitingRoom"
         self.hoppers = []
@@ -4012,7 +4027,7 @@ class MechCommand(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXX$XXXXX
 XI        X
 XI .....  X
@@ -4025,7 +4040,7 @@ XI        X
 XXXXXXXXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.name = "Mech Command Centre"
 
@@ -4134,7 +4149,7 @@ class MetalWorkshop(Room):
         desiredPosition=None,
         seed=0,
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXX
 XP        X
 XP .....  X
@@ -4148,7 +4163,7 @@ XXXXX$XXXXX
 """
         self.quests = []
         super().__init__(
-            self.roomLayout,
+            roomLayout,
             xPosition,
             yPosition,
             offsetX,
@@ -4234,7 +4249,7 @@ class HuntersLodge(Room):
         desiredPosition=None,
         seed=0,
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXX
 X         X
 X  .....  X
@@ -4248,7 +4263,7 @@ XXXXX$XXXXX
 """
         self.quests = []
         super().__init__(
-            self.roomLayout,
+            roomLayout,
             xPosition,
             yPosition,
             offsetX,
@@ -4321,7 +4336,7 @@ class ConstructionSite(Room):
     def __init__(
         self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, desiredPosition=None
     ):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXX
 X         X
 X  .....  X
@@ -4346,7 +4361,7 @@ X#### ####X
 XXXXX$XXXXX
 """
         super().__init__(
-            self.roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
+            roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )
         self.name = "Construction Site"
 
@@ -4441,7 +4456,7 @@ class ScrapStorage(Room):
     """
 
     def __init__(self, xPosition=0, yPosition=0, offsetX=0, offsetY=0, seed=0):
-        self.roomLayout = """
+        roomLayout = """
 XXXXXXXXXXXXX
 X           X
 X           X
@@ -4456,7 +4471,7 @@ X           X
 X           X
 XXXXXXXXXXXXX
 """
-        super().__init__(self.roomLayout, xPosition, yPosition, offsetX, offsetY)
+        super().__init__(roomLayout, xPosition, yPosition, offsetX, offsetY)
         self.floorDisplay = [src.canvas.displayChars.nonWalkableUnkown]
         self.name = "ScrapStorage"
         self.scrapStored = 0

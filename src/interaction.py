@@ -5219,9 +5219,9 @@ class RoomMenu(SubMenu):
 
         super().__init__()
         self.room = room
-        self.firstRun = True
         self.keyPressed = ""
         self.done = False
+        self.index = (0,0)
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -5234,6 +5234,28 @@ class RoomMenu(SubMenu):
             returns True when done
         """
 
+        # exit the submenu
+        if key in ("w",):
+            if self.index[1] > 0:
+                self.index = (self.index[0],self.index[1]-1)
+        if key in ("s",):
+            if self.index[1] < len(self.room.duties)-1:
+                self.index = (self.index[0],self.index[1]+1)
+        if key in ("a",):
+            if self.index[0] > 0:
+                self.index = (self.index[0]-1,self.index[1])
+        if key in ("d",):
+            if self.index[0] < len(self.room.staff)-1:
+                self.index = (self.index[0]+1,self.index[1])
+
+        if key in ("j",):
+            duty = self.room.duties[self.index[1]]
+            staffCharacter = self.room.staff[self.index[0]]
+            if duty in staffCharacter.duties:
+                staffCharacter.duties.remove(duty)
+            else:
+                staffCharacter.duties.append(duty)
+
         # show info
         if not noRender:
             header.set_text((urwid.AttrSpec("default", "default"), ""))
@@ -5241,13 +5263,29 @@ class RoomMenu(SubMenu):
             self.persistentText += str(self.room)+"\n"
             self.persistentText += str(self.room.duties)+"\n"
             self.persistentText += str(self.room.staff)+"\n"
+            self.persistentText += "\n"
+            self.persistentText = [self.persistentText]
+
+            rowCounter = 0
+            for duty in self.room.duties:
+                self.persistentText.append( duty + " |")
+                colCounter = 0
+                for staffCharacter in self.room.staff:
+                    frontColor = "#fff"
+                    if duty in staffCharacter.duties:
+                        frontColor = "#0e0"
+                    backColor = "#000"
+                    if (colCounter,rowCounter) == self.index:
+                        backColor = "#444"
+                    self.persistentText.append((urwid.AttrSpec(frontColor, backColor),staffCharacter.name))
+                    self.persistentText.append(" |")
+                    colCounter += 1
+                self.persistentText.append("\n")
+                rowCounter += 1
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu
-        if key not in ("~",) and not self.firstRun:
-            self.keyPressed = key
-            if self.followUp:
-                self.callIndirect(self.followUp,{"keyPressed":key})
+        if key in ("esc","enter",):
             self.done = True
             return True
 

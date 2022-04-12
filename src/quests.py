@@ -1814,7 +1814,14 @@ class BeUsefull(MetaQuestSequence):
                     return
         """
 
-        if "Trapsetting" in character.duties:
+        # clear inventory local
+        if len(character.inventory) > 1:
+            emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+            if emptyInputSlots:
+                self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
+                return
+
+        if "trapsetting" in character.duties:
             if hasattr(room,"electricalCharges"):
                 if room.electricalCharges < room.maxElectricalCharges:
                     foundCharger = None
@@ -1856,40 +1863,122 @@ class BeUsefull(MetaQuestSequence):
                             self.addQuest(FetchItems(toCollect="CrystalCompressor"))
                             self.addQuest(GoToTile(targetPosition=source[0]))
                             return
-                
 
-        # clear inventory local
-        if len(character.inventory) > 1:
-            emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+        if "resource gathering" in character.duties:
+            emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
             if emptyInputSlots:
-                self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
-                return
+                for inputSlot in random.sample(emptyInputSlots,len(emptyInputSlots)):
+                    if not inputSlot[1] == "Scrap":
+                        continue
 
-        # clean up room
-        if not room.floorPlan and len(character.inventory) < 10:
-            character.addMessage("empty inventory")
-            for position in random.sample(room.walkingSpace,len(room.walkingSpace)):
-                items = room.getItemByPosition(position)
+                    if not room.sources:
+                        continue
 
-                if not items:
+                    source = None
+                    for potentialSource in random.sample(room.sources,len(room.sources)):
+                        if potentialSource[1] == "Scrap":
+                            source = potentialSource
+                            break
+
+                    if source == None:
+                        continue
+
+                    self.addQuest(RestockRoom(toRestock="Scrap"))
+                    self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
+                    self.addQuest(GatherScrap(targetPosition=source[0]))
+                    self.addQuest(GoToTile(targetPosition=(source[0])))
+                    return
+
+        if "scratch checking" in character.duties:
+            for item in random.sample(room.itemsOnFloor,len(room.itemsOnFloor)):
+                if not item.bolted:
                     continue
-                if items[0].bolted:
-                    continue
+                if item.type == "ScratchPlate":
+                    if item.hasScratch():
+                        continue
+                    self.addQuest(RunCommand(command="jsj"))
+                    self.addQuest(GoToPosition(targetPosition=item.getPosition()))
+                    return
 
-                character.addMessage("found space")
+        if "clearing" in character.duties:
+            # clean up room
+            if not room.floorPlan and len(character.inventory) < 10:
+                for position in random.sample(room.walkingSpace,len(room.walkingSpace)):
+                    items = room.getItemByPosition(position)
 
-                if position == (character.xPosition+1,character.yPosition,0):
-                    self.addQuest(RunCommand(command=10*"Kd"))
-                elif position == (character.xPosition-1,character.yPosition,0):
-                    self.addQuest(RunCommand(command=10*"Ka"))
-                elif position == (character.xPosition,character.yPosition+1,0):
-                    self.addQuest(RunCommand(command=10*"Ks"))
-                elif position == (character.xPosition,character.yPosition-1,0):
-                    self.addQuest(RunCommand(command=10*"Kw"))
-                else: 
-                    self.addQuest(RunCommand(command="10k"))
-                    self.addQuest(GoToPosition(targetPosition=position,ignoreEndBlocked=True))
-                return
+                    if not items:
+                        continue
+                    if items[0].bolted:
+                        continue
+
+                    if position == (character.xPosition+1,character.yPosition,0):
+                        self.addQuest(RunCommand(command=10*"Kd"))
+                    elif position == (character.xPosition-1,character.yPosition,0):
+                        self.addQuest(RunCommand(command=10*"Ka"))
+                    elif position == (character.xPosition,character.yPosition+1,0):
+                        self.addQuest(RunCommand(command=10*"Ks"))
+                    elif position == (character.xPosition,character.yPosition-1,0):
+                        self.addQuest(RunCommand(command=10*"Kw"))
+                    else: 
+                        self.addQuest(RunCommand(command="10k"))
+                        self.addQuest(GoToPosition(targetPosition=position,ignoreEndBlocked=True))
+                    return
+
+        if "resource fetching" in character.duties:
+            if hasattr(room,"inputSlots"):
+                emptyInputSlots = room.getEmptyInputslots()
+                if emptyInputSlots:
+                    checkedTypes = set()
+
+                    for inputSlot in random.sample(emptyInputSlots,len(emptyInputSlots)):
+                        if inputSlot[1] == None:
+                            continue
+                        if inputSlot[1] in checkedTypes:
+                            continue
+                        checkedTypes.add(inputSlot[1])
+
+                        if inputSlot[1] == "Scrap":
+                            continue
+
+                        hasItem = False
+                        if character.inventory and character.inventory[-1].type == inputSlot[1]:
+                            hasItem = True
+                        
+                        if not hasItem:
+                            source = None
+                            for candidateSource in room.sources:
+                                if not candidateSource[1] == inputSlot[1]:
+                                    continue
+
+                                sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                                if not sourceRoom:
+                                    continue
+
+                                sourceRoom = sourceRoom[0]
+                                if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                                    continue
+
+                                source = candidateSource
+                                break
+
+                            if not source:
+                                character.addMessage("no filled output slots")
+                                continue
+
+                        self.addQuest(RestockRoom(toRestock=inputSlot[1]))
+
+                        if not hasItem:
+                            roomPos = (room.xPosition,room.yPosition,0)
+                            if not source[0] == roomPos:
+                                self.addQuest(GoToTile(targetPosition=roomPos))
+                            self.addQuest(FetchItems(toCollect=inputSlot[1]))
+                            if not source[0] == roomPos:
+                                self.addQuest(GoToTile(targetPosition=(source[0])))
+                        return
+
+                    character.addMessage("no valid input slot found")
+                character.addMessage("no empty input slot found")
+            character.addMessage("no input slots")
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
@@ -1910,15 +1999,6 @@ class BeUsefull(MetaQuestSequence):
 
 
         if character.rank == None or character.rank == 4 and not room.floorPlan:
-            for item in random.sample(room.itemsOnFloor,len(room.itemsOnFloor)):
-                if not item.bolted:
-                    continue
-                if item.type == "ScratchPlate":
-                    if item.hasScratch():
-                        continue
-                    self.addQuest(RunCommand(command="jsj"))
-                    self.addQuest(GoToPosition(targetPosition=item.getPosition()))
-                    return
 
             if room.buildSites:
                 checkedMaterial = set()
@@ -1976,84 +2056,6 @@ class BeUsefull(MetaQuestSequence):
                         if not source[0] == roomPos:
                             self.addQuest(GoToTile(targetPosition=(source[0])))
                     return
-
-        # refill stockpile
-        if len(character.inventory) < 11 and (character.rank == None or character.rank > 4):
-            if hasattr(room,"inputSlots"):
-                emptyInputSlots = room.getEmptyInputslots()
-                if emptyInputSlots:
-                    checkedTypes = set()
-
-                    for inputSlot in random.sample(emptyInputSlots,len(emptyInputSlots)):
-                        if inputSlot[1] == None:
-                            continue
-                        if inputSlot[1] in checkedTypes:
-                            continue
-                        checkedTypes.add(inputSlot[1])
-
-                        if inputSlot[1] == "Scrap":
-                            if not character.rank == None and not character.rank == 6:
-                                continue
-                            if not room.sources:
-                                continue
-                            source = None
-                            for potentialSource in random.sample(room.sources,len(room.sources)):
-                                if potentialSource[1] == "Scrap":
-                                    source = potentialSource
-                                    break
-
-                            if source == None:
-                                continue
-
-                            self.addQuest(RestockRoom(toRestock="Scrap"))
-                            self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
-                            self.addQuest(GatherScrap(targetPosition=source[0]))
-                            self.addQuest(GoToTile(targetPosition=(source[0])))
-                            return
-
-                        if not character.rank == None and not character.rank == 5:
-                            continue
-
-                        hasItem = False
-                        if character.inventory and character.inventory[-1].type == inputSlot[1]:
-                            hasItem = True
-
-                        
-                        if not hasItem:
-                            source = None
-                            for candidateSource in room.sources:
-                                if not candidateSource[1] == inputSlot[1]:
-                                    continue
-
-                                sourceRoom = room.container.getRoomByPosition(candidateSource[0])
-                                if not sourceRoom:
-                                    continue
-
-                                sourceRoom = sourceRoom[0]
-                                if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1]):
-                                    continue
-
-                                source = candidateSource
-                                break
-
-                            if not source:
-                                character.addMessage("no filled output slots")
-                                continue
-
-                        self.addQuest(RestockRoom(toRestock=inputSlot[1]))
-
-                        if not hasItem:
-                            roomPos = (room.xPosition,room.yPosition,0)
-                            if not source[0] == roomPos:
-                                self.addQuest(GoToTile(targetPosition=roomPos))
-                            self.addQuest(FetchItems(toCollect=inputSlot[1]))
-                            if not source[0] == roomPos:
-                                self.addQuest(GoToTile(targetPosition=(source[0])))
-                        return
-
-                    character.addMessage("no valid input slot found")
-                character.addMessage("no empty input slot found")
-            character.addMessage("no input slots")
 
         if not self.targetPosition:
             # go to other room

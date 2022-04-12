@@ -1817,7 +1817,7 @@ class WorkshopRoom(EmptyRoom):
 
         self.objType = "WorkshopRoom"
         self.staff = []
-        self.duties = ["scrap fetching","cleaning","hauling","ressource fetching","ghul spawning"]
+        self.duties = ["resource fetching","hauling","clearing","scratch checking","resource gathering"]
 
     def doBasicSetup(self):
         super().doBasicSetup()

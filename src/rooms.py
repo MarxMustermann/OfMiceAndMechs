@@ -1816,6 +1816,8 @@ class WorkshopRoom(EmptyRoom):
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "WP")
 
         self.objType = "WorkshopRoom"
+        self.staff = []
+        self.duties = ["scrap fetching","cleaning","hauling","ressource fetching","ghul spawning"]
 
     def doBasicSetup(self):
         super().doBasicSetup()

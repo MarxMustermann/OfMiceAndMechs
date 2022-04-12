@@ -221,9 +221,7 @@ class Saveable(object):
             else:
                 state[objectName] = None
 
-        print(self.objectListsToStore)
         for objectListName in self.objectListsToStore:
-            print(objectListName)
             if hasattr(self, objectListName):
                 convertedList = []
                 items = getattr(self,objectListName)
@@ -267,6 +265,7 @@ class Saveable(object):
             print("vars")
             print(self)
             print(vars(self))
+            1/0
         return state
 
     def setState(self, state):

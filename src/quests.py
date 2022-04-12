@@ -981,6 +981,7 @@ class ClearTerrain(MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
+        self.type = "ClearTerrain"
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -1058,6 +1059,7 @@ class Equip(MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
+        self.type = "Equip"
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -1134,7 +1136,10 @@ class Equip(MetaQuestSequence):
                     return
 
                 if not (room.xPosition,room.yPosition) == source[0]:
-                    self.addQuest(GoToTile(targetPosition=source[0]))
+                    quest = GoToTile(targetPosition=source[0])
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    self.addQuest(quest)
                     return
 
             character.addMessage(sourceSlots)
@@ -1151,6 +1156,7 @@ class RunCommand(MetaQuestSequence):
         self.command = None
         self.ranCommand = False
         self.metaDescription = description
+        self.type = "RunCommand"
 
         if command:
             self.setParameters({"command":command})
@@ -1707,15 +1713,23 @@ class GatherScrap(MetaQuestSequence):
 
 class BeUsefull(MetaQuestSequence):
 
-    def __init__(self, description="be useful", creator=None):
+    def __init__(self, description="be useful", creator=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
         self.type = "BeUsefull"
+        self.targetPosition = None
+        if targetPosition:
+            self.setParameters({"targetPosition":targetPosition})
     
     def triggerCompletionCheck(self,character=None):
         return
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+        return super().setParameters(parameters)
 
     def solver(self, character):
         self.triggerCompletionCheck(character)
@@ -2041,13 +2055,18 @@ class BeUsefull(MetaQuestSequence):
                 character.addMessage("no empty input slot found")
             character.addMessage("no input slots")
 
-        # go to other room
-        directions = [(-1,0),(1,0),(0,-1),(0,1)]
-        random.shuffle(directions)
-        for direction in directions:
-            newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
-            if room.container.getRoomByPosition(newPos):
-                self.addQuest(GoToTile(targetPosition=newPos))
+        if not self.targetPosition:
+            # go to other room
+            directions = [(-1,0),(1,0),(0,-1),(0,1)]
+            random.shuffle(directions)
+            for direction in directions:
+                newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
+                if room.container.getRoomByPosition(newPos):
+                    self.addQuest(GoToTile(targetPosition=newPos))
+                    return
+        else:
+            if room.container.getRoomByPosition(self.targetPosition):
+                self.addQuest(GoToTile(targetPosition=self.targetPosition))
                 return
         character.runCommandString("20.")
 

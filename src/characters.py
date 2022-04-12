@@ -54,6 +54,7 @@ class Character(src.saveing.Saveable):
         self.disabled = False
         self.superior = None
         self.rank = None
+        self.isStaff = False
 
         self.showThinking = False
         self.showGotCommand = False
@@ -81,7 +82,28 @@ class Character(src.saveing.Saveable):
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
 
         if name is None:
-            name = "Person"
+            
+            firstName = random.choice([
+                "Siegfried","Ernst","Alfred","Herrmann","Friedrich","Helmut","Karl","Gunnar","Berthold","Dietrich",
+                "Friedhelm","Horst","Edmund","Wilhelm","Albert","Johann","Herbert","Bertram","Hans","Jochen","Ludwig",
+                "Raimund","Thorsten","Ulrich","Veit","Lutz","Anton","Alwin","Sigmund","Kurt","Heidrun","Elfriede",
+                "Gunhilde","Hildegard","Gudrun","Gertrude","Brunhilde","Adelheid","Sieglinde","Kunigunde","Herta",
+                "Frieda","Ursula","Katharina","Johanna","Clara","Isolde","Hermine","Berta","Gisela","Lina","Irmgard",
+                "Marlene","Mathilde","Monika","Frieda","Gerlinde","Rita","Clementine","Brigitte","Adalbert","Jörg",
+                "Moritz","Maximillian","Gundula","Renate","Udo","Fritz","Susanne","Guido"])
+
+            mainNameCore = random.choice([
+                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten","Felsen",
+                "Feuer","Glut",
+            ])
+
+            postfix = random.choice([
+                "brecher","wurst","schmidt","maier","bach","burg","treu","kraft","schmied","hans","schimmel",
+                "hauer","schläger","feind","kranz","fels",
+            ])
+
+            name = firstName+" "+mainNameCore+postfix
+
         if display is None:
             display = src.canvas.displayChars.staffCharacters[0]
 
@@ -241,8 +263,6 @@ class Character(src.saveing.Saveable):
         self.gotExamineSchooling = False
         self.faction = "player"
 
-        import random
-
         self.personality["idleWaitTime"] = random.randint(2, 100)
         self.personality["idleWaitChance"] = random.randint(2, 10)
         self.personality["frustrationTolerance"] = random.randint(-5000, 5000)
@@ -313,6 +333,23 @@ class Character(src.saveing.Saveable):
 
         if not command and commands:
             command = random.choice(commands)
+
+        if command == "d":
+            pos = self.getPosition()
+            if not self.container.getPositionWalkable((pos[0]+1,pos[1],pos[2])):
+                command = "Kdl"
+        elif command == "a":
+            pos = self.getPosition()
+            if not self.container.getPositionWalkable((pos[0]-1,pos[1],pos[2])):
+                command = "Kal"
+        elif command == "s":
+            pos = self.getPosition()
+            if not self.container.getPositionWalkable((pos[0],pos[1]+1,pos[2])):
+                command = "Ksl"
+        elif command == "w":
+            pos = self.getPosition()
+            if not self.container.getPositionWalkable((pos[0],pos[1]-1,pos[2])):
+                command = "Kwl"
 
         if not foundEnemy:
             self.guarding -= 1

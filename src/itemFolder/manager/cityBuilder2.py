@@ -389,6 +389,8 @@ class CityBuilder2(src.items.Item):
         self.addProductionLine2(character,instaSpawn=True)
         self.addProductionLine3(character,instaSpawn=True)
 
+        self.addScrapFieldFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]-2)})
+
         return {"backGuardRoom":backGuardRoom}
 
     def spawnRank(self,rank,actor,isMilitary=False):
@@ -449,7 +451,7 @@ class CityBuilder2(src.items.Item):
 
         if rank == 5:
             foundSubleader.subordinates.append(char)
-            char.duties.append("Trapsetting")
+            char.duties.append("trapsetting")
 
         if rank == 6:
             foundSubsubleader.subordinates.append(char)
@@ -1028,152 +1030,5 @@ class CityBuilder2(src.items.Item):
             command.extraName = "produce items northwest"
             room.addItem(command,(9,11,0))
             bigMachinesToAdd = bigMachinesToAdd[2:]
-
-
-    def configure(self,character):
-
-        prefabsToPlace = ["ScrapToMetalBars","ScrapToMetalBars"]
-        for room in self.container.emptyRooms:
-            if not prefabsToPlace:
-                continue
-            prefabType = prefabsToPlace.pop()
-            valid = True
-            for i in range(0,5):
-                floorPlan = copy.deepcopy(random.choice(self.prefabs[prefabType]))
-                conditions = floorPlan.get("conditions")
-
-                valid = True
-                if conditions:
-                    for condition in conditions:
-                        if "no doors" in condition:
-                            for pos in condition["no doors"]:
-                                if room.getPositionWalkable(pos):
-                                    valid = False
-                                break
-                        if not valid:
-                            break
-                if valid:
-                    break
-
-            if not valid:
-                floorPlan = copy.deepcopy(self.prefabs[prefabType][0])
-
-            room.resetDirect()
-            room.floorPlan = floorPlan 
-            room.spawnPlaned()
-            room.spawnPlaned()
-            room.addRandomItems()
-            room.spawnGhuls(character)
-        return
-
-        for room in self.container.storageRooms:
-            room.doBasicSetup()
-            room.addStorageSquare((0,0,0))
-            room.addStorageSquare((6,0,0))
-            room.addStorageSquare((0,6,0))
-            room.addStorageSquare((6,6,0))
-
-            for i in range(0,10):
-                painter = src.items.itemMap["Painter"]()
-                room.addItem(painter,(1,1,0))
-
-            for otherRoom in self.rooms:
-                pos = room.getPosition()
-                otherRoom.sources.insert(0,(pos,"Corpse"))
-                otherRoom.sources.insert(0,(pos,"Scrap"))
-                otherRoom.sources.insert(0,(pos,"Frame"))
-                otherRoom.sources.insert(0,(pos,"ScrapCompactor"))
-                otherRoom.sources.insert(0,(pos,"Rod"))
-                otherRoom.sources.insert(0,(pos,"Armor"))
-                otherRoom.sources.insert(0,(pos,"MetalBars"))
-                otherRoom.sources.insert(0,(pos,"Sword"))
-                otherRoom.sources.insert(0,(pos,"Painter"))
-
-
-        smallMachinesToAdd = []
-
-        smallMachinesToAdd.extend(["Armor","Armor","Armor"])
-        smallMachinesToAdd.extend(["Sword","Sword","Sword"])
-        smallMachinesToAdd.extend(["Rod","Rod","Rod"])
-
-        smallMachinesToAdd.extend(["Painter","Connector","Case"])
-        smallMachinesToAdd.extend(["Frame","puller","pusher"])
-        smallMachinesToAdd.extend(["Heater","Tank","Rod"])
-
-        smallMachinesToAdd.extend(["ScrapCompactor","ScrapCompactor","ScrapCompactor"])
-        smallMachinesToAdd.extend(["CorpseAnimator","CommandCycler"])
-
-
-        bigMachinesToAdd = ["Wall","Wall"]
-
-        for room in self.container.workshopRooms:
-            room.resetDirect()
-            room.doBasicSetup()
-
-            if not smallMachinesToAdd and not bigMachinesToAdd:
-                break
-
-            room.addGhulSquare((6,6,0))
-
-            newOutputs = []
-
-            if smallMachinesToAdd:
-                newOutputs.extend(smallMachinesToAdd[0:3])
-                room.addWorkshopSquare((0,6,0),machines=smallMachinesToAdd[0:3])
-                command = "a5w"+"4s4aJwJsddJwJsddww4aJwddJwddww"+"5sd"
-                room.floorPlan["buildSites"].append(((7,11,0),"Command",{"extraName":"produce items southwest","command":command}))
-                smallMachinesToAdd = smallMachinesToAdd[3:]
-            elif bigMachinesToAdd:
-                newOutputs.extend(bigMachinesToAdd[0:2])
-                room.addBigWorkshopSquare((0,6,0),machines=bigMachinesToAdd[0:2])
-                command = src.items.itemMap["Command"]()
-                command.bolted = True
-                command.command = "a5w"+"3s3aJwJs3d3w"+"5sd"
-                command.extraName = "produce items southwest"
-                room.addItem(command,(7,11,0))
-                bigMachinesToAdd = bigMachinesToAdd[2:]
-
-            if smallMachinesToAdd:
-                newOutputs.extend(smallMachinesToAdd[0:3])
-                room.addWorkshopSquare((6,0,0),machines=smallMachinesToAdd[0:3])
-                command = "aa5w"+"wwddJwJsddJwJs4aww2dJwddJw4a4s"+"5sdd"
-                room.floorPlan["buildSites"].append(((8,11,0),"Command",{"extraName":"produce items northeast","command":command}))
-                smallMachinesToAdd = smallMachinesToAdd[3:]
-            elif bigMachinesToAdd:
-                newOutputs.extend(bigMachinesToAdd[0:2])
-                room.addBigWorkshopSquare((6,0,0),machines=bigMachinesToAdd[0:2])
-                command = src.items.itemMap["Command"]()
-                command.bolted = True
-                command.command = "aa5w"+"3w3dJwJs3a3s"+"5sdd"
-                command.extraName = "produce items northeast"
-                room.addItem(command,(8,11,0))
-                bigMachinesToAdd = bigMachinesToAdd[2:]
-
-            if smallMachinesToAdd:
-                newOutputs.extend(smallMachinesToAdd[0:3])
-                room.addWorkshopSquare((0,0,0),machines=smallMachinesToAdd[0:3])
-                command = "aaa5w"+"ww4aJwJsddJwJsddww4aJwddJwdd4s"+"5sddd"
-                room.floorPlan["buildSites"].append(((9,11,0),"Command",{"extraName":"produce items northwest","command":command}))
-                smallMachinesToAdd = smallMachinesToAdd[3:]
-            elif bigMachinesToAdd:
-                newOutputs.extend(bigMachinesToAdd[0:2])
-                room.addBigWorkshopSquare((0,0,0),machines=bigMachinesToAdd[0:2])
-                command = src.items.itemMap["Command"]()
-                command.bolted = True
-                command.command = "aaa5w"+"3w3aJwJs3d3s"+"5sddd"
-                command.extraName = "produce items northwest"
-                room.addItem(command,(9,11,0))
-                bigMachinesToAdd = bigMachinesToAdd[2:]
-
-
-            room.spawnPlaned()
-            room.spawnPlaned()
-            room.addRandomItems()
-            room.spawnGhuls(character)
-
-            pos = room.getPosition()
-            for machine in newOutputs:
-                for otherRoom in self.rooms:
-                    otherRoom.sources.append((pos,machine))
 
 src.items.addType(CityBuilder2)

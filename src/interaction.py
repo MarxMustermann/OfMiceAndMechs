@@ -2461,6 +2461,10 @@ press key for advanced drop
         if key in (commandChars.hail,):
             charState["submenue"] = ChatPartnerselection()
 
+        if key in ("r",):
+            if char.room:
+                charState["submenue"] = RoomMenu(char.room)
+
         # do automated movement for the main character
         if key in (commandChars.advance, commandChars.autoAdvance):
             char.showThinking = True
@@ -4658,7 +4662,7 @@ class JobAsMatrixMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        duties = ["Trapsetting","Farming","Cleaning","Guarding","Adventuring"]
+        duties = ["trapsetting","farming","cleaning","guarding","adventuring"]
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -4834,7 +4838,7 @@ class JobByRankMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        duties = ["Trapsetting","Farming","Cleaning","Guarding","Adventuring"]
+        duties = ["trapsetting","farming","cleaning","guarding","adventuring"]
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -5189,6 +5193,58 @@ class OneKeystrokeMenu(SubMenu):
 
         # exit the submenu
         if key not in ("~",) and not self.firstRun:
+            self.key = key
+            if self.followUp:
+                self.callIndirect(self.followUp,{"keyPressed":key})
+            self.done = True
+            return True
+
+        self.firstRun = False
+
+        return False
+
+class RoomMenu(SubMenu):
+    """
+    """
+
+    type = "RoomMenu"
+
+    def __init__(self, room):
+        """
+        initialise inernal state
+
+        Parameters:
+            text: the text to show
+        """
+
+        super().__init__()
+        self.room = room
+        self.firstRun = True
+        self.keyPressed = ""
+        self.done = False
+
+    def handleKey(self, key, noRender=False, character = None):
+        """
+        show the text and quit on second keypress
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # show info
+        if not noRender:
+            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            self.persistentText = ""
+            self.persistentText += str(self.room)+"\n"
+            self.persistentText += str(self.room.duties)+"\n"
+            self.persistentText += str(self.room.staff)+"\n"
+            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+        # exit the submenu
+        if key not in ("~",) and not self.firstRun:
             self.keyPressed = key
             if self.followUp:
                 self.callIndirect(self.followUp,{"keyPressed":key})
@@ -5198,6 +5254,7 @@ class OneKeystrokeMenu(SubMenu):
         self.firstRun = False
 
         return False
+
 
 # bad code: should not be a global function
 def renderHelp():
@@ -6484,6 +6541,7 @@ subMenuMap = {
     "CreateQuestMenu": CreateQuestMenu,
     "JobByRankMenu": JobByRankMenu,
     "JobAsMatrixMenu": JobAsMatrixMenu,
+    "RoomMenu": RoomMenu,
 }
 
 def getSubmenuFromState(state):

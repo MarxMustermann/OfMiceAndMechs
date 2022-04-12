@@ -1340,26 +1340,6 @@ class BackToTheRoots(BasicPhase):
         npc = src.characters.Character()
         item = src.items.itemMap["GooFlask"]()
         item.uses = flaskUses
-        firstName = random.choice([
-                "Siegfried","Ernst","Alfred","Herrmann","Friedrich","Helmut","Karl","Gunnar","Berthold","Dietrich",
-                "Friedhelm","Horst","Edmund","Wilhelm","Albert","Johann","Herbert","Bertram","Hans","Jochen","Ludwig",
-                "Raimund","Thorsten","Ulrich","Veit","Lutz","Anton","Alwin","Sigmund","Kurt","Heidrun","Elfriede",
-                "Gunhilde","Hildegard","Gudrun","Gertrude","Brunhilde","Adelheid","Sieglinde","Kunigunde","Herta",
-                "Frieda","Ursula","Katharina","Johanna","Clara","Isolde","Hermine","Berta","Gisela","Lina","Irmgard",
-                "Marlene","Mathilde","Monika","Frieda","Gerlinde","Rita","Clementine","Brigitte","Adalbert","Jörg",
-                "Moritz","Maximillian","Gundula","Renate","Udo","Fritz","Susanne","Guido"])
-
-        mainNameCore = random.choice([
-                "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten","Felsen",
-                "Feuer","Glut",
-                ])
-
-        postfix = random.choice([
-                "brecher","wurst","schmidt","maier","bach","burg","treu","kraft","schmied","hans","schimmel",
-                "hauer","schläger","feind","kranz","fels",
-                ])
-
-        npc.name = firstName+" "+mainNameCore+postfix
 
         npc.inventory.append(item)
         npc.runCommandString("10.10*")
@@ -3521,10 +3501,10 @@ class Siege2(BasicPhase):
         """
 
         mainChar = src.gamestate.gamestate.mainChar
+        mainChar.baseDamage = 40
+        mainChar.maxHealth = 1000
+        mainChar.health = 1000
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
-        currentTerrain.addCharacter(
-            src.gamestate.gamestate.mainChar, 124, 109
-        )
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -3532,7 +3512,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 200
+        self.epochLength = 100
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3586,13 +3566,31 @@ class Siege2(BasicPhase):
         src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
         mainRoom.storageRooms = []
 
+        mainRoom.addCharacter(
+            src.gamestate.gamestate.mainChar, 6, 6
+        )
+
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.architect = architect
         mainRoom.addItem(cityBuilder,(7,1,0))
         cityBuilder.registerRoom(mainRoom)
 
+        cityBuilder.spawnCity(src.gamestate.gamestate.mainChar)
+
+        staffArtwork = src.items.itemMap["StaffArtwork"]()
+        mainRoom.addItem(staffArtwork,(1,1,0))
+
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
+        
+        orderArtwork = src.items.itemMap["OrderArtwork"]()
+        mainRoom.addItem(orderArtwork,(3,1,0))
+
+        orderArtwork = src.items.itemMap["ProductionArtwork"]()
+        mainRoom.addItem(orderArtwork,(3,11,0))
+
+        orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
+        mainRoom.addItem(orderArtwork,(9,1,0))
 
         self.numRounds = 1
         self.startRound()
@@ -3607,13 +3605,20 @@ Defend yourself and surive as long as possible.
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
 
         mainChar.runCommandString(".",nativeKey=True)
 
     def startRound(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
-        for i in range(0,self.numRounds):
+        numMonsters = 1
+        if self.numRounds > 8:
+            numMonsters = self.numRounds-8
+
+        for i in range(0,numMonsters):
             enemy = src.characters.Monster(35,35)
             enemy.health = 10*i
             enemy.baseDamage = i

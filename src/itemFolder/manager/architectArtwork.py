@@ -1232,6 +1232,28 @@ class ArchitectArtwork(src.items.Item):
 
         self.doAddScrapfield(self.targetX, self.targetY, amount)
 
+    def doAddMinefield(self, x, y, amount):
+        terrain = self.getTerrain()
+
+        counter = 0
+        minX = 15 * x
+        minY = 15 * y
+        maxX = minX + 13
+        maxY = minY + 13
+        maxItems = amount
+        maxItems = amount
+        items = []
+        while counter < maxItems:
+            itemPair = (
+                    src.items.itemMap["LandMine"](),
+                    (random.randint(minX, maxX), random.randint(minY, maxY), 0),
+                )
+            items.append(itemPair)
+            counter += 1
+
+        terrain.addItems(items)
+
+
     def doAddScrapfield(self, x, y, amount, leavePath=False):
         """
         spawn a scrap field to a big coordinate

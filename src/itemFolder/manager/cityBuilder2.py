@@ -33,6 +33,7 @@ class CityBuilder2(src.items.Item):
         self.enemyRoomCounter = 0
         self.cityLeader = None
         self.rooms = []
+        self.sourcesList = []
 
         self.charges = 0
 
@@ -273,8 +274,24 @@ class CityBuilder2(src.items.Item):
             None,
         )
 
+        room.sources.extend(self.sourcesList)
+
+        for storageRoom in self.container.storageRooms:
+            pos = storageRoom.getPosition()
+            room.sources.insert(0,(pos,"Corpse"))
+            room.sources.insert(0,(pos,"Scrap"))
+            room.sources.insert(0,(pos,"Frame"))
+            room.sources.insert(0,(pos,"ScrapCompactor"))
+            room.sources.insert(0,(pos,"Rod"))
+            room.sources.insert(0,(pos,"Armor"))
+            room.sources.insert(0,(pos,"MetalBars"))
+            room.sources.insert(0,(pos,"Sword"))
+            room.sources.insert(0,(pos,"Painter"))
+            room.sources.insert(0,(pos,"ScratchPlate"))
+            room.sources.insert(0,(pos,"CorpseAnimator"))
+
         for item in self.scrapFields:
-            room.sources.append((item,"Scrap"))
+            room.sources.insert(0,(item,"rawScrap"))
 
         self.rooms.append(room)
 
@@ -288,6 +305,9 @@ class CityBuilder2(src.items.Item):
         room.sources.append((self.container.getPosition(),"CorpseAnimator"))
         room.sources.append((self.container.getPosition(),"Corpse"))
         room.sources.append((self.container.getPosition(),"ScratchPlate"))
+
+        print("room.sources")
+        print(room.sources)
 
         return room
 
@@ -340,6 +360,7 @@ class CityBuilder2(src.items.Item):
         for item in items:
             for otherRoom in self.rooms:
                 otherRoom.sources.append((room.getPosition(),item))
+            self.sourcesList.append((room.getPosition(),item))
 
         if instaSpawn:
             room.spawnPlaned()
@@ -357,6 +378,10 @@ class CityBuilder2(src.items.Item):
         guardRoom.electricalCharges = int(random.random()*30)+300
         guardRoom.chargeStrength = 20
 
+        guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-2),"character":character})
+        guardRoom.electricalCharges = int(random.random()*30)+300
+        guardRoom.chargeStrength = 20
+
         self.addScrapCompactorFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character,"type":"random"})
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})
         self.addTeleporterRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
@@ -364,6 +389,28 @@ class CityBuilder2(src.items.Item):
         generalStorage = self.addStorageRoomFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
         for i in range(1,10):
             generalStorage.addItem(src.items.itemMap["Painter"](),(1,1,0))
+        for i in range(1,10):
+            generalStorage.addItem(src.items.itemMap["Corpse"](),(2,1,0))
+        item = src.items.itemMap["CorpseAnimator"]()
+        item.bolted = False
+        generalStorage.addItem(item,(3,1,0))
+        item = src.items.itemMap["CorpseAnimator"]()
+        item.bolted = False
+        generalStorage.addItem(item,(4,1,0))
+        item = src.items.itemMap["CorpseAnimator"]()
+        item.bolted = False
+        generalStorage.addItem(item,(5,1,0))
+
+        for i in range(1,10):
+            item = src.items.itemMap["ScratchPlate"]()
+            item.bolted = False
+            generalStorage.addItem(item,(7,1,0))
+        for i in range(1,10):
+            generalStorage.addItem(src.items.itemMap["Sheet"](),(8,1,0))
+        for i in range(1,10):
+            generalStorage.addItem(src.items.itemMap["Sheet"](),(9,1,0))
+        for i in range(1,10):
+            generalStorage.addItem(src.items.itemMap["Sheet"](),(10,1,0))
 
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]+1),"character":character})
         
@@ -384,6 +431,11 @@ class CityBuilder2(src.items.Item):
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]),"selection":"a"},noFurtherInteraction=True)
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]+1),"selection":"d"},noFurtherInteraction=True)
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]+1),"selection":"a"},noFurtherInteraction=True)
+
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"w"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"a"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"s"},noFurtherInteraction=True)
+        self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"d"},noFurtherInteraction=True)
 
         self.addProductionLine1(character,instaSpawn=True)
         self.addProductionLine2(character,instaSpawn=True)
@@ -448,13 +500,15 @@ class CityBuilder2(src.items.Item):
 
         if rank == 4:
             self.cityLeader.subordinates.append(char)
+            char.duties.extend(["scratch checking","clearing","painting"])
 
         if rank == 5:
             foundSubleader.subordinates.append(char)
-            char.duties.append("trapsetting")
+            char.duties.extend(["resource fetching","trap setting","hauling"])
 
         if rank == 6:
             foundSubsubleader.subordinates.append(char)
+            char.duties.extend(["resource gathering"])
 
         quest = src.quests.BeUsefull()
         quest.assignToCharacter(char)
@@ -555,9 +609,10 @@ class CityBuilder2(src.items.Item):
         self.container.container.addItem(architect,(1,1,0))
         architect.doAddScrapfield(params["coordinate"][0], params["coordinate"][1],500)
         self.container.container.removeItem(architect)
+        self.scrapFields.append((params["coordinate"][0],params["coordinate"][1]))
 
         for otherRoom in self.rooms:
-            otherRoom.sources.append((params["coordinate"],"Scrap"))
+            otherRoom.sources.append((params["coordinate"],"rawScrap"))
 
     def addFarmFromMap(self,params):
         room = self.addRoom(params["coordinate"])
@@ -734,6 +789,8 @@ class CityBuilder2(src.items.Item):
             otherRoom.sources.insert(0,(pos,"MetalBars"))
             otherRoom.sources.insert(0,(pos,"Sword"))
             otherRoom.sources.insert(0,(pos,"Painter"))
+            otherRoom.sources.insert(0,(pos,"ScratchPlate"))
+            otherRoom.sources.insert(0,(pos,"CorpseAnimator"))
 
         if instaSpawn:
             room.spawnPlaned()
@@ -892,7 +949,7 @@ class CityBuilder2(src.items.Item):
                         "method":"addScrapFieldFromMap",
                         "params":{"character":character},
                     },
-                    "description":"add scrap fields",
+                    "description":"add scrap field",
                 }
                 functionMap[(x,y)]["m"] = {
                     "function": {
@@ -900,7 +957,7 @@ class CityBuilder2(src.items.Item):
                         "method":"addMinefieldFromMap",
                         "params":{"character":character},
                     },
-                    "description":"add scrap fields",
+                    "description":"add mine field",
                 }
 
 
@@ -979,6 +1036,7 @@ class CityBuilder2(src.items.Item):
         if not smallMachinesToAdd and not bigMachinesToAdd:
             return
 
+        room.doBasicSetup()
         room.addGhulSquare((6,6,0))
 
         newOutputs = []

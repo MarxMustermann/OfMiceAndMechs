@@ -17,7 +17,6 @@ can be processed in a corpse shredder
 """
     walkable = True
     bolted = False
-    charges = 1000
 
     def __init__(self):
         """
@@ -27,6 +26,7 @@ can be processed in a corpse shredder
         super().__init__(display=src.canvas.displayChars.corpse)
 
         self.attributesToStore.extend(["activated", "charges"])
+        self.charges = 1000
 
     def getLongInfo(self):
         """

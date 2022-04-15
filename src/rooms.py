@@ -1817,7 +1817,7 @@ class WorkshopRoom(EmptyRoom):
 
         self.objType = "WorkshopRoom"
         self.staff = []
-        self.duties = ["resource fetching","hauling","clearing","scratch checking","resource gathering"]
+        self.duties = ["resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
 
     def doBasicSetup(self):
         super().doBasicSetup()
@@ -2014,6 +2014,8 @@ class TrapRoom(EmptyRoom):
         self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
 
         self.attributesToStore.extend(["faction","chargeStrength","maxElectricalCharges","electricalCharges"])
+        self.staff = []
+        self.duties = ["clearing","trap setting","guarding","painting"]
 
     def moveCharacterDirection(self, character, direction):
         oldPos = character.getPosition()

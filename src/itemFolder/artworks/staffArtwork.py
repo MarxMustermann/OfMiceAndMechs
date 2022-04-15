@@ -21,14 +21,16 @@ class StaffArtwork(src.items.Item):
         self.applyOptions.extend(
                                                 [
                                                     ("showMap", "show map"),
+                                                    ("assignByRoomType", "assign staff by room type"),
                                                 ]
                                 )
 
         self.applyMap = {
                                     "showMap": self.showMap,
+                                    "assignByRoomType": self.assignByRoomType,
                                 }
 
-    def showMap(self, character):
+    def showMap(self, character, cursor=None):
         # render empty map
         mapContent = []
         for x in range(0, 15):
@@ -76,6 +78,14 @@ class StaffArtwork(src.items.Item):
                     "function": {
                         "container":self,
                         "method":"autoFillStaffFromMap",
+                        "params":{"character":character,"amount":1},
+                    },
+                    "description":"to auto fill staff"
+                }
+            functionMap[(x,y)]["F"] = {
+                    "function": {
+                        "container":self,
+                        "method":"autoFillStaffFromMap",
                         "params":{"character":character},
                     },
                     "description":"to auto fill staff"
@@ -94,7 +104,7 @@ class StaffArtwork(src.items.Item):
 
         extraText = "\n\n"
 
-        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
+        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
         character.macroState["submenue"] = self.submenue
 
     def fetchCityleader(self):
@@ -109,7 +119,7 @@ class StaffArtwork(src.items.Item):
 
         return cityBuilder.cityLeader
 
-    def autoFillStaffFromMap(self, extraInfo):
+    def autoFillStaffFromMap(self, extraInfo,redirect=True):
         character = extraInfo["character"]
 
         cityLeader = self.fetchCityleader()
@@ -169,7 +179,52 @@ class StaffArtwork(src.items.Item):
             room.staff[counter].duties.append(duty)
             counter += 1
 
+        if redirect:
+            self.showMap(character,cursor=extraInfo["coordinate"])
+
+    def autoRemoveStaffFromMap(self, extraInfo,redirect=True):
+        character = extraInfo["character"]
+
+        cityLeader = self.fetchCityleader()
+        if not cityLeader:
+            character.addMessage("no city leader")
+            return
+
+        room = self.container.container.getRoomByPosition(extraInfo["coordinate"])[0]
+        if not room.staff:
+            character.addMessage("no staff")
+            return
+        worker = room.staff.pop()
+        worker.quests.pop()
+        worker.isStaff = False
+
+        if not room.staff:
+            return
+
+        numDuties = len(room.duties)//len(room.staff)
+        counter = 0
+        for staffCharacter in room.staff:
+            staffCharacter.duties = room.duties[numDuties*counter:numDuties*(counter+1)]
+            counter += 1
+        
+        cutOff = numDuties*(counter)
+        if cutOff < 0:
+            cutOff = 0
+
+        counter = 0
+        for duty in room.duties[cutOff:]:
+            room.staff[counter].duties.append(duty)
+            counter += 1
+
+        if redirect:
+            self.showMap(character,cursor=extraInfo["coordinate"])
+
+
     def editStaffFromMap(self, character):
         pass
+
+    def assignByRoomType(self, character):
+        self.submenue = src.interaction.StaffAsMatrixMenu(self)
+        character.macroState["submenue"] = self.submenue
 
 src.items.addType(StaffArtwork)

@@ -3512,7 +3512,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 100
+        self.epochLength = 250
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3576,6 +3576,7 @@ class Siege2(BasicPhase):
         cityBuilder.registerRoom(mainRoom)
 
         cityBuilder.spawnCity(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnSet(src.gamestate.gamestate.mainChar)
 
         staffArtwork = src.items.itemMap["StaffArtwork"]()
         mainRoom.addItem(staffArtwork,(1,1,0))
@@ -3585,6 +3586,7 @@ class Siege2(BasicPhase):
         
         orderArtwork = src.items.itemMap["OrderArtwork"]()
         mainRoom.addItem(orderArtwork,(3,1,0))
+        orderArtwork.cancel(src.gamestate.gamestate.mainChar)
 
         orderArtwork = src.items.itemMap["ProductionArtwork"]()
         mainRoom.addItem(orderArtwork,(3,11,0))
@@ -3611,12 +3613,42 @@ Defend yourself and surive as long as possible.
 
         mainChar.runCommandString(".",nativeKey=True)
 
+        # add hardcoded treasure rooms
+        def addTreasureRoom(pos,itemType):
+            treasureRoom = architect.doAddRoom(
+                    {
+                           "coordinate": pos,
+                           "roomType": "EmptyRoom",
+                           "doors": "0,6 6,0 12,6 6,12",
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None)
+
+            for i in range(1,20):
+                treasureRoom.damage()
+
+            for i in range(1,25):
+                item = src.items.itemMap[itemType]()
+                treasureRoom.addItem(item,(1,1,0))
+            for i in range(1,25):
+                item = src.items.itemMap[itemType]()
+                treasureRoom.addItem(item,(2,1,0))
+            for i in range(1,25):
+                item = src.items.itemMap[itemType]()
+                treasureRoom.addItem(item,(3,1,0))
+        addTreasureRoom((2,3),"Sword")
+        addTreasureRoom((11,12),"Armor")
+        addTreasureRoom((4,5),"Rod")
+        addTreasureRoom((2,10),"MetalBars")
+
     def startRound(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
-        numMonsters = 1
-        if self.numRounds > 8:
-            numMonsters = self.numRounds-8
+        #numMonsters = 1
+        #if self.numRounds > 8:
+        #    numMonsters = self.numRounds-8
+        numMonsters = self.numRounds
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(35,35)

@@ -1760,15 +1760,18 @@ class BeUsefull(MetaQuestSequence):
 
         room = character.container
 
-        for otherCharacter in room.characters:
-            if not otherCharacter.faction == character.faction:
-                character.runCommandString("gg")
-                return
+        if "guarding" in character.duties:
+            for otherCharacter in room.characters:
+                if not otherCharacter.faction == character.faction:
+                    character.runCommandString("gg")
+                    return
 
-        if character.isMilitary:
+        if character.isMilitary or "guarding" in character.duties:
             if not character.weapon or not character.armor:
                 self.addQuest(Equip(lifetime=1000))
                 return
+
+        if character.isMilitary:
             for item in room.itemsOnFloor:
                 if not item.bolted:
                     continue
@@ -1821,7 +1824,22 @@ class BeUsefull(MetaQuestSequence):
                 self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
                 return
 
-        if "trapsetting" in character.duties:
+        # go to garbage stockpile and unload
+        if len(character.inventory) > 6:
+            if not "HOMEx" in character.registers:
+                return
+            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
+                return
+            self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
+            return
+
+        if self.targetPosition:
+            if not (self.targetPosition[0] == room.xPosition and self.targetPosition[1] == room.yPosition):
+                self.addQuest(GoToTile(targetPosition=self.targetPosition))
+                return
+
+        if "trap setting" in character.duties:
             if hasattr(room,"electricalCharges"):
                 if room.electricalCharges < room.maxElectricalCharges:
                     foundCharger = None
@@ -1876,7 +1894,7 @@ class BeUsefull(MetaQuestSequence):
 
                     source = None
                     for potentialSource in random.sample(room.sources,len(room.sources)):
-                        if potentialSource[1] == "Scrap":
+                        if potentialSource[1] == "rawScrap":
                             source = potentialSource
                             break
 
@@ -1937,9 +1955,6 @@ class BeUsefull(MetaQuestSequence):
                             continue
                         checkedTypes.add(inputSlot[1])
 
-                        if inputSlot[1] == "Scrap":
-                            continue
-
                         hasItem = False
                         if character.inventory and character.inventory[-1].type == inputSlot[1]:
                             hasItem = True
@@ -1980,30 +1995,18 @@ class BeUsefull(MetaQuestSequence):
                 character.addMessage("no empty input slot found")
             character.addMessage("no input slots")
 
-        # go to garbage stockpile and unload
-        if len(character.inventory) > 6:
-            if not "HOMEx" in character.registers:
-                return
-            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
-            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                return
-            self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
-            return
-
         # officer work
-        if character.rank == None or character.rank in (3,4,):
+        if "painting" in character.duties:
             # set up machines
             if room.floorPlan:
                 self.addQuest(DrawFloorPlan())
                 return
 
-
-        if character.rank == None or character.rank == 4 and not room.floorPlan:
+        if not room.floorPlan and "machine placing" in character.duties:
 
             if room.buildSites:
                 checkedMaterial = set()
-                #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
-                for buildSite in room.buildSites:
+                for buildSite in random.sample(room.buildSites,len(room.buildSites)):
                     if "reservedTill" in buildSite[2] and buildSite[2]["reservedTill"] > room.timeIndex:
                         continue
                     if buildSite[1] in checkedMaterial:
@@ -2058,7 +2061,6 @@ class BeUsefull(MetaQuestSequence):
                     return
 
         if not self.targetPosition:
-            # go to other room
             directions = [(-1,0),(1,0),(0,-1),(0,1)]
             random.shuffle(directions)
             for direction in directions:
@@ -2066,10 +2068,6 @@ class BeUsefull(MetaQuestSequence):
                 if room.container.getRoomByPosition(newPos):
                     self.addQuest(GoToTile(targetPosition=newPos))
                     return
-        else:
-            if room.container.getRoomByPosition(self.targetPosition):
-                self.addQuest(GoToTile(targetPosition=self.targetPosition))
-                return
         character.runCommandString("20.")
 
 class StandAttention(MetaQuestSequence):

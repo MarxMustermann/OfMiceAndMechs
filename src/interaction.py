@@ -4639,6 +4639,84 @@ class HelpMenu(SubMenu):
 
         return False
 
+class StaffAsMatrixMenu(SubMenu):
+    type = "StaffAsMatrixMenu"
+
+    def __init__(self,staffArtwork):
+        super().__init__()
+        self.index = [0,0]
+        self.staffArtwork = staffArtwork
+
+    def handleKey(self, key, noRender=False, character = None):
+        """
+        show the help text and ignore keypresses
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # exit the submenu
+        if key in ("esc"," ",):
+            return True
+
+        text = ["press wasd to move cursor\npress j to increase\npress k to decrease\n"]
+
+        roomTypes = ["TrapRoom","WorkshopRoom"]
+
+        if key in ("w",):
+            if self.index[1] > 0:
+                self.index[1] -= 1
+        if key in ("s",):
+            if self.index[1] < len(roomTypes):
+                self.index[1] += 1
+        if key in ("a",):
+            if self.index[0] > 0:
+                self.index[0] -= 1
+        if key in ("d",):
+            self.index[0] += 1
+
+        if key in ("j",):
+            roomCounter = 1
+            for room in self.staffArtwork.container.container.rooms:
+                if room.objType == roomTypes[self.index[1]]:
+                    if self.index[0] == 0 or self.index[0] == roomCounter:
+                        self.staffArtwork.autoFillStaffFromMap({"character":character,"coordinate":(room.xPosition,room.yPosition)},redirect=False)
+                    roomCounter += 1
+        if key in ("k",):
+            roomCounter = 1
+            for room in self.staffArtwork.container.container.rooms:
+                if room.objType == roomTypes[self.index[1]]:
+                    if self.index[0] == 0 or self.index[0] == roomCounter:
+                        self.staffArtwork.autoRemoveStaffFromMap({"character":character,"coordinate":(room.xPosition,room.yPosition)},redirect=False)
+                    roomCounter += 1
+
+        counter = 0
+        for roomType in roomTypes:
+            color = "#fff"
+            if counter == self.index[1] and self.index[0] == 0:
+                color = "#f00"
+            text.append((urwid.AttrSpec(color, "default"),"%s"%(roomType,)))
+            roomCounter = 1
+            for room in self.staffArtwork.container.container.rooms:
+                if room.objType == roomType:
+                    color = "#fff"
+                    if counter == self.index[1] and roomCounter == self.index[0]:
+                        color = "#f00"
+                    text.append((urwid.AttrSpec(color, "default")," %s"%(len(room.staff))))
+                    roomCounter += 1
+            text.append("\n")
+            counter += 1
+
+        # show info
+        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        self.persistentText = text
+        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+        return False
+
 class JobAsMatrixMenu(SubMenu):
     type = "JobAsMatrixMenu"
 
@@ -4662,7 +4740,7 @@ class JobAsMatrixMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        duties = ["trapsetting","farming","cleaning","guarding","adventuring"]
+        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -5020,7 +5098,7 @@ class MapMenu(SubMenu):
     
     type = "MapMenu"
 
-    def __init__(self, mapContent=None,functionMap=None, extraText = ""):
+    def __init__(self, mapContent=None,functionMap=None, extraText = "", cursor = None):
         """
         initialise internal state
 
@@ -5032,7 +5110,10 @@ class MapMenu(SubMenu):
         self.mapContent = mapContent
         self.functionMap = functionMap
         self.extraText = extraText
-        self.cursor = (7,7)
+        if cursor:
+            self.cursor = cursor
+        else:
+            self.cursor = (7,7)
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -5193,7 +5274,7 @@ class OneKeystrokeMenu(SubMenu):
 
         # exit the submenu
         if key not in ("~",) and not self.firstRun:
-            self.key = key
+            self.keyPressed = key
             if self.followUp:
                 self.callIndirect(self.followUp,{"keyPressed":key})
             self.done = True
@@ -5263,6 +5344,14 @@ class RoomMenu(SubMenu):
             self.persistentText += str(self.room)+"\n"
             self.persistentText += str(self.room.duties)+"\n"
             self.persistentText += str(self.room.staff)+"\n"
+            try:
+                self.persistentText += str(self.room.electricalCharges)+"\n"
+            except:
+                pass
+            try:
+                self.persistentText += str(self.room.maxElectricalCharges)+"\n"
+            except:
+                pass
             self.persistentText += "\n"
             self.persistentText = [self.persistentText]
 
@@ -6579,6 +6668,7 @@ subMenuMap = {
     "CreateQuestMenu": CreateQuestMenu,
     "JobByRankMenu": JobByRankMenu,
     "JobAsMatrixMenu": JobAsMatrixMenu,
+    "StaffAsMatrixMenu": StaffAsMatrixMenu,
     "RoomMenu": RoomMenu,
 }
 

@@ -82,6 +82,14 @@ class StaffArtwork(src.items.Item):
                     },
                     "description":"to auto fill staff"
                 }
+            functionMap[(x,y)]["r"] = {
+                    "function": {
+                        "container":self,
+                        "method":"autoRemoveStaffFromMap",
+                        "params":{"character":character,"amount":1},
+                    },
+                    "description":"to auto remove staff"
+                }
             functionMap[(x,y)]["F"] = {
                     "function": {
                         "container":self,

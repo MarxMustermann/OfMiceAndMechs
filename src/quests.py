@@ -1824,16 +1824,6 @@ class BeUsefull(MetaQuestSequence):
                 self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
                 return
 
-        # go to garbage stockpile and unload
-        if len(character.inventory) > 6:
-            if not "HOMEx" in character.registers:
-                return
-            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
-            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                return
-            self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
-            return
-
         if self.targetPosition:
             if not (self.targetPosition[0] == room.xPosition and self.targetPosition[1] == room.yPosition):
                 self.addQuest(GoToTile(targetPosition=self.targetPosition))
@@ -1842,6 +1832,8 @@ class BeUsefull(MetaQuestSequence):
         if "trap setting" in character.duties:
             if hasattr(room,"electricalCharges"):
                 if room.electricalCharges < room.maxElectricalCharges:
+                    character.addMessage("should recharge now")
+
                     foundCharger = None
                     for item in room.itemsOnFloor:
                         if not item.bolted:
@@ -1850,7 +1842,10 @@ class BeUsefull(MetaQuestSequence):
                             continue
                         foundCharger = item
 
+                    character.addMessage("testing copressor")
+                    character.addMessage(str(character.inventory))
                     if character.inventory and character.inventory[-1].type == "CrystalCompressor":
+                        character.addMessage("compressor found")
                         chargerPos = foundCharger.getPosition()
                         characterPos = character.getPosition()
                         if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
@@ -1867,6 +1862,7 @@ class BeUsefull(MetaQuestSequence):
                             quest.assignToCharacter(character)
                             self.addQuest(quest)
                         return
+                    character.addMessage("no compressor found")
 
                     if foundCharger:
                         source = None
@@ -1881,6 +1877,16 @@ class BeUsefull(MetaQuestSequence):
                             self.addQuest(FetchItems(toCollect="CrystalCompressor"))
                             self.addQuest(GoToTile(targetPosition=source[0]))
                             return
+
+        # go to garbage stockpile and unload
+        if len(character.inventory) > 6:
+            if not "HOMEx" in character.registers:
+                return
+            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
+                return
+            self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
+            return
 
         if "resource gathering" in character.duties:
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")

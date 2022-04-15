@@ -3512,7 +3512,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 250
+        self.epochLength = 1000
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -3586,13 +3586,13 @@ class Siege2(BasicPhase):
         
         orderArtwork = src.items.itemMap["OrderArtwork"]()
         mainRoom.addItem(orderArtwork,(3,1,0))
-        orderArtwork.cancel(src.gamestate.gamestate.mainChar)
+        orderArtwork.assignQuest3({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all"})
 
-        orderArtwork = src.items.itemMap["ProductionArtwork"]()
-        mainRoom.addItem(orderArtwork,(3,11,0))
+        produtionArtwork = src.items.itemMap["ProductionArtwork"]()
+        mainRoom.addItem(produtionArtwork,(3,11,0))
 
-        orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
-        mainRoom.addItem(orderArtwork,(9,1,0))
+        #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
+        #mainRoom.addItem(orderArtwork,(9,1,0))
 
         self.numRounds = 1
         self.startRound()
@@ -3648,7 +3648,7 @@ Defend yourself and surive as long as possible.
         #numMonsters = 1
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
-        numMonsters = self.numRounds
+        numMonsters = self.numRounds*10
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(35,35)

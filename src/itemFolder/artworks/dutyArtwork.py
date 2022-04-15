@@ -20,10 +20,8 @@ class DutyArtwork(src.items.Item):
                 
         self.applyOptions.extend(
                                                 [
-                                                    ("showTree", "show tree"),
                                                     ("showRankBased", "show rank based"),
                                                     ("showMatrix", "show matrix based"),
-                                                    ("showDetailed", "show character based"),
                                                 ]
                                 )
 

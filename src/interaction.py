@@ -4916,7 +4916,7 @@ class JobByRankMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        duties = ["trapsetting","farming","cleaning","guarding","adventuring"]
+        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1

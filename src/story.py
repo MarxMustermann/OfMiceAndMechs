@@ -3586,7 +3586,7 @@ class Siege2(BasicPhase):
         
         orderArtwork = src.items.itemMap["OrderArtwork"]()
         mainRoom.addItem(orderArtwork,(3,1,0))
-        orderArtwork.assignQuest3({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all"})
+        orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all","amount":0})
 
         produtionArtwork = src.items.itemMap["ProductionArtwork"]()
         mainRoom.addItem(produtionArtwork,(3,11,0))
@@ -3648,7 +3648,7 @@ Defend yourself and surive as long as possible.
         #numMonsters = 1
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
-        numMonsters = self.numRounds*10
+        numMonsters = 5+self.numRounds*5
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(35,35)
@@ -3663,9 +3663,9 @@ Defend yourself and surive as long as possible.
             quest.activate()
             enemy.quests.append(quest)
 
-        if self.numRounds%15 == 14:
-            for room in terrain.rooms:
-                room.damage()
+        #if self.numRounds%15 == 14:
+        #    for room in terrain.rooms:
+        #        room.damage()
 
         self.numRounds += 1
         

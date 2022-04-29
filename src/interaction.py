@@ -5355,6 +5355,14 @@ class RoomMenu(SubMenu):
             self.persistentText += "\n"
             self.persistentText = [self.persistentText]
 
+            self.persistentText += "\n"
+            for source in self.room.sources:
+                if not source[1] == "MetalBars":
+                    continue
+                self.persistentText += str(source)
+                self.persistentText += "\n"
+            self.persistentText += "\n"
+
             rowCounter = 0
             for duty in self.room.duties:
                 self.persistentText.append( duty + " |")

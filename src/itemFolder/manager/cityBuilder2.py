@@ -206,6 +206,10 @@ class CityBuilder2(src.items.Item):
                                                                 ("addProductionLine1", "add weapon production line"),
                                                                 ("addProductionLine2", "add crystal compactor production line"),
                                                                 ("addProductionLine3", "add scrapcompactor production line"),
+                                                                ("addProductionLine4", "add basics production line"),
+                                                                ("addProductionLine5", "add sheet production line"),
+                                                                ("addProductionLine6", "add rod production line"),
+                                                                ("addProductionLine7", "add wall production line"),
                                                                 ("spawnCity", "spawn City"),
                         ]
                         )
@@ -221,6 +225,10 @@ class CityBuilder2(src.items.Item):
                     "addProductionLine1": self.addProductionLine1,
                     "addProductionLine2": self.addProductionLine2,
                     "addProductionLine3": self.addProductionLine3,
+                    "addProductionLine4": self.addProductionLine4,
+                    "addProductionLine5": self.addProductionLine5,
+                    "addProductionLine6": self.addProductionLine6,
+                    "addProductionLine7": self.addProductionLine7,
                     "spawnCity": self.spawnCity,
                         }
         
@@ -280,6 +288,7 @@ class CityBuilder2(src.items.Item):
             pos = storageRoom.getPosition()
             room.sources.insert(0,(pos,"Corpse"))
             room.sources.insert(0,(pos,"Scrap"))
+            room.sources.insert(0,(pos,"Sheet"))
             room.sources.insert(0,(pos,"Frame"))
             room.sources.insert(0,(pos,"ScrapCompactor"))
             room.sources.insert(0,(pos,"Rod"))
@@ -346,6 +355,22 @@ class CityBuilder2(src.items.Item):
         toAdd = ["ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor","ScrapCompactor"]
         self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
 
+    def addProductionLine4(self,character,instaSpawn=False):
+        toAdd = ["Sheet","Rod","Bolt","Frame","Mount","Puller","Pusher","Stripe","Tank"]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
+    def addProductionLine5(self,character,instaSpawn=False):
+        toAdd = ["Sheet","Sheet","Sheet","Sheet","Sheet","Sheet","Sheet","Sheet","Sheet"]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
+    def addProductionLine6(self,character,instaSpawn=False):
+        toAdd = ["Rod","Rod","Rod","Rod","Rod","Rod","Rod","Rod","Rod"]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
+    def addProductionLine7(self,character,instaSpawn=False):
+        toAdd = ["Wall",]
+        self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
+
     def addProductionLine(self,character,instaSpawn=False,toAdd=None):
         if not self.workshopRooms:
             character.addMessage("no workshop rooms available")
@@ -372,7 +397,7 @@ class CityBuilder2(src.items.Item):
             character.addMessage("need to remove old city first")
 
         citylocation = self.container.getPosition()
-        backGuardRoom = self.addRoom((citylocation[0],citylocation[1]+1))
+        backGuardRoom = self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
         
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         guardRoom.electricalCharges = int(random.random()*30)+300
@@ -382,9 +407,12 @@ class CityBuilder2(src.items.Item):
         guardRoom.electricalCharges = int(random.random()*30)+300
         guardRoom.chargeStrength = 20
 
-        self.addScrapCompactorFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character,"type":"random"})
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character})
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})
-        self.addTeleporterRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
+
+        backGuardRoom = self.addTrapRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
+        backGuardRoom.electricalCharges = int(random.random()*30)+300
+        backGuardRoom.chargeStrength = 20
 
         generalStorage = self.addStorageRoomFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
         for i in range(1,10):
@@ -440,6 +468,7 @@ class CityBuilder2(src.items.Item):
         self.addProductionLine1(character,instaSpawn=True)
         self.addProductionLine2(character,instaSpawn=True)
         self.addProductionLine3(character,instaSpawn=True)
+        self.addProductionLine2(character)
 
         self.addScrapFieldFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]-2)})
 
@@ -590,7 +619,11 @@ class CityBuilder2(src.items.Item):
             room.addRandomItems()
             room.spawnGhuls(character)
 
-        self.container.sources.append((room.getPosition(),"MetalBars"))
+        #self.container.sources.append((room.getPosition(),"MetalBars"))
+
+        for otherRoom in self.rooms:
+            otherRoom.sources.append((room.getPosition(),"MetalBars"))
+        self.sourcesList.append((room.getPosition(),"MetalBars"))
 
     def clearFieldFromMap(self,params):
         architect = src.items.itemMap["ArchitectArtwork"]()
@@ -782,6 +815,7 @@ class CityBuilder2(src.items.Item):
             pos = room.getPosition()
             otherRoom.sources.insert(0,(pos,"Corpse"))
             otherRoom.sources.insert(0,(pos,"Scrap"))
+            otherRoom.sources.insert(0,(pos,"Sheet"))
             otherRoom.sources.insert(0,(pos,"Frame"))
             otherRoom.sources.insert(0,(pos,"ScrapCompactor"))
             otherRoom.sources.insert(0,(pos,"Rod"))
@@ -911,7 +945,7 @@ class CityBuilder2(src.items.Item):
                     },
                     "description":"add storage room",
                 }
-                functionMap[(x,y)]["x"] = {
+                functionMap[(x,y)]["y"] = {
                     "function": {
                         "container":self,
                         "method":"setConnectionsFromMap",

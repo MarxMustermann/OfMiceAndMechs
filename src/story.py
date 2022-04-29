@@ -3642,13 +3642,27 @@ Defend yourself and surive as long as possible.
         addTreasureRoom((4,5),"Rod")
         addTreasureRoom((2,10),"MetalBars")
 
+        self.checkDead()
+
+    def checkDead(self):
+        if src.gamestate.gamestate.mainChar.dead:
+            print("dead")
+            print(src.gamestate.gamestate.tick)
+            showText("you survived till tick %s"%(src.gamestate.gamestate.tick,))
+        else:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "checkDead"})
+            currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+            currentTerrain.addEvent(event)
+
+
     def startRound(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
         #numMonsters = 1
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
-        numMonsters = 5+self.numRounds*5
+        numMonsters = 10+self.numRounds*2
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(35,35)
@@ -3663,7 +3677,7 @@ Defend yourself and surive as long as possible.
             quest.activate()
             enemy.quests.append(quest)
 
-        #if self.numRounds%15 == 14:
+        #for 
         #    for room in terrain.rooms:
         #        room.damage()
 

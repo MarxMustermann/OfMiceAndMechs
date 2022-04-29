@@ -203,7 +203,8 @@ class StaffArtwork(src.items.Item):
             character.addMessage("no staff")
             return
         worker = room.staff.pop()
-        worker.quests.pop()
+        if worker.quests:
+            worker.quests.pop()
         worker.isStaff = False
 
         if not room.staff:

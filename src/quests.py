@@ -1817,12 +1817,24 @@ class BeUsefull(MetaQuestSequence):
                     return
         """
 
-        # clear inventory local
-        if len(character.inventory) > 1:
-            emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
-            if emptyInputSlots:
-                self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
-                return
+        def triggerClearIneventory():
+            # clear inventory local
+            if len(character.inventory) > 1:
+                emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+                if emptyInputSlots:
+                    self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
+                    return True
+
+            # go to garbage stockpile and unload
+            if len(character.inventory) > 6:
+                if not "HOMEx" in character.registers:
+                    return True
+                homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+                if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
+                    return True
+                self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
+                return True
+            return False
 
         if self.targetPosition:
             if not (self.targetPosition[0] == room.xPosition and self.targetPosition[1] == room.yPosition):
@@ -1869,24 +1881,26 @@ class BeUsefull(MetaQuestSequence):
                         for sourceCandidate in room.sources:
                             if not sourceCandidate[1] == "CrystalCompressor":
                                continue 
+
+                            sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
+                            if not sourceRoom:
+                                continue
+
+                            sourceRoom = sourceRoom[0]
+                            if not sourceRoom.getNonEmptyOutputslots(itemType=sourceCandidate[1]):
+                                continue
+
                             source = sourceCandidate
                         if source:
+                            if triggerClearIneventory():
+                                return
+
                             character.addMessage("should reload Trap room now")
                             self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
                             self.addQuest(GoToTile(targetPosition=room.getPosition()))
                             self.addQuest(FetchItems(toCollect="CrystalCompressor"))
                             self.addQuest(GoToTile(targetPosition=source[0]))
                             return
-
-        # go to garbage stockpile and unload
-        if len(character.inventory) > 6:
-            if not "HOMEx" in character.registers:
-                return
-            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
-            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                return
-            self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
-            return
 
         if "resource gathering" in character.duties:
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
@@ -1906,6 +1920,9 @@ class BeUsefull(MetaQuestSequence):
 
                     if source == None:
                         continue
+
+                    if triggerClearIneventory():
+                        return
 
                     self.addQuest(RestockRoom(toRestock="Scrap"))
                     self.addQuest(GoToTile(targetPosition=(room.xPosition,room.yPosition)))
@@ -1934,6 +1951,9 @@ class BeUsefull(MetaQuestSequence):
                         continue
                     if items[0].bolted:
                         continue
+
+                    if triggerClearIneventory():
+                        return
 
                     if position == (character.xPosition+1,character.yPosition,0):
                         self.addQuest(RunCommand(command=10*"Kd"))
@@ -1989,6 +2009,9 @@ class BeUsefull(MetaQuestSequence):
                         self.addQuest(RestockRoom(toRestock=inputSlot[1]))
 
                         if not hasItem:
+                            if triggerClearIneventory():
+                                return
+
                             roomPos = (room.xPosition,room.yPosition,0)
                             if not source[0] == roomPos:
                                 self.addQuest(GoToTile(targetPosition=roomPos))
@@ -2012,7 +2035,8 @@ class BeUsefull(MetaQuestSequence):
 
             if room.buildSites:
                 checkedMaterial = set()
-                for buildSite in random.sample(room.buildSites,len(room.buildSites)):
+                #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
+                for buildSite in room.buildSites:
                     if "reservedTill" in buildSite[2] and buildSite[2]["reservedTill"] > room.timeIndex:
                         continue
                     if buildSite[1] in checkedMaterial:
@@ -2057,6 +2081,9 @@ class BeUsefull(MetaQuestSequence):
                         self.addQuest(GoToPosition(targetPosition=buildSite[0]))
                         buildSite[2]["reservedTill"] = room.timeIndex+100
                     elif source:
+                        if triggerClearIneventory():
+                            return
+
                         roomPos = (room.xPosition,room.yPosition)
 
                         if not source[0] == roomPos:
@@ -3833,8 +3860,6 @@ class WaitQuest(Quest):
 
         # save initial state and register
         self.type = "WaitQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     do nothing

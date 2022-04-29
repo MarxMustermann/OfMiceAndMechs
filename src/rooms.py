@@ -1636,6 +1636,9 @@ XXX
 
         self.attributesToStore.extend(["bio"])
 
+        self.staff = []
+        self.duties = ["resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
+
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "ER")
         self.sources = []
 
@@ -2062,7 +2065,7 @@ class TrapRoom(EmptyRoom):
 
     def addItems(self, items, actor=None):
         for itemPair in items:
-            if not self.getItemByPosition(itemPair[1]):
+            if self.electricalCharges and not self.getItemByPosition(itemPair[1]):
                 self.electricalCharges -= 1
                 if isinstance(actor,src.characters.Character) and not actor.dead:
                     if actor.faction == self.faction:

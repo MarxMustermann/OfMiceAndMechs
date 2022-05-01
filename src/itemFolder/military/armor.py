@@ -68,10 +68,14 @@ protects you in combat
         if character.armor:
             oldArmor = character.armor
             character.armor = None
-            self.container.addItem(oldArmor,self.getPosition())
+            character.container.addItem(oldArmor,character.getPosition())
 
         character.armor = self
-        self.container.removeItem(self)
+        if self.container:
+            self.container.removeItem(self)
+        else:
+            if self in character.inventory:
+                character.inventory.remove(self)
 
     def upgrade(self):
         self.armorValue += 1

@@ -61,10 +61,14 @@ baseDamage:
         if character.weapon:
             oldWeapon = character.weapon
             character.weapon = None
-            self.container.addItem(oldWeapon,self.getPosition())
+            character.container.addItem(oldWeapon,character.getPosition())
 
         character.weapon = self
-        self.container.removeItem(self)
+        if self.container:
+            self.container.removeItem(self)
+        else:
+            if self in character.inventory:
+                character.inventory.remove(self)
 
     def upgrade(self):
         self.baseDamage += 1

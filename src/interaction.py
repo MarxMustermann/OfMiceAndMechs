@@ -5357,45 +5357,58 @@ class RoomMenu(SubMenu):
         # show info
         if not noRender:
             header.set_text((urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = ""
-            self.persistentText += str(self.room)+"\n"
-            self.persistentText += str(self.room.duties)+"\n"
-            self.persistentText += str(self.room.staff)+"\n"
-            try:
-                self.persistentText += str(self.room.electricalCharges)+"\n"
-            except:
-                pass
-            try:
-                self.persistentText += str(self.room.maxElectricalCharges)+"\n"
-            except:
-                pass
-            self.persistentText += "\n"
+            self.persistentText = """
+move the cursor using w/a/s/d.
+press j or enter to select
+
+"""
             self.persistentText = [self.persistentText]
+            self.persistentText.append("%s - %s\n"%(self.room.objType,self.room.name,))
+            try:
+                self.persistentText.append( "electricalCharges: " + str(self.room.electricalCharges)+"\n")
+            except:
+                pass
+            try:
+                self.persistentText.append("maxElectricalCharges: " + str(self.room.maxElectricalCharges)+"\n")
+            except:
+                pass
+            self.persistentText.append("\n\n")
+            if self.room.staff:
+                self.persistentText.append("staff\n")
+                for staffNpc in self.room.staff:
+                    deadText = ""
+                    if staffNpc.dead:
+                        deadText = " (dead)"
+                    questText = ""
+                    if not staffNpc.dead and staffNpc.quests:
+                        questText = staffNpc.quests[0].description.split("\n")[0]
+                        try:
+                            questText += staffNpc.quests[0].description.split("\n")[1]
+                        except:
+                            pass
+                    self.persistentText.append("%s%s - %s\n"%(staffNpc.name,deadText,questText,))
+            else:
+                    self.persistentText.append("There is no staff assigned assign staff by using the staff artwork (SA)")
 
             self.persistentText += "\n"
-            for source in self.room.sources:
-                if not source[1] == "MetalBars":
-                    continue
-                self.persistentText += str(source)
-                self.persistentText += "\n"
-            self.persistentText += "\n"
 
-            rowCounter = 0
-            for duty in self.room.duties:
-                self.persistentText.append( duty + " |")
-                colCounter = 0
-                for staffCharacter in self.room.staff:
-                    frontColor = "#fff"
-                    if duty in staffCharacter.duties:
-                        frontColor = "#0e0"
-                    backColor = "#000"
-                    if (colCounter,rowCounter) == self.index:
-                        backColor = "#444"
-                    self.persistentText.append((urwid.AttrSpec(frontColor, backColor),staffCharacter.name))
-                    self.persistentText.append(" |")
-                    colCounter += 1
-                self.persistentText.append("\n")
-                rowCounter += 1
+            if self.room.staff:
+                rowCounter = 0
+                for duty in self.room.duties:
+                    self.persistentText.append( duty + " |")
+                    colCounter = 0
+                    for staffCharacter in self.room.staff:
+                        frontColor = "#fff"
+                        if duty in staffCharacter.duties:
+                            frontColor = "#0e0"
+                        backColor = "#000"
+                        if (colCounter,rowCounter) == self.index:
+                            backColor = "#444"
+                        self.persistentText.append((urwid.AttrSpec(frontColor, backColor),staffCharacter.name))
+                        self.persistentText.append(" |")
+                        colCounter += 1
+                    self.persistentText.append("\n")
+                    rowCounter += 1
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu

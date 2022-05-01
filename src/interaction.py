@@ -5346,7 +5346,7 @@ class RoomMenu(SubMenu):
             if self.index[0] < len(self.room.staff)-1:
                 self.index = (self.index[0]+1,self.index[1])
 
-        if key in ("j",):
+        if key in ("j","enter"):
             duty = self.room.duties[self.index[1]]
             staffCharacter = self.room.staff[self.index[0]]
             if duty in staffCharacter.duties:
@@ -5399,7 +5399,7 @@ class RoomMenu(SubMenu):
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu
-        if key in ("esc","enter",):
+        if key in ("esc",):
             self.done = True
             return True
 

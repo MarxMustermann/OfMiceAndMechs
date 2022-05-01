@@ -2028,7 +2028,7 @@ class TrapRoom(EmptyRoom):
         newPos = character.getPosition()
 
         if not oldPos == newPos and character.container == self:
-            if self.electricalCharges and not character.faction == self.faction:
+            if self.electricalCharges > 0 and not character.faction == self.faction:
                 if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
                     character.hurt(self.chargeStrength,reason="the floor shocks you")
                     self.electricalCharges -= 1
@@ -2065,7 +2065,7 @@ class TrapRoom(EmptyRoom):
 
     def addItems(self, items, actor=None):
         for itemPair in items:
-            if self.electricalCharges and not self.getItemByPosition(itemPair[1]):
+            if self.electricalCharges > 0 and not self.getItemByPosition(itemPair[1]):
                 self.electricalCharges -= 1
                 if isinstance(actor,src.characters.Character) and not actor.dead:
                     if actor.faction == self.faction:

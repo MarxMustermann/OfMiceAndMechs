@@ -5374,7 +5374,7 @@ press j or enter to select
                 pass
             self.persistentText.append("\n\n")
             if self.room.staff:
-                self.persistentText.append("staff\n")
+                self.persistentText.append("staff:\n")
                 for staffNpc in self.room.staff:
                     deadText = ""
                     if staffNpc.dead:

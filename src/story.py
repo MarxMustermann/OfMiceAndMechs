@@ -3664,11 +3664,12 @@ Defend yourself and surive as long as possible.
         #    numMonsters = self.numRounds-8
         numMonsters = 10+self.numRounds*2
 
+        monsterStartPos = random.choice([(112,22),(202,112),(112,202),(22,112)])
         for i in range(0,numMonsters):
-            enemy = src.characters.Monster(35,35)
+            enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
             enemy.health = 10*i
             enemy.baseDamage = i
-            terrain.addCharacter(enemy, 35, 35)
+            terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
             enemy.movementSpeed = 0.3
 
             quest = src.quests.ClearTerrain()

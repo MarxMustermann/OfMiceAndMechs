@@ -2758,6 +2758,9 @@ class SubMenu(src.saveing.Saveable):
 
         self.escape = False
 
+    def getQuestMarkersTile(self, character):
+        return []
+
     def setState(self, state):
         """
         set internal state from state dictionary
@@ -4646,6 +4649,8 @@ class StaffAsMatrixMenu(SubMenu):
         super().__init__()
         self.index = [0,0]
         self.staffArtwork = staffArtwork
+        self.roomTypes = ["TrapRoom","WorkshopRoom"]
+
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -4664,13 +4669,11 @@ class StaffAsMatrixMenu(SubMenu):
 
         text = ["press wasd to move cursor\npress j to increase\npress k to decrease\n"]
 
-        roomTypes = ["TrapRoom","WorkshopRoom"]
-
         if key in ("w",):
             if self.index[1] > 0:
                 self.index[1] -= 1
         if key in ("s",):
-            if self.index[1] < len(roomTypes):
+            if self.index[1] < len(self.roomTypes):
                 self.index[1] += 1
         if key in ("a",):
             if self.index[0] > 0:
@@ -4681,20 +4684,20 @@ class StaffAsMatrixMenu(SubMenu):
         if key in ("j",):
             roomCounter = 1
             for room in self.staffArtwork.container.container.rooms:
-                if room.objType == roomTypes[self.index[1]]:
+                if room.objType == self.roomTypes[self.index[1]]:
                     if self.index[0] == 0 or self.index[0] == roomCounter:
                         self.staffArtwork.autoFillStaffFromMap({"character":character,"coordinate":(room.xPosition,room.yPosition)},redirect=False)
                     roomCounter += 1
         if key in ("k",):
             roomCounter = 1
             for room in self.staffArtwork.container.container.rooms:
-                if room.objType == roomTypes[self.index[1]]:
+                if room.objType == self.roomTypes[self.index[1]]:
                     if self.index[0] == 0 or self.index[0] == roomCounter:
                         self.staffArtwork.autoRemoveStaffFromMap({"character":character,"coordinate":(room.xPosition,room.yPosition)},redirect=False)
                     roomCounter += 1
 
         counter = 0
-        for roomType in roomTypes:
+        for roomType in self.roomTypes:
             color = "#fff"
             if counter == self.index[1] and self.index[0] == 0:
                 color = "#f00"
@@ -4716,6 +4719,20 @@ class StaffAsMatrixMenu(SubMenu):
         main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
+
+    def getQuestMarkersTile(self, character):
+        out = []
+
+        roomType = self.roomTypes[self.index[1]]
+        roomCounter = 1
+        for room in self.staffArtwork.container.container.rooms:
+            if not room.objType == roomType:
+                continue
+            if self.index[0] == 0 or self.index[0] == roomCounter:
+                out.append((room.getPosition(),"selected"))
+            roomCounter += 1
+        return out
+
 
 class JobAsMatrixMenu(SubMenu):
     type = "JobAsMatrixMenu"

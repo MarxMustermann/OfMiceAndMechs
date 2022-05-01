@@ -1472,13 +1472,37 @@ class Terrain(src.saveing.Saveable):
             pass
 
         for scrapField in self.scrapFields:
-             chars[scrapField[1]][scrapField[0]] = "ss"
+            chars[scrapField[1]][scrapField[0]] = "ss"
 
         displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
         if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
             chars[src.gamestate.gamestate.mainChar.container.yPosition][src.gamestate.gamestate.mainChar.container.xPosition] = displayChar
         else:
             chars[src.gamestate.gamestate.mainChar.yPosition//15][src.gamestate.gamestate.mainChar.xPosition//15] = displayChar
+
+        if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
+            for marker in src.gamestate.gamestate.mainChar.macroState["submenue"].getQuestMarkersTile(src.gamestate.gamestate.mainChar):
+                pos = marker[0]
+                try:
+                    display = chars[pos[1]][pos[0]]
+                except:
+                    continue
+
+                if isinstance(display,int):
+                    display = src.canvas.displayChars.indexedMapping[display]
+                if isinstance(display,str):
+                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                if marker[1] == "target":
+                    color = "#fff"
+                else:
+                    color = "#555"
+                if hasattr(display[0],"fg"):
+                    display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
+                else:
+                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
+
+                chars[pos[1]][pos[0]] = display
 
         return chars
 

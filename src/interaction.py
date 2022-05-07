@@ -4643,6 +4643,57 @@ class HelpMenu(SubMenu):
 
         return False
 
+class ViewNPCsMenu(SubMenu):
+    type = "ViewNPCsMenu"
+
+    def __init__(self,personnelArtwork):
+        super().__init__()
+        self.index = 0
+        self.personnelArtwork = personnelArtwork
+
+    def handleKey(self, key, noRender=False, character = None):
+
+        # exit the submenu
+        if key in ("esc"," ",):
+            return True
+
+        self.persistentText = "press w/a and s/d to scroll\n\n"
+
+        characters = self.personnelArtwork.getPersonnelList()
+
+        if key in ("w","a",):
+            if self.index > 0:
+                self.index -= 1
+
+        if key in ("s","d"):
+            if self.index < len(characters)-1:
+                self.index += 1
+
+        self.persistentText += "%s of %s\n\n"%(self.index+1,len(characters),)
+
+        selectedCharacter = characters[self.index]
+        self.persistentText += "\ninternal id: %s"%(selectedCharacter)
+        self.persistentText += "\nname: %s"%(selectedCharacter.name)
+        self.persistentText += "\nrank: %s"%(selectedCharacter.rank)
+        if selectedCharacter.weapon:
+            self.persistentText += "\nweapon: %s"%(selectedCharacter.weapon.baseDamage)
+        else:
+            self.persistentText += "\nweapon: None"
+        if selectedCharacter.armor:
+            self.persistentText += "\narmor: %s"%(selectedCharacter.armor.armorValue)
+        else:
+            self.persistentText += "\narmor: None"
+        self.persistentText += "\nstaff: %s"%(selectedCharacter.isStaff)
+        self.persistentText += "\nduties: %s"%(", ".join(selectedCharacter.duties),)
+        quest = selectedCharacter.getActiveQuest()
+        if quest:
+            self.persistentText += "\nactive quest: %s"%(quest.description,)
+        else:
+            self.persistentText += "\nactive quest: None"
+
+        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
 class StaffAsMatrixMenu(SubMenu):
     type = "StaffAsMatrixMenu"
 

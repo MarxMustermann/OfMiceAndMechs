@@ -22,6 +22,7 @@ class PersonnelArtwork(src.items.Item):
 
         self.applyOptions.extend(
                         [
+                                                                ("viewNPCs", "view npcs"),
                                                                 ("spawnRank6", "spawn rank 6"),
                                                                 ("spawnRank5", "spawn rank 5"),
                                                                 ("spawnRank4", "spawn rank 4"),
@@ -32,6 +33,7 @@ class PersonnelArtwork(src.items.Item):
                         ]
                         )
         self.applyMap = {
+                    "viewNPCs": self.viewNPCs,
                     "spawnRank6": self.spawnRank6,
                     "spawnRank5": self.spawnRank5,
                     "spawnRank4": self.spawnRank4,
@@ -41,6 +43,40 @@ class PersonnelArtwork(src.items.Item):
                     "spawnRankUnranked": self.spawnRankUnranked,
                         }
         self.cityLeader = None
+
+    def viewNPCs(self,character):
+        submenue = src.interaction.ViewNPCsMenu(self)
+        character.macroState["submenue"] = submenue
+
+    def getPersonnelList(self):
+
+        personel = []
+
+        cityLeader = self.fetchCityleader()
+
+        if not cityLeader:
+            return []
+
+        personel.append(cityLeader)
+
+        for subleader in cityLeader.subordinates:
+            if not subleader or subleader.dead:
+                continue
+
+            personel.append(subleader)
+
+            for subsubleader in subleader.subordinates:
+                if not subsubleader or subsubleader.dead:
+                    continue
+
+                personel.append(subsubleader)
+
+                for worker in subsubleader.subordinates:
+                    if not worker or worker.dead:
+                        continue
+
+                    personel.append(worker)
+        return personel
         
     def fetchCityleader(self):
         return self.cityLeader

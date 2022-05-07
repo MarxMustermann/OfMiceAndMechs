@@ -7015,6 +7015,9 @@ class SecureTile(GoToTile):
         if not character:
             return False
 
+        if not self.endWhenCleared:
+            return False
+
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
                 foundEnemy = None

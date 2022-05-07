@@ -3637,6 +3637,20 @@ Defend yourself and surive as long as possible.
             for i in range(1,25):
                 item = src.items.itemMap[itemType]()
                 treasureRoom.addItem(item,(3,1,0))
+
+            for i in range(random.randint(11,17),random.randint(18,25)):
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 10*i
+                enemy.baseDamage = i
+                treasureRoom.addCharacter(enemy, random.randint(2,11), random.randint(2,11))
+                enemy.movementSpeed = 0.3
+
+                quest = src.quests.SecureTile(toSecure=treasureRoom.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
         addTreasureRoom((2,3),"Sword")
         addTreasureRoom((11,12),"Armor")
         addTreasureRoom((4,5),"Rod")

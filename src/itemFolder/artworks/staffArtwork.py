@@ -22,13 +22,18 @@ class StaffArtwork(src.items.Item):
                                                 [
                                                     ("showMap", "show map"),
                                                     ("assignByRoomType", "assign staff by room type"),
+                                                    ("connect", "connect implant"),
                                                 ]
                                 )
 
         self.applyMap = {
                                     "showMap": self.showMap,
                                     "assignByRoomType": self.assignByRoomType,
+                                    "connect": self.connect,
                                 }
+
+    def connect(self, character):
+        character.macroState["submenue"] = src.interaction.ImplantConnection(self)
 
     def showMap(self, character, cursor=None):
         # render empty map

@@ -1854,10 +1854,7 @@ class BeUsefull(MetaQuestSequence):
                             continue
                         foundCharger = item
 
-                    character.addMessage("testing copressor")
-                    character.addMessage(str(character.inventory))
                     if character.inventory and character.inventory[-1].type == "CrystalCompressor":
-                        character.addMessage("compressor found")
                         chargerPos = foundCharger.getPosition()
                         characterPos = character.getPosition()
                         if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
@@ -1874,7 +1871,6 @@ class BeUsefull(MetaQuestSequence):
                             quest.assignToCharacter(character)
                             self.addQuest(quest)
                         return
-                    character.addMessage("no compressor found")
 
                     if foundCharger:
                         source = None
@@ -1895,7 +1891,6 @@ class BeUsefull(MetaQuestSequence):
                             if triggerClearIneventory():
                                 return
 
-                            character.addMessage("should reload Trap room now")
                             self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
                             self.addQuest(GoToTile(targetPosition=room.getPosition()))
                             self.addQuest(FetchItems(toCollect="CrystalCompressor"))

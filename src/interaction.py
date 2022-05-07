@@ -5398,10 +5398,95 @@ class ImplantConnection(SubMenu):
         return "implant connection to %s"%(self.connectionTarget.type,)
 
 class RoomMenu(SubMenu):
+    type = "RoomMenu"
+
+    def __init__(self, room):
+        super().__init__()
+        self.room = room
+        self.firstKey = True
+
+    def handleKey(self, key, noRender=False, character = None):
+        self.persistentText = "room menu \n\n"
+
+        self.persistentText = [self.persistentText]
+        self.persistentText.append("%s - %s\n"%(self.room.objType,self.room.name,))
+        try:
+            self.persistentText.append( "electricalCharges: " + str(self.room.electricalCharges)+"\n")
+        except:
+            pass
+        try:
+            self.persistentText.append("maxElectricalCharges: " + str(self.room.maxElectricalCharges)+"\n")
+        except:
+            pass
+        self.persistentText.append("\n\n")
+        if self.room.staff:
+            self.persistentText.append("staff:\n")
+            for staffNpc in self.room.staff:
+                deadText = ""
+                if staffNpc.dead:
+                    deadText = " (dead)"
+                questText = ""
+                if not staffNpc.dead and staffNpc.quests:
+                    questText = staffNpc.quests[0].description.split("\n")[0]
+                    try:
+                        questText += staffNpc.quests[0].description.split("\n")[1]
+                    except:
+                        pass
+                self.persistentText.append("%s%s - %s\n"%(staffNpc.name,deadText,questText,))
+        else:
+                self.persistentText.append("There is no staff assigned assign staff by using the staff artwork (SA)")
+
+        self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources")
+
+        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+        if self.firstKey:
+            self.firstKey = False
+            return
+
+        if character and key in ("q",):
+            character.macroState["submenue"] = RoomDutyMenu(self.room)
+
+        if character and key in ("r",):
+            character.macroState["submenue"] = RoomSourceMenu(self.room)
+
+        # exit the submenu
+        if key in ("esc",):
+            self.done = True
+            return True
+
+class RoomSourceMenu(SubMenu):
+    """
+    """
+    
+    type = "RoomSourceMenu"
+    def __init__(self, room):
+        """
+        initialise inernal state
+
+        Parameters:
+            text: the text to show
+        """
+
+        super().__init__()
+        self.room = room
+
+    def handleKey(self, key, noRender=False, character = None):
+        self.persistentText = "sources to fetch resources from:\n\n"
+        for source in self.room.sources:
+            self.persistentText += "%s: %s\n"%(source[1],source[0],)
+        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        
+        # exit the submenu
+        if key in ("esc",):
+            self.done = True
+            return True
+
+class RoomDutyMenu(SubMenu):
     """
     """
 
-    type = "RoomMenu"
+    type = "RoomDutyMenu"
 
     def __init__(self, room):
         """

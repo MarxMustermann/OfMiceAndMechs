@@ -8,6 +8,7 @@ class CrystalCompressor(src.items.Item):
     name = "crystal compressor"
     description = "used to recharge shockers"
     walkable = True
+    bolted = False
 
     def __init__(self):
         """

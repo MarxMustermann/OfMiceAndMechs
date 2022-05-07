@@ -346,6 +346,8 @@ class CityBuilder2(src.items.Item):
         self.addWorkshop(items,[],room)
         for item in items:
             for otherRoom in self.rooms:
+                if (room.getPosition(),item) in otherRoom.sources:
+                    continue
                 otherRoom.sources.append((room.getPosition(),item))
             self.sourcesList.append((room.getPosition(),item))
 
@@ -387,6 +389,9 @@ class CityBuilder2(src.items.Item):
         item = src.items.itemMap["CorpseAnimator"]()
         item.bolted = False
         generalStorage.addItem(item,(5,1,0))
+        for x in range(1,6):
+            for i in range(1,25):
+                generalStorage.addItem(src.items.itemMap["CrystalCompressor"](),(x,11,0))
 
         for i in range(1,10):
             item = src.items.itemMap["ScratchPlate"]()
@@ -471,8 +476,6 @@ class CityBuilder2(src.items.Item):
 
         if not "type" in params:
             params["type"] = "random"
-            character.addMessage("spawned submenu")
-            character.addMessage(params)
             options = []
             index = 0
             for item in self.prefabs["ScrapToMetalBars"]:

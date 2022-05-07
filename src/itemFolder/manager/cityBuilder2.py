@@ -709,6 +709,7 @@ class CityBuilder2(src.items.Item):
             otherRoom.sources.insert(0,(pos,"Painter"))
             otherRoom.sources.insert(0,(pos,"ScratchPlate"))
             otherRoom.sources.insert(0,(pos,"CorpseAnimator"))
+            otherRoom.sources.insert(0,(pos,"CrystalCompressor"))
 
         if instaSpawn:
             room.spawnPlaned()

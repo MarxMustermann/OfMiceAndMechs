@@ -3667,7 +3667,9 @@ Defend yourself and surive as long as possible.
 
     def checkDead(self):
 
+        text = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//1000+1,src.gamestate.gamestate.tick%1000)
         self.wavecounterUI["text"] = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//1000+1,src.gamestate.gamestate.tick%1000)
+        self.wavecounterUI["offset"] = (82-len(text)//2,5)
 
         if src.gamestate.gamestate.mainChar.dead:
             print("dead")

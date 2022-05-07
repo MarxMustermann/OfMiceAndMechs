@@ -19,3 +19,4 @@ import src.itemFolder.artworks.teleporterArtwork
 import src.itemFolder.artworks.dutyArtwork
 import src.itemFolder.artworks.orderArtwork
 import src.itemFolder.artworks.staffArtwork
+import src.itemFolder.artworks.personnelArtwork

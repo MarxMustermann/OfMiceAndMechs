@@ -82,6 +82,11 @@ class OrderArtwork(src.items.Item):
 
         targets = []
         cityLeader = self.fetchCityleader()
+
+        if not cityLeader:
+            character.addMessage("no city leader")
+            return
+
         mode = extraInfo["groupType"]
 
         def checkAdd(person):
@@ -275,7 +280,7 @@ class OrderArtwork(src.items.Item):
     def fetchCityleader(self):
         cityBuilder = None
         for item in self.container.itemsOnFloor:
-            if not item.type == "CityBuilder2":
+            if not item.type == "PersonnelArtwork":
                 continue
             cityBuilder = item
 

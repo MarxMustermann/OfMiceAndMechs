@@ -31,7 +31,6 @@ class CityBuilder2(src.items.Item):
 
         self.generateFloorPlans()
         self.enemyRoomCounter = 0
-        self.cityLeader = None
         self.rooms = []
         self.sourcesList = []
 
@@ -196,13 +195,6 @@ class CityBuilder2(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("showMap", "show map"),
-                                                                ("spawnRank6", "spawn rank 6"),
-                                                                ("spawnRank5", "spawn rank 5"),
-                                                                ("spawnRank4", "spawn rank 4"),
-                                                                ("spawnRank3", "spawn rank 3"),
-                                                                ("spawnMilitary", "spawn military"),
-                                                                ("spawnRankUnranked", "spawn unranked"),
-                                                                ("spawnSet", "spawn set"),
                                                                 ("addProductionLine1", "add weapon production line"),
                                                                 ("addProductionLine2", "add crystal compactor production line"),
                                                                 ("addProductionLine3", "add scrapcompactor production line"),
@@ -215,13 +207,6 @@ class CityBuilder2(src.items.Item):
                         )
         self.applyMap = {
                     "showMap": self.showMap,
-                    "spawnRank6": self.spawnRank6,
-                    "spawnRank5": self.spawnRank5,
-                    "spawnRank4": self.spawnRank4,
-                    "spawnRank3": self.spawnRank3,
-                    "spawnMilitary": self.spawnMilitary,
-                    "spawnSet": self.spawnSet,
-                    "spawnRankUnranked": self.spawnRankUnranked,
                     "addProductionLine1": self.addProductionLine1,
                     "addProductionLine2": self.addProductionLine2,
                     "addProductionLine3": self.addProductionLine3,
@@ -319,29 +304,6 @@ class CityBuilder2(src.items.Item):
         print(room.sources)
 
         return room
-
-    def spawnSet(self,character):
-        cityleader = self.spawnRank(3,character)
-        for i in range(0,3):
-            self.spawnRank(4,character)
-        for i in range(0,9):
-            self.spawnRank(5,character)
-        for i in range(0,9*3):
-            self.spawnRank(6,character)
-        return cityleader
-
-    def spawnRank6(self,character):
-        return self.spawnRank(6,character)
-    def spawnRank5(self,character):
-        return self.spawnRank(5,character)
-    def spawnRank4(self,character):
-        return self.spawnRank(4,character)
-    def spawnRank3(self,character):
-        return self.spawnRank(3,character)
-    def spawnRankUnranked(self,character):
-        return self.spawnRank(None,character)
-    def spawnMilitary(self,character):
-        return self.spawnRank(None,character,isMilitary=True)
 
     def addProductionLine1(self,character,instaSpawn=False):
         toAdd = ["Rod","Sword","Armor","Sheet","Bolt","Rod","Sword","Armor","Rod"]
@@ -473,82 +435,6 @@ class CityBuilder2(src.items.Item):
         self.addScrapFieldFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]-2)})
 
         return {"backGuardRoom":backGuardRoom}
-
-    def spawnRank(self,rank,actor,isMilitary=False):
-        if rank == 4:
-            if not self.cityLeader or self.cityLeader.dead or len(self.cityLeader.subordinates) > 2:
-                actor.addMessage("no rank 3 to hook into")
-                return
-
-        if rank == 5:
-            if not self.cityLeader or self.cityLeader.dead:
-                actor.addMessage("no rank 3 to hook into")
-                return
-
-            foundSubleader = None
-            for subleader in self.cityLeader.subordinates:
-                if subleader.dead:
-                    continue
-                if len(subleader.subordinates) > 2:
-                    continue
-                foundSubleader = subleader
-
-            if not foundSubleader:
-                actor.addMessage("no rank 4 to hook into")
-                return
-
-        if rank == 6:
-            if not self.cityLeader or self.cityLeader.dead:
-                actor.addMessage("no rank 3 to hook into")
-                return
-
-            for subleader in self.cityLeader.subordinates:
-                if subleader.dead:
-                    continue
-
-                for subsubleader in subleader.subordinates:
-                    if subsubleader.dead:
-                        continue
-                    if len(subsubleader.subordinates) > 2:
-                        continue
-                    foundSubsubleader = subsubleader
-
-                if not foundSubsubleader:
-                    actor.addMessage("no rank 5 to hook into")
-                    return
-
-        char = src.characters.Character()
-        char.registers["HOMEx"] = self.container.xPosition
-        char.registers["HOMEy"] = self.container.yPosition
-        char.isMilitary = isMilitary
-        char.personality["abortMacrosOnAttack"] = False
-
-        if rank == 3:
-            if not self.cityLeader or self.cityLeader.dead:
-                self.cityLeader = char
-
-        if rank == 4:
-            self.cityLeader.subordinates.append(char)
-            char.duties.extend(["scratch checking","clearing","painting"])
-
-        if rank == 5:
-            foundSubleader.subordinates.append(char)
-            char.duties.extend(["resource fetching","trap setting","hauling"])
-
-        if rank == 6:
-            foundSubsubleader.subordinates.append(char)
-            char.duties.extend(["resource gathering"])
-
-        quest = src.quests.BeUsefull()
-        quest.assignToCharacter(char)
-        quest.activate()
-        char.quests.append(quest)
-        char.faction = actor.faction
-        if rank:
-            char.rank = rank
-        self.container.addCharacter(char,5,6)
-        char.runCommandString("********")
-        char.godMode = True
 
     def addEnemyRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],addEnemyRoom=False)

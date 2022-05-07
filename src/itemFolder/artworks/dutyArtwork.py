@@ -32,16 +32,16 @@ class DutyArtwork(src.items.Item):
                                 }
 
     def fetchCityleader(self):
-        cityBuilder = None
+        personnelArtwork = None
         for item in self.container.itemsOnFloor:
-            if not item.type == "CityBuilder2":
+            if not item.type == "PersonnelArtwork":
                 continue
-            cityBuilder = item
+            personnelArtwork = item
 
-        if not cityBuilder:
+        if not personnelArtwork:
             return None
 
-        return cityBuilder.cityLeader
+        return personnelArtwork.cityLeader
 
     def showTree(self, character):
         cityLeader = self.fetchCityleader()

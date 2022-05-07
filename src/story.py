@@ -3576,7 +3576,7 @@ class Siege2(BasicPhase):
         cityBuilder.registerRoom(mainRoom)
 
         cityBuilder.spawnCity(src.gamestate.gamestate.mainChar)
-        cityBuilder.spawnSet(src.gamestate.gamestate.mainChar)
+        ##cityBuilder.spawnSet(src.gamestate.gamestate.mainChar)
 
         staffArtwork = src.items.itemMap["StaffArtwork"]()
         mainRoom.addItem(staffArtwork,(1,1,0))
@@ -3591,6 +3591,9 @@ class Siege2(BasicPhase):
         produtionArtwork = src.items.itemMap["ProductionArtwork"]()
         mainRoom.addItem(produtionArtwork,(3,11,0))
 
+        personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        mainRoom.addItem(personnelArtwork,(9,1,0))
+        
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
 

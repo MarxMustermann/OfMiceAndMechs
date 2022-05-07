@@ -362,18 +362,15 @@ class CityBuilder2(src.items.Item):
         backGuardRoom = self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
         
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
-        guardRoom.electricalCharges = int(random.random()*30)+300
         guardRoom.chargeStrength = 20
 
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-2),"character":character})
-        guardRoom.electricalCharges = int(random.random()*30)+300
         guardRoom.chargeStrength = 20
 
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character})
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})
 
         backGuardRoom = self.addTrapRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
-        backGuardRoom.electricalCharges = int(random.random()*30)+300
         backGuardRoom.chargeStrength = 20
 
         generalStorage = self.addStorageRoomFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
@@ -408,11 +405,9 @@ class CityBuilder2(src.items.Item):
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+2),"character":character})
 
         guardRoom2 = self.addTrapRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]-1),"character":character})
-        guardRoom2.electricalCharges = int(random.random()*30)+30
         guardRoom2.chargeStrength = 5
 
         guardRoom3 = self.addTrapRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]-1),"character":character})
-        guardRoom3.electricalCharges = int(random.random()*30)+30
         guardRoom3.chargeStrength = 5
 
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-1),"selection":"w"},noFurtherInteraction=True)

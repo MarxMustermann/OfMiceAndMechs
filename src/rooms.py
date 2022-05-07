@@ -1998,8 +1998,6 @@ class TeleporterRoom(EmptyRoom):
 
 class TrapRoom(EmptyRoom):
 
-    electricalCharges = 0
-    maxElectricalCharges = 500
     chargeStrength = 1
     faction = "Trap"
     objType = "TrapRoom"
@@ -2019,6 +2017,9 @@ class TrapRoom(EmptyRoom):
         self.attributesToStore.extend(["faction","chargeStrength","maxElectricalCharges","electricalCharges"])
         self.staff = []
         self.duties = ["clearing","trap setting","guarding","painting"]
+
+        self.electricalCharges = 90
+        self.maxElectricalCharges = 500
 
     def moveCharacterDirection(self, character, direction):
         oldPos = character.getPosition()

@@ -3656,9 +3656,16 @@ Defend yourself and surive as long as possible.
         addTreasureRoom((4,5),"Rod")
         addTreasureRoom((2,10),"MetalBars")
 
+        self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
+
         self.checkDead()
 
+        src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
+
     def checkDead(self):
+
+        self.wavecounterUI["text"] = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//1000+1,src.gamestate.gamestate.tick%1000)
+
         if src.gamestate.gamestate.mainChar.dead:
             print("dead")
             print(src.gamestate.gamestate.tick)

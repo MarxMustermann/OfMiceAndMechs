@@ -38,6 +38,8 @@ class GameState(src.saveing.Saveable):
         self.gameIndex = gameIndex
         self.initialSeed = None
         self.timedAutoAdvance = None
+        self.gameOver = False
+        self.gameOverText = ""
 
         """
         self.uiElements = [

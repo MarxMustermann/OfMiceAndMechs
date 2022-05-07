@@ -3662,7 +3662,10 @@ Defend yourself and surive as long as possible.
         if src.gamestate.gamestate.mainChar.dead:
             print("dead")
             print(src.gamestate.gamestate.tick)
-            showText("you survived till tick %s"%(src.gamestate.gamestate.tick,))
+            src.gamestate.gamestate.uiElements = [
+                    {"type":"text","offset":(15,10), "text":"you were killed while holding against the siege"},
+                    {"type":"text","offset":(15,12), "text":"you suvived %s ticks. That means wave no %s got you"%(src.gamestate.gamestate.tick,src.gamestate.gamestate.tick//1000+1,)},
+                    ]
         else:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "checkDead"})

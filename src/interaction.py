@@ -84,6 +84,7 @@ tcodMixer = None
 sounds = {}
 
 def playSound(soundName,channelName,loop=False):
+    return
     channel = src.interaction.tcodMixer.get_channel(channelName)
     if not channel.busy:
         channel.play(sounds[soundName])

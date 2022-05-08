@@ -205,6 +205,7 @@ class CityBuilder2(src.items.Item):
                                                                 ("spawnCity", "spawn City"),
                         ]
                         )
+        self.applyOptions = []
         self.applyMap = {
                     "showMap": self.showMap,
                     "addProductionLine1": self.addProductionLine1,

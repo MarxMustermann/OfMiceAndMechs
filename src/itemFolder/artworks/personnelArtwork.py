@@ -23,13 +23,6 @@ class PersonnelArtwork(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("viewNPCs", "view npcs"),
-                                                                ("spawnRank6", "spawn rank 6"),
-                                                                ("spawnRank5", "spawn rank 5"),
-                                                                ("spawnRank4", "spawn rank 4"),
-                                                                ("spawnRank3", "spawn rank 3"),
-                                                                ("spawnMilitary", "spawn military"),
-                                                                ("spawnRankUnranked", "spawn unranked"),
-                                                                ("spawnSet", "spawn set"),
                         ]
                         )
         self.applyMap = {

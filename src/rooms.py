@@ -851,6 +851,9 @@ class Room(src.saveing.Saveable):
                     src.logger.debugMessages.append("room drawing failed")
 
             # draw characters
+            viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
+            viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
+
             foundMainchar = None
             for character in self.characters:
                 if character == src.gamestate.gamestate.mainChar:
@@ -861,41 +864,180 @@ class Room(src.saveing.Saveable):
                     if not "city" in character.faction or not character.charType in ("Character","Ghul"):
                         chars[character.yPosition][character.xPosition] = character.display
                     else:
-                        if not isinstance(character,src.characters.Ghul):
-                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@"+str(character.rank))
-                        else:
-                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("#3f3", "black"), "@x")
+                        if viewChar == "rank":
+                            if not isinstance(character,src.characters.Ghul):
+                                char = "@"+str(character.rank)
+                            else:
+                                char = "@x"
+                        elif viewChar == "health":
+                            health = str(character.health//(character.maxHealth//10))
+                            if health == "10":
+                                health = "|"
+                            char = "@"+health
+                        elif viewChar == "name":
+                            if not isinstance(character,src.characters.Ghul):
+                                char = character.name[0]+character.name.split(" ")[1][0]
+                            else:
+                                char = "Gu"
+                        elif viewChar == "faction":
+                            char = "@"+character.faction[-1]
+                        elif viewChar == "activity":
+                            if not isinstance(character,src.characters.Ghul):
+                                postfix = " "
 
-                        if character.faction.endswith("#1"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#066"
-                        if character.faction.endswith("#2"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#006"
-                        if character.faction.endswith("#3"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#060"
-                        if character.faction.endswith("#4"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#082"
-                        if character.faction.endswith("#5"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#028"
-                        if character.faction.endswith("#6"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#088"
-                        if character.faction.endswith("#7"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#086"
-                        if character.faction.endswith("#8"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#068"
-                        if character.faction.endswith("#9"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#0a0"
-                        if character.faction.endswith("#10"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#00a"
-                        if character.faction.endswith("#11"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#0a6"
-                        if character.faction.endswith("#12"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#06a"
-                        if character.faction.endswith("#13"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#08a"
-                        if character.faction.endswith("#14"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#0a6"
-                        if character.faction.endswith("#15"):
-                            chars[character.yPosition][character.xPosition][0].fg = "#0aa"
+                                if character.isStaff:
+                                    prefix = "S"
+                                elif not character.quests:
+                                    prefix = "I"
+                                elif character.quests[0].type == "BeUsefull":
+                                    prefix = "U"
+                                else:
+                                    prefix = "@"
+
+                                """
+                                activeQuest = character.getActiveQuest()
+                                if activeQuest:
+                                    postfix = activeQuest.shortCode
+                                """
+                                subQuest = None
+                                if character.quests and character.quests[0].type == "BeUsefull":
+                                    if character.quests[0].subQuests:
+                                        postfix = character.quests[0].subQuests[0].shortCode
+                                    else:
+                                        postfix = " "
+
+                                char = prefix+postfix
+                            else:
+                                char = "G "
+                        else:
+                            char = "@ "
+
+                        color = "#fff"
+                        if viewColour == "activity":
+                            if not isinstance(character,src.characters.Ghul):
+                                if character.isStaff:
+                                    color = "#0f0"
+                                elif not character.quests:
+                                    color = "#f00"
+                                elif character.quests[0].type == "BeUsefull":
+                                    color = "#00f"
+                                else:
+                                    color = "#333"
+                            else:
+                                color = "#fff"
+                        if viewColour == "rank":
+                            color = "#fff"
+                            if character.rank == 3:
+                                color = "#0f0"
+                            if character.rank == 4:
+                                color = "#3f0"
+                            if character.rank == 5:
+                                color = "#480"
+                            if character.rank == 6:
+                                color = "#662"
+                        if viewColour == "health":
+                            color = "#fff"
+                            health = character.health//(character.maxHealth//14)
+                            if health == 0:
+                                color = "#f00"
+                            if health == 1:
+                                color = "#e10"
+                            if health == 2:
+                                color = "#d20"
+                            if health == 3:
+                                color = "#c30"
+                            if health == 4:
+                                color = "#b40"
+                            if health == 5:
+                                color = "#a50"
+                            if health == 6:
+                                color = "#960"
+                            if health == 7:
+                                color = "#870"
+                            if health == 8:
+                                color = "#780"
+                            if health == 9:
+                                color = "#690"
+                            if health == 10:
+                                color = "#5a0"
+                            if health == 11:
+                                color = "#4b0"
+                            if health == 12:
+                                color = "#3c0"
+                            if health == 13:
+                                color = "#2d0"
+                            if health == 14:
+                                color = "#1e0"
+                            if health == 15:
+                                color = "#0f0"
+                        if viewColour == "faction":
+                            if character.faction.endswith("#1"):
+                                color = "#066"
+                            elif character.faction.endswith("#2"):
+                                color = "#006"
+                            elif character.faction.endswith("#3"):
+                                color = "#060"
+                            elif character.faction.endswith("#4"):
+                                color = "#082"
+                            elif character.faction.endswith("#5"):
+                                color = "#028"
+                            elif character.faction.endswith("#6"):
+                                color = "#088"
+                            elif character.faction.endswith("#7"):
+                                color = "#086"
+                            elif character.faction.endswith("#8"):
+                                color = "#068"
+                            elif character.faction.endswith("#9"):
+                                color = "#0a0"
+                            elif character.faction.endswith("#10"):
+                                color = "#00a"
+                            elif character.faction.endswith("#11"):
+                                color = "#0a6"
+                            elif character.faction.endswith("#12"):
+                                color = "#06a"
+                            elif character.faction.endswith("#13"):
+                                color = "#08a"
+                            elif character.faction.endswith("#14"):
+                                color = "#0a6"
+                            elif character.faction.endswith("#15"):
+                                color = "#0aa"
+                            else:
+                                color = "#3f3"
+                        if viewColour == "name":
+                            colormap = {
+                                    "A":"#aaa",
+                                    "B":"#3aa",
+                                    "C":"#00a",
+                                    "D":"#fa4",
+                                    "E":"#0af",
+                                    "F":"#44a",
+                                    "G":"#dfa",
+                                    "H":"#0fa",
+                                    "I":"#0a4",
+                                    "J":"#4fa",
+                                    "K":"#08a",
+                                    "L":"#ea8",
+                                    "M":"#37a",
+                                    "N":"#3f8",
+                                    "O":"#a4f",
+                                    "P":"#0aa",
+                                    "Q":"#8aa",
+                                    "R":"#0a8",
+                                    "S":"#a2a",
+                                    "T":"#6af",
+                                    "U":"#5ea",
+                                    "V":"#0a5",
+                                    "W":"#4af",
+                                    "X":"#daa",
+                                    "Y":"#1aa",
+                                    "Z":"#03a",
+                                    }
+                            color = colormap.get(character.name[0])
+                            if not color:
+                                color = "#3f3"
+
+                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, "black"), char)
+
                         if character.showThinking:
                             chars[character.yPosition][character.xPosition][0].bg = "#333"
                             character.showThinking = False

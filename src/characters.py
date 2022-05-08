@@ -275,6 +275,8 @@ class Character(src.saveing.Saveable):
         self.personality["doIdleAction"] = True
         self.personality["avoidItems"] = False
         self.personality["riskAffinity"] = random.random()
+        self.personality["viewChar"] = "rank"
+        self.personality["viewColour"] = "faction"
 
         self.silent = False
 

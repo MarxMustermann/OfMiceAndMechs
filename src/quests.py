@@ -253,6 +253,8 @@ class Quest(src.saveing.Saveable):
         self.id = str(random.random())+str(time.time())
         self.reroll()
 
+        self.shortCode = "?"
+
     def getQuestMarkersSmall(self,character):
         return []
 
@@ -1061,6 +1063,8 @@ class Equip(MetaQuestSequence):
         self.metaDescription = description
         self.type = "Equip"
 
+        self.shortCode = "e"
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return 
@@ -1158,6 +1162,8 @@ class RunCommand(MetaQuestSequence):
         self.metaDescription = description
         self.type = "RunCommand"
 
+        self.shortCode = "c"
+
         if command:
             self.setParameters({"command":command})
 
@@ -1253,6 +1259,7 @@ class DrawFloorPlan(MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.type = "DrawFloorPlan"
+        self.shortCode = "d"
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -1424,6 +1431,8 @@ class RestockRoom(MetaQuestSequence):
         if allowAny:
             self.setParameters({"allowAny":allowAny})
         self.type = "RestockRoom"
+
+        self.shortCode = "r"
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -1722,6 +1731,8 @@ class BeUsefull(MetaQuestSequence):
         self.targetPosition = None
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
+
+        self.shortCode = " "
     
     def triggerCompletionCheck(self,character=None):
         return
@@ -2360,6 +2371,8 @@ class FetchItems(MetaQuestSequence):
         self.attributesToStore.append("amount")
         self.attributesToStore.append("returnToTile")
         self.tuplesToStore.append("tileToReturnTo")
+
+        self.shortCode = "f"
 
     def setParameters(self,parameters):
         if "toCollect" in parameters and "toCollect" in parameters:
@@ -6678,6 +6691,8 @@ class GoToTile(Quest):
 
         self.type = "GoToTile"
 
+        self.shortCode = "G"
+
     def getQuestMarkersSmall(self,character):
         self.getSolvingCommandString(character)
         result = super().getQuestMarkersSmall(character)
@@ -7058,6 +7073,8 @@ class GoToPosition(Quest):
         self.type = "GoToPosition"
 
         self.tuplesToStore.append("targetPosition")
+        
+        self.shortCode = "g"
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:

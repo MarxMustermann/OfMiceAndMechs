@@ -3688,16 +3688,56 @@ Defend yourself and surive as long as possible.
     def startRound(self):
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
+        remainingEnemyCounter = 0
+        for character in terrain.characters:
+            if not character.faction == "invader":
+                continue
+            remainingEnemyCounter += 1
+
+        for room in terrain.rooms:
+            for character in room.characters:
+                if not character.faction == "invader":
+                    continue
+                remainingEnemyCounter += 1
+
+        """
+        counter = 0
+        while counter < remainingEnemyCounter:
+            if terrain.rooms:
+                room = random.choice(terrain.rooms)
+                print("damage room")
+                room.damage()
+            counter += 1
+        """
+
+        counter = 0
+        monsterStartPos = random.choice([(112,22),(202,112),(112,202),(22,112)])
+        print("survivors")
+        print(remainingEnemyCounter)
+        while counter < remainingEnemyCounter:
+            enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
+            enemy.faction = "invader"
+            enemy.specialDisplay = "<c"
+            terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
+
+            quest = src.quests.DestroyRooms()
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            counter += 1
+
         #numMonsters = 1
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
-        numMonsters = 10+self.numRounds*2
+        numMonsters = 10+self.numRounds*2+remainingEnemyCounter
 
-        monsterStartPos = random.choice([(112,22),(202,112),(112,202),(22,112)])
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
             enemy.health = 10*i
             enemy.baseDamage = i
+            enemy.faction = "invader"
             terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
             enemy.movementSpeed = 0.3
 
@@ -3706,10 +3746,6 @@ Defend yourself and surive as long as possible.
             quest.assignToCharacter(enemy)
             quest.activate()
             enemy.quests.append(quest)
-
-        #for 
-        #    for room in terrain.rooms:
-        #        room.damage()
 
         self.numRounds += 1
         

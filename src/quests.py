@@ -1055,6 +1055,113 @@ class ClearTerrain(MetaQuestSequence):
                             self.addQuest(src.quests.SecureTile(toSecure=room.getPosition()))
                             return
 
+class DestroyRoom(MetaQuestSequence):
+    def __init__(self, description="destroyRoom", creator=None, command=None, lifetime=None, targetPosition=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "DestroyRoom"
+        self.shortCode = "D"
+
+        if targetPosition:
+            self.setParameters({"targetPosition":targetPosition})
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append((self.targetPosition,"target"))
+        return result
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        if isinstance(character.container,src.rooms.Room):
+            terrain = character.container.container
+        else:
+            terrain = character.container
+
+        if not terrain.getRoomByPosition(self.targetPosition):
+            self.postHandler()
+            return
+        return
+
+    def solver(self, character):
+        if isinstance(character.container,src.rooms.Room):
+            character.container.damage()
+            character.die()
+            return
+
+        charpos = (character.xPosition//15,character.yPosition//15)
+
+        roomsOnTile = character.container.getRoomByPosition(charpos)
+        if roomsOnTile:
+            roomsOnTile[0].damage()
+            character.die()
+            return
+
+        if not self.subQuests:
+
+            direction = None 
+            if charpos[0] > self.targetPosition[0]:
+                direction = (-1,0)
+                command = "a"
+            if charpos[0] < self.targetPosition[0]:
+                direction = (+1,0)
+                command = "d"
+            if charpos[1] > self.targetPosition[1]:
+                direction = (0,-1)
+                command = "w"
+            if charpos[1] < self.targetPosition[1]:
+                direction = (0,+1)
+                command = "s"
+            
+            if direction:
+                self.addQuest(src.quests.RunCommand(command=13*command))
+            return
+        return super().solver(character)
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+        return super().setParameters(parameters)
+
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
+class DestroyRooms(MetaQuestSequence):
+    def __init__(self, description="destroyRooms", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "DestroyRooms"
+        self.shortCode = "D"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return 
+
+        if isinstance(character.container,src.rooms.Room):
+            return
+
+        if not character.container.rooms:
+            self.postHandler()
+            return
+
+        return
+
+    def solver(self, character):
+
+        if not self.subQuests:
+            targetRoom = random.choice(character.container.rooms)
+            character.addMessage("should attack room")
+            character.addMessage(targetRoom.getPosition())
+
+            self.addQuest(src.quests.DestroyRoom(targetPosition=targetRoom.getPosition()))
+
+            return
+        return super().solver(character)
 
 class Equip(MetaQuestSequence):
     def __init__(self, description="equip", creator=None, command=None, lifetime=None):
@@ -7806,6 +7913,8 @@ questMap = {
     "ClearTerrain": ClearTerrain,
     "TeleportToTerrain": TeleportToTerrain,
     "LootRuin": LootRuin,
+    "DestroyRooms": DestroyRooms,
+    "DestroyRoom": DestroyRoom,
 }
 
 def getQuestFromState(state):

@@ -524,7 +524,7 @@ class CityBuilder2(src.items.Item):
     def addScrapFieldFromMap(self,params):
         architect = src.items.itemMap["ArchitectArtwork"]()
         self.container.container.addItem(architect,(1,1,0))
-        architect.doAddScrapfield(params["coordinate"][0], params["coordinate"][1],500)
+        architect.doAddScrapfield(params["coordinate"][0], params["coordinate"][1],200)
         self.container.container.removeItem(architect)
         self.scrapFields.append((params["coordinate"][0],params["coordinate"][1]))
 

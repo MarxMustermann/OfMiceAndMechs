@@ -2119,6 +2119,8 @@ class Monster(Character):
 
         self.faction = "monster"
 
+        self.specialDisplay = None
+
         self.solvers.extend(["NaiveMurderQuest"])
 
     # bad code: specific code in generic class
@@ -2265,6 +2267,9 @@ class Monster(Character):
         Returns:
             what the monster looks like
         """
+
+        if self.specialDisplay:
+            return self.specialDisplay
 
         render = src.canvas.displayChars.monster_spore
         if self.phase == 2:

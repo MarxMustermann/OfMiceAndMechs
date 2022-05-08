@@ -6878,9 +6878,10 @@ def advanceChar(char,removeChars):
                         (char.doHuntKill(),["norecord"]),
                         charState=state, noAdvanceGame=True, char=char)
             elif char.hasOwnAction > 0:
-                processInput(
-                        (char.getOwnAction(),["norecord"]),
-                        charState=state, noAdvanceGame=True, char=char)
+                for commandChar in char.getOwnAction():
+                    processInput(
+                            (commandChar,["norecord"]),
+                            charState=state, noAdvanceGame=True, char=char)
             elif state["commandKeyQueue"]:
                 key = state["commandKeyQueue"].pop()
                 processInput(

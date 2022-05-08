@@ -4735,7 +4735,7 @@ class StaffAsMatrixMenu(SubMenu):
             if self.index[1] > 0:
                 self.index[1] -= 1
         if key in ("s",):
-            if self.index[1] < len(self.roomTypes):
+            if self.index[1] < len(self.roomTypes)-1:
                 self.index[1] += 1
         if key in ("a",):
             if self.index[0] > 0:

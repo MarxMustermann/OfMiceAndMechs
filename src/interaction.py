@@ -4876,90 +4876,133 @@ class JobAsMatrixMenu(SubMenu):
         text = "press wasd to move cursor"
         text += "press j to enable/disable"
 
-        text += "\ncharacter   | "+" | ".join(duties)
+        text = [text]
 
-        lineCounter = 0
-        text += "\nrank 3 ----\n"
-        text += "%s: "%(cityLeader.name,)
+        text.append("\ncharacter                 ")
         rowCounter = 0
         for duty in duties:
+            color = "default"
+            if rowCounter == self.index[1]:
+                color = "#333"
+            text.append(" | ")
+            text.append((urwid.AttrSpec("default", color),duty))
+            rowCounter += 1
+
+        def convertName(name):
+            return name.ljust(25," ")[0:24]
+
+
+        lineCounter = 0
+        text.append("\nrank 3 ----\n")
+        color = "default"
+        rowCounter = 0
+        if lineCounter == self.index[0]:
+            color = "#333"
+        text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(cityLeader.name),)))
+        for duty in duties:
             if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                text += "=>"
+                text.append("=>")
             else:
-                text += "  "
+                color = "default"
+                if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                    color = "#333"
+                text.append((urwid.AttrSpec("default", color),"  "))
             if duty in cityLeader.duties:
-                text += "X"
+                text.append("X")
             else:
-                text += " "
-            text += "|"
+                color = "default"
+                if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                    color = "#333"
+                text.append((urwid.AttrSpec("default", color)," "))
+            text.append("|")
             rowCounter += 1
         lineCounter += 1
 
-        text += "\nrank 4 ----\n"
+        text.append("\nrank 4 ----\n")
         for subleader in cityLeader.subordinates:
-            text += "%s: "%(subleader.name,)
+            color = "default"
+            if lineCounter == self.index[0]:
+                color = "#333"
+            text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(subleader.name),)))
             rowCounter = 0
             for duty in duties:
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                    text += "=>"
+                    text.append("=>")
                 else:
-                    text += "  "
+                    color = "default"
+                    if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                        color = "#333"
+                    text.append((urwid.AttrSpec("default", color),"  "))
                 if duty in subleader.duties:
-                    text += "X"
+                    text.append("X")
                 else:
-                    text += " "
-                text += "|"
+                    color = "default"
+                    if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                        color = "#333"
+                    text.append((urwid.AttrSpec("default", color)," "))
+                text.append("|")
                 rowCounter += 1
             lineCounter += 1
-            text += "\n"
+            text.append("\n")
 
-        text += "rank 5 ----\n"
+        text.append("rank 5 ----\n")
         for subleader in cityLeader.subordinates:
             for subsubleader in subleader.subordinates:
-                text += "%s: "%(subsubleader.name,)
+                color = "default"
+                if lineCounter == self.index[0]:
+                    color = "#333"
+                text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(subsubleader.name),)))
                 rowCounter = 0
                 for duty in duties:
                     if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                        text += "=>"
+                        text.append("=>")
                     else:
-                        text += "  "
+                        color = "default"
+                        if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                            color = "#333"
+                        text.append((urwid.AttrSpec("default", color),"  "))
                     if duty in subsubleader.duties:
-                        text += "X"
+                        text.append("X")
                     else:
-                        text += " "
-                    text += "|"
+                        color = "default"
+                        if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                            color = "#333"
+                        text.append((urwid.AttrSpec("default", color)," "))
+                    text.append("|")
                     rowCounter += 1
                 lineCounter += 1
-                text += "\n"
+                text.append("\n")
 
-        text += "rank 6 ----\n"
+        text.append("rank 6 ----\n")
         for subleader in cityLeader.subordinates:
             for subsubleader in subleader.subordinates:
                 for worker in subsubleader.subordinates:
-                    text += "%s: "%(worker.name,)
+
+                    color = "default"
+                    if lineCounter == self.index[0]:
+                        color = "#333"
+                    text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(worker.name),)))
+
                     rowCounter = 0
                     for duty in duties:
                         if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                            text += "=>"
+                            text.append("=>")
                         else:
-                            text += "  "
+                            color = "default"
+                            if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                                color = "#333"
+                            text.append((urwid.AttrSpec("default", color),"  "))
                         if duty in worker.duties:
-                            text += "X"
+                            text.append("X")
                         else:
-                            text += " "
-                        text += "|"
+                            color = "default"
+                            if rowCounter == self.index[1] or lineCounter == self.index[0]:
+                                color = "#333"
+                            text.append((urwid.AttrSpec("default", color)," "))
+                        text.append("|")
                         rowCounter += 1
                     lineCounter += 1
-                    text += "\n"
-
-        """
-        for subleader in cityLeader.subordinates:
-            for subsubleader in subleader.subordinates:
-                for worker in subsubleader.subordinates:
-                    npcCount += 1
-                    for duty in worker.duties:
-                        dutyCount[duty] += 1
-        """
+                    text.append("\n")
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))

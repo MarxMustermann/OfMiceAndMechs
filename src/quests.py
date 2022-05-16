@@ -7121,6 +7121,54 @@ class GoToTile(Quest):
             return ".17.."
         return ".20.."
 
+class Huntdown(MetaQuestSequence):
+    def __init__(self, description="huntdown", target=None):
+        questList = []
+        super().__init__(questList)
+        self.metaDescription = description
+        self.type = "Huntdown"
+        self.target = target
+
+    def triggerCompletionCheck(self):
+        if self.target:
+            self.postHandler()
+            return True
+        return False
+
+    def solver(self,character):
+        self.triggerCompletionCheck()
+
+        if not self.subQuests:
+            if isinstance(character.container, src.rooms.Room):
+                charPos = (character.container.xPosition,character.container.yPosition,0)
+            else:
+                charPos = (character.xPosition//15,character.yPosition//15,0)
+
+            if not self.target.container:
+                character.runCommandString("10.")
+                return
+
+            if isinstance(self.target.container, src.rooms.Room):
+                targetPos = (self.target.container.xPosition,self.target.container.yPosition,0)
+            else:
+                targetPos = (self.target.xPosition//15,self.target.yPosition//15,0)
+
+            if targetPos == (0,0,0):
+                return
+
+            if not charPos == targetPos:
+                quest = GoToTile(paranoid=True)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                quest.setParameters({"targetPosition":targetPos})
+                return
+            else:
+                character.runCommandString("gg")
+                return
+
+        super().solver(character)
+
 class SecureTile(GoToTile):
     def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False):
         super().__init__(description=description,targetPosition=toSecure)

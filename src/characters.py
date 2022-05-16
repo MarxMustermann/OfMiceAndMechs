@@ -64,6 +64,7 @@ class Character(src.saveing.Saveable):
         self.rememberedMenu2 = []
 
         self.movementSpeed = 1
+        self.tag = None
 
         self.duties = []
 
@@ -277,6 +278,7 @@ class Character(src.saveing.Saveable):
         self.personality["riskAffinity"] = random.random()
         self.personality["viewChar"] = "rank"
         self.personality["viewColour"] = "faction"
+        self.personality["moveItemsOnCollision"] = False
 
         self.silent = False
 
@@ -665,7 +667,7 @@ class Character(src.saveing.Saveable):
         baseDamage = self.baseDamage
 
         if self.weapon:
-            baseDamage = self.weapon.baseDamage
+            baseDamage += self.weapon.baseDamage
 
         damage = baseDamage
         target.hurt(damage, reason="attacked", actor=self)
@@ -2118,6 +2120,8 @@ class Monster(Character):
         )
 
         self.faction = "monster"
+
+        self.personality["moveItemsOnCollision"] = True
 
         self.specialDisplay = None
 

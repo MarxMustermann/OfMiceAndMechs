@@ -357,9 +357,12 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid):
 
         return char.terrain.moveCharacterDirection(char, direction)
 
-def tumble(char,charState):
+def handleCollision(char,charState):
+    if charState["itemMarkedLast"] and char.personality["moveItemsOnCollision"]:
+        char.runCommandString("kl")
+        return
     if charState["itemMarkedLast"] and char.personality["avoidItems"]:
-        char.runCommandString("k"+random.choice(("a","w","s","d",)))
+        char.runCommandString(random.choice(("a","w","s","d",)))
         return
 
 def handleActivityKeypress(char, header, main, footer, flags):
@@ -2144,22 +2147,22 @@ select what you want to observe
         if key in (commandChars.move_north, "up"):
             charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
-                tumble(char,charState)
+                handleCollision(char,charState)
                 return
         if key in (commandChars.move_south, "down"):
             charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
-                tumble(char,charState)
+                handleCollision(char,charState)
                 return
         if key in (commandChars.move_east, "right"):
             charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
-                tumble(char,charState)
+                handleCollision(char,charState)
                 return
         if key in (commandChars.move_west, "left"):
             charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
-                tumble(char,charState)
+                handleCollision(char,charState)
                 return
 
         # move the player
@@ -2188,7 +2191,7 @@ select what you want to observe
                 char.runCommandString(key)
 
             if charState["itemMarkedLast"]:
-                tumble(char,charState)
+                handleCollision(char,charState)
                 return
 
         # murder the next available character

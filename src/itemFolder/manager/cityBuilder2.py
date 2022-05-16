@@ -390,9 +390,18 @@ class CityBuilder2(src.items.Item):
         item = src.items.itemMap["CorpseAnimator"]()
         item.bolted = False
         generalStorage.addItem(item,(5,1,0))
+
         for x in range(1,6):
             for i in range(1,25):
                 generalStorage.addItem(src.items.itemMap["CrystalCompressor"](),(x,11,0))
+
+        for x in range(1,6):
+            for i in range(1,25):
+                generalStorage.addItem(src.items.itemMap["Bomb"](),(x,9,0))
+
+        for x in range(1,6):
+            for i in range(1,25):
+                generalStorage.addItem(src.items.itemMap["MetalBars"](),(x+6,11,0))
 
         for i in range(1,10):
             item = src.items.itemMap["ScratchPlate"]()

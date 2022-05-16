@@ -3501,9 +3501,6 @@ class Siege2(BasicPhase):
         """
 
         mainChar = src.gamestate.gamestate.mainChar
-        mainChar.baseDamage = 40
-        mainChar.maxHealth = 1000
-        mainChar.health = 1000
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
 
         item = src.items.itemMap["ArchitectArtwork"]()
@@ -3566,9 +3563,84 @@ class Siege2(BasicPhase):
         src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
         mainRoom.storageRooms = []
 
-        mainRoom.addCharacter(
+        spawnRoom = architect.doAddRoom(
+                {
+                       "coordinate": (5,11),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None)
+        
+        spawnRoom.addCharacter(
             src.gamestate.gamestate.mainChar, 6, 6
         )
+
+        for x in range(1,6):
+            item = src.items.itemMap["Sword"]()
+            spawnRoom.addItem(item,(x,1,0))
+
+            item = src.items.itemMap["Sword"]()
+            spawnRoom.addItem(item,(x+6,1,0))
+
+            item = src.items.itemMap["Armor"]()
+            spawnRoom.addItem(item,(x,3,0))
+
+            item = src.items.itemMap["Armor"]()
+            spawnRoom.addItem(item,(x+6,3,0))
+
+            item = src.items.itemMap["MetalBars"]()
+            spawnRoom.addItem(item,(x,5,0))
+
+            item = src.items.itemMap["MetalBars"]()
+            spawnRoom.addItem(item,(x+6,5,0))
+
+            item = src.items.itemMap["GooFlask"]()
+            spawnRoom.addItem(item,(x,7,0))
+            item.uses = 100
+
+            item = src.items.itemMap["GooFlask"]()
+            spawnRoom.addItem(item,(x+6,7,0))
+            item.uses = random.randint(2,12)
+
+            item = src.items.itemMap["Bolt"]()
+            spawnRoom.addItem(item,(x,9,0))
+
+            item = src.items.itemMap["Bolt"]()
+            spawnRoom.addItem(item,(x+6,9,0))
+
+            item = src.items.itemMap["Scrap"]()
+            spawnRoom.addItem(item,(x,11,0))
+
+            item = src.items.itemMap["Bomb"]()
+            spawnRoom.addItem(item,(x+6,11,0))
+
+        text = """
+You are beeing sieged and your command is to hold the position and go down in glory.
+
+Waves will appear every %s ticks. Each wave will be stronger than the last.
+
+Defend yourself and surive as long as possible.
+"""%(self.epochLength,)
+        text = """
+You arrived at your new base of operations.
+
+Move to the command centre and recieve instructions on what your tasks wil be.
+Relocate quickly. A group of mites is on its way to attack.
+
+The command centre is on coordinate 7/7
+Use q to see your quests and shift+ESC to dock the quest menu.
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+
+        mainChar.runCommandString(".",nativeKey=True)
+
 
         cityBuilder = src.items.itemMap["CityBuilder2"]()
         cityBuilder.architect = architect
@@ -3600,22 +3672,6 @@ class Siege2(BasicPhase):
         self.numRounds = 1
         self.startRound()
 
-        text = """
-you are beeing sieged and your command is to hold the position and go down in glory.
-
-Waves will appear every %s ticks. Each wave will be stronger than the last.
-
-Defend yourself and surive as long as possible.
-"""%(self.epochLength,)
-        submenu = src.interaction.TextMenu(text)
-        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-
-        mainChar.personality["autoFlee"] = False
-        mainChar.personality["abortMacrosOnAttack"] = False
-        mainChar.personality["autoCounterAttack"] = False
-
-        mainChar.runCommandString(".",nativeKey=True)
-
         # add hardcoded treasure rooms
         def addTreasureRoom(pos,itemType):
             treasureRoom = architect.doAddRoom(
@@ -3645,8 +3701,8 @@ Defend yourself and surive as long as possible.
                 enemy = src.characters.Monster(4,4)
                 enemy.health = 10*i
                 enemy.baseDamage = i
+                enemy.faction = "invader"
                 treasureRoom.addCharacter(enemy, random.randint(2,11), random.randint(2,11))
-                enemy.movementSpeed = 0.3
 
                 quest = src.quests.SecureTile(toSecure=treasureRoom.getPosition())
                 quest.autoSolve = True
@@ -3659,6 +3715,129 @@ Defend yourself and surive as long as possible.
         addTreasureRoom((4,5),"Rod")
         addTreasureRoom((2,10),"MetalBars")
 
+        for x in range(1,14):
+            for y in range(1,14):
+                if currentTerrain.getRoomByPosition((x,y)):
+                    continue
+
+                if (x,y) == (8,5):
+                    continue
+
+                for i in range(1,8):
+                    mold = src.items.itemMap["Mold"]()
+                    mold.dead = True
+                    currentTerrain.addItem(mold,(15*x+random.randint(1,13),15*y+random.randint(1,13),0))
+
+                for i in range(1,5+random.randint(1,20)):
+                    offsetX = random.randint(1,13)
+                    offsetY = random.randint(1,13)
+
+                    xPos = 15*x+offsetX
+                    yPos = 15*y+offsetY
+
+                    if currentTerrain.getItemByPosition((xPos,yPos,0)):
+                        continue
+
+                    scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
+                    currentTerrain.addItem(scrap,(xPos,yPos,0))
+
+                if random.random() > 0.5:
+                    for i in range(1,2+random.randint(1,5)):
+                        offsetX = random.randint(1,13)
+                        offsetY = random.randint(1,13)
+                        
+                        xPos = 15*x+offsetX
+                        yPos = 15*y+offsetY
+
+                        if currentTerrain.getItemByPosition((xPos,yPos,0)):
+                            continue
+
+                        landmine = src.items.itemMap["LandMine"]()
+                        currentTerrain.addItem(landmine,(xPos,yPos,0))
+
+                if random.random() > 0.8:
+                    for j in range(0,random.randint(1,3)):
+                        enemy = src.characters.Monster(4,4)
+                        enemy.health = 2*i
+                        enemy.baseDamage = i
+                        enemy.movementSpeed = 0.8
+                        currentTerrain.addCharacter(enemy, 15*x+random.randint(2,11), 15*y+random.randint(2,11))
+                        enemy.specialDisplay = "ss"
+                        enemy.faction = "invader"
+
+                        quest = src.quests.SecureTile(toSecure=(x,y))
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
+
+        for i in range(1,12):
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 10*i
+            enemy.baseDamage = i
+            currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
+            enemy.movementSpeed = 0.5
+            enemy.specialDisplay = "[-"
+            enemy.faction = "invader"
+
+            if random.random() > 0.5:
+                quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+            else:
+                quest = src.quests.Huntdown(target=mainChar)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+        for i in range(0,3):
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 100
+            enemy.baseDamage = 5
+            currentTerrain.addCharacter(enemy, 15*7+random.randint(2,11), 15*4+random.randint(2,11))
+            enemy.specialDisplay = "{-"
+            enemy.faction = "invader"
+
+            quest = src.quests.SecureTile(toSecure=(7,4))
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+        for i in range(0,3):
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 100
+            enemy.baseDamage = 5
+            currentTerrain.addCharacter(enemy, 15*6+random.randint(2,11), 15*5+random.randint(2,11))
+            enemy.specialDisplay = "{-"
+            enemy.faction = "invader"
+
+            quest = src.quests.SecureTile(toSecure=(6,5))
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+
+        """
+        for i in range(1,10):
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 10*i
+            enemy.baseDamage = i
+            currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
+            enemy.movementSpeed = 0.5
+
+            quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition())
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+        """
+
+        addTreasureRoom((2,3),"Sword")
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
 
         self.checkDead()
@@ -3690,13 +3869,13 @@ Defend yourself and surive as long as possible.
         
         remainingEnemyCounter = 0
         for character in terrain.characters:
-            if not character.faction == "invader":
+            if not character.tag == "wave":
                 continue
             remainingEnemyCounter += 1
 
         for room in terrain.rooms:
             for character in room.characters:
-                if not character.faction == "invader":
+                if not character.tag == "wave":
                     continue
                 remainingEnemyCounter += 1
 
@@ -3717,6 +3896,7 @@ Defend yourself and surive as long as possible.
         while counter < remainingEnemyCounter:
             enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
             enemy.faction = "invader"
+            enemy.tag = "wave"
             enemy.specialDisplay = "<c"
             terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
 
@@ -3738,6 +3918,7 @@ Defend yourself and surive as long as possible.
             enemy.health = 10*i
             enemy.baseDamage = i
             enemy.faction = "invader"
+            enemy.tag = "wave"
             terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
             enemy.movementSpeed = 0.3
 

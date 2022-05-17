@@ -3549,6 +3549,11 @@ class Siege2(BasicPhase):
         src.gamestate.gamestate.mainChar.godMode = True
         src.gamestate.gamestate.mainChar.faction = "city test"
 
+        quest = src.quests.GoToTile(targetPosition=(7,7))
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        quest.activate()
+        src.gamestate.gamestate.mainChar.quests.append(quest)
+
         mainRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,7),

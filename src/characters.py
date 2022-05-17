@@ -2345,7 +2345,7 @@ class Monster(Character):
             else:
                 colorDamage = "#080"
 
-            render = [(urwid.AttrSpec(colorHealth, "black"), "🝆"),(urwid.AttrSpec(colorDamage, "black"), "-")]
+            render = [(urwid.AttrSpec(colorHealth, "#444"), "🝆"),(urwid.AttrSpec(colorDamage, "#444"), "-")]
         elif self.phase == 3:
             render = src.canvas.displayChars.monster_grazer
         elif self.phase == 4:

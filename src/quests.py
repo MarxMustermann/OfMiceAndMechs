@@ -5433,7 +5433,6 @@ class LeaveRoomQuest(Quest):
 
 """
 patrol along a circular path
-bad code: this quest is not used and may be broken
 """
 
 
@@ -5442,34 +5441,32 @@ class PatrolQuest(MetaQuestSequence):
     state initialization
     """
 
-    def __init__(
-        self,
-        waypoints=[],
-        startCinematics=None,
-        looped=True,
-        lifetime=None,
-        creator=None,
-    ):
-        # bad code: superconstructor doesn't actually process the looped parameter
-        super().__init__(
-            quests,
-            startCinematics=startCinematics,
-            looped=looped,
-            creator=creator,
-            lifetime=lifetime,
-        )
+    def __init__(self, description="patrol", waypoints=None, lifetime=None):
+        questList = []
+        super().__init__(questList, lifetime=lifetime)
 
-        # add movement between waypoints
-        quests = []
-        for waypoint in waypoints:
-            quest = MoveQuestMeta(waypoint[0], waypoint[1], waypoint[2], creator=self)
-            self.addQuest(quest)
+        self.metaDescription = description
 
         # save initial state and register
         self.type = "PatrolQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
+        self.waypointIndex = 0
+        self.waypoints = waypoints
 
+    def triggerCompletionCheck(self, character=None):
+        return False
+
+    def solver(self,character):
+        if not self.subQuests:
+            quest = GoToTile(targetPosition=self.waypoints[self.waypointIndex],paranoid=True)
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
+
+            self.waypointIndex += 1
+            if self.waypointIndex >= len(self.waypoints):
+                self.waypointIndex = 0
+            return
+        super().solver(character)
 
 """
 quest to examine the environment

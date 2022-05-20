@@ -428,6 +428,34 @@ else:
 
     seed = random.randint(1, 100000)
 
+# create and load the gamestate
+gamestate.setup(gameIndex)
+
+if not args.notcod:
+    interaction.setUpTcod()
+
+story.registerPhases()
+
+
+interaction.debug = args.debug
+logger.setup(interaction.debug)
+
+if shouldLoad:
+    try:
+        # load the game
+        #loaded = gamestate.gamestate.load()
+        #seed = gamestate.gamestate.initialSeed
+        gamestate.gamestate = gamestate.gamestate.loadP(gameIndex)
+        print(src.gamestate.gamestate.mainChar.specialRender)
+        loaded = True
+    except Exception as e:
+        ignore = input(
+            "error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)"
+        )
+        if not ignore.lower() == "n":
+            raise e
+mainChar = gamestate.gamestate.mainChar
+
 if not args.urwid:
     interaction.nourwid = True
 
@@ -443,30 +471,6 @@ else:
     interaction.urwid = urwid
     characters.urwid = urwid
     interaction.setUpUrwid()
-
-if not args.notcod:
-    interaction.setUpTcod()
-
-story.registerPhases()
-
-# create and load the gamestate
-gamestate.setup(gameIndex)
-
-interaction.debug = args.debug
-logger.setup(interaction.debug)
-
-if shouldLoad:
-    try:
-        # load the game
-        loaded = gamestate.gamestate.load()
-        seed = gamestate.gamestate.initialSeed
-    except Exception as e:
-        ignore = input(
-            "error in gamestate, could not load gamestate completely. Abort and show error message? (Y/n)"
-        )
-        if not ignore.lower() == "n":
-            raise e
-mainChar = gamestate.gamestate.mainChar
 
 ################################################################################
 #
@@ -497,8 +501,9 @@ if not loaded:
     else:
         gamestate.gamestate.terrainType = terrains.GameplayTest
 else:
-    terrain = gamestate.gamestate.terrain
-    interaction.lastTerrain = terrain
+    #terrain = gamestate.gamestate.terrain
+    #interaction.lastTerrain = terrain
+    pass
 
 # state that should be contained in the gamestate
 mapHidden = True
@@ -547,9 +552,10 @@ if not args.debug and not interaction.submenue and not loaded:
     #)
     #gamestate.gamestate.mainChar.macroState["commandKeyQueue"].insert(
     #    0, (".", ["norecord"])
-    #)
+    ##)
 else:
-    gamestate.gamestate.openingCinematic = None
+    #gamestate.gamestate.openingCinematic = None
+    pass
 
 # set up the current phase
 if not loaded:

@@ -41,6 +41,11 @@ class GameState(src.saveing.Saveable):
         self.gameOver = False
         self.gameOverText = ""
 
+        self.multi_chars = set()
+        self.header = None
+        self.main = None
+        self.footer = None
+
         """
         self.uiElements = [
                 {"type":"gameMap","offset":(20,2)},
@@ -138,6 +143,36 @@ class GameState(src.saveing.Saveable):
         save the game state to disc
         """
 
+        import pickle
+        try:
+            copyfile("gamestate/gamestate_%s"%(self.gameIndex,), "gamestate/gamestate_%s_backup"%(self.gameIndex,))
+        except:
+            pass
+
+        file = open("gamestate/gamestate_%s"%(self.gameIndex,), 'wb')
+
+        # dump information to that file
+        print(src.gamestate.gamestate.mainChar.specialRender)
+        pickle.dump(self, file)
+
+        # close the file
+        file.close()
+
+        try:
+            # register the save
+            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+        except:
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
+
+        saves = rawState["saves"]
+        saves[self.gameIndex] = "taken"
+        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+            json.dump(rawState,globalInfoFile)
+
+        return
+
+    def saveOld(self):
         # get state as dictionary
         state = self.getState()
 
@@ -170,13 +205,25 @@ class GameState(src.saveing.Saveable):
             json.dump(rawState,globalInfoFile)
 
     # bad pattern: loading and saving one massive json will break on the long run. load function should be delegated down to be able to scale json size
-    def load(self):
+    def loadP(self,gameIndex):
         """
         load the gamestate from disc
 
         Returns:
             bool: success indicator
         """
+
+        import pickle
+        file = open("gamestate/gamestate_%s"%(gameIndex,), 'rb')
+        # dump information to that file
+        newSelf = pickle.load(file)
+
+        # close the file
+        file.close()
+
+        print(newSelf)
+
+        return newSelf
 
         # handle missing savefile
         if not os.path.isfile("gamestate/gamestate_%s.json"%(self.gameIndex,)):

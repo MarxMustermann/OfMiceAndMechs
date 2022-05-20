@@ -5457,10 +5457,18 @@ class PatrolQuest(MetaQuestSequence):
 
     def solver(self,character):
         if not self.subQuests:
+            """
             quest = GoToTile(targetPosition=self.waypoints[self.waypointIndex],paranoid=True)
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
+            """
+
+            quest = SecureTile(toSecure=self.waypoints[self.waypointIndex],endWhenCleared=True)
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.addQuest(quest)
+
 
             self.waypointIndex += 1
             if self.waypointIndex >= len(self.waypoints):
@@ -7118,6 +7126,51 @@ class GoToTile(Quest):
             return ".17.."
         return ".20.."
 
+class ActivateEpochArtwork(MetaQuestSequence):
+    def __init__(self, description="activate epoch artwork",epochArtwork=None):
+        questList = []
+        super().__init__(questList)
+        self.metaDescription = description
+        self.type = "ActivateEpochArtwork"
+        self.epochArtwork = epochArtwork
+
+        epochArtwork.addListener(self.registerFirstUse, "first use")
+
+    def registerFirstUse(self):
+        self.postHandler()
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        if character.baseDamage > 40:
+            self.postHandler()
+            return True
+
+        return False
+
+    def solver(self,character):
+        self.triggerCompletionCheck(character)
+
+        if not self.subQuests:
+            if not character.getBigPosition() == (7,7,0):
+                print("wrong pos")
+                self.addQuest(GoToTile(targetPosition=(7,7)))
+                return
+
+            print("correct pos")
+            if not character.getPosition() == (6,7,0):
+                quest = GoToPosition(targetPosition=(6,7,0))
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
+                return
+
+            self.addQuest(RunCommand(command="Jw."))
+            return
+
+        super().solver(character)
+
 class Huntdown(MetaQuestSequence):
     def __init__(self, description="huntdown", target=None):
         questList = []
@@ -7154,11 +7207,30 @@ class Huntdown(MetaQuestSequence):
                 return
 
             if not charPos == targetPos:
+                if abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
+                    newPos = targetPos
+                else:
+                    offsets = [(-1,0),(1,0),(0,-1),(0,1)]
+                    offset = random.choice(offsets)
+                    newPos = (charPos[0]+offset[0],charPos[1]+offset[1])
+
                 quest = GoToTile(paranoid=True)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
-                quest.setParameters({"targetPosition":targetPos})
+                quest.setParameters({"targetPosition":newPos})
+                return
+            elif character.yPosition%15 == 0:
+                character.runCommandString("s")
+                return
+            elif character.yPosition%15 == 14:
+                character.runCommandString("w")
+                return
+            elif character.xPosition%15 == 0:
+                character.runCommandString("d")
+                return
+            elif character.xPosition%15 == 14:
+                character.runCommandString("a")
                 return
             else:
                 character.runCommandString("gg")

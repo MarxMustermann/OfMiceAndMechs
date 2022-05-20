@@ -363,6 +363,13 @@ class Character(src.saveing.Saveable):
             command = "."
         return command
 
+    def getBigPosition(self):
+        if isinstance(self.container, src.rooms.Room):
+            charPos = (self.container.xPosition,self.container.yPosition,0)
+        else:
+            charPos = (self.xPosition//15,self.yPosition//15,0)
+        return charPos
+
     def huntkill(self):
         self.addMessage("should start huntkill now")
         self.huntkilling = True

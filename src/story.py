@@ -3549,11 +3549,6 @@ class Siege2(BasicPhase):
         src.gamestate.gamestate.mainChar.godMode = True
         src.gamestate.gamestate.mainChar.faction = "city test"
 
-        quest = src.quests.GoToTile(targetPosition=(7,7))
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        quest.activate()
-        src.gamestate.gamestate.mainChar.quests.append(quest)
-
         mainRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,7),
@@ -3578,10 +3573,6 @@ class Siege2(BasicPhase):
                 },
                 None)
         
-        spawnRoom.addCharacter(
-            src.gamestate.gamestate.mainChar, 6, 6
-        )
-
         for x in range(1,6):
             item = src.items.itemMap["Sword"]()
             spawnRoom.addItem(item,(x,1,0))
@@ -3621,13 +3612,13 @@ class Siege2(BasicPhase):
             item = src.items.itemMap["Bomb"]()
             spawnRoom.addItem(item,(x+6,11,0))
 
-        text = """
-You are beeing sieged and your command is to hold the position and go down in glory.
+        for i in range(1,20):
+            spawnRoom.damage()
 
-Waves will appear every %s ticks. Each wave will be stronger than the last.
+        spawnRoom.addCharacter(
+            src.gamestate.gamestate.mainChar, 6, 6
+        )
 
-Defend yourself and surive as long as possible.
-"""%(self.epochLength,)
         text = """
 You arrived at your new base of operations.
 
@@ -3671,6 +3662,14 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         personnelArtwork.spawnSet(src.gamestate.gamestate.mainChar)
         orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all","amount":0})
         
+        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        mainRoom.addItem(epochArtwork,(6,6,0))
+
+        quest = src.quests.ActivateEpochArtwork(epochArtwork=epochArtwork)
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        quest.activate()
+        src.gamestate.gamestate.mainChar.quests.append(quest)
+
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
 
@@ -3720,12 +3719,29 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         addTreasureRoom((4,5),"Rod")
         addTreasureRoom((2,10),"MetalBars")
 
+        blockerRingPositions = [(7,4),(6,5)]
+        for pos in blockerRingPositions:
+            for i in range(0,2):
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 100
+                enemy.baseDamage = 5
+                currentTerrain.addCharacter(enemy, 15*pos[0]+random.randint(2,11), 15*pos[1]+random.randint(2,11))
+                enemy.specialDisplay = "{-"
+                enemy.faction = "invader"
+                enemy.tag = "blocker"
+
+                quest = src.quests.SecureTile(toSecure=pos)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
         for x in range(1,14):
             for y in range(1,14):
-                if currentTerrain.getRoomByPosition((x,y)):
+                if (x,y) == (8,5):
                     continue
 
-                if (x,y) == (8,5):
+                if currentTerrain.getRoomByPosition((x,y)):
                     continue
 
                 for i in range(1,8):
@@ -3733,20 +3749,10 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                     mold.dead = True
                     currentTerrain.addItem(mold,(15*x+random.randint(1,13),15*y+random.randint(1,13),0))
 
-                for i in range(1,5+random.randint(1,20)):
-                    offsetX = random.randint(1,13)
-                    offsetY = random.randint(1,13)
+                placedMines = False
 
-                    xPos = 15*x+offsetX
-                    yPos = 15*y+offsetY
-
-                    if currentTerrain.getItemByPosition((xPos,yPos,0)):
-                        continue
-
-                    scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
-                    currentTerrain.addItem(scrap,(xPos,yPos,0))
-
-                if random.random() > 0.5:
+                if random.random() > 0.5 or (x,y) in blockerRingPositions:
+                    placedMines = True
                     for i in range(1,2+random.randint(1,5)):
                         offsetX = random.randint(1,13)
                         offsetY = random.randint(1,13)
@@ -3760,7 +3766,24 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                         landmine = src.items.itemMap["LandMine"]()
                         currentTerrain.addItem(landmine,(xPos,yPos,0))
 
-                if random.random() > 0.8:
+                for i in range(1,5+random.randint(1,20)):
+                    offsetX = random.randint(1,13)
+                    offsetY = random.randint(1,13)
+
+                    xPos = 15*x+offsetX
+                    yPos = 15*y+offsetY
+
+                    if currentTerrain.getItemByPosition((xPos,yPos,0)):
+                        continue
+
+                    if placedMines:
+                        landmine = src.items.itemMap["LandMine"]()
+                        currentTerrain.addItem(landmine,(xPos,yPos,0))
+
+                    scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
+                    currentTerrain.addItem(scrap,(xPos,yPos,0))
+
+                if random.random() > 0.8 and not (x,y) in blockerRingPositions:
                     for j in range(0,random.randint(1,3)):
                         enemy = src.characters.Monster(4,4)
                         enemy.health = 2*i
@@ -3781,51 +3804,61 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             enemy.health = 10*i
             enemy.baseDamage = i
             currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
-            enemy.movementSpeed = 0.5
             enemy.specialDisplay = "[-"
             enemy.faction = "invader"
 
-            if random.random() > 0.5:
+            if i%2 == 0:
                 quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition())
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
             else:
+                quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition(),endWhenCleared=True)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
                 quest = src.quests.Huntdown(target=mainChar)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
 
-        for i in range(0,3):
+        waypoints = [(5,10),(9,10),(9,4),(5,4)]
+        for i in range(1,10):
+            waypoints = waypoints[1:]+[waypoints[0]]
+
             enemy = src.characters.Monster(4,4)
             enemy.health = 100
             enemy.baseDamage = 5
-            currentTerrain.addCharacter(enemy, 15*7+random.randint(2,11), 15*4+random.randint(2,11))
-            enemy.specialDisplay = "{-"
+            currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
+            enemy.specialDisplay = "X-"
             enemy.faction = "invader"
 
-            quest = src.quests.SecureTile(toSecure=(7,4))
+            quest = src.quests.PatrolQuest(waypoints=waypoints)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()
             enemy.quests.append(quest)
 
-        for i in range(0,3):
+        waypoints = [(5,4),(9,4),(9,10),(5,10)]
+        for i in range(1,10):
+            waypoints = waypoints[1:]+[waypoints[0]]
+
             enemy = src.characters.Monster(4,4)
             enemy.health = 100
             enemy.baseDamage = 5
-            currentTerrain.addCharacter(enemy, 15*6+random.randint(2,11), 15*5+random.randint(2,11))
-            enemy.specialDisplay = "{-"
+            currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
+            enemy.specialDisplay = "X-"
             enemy.faction = "invader"
 
-            quest = src.quests.SecureTile(toSecure=(6,5))
+            quest = src.quests.PatrolQuest(waypoints=waypoints)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()
             enemy.quests.append(quest)
-
 
         """
         for i in range(1,10):

@@ -31,8 +31,6 @@ import src.gamestate
 
 continousOperation = 0
 main = None
-footer = None
-header = None
 frame = None
 urwid = None
 fixedTicks = False
@@ -62,6 +60,7 @@ class AbstractedDisplay(object):
 
     def __init__(self, urwidInstance):
         self.urwidInstance = urwidInstance
+        self.text = ""
 
     def set_text(self, text):
         if self.urwidInstance:
@@ -180,6 +179,10 @@ def setUpTcod():
     )
     """
 
+footer = None
+main = None
+header = None
+
 def setUpUrwid():
     """
     initialise console based rendering
@@ -192,15 +195,23 @@ def setUpUrwid():
     urwidMain = urwid.Text(u"")
     urwidFooter = urwid.Text(u"", align="right")
 
-    global main
     global footer
+    global main
     global header
+
     global frame
     global loop
 
-    main = AbstractedDisplay(urwidMain)
-    footer = AbstractedDisplay(urwidFooter)
-    header = AbstractedDisplay(urwidHeader)
+    if not src.gamestate.gamestate.header:
+        src.gamestate.gamestate.header = AbstractedDisplay(urwidHeader)
+    if not src.gamestate.gamestate.main:
+        src.gamestate.gamestate.main = AbstractedDisplay(urwidMain)
+    if not src.gamestate.gamestate.footer:
+        src.gamestate.gamestate.footer = AbstractedDisplay(urwidFooter)
+
+    header = src.gamestate.gamestate.header
+    main = src.gamestate.gamestate.main
+    footer = src.gamestate.gamestate.footer
 
     urwidMain.set_layout("left", "clip")
     frame = urwid.Frame(
@@ -220,13 +231,20 @@ def setUpNoUrwid():
     initialise rendering without a console
     """
 
-    global main
     global footer
+    global main
     global header
 
-    main = AbstractedDisplay(None)
-    footer = AbstractedDisplay(None)
-    header = AbstractedDisplay(None)
+    if not src.gamestate.gamestate.header:
+        src.gamestate.gamestate.header = AbstractedDisplay(None)
+    if not src.gamestate.gamestate.main:
+        src.gamestate.gamestate.main = AbstractedDisplay(None)
+    if not src.gamestate.gamestate.footer:
+        src.gamestate.gamestate.footer = AbstractedDisplay(None)
+
+    header = src.gamestate.gamestate.header
+    main = src.gamestate.gamestate.main
+    footer = src.gamestate.gamestate.footer
 
 # timestamps for detecting periods in inactivity etc
 lastLagDetection = time.time()
@@ -1847,8 +1865,10 @@ current macros:
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):
-        #src.gamestate.gamestate.save()
-        raise urwid.ExitMainLoop()
+        if hasattr(urwid,"ExitMainLoop"):
+            raise urwid.ExitMainLoop()
+        else:
+            raise SystemExit()
 
     """
     if key in ('S',):
@@ -1981,8 +2001,13 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 char.macroState["submenue"] = tmp
             elif selection == "quit":
                 char.macroState["submenue"] = None
+                char.specialRender = False
                 src.gamestate.gamestate.save()
-                raise urwid.ExitMainLoop()
+                if hasattr(urwid,"ExitMainLoop"):
+                    raise urwid.ExitMainLoop()
+                else:
+                    raise SystemExit()
+                return
             elif selection == "actions":
                 pass
             elif selection == "macros":
@@ -2173,6 +2198,7 @@ select what you want to observe
             "A",
         ):
 
+            """
             lastXposition = char.xPosition
             lastYposition = char.yPosition
             if key in ("W",):
@@ -2193,6 +2219,28 @@ select what you want to observe
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
                 return
+            """
+            
+            if isinstance(char.container,src.rooms.Room):
+                charPos = char.container.getPosition()
+            else:
+                charPos = (char.xPosition//15,char.yPosition//15,0)
+
+            if key in ("W",):
+                newPos = (charPos[0],charPos[1]-1,charPos[2])
+            if key in ("S",):
+                newPos = (charPos[0],charPos[1]+1,charPos[2])
+            if key in ("A",):
+                newPos = (charPos[0]-1,charPos[1],charPos[2])
+            if key in ("D",):
+                newPos = (charPos[0]+1,charPos[1],charPos[2])
+
+            quest = src.quests.GoToTile(targetPosition=newPos,paranoid=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(char)
+            quest.activate()
+
+            char.quests.insert(0,quest)
 
         # murder the next available character
         # bad pattern: player should be able to select whom to kill if there are multiple targets
@@ -3834,36 +3882,46 @@ class CharacterInfoMenu(SubMenu):
     def render(self,char):
         if char.dead:
             return ""
-        text = char.getDetailedInfo() + "\n\n"
+
+        text = ""
+
+        armorValue = None
+        if char.armor:
+            armorValue = char.armor.armorValue
+        weaponBaseDamage = None
+        if char.weapon:
+            weaponBaseDamage = char.weapon.baseDamage
+
+        text += "name:       %s\n" % char.name
+        text += "\n"
+        text += "\n"
+        text += "baseDamage: %s\n" % char.baseDamage
+        text += "weapon:     %s\n" % weaponBaseDamage
+        text += "armor:      %s\n" % armorValue
+        text += "faction:    %s\n" % char.faction
+        text += "health:     %s" % char.health + "\n"
+        text += "max health: %s" % char.maxHealth + "\n"
+
+        text += "\n"
+
+        if hasattr(char,"rank"):
+            text += "rank:       %s\n" % char.rank
+        if hasattr(char,"superior"):
+            text += "superior:   %s\n" % char.superior
 
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)
             text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
         text += "\n"
-
-        armorValue = None
-        if char.armor:
-            armorValue = char.armor.armorValue
-        baseDamage = None
-        if char.weapon:
-            baseDamage = char.weapon.baseDamage
-
-        text += "internal id: %s\n" % (char,)
-        if char.container:
-            text += "numChars: %s\n" % (len(char.container.characters))
         text += "lastJobOrder: %s\n" % char.lastJobOrder
-        text += "weapon: %s\n" % baseDamage
-        text += "armor: %s\n" % armorValue
-        text += "faction: %s\n" % char.faction
-        if hasattr(char,"rank"):
-            text += "rank: %s\n" % char.rank
-        if hasattr(char,"superior"):
-            text += "superior: %s\n" % char.superior
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
 
+        text += "\n\n\n"
+
+        text += char.getDetailedInfo() + "\n\n"
+        text += "internal id: %s\n" % (char,)
         char.setRegisterValue("HEALTh", char.health)
-        text += "HEALTh - %s" % char.health + "\n"
         char.setRegisterValue("SELFx", char.xPosition % 15)
         text += "SELFx - %s" % (char.xPosition % 15) + "\n"
         char.setRegisterValue("SELFy", char.yPosition % 15)
@@ -5922,7 +5980,6 @@ def render(char):
     return canvas
 
 multi_currentChar = None
-multi_chars = set()
 new_chars = set()
 charindex = 0
 
@@ -5936,7 +5993,7 @@ def keyboardListener(key):
     """
 
     global multi_currentChar
-    global multi_chars
+    multi_chars = src.gamestate.gamestate.multi_chars
     global charindex
 
     global continousOperation
@@ -6731,7 +6788,7 @@ def gameLoop(loop, user_data=None):
         runFixedTick = True
 
     global multi_currentChar
-    global multi_chars
+    multi_chars = src.gamestate.gamestate.multi_chars
     global new_chars
 
     firstRun = True

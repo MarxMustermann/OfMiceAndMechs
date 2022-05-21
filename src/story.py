@@ -3623,11 +3623,13 @@ class Siege2(BasicPhase):
         text = """
 You got ambushed while traveling to a base you will be serving in.
 
-Breach the base and go to the command centre. You will recieve further instructions on what your duty will be from the epoch artwork.
+Breach the siege ring and enter the base. Go to the command centre afterwards.
+You will recieve further instructions on what your duty will be from the epoch artwork.
+
 Relocate quickly. A group of spores is on its way to attack.
 
 The command centre is on coordinate 7/7.
-The epoch artwork is rendered as "EA".
+The epoch artwork is shown as EA.
 Use q to see your quests and shift+ESC to dock the quest menu.
 
 """

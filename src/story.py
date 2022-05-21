@@ -3716,6 +3716,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                 enemy.health = 10*i
                 enemy.baseDamage = i
                 enemy.faction = "invader"
+                enemy.godMode = True
                 treasureRoom.addCharacter(enemy, random.randint(2,11), random.randint(2,11))
 
                 quest = src.quests.SecureTile(toSecure=treasureRoom.getPosition())
@@ -3733,6 +3734,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         for pos in blockerRingPositions:
             for i in range(0,2):
                 enemy = src.characters.Monster(4,4)
+                enemy.godMode = True
                 enemy.health = 100
                 enemy.baseDamage = 5
                 currentTerrain.addCharacter(enemy, 15*pos[0]+random.randint(2,11), 15*pos[1]+random.randint(2,11))
@@ -3796,6 +3798,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                 if random.random() > 0.8 and not (x,y) in blockerRingPositions:
                     for j in range(0,random.randint(1,3)):
                         enemy = src.characters.Monster(4,4)
+                        enemy.godMode = True
                         enemy.health = 2*i
                         enemy.baseDamage = i
                         enemy.movementSpeed = 0.8
@@ -3811,6 +3814,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
         for i in range(1,12):
             enemy = src.characters.Monster(4,4)
+            enemy.godMode = True
             enemy.health = 10*i
             enemy.baseDamage = i
             currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
@@ -3841,6 +3845,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             waypoints = waypoints[1:]+[waypoints[0]]
 
             enemy = src.characters.Monster(4,4)
+            enemy.godMode = True
             enemy.health = 100
             enemy.baseDamage = 5
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
@@ -3858,6 +3863,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             waypoints = waypoints[1:]+[waypoints[0]]
 
             enemy = src.characters.Monster(4,4)
+            enemy.godMode = True
             enemy.health = 100
             enemy.baseDamage = 5
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
@@ -3870,22 +3876,6 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             quest.activate()
             enemy.quests.append(quest)
 
-        """
-        for i in range(1,10):
-            enemy = src.characters.Monster(4,4)
-            enemy.health = 10*i
-            enemy.baseDamage = i
-            currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
-            enemy.movementSpeed = 0.5
-
-            quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition())
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
-        """
-
-        addTreasureRoom((2,3),"Sword")
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
 
         self.checkDead()

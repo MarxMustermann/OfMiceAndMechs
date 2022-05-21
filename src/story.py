@@ -3559,8 +3559,6 @@ class Siege2(BasicPhase):
                 },
                 None,
            )
-        src.gamestate.gamestate.mainChar.registers["HOMEx"] = 7
-        src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
         mainRoom.storageRooms = []
 
         spawnRoom = architect.doAddRoom(
@@ -3572,6 +3570,9 @@ class Siege2(BasicPhase):
                        "size": [13, 13],
                 },
                 None)
+
+        src.gamestate.gamestate.mainChar.registers["HOMEx"] = spawnRoom.xPosition
+        src.gamestate.gamestate.mainChar.registers["HOMEy"] = spawnRoom.yPosition
         
         for x in range(1,6):
             item = src.items.itemMap["Sword"]()
@@ -3620,13 +3621,15 @@ class Siege2(BasicPhase):
         )
 
         text = """
-You arrived at your new base of operations.
+You got ambushed while traveling to a base you will be serving in.
 
-Move to the command centre and recieve instructions on what your tasks wil be.
-Relocate quickly. A group of mites is on its way to attack.
+Breach the base and go to the command centre. You will recieve further instructions on what your duty will be from the epoch artwork.
+Relocate quickly. A group of spores is on its way to attack.
 
-The command centre is on coordinate 7/7
+The command centre is on coordinate 7/7.
+The epoch artwork is rendered as "EA".
 Use q to see your quests and shift+ESC to dock the quest menu.
+
 """
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -3664,6 +3667,11 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
         mainRoom.addItem(epochArtwork,(6,6,0))
+
+        quest = src.quests.GoToTile(targetPosition=(7,5),description="reach base")
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        quest.activate()
+        src.gamestate.gamestate.mainChar.quests.append(quest)
 
         quest = src.quests.ActivateEpochArtwork(epochArtwork=epochArtwork)
         quest.assignToCharacter(src.gamestate.gamestate.mainChar)

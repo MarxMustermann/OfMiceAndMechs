@@ -7154,11 +7154,9 @@ class ActivateEpochArtwork(MetaQuestSequence):
 
         if not self.subQuests:
             if not character.getBigPosition() == (7,7,0):
-                print("wrong pos")
                 self.addQuest(GoToTile(targetPosition=(7,7)))
                 return
 
-            print("correct pos")
             if not character.getPosition() == (6,7,0):
                 quest = GoToPosition(targetPosition=(6,7,0))
                 quest.assignToCharacter(character)

@@ -36,6 +36,8 @@ class EpochArtwork(src.items.Item):
 
             quest = src.quests.DummyQuest("defend against the siege")
             character.assignQuest(quest)
+            character.registers["HOMEx"] = 7
+            character.registers["HOMEy"] = 7
             return
         super().apply(character)
 

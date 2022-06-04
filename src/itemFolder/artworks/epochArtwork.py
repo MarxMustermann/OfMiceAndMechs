@@ -175,6 +175,16 @@ class EpochArtwork(src.items.Item):
         character.macroState["submenue"].followUp = {"container":self,"method":"getEpochRewardsProxy","params":{"character":character}}
         return
 
+    def getLurkerThreashold(self):
+        if self.lastLurkerReward == None:
+            return 40
+        if self.lastLurkerReward == 40:
+            return 30
+        if self.lastLurkerReward == 30:
+            return 15
+        if self.lastLurkerReward == 15:
+            return 0
+
     def showEpochQuests(self,character):
         text = ""
         text += """
@@ -185,7 +195,8 @@ Survive this epoch and you get some extra resources.
 Also kill all invaders.
 
 The current epoch is still running for %s ticks.
-"""%(self.epochLength-(src.gamestate.gamestate.tick%self.epochLength),)
+You are in epoch %s reach epoch 15 to beat the siege.
+"""%(self.epochLength-(src.gamestate.gamestate.tick%self.epochLength),src.gamestate.gamestate.tick//self.epochLength,)
         if not self.eliminateGuardsDone:
             text += """
 
@@ -213,10 +224,9 @@ Eliminate them to break up the second siege ring.
 This will get you access to some extra ressources.
 """
 
-        elif not self.eliminateLurkersDone and 1==9:
+        elif not self.eliminateLurkersDone:
             enemies = self.getEnemiesWithTag("lurker")
 
-            
             text += """
 2. Eliminate the lurkers.
 
@@ -228,7 +238,8 @@ Eliminate them to break up the second siege ring.
 
 This will get you access to some extra ressources.
 Rewards will be given even for partially completing the task.
-"""
+Reduce the number of lurkers to %s to get a reward.
+"""%(self.getLurkerThreashold(),)
 
 
         submenue = src.interaction.TextMenu(text)
@@ -282,8 +293,9 @@ Rewards will be given even for partially completing the task.
 
         if self.eliminateLurkersInProgess and not self.eliminateLurkersDone:
             enemies = self.getEnemiesWithTag("lurker")
-            self.getThirdEpochReward(character)
-            return
+            if len(enemies) < self.getLurkerThreashold():
+                self.getLurkerEpochReward(character)
+                return
 
         if self.firstUse:
             self.getFirstEpochReward(character)
@@ -298,6 +310,31 @@ Rewards will be given even for partially completing the task.
             return
 
         super().apply(character)
+
+    def getLurkerEpochReward(self,character):
+        self.lastLurkerReward = self.getLurkerThreashold()
+
+        if not self.lastLurkerReward == 0:
+            text = """
+You removed some of the lurkers.
+
+You get a reward of 5 glass tears for this.
+Reduce them to %s to get a further reward.
+"""%(self.getLurkerThreashold(),)
+            self.changeCharges(5)
+        else:
+            text = """
+You eliminated all lurkers.
+
+You comleted all side quests. More should come with further development on the game.
+
+You also recieved 2 glass tears for this. Don't spent them all at once :-)
+"""
+            self.changeCharges(2)
+        amount = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)*30
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
 
     def getEpochSurvivedReward(self,character):
         amount = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)*30

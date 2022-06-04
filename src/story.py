@@ -4111,6 +4111,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
 
         orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all","amount":0})
         orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
@@ -4247,8 +4248,8 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                     for j in range(0,random.randint(1,3)):
                         enemy = src.characters.Monster(4,4)
                         enemy.godMode = True
-                        enemy.health = 2*i
-                        enemy.baseDamage = i
+                        enemy.health = 15*i
+                        enemy.baseDamage = 4*i
                         enemy.movementSpeed = 0.8
                         currentTerrain.addCharacter(enemy, 15*x+random.randint(2,11), 15*y+random.randint(2,11))
                         enemy.specialDisplay = "ss"

@@ -35,7 +35,8 @@ class EpochArtwork(src.items.Item):
         self.eliminatePatrolsDone = False
         self.eliminateLurkersInProgess = False
         self.eliminateLurkersDone = False
-        self.lastEpochChargeReward = 0
+        self.lastEpochSurvivedReward = 0
+        self.lastLurkerReward = None
 
         self.charges = 0
 
@@ -181,6 +182,7 @@ class EpochArtwork(src.items.Item):
 
 Each epoch a wave of enemies is spawned that you need to defend against.
 Survive this epoch and you get some extra resources.
+Also kill all invaders.
 
 The current epoch is still running for %s ticks.
 """%(self.epochLength-(src.gamestate.gamestate.tick%self.epochLength),)
@@ -211,7 +213,10 @@ Eliminate them to break up the second siege ring.
 This will get you access to some extra ressources.
 """
 
-        elif not self.eliminateLurkersDone:
+        elif not self.eliminateLurkersDone and 1==9:
+            enemies = self.getEnemiesWithTag("lurker")
+
+            
             text += """
 2. Eliminate the lurkers.
 
@@ -246,6 +251,13 @@ Rewards will be given even for partially completing the task.
         return enemies
 
     def apply(self,character):
+        if src.gamestate.gamestate.tick//self.epochLength > self.lastEpochSurvivedReward:
+            enemies = self.getEnemiesWithTag("invader")
+
+            if not enemies:
+                self.getEpochSurvivedReward(character)
+                return
+
         if self.eliminateGuardsInProgess and not self.eliminateGuardsDone:
             enemies = self.getEnemiesWithTag("blocker")
 
@@ -270,6 +282,8 @@ Rewards will be given even for partially completing the task.
 
         if self.eliminateLurkersInProgess and not self.eliminateLurkersDone:
             enemies = self.getEnemiesWithTag("lurker")
+            self.getThirdEpochReward(character)
+            return
 
         if self.firstUse:
             self.getFirstEpochReward(character)
@@ -282,7 +296,21 @@ Rewards will be given even for partially completing the task.
             character.registers["HOMEx"] = 7
             character.registers["HOMEy"] = 7
             return
+
         super().apply(character)
+
+    def getEpochSurvivedReward(self,character):
+        amount = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)*30
+        text = """
+You survived the siege so far and a new epoch has started with the invaders dead.
+
+For surviving and eliminating the invaders you get an additional %s glass tears.
+"""%(amount,)
+        self.lastEpochSurvivedReward = src.gamestate.gamestate.tick//self.epochLength
+        self.changeCharges(amount)
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
 
     def getThirdEpochReward(self,character):
         text = """

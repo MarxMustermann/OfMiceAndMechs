@@ -5891,7 +5891,7 @@ def render(char):
     ):
         chars = src.gamestate.gamestate.mainChar.room.render()
     else:
-        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite, centerX - halfviewsite))
+        chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite -1, centerX - halfviewsite-1))
         miniMapChars = []
 
         '''

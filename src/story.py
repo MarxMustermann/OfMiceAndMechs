@@ -4296,7 +4296,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             enemy = src.characters.Monster(4,4)
             enemy.godMode = True
             enemy.health = 100
-            enemy.baseDamage = 5
+            enemy.baseDamage = 7
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
             enemy.specialDisplay = "X-"
             enemy.faction = "invader"
@@ -4315,7 +4315,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             enemy = src.characters.Monster(4,4)
             enemy.godMode = True
             enemy.health = 100
-            enemy.baseDamage = 5
+            enemy.baseDamage = 7
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
             enemy.specialDisplay = "X-"
             enemy.faction = "invader"

@@ -358,6 +358,7 @@ The lurkers are not partiulary agressive, but make movement harder by attacking 
 
 Kill them all.
 To help you with that you got the universal leaders blessing.
+(base damage +2 max health +20)
 
 Use this item to get further instructions and to claim your rewards.
 """
@@ -383,6 +384,7 @@ You eliminated the siege guards, that breaks the innermost siege ring.
 
 Break the second siege ring now by eliminating the patrols around the base.
 To help you with that you got the universal leaders blessing.
+(base damage +2 max health +20)
 
 Use this item to get further instructions and to claim your rewards.
 """
@@ -413,6 +415,7 @@ You are beeing sieged and your command is to hold the position and go down in gl
 Waves will appear every %s ticks. Each wave will be stronger than the last.
 
 Defend yourself and surive as long as possible. To help you with that you got the universal leaders blessing.
+(base damage +2 max health +20)
 
 Use the artworks in this room to coordinate the bases defences and use this item again to get more instructions.
 """%(self.epochLength,)

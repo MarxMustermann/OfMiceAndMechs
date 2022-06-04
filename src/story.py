@@ -4060,7 +4060,8 @@ You got ambushed while traveling to the outpost you were assigned to serve in.
 Breach the siege ring and enter the base. Go to the command centre afterwards.
 You will recieve further instructions on what your duty will be from the epoch artwork.
 
-Relocate quickly. A group of spores is on its way to attack.
+Grab some of the equipment and relocate quickly. A group of spores is on its way to attack.
+They are shown as [- and will chase you.
 
 The command centre is on coordinate 7/7.
 The epoch artwork is shown as EA.
@@ -4248,8 +4249,8 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                     for j in range(0,random.randint(1,3)):
                         enemy = src.characters.Monster(4,4)
                         enemy.godMode = True
-                        enemy.health = 15*i
-                        enemy.baseDamage = 4*i
+                        enemy.health = 15*j
+                        enemy.baseDamage = 4*j
                         enemy.movementSpeed = 0.8
                         currentTerrain.addCharacter(enemy, 15*x+random.randint(2,11), 15*y+random.randint(2,11))
                         enemy.specialDisplay = "ss"

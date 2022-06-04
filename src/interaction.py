@@ -6932,8 +6932,6 @@ def advanceChar(char,removeChars):
                 )
             elif hasAutosolveQuest:
                 char.runCommandString("+")
-                if char == src.gamestate.gamestate.mainChar:
-                    print("run autosolver")
             else:
                 if tcod:
                     renderGameDisplay()

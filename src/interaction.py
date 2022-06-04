@@ -2198,29 +2198,6 @@ select what you want to observe
             "A",
         ):
 
-            """
-            lastXposition = char.xPosition
-            lastYposition = char.yPosition
-            if key in ("W",):
-                charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
-            if key in ("S",):
-                charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid)
-            if key in ("D",):
-                charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid)
-            if key in ("A",):
-                charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid)
-
-            if (
-                not lastXposition == char.xPosition
-                or not lastYposition == char.yPosition
-            ):
-                char.runCommandString(key)
-
-            if charState["itemMarkedLast"]:
-                handleCollision(char,charState)
-                return
-            """
-            
             if isinstance(char.container,src.rooms.Room):
                 charPos = char.container.getPosition()
             else:
@@ -6846,10 +6823,16 @@ def gameLoop(loop, user_data=None):
             if tcod:
                 getTcodEvents()
 
+            hasAutosolveQuest = False
+            for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+                if not quest.autoSolve:
+                    continue
+                hasAutosolveQuest = True
+
             global continousOperation
             if (
                 src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
-            ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance:
+            ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest:
                 continousOperation += 1
 
                 if not len(cinematics.cinematicQueue):
@@ -6949,11 +6932,20 @@ def advanceChar(char,removeChars):
                 )
             elif hasAutosolveQuest:
                 char.runCommandString("+")
+                if char == src.gamestate.gamestate.mainChar:
+                    print("run autosolver")
             else:
                 if tcod:
                     renderGameDisplay()
                     startTime = time.time()
+
                     while (not state["commandKeyQueue"]) and char.timeTaken < 1:
+                        hasAutosolveQuest = False
+                        for quest in char.getActiveQuests():
+                            if not quest.autoSolve:
+                                continue
+                            hasAutosolveQuest = True
+
                         getTcodEvents()
                         if src.gamestate.gamestate.timedAutoAdvance:
                             if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:
@@ -6963,7 +6955,7 @@ def advanceChar(char,removeChars):
             for quest in char.getActiveQuests():
                 if not quest.autoSolve:
                     continue
-        hasAutosolveQuest = True
+                hasAutosolveQuest = True
 
 
         char.timeTaken -= 1

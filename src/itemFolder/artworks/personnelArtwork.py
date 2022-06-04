@@ -131,6 +131,7 @@ class PersonnelArtwork(src.items.Item):
                 if subleader.dead:
                     continue
 
+                foundSubsubleader = None
                 for subsubleader in subleader.subordinates:
                     if subsubleader.dead:
                         continue
@@ -174,5 +175,7 @@ class PersonnelArtwork(src.items.Item):
         self.container.addCharacter(char,5,6)
         char.runCommandString("********")
         char.godMode = True
+
+        return char
 
 src.items.addType(PersonnelArtwork)

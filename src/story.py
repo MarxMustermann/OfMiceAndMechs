@@ -2756,7 +2756,7 @@ class Tutorials(BasicPhase):
             industry: how things are produced
             ghuls: how to use ghuls and commands
         """
-        options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("BackToTheRoots","start main game")]
+        options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("Siege2","start main game")]
         submenu = src.interaction.SelectionMenu(
             "what do you want to know more about?\n(press w/s to change selection. press enter/space/d/j to select)\n", options,
             targetParamName="tutorialToStart",
@@ -2783,13 +2783,18 @@ class Tutorials(BasicPhase):
             self.restartTutorial()
             return
 
-        if extraInfo["tutorialToStart"] == "BackToTheRoots":
-            nextPhase = BackToTheRoots()
+        if extraInfo["tutorialToStart"] == "Siege2":
+            nextPhase = Siege2()
             nextPhase.start()
             return
 
         if extraInfo["tutorialToStart"] == "BasicUsageTutorial":
             nextPhase = BasicUsageTutorial()
+            nextPhase.start()
+            return
+
+        if extraInfo["tutorialToStart"] == "FightingTutorial":
+            nextPhase = FightingTutorial()
             nextPhase.start()
             return
 
@@ -2803,6 +2808,435 @@ class Tutorials(BasicPhase):
     def restartTutorial(self):
         nextPhase = Tutorials()
         nextPhase.start()
+
+class FightingTutorial(BasicPhase):
+    """
+    """
+
+    def __init__(self, seed=0):
+        super().__init__("FightingTutorial", seed=seed)
+
+        self.enemies = []
+
+    def start(self, seed=0):
+        src.gamestate.gamestate.terrainMap[7][7] = src.terrains.Nothingness()
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
+            src.gamestate.gamestate.mainChar, 124, 109
+        )
+
+        text = """
+This tutorial will explain how fighting works in this game.
+
+it will explain:
+ * how to attack
+ * health and healing
+ * weapons and armor
+ * weapons and armor quality
+ * environments in fights
+ * not to fight
+
+press space to start
+"""
+        src.gamestate.gamestate.mainChar.addMessage(text)
+
+        src.gamestate.gamestate.mainChar.solvers.append("NaiveMurderQuest")
+        src.gamestate.gamestate.mainChar.solvers.append("NaiveActivateQuest")
+        src.gamestate.gamestate.mainChar.personality["autoFlee"] = False
+        src.gamestate.gamestate.mainChar.personality["abortMacrosOnAttack"] = False
+        src.gamestate.gamestate.mainChar.personality["autoCounterAttack"] = False
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "tutorialHowToAttack",
+        }
+
+    def tutorialHowToAttack(self):
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+
+        src.gamestate.gamestate.mainChar.health = 99
+        
+        enemy = src.characters.Monster(4,4)
+        enemy.health = 10
+        enemy.baseDamage = 10
+        enemy.maxHealth = 10
+        enemy.godMode = True
+
+        self.enemies.append(enemy)
+
+        currentTerrain.addCharacter(enemy, 8*15+9, 7*15+8)
+
+        text = """
+Attacking is pretty simple, you move into an enemy and you will attack that enemy.
+
+I spawned an enemy nearby. It looks something like <- 
+
+Kill it.
+
+press space to fight
+
+reminder:
+ * press x to see message log
+ * press v to see your characters stats
+"""
+        src.gamestate.gamestate.mainChar.addMessage(text)
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        self.tutorialCheckFirstFight()
+
+    def tutorialCheckFirstFight(self):
+        if not self.enemies[0].dead:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckFirstFight"})
+            src.gamestate.gamestate.mainChar.container.addEvent(event)
+        else:
+            self.tutorialHowToHeal()
+
+    def tutorialHowToHeal(self):
+        mainChar = src.gamestate.gamestate.mainChar
+        charPos = mainChar.getBigPosition()
+
+        item = src.items.itemMap["GooFlask"]()
+        item.uses = 100
+        mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Vial"]()
+        item.uses = 10
+        mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+5,0))
+
+        text = """
+On top of the screen you should see a health bar. 
+You should see that you have lost some heath.
+
+There are 2 main healing items in this game:
+
+Goo flasks are usually used for food, but also heal 1 health each time you drink.
+Vials are dedicated healing items and heal 10 health per usage.
+
+I droped some healing items nearby. Heal yourself using these.
+
+press space to start healing
+
+reminder:
+ * press j to use items
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        self.tutorialCheckHeal()
+
+    def tutorialCheckHeal(self):
+        if not src.gamestate.gamestate.mainChar.health == 100:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckHeal"})
+            src.gamestate.gamestate.mainChar.container.addEvent(event)
+        else:
+            self.tutorialWeapons()
+
+    def tutorialWeapons(self):
+        mainChar = src.gamestate.gamestate.mainChar
+        charPos = mainChar.getBigPosition()
+
+        item = src.items.itemMap["Sword"]()
+        item.baseDamage = 15
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["Armor"]()
+        item.armorValue = 2
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+10,0))
+
+        text = """
+As you can imagine fighting with weapons and armor will be more effective.
+
+Swords are the common weapons and are shown as wt.
+Armor is shown as ar.
+
+I dropped a sword and armor nearby.
+Equip those by using them.
+
+press space to start equiping
+
+reminder:
+ * press v to see your character stats
+ * press j to use items
+ * press j to use items
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        self.tutorialCheckWeapon()
+
+    def tutorialCheckWeapon(self):
+        if not (src.gamestate.gamestate.mainChar.weapon and src.gamestate.gamestate.mainChar.armor):
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckWeapon"})
+            src.gamestate.gamestate.mainChar.container.addEvent(event)
+        else:
+            self.tutorialWeapongrades()
+
+    def tutorialWeapongrades(self):
+        mainChar = src.gamestate.gamestate.mainChar
+        charPos = mainChar.getBigPosition()
+
+        item = src.items.itemMap["Sword"]()
+        item.baseDamage = 20
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+2,0))
+
+        item = src.items.itemMap["Sword"]()
+        item.baseDamage = 19
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+3,0))
+
+        item = src.items.itemMap["Sword"]()
+        item.baseDamage = 17
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+4,0))
+
+        item = src.items.itemMap["Sword"]()
+        item.baseDamage = 25
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+5,0))
+
+        item = src.items.itemMap["Sword"]()
+        item.baseDamage = 18
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+6,0))
+
+
+        item = src.items.itemMap["Armor"]()
+        item.armorValue = 2
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+2,0))
+        
+        item = src.items.itemMap["Armor"]()
+        item.armorValue = 5
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+3,0))
+
+        item = src.items.itemMap["Armor"]()
+        item.armorValue = 3
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+4,0))
+
+        item = src.items.itemMap["Armor"]()
+        item.armorValue = 4
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+5,0))
+
+        item = src.items.itemMap["Armor"]()
+        item.armorValue = 1
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+6,0))
+
+
+        text = """
+Weapons and armor have different qualities.
+Those qualities determine how hard a sword hits or how much damage armor absorbs.
+
+Those stats can be seen in 3 ways:
+ * examining the item
+ * in the message log when equiping it
+ * in the character stats when equipped
+
+When equipping a weapon or armor you drop the one you are currently wearing.
+
+I dropped some swords and armor nearby.
+Equip the best of each.
+
+press space to start equiping
+
+reminder:
+ * press v to see your character stats
+ * press e to examine items
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        self.tutorialCheckWeapongrades()
+
+    def tutorialCheckWeapongrades(self):
+        if not ((src.gamestate.gamestate.mainChar.weapon and src.gamestate.gamestate.mainChar.weapon.baseDamage == 25) and 
+                (src.gamestate.gamestate.mainChar.armor and src.gamestate.gamestate.mainChar.armor.armorValue == 5)):
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckWeapongrades"})
+            src.gamestate.gamestate.mainChar.container.addEvent(event)
+        else:
+            self.tutorialCombatEnvironment()
+
+    def tutorialCombatEnvironment(self):
+        mainChar = src.gamestate.gamestate.mainChar
+        charPos = mainChar.getBigPosition()
+
+        mainChar.weapon = None
+        mainChar.armor = None
+
+        container = mainChar.container
+        container.removeCharacter(mainChar)
+
+        src.gamestate.gamestate.terrainMap[7][7] = src.terrains.Nothingness()
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(
+            mainChar,charPos[0]*15+10,charPos[1]*15+4
+        )
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+3,0))
+        
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+3,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+10,charPos[1]*15+3,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+11,charPos[1]*15+3,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+11,charPos[1]*15+4,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+11,charPos[1]*15+5,0))
+
+        item = src.items.itemMap["Scrap"](amount=5)
+        mainChar.container.addItem(item,(charPos[0]*15+11,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+5,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+5,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+6,0))
+        
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+7,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+4,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+6,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+7,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+4,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+9,0))
+
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+7,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+7,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+8,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+4,charPos[1]*15+7,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+8,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+9,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+9,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+7,charPos[1]*15+3,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+2,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+7,charPos[1]*15+1,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+1,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+4,charPos[1]*15+2,0))
+        
+        item = src.items.itemMap["LandMine"]()
+        mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+1,0))
+        
+        item = src.items.itemMap["Scrap"](amount=20)
+        mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+3,0))
+
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+
+        enemies = []
+        for pos in ((8,2),(10,2),(12,2),(12,4),(12,6),):
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 10
+            enemy.baseDamage = 10
+            enemy.maxHealth = 10
+            enemy.godMode = True
+
+            quest = src.quests.SecureTile(toSecure=charPos)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            self.enemies.append(enemy)
+
+            currentTerrain.addCharacter(enemy, charPos[0]*15+pos[0], charPos[1]*15+pos[1])
+
+        text = """
+Combats rarely happen in empty spaces.
+Usually there are scrap piles, machines or other things in the way.
+You can use those to block off enemies and keep them busy for a while.
+
+There are other items that effect fighting. Landmines for example.
+You should not step on them, but if you can make enemies step onto them they might be useful.
+
+I spawned some scrap, random items, landmines and enemies on this field.
+Also i took your weapos away to make the fight more fair.
+
+Kill the enemies and try to use the environment to your advantage.
+
+press space to start killing
+
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        self.tutorialCheckFight2()
+
+    def tutorialCheckFight2(self):
+        foundSurvivor = False
+        for enemy in self.enemies:
+            if not enemy.dead:
+                foundSurvivor = True
+
+        if foundSurvivor:
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+            event.setCallback({"container": self, "method": "tutorialCheckFight2"})
+            src.gamestate.gamestate.mainChar.container.addEvent(event)
+        else:
+            self.tutorialHowToNotFight()
 
 class BasicUsageTutorial(BasicPhase):
     """
@@ -3621,7 +4055,7 @@ class Siege2(BasicPhase):
         )
 
         text = """
-You got ambushed while traveling to a base you will be serving in.
+You got ambushed while traveling to the outpost you were assigned to serve in.
 
 Breach the siege ring and enter the base. Go to the command centre afterwards.
 You will recieve further instructions on what your duty will be from the epoch artwork.
@@ -3664,8 +4098,22 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         mainRoom.addItem(personnelArtwork,(9,1,0))
-        personnelArtwork.spawnSet(src.gamestate.gamestate.mainChar)
+        #personnelArtwork.spawnSet(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
+        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+
         orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all","amount":0})
+        orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
         
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
         mainRoom.addItem(epochArtwork,(6,6,0))
@@ -3805,6 +4253,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                         currentTerrain.addCharacter(enemy, 15*x+random.randint(2,11), 15*y+random.randint(2,11))
                         enemy.specialDisplay = "ss"
                         enemy.faction = "invader"
+                        enemy.tag = "lurker"
 
                         quest = src.quests.SecureTile(toSecure=(x,y))
                         quest.autoSolve = True
@@ -3851,6 +4300,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
             enemy.specialDisplay = "X-"
             enemy.faction = "invader"
+            enemy.tag = "patrol"
 
             quest = src.quests.PatrolQuest(waypoints=waypoints)
             quest.autoSolve = True
@@ -3869,6 +4319,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
             enemy.specialDisplay = "X-"
             enemy.faction = "invader"
+            enemy.tag = "patrol"
 
             quest = src.quests.PatrolQuest(waypoints=waypoints)
             quest.autoSolve = True
@@ -3901,8 +4352,13 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
             currentTerrain.addEvent(event)
 
-
     def startRound(self):
+        if self.numRounds == 15:
+            src.gamestate.gamestate.uiElements = [
+                    {"type":"text","offset":(15,10), "text":"You won the game"},
+                    ]
+            return
+
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
         remainingEnemyCounter = 0
@@ -3929,8 +4385,6 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
         counter = 0
         monsterStartPos = random.choice([(112,22),(202,112),(112,202),(22,112)])
-        print("survivors")
-        print(remainingEnemyCounter)
         while counter < remainingEnemyCounter:
             enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
             enemy.faction = "invader"
@@ -3950,6 +4404,10 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
         numMonsters = 10+self.numRounds*2+remainingEnemyCounter
+
+        if self.numRounds == 1:
+            numMonsters = 0
+            print("skipped wave")
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])

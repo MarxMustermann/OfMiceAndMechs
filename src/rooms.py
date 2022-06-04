@@ -789,6 +789,12 @@ class Room(src.saveing.Saveable):
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
 
+    def getItemByType(self,itemType):
+        for item in self.itemsOnFloor:
+            if item.type == itemType:
+                return item
+        return None
+
     def render(self):
         """
         render the room

@@ -60,6 +60,7 @@ parser.add_argument(
 )
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
 parser.add_argument("-notcod", "--notcod", action="store_true", help="do not use tcod renderer")
+parser.add_argument("-df", "--difficulty", type=str, help="set the difficulty for this run")
 args = parser.parse_args()
 
 ################################################################################
@@ -162,6 +163,62 @@ else:
             gameIndex = index
 
 if not shouldLoad:
+    
+    if not args.difficulty:
+        difficulties = [
+                (
+                    "easy",
+                    "easy (maybe best to start with)",
+                    "e"
+                ),
+                (
+                    "normal",
+                    "normal (i play this)",
+                    "n"
+                )
+        ]
+
+        text = "\n"
+        for difficulty in difficulties:
+            text += "%s: %s\n" % (
+                difficulty[2],
+                difficulty[1],
+            )
+
+        if args.notcod:
+            scenarioNum = input("select difficulty (type number)\n\n%s\n\n" % (text,))
+            scenario = scenarios[int(scenarioNum)][0]
+        else:
+            
+            root_console.clear()
+            root_console.print(x=3,y=2,string=text)
+
+            while 1:
+                context.present(root_console)
+
+                foundEvent = False
+                events = tcod.event.get()
+                for event in events:
+                    if isinstance(event,tcod.event.MouseButtonUp):
+                        context.convert_event(event)
+                        mainSelection = event.tile.y-5
+                        if mainSelection in (0,1,2):
+                            foundEvent = True
+
+                    if isinstance(event,tcod.event.KeyDown):
+                        key = event.sym
+                        if key == tcod.event.KeySym.n:
+                            chosenDifficuly = 10
+                            foundEvent = True
+                        if key == tcod.event.KeySym.e:
+                            chosenDifficuly = 5
+                            foundEvent = True
+
+                if foundEvent:
+                    break
+    else:
+        chosenDifficuly = args.difficulty
+
     if not args.scenario:
         scenarios = [
             (
@@ -266,7 +323,7 @@ if not shouldLoad:
 
             if mainSelection == 0:
                 #print("loading main game")
-                scenario = "BackToTheRoots"
+                scenario = "siege2"
 
             elif mainSelection == 1:
                 #print("loading tutorial")

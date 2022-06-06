@@ -4099,7 +4099,6 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         mainRoom.addItem(personnelArtwork,(9,1,0))
-        #personnelArtwork.spawnSet(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
@@ -4153,13 +4152,13 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
             for i in range(1,25):
                 item = src.items.itemMap[itemType]()
-                treasureRoom.addItem(item,(1,1,0))
+                #treasureRoom.addItem(item,(1,1,0))
             for i in range(1,25):
                 item = src.items.itemMap[itemType]()
-                treasureRoom.addItem(item,(2,1,0))
+                #treasureRoom.addItem(item,(2,1,0))
             for i in range(1,25):
                 item = src.items.itemMap[itemType]()
-                treasureRoom.addItem(item,(3,1,0))
+                #treasureRoom.addItem(item,(3,1,0))
 
             for i in range(random.randint(11,17),random.randint(18,25)):
                 enemy = src.characters.Monster(4,4)
@@ -4337,8 +4336,8 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
     def checkDead(self):
 
-        text = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//1000+1,src.gamestate.gamestate.tick%1000)
-        self.wavecounterUI["text"] = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//1000+1,src.gamestate.gamestate.tick%1000)
+        text = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
+        self.wavecounterUI["text"] = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
         self.wavecounterUI["offset"] = (82-len(text)//2,5)
 
         if src.gamestate.gamestate.mainChar.dead:
@@ -4405,7 +4404,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         #numMonsters = 1
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
-        numMonsters = 10+self.numRounds*2+remainingEnemyCounter
+        numMonsters = 10+self.numRounds+remainingEnemyCounter
 
         if self.numRounds == 1:
             numMonsters = 0
@@ -4418,7 +4417,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             enemy.faction = "invader"
             enemy.tag = "wave"
             terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
-            enemy.movementSpeed = 0.3
+            enemy.movementSpeed = 0.7
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True

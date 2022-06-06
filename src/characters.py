@@ -2163,7 +2163,9 @@ class Monster(Character):
 
             super().die(reason, addCorpse=False)
         else:
-            super().die(reason, addCorpse)
+            new = src.items.itemMap["MoldFeed"]()
+            self.container.addItem(new, self.getPosition())
+            super().die(reason, addCorpse=False)
 
     # bad code: very specific and unclear
     def enterPhase2(self):

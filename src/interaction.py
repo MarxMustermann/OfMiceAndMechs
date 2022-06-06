@@ -50,8 +50,11 @@ def advanceGame():
         for character in item.characters:
             character.advance()
 
+
     src.gamestate.gamestate.tick += 1
 
+    if src.gamestate.gamestate.tick%100 == 15:
+        src.gamestate.gamestate.save()
 
 class AbstractedDisplay(object):
     """
@@ -1869,12 +1872,6 @@ current macros:
             raise urwid.ExitMainLoop()
         else:
             raise SystemExit()
-
-    """
-    if key in ('S',):
-        src.gamestate.gamestate.save()
-        return
-    """
 
     if key in ("<",):
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -6891,7 +6888,6 @@ def advanceChar(char,removeChars):
 
     # do random action
     if not (len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest):
-        #if not char == src.gamestate.gamestate.mainChar:
         char.startIdling()
 
     """

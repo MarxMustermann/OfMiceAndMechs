@@ -100,8 +100,21 @@ class PersonnelArtwork(src.items.Item):
     def spawnRank(self,rank,actor,isMilitary=False):
         cityLeader = self.fetchCityleader()
 
+        if rank == 3:
+            if cityLeader and not cityLeader.dead:
+                actor.addMessage("only one rank 3 possible")
+                return
+
         if rank == 4:
-            if not cityLeader or self.cityLeader.dead or len(cityLeader.subordinates) > 2:
+            if not cityLeader or self.cityLeader.dead:
+                actor.addMessage("no rank 3 to hook into")
+                return
+
+            for subleader in cityLeader.subordinates:
+                if subleader.dead:
+                    cityLeader.subordinates.remove(subleader)
+
+            if len(cityLeader.subordinates) > 2:
                 actor.addMessage("no rank 3 to hook into")
                 return
 
@@ -114,6 +127,9 @@ class PersonnelArtwork(src.items.Item):
             for subleader in cityLeader.subordinates:
                 if subleader.dead:
                     continue
+                for subsubleader in subleader.subordinates:
+                    if subsubleader.dead:
+                        subleader.subordinates.remove(subsubleader)
                 if len(subleader.subordinates) > 2:
                     continue
                 foundSubleader = subleader
@@ -127,11 +143,11 @@ class PersonnelArtwork(src.items.Item):
                 actor.addMessage("no rank 3 to hook into")
                 return
 
+            foundSubsubleader = None
             for subleader in cityLeader.subordinates:
                 if subleader.dead:
                     continue
 
-                foundSubsubleader = None
                 for subsubleader in subleader.subordinates:
                     if subsubleader.dead:
                         continue
@@ -139,9 +155,9 @@ class PersonnelArtwork(src.items.Item):
                         continue
                     foundSubsubleader = subsubleader
 
-                if not foundSubsubleader:
-                    actor.addMessage("no rank 5 to hook into")
-                    return
+            if not foundSubsubleader:
+                actor.addMessage("no rank 5 to hook into")
+                return
 
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition

@@ -2017,7 +2017,7 @@ class Nothingness(Terrain):
 
                 if not self.hidden:
                     display = displayChar
-                    display = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i)}},content=display)
+                    #display = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i)}},content=display)
                     line.append(display)
                 else:
                     line.append(src.canvas.displayChars.void)

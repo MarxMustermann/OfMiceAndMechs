@@ -144,19 +144,23 @@ class GameState(src.saveing.Saveable):
         """
 
         import pickle
+        import shutil
         try:
-            copyfile("gamestate/gamestate_%s"%(self.gameIndex,), "gamestate/gamestate_%s_backup"%(self.gameIndex,))
+            shutil.copyfile("gamestate/gamestate_%s"%(self.gameIndex,), "gamestate/gamestate_%s_backup"%(self.gameIndex,))
         except:
             pass
 
-        file = open("gamestate/gamestate_%s"%(self.gameIndex,), 'wb')
+        try:
+            file = open("gamestate/gamestate_%s"%(self.gameIndex,), 'wb')
 
-        # dump information to that file
-        print(src.gamestate.gamestate.mainChar.specialRender)
-        pickle.dump(self, file)
+            # dump information to that file
+            print(src.gamestate.gamestate.mainChar.specialRender)
+            pickle.dump(self, file)
 
-        # close the file
-        file.close()
+            # close the file
+            file.close()
+        except:
+            shutil.copyfile("gamestate/gamestate_%s_backup"%(self.gameIndex,), "gamestate/gamestate_%s"%(self.gameIndex,))
 
         try:
             # register the save

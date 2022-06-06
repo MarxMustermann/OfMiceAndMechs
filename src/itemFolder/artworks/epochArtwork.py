@@ -133,9 +133,9 @@ class EpochArtwork(src.items.Item):
                 char = personnelArtwork.spawnRank6(character)
                 if char:
                     text = "NPC spawned"
+                    self.changeCharges(-10)
                 else:
                     text = "Something went wrong. No NPC spawned. see your message log (x) for what went wrong"
-                self.changeCharges(-10)
         elif extraInfo["rewardType"] == "rank 5":
             if not self.charges > 14:
                 text = "not enough glass tears"
@@ -144,31 +144,31 @@ class EpochArtwork(src.items.Item):
                 char = personnelArtwork.spawnRank5(character)
                 if char:
                     text = "NPC spawned"
+                    self.changeCharges(-15)
                 else:
                     text = "Something went wrong. No NPC spawned. see your message log (x) for what went wrong"
-                self.changeCharges(-15)
         elif extraInfo["rewardType"] == "rank 4":
             if not self.charges > 19:
                 text = "not enough glass tears"
             else:
-                personnelArtwork = se5f.container.getItemByType("PersonnelArtwork")
-                char = personnelArtwork.spawnRank5(character)
+                personnelArtwork = self.container.getItemByType("PersonnelArtwork")
+                char = personnelArtwork.spawnRank4(character)
                 if char:
                     text = "NPC spawned"
+                    self.changeCharges(-20)
                 else:
                     text = "Something went wrong. No NPC spawned. see your message log (x) for what went wrong"
-                self.changeCharges(-20)
         elif extraInfo["rewardType"] == "rank 3":
             if not self.charges > 19:
                 text = "not enough glass tears"
             else:
                 personnelArtwork = self.container.getItemByType("PersonnelArtwork")
-                char = personnelArtwork.spawnRank5(character)
+                char = personnelArtwork.spawnRank3(character)
                 if char:
                     text = "NPC spawned"
+                    self.changeCharges(-25)
                 else:
                     text = "Something went wrong. No NPC spawned. see your message log (x) for what went wrong"
-                self.changeCharges(-25)
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
@@ -263,7 +263,7 @@ Reduce the number of lurkers to %s to get a reward.
 
     def apply(self,character):
         if src.gamestate.gamestate.tick//self.epochLength > self.lastEpochSurvivedReward:
-            enemies = self.getEnemiesWithTag("invader")
+            enemies = self.getEnemiesWithTag("wave")
 
             if not enemies:
                 self.getEpochSurvivedReward(character)

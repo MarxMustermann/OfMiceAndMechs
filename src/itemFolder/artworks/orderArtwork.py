@@ -46,10 +46,12 @@ class OrderArtwork(src.items.Item):
             options.append(("non staff","non staff NPCs"))
             options.append(("idle","idle NPCs"))
             options.append(("non idle","non idle NPCs"))
+            options.append(("rank 3","rank 3 NPCs"))
             options.append(("rank 4","rank 4 NPCs"))
             options.append(("rank 5","rank 5 NPCs"))
             options.append(("rank 6","rank 6 NPCs"))
             options.append(("rank 5-6","rank 5-6 NPCs"))
+            options.append(("non staff rank 6","non staff rank 6 NPCs"))
             options.append(("idle rank 6","idle rank 6 NPCs"))
             options.append(("idle non staff","idle non staff NPCs"))
             options.append(("idle non staff rank 6","idle rank 6 non staff NPCs"))
@@ -67,7 +69,8 @@ class OrderArtwork(src.items.Item):
             else:
                 options.append(("restockRoom","restock"))
             options.append(("BeUsefull","be usefull"))
-            options.append(("cancel","cancel quests"))
+            options.append(("cancel","cancel current quest"))
+            options.append(("cancelAll","cancel all quests"))
             submenue = src.interaction.SelectionMenu("what quest to assign?",options,targetParamName="questType")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"assignQuest","params":extraInfo}
@@ -105,6 +108,9 @@ class OrderArtwork(src.items.Item):
             if mode == "non idle" and person.quests:
                 targets.append(person)
                 return
+            if mode == "rank 3" and person.rank == 3:
+                targets.append(person)
+                return
             if mode == "rank 4" and person.rank == 4:
                 targets.append(person)
                 return
@@ -115,6 +121,9 @@ class OrderArtwork(src.items.Item):
                 targets.append(person)
                 return
             if mode == "rank 5-6" and (person.rank == 6 or person.rank == 5):
+                targets.append(person)
+                return
+            if mode == "non staff rank 6" and (person.isStaff == False and person.rank == 6):
                 targets.append(person)
                 return
             if mode == "idle rank 6" and (person.rank == 6 and not person.quests):
@@ -212,54 +221,40 @@ class OrderArtwork(src.items.Item):
         for x in range(1,14):
             for y in range(1,14):
                 functionMap[(x,y)] = {}
-                functionMap[(x,y)]["m"] = {
-                        "function": {
-                            "container":self,
-                            "method":"guardTileFromMap",
-                            "params":{"character":character},
-                        },
-                        "description":"send npcs to guard tile",
-                    }
-                functionMap[(x,y)]["u"] = {
-                        "function": {
-                            "container":self,
-                            "method":"beusefulFromMap",
-                            "params":{"character":character,"amount":0},
-                        },
-                        "description":"send npcs to work on that tile",
-                    }
-                functionMap[(x,y)]["U"] = {
-                        "function": {
-                            "container":self,
-                            "method":"beusefulFromMap",
-                            "params":{"character":character},
-                        },
-                        "description":"send npcs to work on that tile (specific number)",
-                    }
+
                 functionMap[(x,y)]["q"] = {
                         "function": {
                             "container":self,
                             "method":"questFromMap",
                             "params":{"character":character,"amount":0},
                         },
-                        "description":"send npcs to work on that tile",
+                        "description":"assign quest with that tile as a target",
                     }
-                functionMap[(x,y)]["Q"] = {
+                functionMap[(x,y)]["u"] = {
                         "function": {
                             "container":self,
                             "method":"questFromMap",
-                            "params":{"character":character},
+                            "params":{"character":character,"amount":0,"questType":"BeUsefull"},
                         },
-                        "description":"send npcs to work on that tile (specific number)",
+                        "description":"send npcs to work on that tile",
+                    }
+                functionMap[(x,y)]["m"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"amount":0,"questType":"SecureTile"},
+                        },
+                        "description":"send npcs to guard tile",
                     }
                 functionMap[(x,y)]["v"] = {
                         "function": {
                             "container":self,
-                            "method":"goToFromMap",
-                            "params":{"character":character},
+                            "method":"questFromMap",
+                            "params":{"character":character,"amount":0,"questType":"GoToTile"},
                         },
                         "description":"send npcs to that tile",
                     }
+
                 functionMap[(x,y)]["r"] = {
                         "function": {
                             "container":self,
@@ -267,6 +262,39 @@ class OrderArtwork(src.items.Item):
                             "params":{"character":character,"amount":0},
                         },
                         "description":"send npcs to restock room",
+                    }
+
+                functionMap[(x,y)]["Q"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character},
+                        },
+                        "description":"assign quest with that tile as a target (specific number)",
+                    }
+                functionMap[(x,y)]["U"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"questType":"BeUsefull"},
+                        },
+                        "description":"send npcs to work on that tile (specific number)",
+                    }
+                functionMap[(x,y)]["M"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"questType":"SecureTile"},
+                        },
+                        "description":"send npcs to guard tile (specific number)",
+                    }
+                functionMap[(x,y)]["V"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"questType":"GoToTile"},
+                        },
+                        "description":"send npcs to that tile (specific number)",
                     }
 
         plot = (self.container.xPosition,self.container.yPosition)
@@ -442,7 +470,10 @@ class OrderArtwork(src.items.Item):
         print("guardTileFromMap")
 
     def questFromMap(self, extraInfo):
-        print(extraInfo)
+        self.assignQuest(extraInfo)
+
+    def beusefulFromMap(self, extraInfo):
+        extraInfo["questType"] = "BeUsefull"
         self.assignQuest(extraInfo)
 
     def beusefulFromMap2(self, extraInfo):

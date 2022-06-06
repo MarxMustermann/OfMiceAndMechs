@@ -160,7 +160,10 @@ class GameState(src.saveing.Saveable):
             # close the file
             file.close()
         except:
-            shutil.copyfile("gamestate/gamestate_%s_backup"%(self.gameIndex,), "gamestate/gamestate_%s"%(self.gameIndex,))
+            try:
+                shutil.copyfile("gamestate/gamestate_%s_backup"%(self.gameIndex,), "gamestate/gamestate_%s"%(self.gameIndex,))
+            except:
+                pass
 
         try:
             # register the save

@@ -53,6 +53,12 @@ class GooFaucet(src.items.Item):
                 ("balanceTooLow", "balance too low"),
             ]
 
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This artwork generates goo from goo tokens."""
+        self.usageInfo = """
+Use it to either to manage your goo token balance or get some goo."""
+
     def drink(self, character):
         """
         handle a character drinking from the goo faucet

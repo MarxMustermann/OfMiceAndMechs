@@ -35,6 +35,12 @@ class QuestArtwork(src.items.Item):
                 ]
             )
 
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This artwork generates and can assign quests."""
+        self.usageInfo = """
+Use it to generate a quest and assign it to you."""
+
     def getQuest(self, character):
         for room in self.container.container.rooms:
             for target in room.characters:

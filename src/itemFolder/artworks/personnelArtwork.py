@@ -36,6 +36,12 @@ class PersonnelArtwork(src.items.Item):
                     "spawnRankUnranked": self.spawnRankUnranked,
                         }
         self.cityLeader = None
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This item allows to manage the clones in this base."""
+        self.usageInfo = """
+Activate the item to use it.
+Use the item so see an overview over the NPCs in this base."""
 
     def viewNPCs(self,character):
         submenue = src.interaction.ViewNPCsMenu(self)

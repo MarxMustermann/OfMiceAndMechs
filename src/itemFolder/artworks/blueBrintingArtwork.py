@@ -16,6 +16,14 @@ class BluePrintingArtwork(src.items.Item):
 
         self.name = "blueprinting artwork"
 
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This artwork allows to generate a Blueprint for anything."""
+        self.usageInfo = """
+Use it by activating it and typing the exact name of the item you want the blueprint for
+The new blueprint should be spawned into your inventory."""
+
+
     def apply(self, character):
         '''
         start creating a blueprint

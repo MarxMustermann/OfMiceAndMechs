@@ -31,6 +31,17 @@ class OrderArtwork(src.items.Item):
                                     "showQuests": self.showQuests,
                                     "assignQuest": self.assignQuestFromMenu,
                                 }
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This item allows to issue quest to groups of clones in this base."""
+        self.usageInfo = """
+Activate the item to use it.
+Use the map view to assign quests related to a room or tile.
+Skip the map view to assign quests that do not relate to a room or tile.
+
+The issued quest will be added at the front of the clones quest queue.
+So they will start to run it as soon as their command queue is empty.
+That should usually be around 10-20 ticks."""
 
     def assignQuestFromMenu(self, character):
         self.assignQuest({"character":character})

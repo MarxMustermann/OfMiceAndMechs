@@ -31,6 +31,17 @@ class DutyArtwork(src.items.Item):
                                     "showMatrix": self.showMatrix,
                                 }
 
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This artwork allows to manage the duties of clones in this base.
+This will change what work the clones are doing when told to be useful."""
+        self.usageInfo = """
+Use it by activating it and selecting in what mode you want to set the duties.
+After changing the duties the clones should change their behaviour after completing their current task."""
+
+    def changeCharges(self,delta):
+        self.charges += delta
+
     def fetchCityleader(self):
         personnelArtwork = None
         for item in self.container.itemsOnFloor:

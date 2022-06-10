@@ -40,6 +40,13 @@ class EpochArtwork(src.items.Item):
 
         self.charges = 0
 
+        self.description = """
+This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
+This artwork manages the flow of the epochs.
+It generates missions and hands out rewards."""
+        self.usageInfo = """
+Use it by activating it. You will recieve further instructions."""
+
     def changeCharges(self,delta):
         self.charges += delta
         self.applyOptions[1] = ("getEpochRewards", "get epoch rewards (%s)"%(self.charges,))

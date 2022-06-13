@@ -7334,22 +7334,22 @@ But despite all the unknowns, you have that voice in your head, that tells you:"
 FOLLOW YOUR ORDERS
 """
 
-            if stageState["substep"] > 1 and stageState["substep"] < 5:
+            if stageState["substep"] > 0 and stageState["substep"] < 4:
                 printUrwidToTcod(text1,(27,19))
-            if stageState["substep"] > 2 and stageState["substep"] < 5:
+            if stageState["substep"] > 1 and stageState["substep"] < 4:
                 printUrwidToTcod(text2,(44,23))
-            if stageState["substep"] > 3:
+            if stageState["substep"] > 2:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
             tcodContext.present(tcodConsole)
 
-            if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
+            if stageState["substep"] == 3 and stageState["animationStep"] < len(text3):
                 if time.time()-stageState["lastChange"] > 0.1:
                     stageState["animationStep"] += 1
                     stageState["lastChange"] = time.time()
             if time.time()-stageState["lastChange"] > 4:
                 stageState["substep"] += 1
                 stageState["lastChange"] = time.time()
-                if stageState["substep"] > 7:
+                if stageState["substep"] > 6:
                     stageState = None
             time.sleep(0.01)
 

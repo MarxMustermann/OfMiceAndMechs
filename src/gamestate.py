@@ -145,6 +145,11 @@ class GameState(src.saveing.Saveable):
 
         import pickle
         import shutil
+        import os
+
+        if not os.path.exists("gamestate/"):
+            os.makedirs("gamestate/")
+
         try:
             shutil.copyfile("gamestate/gamestate_%s"%(self.gameIndex,), "gamestate/gamestate_%s_backup"%(self.gameIndex,))
         except:

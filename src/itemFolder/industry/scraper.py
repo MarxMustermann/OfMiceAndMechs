@@ -38,7 +38,7 @@ Place an item to the west and activate the scrapper to shred an item.
 
         # fetch input scrap
         itemFound = None
-        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.xPosition)):
+        for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
             itemFound = item
             break
 
@@ -63,15 +63,13 @@ Place an item to the west and activate the scrapper to shred an item.
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
+        if (self.xPosition+1,self.yPosition,self.zPosition) in self.container.itemByCoordinates:
             if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition)])
+                len(self.container.itemByCoordinates[(self.xPosition+1,self.yPosition,self.zPosition)])
                 > 15
             ):
                 targetFull = True
-            for item in self.container.itemByCoordinates[
-                (self.xPosition + 1, self.yPosition)
-            ]:
+            for item in self.container.itemByCoordinates[(self.xPosition+1,self.yPosition,self.zPosition)]:
                 if item.walkable == False:
                     targetFull = True
 
@@ -85,7 +83,7 @@ Place an item to the west and activate the scrapper to shred an item.
         self.container.removeItem(item)
 
         # spawn scrap
-        new = itemMap["Scrap"](amount=1)
+        new = src.items.itemMap["Scrap"](amount=1)
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 
 src.items.addType(Scraper)

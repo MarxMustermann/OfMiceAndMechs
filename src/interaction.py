@@ -6408,6 +6408,62 @@ class ActionMeta(object):
         self.payload = payload
         self.content = content
 
+def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
+    if not internalOffset:
+        internalOffset = [0,0]
+
+    if not color:
+        color = ((255,255,255),(0,0,0))
+    if color[0] == (None,None,None):
+        color = ((255,255,255),color[1])
+    if color[1] == (None,None,None):
+        color = (color[0],(0,0,0))
+
+    if isinstance(inData,str):
+        counter = 0
+        for line in inData.split("\n"):
+            if counter > 0:
+                internalOffset[0] = 0
+                internalOffset[1] += 1
+
+            skipPrint = False
+            toPrint = line
+            if size:
+                if internalOffset[0] > size[0]:
+                    skipPrint = True
+                if internalOffset[1] > size[1]:
+                    skipPrint = True
+
+                if not skipPrint:
+                    toPrint = line[:size[0]-internalOffset[0]]
+            
+            if not skipPrint:
+                x = offset[0]+internalOffset[0]
+                y = offset[1]+internalOffset[1]
+                if actionMeta:
+                    for i in range(0,len(toPrint)):
+                        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
+                tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
+
+            internalOffset[0] += len(line)
+            counter += 1
+
+
+    if isinstance(inData,tuple):
+        printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
+
+    if isinstance(inData,int):
+        printUrwidToTcod(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData,list):
+        for item in inData:
+            printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData, ActionMeta):
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload)
+    
+    #footertext = stringifyUrwid(inData)
+
 def renderGameDisplay():
     src.gamestate.gamestate.clickMap = {}
 
@@ -6463,59 +6519,6 @@ def renderGameDisplay():
             if isinstance(item, ActionMeta):
                 outData += item.content
         return outData
-
-    def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
-        if not internalOffset:
-            internalOffset = [0,0]
-
-        if not color:
-            color = ((255,255,255),(0,0,0))
-        if color[0] == (None,None,None):
-            color = ((255,255,255),color[1])
-        if color[1] == (None,None,None):
-            color = (color[0],(0,0,0))
-
-        if isinstance(inData,str):
-            counter = 0
-            for line in inData.split("\n"):
-                if counter > 0:
-                    internalOffset[0] = 0
-                    internalOffset[1] += 1
-
-                skipPrint = False
-                toPrint = line
-                if size:
-                    if internalOffset[0] > size[0]:
-                        skipPrint = True
-                    if internalOffset[1] > size[1]:
-                        skipPrint = True
-
-                    if not skipPrint:
-                        toPrint = line[:size[0]-internalOffset[0]]
-                
-                if not skipPrint:
-                    x = offset[0]+internalOffset[0]
-                    y = offset[1]+internalOffset[1]
-                    if actionMeta:
-                        for i in range(0,len(toPrint)):
-                            src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
-                    tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
-
-                internalOffset[0] += len(line)
-                counter += 1
-
-
-        if isinstance(inData,tuple):
-            printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
-
-        if isinstance(inData,list):
-            for item in inData:
-                printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta)
-
-        if isinstance(inData, ActionMeta):
-            printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload)
-        
-        #footertext = stringifyUrwid(inData)
 
     # render the game
     if not src.gamestate.gamestate.mainChar.specialRender or tcodConsole:
@@ -6729,6 +6732,653 @@ def renderGameDisplay():
             printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
             tcodContext.present(tcodConsole)
 
+def showIntro():
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    initialTick = src.gamestate.gamestate.tick
+    initialMainChar = src.gamestate.gamestate.mainChar
+
+    stage = 0
+    stageState = None
+    room = None
+    while 1:
+        tcodConsole.clear()
+
+        if stage == 0:
+            if stageState == None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+You """+"."*stageState["substep"]+"""
+
+
+"""
+            printUrwidToTcod(text,(60,24))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(63,27))
+            tcodContext.present(tcodConsole)
+            if time.time()-stageState["lastChange"] > 1:
+                stageState["substep"] += 1
+                stageState["lastChange"] = time.time()
+                if stageState["substep"] == 4:
+                    stageState = None
+            time.sleep(0.01)
+
+        if stage == 1:
+            if stageState == None:
+                stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
+
+                scrapTakenMap = {}
+                blockedMap = set()
+                stageState["scrapToAdd"] = []
+                for tile in [(6,7),(6,8),(7,8),(8,8)]:
+                    for i in range(1,150):
+                        pos = (tile[0]*15+random.randint(1,13),tile[1]*15+random.randint(1,13),0)
+                        if pos in blockedMap:
+                            continue
+                        stageState["scrapToAdd"].append(((pos),random.choice([1,1,1,1,5,5,15])))
+                        blockedMap.add(pos)
+
+                stageState["MoldToAdd"] = []
+                for tile in [(6,6),(7,6),(8,6),(8,7)]:
+                    for i in range(1,10):
+                        stageState["MoldToAdd"].append(((tile[0]*15+random.randint(1,13),tile[1]*15+random.randint(1,13),0),))
+
+            text = ["""You are born into a world of metal"""]
+            if stageState["substep"] > 4:
+                text.append(""", rust""")
+            if stageState["substep"] > 6:
+                text.append(""" and mold.""")
+
+            if not room:
+                terrain = src.terrains.Nothingness()
+                src.gamestate.gamestate.tick = 0
+                room = src.rooms.EmptyRoom()
+                room.reconfigure(sizeX=13,sizeY=13,doorPos=[(0,6),(12,6)])
+                room.hidden = False
+                room.xPosition = 7
+                room.yPosition = 7
+                room.offsetX = 1
+                room.offsetY = 1
+                terrain.addRoom(room)
+
+            if stageState["substep"] == 6:
+                terrain.hidden = False
+
+                if time.time()-stageState["lastChange"] > 0.001 and stageState["scrapToAdd"]:
+                    stageState["lastChange"] = time.time()
+
+                    for i in range(0,6):
+                        if not stageState["scrapToAdd"]:
+                            continue
+                        scrapItem = stageState["scrapToAdd"].pop()
+                        terrain.addItem(src.items.itemMap["Scrap"](amount=scrapItem[1]),scrapItem[0])
+
+            if stageState["substep"] == 7:
+                terrain.hidden = False
+
+                while stageState["MoldToAdd"]:
+                    moldItem = stageState["MoldToAdd"].pop()
+                    item = src.items.itemMap["MoldSpore"]()
+                    terrain.addItem(item,moldItem[0])
+                    item.startSpawn()
+
+            if stageState["substep"] == 8:
+                if time.time()-stageState["lastChange"] > 0.1 and src.gamestate.gamestate.tick < 10000:
+                    stageState["lastChange"] = time.time()
+
+                    for i in range(1,400):
+                        terrain.advance()
+                        src.gamestate.gamestate.tick += 1
+
+            roomRender = room.render()
+            roomRender = fixRoomRender(roomRender)
+            roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+            mapStep = min(stageState["animationStep"],16)
+            terrainRender = terrain.render(coordinateOffset=(15*7+1-mapStep,15*7+1-mapStep),size=(12+2*mapStep,12+2*mapStep))
+            terrainRender = fixRoomRender(terrainRender)
+            terrainRender[6+mapStep][6+mapStep] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+            if stageState["substep"] < 4:
+                printUrwidToTcod(roomRender,(51,21))
+            else:
+                printUrwidToTcod(terrainRender,(51-2*mapStep,21-mapStep))
+            if stageState["substep"] < 5:
+                printUrwidToTcod(text,(47-min(9,stageState["animationStep"]//2),19-min(stageState["animationStep"],17)))
+            else:
+                printUrwidToTcod(text,(38,2))
+            tcodContext.present(tcodConsole)
+
+            if stageState["substep"] == 4 and time.time()-stageState["lastChange"] > 0.2 and stageState["animationStep"] < 17:
+                stageState["animationStep"] += 1
+                stageState["lastChange"] = time.time()
+
+            if time.time()-stageState["lastChange"] > 1:
+                stageState["substep"] += 1
+                stageState["lastChange"] = time.time()
+                if stageState["substep"] == 11:
+                    stageState = None
+
+            time.sleep(0.01)
+
+        if stage == 2:
+            text = """Strange mechanations fill the world with ancient logic"""
+
+            if stageState == None:
+                stageState = {"lastChange":time.time(), "items":[],"terrainItems":[],"outputslots":[],"walkingSpaces":[],"inputslots":[],"fastSpawn":set(),"subStep":0,"didRemove":False}
+
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Sheet")
+                stageState["items"].extend([
+                    (src.items.itemMap["Scrap"](amount=5),(1,7,0)),
+                    (src.items.itemMap["ScrapCompactor"](),(2,7,0)),
+                    (machine,(4,7,0)),
+                ])
+
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("Rod")
+                machine2 = src.items.itemMap["Machine"]()
+                machine2.setToProduce("Tank")
+                machine3 = src.items.itemMap["Machine"]()
+                machine3.setToProduce("Sword")
+                machine4 = src.items.itemMap["Machine"]()
+                machine4.setToProduce("Armor")
+                stageState["items"].extend([
+                    (src.items.itemMap["ScrapCompactor"](),(2,9,0)),
+                    (machine,(4,9,0)),
+                    (machine2,(8,5,0)),
+                    (machine3,(4,3,0)),
+                    (machine4,(4,5,0)),
+                ])
+
+                command1 = src.items.itemMap["Command"]()
+                command1.command =  "ddKdaj"
+                command1.bolted = True
+
+                command2 = src.items.itemMap["Command"]()
+                command2.command =  "waajjddsdjaj"
+                command2.bolted = True
+
+                command3 = src.items.itemMap["Command"]()
+                command3.command =  "wd2w4aJsJwddJsJwddssaas"
+                command3.bolted = True
+
+                command4 = src.items.itemMap["Command"]()
+                command4.command =  "wjwjwjwjdkalsdkalsdkalsdkalsj"
+                command4.bolted = True
+
+                command5 = src.items.itemMap["Command"]()
+                command5.command =  "kdldj"
+
+                command6 = src.items.itemMap["Command"]()
+                command6.command =  "5a4w15ajjj13sjjj13djjj13djjj13w13a.2s6a"+10*"Lw"+10*"Ls"+"5d2s5d"+50*"Js"+"j"
+                command6.bolted = True
+
+                command7 = src.items.itemMap["Command"]()
+                command7.command =  "kdldj"
+
+                command8 = src.items.itemMap["Command"]()
+                command8.command =  "5a3w15dj13wj13aj13aj13s13d.4w2dj2a4s"+".3s5das"+50*"Js"+"wdj"
+                command8.bolted = True
+
+                command9 = src.items.itemMap["Command"]()
+                command9.command =  "kdldj"
+
+                command10 = src.items.itemMap["Command"]()
+                command10.command =  "5a2w"+"4aJw4d"+"2waaJwJsdd2w4asJsw4d"+"dd2sJsww"+"dddKwaJw3aJwa6s5d2s"+10*"Js"+"aaajj20.ddd2wj"
+                command10.bolted = True
+
+                scratchPlate = src.items.itemMap["ScratchPlate"]()
+                scratchPlate.bolted = True
+                scratchPlate.commands["noscratch"] = "jjaKsdJsJs20."
+                scratchPlate.settings["scratchThreashold"] = 300
+                scratchPlate.lastActivation = -2000
+
+                scratchPlate2 = src.items.itemMap["ScratchPlate"]()
+                scratchPlate2.bolted = True
+                scratchPlate2.commands["noscratch"] = "jjaKsdJsJs20.aKsdJsJs20.aKsdJsJs20."
+                scratchPlate2.settings["scratchThreashold"] = 300
+                scratchPlate2.lastActivation = -2000
+
+
+                stageState["items"].extend([
+                    (src.items.itemMap["Corpse"](),(1,11,0)),
+                    (scratchPlate,(2,10,0)),
+                    (src.items.itemMap["CorpseAnimator"](),(2,11,0)),
+                    (command1,(3,11,0)),
+                    (command2,(4,11,0)),
+                    (command3,(5,11,0)),
+                    (src.items.itemMap["Corpse"](),(6,11,0)),
+                    (src.items.itemMap["Corpse"](),(7,11,0)),
+                    (src.items.itemMap["Corpse"](),(7,11,0)),
+                    (src.items.itemMap["Corpse"](),(7,11,0)),
+                    (src.items.itemMap["Corpse"](),(7,11,0)),
+                    (src.items.itemMap["Corpse"](),(7,11,0)),
+                    (scratchPlate2,(8,10,0)),
+                    (src.items.itemMap["CorpseAnimator"](),(8,11,0)),
+                    (command4,(9,11,0)),
+                    (command5,(9,10,0)),
+                    (command6,(11,10,0)),
+                    (command7,(9,9,0)),
+                    (command8,(11,9,0)),
+                    (command9,(9,8,0)),
+                    (command10,(11,8,0)),
+                    (src.items.itemMap["Corpse"](),(11,11,0)),
+                    (src.items.itemMap["Corpse"](),(11,11,0)),
+                    (src.items.itemMap["Corpse"](),(11,11,0)),
+                    (src.items.itemMap["Corpse"](),(11,11,0)),
+                    (src.items.itemMap["Corpse"](),(11,11,0)),
+                    (src.items.itemMap["Corpse"](),(10,11,0)),
+                    (src.items.itemMap["Corpse"](),(10,11,0)),
+                    (src.items.itemMap["Corpse"](),(10,11,0)),
+                    (src.items.itemMap["Corpse"](),(10,11,0)),
+                    (src.items.itemMap["Corpse"](),(10,11,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(7,4,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(10,5,0)),
+                    (src.items.itemMap["Corpse"](),(11,4,0)),
+                    (src.items.itemMap["Corpse"](),(11,4,0)),
+                    (src.items.itemMap["Corpse"](),(11,4,0)),
+                    (src.items.itemMap["Corpse"](),(11,4,0)),
+                    (src.items.itemMap["Corpse"](),(11,4,0)),
+                ])
+                
+                commandGooProduction = src.items.itemMap["Command"]()
+                commandGooProduction.command = "d"+10*"Ls"+"d"+10*"10.Js"+"aassd"+10*"Kd"+"aww"+"7a"+10*"Lw"+"d"+10*"Jw"+"ddJwddJwdd"
+                commandGooProduction.bolted = True
+
+                bloom = src.items.itemMap["Bloom"]()
+                bloom.dead = True
+                bloom.bolted = True
+
+                gooFlask = src.items.itemMap["GooFlask"]()
+                gooFlask.uses = 100
+
+                machine = src.items.itemMap["Machine"]()
+                machine.setToProduce("GooFlask")
+
+                gooDispenser = src.items.itemMap["GooDispenser"]()
+                gooDispenser.charges = 1
+                gooDispenser.commands["filled"] = "dLwa"
+                stageState["items"].extend([
+                    (src.items.itemMap["BloomShredder"](),(2,1,0)),
+                    (src.items.itemMap["BioPress"](),(4,1,0)),
+                    (src.items.itemMap["GooProducer"](),(6,1,0)),
+                    (gooDispenser,(7,1,0)),
+                    (gooFlask,(8,1,0)),
+                    (commandGooProduction,(8,2,0)),
+                    (machine,(10,1,0)),
+                    (bloom,(10,2,0)),
+                    (src.items.itemMap["Bolt"](),(11,2,0)),
+                    (src.items.itemMap["Bolt"](),(11,3,0)),
+                    (src.items.itemMap["Sorter"](),(10,3,0)),
+                    (src.items.itemMap["Scraper"](),(2,4,0)),
+                    (src.items.itemMap["ScrapCompactor"](),(2,5,0)),
+                ])
+                
+                def generatePaving():
+                    item = src.items.itemMap["Paving"]()
+                    item.bolted = True
+                    return item
+
+                for y in reversed(range(8,14)):
+                    stageState["terrainItems"].append((generatePaving(),(6*15+7,6*15+y,0)))
+                for x in range(8,14):
+                    stageState["terrainItems"].append((generatePaving(),(6*15+x,6*15+7,0)))
+                for x in range(8,14):
+                    stageState["terrainItems"].append((generatePaving(),(6*15+x,6*15+7,0)))
+                for x in range(1,7):
+                    stageState["terrainItems"].append((generatePaving(),(7*15+x,6*15+7,0)))
+                for x in range(8,14):
+                    stageState["terrainItems"].append((generatePaving(),(7*15+x,6*15+7,0)))
+                for x in range(1,7):
+                    stageState["terrainItems"].append((generatePaving(),(8*15+x,6*15+7,0)))
+                for y in range(8,14):
+                    stageState["terrainItems"].append((generatePaving(),(8*15+7,6*15+y,0)))
+                for y in range(1,7):
+                    stageState["terrainItems"].append((generatePaving(),(8*15+7,7*15+y,0)))
+                for y in range(8,14):
+                    stageState["terrainItems"].append((generatePaving(),(8*15+7,7*15+y,0)))
+                for x in range(1,7):
+                    stageState["terrainItems"].append((generatePaving(),(8*15+x,7*15+7,0)))
+
+                stageState["terrainItems"].append((src.items.itemMap["AutoFarmer"](),(6*15+7,6*15+7,0)))
+                stageState["terrainItems"].append((src.items.itemMap["AutoFarmer"](),(7*15+7,6*15+7,0)))
+                stageState["terrainItems"].append((src.items.itemMap["AutoFarmer"](),(8*15+7,6*15+7,0)))
+                stageState["terrainItems"].append((src.items.itemMap["AutoFarmer"](),(8*15+7,7*15+7,0)))
+
+                stageState["terrainItems"].append((src.items.itemMap["ItemCollector"](),(6*15+7,7*15+7,0)))
+                stageState["terrainItems"].append((src.items.itemMap["ItemCollector"](),(6*15+7,8*15+7,0)))
+                stageState["terrainItems"].append((src.items.itemMap["ItemCollector"](),(7*15+7,8*15+7,0)))
+                stageState["terrainItems"].append((src.items.itemMap["ItemCollector"](),(8*15+7,8*15+7,0)))
+
+                for x in reversed(range(1,12)):
+                    stageState["walkingSpaces"].append((x,6,0))
+                    stageState["walkingSpaces"].append((x,2,0))
+                for x in reversed(range(1,9)):
+                    stageState["walkingSpaces"].append((x,10,0))
+                for x in reversed(range(1,7)):
+                    stageState["walkingSpaces"].append((x,8,0))
+                for y in reversed(range(2,11)):
+                    stageState["walkingSpaces"].append((6,y,0))
+
+                stageState["walkingSpaces"].append((8,3,0))
+                stageState["walkingSpaces"].append((8,4,0))
+                stageState["walkingSpaces"].append((9,4,0))
+                stageState["walkingSpaces"].append((1,3,0))
+                stageState["walkingSpaces"].append((2,3,0))
+                stageState["walkingSpaces"].append((4,4,0))
+                stageState["walkingSpaces"].append((5,4,0))
+                stageState["walkingSpaces"].append((11,5,0))
+                stageState["walkingSpaces"].append((11,3,0))
+                stageState["walkingSpaces"].append((3,4,0))
+
+                stageState["outputslots"].append(("Sword",(5,3,0)))
+                stageState["outputslots"].append(("Armor",(5,5,0)))
+                stageState["outputslots"].append(("Sheet",(5,7,0)))
+                stageState["outputslots"].append(("Rod",(5,9,0)))
+                stageState["outputslots"].append(("MetalBars",(3,7,0)))
+                stageState["outputslots"].append(("MetalBars",(3,9,0)))
+                stageState["outputslots"].append(("Corpse",(7,3,0)))
+                stageState["outputslots"].append(("GooFlask",(8,1,0)))
+                stageState["outputslots"].append(("Tank",(9,5,0)))
+                stageState["outputslots"].append(("Corpse",(7,4,0)))
+                stageState["outputslots"].append(("Corpse",(10,5,0)))
+                stageState["outputslots"].append(("Corpse",(11,4,0)))
+
+                stageState["inputslots"].append(("Tank",(9,1,0)))
+                stageState["inputslots"].append(("Scrap",(1,5,0)))
+                stageState["inputslots"].append(("MetalBars",(3,5,0)))
+                stageState["inputslots"].append(("Rod",(3,3,0)))
+                stageState["inputslots"].append(("Sheet",(7,5,0)))
+                stageState["inputslots"].append(("Scrap",(1,7,0)))
+                stageState["inputslots"].append(("Scrap",(1,9,0)))
+                stageState["inputslots"].append((None,(1,4,0)))
+                stageState["inputslots"].append(("Corpse",(1,11,0)))
+                stageState["inputslots"].append(("Corpse",(6,11,0)))
+                stageState["inputslots"].append(("Corpse",(7,11,0)))
+                stageState["inputslots"].append(("Corpse",(10,11,0)))
+                stageState["inputslots"].append(("Corpse",(11,11,0)))
+                stageState["inputslots"].append(("Scrap",(1,9,0)))
+                stageState["inputslots"].append(("Scrap",(1,9,0)))
+            roomRender = room.render()
+            roomRender = fixRoomRender(roomRender)
+            roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+
+            terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+            terrainRender = fixRoomRender(terrainRender)
+            terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+            printUrwidToTcod(text,(38,2))
+            printUrwidToTcod(terrainRender,(19,5))
+            tcodContext.present(tcodConsole)
+
+
+            if stageState["walkingSpaces"] and stageState["subStep"] > 1:
+                stageState["lastChange"] = time.time()
+                for pos in stageState["walkingSpaces"]:
+                    if not pos in room.walkingSpace:
+                        room.walkingSpace.add(pos)
+                stageState["walkingSpaces"] = []
+            elif stageState["outputslots"] and stageState["subStep"] > 2:
+                stageState["lastChange"] = time.time()
+                for (itemType,pos) in stageState["outputslots"]:
+                    room.addOutputSlot(pos,itemType)
+                stageState["outputslots"] = []
+            elif stageState["inputslots"] and stageState["subStep"] > 3:
+                stageState["lastChange"] = time.time()
+                for (itemType,pos) in stageState["inputslots"]:
+                    if itemType == "Corpse":
+                        room.addInputSlot(pos,itemType,{"maxAmount":3})
+                    else:
+                        room.addInputSlot(pos,itemType)
+                stageState["inputslots"] = []
+            elif stageState["items"] and stageState["subStep"] > 4:
+                if time.time()-stageState["lastChange"] > 0.1:
+                    stageState["lastChange"] = time.time()
+                    numItems = 2
+                    i = 0
+                    while i < numItems:
+                        if not stageState["items"]:
+                            i += 1
+                            continue
+                        item = stageState["items"].pop()
+                        room.addItem(item[0],item[1])
+                        if item[1] in stageState["fastSpawn"]:
+                            i -= 1
+                        else:
+                            stageState["fastSpawn"].add(item[1])
+                        i += 1
+            elif not stageState["didRemove"] and stageState["subStep"] > 4:
+                for x in range(15*6+7,15*8+7+1):
+                    items = terrain.getItemByPosition((x,15*6+7,0))
+                    if items:
+                        terrain.removeItems(items)
+                    items = terrain.getItemByPosition((x,15*7+7,0))
+                    if items:
+                        terrain.removeItems(items)
+                    items = terrain.getItemByPosition((x,15*8+7,0))
+                    if items:
+                        terrain.removeItems(items)
+                    
+                for y in range(15*6+7,15*8+7+1):
+                    items = terrain.getItemByPosition((15*6+7,y,0))
+                    if items:
+                        terrain.removeItems(items)
+                    items = terrain.getItemByPosition((15*8+7,y,0))
+                    if items:
+                        terrain.removeItems(items)
+
+                stageState["didRemove"] = True
+
+            elif stageState["terrainItems"] and stageState["subStep"] > 4:
+                if time.time()-stageState["lastChange"] > 0.01:
+                    stageState["lastChange"] = time.time()
+                    for i in range(0,4):
+                        if not stageState["terrainItems"]:
+                            continue
+                        item = stageState["terrainItems"].pop()
+                        terrain.addItem(item[0],item[1])
+            else:
+                if time.time()-stageState["lastChange"] > 1:
+                    stageState["lastChange"] = time.time()
+                    stageState["subStep"] += 1
+                    if stageState["subStep"] == 6:
+                        stageState = None
+
+            time.sleep(0.01)
+
+        if stage == 3:
+            text1 = """Strange machinations fill the world with ancient logic"""
+            text2 = """and you work on tasks with unknown purposes."""
+
+            if stageState == None:
+                stageState = {"lastChange":time.time()}
+
+            terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+            terrainRender = fixRoomRender(terrainRender)
+            terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+            printUrwidToTcod(text1,(38,2))
+            printUrwidToTcod(text2,(42,3))
+            printUrwidToTcod(terrainRender,(19,5))
+            
+            tcodContext.present(tcodConsole)
+
+            if time.time()-stageState["lastChange"] > 2:
+                stageState = None
+
+        if stage == 4:
+            text1 = """Strange machinations fill the world with ancient logic"""
+            text2 = """and you work on tasks with unknown purposes."""
+
+            if stageState == None:
+                stageState = {"lastChange":time.time(),"substep":0,"endless":False}
+
+                npc = src.characters.Character()
+                npc.runCommandString("4w2dKw")
+                room.addCharacter(npc,6,6)
+
+                npc.solvers = [
+                    "SurviveQuest",
+                    "Serve",
+                    "NaiveMoveQuest",
+                    "MoveQuestMeta",
+                    "NaiveActivateQuest",
+                    "ActivateQuestMeta",
+                    "NaivePickupQuest",
+                    "PickupQuestMeta",
+                    "DrinkQuest",
+                    "ExamineQuest",
+                    "FireFurnaceMeta",
+                    "CollectQuestMeta",
+                    "WaitQuest",
+                    "NaiveDropQuest",
+                    "NaiveMurderQuest",
+                    "DropQuestMeta",
+                    "DeliverSpecialItem",
+                ]
+
+
+                quest = src.quests.BeUsefull(targetPosition=(7,7,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(npc)
+                quest.activate()
+                npc.quests.insert(0,quest)
+
+                npc.duties = ["clearing","hauling"]
+                npc.duties = ["scratch checking"]
+                npc.duties = ["clearing","hauling","scratch checking"]
+
+                src.gamestate.gamestate.mainChar = npc
+
+            terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+            terrainRender = fixRoomRender(terrainRender)
+            printUrwidToTcod(text1,(38,2))
+            printUrwidToTcod(text2,(42,3))
+            printUrwidToTcod(terrainRender,(19,5))
+            
+            if src.gamestate.gamestate.tick > 10400:
+                if stageState["endless"]:
+                    printUrwidToTcod("press space to stop watching",(52,4))
+                else:
+                    printUrwidToTcod("press space to continue watching",(52,4))
+            tcodContext.present(tcodConsole)
+
+            if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
+                stageState["lastChange"] = time.time()
+                stageState["substep"] += 1
+
+            if stageState["substep"] > 0:
+                if time.time()-stageState["lastChange"] > 0.15:
+                    stageState["lastChange"] = time.time()
+                    terrain.advance()
+                    src.gamestate.gamestate.tick += 1
+
+                    removeList = []
+                    for character in room.characters+terrain.characters:
+                        advanceChar(character,removeList)
+
+                if src.gamestate.gamestate.tick > 10470 and not stageState["endless"]:
+                    stageState = None
+
+        if stage == 5:
+            text1 = """Strange machinations fill the world with ancient logic"""
+            text2 = """and you work on tasks with unknown purposes."""
+
+            if stageState == None:
+                stageState = {"lastChange":time.time(),"substep":0}
+
+            offset = min(stageState["substep"],16)
+            if not stageState["substep"] > 16:
+                terrainRender = terrain.render(coordinateOffset=(15*6+offset,15*6+offset),size=(44-2*offset,44-2*offset))
+                terrainRender = fixRoomRender(terrainRender)
+                printUrwidToTcod(terrainRender,(19+2*offset,5+offset))
+            printUrwidToTcod(text1,(38,2+offset))
+            printUrwidToTcod(text2,(42,3+offset))
+            tcodContext.present(tcodConsole)
+
+            if time.time()-stageState["lastChange"] > 0.3:
+                stageState["lastChange"] = time.time()
+                stageState["substep"] += 1
+
+            if stageState["substep"] > 30:
+                stageState = None
+
+        if stage == 6:
+            if stageState == None:
+                stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
+
+            text1 = """
+But despite all the unknowns, you have that voice in your head, that tells you:"""
+
+            text2 = """
+"You will rule the world someday, but first
+
+"""
+            text3 = """
+
+FOLLOW YOUR ORDERS
+"""
+
+            if stageState["substep"] > 1 and stageState["substep"] < 5:
+                printUrwidToTcod(text1,(27,19))
+            if stageState["substep"] > 2 and stageState["substep"] < 5:
+                printUrwidToTcod(text2,(44,23))
+            if stageState["substep"] > 3:
+                printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
+            tcodContext.present(tcodConsole)
+
+            if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
+                if time.time()-stageState["lastChange"] > 0.1:
+                    stageState["animationStep"] += 1
+                    stageState["lastChange"] = time.time()
+            if time.time()-stageState["lastChange"] > 4:
+                stageState["substep"] += 1
+                stageState["lastChange"] = time.time()
+                if stageState["substep"] > 7:
+                    stageState = None
+            time.sleep(0.01)
+
+        if stage > 6:
+            src.gamestate.gamestate.tick = initialTick
+            src.gamestate.gamestate.mainChar = initialMainChar
+            break
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.SPACE:
+                    if stage == 4:
+                        if not stageState["endless"]:
+                            stageState["endless"] = True
+                        else:
+                            stageState = None
+                if key == tcod.event.KeySym.ESCAPE:
+                    stageState = 7
+
+        if not stageState:
+            stage += 1
+
 def gameLoop(loop, user_data=None):
     """
     run the game for one tick
@@ -6748,8 +7398,6 @@ def gameLoop(loop, user_data=None):
     if src.gamestate.gamestate.gameHalted:
         loop.set_alarm_in(0.001, gameLoop)
         return
-
-    import time
 
     global lastAdvance
     global fixedTicks

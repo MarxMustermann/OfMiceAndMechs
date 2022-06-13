@@ -105,6 +105,9 @@ class Bloom(src.items.Item):
         """
 
         if not self.dead:
+            if isinstance(self.container,src.rooms.Room):
+                return
+
             position = self.getPosition()
             position = (position[0]//15,position[1]//15,0)
             if not self.container.microBiomeMap[position]["moisture"] > 0:

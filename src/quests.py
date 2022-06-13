@@ -2081,6 +2081,37 @@ class BeUsefull(MetaQuestSequence):
                         self.addQuest(GoToPosition(targetPosition=position,ignoreEndBlocked=True))
                     return
 
+        if "hauling" in character.duties:
+            if hasattr(room,"inputSlots"):
+                checkedTypes = set()
+
+                emptyInputSlots = room.getEmptyInputslots()
+                if emptyInputSlots:
+
+                    for inputSlot in random.sample(emptyInputSlots,len(emptyInputSlots)):
+                        if inputSlot[1] == None:
+                            continue
+                        if inputSlot[1] in checkedTypes:
+                            continue
+                        checkedTypes.add(inputSlot[1])
+
+                        hasItem = False
+                        if character.inventory and character.inventory[-1].type == inputSlot[1]:
+                            hasItem = True
+
+                        if not hasItem:
+                            if not room.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                                continue
+
+                        self.addQuest(RestockRoom(toRestock=inputSlot[1]))
+
+                        if not hasItem:
+                            if triggerClearIneventory():
+                                return
+
+                        self.addQuest(FetchItems(toCollect=inputSlot[1]))
+                        return
+
         if "resource fetching" in character.duties:
             if hasattr(room,"inputSlots"):
                 emptyInputSlots = room.getEmptyInputslots()

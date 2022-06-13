@@ -9,8 +9,6 @@ class Mold(src.items.Item):
     """
 
     type = "Mold"
-    charges = 2
-    walkable = True
     name = "mold"
     description = "This is a patch of mold"
     usageInfo = """
@@ -24,6 +22,8 @@ you can eat it to gain 2 satiation.
 
         super().__init__(display=src.canvas.displayChars.moss)
         self.attributesToStore.extend(["charges"])
+        self.charges = 2
+        self.walkable = True
 
     def apply(self, character):
         """

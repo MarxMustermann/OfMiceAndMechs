@@ -67,6 +67,7 @@ Filling a flask will use up a charge from your goo dispenser.
                 self.description = self.baseName + " (%s charges)" % (self.charges)
                 break
         if filled:
+            self.runCommand("filled",character)
             character.addMessage("you fill the goo flask")
         self.activated = True
 

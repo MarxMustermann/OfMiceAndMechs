@@ -664,6 +664,7 @@ if args.urwid:
     interaction.loop.run()
 
 if not args.urwid:
+    interaction.showIntro()
     while 1:
         interaction.gameLoop(None, None)
 

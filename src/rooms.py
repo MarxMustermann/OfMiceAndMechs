@@ -855,6 +855,7 @@ class Room(src.saveing.Saveable):
                     chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                 except:
                     src.logger.debugMessages.append("room drawing failed")
+                    print("room drawing failed")
 
             # draw characters
             viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]

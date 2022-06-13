@@ -148,7 +148,15 @@ class ItemCollector(src.items.Item):
             if lastCharacterPosition[1] > pos[1]:
                 command += "Kw"
 
-        command += "opx$=ss$=ww$=dd$=aa"
+        pos = (self.xPosition, self.yPosition)
+        if lastCharacterPosition[0] > pos[0]:
+            command += str(lastCharacterPosition[0] - pos[0]) + "a"
+        if lastCharacterPosition[0] < pos[0]:
+            command += str(pos[0] - lastCharacterPosition[0]) + "d"
+        if lastCharacterPosition[1] > pos[1]:
+            command += str(lastCharacterPosition[1] - pos[1]) + "w"
+        if lastCharacterPosition[1] < pos[1]:
+            command += str(pos[1] - lastCharacterPosition[1]) + "s"
 
         character.runCommandString(command)
 

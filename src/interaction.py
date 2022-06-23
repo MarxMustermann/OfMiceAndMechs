@@ -6732,14 +6732,508 @@ def renderGameDisplay():
             printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
             tcodContext.present(tcodConsole)
 
+def showMainMenu(args):
+
+    try:
+        with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+            rawState = json.loads(globalInfoFile.read())
+            saves = rawState["saves"]
+    except:
+        saves = [0,0,0,0,0,0,0,0,0,0]
+
+    scenarios = [
+        (
+        "BackToTheRoots",
+        "main game",
+        "m",
+        ),
+        (
+        "Tutorials",
+        "tutorials",
+        "t",
+        ),
+        (
+        "PrefabDesign",
+        "PrefabDesign",
+        "p",
+        ),
+        (
+        "basebuilding",
+        "basebuilding",
+        "b",
+        ),
+        (
+        "RoguelikeStart",
+        "RoguelikeStart",
+        "r",
+        ),
+        (
+        "survival",
+        "survival",
+        "s",
+        ),
+        (
+        "creative",
+        "creative mode",
+        "c",
+        ),
+        (
+        "dungeon",
+        "dungeon",
+        "d",
+        ),
+        (
+        "siege2",
+        "siege2",
+        "S",
+        ),
+        (
+        "Tour",
+        "(Tour)",
+        "T",
+        ),
+        (
+        "siege",
+        "(siege)",
+        "x",
+        ),
+    ]
+
+    gameIndex = 0
+    selectedScenario = "siege2"
+    difficulty = "medium"
+
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    src.gamestate.setup(None) 
+    src.gamestate.gamestate.terrainType = src.terrains.Nothingness
+    src.gamestate.gamestate.mainChar = src.characters.Character()
+    
+    terrain = src.terrains.Nothingness()
+    mainChar = src.gamestate.gamestate.mainChar
+
+    item = src.items.itemMap["ArchitectArtwork"]()
+    architect = item
+    item.bolted = False
+    item.godMode = True
+    terrain.addItem(item,(1,1,0))
+
+    src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
+    src.gamestate.gamestate.mainChar.godMode = True
+    src.gamestate.gamestate.mainChar.faction = "city test"
+
+    mainRoom = architect.doAddRoom(
+                        {
+                            "coordinate": (7,7),
+                            "roomType": "EmptyRoom",
+                            "doors": "0,6 6,0 12,6 6,12",
+                            "offset": [1,1],
+                            "size": [13, 13],
+                        },
+                        None,
+                  )
+    mainRoom.storageRooms = []
+
+    cityBuilder = src.items.itemMap["CityBuilder2"]()
+    cityBuilder.architect = architect
+    mainRoom.addItem(cityBuilder,(7,1,0))
+    cityBuilder.registerRoom(mainRoom)
+
+    mainRoom.addCharacter(
+            src.gamestate.gamestate.mainChar, 6, 6
+        )
+
+    cityBuilder.spawnCity(src.gamestate.gamestate.mainChar)
+
+    staffArtwork = src.items.itemMap["StaffArtwork"]()
+    mainRoom.addItem(staffArtwork,(1,1,0))
+
+    dutyArtwork = src.items.itemMap["DutyArtwork"]()
+    mainRoom.addItem(dutyArtwork,(5,1,0))
+    
+    orderArtwork = src.items.itemMap["OrderArtwork"]()
+    mainRoom.addItem(orderArtwork,(3,1,0))
+
+    produtionArtwork = src.items.itemMap["ProductionArtwork"]()
+    mainRoom.addItem(produtionArtwork,(3,11,0))
+
+    personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+    mainRoom.addItem(personnelArtwork,(9,1,0))
+    personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+    personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
+
+    mainRoom.removeCharacter(src.gamestate.gamestate.mainChar)
+
+    startGame = False
+    logoText = """
+
+OOO FFF          AAA N N DD
+O O FF   mice    AAA NNN D D
+OOO F            A A N N DD
+
+
+MMM   MMM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+MMMM MMMM  EE      CC      HH   HH  SS
+MM MMM MM  EEEE    CC      HHHHHHH  SSSSSSS
+MM  M  MM  EEEE    CC      HHHHHHH  SSSSSSS
+MM     MM  EE      CC      HH   HH        S
+MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
+
+
+- a pipedream
+
+"""
+
+    for x in range(1,14):
+        for y in range(1,14):
+            if (x,y) == (8,5):
+                continue
+
+            if terrain.getRoomByPosition((x,y)):
+                continue
+
+            for i in range(1,8):
+                mold = src.items.itemMap["Mold"]()
+                mold.dead = True
+                terrain.addItem(mold,(15*x+random.randint(1,13),15*y+random.randint(1,13),0))
+
+            placedMines = False
+
+            if random.random() > 0.5:
+                placedMines = True
+                for i in range(1,2+random.randint(1,5)):
+                    offsetX = random.randint(1,13)
+                    offsetY = random.randint(1,13)
+                    
+                    xPos = 15*x+offsetX
+                    yPos = 15*y+offsetY
+
+                    if terrain.getItemByPosition((xPos,yPos,0)):
+                        continue
+
+                    landmine = src.items.itemMap["LandMine"]()
+                    terrain.addItem(landmine,(xPos,yPos,0))
+
+            for i in range(1,5+random.randint(1,20)):
+                offsetX = random.randint(1,13)
+                offsetY = random.randint(1,13)
+
+                xPos = 15*x+offsetX
+                yPos = 15*y+offsetY
+
+                if terrain.getItemByPosition((xPos,yPos,0)):
+                    continue
+
+                if placedMines:
+                    landmine = src.items.itemMap["LandMine"]()
+                    terrain.addItem(landmine,(xPos,yPos,0))
+
+                scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
+                terrain.addItem(scrap,(xPos,yPos,0))
+
+    lastStep = time.time()
+    submenu = None
+
+    import os
+
+    while 1:
+        tcodConsole.clear()
+
+        canLoad = False
+        if os.path.exists("gamestate/gamestate_%s"%(gameIndex,)):
+            canLoad = True
+
+        if startGame:
+            if canLoad:
+                src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
+                setUpNoUrwid()
+                src.gamestate.gamestate.mainChar.runCommandString("~")
+            else:
+                seed = 0
+                src.gamestate.setup(gameIndex) 
+                setUpNoUrwid()
+
+                if selectedScenario == "siege":
+                    args.terrain = "test"
+                    args.phase = "Siege"
+                elif selectedScenario == "siege2":
+                    args.terrain = "test"
+                    args.phase = "Siege2"
+                elif selectedScenario == "basebuilding":
+                    args.terrain = "nothingness"
+                    args.phase = "BaseBuilding"
+                elif selectedScenario == "survival":
+                    args.terrain = "desert"
+                    args.phase = "DesertSurvival"
+                elif selectedScenario == "creative":
+                    args.terrain = "nothingness"
+                    args.phase = "CreativeMode"
+                elif selectedScenario == "dungeon":
+                    args.terrain = "nothingness"
+                    args.phase = "Dungeon"
+                elif selectedScenario == "WorldBuildingPhase":
+                    args.terrain = "nothingness"
+                    args.phase = "WorldBuildingPhase"
+                elif selectedScenario == "RoguelikeStart":
+                    args.terrain = "nothingness"
+                    args.phase = "RoguelikeStart"
+                elif selectedScenario == "Tour":
+                    args.terrain = "nothingness"
+                    args.phase = "Tour"
+                elif selectedScenario == "BackToTheRoots":
+                    args.terrain = "nothingness"
+                    args.phase = "BackToTheRoots"
+                elif selectedScenario == "PrefabDesign":
+                    args.terrain = "nothingness"
+                    args.phase = "PrefabDesign"
+                elif selectedScenario == "Tutorials":
+                    args.terrain = "nothingness"
+                    args.phase = "Tutorials"
+
+                print(args.terrain)
+                print(args.phase)
+
+                if args.terrain and args.terrain == "scrapField":
+                    src.gamestate.gamestate.terrainType = src.terrains.ScrapField
+                elif args.terrain and args.terrain == "nothingness":
+                    src.gamestate.gamestate.terrainType = src.terrains.Nothingness
+                elif args.terrain and args.terrain == "test":
+                    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+                elif args.terrain and args.terrain == "tutorial":
+                    src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
+                elif args.terrain and args.terrain == "desert":
+                    src.gamestate.gamestate.terrainType = src.terrains.Desert
+                else:
+                    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+
+                src.gamestate.gamestate.mainChar = src.characters.Character()
+
+                src.gamestate.gamestate.setup(phase=args.phase, seed=seed)
+                src.gamestate.gamestate.currentPhase.start(seed=seed)
+                terrain = src.gamestate.gamestate.terrainMap[7][7]
+                
+                src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                global lastTerrain
+                lastTerrain = terrain
+
+            break
+
+        if time.time() - lastStep > 1:
+            lastStep = time.time()
+            terrain.advance()
+            src.gamestate.gamestate.tick += 1
+
+            charList = []
+            charList.extend(terrain.characters)
+            for room in terrain.rooms:
+                charList.extend(room.characters)
+
+            removeList = []
+            for character in charList:
+                advanceChar(character,removeList)
+
+        height = 5
+        width = 46
+
+        printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(50,126))),(0,0))
+
+        offsetX = 51
+        offsetY = 10
+
+        printUrwidToTcod("|",(offsetX,offsetY))
+        printUrwidToTcod("|",(offsetX+width,offsetY))
+        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+1))
+        for y in range(offsetY+2,offsetY+21+height):
+            printUrwidToTcod("|"+45*" "+"|",(offsetX,y))
+        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+18))
+        printUrwidToTcod("--+"+45*"-"+"+--",(offsetX-2,offsetY+21+height))
+        printUrwidToTcod("|",(offsetX,offsetY+22+height))
+        printUrwidToTcod("|",(offsetX+width,offsetY+22+height))
+        printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1))
+
+        if canLoad:
+            printUrwidToTcod("press p to load game",(offsetX+2,offsetY+20))
+        else:
+            printUrwidToTcod("press p to start new game",(offsetX+2,offsetY+20))
+
+        color = "#fff"
+        if saves[gameIndex]:
+            color = "#333"
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"d: difficulty - %s"%(difficulty,)),(offsetX+3,offsetY+22))
+        color = "#fff"
+        if saves[gameIndex]:
+            color = "#333"
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"s: scenario   - %s"%(selectedScenario,)),(offsetX+3,offsetY+23))
+        printUrwidToTcod("g: gameslot   - %s"%(gameIndex,),(offsetX+3,offsetY+24))
+
+        if submenu == "gameslot":
+            printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
+            printUrwidToTcod("| choose the gameslot: |",(offsetX+3+16,offsetY+24))
+            for i in range(0,10):
+                if saves[i]:
+                    printUrwidToTcod("| %s: load game         |"%(i,),(offsetX+3+16,offsetY+25+i))
+                else:
+                    printUrwidToTcod("| %s: new game          |"%(i,),(offsetX+3+16,offsetY+25+i))
+            printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+35))
+
+        if submenu == "scenario":
+            maxLength = 0
+            for scenario in scenarios:
+                maxLength = max(maxLength,len(scenario[1]))
+
+            printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+22))
+            i = 0
+            for scenario in scenarios:
+                printUrwidToTcod(("| %s: %s "+" "*(maxLength-len(scenario[1]))+"|")%(scenario[2],scenario[1],),(offsetX+3+16,offsetY+23+i))
+                i += 1
+            printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+23+i))
+                
+
+        if submenu == "difficulty":
+            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+21))
+            printUrwidToTcod("| e: easy      |",(offsetX+3+16,offsetY+22))
+            printUrwidToTcod("| m: medium    |",(offsetX+3+16,offsetY+23))
+            printUrwidToTcod("| d: difficult |",(offsetX+3+16,offsetY+24))
+            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+25))
+
+
+        tcodContext.present(tcodConsole)
+
+
+        events = tcod.event.get()
+        for event in events:
+            if submenu == "gameslot":
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    if key == tcod.event.KeySym.ESCAPE:
+                        submenu = None
+                    if key == tcod.event.KeySym.N0:
+                        gameIndex = 0
+                        submenu = None
+                    if key == tcod.event.KeySym.N1:
+                        gameIndex = 1
+                        submenu = None
+                    if key == tcod.event.KeySym.N2:
+                        gameIndex = 2
+                        submenu = None
+                    if key == tcod.event.KeySym.N3:
+                        gameIndex = 3
+                        submenu = None
+                    if key == tcod.event.KeySym.N4:
+                        gameIndex = 4
+                        submenu = None
+                    if key == tcod.event.KeySym.N5:
+                        gameIndex = 5
+                        submenu = None
+                    if key == tcod.event.KeySym.N6:
+                        gameIndex = 6
+                        submenu = None
+                    if key == tcod.event.KeySym.N7:
+                        gameIndex = 7
+                        submenu = None
+                    if key == tcod.event.KeySym.N8:
+                        gameIndex = 8
+                        submenu = None
+                    if key == tcod.event.KeySym.N9:
+                        gameIndex = 9
+                        submenu = None
+            elif submenu == "scenario":
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    convertedKey = None
+                    if key == tcod.event.KeySym.ESCAPE:
+                        submenu = None
+                    if key == tcod.event.KeySym.m:
+                        convertedKey = "m"
+                    if key == tcod.event.KeySym.t:
+                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                            convertedKey = "T"
+                        else:
+                            convertedKey = "t"
+                    if key == tcod.event.KeySym.p:
+                        convertedKey = "p"
+                    if key == tcod.event.KeySym.b:
+                        convertedKey = "b"
+                    if key == tcod.event.KeySym.r:
+                        convertedKey = "r"
+                    if key == tcod.event.KeySym.s:
+                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                            convertedKey = "S"
+                        else:
+                            convertedKey = "s"
+                    if key == tcod.event.KeySym.c:
+                        convertedKey = "c"
+                    if key == tcod.event.KeySym.d:
+                        convertedKey = "d"
+                    if key == tcod.event.KeySym.x:
+                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                            convertedKey = "X"
+                        else:
+                            convertedKey = "x"
+
+                    for scenario in scenarios:
+                        if scenario[2] == convertedKey:
+                            selectedScenario = scenario[0]
+                            submenu = None
+
+            elif submenu == "difficulty":
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    if key == tcod.event.KeySym.ESCAPE:
+                        submenu = None
+                    if key == tcod.event.KeySym.e:
+                        difficulty = "easy"
+                        submenu = None
+                    if key == tcod.event.KeySym.m:
+                        difficulty = "medium"
+                        submenu = None
+                    if key == tcod.event.KeySym.d:
+                        difficulty = "difficulty"
+                        submenu = None
+            else:
+                if isinstance(event, tcod.event.Quit):
+                    raise SystemExit()
+                if isinstance(event, tcod.event.WindowEvent):
+                    if event.type == "WINDOWCLOSE":
+                        raise SystemExit()
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    if key == tcod.event.KeySym.ESCAPE:
+                        raise SystemExit()
+                    if key == tcod.event.KeySym.p:
+                        print("should start game")
+                        startGame = True
+                    if key == tcod.event.KeySym.g:
+                        submenu = "gameslot"
+                    if key == tcod.event.KeySym.s:
+                        submenu = "scenario"
+                    if key == tcod.event.KeySym.d:
+                        submenu = "difficulty"
+
 def showIntro():
     def fixRoomRender(render):
         for row in render:
             row.append("\n")
         return render
 
-    initialTick = src.gamestate.gamestate.tick
-    initialMainChar = src.gamestate.gamestate.mainChar
+    src.gamestate.setup(None) 
+    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+    src.gamestate.gamestate.mainChar = src.characters.Character()
 
     stage = 0
     stageState = None
@@ -7134,12 +7628,12 @@ You """+"."*stageState["substep"]+"""
                     if not pos in room.walkingSpace:
                         room.walkingSpace.add(pos)
                 stageState["walkingSpaces"] = []
-            elif stageState["outputslots"] and stageState["subStep"] > 2:
+            elif stageState["outputslots"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
                 for (itemType,pos) in stageState["outputslots"]:
                     room.addOutputSlot(pos,itemType)
                 stageState["outputslots"] = []
-            elif stageState["inputslots"] and stageState["subStep"] > 3:
+            elif stageState["inputslots"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
                 for (itemType,pos) in stageState["inputslots"]:
                     if itemType == "Corpse":
@@ -7147,7 +7641,7 @@ You """+"."*stageState["substep"]+"""
                     else:
                         room.addInputSlot(pos,itemType)
                 stageState["inputslots"] = []
-            elif stageState["items"] and stageState["subStep"] > 4:
+            elif stageState["items"] and stageState["subStep"] > 2:
                 if time.time()-stageState["lastChange"] > 0.1:
                     stageState["lastChange"] = time.time()
                     numItems = 2
@@ -7163,7 +7657,7 @@ You """+"."*stageState["substep"]+"""
                         else:
                             stageState["fastSpawn"].add(item[1])
                         i += 1
-            elif not stageState["didRemove"] and stageState["subStep"] > 4:
+            elif not stageState["didRemove"] and stageState["subStep"] > 2:
                 for x in range(15*6+7,15*8+7+1):
                     items = terrain.getItemByPosition((x,15*6+7,0))
                     if items:
@@ -7185,7 +7679,7 @@ You """+"."*stageState["substep"]+"""
 
                 stageState["didRemove"] = True
 
-            elif stageState["terrainItems"] and stageState["subStep"] > 4:
+            elif stageState["terrainItems"] and stageState["subStep"] > 2:
                 if time.time()-stageState["lastChange"] > 0.01:
                     stageState["lastChange"] = time.time()
                     for i in range(0,4):
@@ -7197,7 +7691,7 @@ You """+"."*stageState["substep"]+"""
                 if time.time()-stageState["lastChange"] > 1:
                     stageState["lastChange"] = time.time()
                     stageState["subStep"] += 1
-                    if stageState["subStep"] == 6:
+                    if stageState["subStep"] == 4:
                         stageState = None
 
             time.sleep(0.01)
@@ -7273,9 +7767,9 @@ You """+"."*stageState["substep"]+"""
             
             if src.gamestate.gamestate.tick > 10400:
                 if stageState["endless"]:
-                    printUrwidToTcod("press space to stop watching",(52,4))
+                    printUrwidToTcod("press space to stop watching",(47,4))
                 else:
-                    printUrwidToTcod("press space to continue watching",(52,4))
+                    printUrwidToTcod("press space to continue watching",(46,4))
             tcodContext.present(tcodConsole)
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
@@ -7334,9 +7828,9 @@ But despite all the unknowns, you have that voice in your head, that tells you:"
 FOLLOW YOUR ORDERS
 """
 
-            if stageState["substep"] > 0 and stageState["substep"] < 4:
+            if stageState["substep"] > 0 and stageState["substep"] < 5:
                 printUrwidToTcod(text1,(27,19))
-            if stageState["substep"] > 1 and stageState["substep"] < 4:
+            if stageState["substep"] > 1 and stageState["substep"] < 5:
                 printUrwidToTcod(text2,(44,23))
             if stageState["substep"] > 2:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
@@ -7346,16 +7840,14 @@ FOLLOW YOUR ORDERS
                 if time.time()-stageState["lastChange"] > 0.1:
                     stageState["animationStep"] += 1
                     stageState["lastChange"] = time.time()
-            if time.time()-stageState["lastChange"] > 4:
+            if time.time()-stageState["lastChange"] > 3:
                 stageState["substep"] += 1
                 stageState["lastChange"] = time.time()
-                if stageState["substep"] > 6:
+                if stageState["substep"] > 4:
                     stageState = None
             time.sleep(0.01)
 
         if stage > 6:
-            src.gamestate.gamestate.tick = initialTick
-            src.gamestate.gamestate.mainChar = initialMainChar
             break
 
         events = tcod.event.get()
@@ -7374,7 +7866,7 @@ FOLLOW YOUR ORDERS
                         else:
                             stageState = None
                 if key == tcod.event.KeySym.ESCAPE:
-                    stageState = 7
+                    stage = 7
 
         if not stageState:
             stage += 1

@@ -178,7 +178,7 @@ class GameState(src.saveing.Saveable):
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
 
         saves = rawState["saves"]
-        saves[self.gameIndex] = "taken"
+        saves[self.gameIndex] =  {"difficulty":10,"scenario":"test"}
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 

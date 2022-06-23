@@ -301,9 +301,6 @@ class CityBuilder2(src.items.Item):
         room.sources.append((self.container.getPosition(),"Corpse"))
         room.sources.append((self.container.getPosition(),"ScratchPlate"))
 
-        print("room.sources")
-        print(room.sources)
-
         return room
 
     def addProductionLine1(self,character,instaSpawn=False):

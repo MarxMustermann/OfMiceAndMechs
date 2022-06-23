@@ -1275,22 +1275,23 @@ class ArchitectArtwork(src.items.Item):
         maxItems = amount
         items = []
         while counter < maxItems:
+            xPos = random.randint(minX, maxX)
+            yPos = random.randint(minY, maxY)
+            pos = (xPos,yPos,0)
+
+            if ((xPos == 7 and yPos == 1) or 
+                (xPos == 7 and yPos == 13) or
+                (xPos == 1 and yPos == 7) or
+                (xPos == 13 and yPos == 7)):
+                continue
+
             if not random.randint(1, 15) == 10:
-                itemPair = (
-                    src.items.itemMap["Scrap"](amount=random.randint(1, 20)),
-                    (random.randint(minX, maxX), random.randint(minY, maxY), 0),
-                )
+                itemPair = (src.items.itemMap["Scrap"](amount=random.randint(1, 20)), pos, )
             else:
                 if not random.randint(1, 10) == 2:
-                    itemPair = (
-                        src.items.itemMap[random.choice(src.items.commons)](),
-                        (random.randint(minX, maxX), random.randint(minY, maxY), 0),
-                    )
+                    itemPair = (src.items.itemMap[random.choice(src.items.commons)](), pos, )
                 else:
-                    itemPair = (
-                        src.items.itemMap[random.choice(src.items.semiCommons)](),
-                        (random.randint(minX, maxX), random.randint(minY, maxY), 0),
-                    )
+                    itemPair = (src.items.itemMap[random.choice(src.items.semiCommons)](), pos, )
 
                 item = itemPair[0]
                 item.bolted = False

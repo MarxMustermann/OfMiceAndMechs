@@ -3997,7 +3997,7 @@ class Siege2(BasicPhase):
 
         spawnRoom = architect.doAddRoom(
                 {
-                       "coordinate": (5,11),
+                       "coordinate": (7,13),
                        "roomType": "EmptyRoom",
                        "doors": "0,6 6,0 12,6 6,12",
                        "offset": [1,1],
@@ -4083,6 +4083,79 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         mainRoom.addItem(cityBuilder,(7,1,0))
         cityBuilder.registerRoom(mainRoom)
 
+        farmPositions = [(2,2),(4,2),(2,4),(10,2),(12,2),(12,4),(2,10),(4,12),(2,12),(12,10),(10,12),(12,12),  (4,4),(4,10),(10,4),(10,10)]
+        farmPositions = [(2,2),(4,2),(2,4),(10,2),(12,2),(12,4),(2,10),(4,12),(2,12),(12,10),(10,12),(12,12),]
+
+        farmPlots = []
+        for farmPos in farmPositions:
+            architect.doClearField(farmPos[0],farmPos[1])
+            farmPlots.extend([
+                (farmPos[0]-1,farmPos[1],0),
+                (farmPos[0]-1,farmPos[1]-1,0),
+                (farmPos[0],farmPos[1]-1,0),
+                (farmPos[0]+1,farmPos[1]-1,0),
+                (farmPos[0]+1,farmPos[1],0),
+                (farmPos[0]+1,farmPos[1]+1,0),
+                (farmPos[0],farmPos[1]+1,0),
+                (farmPos[0]-1,farmPos[1]+1,0),
+                ])
+
+            architect.doClearField(farmPos[0]-1,farmPos[1])
+            architect.doClearField(farmPos[0]-1,farmPos[1]-1)
+            architect.doClearField(farmPos[0],farmPos[1]-1)
+            architect.doClearField(farmPos[0]+1,farmPos[1]-1)
+            architect.doClearField(farmPos[0]+1,farmPos[1])
+            architect.doClearField(farmPos[0]+1,farmPos[1]+1)
+            architect.doClearField(farmPos[0],farmPos[1]+1)
+            architect.doClearField(farmPos[0]-1,farmPos[1]+1)
+            farm = cityBuilder.addFarmFromMap({"coordinate":farmPos,"character":src.gamestate.gamestate.mainChar},forceSpawn=10)
+            for i in range(1,30):
+                farm.damage()
+
+        # add hardcoded treasure rooms
+        def addTreasureRoom(pos,itemType):
+            treasureRoom = architect.doAddRoom(
+                    {
+                           "coordinate": pos,
+                           "roomType": "EmptyRoom",
+                           "doors": "0,6 6,0 12,6 6,12",
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None)
+
+            for i in range(1,20):
+                treasureRoom.damage()
+
+            for i in range(1,25):
+                item = src.items.itemMap[itemType]()
+                #treasureRoom.addItem(item,(1,1,0))
+            for i in range(1,25):
+                item = src.items.itemMap[itemType]()
+                #treasureRoom.addItem(item,(2,1,0))
+            for i in range(1,25):
+                item = src.items.itemMap[itemType]()
+                #treasureRoom.addItem(item,(3,1,0))
+
+            for i in range(random.randint(11,17),random.randint(18,25)):
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 10*i
+                enemy.baseDamage = i
+                enemy.faction = "invader"
+                enemy.godMode = True
+                treasureRoom.addCharacter(enemy, random.randint(2,11), random.randint(2,11))
+
+                quest = src.quests.SecureTile(toSecure=treasureRoom.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+        #addTreasureRoom((3,3),"Sword")
+        #addTreasureRoom((11,11),"Armor")
+        #addTreasureRoom((3,11),"Rod")
+        #addTreasureRoom((11,3),"MetalBars")
+
         cityBuilder.spawnCity(src.gamestate.gamestate.mainChar)
 
         staffArtwork = src.items.itemMap["StaffArtwork"]()
@@ -4132,12 +4205,9 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
 
-        self.numRounds = 1
-        self.startRound()
-
         # add hardcoded treasure rooms
-        def addTreasureRoom(pos,itemType):
-            treasureRoom = architect.doAddRoom(
+        def addHive(pos):
+            room = architect.doAddRoom(
                     {
                            "coordinate": pos,
                            "roomType": "EmptyRoom",
@@ -4147,39 +4217,60 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                     },
                     None)
 
-            for i in range(1,20):
-                treasureRoom.damage()
+            room.addItem(src.items.itemMap["MonsterSpawner"](),(6,6,0))
 
-            for i in range(1,25):
-                item = src.items.itemMap[itemType]()
-                #treasureRoom.addItem(item,(1,1,0))
-            for i in range(1,25):
-                item = src.items.itemMap[itemType]()
-                #treasureRoom.addItem(item,(2,1,0))
-            for i in range(1,25):
-                item = src.items.itemMap[itemType]()
-                #treasureRoom.addItem(item,(3,1,0))
-
-            for i in range(random.randint(11,17),random.randint(18,25)):
+            for i in range(1,14):
                 enemy = src.characters.Monster(4,4)
-                enemy.health = 10*i
-                enemy.baseDamage = i
-                enemy.faction = "invader"
                 enemy.godMode = True
-                treasureRoom.addCharacter(enemy, random.randint(2,11), random.randint(2,11))
+                enemy.health = 200
+                enemy.baseDamage = 20
+                enemy.faction = "invader"
+                room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
-                quest = src.quests.SecureTile(toSecure=treasureRoom.getPosition())
+                quest = src.quests.SecureTile(toSecure=pos)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
 
-        addTreasureRoom((2,3),"Sword")
-        addTreasureRoom((11,12),"Armor")
-        addTreasureRoom((4,5),"Rod")
-        addTreasureRoom((2,10),"MetalBars")
+            neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
+            for neighbour in neighbours:
+                architect.doFillWith(neighbour[0],neighbour[1],["EncrustedBush","Bush","Sprout2"])
+            room.bio = True
+        
+        hivePositions = [(3,3,0),(11,11,0),(3,11,0),(11,3,0)]
+        for hivePos in hivePositions:
+            addHive(hivePos)
 
-        blockerRingPositions = [(7,4),(6,5)]
+        tmpList = farmPlots[:]
+        while tmpList:
+            farmPlot = tmpList.pop()
+            if not farmPlot in tmpList:
+                continue
+            architect.doSpawnItems(farmPlot[0],farmPlot[1],["Bush","Bush","EncrustedBush"],20,repeat=10)
+
+        for farmPlot in farmPlots:
+            architect.doFillWith(farmPlot[0],farmPlot[1],["Mold","Mold","Sprout","Mold","Sprout2"])
+
+        for farmPlot in farmPlots:
+            if farmPlot in hivePositions:
+                continue
+
+            for i in range(1,4):
+                enemy = src.characters.Monster(4,4)
+                enemy.godMode = True
+                enemy.health = 100
+                enemy.baseDamage = 10
+                enemy.faction = "invader"
+                currentTerrain.addCharacter(enemy,farmPlot[0]*15+random.randint(2,11),farmPlot[1]*15+random.randint(2,11))
+
+                quest = src.quests.SecureTile(toSecure=farmPlot)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+        blockerRingPositions = [(7,4,0),(6,5,0)]
         for pos in blockerRingPositions:
             for i in range(0,2):
                 enemy = src.characters.Monster(4,4)
@@ -4202,10 +4293,13 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                 if (x,y) == (8,5):
                     continue
 
+                if (x,y) in farmPlots:
+                    continue
+
                 if currentTerrain.getRoomByPosition((x,y)):
                     continue
 
-                for i in range(1,8):
+                for i in range(1,2):
                     mold = src.items.itemMap["Mold"]()
                     mold.dead = True
                     currentTerrain.addItem(mold,(15*x+random.randint(1,13),15*y+random.randint(1,13),0))
@@ -4256,7 +4350,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                         enemy.faction = "invader"
                         enemy.tag = "lurker"
 
-                        quest = src.quests.SecureTile(toSecure=(x,y))
+                        quest = src.quests.SecureTile(toSecure=(x,y,0))
                         quest.autoSolve = True
                         quest.assignToCharacter(enemy)
                         quest.activate()
@@ -4330,6 +4424,9 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
 
+        self.numRounds = 1
+        self.startRound()
+
         self.checkDead()
 
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
@@ -4354,12 +4451,6 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             currentTerrain.addEvent(event)
 
     def startRound(self):
-        if self.numRounds == 15:
-            src.gamestate.gamestate.uiElements = [
-                    {"type":"text","offset":(15,10), "text":"You won the game"},
-                    ]
-            return
-
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
         remainingEnemyCounter = 0
@@ -4385,13 +4476,33 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         """
 
         counter = 0
-        monsterStartPos = random.choice([(112,22),(202,112),(112,202),(22,112)])
+
+        spawnerRooms = []
+        for room in terrain.rooms:
+            print(room.getPosition())
+            for item in room.getItemByPosition((6,6,0)):
+                print(item)
+                if item.type == "MonsterSpawner":
+                    spawnerRooms.append(room)
+        
+        if self.numRounds == 15 or not spawnerRooms:
+            src.gamestate.gamestate.uiElements = [
+                    {"type":"text","offset":(15,10), "text":"You won the game"},
+                    ]
+            return
+
+
+        if not spawnerRooms:
+            print("ending siege")
+            return
+
+        monsterStartRoom = random.choice(spawnerRooms)
         while counter < remainingEnemyCounter:
-            enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
+            enemy = src.characters.Monster(6,6)
             enemy.faction = "invader"
             enemy.tag = "wave"
             enemy.specialDisplay = "<c"
-            terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
+            monsterStartRoom.addCharacter(enemy, 6, 6)
 
             quest = src.quests.DestroyRooms()
             quest.autoSolve = True
@@ -4411,12 +4522,12 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             print("skipped wave")
 
         for i in range(0,numMonsters):
-            enemy = src.characters.Monster(monsterStartPos[0],monsterStartPos[1])
+            enemy = src.characters.Monster(6,6)
             enemy.health = 10*i
             enemy.baseDamage = i
             enemy.faction = "invader"
             enemy.tag = "wave"
-            terrain.addCharacter(enemy, monsterStartPos[0], monsterStartPos[1])
+            monsterStartRoom.addCharacter(enemy, 6, 6)
             enemy.movementSpeed = 0.7
 
             quest = src.quests.ClearTerrain()

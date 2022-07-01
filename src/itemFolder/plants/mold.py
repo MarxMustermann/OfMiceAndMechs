@@ -59,7 +59,7 @@ you can eat it to gain 2 satiation.
             event.setCallback({"container": self, "method": "spawn"})
             self.container.addEvent(event)
 
-    def spawn(self):
+    def spawn(self,forceSpawn=0):
         """
         spawn a now mold and handle interactions with other plants
         """
@@ -88,7 +88,11 @@ you can eat it to gain 2 satiation.
             if not len(itemList):
                 new = src.items.itemMap["Mold"]()
                 self.container.addItem(new, newPos)
-                new.startSpawn()
+                if not forceSpawn:
+                    new.startSpawn()
+                else:
+                    forceSpawn = forceSpawn//2
+                    new.spawn(forceSpawn=forceSpawn)
             elif len(itemList) == 1:
                 if itemList[-1].type == "Mold":
                     self.charges += itemList[-1].charges // 2
@@ -210,7 +214,10 @@ you can eat it to gain 2 satiation.
 
         self.charges -= 1
         if self.charges:
-            self.startSpawn()
+            if not forceSpawn:
+                self.startSpawn()
+            else:
+                self.spawn(forceSpawn=forceSpawn)
 
     def destroy(self, generateScrap=True):
         """

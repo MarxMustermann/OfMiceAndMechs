@@ -71,13 +71,6 @@ class FireCrystals(src.items.Item):
             return
 
         new = src.items.itemMap["Explosion"]()
-        event = src.events.RunCallbackEvent(
-            src.gamestate.gamestate.tick + 1
-        )
-        event.setCallback({"container": new, "method": "explode"})
-        self.container.addEvent(event)
-
-        new = src.items.itemMap["Explosion"]()
         self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + 1

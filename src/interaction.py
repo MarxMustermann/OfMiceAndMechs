@@ -2283,6 +2283,8 @@ select what you want to observe
                     #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
                     #        item.apply(char)
                     #        break
+                    if not char.container:
+                        return
                     entry = char.container.getItemByPosition(
                         (char.xPosition, char.yPosition, char.zPosition)
                     )
@@ -2310,9 +2312,10 @@ select what you want to observe
                     #        item.apply(char)
                     #        break
                     if not (
-                        char.xPosition is None
-                        or char.yPosition is None
-                        or char.zPosition is None
+                        char.xPosition == None
+                        or char.yPosition == None
+                        or char.zPosition == None
+                        or char.container == None
                     ):
                         entry = char.container.getItemByPosition(
                             (char.xPosition, char.yPosition, char.zPosition)
@@ -2470,6 +2473,8 @@ press key for advanced drop
                 item = charState["itemMarkedLast"]
 
                 if not item:
+                    if not char.container:
+                        return
                     itemList = char.container.getItemByPosition(
                         (char.xPosition, char.yPosition, char.zPosition)
                     )
@@ -6743,7 +6748,7 @@ def showMainMenu(args):
 
     scenarios = [
         (
-        "BackToTheRoots",
+        "siege2",
         "main game",
         "m",
         ),
@@ -6757,46 +6762,46 @@ def showMainMenu(args):
         "PrefabDesign",
         "p",
         ),
+        #(
+        #"basebuilding",
+        #"basebuilding",
+        #"b",
+        #),
+        #(
+        #"RoguelikeStart",
+        #"RoguelikeStart",
+        #"r",
+        #),
+        #(
+        #"survival",
+        #"survival",
+        #"S",
+        #),
+        #(
+        #"creative",
+        #"creative mode",
+        #"c",
+        #),
+        #(
+        #"dungeon",
+        #"dungeon",
+        #"d",
+        #),
         (
-        "basebuilding",
-        "basebuilding",
-        "b",
-        ),
-        (
-        "RoguelikeStart",
-        "RoguelikeStart",
-        "r",
-        ),
-        (
-        "survival",
-        "survival",
+        "siege2",
+        "siege",
         "s",
         ),
-        (
-        "creative",
-        "creative mode",
-        "c",
-        ),
-        (
-        "dungeon",
-        "dungeon",
-        "d",
-        ),
-        (
-        "siege2",
-        "siege2",
-        "S",
-        ),
-        (
-        "Tour",
-        "(Tour)",
-        "T",
-        ),
-        (
-        "siege",
-        "(siege)",
-        "x",
-        ),
+        #(
+        #"Tour",
+        #"(Tour)",
+        #"T",
+        #),
+        #(
+        #"siege",
+        #"(siege)",
+        #"x",
+        #),
     ]
 
     gameIndex = 0
@@ -7047,7 +7052,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             for character in charList:
                 advanceChar(character,removeList)
 
-        height = 5
+        height = 10
         width = 46
 
         printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(50,126))),(0,0))
@@ -7066,20 +7071,25 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         printUrwidToTcod("|",(offsetX+width,offsetY+22+height))
         printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1))
 
+        printUrwidToTcod("try playing the \"tutorials\" scenario,\nif you have trouble with the game",(offsetX+3,offsetY+20))
+
         if canLoad:
-            printUrwidToTcod("press p to load game",(offsetX+2,offsetY+20))
+            printUrwidToTcod("press p to load game",(offsetX+3,offsetY+27))
         else:
-            printUrwidToTcod("press p to start new game",(offsetX+2,offsetY+20))
+            printUrwidToTcod("press p to start new game",(offsetX+3,offsetY+27))
+        printUrwidToTcod("press g to select different save slot",(offsetX+3,offsetY+28))
+        if not saves[gameIndex]:
+            printUrwidToTcod("press d/s to edit game settings",(offsetX+3,offsetY+29))
 
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"d: difficulty - %s"%(difficulty,)),(offsetX+3,offsetY+22))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"d: difficulty - %s"%(difficulty,)),(offsetX+3,offsetY+23))
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"s: scenario   - %s"%(selectedScenario,)),(offsetX+3,offsetY+23))
-        printUrwidToTcod("g: gameslot   - %s"%(gameIndex,),(offsetX+3,offsetY+24))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"s: scenario   - %s"%(selectedScenario,)),(offsetX+3,offsetY+24))
+        printUrwidToTcod("g: gameslot   - %s"%(gameIndex,),(offsetX+3,offsetY+25))
 
         if submenu == "gameslot":
             printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
@@ -7830,20 +7840,20 @@ FOLLOW YOUR ORDERS
 
             if stageState["substep"] > 0 and stageState["substep"] < 5:
                 printUrwidToTcod(text1,(27,19))
-            if stageState["substep"] > 1 and stageState["substep"] < 5:
+            if stageState["substep"] > 2 and stageState["substep"] < 5:
                 printUrwidToTcod(text2,(44,23))
-            if stageState["substep"] > 2:
+            if stageState["substep"] > 3:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
             tcodContext.present(tcodConsole)
 
-            if stageState["substep"] == 3 and stageState["animationStep"] < len(text3):
+            if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
                 if time.time()-stageState["lastChange"] > 0.1:
                     stageState["animationStep"] += 1
                     stageState["lastChange"] = time.time()
             if time.time()-stageState["lastChange"] > 3:
                 stageState["substep"] += 1
                 stageState["lastChange"] = time.time()
-                if stageState["substep"] > 4:
+                if stageState["substep"] > 5:
                     stageState = None
             time.sleep(0.01)
 

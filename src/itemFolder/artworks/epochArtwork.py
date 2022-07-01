@@ -33,6 +33,8 @@ class EpochArtwork(src.items.Item):
         self.eliminateGuardsDone = False
         self.eliminatePatrolsInProgess = False
         self.eliminatePatrolsDone = False
+        self.eliminateSpawnersInProgess = False
+        self.eliminateSpawnersDone = False
         self.eliminateLurkersInProgess = False
         self.eliminateLurkersDone = False
         self.lastEpochSurvivedReward = 0
@@ -231,6 +233,32 @@ Eliminate them to break up the second siege ring.
 This will get you access to some extra ressources.
 """
 
+        elif not self.eliminateSpawnersDone:
+            currentTerrain = self.container.container
+            numSpawnersFound = 0
+            for room in currentTerrain.rooms:
+                for item in room.getItemByPosition((6,6,0)):
+                    if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                        numSpawnersFound += 1
+
+            text += """
+2. Eliminate the spawners.
+
+The enemy has overrun and made base in the overrun farm.
+They have spawners there that allow them to bring reinforcements.
+Eliminate the spawners and cut the enemies reinforcements off.
+
+There are %s spawners remaining.
+
+The spawners can be found in the hive rooms.
+The spawners look like MS
+To destroy them by unsing them.
+
+This will get you access to some extra resources.
+Rewards will be given even for partially completing the task.
+Eliminating all spawners will stop the waves from coming in.
+"""%(numSpawnersFound,)
+
         elif not self.eliminateLurkersDone:
             enemies = self.getEnemiesWithTag("lurker")
 
@@ -243,7 +271,7 @@ The lurkers are shown as white ss
 
 Eliminate them to break up the second siege ring.
 
-This will get you access to some extra ressources.
+This will get you access to some extra resources.
 Rewards will be given even for partially completing the task.
 Reduce the number of lurkers to %s to get a reward.
 """%(self.getLurkerThreashold(),)
@@ -296,6 +324,21 @@ Reduce the number of lurkers to %s to get a reward.
                 self.eliminatePatrolsDone = True
 
                 self.getThirdEpochReward(character)
+                return
+
+        if self.eliminateSpawnersInProgess and not self.eliminateSpawnersDone:
+            currentTerrain = self.container.container
+            numSpawnersFound = 0
+            for room in currentTerrain.rooms:
+                for item in room.getItemByPosition((6,6,0)):
+                    if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                        numSpawnersFound += 1
+
+            if not numSpawnersFound:
+                self.eliminateSpawnersInProgess = False
+                self.eliminateSpawnersDone = True
+
+                self.getFourthEpochReward(character)
                 return
 
         if self.eliminateLurkersInProgess and not self.eliminateLurkersDone:
@@ -356,14 +399,13 @@ For surviving and eliminating the invaders you get an additional %s glass tears.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-    def getThirdEpochReward(self,character):
+    def getFourthEpochReward(self,character):
         text = """
-You eliminated the patrols, that breaks the second siege ring.
+You eliminated the spawners, that breaks the siege mostly.
 
-Next threat to remove are the enemies that are spread around in the area.
-The lurkers are not partiulary agressive, but make movement harder by attacking when somebody enters the field they are guarding.
-
+There are enemies remaining in that terrain.
 Kill them all.
+
 To help you with that you got the universal leaders blessing.
 (base damage +2 max health +20)
 
@@ -381,6 +423,33 @@ Use this item to get further instructions and to claim your rewards.
         self.changeCharges(10)
 
         self.eliminateLurkersInProgess = True
+
+        return
+
+    def getThirdEpochReward(self,character):
+        text = """
+You eliminated the patrols, that breaks the second siege ring.
+
+The enemies uses spawners to get reenforcements to attack this base with.
+Destroy the spawners to stop the enemies from sending reenforcements.
+
+To help you with that you got the universal leaders blessing.
+(base damage +2 max health +20)
+
+Use this item to get further instructions and to claim your rewards.
+"""
+        character.baseDamage += 2
+        character.addMessage("your base damage increased by 2")
+        character.maxHealth += 20
+        character.heal(50)
+        character.addMessage("your max health increased by 20")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+
+        self.changeCharges(10)
+
+        self.eliminateSpawnersInProgess = True
 
         return
 

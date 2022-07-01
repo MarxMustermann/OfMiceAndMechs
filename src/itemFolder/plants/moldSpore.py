@@ -21,7 +21,7 @@ put it on the ground and activate it to plant it
         """
         super().__init__(display=src.canvas.displayChars.moldSpore)
 
-    def apply(self, character):
+    def apply(self, character, forceSpawn=0):
         """
         handle a character using this item
         by spawning mold
@@ -33,7 +33,10 @@ put it on the ground and activate it to plant it
         if not self.container:
             character.addMessage("this needs to be placed outside to be used")
             return
-        self.startSpawn()
+        if not forceSpawn:
+            self.startSpawn()
+        else:
+            self.spawn(forceSpawn=forceSpawn)
         character.addMessage("you activate the mold spore")
 
     def startSpawn(self):
@@ -49,7 +52,7 @@ put it on the ground and activate it to plant it
         event.setCallback({"container": self, "method": "spawn"})
         self.container.addEvent(event)
 
-    def spawn(self):
+    def spawn(self,forceSpawn=0):
         """
         spawn more mold
         """
@@ -59,7 +62,10 @@ put it on the ground and activate it to plant it
 
         new = src.items.itemMap["Mold"]()
         self.container.addItem(new,self.getPosition())
-        new.startSpawn()
+        if not forceSpawn:
+            new.startSpawn()
+        else:
+            new.spawn(forceSpawn=forceSpawn)
         self.destroy(generateScrap=False)
 
 src.items.addType(MoldSpore)

@@ -1253,6 +1253,34 @@ class ArchitectArtwork(src.items.Item):
 
         terrain.addItems(items)
 
+    def doFillWith(self, x, y, itemTypes):
+
+        terrain = self.getTerrain()
+        for smallX in range(1,14):
+            for smallY in range(1,14):
+                pos = (x*15+smallX,y*15+smallY,0)
+                if terrain.getItemByPosition(pos):
+                    continue
+
+                itemType = random.choice(itemTypes)
+                terrain.addItem(src.items.itemMap[itemType](),pos)
+
+    def doSpawnItems(self, x, y, itemTypes, amount, repeat=1):
+        terrain = self.getTerrain()
+        for i in range(0,amount):
+            selectedPos = None
+            for j in range(0,repeat):
+                pos = (x*15+random.randint(1,13),y*15+random.randint(1,13),0)
+                if terrain.getItemByPosition(pos):
+                    continue
+                selectedPos = pos
+                break
+
+            if not selectedPos:
+                continue
+
+            itemType = random.choice(itemTypes)
+            terrain.addItem(src.items.itemMap[itemType](),selectedPos)
 
     def doAddScrapfield(self, x, y, amount, leavePath=False):
         """

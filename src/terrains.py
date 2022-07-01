@@ -64,6 +64,7 @@ class Terrain(src.saveing.Saveable):
         # store terrain content
         self.characters = []
         self.rooms = []
+        self.roomByMap = {}
         self.floordisplay = src.canvas.displayChars.floor
         self.itemsByCoordinate = {}
         self.roomByCoordinates = {}
@@ -73,6 +74,7 @@ class Terrain(src.saveing.Saveable):
         self.events = []
         self.biomeInfo = {"moisture": 1}
         self.hidden = True
+        self.characterByFieldMap = {}
 
         self.microBiomeMap = {}
         moisture = self.biomeInfo["moisture"]
@@ -118,9 +120,6 @@ class Terrain(src.saveing.Saveable):
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
             return
-
-        print("handleFloorClick")
-        print(extraInfo)
 
         charPos = (src.gamestate.gamestate.mainChar.xPosition//15,src.gamestate.gamestate.mainChar.yPosition//15,0)
         newPos = (extraInfo["pos"][0]//15,extraInfo["pos"][1]//15,0)
@@ -181,21 +180,21 @@ class Terrain(src.saveing.Saveable):
     def damage(self):
         pass
 
-    def getPositionWalkable(self,pos):
+    def getPositionWalkable(self,pos,character=None):
         items = self.getItemByPosition(pos)
         if len(items) > 15:
             return False
         for item in items:
-            if item.walkable == False:
-                return False
+            if not character:
+                if item.walkable == False:
+                    return False
+            else:
+                if not character.getItemWalkable(item):
+                    return False
         return True
 
     def getRoomByPosition(self, position):
-        foundRooms = []
-        for room in self.rooms:
-            if room.xPosition == position[0] and room.yPosition == position[1]:
-                foundRooms.append(room)
-        return foundRooms
+        return self.roomByCoordinates.get((position[0],position[1]),[])
 
     def getItemByPosition(self, position):
         """
@@ -341,7 +340,7 @@ class Terrain(src.saveing.Saveable):
                 for item in room.itemByCoordinates[localisedEntry]:
 
                     # handle collisions
-                    if not item.walkable:
+                    if not char.getItemWalkable(item):
                         # print some info
                         if isinstance(item, src.items.itemMap["Door"]):
                             char.addMessage("you need to open the door first")
@@ -627,7 +626,7 @@ class Terrain(src.saveing.Saveable):
             stepOnActiveItems = []
             item = None
             for item in foundItems:
-                if item and not item.walkable:
+                if item and not char.getItemWalkable(item):
                     # print some info
                     char.addMessage("You cannot walk there")
                     # char.addMessage("press "+commandChars.activate+" to apply")
@@ -806,9 +805,15 @@ class Terrain(src.saveing.Saveable):
             return "..."
         return command
 
-    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False):
+    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False,character=None):
         if not localRandom:
             localRandom = random
+
+        targetPos[2]
+        startPos[2]
+
+        if startPos == targetPos:
+            return []
 
         costMap = {startPos:0}
         lastPos = startPos
@@ -881,13 +886,13 @@ class Terrain(src.saveing.Saveable):
                 if newRoom:
                     newRoom = newRoom[0]
 
-                if offset == (0,+1) and (not newRoom or newRoom.getPositionWalkable((6,0,0) )) and (not oldRoom or oldRoom.getPositionWalkable((6,12,0))):
+                if offset == (0,+1) and (not newRoom or newRoom.getPositionWalkable((6,0,0),character=character)) and (not oldRoom or oldRoom.getPositionWalkable((6,12,0),character=character)):
                     passable = True
-                if offset == (0,-1) and (not newRoom or newRoom.getPositionWalkable((6,12,0))) and (not oldRoom or oldRoom.getPositionWalkable((6,0,0 ))):
+                if offset == (0,-1) and (not newRoom or newRoom.getPositionWalkable((6,12,0),character=character)) and (not oldRoom or oldRoom.getPositionWalkable((6,0,0 ),character=character)):
                     passable = True
-                if offset == (+1,0) and (not newRoom or newRoom.getPositionWalkable((0,6,0) )) and (not oldRoom or oldRoom.getPositionWalkable((12,6,0))):
+                if offset == (+1,0) and (not newRoom or newRoom.getPositionWalkable((0,6,0),character=character)) and (not oldRoom or oldRoom.getPositionWalkable((12,6,0),character=character)):
                     passable = True
-                if offset == (-1,0) and (not newRoom or newRoom.getPositionWalkable((12,6,0))) and (not oldRoom or oldRoom.getPositionWalkable((0,6,0 ))):
+                if offset == (-1,0) and (not newRoom or newRoom.getPositionWalkable((12,6,0),character=character)) and (not oldRoom or oldRoom.getPositionWalkable((0,6,0 ),character=character)):
                     passable = True
 
                 if not passable:
@@ -907,8 +912,8 @@ class Terrain(src.saveing.Saveable):
 
         return paths.get(targetPos)
 
-    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None):
-        path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked)
+    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+        path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -918,7 +923,7 @@ class Terrain(src.saveing.Saveable):
         return (command,path)
 
 
-    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None):
+    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -979,7 +984,7 @@ class Terrain(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15)) and not newPos == targetPos:
+                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15),character) and not newPos == targetPos:
                     continue
 
                 if not tryHard:

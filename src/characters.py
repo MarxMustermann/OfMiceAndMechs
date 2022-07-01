@@ -287,6 +287,9 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def getItemWalkable(self,item):
+        return item.walkable
+
     def freeWillDecison(self,options,weights,localRandom=random):
         #if self == src.gamestate.gamestate.mainChar:
         #    return [input(str(options)+" "+str(weights))]
@@ -340,19 +343,19 @@ class Character(src.saveing.Saveable):
 
         if command == "d":
             pos = self.getPosition()
-            if not self.container.getPositionWalkable((pos[0]+1,pos[1],pos[2])):
+            if not self.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=self):
                 command = "Kdl"
         elif command == "a":
             pos = self.getPosition()
-            if not self.container.getPositionWalkable((pos[0]-1,pos[1],pos[2])):
+            if not self.container.getPositionWalkable((pos[0]-1,pos[1],pos[2]),character=self):
                 command = "Kal"
         elif command == "s":
             pos = self.getPosition()
-            if not self.container.getPositionWalkable((pos[0],pos[1]+1,pos[2])):
+            if not self.container.getPositionWalkable((pos[0],pos[1]+1,pos[2]),character=self):
                 command = "Ksl"
         elif command == "w":
             pos = self.getPosition()
-            if not self.container.getPositionWalkable((pos[0],pos[1]-1,pos[2])):
+            if not self.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=self):
                 command = "Kwl"
 
         if not foundEnemy:
@@ -2133,6 +2136,11 @@ class Monster(Character):
         self.specialDisplay = None
 
         self.solvers.extend(["NaiveMurderQuest"])
+
+    def getItemWalkable(self,item):
+        if item.type in ["Bush","EncrustedBush"]:
+            return True
+        return item.walkable
 
     # bad code: specific code in generic class
     def die(self, reason=None, addCorpse=True):

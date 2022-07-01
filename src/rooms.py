@@ -290,9 +290,9 @@ class Room(src.saveing.Saveable):
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
 
-    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None):
+    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None,character=None):
         if path == None:
-            path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked)
+            path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -301,7 +301,7 @@ class Room(src.saveing.Saveable):
                 command += movementMap[offset]
         return (command,path)
 
-    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False):
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -362,7 +362,7 @@ class Room(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 0 or newPos[1] < 0:
                     continue
 
-                if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2])) and (not ignoreEndBlocked or not newPos == targetPos):
+                if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2]),character=character) and (not ignoreEndBlocked or not newPos == targetPos):
                     continue
 
                 if not costMap.get(newPos) == None:
@@ -381,13 +381,17 @@ class Room(src.saveing.Saveable):
 
         return paths.get(targetPos)
 
-    def getPositionWalkable(self,pos):
+    def getPositionWalkable(self,pos,character=None):
         items = self.getItemByPosition(pos)
         if len(items) > 15:
             return False
         for item in items:
-            if item.walkable == False:
-                return False
+            if not character:
+                if item.walkable == False:
+                    return False
+            else:
+                if not character.getItemWalkable(item):
+                    return False
         return True
 
     def damage(self):
@@ -1443,7 +1447,7 @@ class Room(src.saveing.Saveable):
 
         itemList = self.terrain.getItemByPosition(newPosition)
         for item in itemList:
-            if not item.walkable:
+            if not character.getItemWalkable(item):
                 return item
 
         if len(itemList) > 15:
@@ -1472,7 +1476,7 @@ class Room(src.saveing.Saveable):
             for item in self.itemByCoordinates[newPosition]:
                 if item.hasStepOnAction:
                     triggeringItems.append(item)
-                if not item.walkable:
+                if not character.getItemWalkable(item):
                     return item
 
             if len(self.itemByCoordinates[newPosition]) > 15:

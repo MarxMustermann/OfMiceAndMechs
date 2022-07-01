@@ -538,7 +538,7 @@ class CityBuilder2(src.items.Item):
         for otherRoom in self.rooms:
             otherRoom.sources.append((params["coordinate"],"rawScrap"))
 
-    def addFarmFromMap(self,params):
+    def addFarmFromMap(self,params,forceSpawn=0):
         room = self.addRoom(params["coordinate"])
         if not room:
             return
@@ -552,7 +552,7 @@ class CityBuilder2(src.items.Item):
                 for y in (2,4,10,12):
                     item = src.items.itemMap["MoldSpore"]()
                     self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+x,(params["coordinate"][1]+offset[1])*15+y,0))
-                    item.apply(params["character"])
+                    item.apply(params["character"],forceSpawn=forceSpawn)
 
         floorPlan = {}
         floorPlan["buildSites"] = []

@@ -77,6 +77,7 @@ That should usually be around 10-20 ticks."""
                 options.append(("Equip","equip"))
                 options.append(("GoHome","go home"))
                 options.append(("shelter","shelter"))
+                options.append(("ClearTerrain","clear terrain"))
             else:
                 options.append(("restockRoom","restock"))
             options.append(("BeUsefull","be usefull"))

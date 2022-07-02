@@ -3936,6 +3936,11 @@ class Siege2(BasicPhase):
 
         mainChar = src.gamestate.gamestate.mainChar
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        
+        questMenu = src.interaction.QuestMenu(mainChar)
+        mainChar.rememberedMenu.append(questMenu)
+        messagesMenu = src.interaction.MessagesMenu(mainChar)
+        mainChar.rememberedMenu2.append(messagesMenu)
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4029,8 +4034,6 @@ class Siege2(BasicPhase):
 
             item = src.items.itemMap["GooFlask"]()
             spawnRoom.addItem(item,(x,7,0))
-            item.uses = 100
-
             item = src.items.itemMap["GooFlask"]()
             spawnRoom.addItem(item,(x+6,7,0))
             item.uses = random.randint(2,12)
@@ -4205,6 +4208,9 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
 
+        hiveStyles = ["simple","empty","attackHeavy","healthHeavy","single"]
+        random.shuffle(hiveStyles)
+
         # add hardcoded treasure rooms
         def addHive(pos):
             room = architect.doAddRoom(
@@ -4219,11 +4225,59 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
             room.addItem(src.items.itemMap["MonsterSpawner"](),(6,6,0))
 
-            for i in range(1,14):
+            hiveStyle = hiveStyles.pop()
+            print(pos)
+            print(hiveStyle)
+            
+            if hiveStyle == "empty":
+                pass
+            elif hiveStyle == "simple":
+                for i in range(1,10):
+                    enemy = src.characters.Monster(4,4)
+                    enemy.godMode = True
+                    enemy.health = 100
+                    enemy.baseDamage = 10
+                    enemy.faction = "invader"
+                    room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
+
+                    quest = src.quests.SecureTile(toSecure=pos)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+            elif hiveStyle == "attackHeavy":
+                for i in range(1,10):
+                    enemy = src.characters.Monster(4,4)
+                    enemy.godMode = True
+                    enemy.health = 10
+                    enemy.baseDamage = 30
+                    enemy.faction = "invader"
+                    room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
+
+                    quest = src.quests.SecureTile(toSecure=pos)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+            elif hiveStyle == "healthHeavy":
+                for i in range(1,10):
+                    enemy = src.characters.Monster(4,4)
+                    enemy.godMode = True
+                    enemy.health = 400
+                    enemy.baseDamage = 6
+                    enemy.faction = "invader"
+                    room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
+
+                    quest = src.quests.SecureTile(toSecure=pos)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+            elif hiveStyle == "single":
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
-                enemy.health = 200
-                enemy.baseDamage = 20
+                enemy.health = 400
+                enemy.baseDamage = 30
                 enemy.faction = "invader"
                 room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
@@ -4232,6 +4286,9 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
+            else:
+                print(hiveStyle)
+                1/0
 
             neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
             for neighbour in neighbours:
@@ -4430,6 +4487,11 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         self.checkDead()
 
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
+
+        mainChar.messages = []
+        mainChar.addMessage("press z for help")
+        mainChar.addMessage("the base is the big structure to the north")
+        mainChar.addMessage("escape the ambush and reach the base")
 
     def checkDead(self):
 

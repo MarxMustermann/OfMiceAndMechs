@@ -2386,7 +2386,7 @@ press key for the advanced interaction
             handleActivityKeypress(char, header, main, footer, flags)
             return
 
-        if key in ("f",):
+        if key in ("f",) and 1==0:
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
 
@@ -2489,7 +2489,7 @@ press key for advanced drop
                 item.pickUp(char)
 
         # open chat partner selection
-        if key in (commandChars.hail,):
+        if key in (commandChars.hail,) and 1 == 0:
             charState["submenue"] = ChatPartnerselection()
 
         if key in ("r",):
@@ -5778,36 +5778,26 @@ def renderHelp():
     """
 
     char = src.gamestate.gamestate.mainChar
-    txt = "the Goal of the Game is to stay alive and build a base.\nThe daily Grind can be delageted to subordinates.\n\nThe game is focused on automation so try to use Commands and NPCs to automate production.\n\nUse the Auto tutor to do challenges and to learn how to play the game.\n\n"
+    txt = ""
     txt += "your keybindings are:\n\n"
-    txt += "* move_north: " + commandChars.move_north + "\n"
-    txt += "* move_east: " + commandChars.move_east + "\n"
-    txt += "* move_west: " + commandChars.move_west + "\n"
-    txt += "* move_south: " + commandChars.move_south + "\n"
-    txt += "* activate: " + commandChars.activate + "\n"
-    txt += "* drink: " + commandChars.drink + "\n"
-    txt += "* pickUp: " + commandChars.pickUp + "\n"
-    txt += "* drop: " + commandChars.drop + "\n"
-    txt += "* hail: " + commandChars.hail + "\n"
-    txt += "* examine: " + commandChars.examine + "\n"
-    txt += "* quit_normal: " + commandChars.quit_normal + "\n"
-    txt += "* quit_instant: " + commandChars.quit_instant + "\n"
-    txt += "* quit_delete: " + commandChars.quit_delete + "\n"
-    txt += "* autoAdvance: " + commandChars.autoAdvance + "\n"
-    txt += "* advance: " + commandChars.advance + "\n"
-    txt += "* pause: " + commandChars.pause + "\n"
-    txt += "* ignore: " + commandChars.ignore + "\n"
-    txt += "* wait: " + commandChars.wait + "\n"
-    txt += "* show_quests " + commandChars.show_quests + "\n"
-    txt += "* show_quests_detailed: " + commandChars.show_quests_detailed + "\n"
-    txt += "* show_inventory: " + commandChars.show_inventory + "\n"
-    txt += "* show_inventory_detailed: " + commandChars.show_inventory_detailed + "\n"
-    txt += "* show_characterInfo: " + commandChars.show_characterInfo + "\n"
-    txt += "* redraw: " + commandChars.redraw + "\n"
-    txt += "* show_help: " + commandChars.show_help + "\n"
-    txt += "* attack: " + commandChars.attack + "\n"
-    txt += "* devMenu: " + commandChars.devMenu + "\n"
-    txt += "\n\nMove onto an item and press the key to interact with it. Move against big items and press the key to interact with it\n\n"
+    txt += " w/a/s/d: move north/east/south/west (up/left/down/right)\n"
+    txt += " W/A/S/D: move tile north/east/south/west (up/left/down/right)\n"
+    txt += " j/J : activate items\n"
+    txt += " k/K: pick up\n"
+    txt += " l/L: drop\n"
+    txt += " e/E: examine\n"
+    txt += " q/Q: quests\n"
+    txt += " r: show room menu\n"
+    txt += " i: show inventory\n"
+    txt += " m: attack\n"
+    txt += " ctrl+d: stop automove\n"
+    txt += " .: wait\n"
+    txt += " t: set information to render\n"
+    txt += "\n"
+    txt += "sadly the controls cannot be changed at the moment"
+    txt += "\n"
+    txt += "play the tutorial scenarios to find out more about the game itself"
+    txt += "\n"
     return txt
 
 
@@ -6743,8 +6733,10 @@ def showMainMenu(args):
         with open("gamestate/globalInfo.json", "r") as globalInfoFile:
             rawState = json.loads(globalInfoFile.read())
             saves = rawState["saves"]
+            gameIndex = rawState["lastGameIndex"]
     except:
         saves = [0,0,0,0,0,0,0,0,0,0]
+        gameIndex = 0
 
     scenarios = [
         (
@@ -6804,7 +6796,6 @@ def showMainMenu(args):
         #),
     ]
 
-    gameIndex = 0
     selectedScenario = "siege2"
     difficulty = "medium"
 
@@ -6958,11 +6949,25 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
     while 1:
         tcodConsole.clear()
 
+        try:
+            # register the save
+            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+        except:
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+
         canLoad = False
-        if os.path.exists("gamestate/gamestate_%s"%(gameIndex,)):
+        if rawState["saves"][gameIndex]:
             canLoad = True
+        saves = rawState["saves"]
 
         if startGame:
+            tcodConsole.clear()
+            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
+            printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
+            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
+            tcodContext.present(tcodConsole)
+
             if canLoad:
                 src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
                 setUpNoUrwid()
@@ -7008,9 +7013,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 elif selectedScenario == "Tutorials":
                     args.terrain = "nothingness"
                     args.phase = "Tutorials"
-
-                print(args.terrain)
-                print(args.phase)
 
                 if args.terrain and args.terrain == "scrapField":
                     src.gamestate.gamestate.terrainType = src.terrains.ScrapField
@@ -7078,7 +7080,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         else:
             printUrwidToTcod("press p to start new game",(offsetX+3,offsetY+27))
         printUrwidToTcod("press g to select different save slot",(offsetX+3,offsetY+28))
-        if not saves[gameIndex]:
+        if canLoad:
+            printUrwidToTcod("press D to delete savestate",(offsetX+3,offsetY+29))
+        else:
             printUrwidToTcod("press d/s to edit game settings",(offsetX+3,offsetY+29))
 
         color = "#fff"
@@ -7121,9 +7125,13 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             printUrwidToTcod("| d: difficult |",(offsetX+3+16,offsetY+24))
             printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+25))
 
+        if submenu == "delete":
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+21))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| this will delete your game state      |"),(offsetX+2,offsetY+22))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| press y to confirm                    |"),(offsetX+2,offsetY+23))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+24))
 
         tcodContext.present(tcodConsole)
-
 
         events = tcod.event.get()
         for event in events:
@@ -7215,6 +7223,25 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if key == tcod.event.KeySym.d:
                         difficulty = "difficulty"
                         submenu = None
+            elif submenu == "delete":
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+
+                    print("in delete")
+                    if key == tcod.event.KeySym.y:
+                        print("go delete stuff")
+                        try:
+                            # register the save
+                            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                                rawState = json.loads(globalInfoFile.read())
+                        except:
+                            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+
+                        rawState["saves"][gameIndex] = 0
+                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                            json.dump(rawState,globalInfoFile)
+
+                    submenu = None
             else:
                 if isinstance(event, tcod.event.Quit):
                     raise SystemExit()
@@ -7233,7 +7260,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if key == tcod.event.KeySym.s:
                         submenu = "scenario"
                     if key == tcod.event.KeySym.d:
-                        submenu = "difficulty"
+                        print("d pressed")
+                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
+                            print("D pressed")
+                            submenu = "delete"
+                        else:
+                            submenu = "difficulty"
 
 def showIntro():
     def fixRoomRender(render):

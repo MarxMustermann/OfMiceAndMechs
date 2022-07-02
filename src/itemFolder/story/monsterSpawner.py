@@ -19,13 +19,12 @@ class MonsterSpawner(src.items.Item):
         self.bolted = True
 
     def apply(self, character):
-        print("test")
         if isinstance(character,src.characters.Monster):
             return
         character.addMessage("you rip the spawner apart")
 
         new = src.items.itemMap["Explosion"]()
-        self.container.addItem(new,(self.xPosition,self.yPosition-1,self.zPosition))
+        self.container.addItem(new,(self.xPosition,self.yPosition,self.zPosition))
         event = src.events.RunCallbackEvent(
                 src.gamestate.gamestate.tick + 1
             )

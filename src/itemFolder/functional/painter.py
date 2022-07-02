@@ -70,8 +70,9 @@ A painter. it can be used to draw markers on the floor
 
         if self.submenue.keyPressed == "m":
            self.submenue = src.interaction.InputMenu(
-               "type in the mode you want to set"
-                                       )
+               "type in the mode you want to set\n\n"+
+               "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete (i,o,s,w,b,d)"
+               )
            self.character.macroState["submenue"] = self.submenue
            self.character.macroState["submenue"].followUp = self.setMode
            return
@@ -120,7 +121,20 @@ A painter. it can be used to draw markers on the floor
         self.paintExtraInfo[extraInfo["name"]] = value
 
     def setMode(self):
-        self.paintMode = self.submenue.text
+        mode = self.submenue.text
+        if mode == "i":
+            mode = "inputSlot"
+        if mode == "o":
+            mode = "outputSlot"
+        if mode == "s":
+            mode = "storageSlot"
+        if mode == "w":
+            mode = "walkingSpace"
+        if mode == "b":
+            mode = "buildSite"
+        if mode == "d":
+            mode = "delete"
+        self.paintMode = mode
         self.character.addMessage("you set the mode to %s"%(self.paintMode,))
 
     def setType(self):

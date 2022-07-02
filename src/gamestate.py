@@ -175,10 +175,11 @@ class GameState(src.saveing.Saveable):
             with open("gamestate/globalInfo.json", "r") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
-            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
 
         saves = rawState["saves"]
         saves[self.gameIndex] =  {"difficulty":10,"scenario":"test"}
+        rawState["lastGameIndex"] = self.gameIndex
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
@@ -225,6 +226,18 @@ class GameState(src.saveing.Saveable):
             bool: success indicator
         """
 
+        try:
+            # register the save
+            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                rawState = json.loads(globalInfoFile.read())
+        except:
+            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+
+        rawState["lastGameIndex"] = gameIndex
+        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+            json.dump(rawState,globalInfoFile)
+
+
         import pickle
         file = open("gamestate/gamestate_%s"%(gameIndex,), 'rb')
         # dump information to that file
@@ -233,42 +246,7 @@ class GameState(src.saveing.Saveable):
         # close the file
         file.close()
 
-        print(newSelf)
-
         return newSelf
-
-        # handle missing savefile
-        if not os.path.isfile("gamestate/gamestate_%s.json"%(self.gameIndex,)):
-            src.logger.debugMessages.append("no gamestate found - NOT LOADING")
-            print("no gamestate found")
-            return False
-
-        # load state from disc
-        with open("gamestate/gamestate_%s.json"%(self.gameIndex,)) as saveFile:
-            rawstate = saveFile.read()
-
-            # handle special gamestates
-            if rawstate in [
-                "you lost",
-                "reset",
-                "Winning is no fun at all",
-                '"Winning is no fun at all"',
-            ]:
-                src.logger.debugMessages.append(
-                    "special gamestate " + str(rawstate) + " found - NOT LOADING"
-                )
-                print("final gamestate found - resetting")
-                return False
-
-            # get state
-            state = json.loads(rawstate)
-
-        # set state
-        self.setState(state)
-        if src.saveing.loadingRegistry.delayedCalls:
-            print("unresolved delayed calls")
-            print(src.saveing.loadingRegistry.delayedCalls)
-        return True
 
     def setState(self, state):
         """

@@ -4500,10 +4500,6 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         mainChar.addMessage("the base is the big structure to the north")
         mainChar.addMessage("escape the ambush and reach the base")
 
-        mainChar.baseDamage = 100000
-        mainChar.maxHealth = 100000
-        mainChar.health = 100000
-
     def checkDead(self):
 
         text = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)

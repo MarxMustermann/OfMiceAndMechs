@@ -215,9 +215,7 @@ class Quest(src.saveing.Saveable):
         self.character = (
             None  # should be more general like owner as preparation for room quests
         )
-        self.listener = (
-            []
-        )  # the list of things caring about this quest. The owner for example
+        self.listeners = {"default": []}
         self.active = False  # active as in started
         self.completed = False
         self.startCinematics = startCinematics  # deprecate?
@@ -280,20 +278,31 @@ class Quest(src.saveing.Saveable):
     def getActiveQuests(self):
         return [self]
 
-    """
-    register callback
-    """
 
-    def startWatching(self, target, callback):
-        target.addListener(callback)
+    def startWatching(self, target, callback, tag=""):
+        """
+        register callback to be notified if an event occours
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
+        target.addListener(callback, tag)
         self.watched.append((target, callback))
 
-    """
-    unregister callback
-    """
+    def stopWatching(self, target, callback, tag=""):
+        """
+        deregister callback from beeing notified if an event occours
 
-    def stopWatching(self, target, callback):
-        target.delListener(callback)
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
+        target.delListener(callback, tag)
         self.watched.remove((target, callback))
 
     """
@@ -303,6 +312,68 @@ class Quest(src.saveing.Saveable):
     def stopWatchingAll(self):
         for listenItem in self.watched[:]:
             self.stopWatching(listenItem[0], listenItem[1])
+
+    # bad pattern: is repeated in items etc
+    def addListener(self, listenFunction, tag="default"):
+        """
+        register a callback function for notifications
+        if something wants to wait for the character to die it should register as listener
+
+        Parameters:
+            listenFunction: the function that should be called if the listener is triggered
+            tag: a tag determining what kind of event triggers the listen function. For example "died"
+        """
+        # create container if container doesn't exist
+        # bad performance: string comparison, should use enums. Is this slow in python?
+        if tag not in self.listeners:
+            self.listeners[tag] = []
+
+        # added listener function
+        if listenFunction not in self.listeners[tag]:
+            self.listeners[tag].append(listenFunction)
+
+    # bad pattern: is repeated in items etc
+    def delListener(self, listenFunction, tag="default"):
+        """
+        deregister a callback function for notifications
+
+        Parameters:
+            listenFunction: the function that would be called if the listener is triggered
+            tag: a tag determining what kind of event triggers the listen function. For example "died"
+        """
+
+        if not tag in self.listeners:
+            return
+
+        # remove listener
+        if listenFunction in self.listeners[tag]:
+            self.listeners[tag].remove(listenFunction)
+
+        # clear up dict
+        # bad performance: probably better to not clean up and recreate
+        if not self.listeners[tag]:
+            del self.listeners[tag]
+
+    # bad code: probably misnamed
+    def changed(self, tag="default", info=None):
+        """
+        call callbacks functions that did register for listening to events
+
+        Parameters:
+            tag: the tag determining what kind of event triggers the listen function. For example "died"
+            info: additional information
+        """
+
+        # do nothing if nobody listens
+        if tag not in self.listeners:
+            return
+
+        # call each listener
+        for listenFunction in self.listeners[tag]:
+            if info is None:
+                listenFunction()
+            else:
+                listenFunction(info)
 
     """
     check whether the quest is solved or not (and trigger teardown if quest is solved)
@@ -463,8 +534,12 @@ class Quest(src.saveing.Saveable):
                         self.character.startNextQuest()
             return
 
+        # deactivate
+        self.deactivate()
+
         # flag self as completed
         self.completed = True
+        self.changed("completed")
 
         # add quest type to quests done
         if self.type not in self.character.questsDone:
@@ -491,9 +566,6 @@ class Quest(src.saveing.Saveable):
             src.interaction.loop.set_alarm_in(
                 0.0, src.interaction.callShow_or_exit, "."
             )
-
-        # deactivate
-        self.deactivate()
 
         # start next quest
         if self.followUp:
@@ -536,35 +608,6 @@ class Quest(src.saveing.Saveable):
             return
 
         self.triggerCompletionCheck()
-
-    """
-    notify listeners that something changed
-    bad code: should be extra class
-    """
-
-    def changed(self):
-        # call the listener functions
-        # should probably be an event not a function
-        for listener in self.listener:
-            listener()
-
-    """
-    add a callback to be called if the quest changes
-    bad code: should be extra class
-    """
-
-    def addListener(self, listenFunction):
-        if listenFunction not in self.listener:
-            self.listener.append(listenFunction)
-
-    """
-    remove a callback 
-    bad code: should be extra class
-    """
-
-    def delListener(self, listenFunction):
-        if listenFunction in self.listener:
-            self.listener.remove(listenFunction)
 
     """
     fail on timeout
@@ -648,13 +691,15 @@ class MetaQuestSequence(Quest):
 
     def __init__(
         self,
-        quests=[],
+        quests=None,
         followUp=None,
         failTrigger=None,
         startCinematics=None,
         lifetime=None,
         creator=None,
     ):
+        if not quests:
+            quests = []
         # set state
         self.metaDescription = "meta"
         self.subQuestsOrig = quests.copy()
@@ -781,7 +826,10 @@ class MetaQuestSequence(Quest):
             if quest.active:
                 out += "    > " + "\n      ".join(quest.description.split("\n")) + "\n"
             else:
-                out += "    x " + "\n      ".join(quest.description.split("\n")) + "\n"
+                if quest.completed:
+                    out += "    x " + "\n      ".join(quest.description.split("\n")) + "\n"
+                else:
+                    out += "    o " + "\n      ".join(quest.description.split("\n")) + "\n"
         return out
 
     """
@@ -878,6 +926,9 @@ class MetaQuestSequence(Quest):
     check if there are quests left
     """
 
+    def triggerCompletionCheck2(self):
+        self.triggerCompletionCheck()
+
     def triggerCompletionCheck(self):
 
         # smooth over impossible state
@@ -924,6 +975,7 @@ class MetaQuestSequence(Quest):
     """
 
     def addQuest(self, quest, addFront=True):
+
         # add quest
         if addFront:
             self.subQuests.insert(0, quest)
@@ -936,8 +988,7 @@ class MetaQuestSequence(Quest):
             self.character.recalculatePath()
 
         # listen to subquest
-        if self.subQuests[0]:
-            self.startWatching(self.subQuests[0], self.recalculate)
+        self.startWatching(quest, self.triggerCompletionCheck2, "completed")
 
         # deactivate last active quest
         if addFront:
@@ -964,6 +1015,14 @@ class MetaQuestSequence(Quest):
             self.subQuests.remove(self.subQuests[0])
 
         if len(self.subQuests):
+            subQuest = self.subQuests[0]
+            if not subQuest.active:
+                subQuest.activate()
+                return
+            if not (subQuest.character == character):
+                print("reassign character")
+                subQuest.assignToCharacter(character)
+                return
             self.subQuests[0].solver(character)
         else:
             self.triggerCompletionCheck()
@@ -1129,6 +1188,301 @@ class DestroyRoom(MetaQuestSequence):
         parameters = super().getRequiredParameters()
         parameters.append({"name":"targetPosition","type":"coordinate"})
         return parameters
+
+class ControlBase(MetaQuestSequence):
+    def __init__(self, description="control base", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "ControlBase"
+        self.shortCode = "C"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return 
+
+        return
+
+    def solver(self, character):
+        return super().solver(character)
+
+class ManageBase(MetaQuestSequence):
+    def __init__(self, description="manage base", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "ManageBase"
+        self.shortCode = "M"
+
+    def solver(self, character):
+        return super().solver(character)
+
+class ReloadTraproom(MetaQuestSequence):
+    def __init__(self, description="reload traproom", creator=None, command=None, lifetime=None, targetPosition=None):
+        super().__init__(creator=creator, lifetime=lifetime)
+        self.metaDescription = description+" %s"%(targetPosition,)
+        self.type = "ReloadTraproom"
+        self.shortCode = "R"
+
+        if targetPosition:
+            self.setParameters({"targetPosition":targetPosition})
+
+        self.tuplesToStore.append("targetPosition")
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return 
+
+        print("check reload traproom comlpetion")
+        if self.getRoomCharged(character):
+            print("room charged")
+            super().triggerCompletionCheck()
+            return
+
+        return
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+        return super().setParameters(parameters)
+
+    def solver(self, character):
+        self.triggerCompletionCheck(character=character)
+
+        if not self.subQuests:
+            if not isinstance(character.container,src.rooms.Room):
+                if character.yPosition%15 == 14:
+                    character.runCommandString("w")
+                    return
+                if character.yPosition%15 == 0:
+                    character.runCommandString("s")
+                    return
+                if character.xPosition%15 == 14:
+                    character.runCommandString("a")
+                    return
+                if character.xPosition%15 == 0:
+                    character.runCommandString("d")
+                    return
+
+            terrain = character.getTerrain()
+
+            rooms = terrain.getRoomByPosition(self.targetPosition)
+            room = None
+            if rooms:
+                room = rooms[0]
+
+            if room:
+                character.addMessage("should recharge now")
+
+                foundCharger = None
+                for item in room.itemsOnFloor:
+                    if not item.bolted:
+                        continue
+                    if not item.type == "Shocker":
+                        continue
+                    foundCharger = item
+
+                if character.inventory and character.inventory[-1].type == "CrystalCompressor":
+                    chargerPos = foundCharger.getPosition()
+                    characterPos = character.getPosition()
+                    if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Ja"))
+                    elif chargerPos == (characterPos[0]+1,characterPos[1],characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Jd"))
+                    elif chargerPos == (characterPos[0],characterPos[1]-1,characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Jw"))
+                    elif chargerPos == (characterPos[0],characterPos[1]+1,characterPos[2]):
+                        self.addQuest(RunCommand(command=10*"Js"))
+                    else:
+                        quest = GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True)
+                        quest.activate()
+                        quest.assignToCharacter(character)
+                        self.addQuest(quest)
+                    return
+
+                if foundCharger:
+                    source = None
+                    for sourceCandidate in room.sources:
+                        if not sourceCandidate[1] == "CrystalCompressor":
+                           continue 
+
+                        sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
+                        if not sourceRoom:
+                            continue
+
+                        sourceRoom = sourceRoom[0]
+                        if not sourceRoom.getNonEmptyOutputslots(itemType=sourceCandidate[1]):
+                            continue
+
+                        source = sourceCandidate
+                    if source:
+                        #if triggerClearIneventory():
+                        #    return
+
+                        self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
+                        self.addQuest(GoToTile(targetPosition=room.getPosition()))
+                        self.addQuest(FetchItems(toCollect="CrystalCompressor"))
+                        self.addQuest(GoToTile(targetPosition=source[0]))
+                        return
+
+        super().solver(character)
+
+    def getRoomCharged(self,character):
+        
+        terrain = character.getTerrain()
+
+        rooms = terrain.getRoomByPosition(self.targetPosition)
+        room = None
+        if rooms:
+            room = rooms[0]
+
+        try:
+            if room.electricalCharges > 30:
+                return True
+        except:
+            pass
+
+        return False
+
+class ReloadTraps(MetaQuestSequence):
+    def __init__(self, description="reload traps", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "ReloadTraps"
+        self.shortCode = "R"
+
+    def triggerCompletionCheck(self,character=None):
+
+        if not character:
+            return 
+
+        if not self.getUnfilledTrapRooms(character):
+            super().triggerCompletionCheck()
+            return
+
+        return
+
+    def getUnfilledTrapRooms(self,character):
+        if isinstance(character.container,src.rooms.Room):
+            terrain = character.container.container
+        else:
+            terrain = character.container
+
+        foundTraprooms = []
+        for room in terrain.rooms:
+            if not isinstance(room,src.rooms.TrapRoom):
+                continue
+
+            if room.electricalCharges > 30:
+                continue
+
+            foundTraprooms.append(room)
+        
+        return foundTraprooms
+
+    def solver(self, character):
+        self.triggerCompletionCheck(character)
+
+        if self.completed:
+            return
+
+        if not self.subQuests:
+            room = random.choice(self.getUnfilledTrapRooms(character))
+                
+            quest = ReloadTraproom(targetPosition=room.getPosition())
+            self.addQuest(quest)
+            return
+
+        return super().solver(character)
+
+class DefendBase(MetaQuestSequence):
+    def __init__(self, description="defend base", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "DefendBase"
+        self.shortCode = "D"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return 
+
+        super().triggerCompletionCheck()
+
+    def solver(self, character):
+        self.triggerCompletionCheck(character)
+        return super().solver(character)
+
+class BreakSiege(MetaQuestSequence):
+    def __init__(self, description="break siege", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "BreakSiege"
+        self.shortCode = "B"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return 
+
+        return
+
+    def solver(self, character):
+        return super().solver(character)
+
+class AssignStaff(MetaQuestSequence):
+    def __init__(self, description="assign staff", creator=None, command=None, lifetime=None):
+        questList = []
+        super().__init__(questList, creator=creator, lifetime=lifetime)
+        self.metaDescription = description
+        self.type = "AssignStaff"
+        self.shortCode = "A"
+
+        self.generatedCode = False
+
+    def triggerCompletionCheck(self,character=None):
+        print("assign completion check")
+
+        if not self.generatedCode:
+            return
+
+        if self.subQuests:
+            return
+
+        super().triggerCompletionCheck()
+
+    def solver(self, character):
+        if not self.subQuests:
+            if isinstance(character.container,src.rooms.Room):
+                charPos = character.container.getPosition()
+            else:
+                charPos = character.getBigPosition()
+
+            if not charPos == (7,7,0):
+                subQuest = GoToTile(targetPosition=(7,7,0))
+                self.addQuest(subQuest)
+                subQuest.activate()
+                subQuest.assignToCharacter(character)
+                return
+
+            charPos = character.getPosition()
+            if not charPos == (1,2,0):
+                subQuest = GoToPosition(targetPosition=(1,2,0))
+                self.addQuest(subQuest)
+                subQuest.activate()
+                subQuest.assignToCharacter(character)
+                return
+
+            if not self.generatedCode:
+                subQuest = RunCommand(command=list("Jw.sjdjdjaasddddjdjaaaaa")+["esc"])
+                self.addQuest(subQuest)
+                subQuest.activate()
+                subQuest.assignToCharacter(character)
+                self.generatedCode = True
+                return
+
+        return super().solver(character)
 
 class DestroyRooms(MetaQuestSequence):
     def __init__(self, description="destroyRooms", creator=None, command=None, lifetime=None):
@@ -1837,6 +2191,254 @@ class GatherScrap(MetaQuestSequence):
         while toCheck:
         """
         character.runCommandString("20.")
+
+class CleanTraps(MetaQuestSequence):
+
+    def __init__(self, description="clean traps", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+
+        self.type = "CleanTraps"
+
+    def triggerCompletionCheck(self,character=None):
+
+        if not character:
+            return
+
+        if not self.getClutteredTraprooms(character):
+            super().triggerCompletionCheck()
+            return
+
+        return
+
+    def getClutteredTraprooms(self,character):
+
+        if isinstance(character.container,src.rooms.Room):
+            terrain = character.container.container
+        else:
+            terrain  = character.container
+
+        filledTraproom = []
+        for room in terrain.rooms:
+            if isinstance(room,src.rooms.TrapRoom):
+                for item in room.itemsOnFloor:
+                    if item.bolted:
+                        continue
+                    filledTraproom.append(room)
+                    break
+        
+        return filledTraproom 
+
+    def triggerCompletionCheck(self,character=None):
+
+        if not character:
+            return
+
+        if not self.getClutteredTraprooms(character):
+            super().triggerCompletionCheck()
+            return
+
+        return
+
+    def solver(self, character):
+        self.triggerCompletionCheck(character)
+
+        if not self.subQuests:
+            for room in self.getClutteredTraprooms(character):
+                quest = src.quests.ClearTile(targetPosition=room.getPosition())
+                quest.activate()
+                quest.assignToCharacter(character)
+                self.addQuest(quest)
+
+        super().solver(character)
+
+class ClearInventory(MetaQuestSequence):
+    def __init__(self, description="clear inventory", creator=None, targetPosition=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+
+        self.type = "ClearInventory"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        if not character.inventory:
+            super().triggerCompletionCheck()
+            return
+        return
+
+    def solver(self, character):
+        self.triggerCompletionCheck(character)
+
+        if not self.subQuests:
+            if not isinstance(character.container,src.rooms.Room):
+                if character.yPosition%15 == 14:
+                    character.runCommandString("w")
+                    return
+                if character.yPosition%15 == 0:
+                    character.runCommandString("s")
+                    return
+                if character.xPosition%15 == 14:
+                    character.runCommandString("a")
+                    return
+                if character.xPosition%15 == 0:
+                    character.runCommandString("d")
+                    return
+
+
+            # clear inventory local
+            room = character.getRoom()
+            if len(character.inventory) > 1 and room:
+                emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+                if emptyInputSlots:
+                    self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
+                    return True
+
+            # go to garbage stockpile and unload
+            if len(character.inventory) > 6:
+                if not "HOMEx" in character.registers:
+                    return True
+
+                terrain = character.getTerrain()
+
+                homeRoom = terrain.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+                if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
+                    return True
+                self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
+                return True
+            return False
+
+        super().solver(character)
+
+class ClearTile(MetaQuestSequence):
+    def __init__(self, description="clear tile", creator=None, targetPosition=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description+" "+str(targetPosition)
+
+        self.type = "ClearTile"
+
+        if targetPosition:
+            self.setParameters({"targetPosition":targetPosition})
+
+        self.tuplesToStore.append("targetPosition")
+
+    def triggerCompletionCheck(self,character=None):
+
+        if not character:
+            return
+
+        if not self.getLeftoverItems(character):
+            super().triggerCompletionCheck()
+            return
+
+        return
+
+    def setParameters(self,parameters):
+        if "targetPosition" in parameters and "targetPosition" in parameters:
+            self.targetPosition = parameters["targetPosition"]
+        return super().setParameters(parameters)
+
+    def solver(self, character):
+        self.triggerCompletionCheck(character=character)
+
+        if not self.subQuests:
+            if not character.getFreeInventorySpace():
+                quest = src.quests.questMap["ClearInventory"]()
+                self.addQuest(quest)
+                return
+            if not isinstance(character.container,src.rooms.Room):
+                if character.yPosition%15 == 14:
+                    character.runCommandString("w")
+                    return
+                if character.yPosition%15 == 0:
+                    character.runCommandString("s")
+                    return
+                if character.xPosition%15 == 14:
+                    character.runCommandString("a")
+                    return
+                if character.xPosition%15 == 0:
+                    character.runCommandString("d")
+                    return
+
+            if not character.getBigPosition() == self.targetPosition:
+                quest = src.quests.GoToTile(targetPosition=self.targetPosition)
+                self.addQuest(quest)
+                return
+
+            charPos = character.getPosition()
+            
+            offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
+            foundOffset = None
+            foundItems = None
+            for offset in offsets:
+                checkPos = (charPos[0]+offset[0],charPos[1]+offset[1],charPos[2]+offset[2])
+                items = character.container.getItemByPosition(checkPos)
+                if not items:
+                    continue
+                if items[0].bolted:
+                    continue
+                foundOffset = offset
+                foundItems = items
+
+            if foundOffset:
+                if foundOffset == (0,0,0):
+                    command = "k"
+                elif foundOffset == (1,0,0):
+                    command = "Kd"
+                elif foundOffset == (-1,0,0):
+                    command = "Ka"
+                elif foundOffset == (0,1,0):
+                    command = "Ks"
+                elif foundOffset == (0,-1,0):
+                    command = "Kw"
+
+                quest = src.quests.RunCommand(command=command*len(foundItems))
+                quest.activate()
+                quest.assignToCharacter(character)
+                self.addQuest(quest)
+                return
+
+            items = self.getLeftoverItems(character)
+            if items:
+                item = random.choice(items)
+
+                quest = src.quests.GoToPosition(targetPosition=item.getPosition())
+                self.addQuest(quest)
+                return
+
+        super().solver(character)
+
+    def getLeftoverItems(self,character):
+        
+        if isinstance(character.container,src.rooms.Room):
+            terrain = character.container.container
+        else:
+            terrain  = character.container
+
+        rooms = terrain.getRoomByPosition(self.targetPosition)
+        room = None
+        if rooms:
+            room = rooms[0]
+
+        if room.floorPlan:
+            return []
+
+        foundItems = []
+        for position in random.sample(room.walkingSpace,len(room.walkingSpace)):
+            items = room.getItemByPosition(position)
+
+            if not items:
+                continue
+            if items[0].bolted:
+                continue
+
+            foundItems.append(items[0])
+
+        return foundItems
 
 class BeUsefull(MetaQuestSequence):
 
@@ -7187,7 +7789,7 @@ class ActivateEpochArtwork(MetaQuestSequence):
         if not character:
             return False
 
-        if character.baseDamage > 40:
+        if character.rank == 2:
             self.postHandler()
             return True
 
@@ -7208,7 +7810,7 @@ class ActivateEpochArtwork(MetaQuestSequence):
                 self.addQuest(quest)
                 return
 
-            self.addQuest(RunCommand(command="Jw."))
+            self.addQuest(RunCommand(command=list("Jw.")+["esc"]))
             return
 
         super().solver(character)
@@ -7279,6 +7881,185 @@ class Huntdown(MetaQuestSequence):
                 return
 
         super().solver(character)
+
+class DestroySpawner(MetaQuestSequence):
+    def __init__(self, description="destroy spawner",targetPosition=None):
+        super().__init__()
+        self.metaDescription = description+" %s"%(targetPosition,)
+        self.type = "DestroySpawners"
+        self.targetPosition = targetPosition
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        foundSpawner = False
+        terrain = character.getTerrain()
+        rooms = terrain.getRoomByPosition(self.targetPosition)
+        for room in rooms:
+            items = room.getItemByPosition((6,6,0))
+            for item in items:
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                    foundSpawner = True
+
+        if not foundSpawner:
+            self.postHandler()
+            return True
+        return
+
+    def solver(self,character):
+        if self.triggerCompletionCheck(character):
+            return
+        if not self.subQuests:
+            if not character.getBigPosition() == self.targetPosition:
+                quest = GoToTile(targetPosition=self.targetPosition)
+                self.addQuest(quest)
+                return
+            if character.getDistance((6,6,0)) > 1:
+                quest = GoToPosition(targetPosition=(6,6,0),ignoreEndBlocked=True)
+                self.addQuest(quest)
+                return
+
+            offset = (6-character.xPosition,6-character.yPosition,0-character.zPosition)
+            commandMap = {
+                    (1,0,0):"Jd",
+                    (0,1,0):"Js",
+                    (-1,0,0):"Ja",
+                    (0,-1,0):"Jw",
+                    (0,0,0):"j",
+                }
+            
+            if offset in commandMap:
+                quest = src.quests.RunCommand(command=commandMap[offset])
+                self.addQuest(quest)
+                return
+
+        super().solver(character)
+
+
+class DestroySpawners(MetaQuestSequence):
+    def __init__(self, description="destroy spawners"):
+        super().__init__()
+        self.metaDescription = description
+        self.type = "DestroySpawners"
+
+    def getSpawners(self,character):
+        currentTerrain = character.getTerrain()
+        spawnersFound = []
+        for room in currentTerrain.rooms:
+            for item in room.getItemByPosition((6,6,0)):
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                    spawnersFound.append(item.container)
+
+        return spawnersFound
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        if not self.getSpawners(character):
+            self.postHandler()
+        return
+
+    def solver(self,character):
+        if self.triggerCompletionCheck(character):
+            return
+
+        if not self.subQuests:
+            spawner = random.choice(self.getSpawners(character))
+            print("spawner")
+            print(spawner)
+            quest = DestroySpawner(targetPosition=spawner.getPosition())
+            self.addQuest(quest)
+        super().solver(character)
+
+class KillGuards(MetaQuestSequence):
+    def __init__(self, description="kill guards"):
+        super().__init__()
+        self.metaDescription = description
+        self.type = "KillGuards"
+
+    def solver(self,character):
+        if self.triggerCompletionCheck(character):
+            return
+
+        if not self.subQuests:
+            guard = random.choice(self.getGuards(character))
+            quest = SecureTile(toSecure=guard.getBigPosition(),endWhenCleared=False)
+            self.addQuest(quest)
+            return
+        super().solver(character)
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        if not self.getGuards(character):
+            self.postHandler()
+            return True
+
+        return False
+
+    def getGuards(self,character):
+        enemies = []
+        currentTerrain = character.getTerrain()
+
+        foundEnemy = False
+        for enemy in currentTerrain.characters:
+            if enemy.tag == "blocker":
+                enemies.append(enemy)
+        for room in currentTerrain.rooms:
+            for enemy in room.characters:
+                if enemy.tag == "blocker":
+                    enemies.append(enemy)
+
+        return enemies
+
+
+class KillPatrolers(MetaQuestSequence):
+    def __init__(self, description="kill patrolers"):
+        super().__init__()
+        self.metaDescription = description
+        self.type = "KillPatrolers"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        print("triggerCompletionCheck")
+        print(self.getPatrolers(character))
+        """
+        if not self.getPatrolers(character):
+            self.postHandler()
+            return True
+        """
+
+        return False
+
+    def solver(self,character):
+        self.triggerCompletionCheck(character)
+
+        if not self.subQuests:
+            quest = SecureTile(toSecure=(7,4,0),endWhenCleared=False)
+            self.addQuest(quest)
+            return
+        super().postHandler()
+
+    def getPatrolers(self,character):
+        enemies = []
+        currentTerrain = character.getTerrain()
+
+        foundEnemy = False
+        for enemy in currentTerrain.characters:
+            if enemy.tag == "patrol":
+                enemies.append(enemy)
+        for room in currentTerrain.rooms:
+            for enemy in room.characters:
+                if enemy.tag == "patrol":
+                    enemies.append(enemy)
+
+        return enemies
+
 
 class SecureTile(GoToTile):
     def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False):
@@ -8074,6 +8855,17 @@ questMap = {
     "LootRuin": LootRuin,
     "DestroyRooms": DestroyRooms,
     "DestroyRoom": DestroyRoom,
+    "ManageBase": ManageBase,
+    "DefendBase": DefendBase,
+    "BreakSiege": BreakSiege,
+    "ControlBase": ControlBase,
+    "AssignStaff": AssignStaff,
+    "CleanTraps": CleanTraps,
+    "ReloadTraps": ReloadTraps,
+    "ClearInventory": ClearInventory,
+    "KillPatrolers": KillPatrolers,
+    "KillGuards": KillGuards,
+    "DestroySpawners": DestroySpawners,
 }
 
 def getQuestFromState(state):

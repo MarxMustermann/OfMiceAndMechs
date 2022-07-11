@@ -353,8 +353,34 @@ Reduce the number of lurkers to %s to get a reward.
 
             self.changed("first use")
 
-            quest = src.quests.DummyQuest("defend against the siege")
-            character.assignQuest(quest)
+            containerQuest = src.quests.questMap["ControlBase"]()
+
+            breakSiegeQuest = src.quests.questMap["BreakSiege"]()
+            containerQuest.addQuest(breakSiegeQuest)
+            quest = src.quests.questMap["DestroySpawners"]()
+            breakSiegeQuest.addQuest(quest)
+            patrolerQuest = src.quests.questMap["KillPatrolers"]()
+            breakSiegeQuest.addQuest(patrolerQuest)
+            killGuards = src.quests.questMap["KillGuards"]()
+            breakSiegeQuest.addQuest(killGuards)
+            defendBaseQuest = src.quests.questMap["DefendBase"]()
+            defendBaseQuest.assignToCharacter(character)
+            containerQuest.addQuest(defendBaseQuest)
+            quest = src.quests.questMap["ReloadTraps"]()
+            defendBaseQuest.addQuest(quest)
+            quest = src.quests.questMap["CleanTraps"]()
+            defendBaseQuest.addQuest(quest)
+            manageBaseQuest = src.quests.questMap["ManageBase"]()
+            containerQuest.addQuest(manageBaseQuest)
+            assignStaffQuest = src.quests.questMap["AssignStaff"]()
+            assignStaffQuest.assignToCharacter(character)
+            assignStaffQuest.solver(character)
+            manageBaseQuest.addQuest(assignStaffQuest)
+
+            character.assignQuest(containerQuest)
+
+            character.rank = 2
+
             character.registers["HOMEx"] = 7
             character.registers["HOMEy"] = 7
             return

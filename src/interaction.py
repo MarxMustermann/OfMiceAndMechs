@@ -4566,6 +4566,8 @@ def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
     # render the quests
     if len(char.quests):
         solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
+        if isinstance(solvingCommangString,list):
+            solvingCommangString = "".join(solvingCommangString)
         if solvingCommangString:
             solvingCommangString = solvingCommangString.replace("\n","\\n")
 

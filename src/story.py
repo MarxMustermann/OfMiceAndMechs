@@ -4195,15 +4195,22 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
         mainRoom.addItem(epochArtwork,(6,6,0))
 
-        quest = src.quests.GoToTile(targetPosition=(7,5),description="reach base")
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        quest.activate()
-        src.gamestate.gamestate.mainChar.quests.append(quest)
+        containerQuest = src.quests.MetaQuestSequence()
 
         quest = src.quests.ActivateEpochArtwork(epochArtwork=epochArtwork)
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
         quest.activate()
-        src.gamestate.gamestate.mainChar.quests.append(quest)
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.addQuest(quest)
+
+        quest = src.quests.GoToTile(targetPosition=(7,5),description="reach base")
+        quest.activate()
+        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.addQuest(quest)
+
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.activate()
+
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
 
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
@@ -4492,6 +4499,10 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         mainChar.addMessage("press z for help")
         mainChar.addMessage("the base is the big structure to the north")
         mainChar.addMessage("escape the ambush and reach the base")
+
+        mainChar.baseDamage = 100000
+        mainChar.maxHealth = 100000
+        mainChar.health = 100000
 
     def checkDead(self):
 

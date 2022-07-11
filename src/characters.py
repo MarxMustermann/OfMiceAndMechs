@@ -287,6 +287,12 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def getDistance(self,position):
+        return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])+abs(self.zPosition-position[2])
+
+    def getFreeInventorySpace(self):
+        return 10-len(self.inventory)
+
     def getItemWalkable(self,item):
         return item.walkable
 
@@ -294,6 +300,23 @@ class Character(src.saveing.Saveable):
         #if self == src.gamestate.gamestate.mainChar:
         #    return [input(str(options)+" "+str(weights))]
         return localRandom.choices(options,weights=weights)
+
+    def getTerrain(self):
+        if not self.container:
+            return
+
+        if isinstance(self.container,src.rooms.Room):
+            terrain = self.container.container
+        else:
+            terrain = self.container
+
+        return terrain
+
+    def getRoom(self):
+        room = None
+        if isinstance(self.container,src.rooms.Room):
+            room = self.container
+        return room
 
     def startGuarding(self,numTicks):
         self.guarding = numTicks

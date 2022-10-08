@@ -56,7 +56,7 @@ baseDamage:
             character: the character trying to use the iten
         """
 
-        character.addMessage("you equip the rod and wield a %s weapon now"%(self.baseDamage,))
+        character.addMessage("you equip the sword and wield a %s weapon now"%(self.baseDamage,))
 
         if character.weapon:
             oldWeapon = character.weapon

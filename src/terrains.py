@@ -59,6 +59,7 @@ class Terrain(src.saveing.Saveable):
         self.scrapFields = []
         self.ignoreAttributes = []
 
+
         super().__init__()
 
         # store terrain content
@@ -75,6 +76,7 @@ class Terrain(src.saveing.Saveable):
         self.biomeInfo = {"moisture": 1}
         self.hidden = True
         self.characterByFieldMap = {}
+        self.minimapOverride = {(7,7,0):"CC"}
 
         self.microBiomeMap = {}
         moisture = self.biomeInfo["moisture"]
@@ -1478,6 +1480,9 @@ class Terrain(src.saveing.Saveable):
 
         for scrapField in self.scrapFields:
             chars[scrapField[1]][scrapField[0]] = "ss"
+
+        for (k,v) in self.minimapOverride.items():
+            chars[k[1]][k[0]] = v
 
         displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
         if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):

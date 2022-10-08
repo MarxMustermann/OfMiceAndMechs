@@ -168,7 +168,6 @@ Use the item so see an overview over the NPCs in this base."""
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
-        char.isMilitary = isMilitary
         char.personality["abortMacrosOnAttack"] = False
 
         if rank == 3:
@@ -192,6 +191,7 @@ Use the item so see an overview over the NPCs in this base."""
         quest.activate()
         char.quests.append(quest)
         char.faction = actor.faction
+        char.isMilitary = False
         if rank:
             char.rank = rank
         self.container.addCharacter(char,5,6)

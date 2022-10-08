@@ -22,13 +22,6 @@ class Boiler(src.items.Item):
         self.stopBoilingEvent = None
         self.name = "boiler"
 
-        # set metadata for saving
-        self.attributesToStore.extend(["isBoiling", "isHeated"])
-
-        self.objectsToStore.append("startBoilingEvent")
-        self.objectsToStore.append("stopBoilingEvent")
-
-
     def startHeatingUp(self):
         """
         start producing steam after a delay

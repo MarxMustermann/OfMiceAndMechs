@@ -11,6 +11,16 @@ Dowload zip from http://ofmiceandmechs.com/ and double click exceuteMe.exe
 * pygame for python3 (for tile based mode)
 * python3-tcod
 
+### windows
+
+install python3.10 from https://www.python.org/
+cmd:
+py -m pip install tcod
+py -m pip install urwid
+py -m pip install requests
+py -m pip install soundfile
+download zip, unpack zip
+double click excuteMe.py
 
 ### debian based sytems
 

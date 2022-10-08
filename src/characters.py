@@ -63,6 +63,8 @@ class Character(src.saveing.Saveable):
         self.rememberedMenu = []
         self.rememberedMenu2 = []
 
+        self.skills = []
+
         self.movementSpeed = 1
         self.tag = None
 

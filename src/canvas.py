@@ -328,6 +328,72 @@ class Canvas(object):
         # set pixel
         self.chars[x][y] = char
 
+    def getAsDummy(self, out, offsetX, offsetY, warning):
+
+        def stringifyUrwid(inData):
+            outData = ""
+            for item in inData:
+                if isinstance(item, tuple):
+                    outData += stringifyUrwid(item[1])
+                if isinstance(item, list):
+                    outData += stringifyUrwid(item)
+                if isinstance(item, str):
+                    outData += item
+            return outData
+
+        y = offsetY
+        for line in self.chars:
+            x = offsetX
+            for char in line:
+                mapped = None
+
+                actionMeta = None
+                if isinstance(char, src.interaction.ActionMeta):
+                    actionMeta = char.payload
+                    char = char.content
+
+                if isinstance(char, int):
+                    mapped = self.displayChars.indexedMapping[char]
+                else:
+                    mapped = char
+
+                if not isinstance(mapped, list):
+                    mapped = [mapped]
+
+                tcodPrepared = []
+                for item in mapped:
+                    if isinstance(item, str):
+                        tcodPrepared.append(((255,255,255),(0,0,0),item))
+                    if isinstance(item, tuple):
+                        tcodPrepared.append((tuple(item[0].get_rgb_values()[:3]),tuple(item[0].get_rgb_values()[3:]),item[1]))
+
+                numPrinted = 0
+                for item in tcodPrepared:
+                    text = item[2]
+                    text = text.replace("ò","o")
+                    text = text.replace("＠","@ ")
+                    text = text.replace("🝆","<")
+                    text = text.replace("´","'")
+                    text = text.replace("┃","|")
+                    text = text.replace("━","-")
+                    text = text.replace("┳","+")
+                    text = text.replace("┛","+")
+                    text = text.replace("┓","+")
+                    text = text.replace("┛","+")
+
+
+                    extraX = 0
+                    for char in text:
+                        out[y][2*x+numPrinted+extraX] = [[list(item[0]),list(item[1])],char]
+                        extraX += 1
+                    #console.print(x=2*x+numPrinted,y=y,fg=item[0],bg=item[1],string=text)
+                    #if actionMeta:
+                    #    src.gamestate.gamestate.clickMap[(2*x+numPrinted,y)] = actionMeta
+                    #    src.gamestate.gamestate.clickMap[(2*x+numPrinted+1,y)] = actionMeta
+                    numPrinted += 1
+                x += 1
+            y += 1
+
     def printTcod(self, console, offsetX, offsetY, warning):
 
         def stringifyUrwid(inData):

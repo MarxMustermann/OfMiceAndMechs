@@ -336,7 +336,7 @@ def callShow_or_exit(loop, key):
 
     show_or_exit(key)
 
-def show_or_exit(key):
+def show_or_exit(key,targetCharacter=None):
     """
     add keystrokes from urwid to the players command queue
 
@@ -345,7 +345,12 @@ def show_or_exit(key):
         charState: the state of the char to add the keystroke to
     """
 
-    src.gamestate.gamestate.mainChar.runCommandString((key,),nativeKey=True,addBack=True)
+    if not targetCharacter:
+        char = src.gamestate.gamestate.mainChar
+    else:
+        char = targetCharacter
+
+    char.runCommandString((key,),nativeKey=True,addBack=True)
 
 shownStarvationWarning = False
 
@@ -3887,6 +3892,7 @@ class CharacterInfoMenu(SubMenu):
             text += "rank:       %s\n" % char.rank
         if hasattr(char,"superior"):
             text += "superior:   %s\n" % char.superior
+        text += "reputation: %s\n" % char.reputation
 
         text += "\n"
         for jobOrder in char.jobOrders:
@@ -3895,32 +3901,6 @@ class CharacterInfoMenu(SubMenu):
         text += "\n"
         text += "lastJobOrder: %s\n" % char.lastJobOrder
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-
-        text += "\n\n\n"
-
-        text += char.getDetailedInfo() + "\n\n"
-        text += "internal id: %s\n" % (char,)
-        char.setRegisterValue("HEALTh", char.health)
-        char.setRegisterValue("SELFx", char.xPosition % 15)
-        text += "SELFx - %s" % (char.xPosition % 15) + "\n"
-        char.setRegisterValue("SELFy", char.yPosition % 15)
-        text += "SELFy - %s" % (char.yPosition % 15) + "\n"
-        if isinstance(char.container,src.rooms.Room):
-            char.setRegisterValue("SELF BIG x", char.container.xPosition)
-            text += "SELF BIG x - %s" % (char.container.xPosition) + "\n"
-            char.setRegisterValue("SELF BIG y", char.container.yPosition)
-            text += "SELF BIG y - %s" % (char.container.yPosition) + "\n"
-        else:
-            char.setRegisterValue("SELF BIG x", char.xPosition // 15)
-            text += "SELF BIG x - %s" % (char.xPosition // 15) + "\n"
-            char.setRegisterValue("SELF BIG y", char.yPosition // 15)
-            text += "SELF BIG y - %s" % (char.yPosition // 15) + "\n"
-        char.setRegisterValue("SATIATIOn", char.satiation)
-        text += "SATIATIOn - %s" % char.satiation + "\n"
-        char.setRegisterValue("NUM INVENTORY ITEMs", len(char.inventory))
-        text += "NUM INVENTORY ITEMs - %s" % (len(char.inventory)) + "\n"
-        char.setRegisterValue("frustration", char.frustration)
-        text += "frustration: %s\n" % char.frustration
 
         return text
 
@@ -5796,7 +5776,8 @@ def renderHelp():
     txt += " .: wait\n"
     txt += " t: set information to render\n"
     txt += "\n"
-    txt += "sadly the controls cannot be changed at the moment"
+    txt += "sadly the controls cannot be changed at the moment\n"
+    txt += "if you have issues with the character running into wall, tap the keys instead of holding them\n"
     txt += "\n"
     txt += "play the tutorial scenarios to find out more about the game itself"
     txt += "\n"
@@ -5833,22 +5814,22 @@ def render(char):
     # center on player
     # bad code: should focus on arbitrary positions
     if (
-        src.gamestate.gamestate.mainChar.room
-        and src.gamestate.gamestate.mainChar.room.xPosition
+        char.room
+        and char.room.xPosition
     ):
         centerX = (
-            src.gamestate.gamestate.mainChar.room.xPosition * 15
-            + src.gamestate.gamestate.mainChar.room.offsetX
-            + src.gamestate.gamestate.mainChar.xPosition
+            char.room.xPosition * 15
+            + char.room.offsetX
+            + char.xPosition
         )
         centerY = (
-            src.gamestate.gamestate.mainChar.room.yPosition * 15
-            + src.gamestate.gamestate.mainChar.room.offsetY
-            + src.gamestate.gamestate.mainChar.yPosition
+            char.room.yPosition * 15
+            + char.room.offsetY
+            + char.yPosition
         )
     else:
-        centerX = src.gamestate.gamestate.mainChar.xPosition
-        centerY = src.gamestate.gamestate.mainChar.yPosition
+        centerX = char.xPosition
+        centerY = char.yPosition
 
     global lastCenterX
     global lastCenterY
@@ -5880,10 +5861,10 @@ def render(char):
 
     # render the map
     if (
-        src.gamestate.gamestate.mainChar.room
-        and not src.gamestate.gamestate.mainChar.room.xPosition
+        char.room
+        and not char.room.xPosition
     ):
-        chars = src.gamestate.gamestate.mainChar.room.render()
+        chars = char.room.render()
     else:
         chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite -1, centerX - halfviewsite-1))
         miniMapChars = []
@@ -5955,13 +5936,18 @@ new_chars = set()
 charindex = 0
 
 
-def keyboardListener(key):
+def keyboardListener(key, targetCharacter=None):
     """
     handles true key presses from the player
 
     Parameters:
         key: the key pressed
     """
+
+    if not targetCharacter:
+        char = src.gamestate.gamestate.mainChar
+    else:
+        char = targetCharacter
 
     global multi_currentChar
     multi_chars = src.gamestate.gamestate.multi_chars
@@ -5971,7 +5957,7 @@ def keyboardListener(key):
     continousOperation = -1
 
     if not multi_currentChar:
-        multi_currentChar = src.gamestate.gamestate.mainChar
+        multi_currentChar = char
     if multi_chars is None:
         multi_chars = src.gamestate.gamestate.terrain.characters[:]
         for room in src.gamestate.gamestate.terrain.rooms:
@@ -5979,18 +5965,18 @@ def keyboardListener(key):
                 if character not in multi_chars:
                     multi_chars.add(character)
 
-    state = src.gamestate.gamestate.mainChar.macroState
+    state = char.macroState
 
     if key == "ctrl d":
-        src.gamestate.gamestate.mainChar.clearCommandString()
+        char.clearCommandString()
         state["loop"] = []
         state["replay"].clear()
-        src.gamestate.gamestate.mainChar.huntkilling = False
-        if "ifCondition" in src.gamestate.gamestate.mainChar.interactionState:
-            src.gamestate.gamestate.mainChar.interactionState["ifCondition"].clear()
-            src.gamestate.gamestate.mainChar.interactionState["ifParam1"].clear()
-            src.gamestate.gamestate.mainChar.interactionState["ifParam2"].clear()
-        activeQuest = src.gamestate.gamestate.mainChar.getActiveQuest()
+        char.huntkilling = False
+        if "ifCondition" in char.interactionState:
+            char.interactionState["ifCondition"].clear()
+            char.interactionState["ifParam1"].clear()
+            char.interactionState["ifParam2"].clear()
+        activeQuest = char.getActiveQuest()
         if activeQuest and activeQuest.autoSolve:
             activeQuest.autoSolve = False
 
@@ -6001,24 +5987,24 @@ def keyboardListener(key):
             src.gamestate.gamestate.gameHalted = True
 
     elif key == "ctrl p":
-        if not src.gamestate.gamestate.mainChar.macroStateBackup:
-            src.gamestate.gamestate.mainChar.macroStateBackup = (
-                src.gamestate.gamestate.mainChar.macroState
+        if not char.macroStateBackup:
+            char.macroStateBackup = (
+                char.macroState
             )
-            src.gamestate.gamestate.mainChar.setDefaultMacroState()
-            src.gamestate.gamestate.mainChar.macroState[
+            char.setDefaultMacroState()
+            char.macroState[
                 "macros"
-            ] = src.gamestate.gamestate.mainChar.macroStateBackup["macros"]
+            ] = char.macroStateBackup["macros"]
 
-            state = src.gamestate.gamestate.mainChar.macroState
+            state = char.macroState
         else:
-            src.gamestate.gamestate.mainChar.macroState = (
-                src.gamestate.gamestate.mainChar.macroStateBackup
+            char.macroState = (
+                char.macroStateBackup
             )
-            src.gamestate.gamestate.mainChar.macroState[
+            char.macroState[
                 "macros"
-            ] = src.gamestate.gamestate.mainChar.macroStateBackup["macros"]
-            src.gamestate.gamestate.mainChar.macroStateBackup = None
+            ] = char.macroStateBackup["macros"]
+            char.macroStateBackup = None
 
     elif key == "ctrl x":
         src.gamestate.gamestate.save()
@@ -6034,29 +6020,29 @@ def keyboardListener(key):
             state = "normal"
             for key, value in rawMacros.items():
                 parsedMacro = []
-                for char in value:
+                for macroPart in value:
                     if state == "normal":
-                        if char == "/":
+                        if macroPart == "/":
                             state = "multi"
                             combinedKey = ""
                             continue
-                        parsedMacro.append(char)
+                        parsedMacro.append(macroPart)
                     if state == "multi":
-                        if char == "/":
+                        if macroPart == "/":
                             state = "normal"
                             parsedMacro.append(combinedKey)
                         else:
-                            combinedKey += char
+                            combinedKey += macroPart
                 parsedMacros[key] = parsedMacro
 
-            src.gamestate.gamestate.mainChar.macroState["macros"] = parsedMacros
+            char.macroState["macros"] = parsedMacros
 
     elif key == "ctrl k":
         with open("macros.json", "w") as macroFile:
             import json
 
             compressedMacros = {}
-            for key, value in src.gamestate.gamestate.mainChar.macroState[
+            for key, value in char.macroState[
                 "macros"
             ].items():
                 compressedMacro = ""
@@ -6091,42 +6077,47 @@ def keyboardListener(key):
             messages.append("charindex %s" % charindex)
             return
 
-        src.gamestate.gamestate.mainChar = newChar
-        state = src.gamestate.gamestate.mainChar.macroState
+        if not targetCharacter:
+            src.gamestate.gamestate.mainChar = newChar
+        else:
+            global shadowCharacter
+            shadowCharacter = newChar
+        char = newChar
+        state = char.macroState
 
     elif key == "ctrl w":
-        if not src.gamestate.gamestate.mainChar.room:
+        if not char.room:
             return
         import json
 
-        state = src.gamestate.gamestate.mainChar.room.getState()
+        state = char.room.getState()
         serializedState = json.dumps(state, indent=10, sort_keys=True)
 
         with open("roomExport.json", "w") as exportFile:
             exportFile.write(serializedState)
     elif key == "ctrl i":
         foundChar = None
-        for character in src.gamestate.gamestate.mainChar.container.characters:
-            if character == src.gamestate.gamestate.mainChar:
+        for character in char.container.characters:
+            if character == char:
                 continue
-            if character.xPosition == src.gamestate.gamestate.mainChar.xPosition and character.yPosition == src.gamestate.gamestate.mainChar.yPosition:
+            if character.xPosition == char.xPosition and character.yPosition == char.yPosition:
                 foundChar = character
                 break
 
         if not foundChar:
-            for character in src.gamestate.gamestate.mainChar.container.characters:
-                if abs(character.xPosition-src.gamestate.gamestate.mainChar.xPosition) + abs(character.yPosition-src.gamestate.gamestate.mainChar.yPosition):
+            for character in char.container.characters:
+                if abs(character.xPosition-char.xPosition) + abs(character.yPosition-char.yPosition):
                     foundChar = character
                     break
 
         if not foundChar:
-            for character in src.gamestate.gamestate.mainChar.container.characters:
+            for character in char.container.characters:
                 foundChar = character
                 break
 
         if foundChar:
-            src.gamestate.gamestate.mainChar = character
-            state = src.gamestate.gamestate.mainChar.macroState
+            char = character
+            state = char.macroState
     elif src.gamestate.gamestate.gameHalted:
         if key == "M":
             # 1000 moves and then stop
@@ -6142,7 +6133,7 @@ def keyboardListener(key):
             speed = 0.1
         src.gamestate.gamestate.gameHalted = False
     else:
-        show_or_exit(key)
+        show_or_exit(key,targetCharacter)
 
 
 lastAdvance = 0
@@ -6461,12 +6452,81 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
     
     #footertext = stringifyUrwid(inData)
 
-def renderGameDisplay():
+def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
+    if not internalOffset:
+        internalOffset = [0,0]
+
+    if not color:
+        color = ((255,255,255),(0,0,0))
+    if color[0] == (None,None,None):
+        color = ((255,255,255),color[1])
+    if color[1] == (None,None,None):
+        color = (color[0],(0,0,0))
+
+    if isinstance(inData,str):
+        counter = 0
+        for line in inData.split("\n"):
+            if counter > 0:
+                internalOffset[0] = 0
+                internalOffset[1] += 1
+
+            skipPrint = False
+            toPrint = line
+            if size:
+                if internalOffset[0] > size[0]:
+                    skipPrint = True
+                if internalOffset[1] > size[1]:
+                    skipPrint = True
+
+                if not skipPrint:
+                    toPrint = line[:size[0]-internalOffset[0]]
+            
+            if not skipPrint:
+                x = offset[0]+internalOffset[0]
+                y = offset[1]+internalOffset[1]
+                #if actionMeta:
+                #    for i in range(0,len(toPrint)):
+                #        src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
+                #tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
+
+                extraX = 0
+                for char in toPrint:
+                    try:
+                        dummy[y][x+extraX] = [[list(color[0]),list(color[1])],char]
+                    except:
+                        pass
+                    extraX += 1
+
+            internalOffset[0] += len(line)
+            counter += 1
+
+
+    if isinstance(inData,tuple):
+        printUrwidToDummy(dummy,inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
+
+    if isinstance(inData,int):
+        printUrwidToDummy(dummy,src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData,list):
+        for item in inData:
+            printUrwidToDummy(dummy,item,offset,color,internalOffset,size,actionMeta)
+
+    if isinstance(inData, ActionMeta):
+        printUrwidToDummy(dummy,inData.content,offset,color,internalOffset,size,inData.payload)
+    
+    #footertext = stringifyUrwid(inData)
+
+def renderGameDisplay(renderChar=None):
+    pseudoDisplay = []
+    
     src.gamestate.gamestate.clickMap = {}
 
     text = ""
 
-    char = src.gamestate.gamestate.mainChar
+    if not renderChar:
+        char = src.gamestate.gamestate.mainChar
+    else:
+        char = renderChar
 
     if char.room:
         thisTerrain = char.room.terrain
@@ -6518,7 +6578,7 @@ def renderGameDisplay():
         return outData
 
     # render the game
-    if not src.gamestate.gamestate.mainChar.specialRender or tcodConsole:
+    if not char.specialRender or tcodConsole:
 
         skipRender = True
 
@@ -6555,9 +6615,9 @@ def renderGameDisplay():
 
             # render map
             # bad code: display mode specific code
-            if not src.gamestate.gamestate.mainChar.godMode and (
-                src.gamestate.gamestate.mainChar.satiation < 300
-                or src.gamestate.gamestate.mainChar.health < 30
+            if not char.godMode and (
+                char.satiation < 300
+                or char.health < 30
             ):
                 warning = True
             else:
@@ -6565,11 +6625,11 @@ def renderGameDisplay():
             header.set_text(
                 (
                     urwid.AttrSpec("default", "default"),
-                    renderHeader(src.gamestate.gamestate.mainChar),
+                    renderHeader(char),
                 )
             )
             if useTiles:
-                canvas = render(src.gamestate.gamestate.mainChar)
+                canvas = render(char)
                 canvas.setPygameDisplay(pydisplay, pygame, tileSize)
 
                 w, h = pydisplay.get_size()
@@ -6589,12 +6649,41 @@ def renderGameDisplay():
                 pydisplay.blit(text, (w - tw - 8, h - th - 8))
                 pygame.display.update()
             if tcodConsole:
-                tcodConsole.clear()
+                if not renderChar:
+                    tcodConsole.clear()
+
+                for y in range(0,55):
+                    pseudoDisplay.append([])
+                    for x in range(0,210):
+                        pseudoDisplay[y].append("")
+
+                def addToPseudeDisplay(chars,offsetX,offsetY):
+                    extraY = 0
+                    extraX = 0
+                    for char in chars:
+                        if char == "\n":
+                            extraX = 0
+                            extraY += 1
+                            continue
+                        if isinstance(char,str):
+                            pseudoDisplay[offsetY+extraY][offsetX+extraX] = char
+                            extraX += len(char)
+                        elif isinstance(char,tuple):
+                            pseudoDisplay[offsetY+extraY][offsetX+extraX] = char[1]
+                            extraX += len(char[1])
+                        else:
+                            print(offsetY+extraY,offsetX+extraX)
+                            pseudoDisplay[offsetY+extraY][offsetX+extraX] = "XX"
+                    extraY += 1
 
                 for uiElement in src.gamestate.gamestate.uiElements:
                     if uiElement["type"] == "gameMap":
-                        canvas = render(src.gamestate.gamestate.mainChar)
-                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
+                        canvas = render(char)
+                        if not renderChar:
+                            canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
+                        else:
+                            canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
+
                     if uiElement["type"] == "miniMap":
                         miniMapChars = thisTerrain.renderTiles()
                         canvas = src.canvas.Canvas(
@@ -6605,6 +6694,7 @@ def renderGameDisplay():
                             displayChars=src.canvas.displayChars,
                             tileMapping=None,
                         )
+                        canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
                         canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
 
                     if uiElement["type"] == "healthInfo":
@@ -6613,22 +6703,23 @@ def renderGameDisplay():
                         offset = (uiElement["offset"][0]+44-len(stringifyUrwid(footer.get_text()))//2,uiElement["offset"][1])
                         width = uiElement["width"]
                         printUrwidToTcod(footer.get_text(),offset,size=(width,100))
+                        printUrwidToDummy(pseudoDisplay,footer.get_text(),offset,size=(width,100))
                     if uiElement["type"] == "indicators":
                         autoIndicator = ActionMeta(content="*",payload="*")
-                        if src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] or (src.gamestate.gamestate.mainChar.getActiveQuest() and src.gamestate.gamestate.mainChar.getActiveQuest().autoSolve):
+                        if char.macroState["commandKeyQueue"] or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
                             def test():
-                                src.gamestate.gamestate.mainChar.clearCommandString()
-                                src.gamestate.gamestate.mainChar.macroState["loop"] = []
-                                src.gamestate.gamestate.mainChar.macroState["replay"].clear()
-                                src.gamestate.gamestate.mainChar.huntkilling = False
-                                if "ifCondition" in src.gamestate.gamestate.mainChar.interactionState:
-                                    src.gamestate.gamestate.mainChar.interactionState["ifCondition"].clear()
-                                    src.gamestate.gamestate.mainChar.interactionState["ifParam1"].clear()
-                                    src.gamestate.gamestate.mainChar.interactionState["ifParam2"].clear()
-                                activeQuest = src.gamestate.gamestate.mainChar.getActiveQuest()
+                                char.clearCommandString()
+                                char.macroState["loop"] = []
+                                char.macroState["replay"].clear()
+                                char.huntkilling = False
+                                if "ifCondition" in char.interactionState:
+                                    char.interactionState["ifCondition"].clear()
+                                    char.interactionState["ifParam1"].clear()
+                                    char.interactionState["ifParam2"].clear()
+                                activeQuest = char.getActiveQuest()
                                 if activeQuest and activeQuest.autoSolve:
                                     activeQuest.autoSolve = False
-                                src.gamestate.gamestate.mainChar.runCommandString("~")
+                                char.runCommandString("~")
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                         indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
@@ -6637,33 +6728,36 @@ def renderGameDisplay():
                         y = uiElement["offset"][1]
 
                         printUrwidToTcod(indicators,(x,y),size=(uiElement["width"],1))
+                        printUrwidToDummy(pseudoDisplay,indicators,(x,y),size=(uiElement["width"],1))
 
                     if uiElement["type"] == "text":
                         printUrwidToTcod(uiElement["text"],uiElement["offset"])
+                        printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu":
-                        if src.gamestate.gamestate.mainChar.rememberedMenu:
+                        if char.rememberedMenu:
                             chars = []
                             counter = 0
-                            for menu in reversed(src.gamestate.gamestate.mainChar.rememberedMenu):
+                            for menu in reversed(char.rememberedMenu):
                                 chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
-                                chars.extend(menu.render(src.gamestate.gamestate.mainChar))
+                                chars.extend(menu.render(char))
                                 counter += 1
                             size = uiElement["size"]
                             offset = uiElement["offset"]
                             printUrwidToTcod(chars,offset,size=size)
+                            printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
                     if uiElement["type"] == "rememberedMenu2":
-                        if src.gamestate.gamestate.mainChar.rememberedMenu2:
+                        if char.rememberedMenu2:
                             chars = []
-                            for menu in reversed(src.gamestate.gamestate.mainChar.rememberedMenu2):
+                            for menu in reversed(char.rememberedMenu2):
                                 chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
-                                chars.extend(menu.render(src.gamestate.gamestate.mainChar))
+                                chars.extend(menu.render(char))
                             size = uiElement["size"]
                             offset = uiElement["offset"]
                             printUrwidToTcod(chars,offset,size=size)
-                            
+                            printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
-                if not src.gamestate.gamestate.mainChar.specialRender:
+                if not char.specialRender:
                     tcodContext.present(tcodConsole)
             if not useTiles and not tcodConsole:
                 main.set_text(
@@ -6673,8 +6767,8 @@ def renderGameDisplay():
                     )
                 )
 
-                canvas = render(src.gamestate.gamestate.mainChar)
-    if src.gamestate.gamestate.mainChar.specialRender:
+                canvas = render(char)
+    if char.specialRender:
         if useTiles:
             pydisplay.fill((0, 0, 0))
             font = pygame.font.Font("config/DejaVuSansMono.ttf", 14)
@@ -6703,31 +6797,70 @@ def renderGameDisplay():
 
             counter = offsetTop
             tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft] = "|"
             tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
             tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
             src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
             tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
             src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
             tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
             src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
 
             tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
             tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
+            extraX = 0
+            for char in "--+-"+"-"*width+"-+--":
+                pseudoDisplay[counter][offsetLeft-2+extraX] = char
+                extraX += 1
             counter += 1
             tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+            extraX = 0
+            for char in "| "+" "*width+" |":
+                pseudoDisplay[counter][offsetLeft+extraX] = char
+                extraX += 1
             counter += 1
             for line in plainText.split("\n"):
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+                extraX = 0
+                for char in "| "+" "*width+" |":
+                    pseudoDisplay[counter][offsetLeft+extraX] = char
+                    extraX += 1
                 counter += 1
             tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+            extraX = 0
+            for char in "| "+" "*width+" |":
+                pseudoDisplay[counter][offsetLeft+extraX] = char
+                extraX += 1
             counter += 1
             tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
+            extraX = 0
+            for char in "--+-"+"-"*width+"-+--":
+                pseudoDisplay[counter][offsetLeft-2+extraX] = char
+                extraX += 1
             tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter+1][offsetLeft] = "|"
             tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
+            pseudoDisplay[counter+1][offsetLeft+width+3] = "|"
 
             #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
-            printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
-            tcodContext.present(tcodConsole)
+            if not renderChar:
+                printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
+                tcodContext.present(tcodConsole)
+            else:
+                printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
+
+    if renderChar:
+        print("did draw")
+        sendNetworkDraw(pseudoDisplay)
+    else:
+        if shadowCharacter:
+            renderGameDisplay(shadowCharacter)
 
 def showMainMenu(args):
 
@@ -8003,6 +8136,8 @@ def gameLoop(loop, user_data=None):
 
             if tcod:
                 getTcodEvents()
+                getNetworkedEvents()
+
 
             hasAutosolveQuest = False
             for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
@@ -8010,10 +8145,16 @@ def gameLoop(loop, user_data=None):
                     continue
                 hasAutosolveQuest = True
 
+            if shadowCharacter:
+                while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
+                    renderGameDisplay()
+                    shadowCharacter.macroState["commandKeyQueue"].pop()
+                    print("skipping idle")
+
             global continousOperation
             if (
                 src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
-            ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest:
+            ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest or (shadowCharacter and shadowCharacter.macroState["commandKeyQueue"]):
                 continousOperation += 1
 
                 if not len(cinematics.cinematicQueue):
@@ -8125,6 +8266,19 @@ def advanceChar(char,removeChars):
                             hasAutosolveQuest = True
 
                         getTcodEvents()
+                        getNetworkedEvents()
+
+                        if shadowCharacter:
+                            while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
+                                renderGameDisplay()
+                                shadowCharacter.macroState["commandKeyQueue"].pop()
+                                print("skipping idle")
+
+                            if not state["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"]:
+                                char.timeTaken += 1
+                                char.runCommandString("~",nativeKey=True)
+                                #renderGameDisplay()
+
                         if src.gamestate.gamestate.timedAutoAdvance:
                             if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:
                                 char.timeTaken += 1
@@ -8141,9 +8295,67 @@ def advanceChar(char,removeChars):
 loop = None
 
 s = None
+conn = None
 
+HOST = "127.0.0.1"
+PORT = 65475
 
-def handleMultiplayerClients(loop, user_data):
+shadowCharacter = None
+
+def getNetworkedEvents():
+    global shadowCharacter
+    global s
+    global conn
+
+    if not s:
+        import socket
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((HOST, PORT))
+        s.setblocking(False)
+        s.listen()
+
+    if not conn:
+        try:
+            conn, addr = s.accept()
+        except:
+            conn = None
+
+    if not conn:
+        return
+
+    if not shadowCharacter:
+        shadowCharacter = src.characters.Character()
+        shadowCharacter.personality["doIdleAction"] = False
+        shadowCharacter.personality["autoCounterAttack"] = False
+        src.gamestate.gamestate.mainChar.personality["doIdleAction"] = False
+        pos = src.gamestate.gamestate.mainChar.getPosition()
+        src.gamestate.gamestate.mainChar.container.addCharacter(shadowCharacter,pos[0],pos[1])
+
+    s.setblocking(False)
+    conn.setblocking(False)
+    try:
+        chunkData = conn.recv(1024)
+    except:
+        return
+
+    if not len(chunkData):
+        return
+
+    for data in chunkData.split(b"\n"):
+        if not len(data):
+            continue
+
+        data = data.decode("utf-8")
+        raw = json.loads(data)
+
+        for command in raw["commands"]:
+            keyboardListener(command,targetCharacter=shadowCharacter)
+
+    print("networkfetch ended")
+
+import gzip
+def sendNetworkDraw(pseudoDisplay):
     """
     basically a copy of the main loop for networked multiplayer
 
@@ -8151,32 +8363,52 @@ def handleMultiplayerClients(loop, user_data):
         loop: the main loop (urwids main loop)
         user_data: parameter that needs to be there but is not used
     """
-
-    if not multiplayer:
-        return
-
-    HOST = "127.0.0.1"
-    PORT = 65440
+    
+    print("network draw started")
 
     global s
+    global conn
+
     if not s:
         import socket
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((HOST, PORT))
+        s.setblocking(False)
         s.listen()
+
+    if not conn:
+        try:
+            conn, addr = s.accept()
+        except:
+            conn = None
+
+    if not conn:
+        print("no connection")
+        return
 
     import json
     import urwid
 
-    conn, addr = s.accept()
-    with conn:
-        data = conn.recv(1024 * 1024 * 1024)
+    #data = conn.recv(1024 * 1024 * 1024)
 
-        if data == b"ignore":
-            loop.set_alarm_in(0.1, handleMultiplayerClients)
-            return
+    info = {"pseudoDisplay":pseudoDisplay}
+    info = json.dumps(info)
+    data = info.encode("utf-8")
+    data = gzip.compress(data)
+    seperator = b"\n-*_*-\n"
+    
+    if seperator in data:
+        print("seperator in data => hard fuckup")
+        1/0
+    conn.sendall(data+seperator)
 
+    print("network draw done")
+    return
+
+def handleMultiplayerClients():
+    return
+    if 1==1:
         realMainChar = src.gamestate.gamestate.mainChar
 
         if len(multi_chars) > 1:

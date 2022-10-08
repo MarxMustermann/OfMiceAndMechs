@@ -297,6 +297,14 @@ Reduce the number of lurkers to %s to get a reward.
         return enemies
 
     def apply(self,character):
+        if character.rank == None:
+            self.getInitialReward1(character)
+            return
+
+        if character.rank > 3:
+            self.showLocked(character)
+            return
+            
         if src.gamestate.gamestate.tick//self.epochLength > self.lastEpochSurvivedReward:
             enemies = self.getEnemiesWithTag("wave")
 
@@ -402,7 +410,7 @@ Reduce them to %s to get a further reward.
             text = """
 You eliminated all lurkers.
 
-You comleted all side quests. More should come with further development on the game.
+You completed all side quests. More should come with further development on the game.
 
 You also recieved 2 glass tears for this. Don't spent them all at once :-)
 """
@@ -411,6 +419,63 @@ You also recieved 2 glass tears for this. Don't spent them all at once :-)
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
+
+    def showLocked(self,character):
+        text = """
+No commander was found. Operations are halted, please wait.
+You have insufficent rank to take over as commander.
+Be useful until commander is available.
+
+To help you with that you got the universal leaders blessing.
+(base damage +2 max health +20)
+---
+
+You were assiged the quest "be useful". 
+You can decide freely how to be useful.
+
+It is recommendet to press the "+" key to break down the quest into steps.
+
+Completing quests at the quest artwork (QA) is a way to be usefull.
+You are free to equip yourself from the bases stocks.
+"""
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+
+    def getInitialReward1(self,character):
+        text = """
+The commander has fallen.
+Siege ongoing.
+No specific instructions available.
+
+You have no rank.
+Follow emergency protocol by integrating into the base.
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"getInitialReward2","params":{"character":character}}
+
+    def getInitialReward2(self,extraParams):
+        character = extraParams["character"]
+
+        text = """
+Use the assimilator to integrate into the base system.
+
+You will recieve your duties and instructions later.
+"""
+
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+
+        character.quests = []
+        quest = src.quests.Assimilate()
+        character.quests.append(quest)
+        quest.assignToCharacter(character)
+        quest.activate()
+        quest.generateSubquests(character)
 
     def getEpochSurvivedReward(self,character):
         amount = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)*30

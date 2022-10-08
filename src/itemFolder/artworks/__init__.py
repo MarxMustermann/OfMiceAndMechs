@@ -21,3 +21,5 @@ import src.itemFolder.artworks.orderArtwork
 import src.itemFolder.artworks.staffArtwork
 import src.itemFolder.artworks.personnelArtwork
 import src.itemFolder.artworks.epochArtwork
+import src.itemFolder.artworks.assimilator
+import src.itemFolder.artworks.basicTrainer

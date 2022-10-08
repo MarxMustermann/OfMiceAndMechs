@@ -3814,7 +3814,7 @@ class BaseBuilding(BasicPhase):
         ]
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
         src.gamestate.gamestate.mainChar.godMode = True
-        src.gamestate.gamestate.mainChar.faction = "city test"
+        src.gamestate.gamestate.mainChar.faction = "german-sibiria"
 
         """
         architect.doAddScrapfield(10, 8, 280)
@@ -4017,14 +4017,8 @@ class Siege2(BasicPhase):
             item = src.items.itemMap["Sword"]()
             spawnRoom.addItem(item,(x,1,0))
 
-            item = src.items.itemMap["Sword"]()
-            spawnRoom.addItem(item,(x+6,1,0))
-
             item = src.items.itemMap["Armor"]()
             spawnRoom.addItem(item,(x,3,0))
-
-            item = src.items.itemMap["Armor"]()
-            spawnRoom.addItem(item,(x+6,3,0))
 
             item = src.items.itemMap["MetalBars"]()
             spawnRoom.addItem(item,(x,5,0))
@@ -4058,20 +4052,15 @@ class Siege2(BasicPhase):
         )
 
         text = """
-You got ambushed while traveling to the outpost you were assigned to serve in.
+You are ambushed and you need to flee.
 
-Breach the siege ring and enter the base. Go to the command centre afterwards.
-You will recieve further instructions on what your duty will be from the epoch artwork.
+Try to reach the safety of the base in the north.
 
-Grab some of the equipment and relocate quickly. A group of spores is on its way to attack.
-They are shown as [- and will chase you.
 
-The command centre is on coordinate 7/7.
-The epoch artwork is shown as EA.
-Use q to see your quests and shift+ESC to dock the quest menu.
-
+Press ESC to close this window.
 """
         submenu = src.interaction.TextMenu(text)
+        submenu.followUp = {"container": self, "method": "showSecondText"}
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
         mainChar.personality["autoFlee"] = False
@@ -4114,6 +4103,9 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             farm = cityBuilder.addFarmFromMap({"coordinate":farmPos,"character":src.gamestate.gamestate.mainChar},forceSpawn=10)
             for i in range(1,30):
                 farm.damage()
+
+        for farmPlot in farmPlots:
+            currentTerrain.minimapOverride[farmPlot] = (src.interaction.urwid.AttrSpec("#030", "black"), ",.")
 
         # add hardcoded treasure rooms
         def addTreasureRoom(pos,itemType):
@@ -4189,28 +4181,47 @@ Use q to see your quests and shift+ESC to dock the quest menu.
         personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
 
+        questArtwork = src.items.itemMap["QuestArtwork"]()
+        mainRoom.addItem(questArtwork,(1,3,0))
+
         orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all","amount":0})
         orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
         
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        self.epochArtwork = epochArtwork
         mainRoom.addItem(epochArtwork,(6,6,0))
 
-        containerQuest = src.quests.MetaQuestSequence()
+        epochArtwork = src.items.itemMap["Assimilator"]()
+        self.epochArtwork = epochArtwork
+        mainRoom.addItem(epochArtwork,(11,5,0))
 
-        quest = src.quests.ActivateEpochArtwork(epochArtwork=epochArtwork)
-        quest.activate()
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.addQuest(quest)
+        basicTrainer = src.items.itemMap["BasicTrainer"]()
+        self.basicTrainer = basicTrainer
+        mainRoom.addItem(basicTrainer,(11,7,0))
 
-        quest = src.quests.GoToTile(targetPosition=(7,5),description="reach base")
-        quest.activate()
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.addQuest(quest)
+        """
+        miniMech = src.rooms.MiniMech()
 
+        room = src.rooms.EmptyRoom(1,1,2,2)
+        room.reconfigure(sizeX=6,sizeY=6,doorPos=[(2,0)])
+        room.xPosition = 6
+        room.yPosition = 13
+        room.addItem(src.items.itemMap["RoomControls"](),(1,1,0))
+        room.addItem(src.items.itemMap["Boiler"](),(1,4,0))
+        room.addItem(src.items.itemMap["Boiler"](),(2,4,0))
+        room.addItem(src.items.itemMap["Furnace"](),(1,3,0))
+        room.addItem(src.items.itemMap["Furnace"](),(2,3,0))
+        room.addItem(src.items.itemMap["Pile"](),(4,1,0))
+        room.addItem(src.items.itemMap["Pile"](),(4,2,0))
+        currentTerrain.addRoom(room)
+        """
+
+        containerQuest = src.quests.ReachBase()
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
         containerQuest.activate()
-
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
+        containerQuest.endTrigger = {"container": self, "method": "reachedBase"}
 
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
@@ -4229,6 +4240,9 @@ Use q to see your quests and shift+ESC to dock the quest menu.
                            "size": [13, 13],
                     },
                     None)
+
+
+            currentTerrain.minimapOverride[pos] = (src.interaction.urwid.AttrSpec("#484", "black"), "##")
 
             room.addItem(src.items.itemMap["MonsterSpawner"](),(6,6,0))
 
@@ -4300,6 +4314,7 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
             for neighbour in neighbours:
                 architect.doFillWith(neighbour[0],neighbour[1],["EncrustedBush","Bush","Sprout2"])
+                currentTerrain.minimapOverride[neighbour] = (src.interaction.urwid.AttrSpec("#474", "black"), "**")
             room.bio = True
         
         hivePositions = [(3,3,0),(11,11,0),(3,11,0),(11,3,0)]
@@ -4429,24 +4444,17 @@ Use q to see your quests and shift+ESC to dock the quest menu.
             enemy.specialDisplay = "[-"
             enemy.faction = "invader"
 
-            if i%2 == 0:
-                quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition())
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
-            else:
-                quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition(),endWhenCleared=True)
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
+            quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition(),endWhenCleared=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
 
-                quest = src.quests.Huntdown(target=mainChar)
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
+            quest = src.quests.Huntdown(target=mainChar)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
 
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
         for i in range(1,10):
@@ -4497,8 +4505,49 @@ Use q to see your quests and shift+ESC to dock the quest menu.
 
         mainChar.messages = []
         mainChar.addMessage("press z for help")
-        mainChar.addMessage("the base is the big structure to the north")
-        mainChar.addMessage("escape the ambush and reach the base")
+        mainChar.addMessage("Try to reach the safety of the base in the north.")
+        mainChar.addMessage("You are ambushed and you need to flee.")
+        mainChar.addMessage("----------------")
+
+    def showSecondText(self):
+        text = """
+Follow the instructions on the left side of the screen.
+
+On the right side of the screen is a message log.
+
+Close this window and press z to see the movement keys.
+
+On the left top is a mini map.
+"""
+
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+
+        src.gamestate.gamestate.mainChar.addMessage("On the left top is a mini map.")
+        src.gamestate.gamestate.mainChar.addMessage("Close this window and press z to see the movement keys.")
+        src.gamestate.gamestate.mainChar.addMessage("On the right side of the screen is a message log.")
+        src.gamestate.gamestate.mainChar.addMessage("Follow the instructions on the left side of the screen.")
+        src.gamestate.gamestate.mainChar.addMessage("----------------")
+
+    def reachedBase(self):
+        text = """
+You arrived at the base. You are safe for now.
+The base is under siege, so that safety is temporary.
+Go to the command centre and get further instrucions.
+
+----
+
+Activate the epoch artwork shown as EA in the middle of the command centre to do this.
+The command centre is located at the core of this base. (coordinate (7,7,0))
+"""
+        submenu = src.interaction.TextMenu(text)
+        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+        src.gamestate.gamestate.mainChar.addMessage("------------------"+text+"--------------------")
+
+        containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.epochArtwork)
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.activate()
 
     def checkDead(self):
 

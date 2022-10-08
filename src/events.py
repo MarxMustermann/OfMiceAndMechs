@@ -222,15 +222,6 @@ class FurnaceBurnoutEvent(Event):
 
         self.tick = tick
 
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("furnace")
-
-        # self initial state
-        self.initialState = self.getState()
-
-
     def handleEvent(self):
         """
         stop burning
@@ -338,14 +329,6 @@ class StartBoilingEvent(Event):
 
         self.tick = tick
 
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("boiler")
-
-        # self initial state
-        self.initialState = self.getState()
-
     def handleEvent(self):
         """
         start producing steam
@@ -353,8 +336,6 @@ class StartBoilingEvent(Event):
 
         # add noises
         # bad pattern: should only make noise for nearby things
-        mainChar.addMessage("*boil*")
-
         # set own state
         self.boiler.display = src.canvas.displayChars.boiler_active
         self.boiler.isBoiling = True
@@ -362,8 +343,8 @@ class StartBoilingEvent(Event):
         self.boiler.changed()
 
         # change rooms steam production
-        self.boiler.room.steamGeneration += 1
-        self.boiler.room.changed()
+        self.boiler.container.steamGeneration += 1
+        self.boiler.container.changed()
 
 
 # supply a mapping from strings to events

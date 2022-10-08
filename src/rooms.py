@@ -2503,6 +2503,8 @@ XOF.PX
 Xmm.PX
 XXXXXX
 """
+        self.sizeX = 6
+        self.sizeY = 6
         super().__init__(
             roomLayout, xPosition, yPosition, offsetX, offsetY, desiredPosition
         )

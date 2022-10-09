@@ -365,7 +365,8 @@ class CityBuilder2(src.items.Item):
         guardRoom.chargeStrength = 20
 
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-2),"character":character})
-        guardRoom.chargeStrength = 20
+        guardRoom.chargeStrength = 30
+        guardRoom.electricalCharges = guardRoom.maxElectricalCharges
 
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character})
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})

@@ -142,7 +142,7 @@ class WorldBuildingPhase(src.saveing.Saveable):
 
         self.attributesToStore.append("name")
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         newRoom = src.rooms.DungeonRoom()
         newRoom.addCharacter(src.gamestate.gamestate.mainChar,7,7)
         src.gamestate.gamestate.extraRoots.append(newRoom)
@@ -187,7 +187,7 @@ class BasicPhase(src.saveing.Saveable):
         self.attributesToStore.append("name")
         self.attributesToStore.append("seed")
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up and start to run this game phase
         """
@@ -227,7 +227,7 @@ class Challenge(BasicPhase):
         super().__init__("challenge", seed=seed)
 
     # bad code: superclass call should not be prevented
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         start running the phase by placing the main char
 
@@ -342,7 +342,7 @@ class OpenWorld(BasicPhase):
         super().__init__("OpenWorld", seed=seed)
 
     # bad code: superclass call should not be prevented
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         start phase by placing main char
         """
@@ -431,7 +431,7 @@ class Dungeon(BasicPhase):
         """
         super().__init__("Dungeon", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         place main char and add entry point to dungeon
 
@@ -1121,7 +1121,7 @@ your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
         if room.timeIndex%15 == 0:
             self.spawnMaintanenceNPCs(room)
 
-    def start(self,seed=None):
+    def start(self,seed=None, difficulty=None):
         showText("""
 Hello,
 
@@ -1428,7 +1428,7 @@ class BackToTheRoots(BasicPhase):
                 src.saveing.loadingRegistry.callWhenAvailable(entry[1], setValue, newKey)
                 self.leaderQuests[newKey] = None
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up terrain and spawn main character
 
@@ -2749,7 +2749,7 @@ class Tutorials(BasicPhase):
     def __init__(self, seed=0):
         super().__init__("Tutorials", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
             basic usage: movement + basic UI + item management
             fighting: some explanaition on fighting + arena?
@@ -2818,7 +2818,7 @@ class FightingTutorial(BasicPhase):
 
         self.enemies = []
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         src.gamestate.gamestate.terrainMap[7][7] = src.terrains.Nothingness()
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         currentTerrain.addCharacter(
@@ -3245,7 +3245,7 @@ class BasicUsageTutorial(BasicPhase):
     def __init__(self, seed=0):
         super().__init__("BasicUsageTutorial", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         src.gamestate.gamestate.terrainMap[7][7] = src.terrains.Nothingness()
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         currentTerrain.addCharacter(
@@ -3724,7 +3724,7 @@ class BaseBuilding(BasicPhase):
 
         super().__init__("BaseBuilding", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up terrain and spawn main character
 
@@ -3926,13 +3926,17 @@ class Siege2(BasicPhase):
 
         super().__init__("BaseBuilding2", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up terrain and spawn main character
 
         Parameters:
             seed: rng seed
         """
+
+        print("phase difficulty:")
+        print(difficulty)
+        self.difficulty = difficulty
 
         mainChar = src.gamestate.gamestate.mainChar
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
@@ -3987,6 +3991,8 @@ class Siege2(BasicPhase):
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
         src.gamestate.gamestate.mainChar.godMode = True
         src.gamestate.gamestate.mainChar.faction = "city test"
+        if difficulty == "easy":
+            src.gamestate.gamestate.mainChar.baseDamage = 5
 
         mainRoom = architect.doAddRoom(
                 {
@@ -4227,6 +4233,9 @@ Press ESC to close this window.
         #mainRoom.addItem(orderArtwork,(9,1,0))
 
         hiveStyles = ["simple","empty","attackHeavy","healthHeavy","single"]
+        if difficulty == "easy":
+            hiveStyles = ["empty","empty","empty","empty","empty"]
+                
         random.shuffle(hiveStyles)
 
         # add hardcoded treasure rooms
@@ -4312,8 +4321,11 @@ Press ESC to close this window.
                 1/0
 
             neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
+            fillMaterial = ["EncrustedBush","Bush","Sprout2"]
+            if difficulty == "easy":
+                fillMaterial = ["Bush","Sprout2","Sprout2"]
             for neighbour in neighbours:
-                architect.doFillWith(neighbour[0],neighbour[1],["EncrustedBush","Bush","Sprout2"])
+                architect.doFillWith(neighbour[0],neighbour[1],fillMaterial)
                 currentTerrain.minimapOverride[neighbour] = (src.interaction.urwid.AttrSpec("#474", "black"), "**")
             room.bio = True
         
@@ -4326,7 +4338,10 @@ Press ESC to close this window.
             farmPlot = tmpList.pop()
             if not farmPlot in tmpList:
                 continue
-            architect.doSpawnItems(farmPlot[0],farmPlot[1],["Bush","Bush","EncrustedBush"],20,repeat=10)
+            fillMaterial = ["Bush","Bush","EncrustedBush"]
+            if difficulty == "easy":
+                fillMaterial = ["Bush","Bush","Sprout2"]
+            architect.doSpawnItems(farmPlot[0],farmPlot[1],fillMaterial,20,repeat=10)
 
         for farmPlot in farmPlots:
             architect.doFillWith(farmPlot[0],farmPlot[1],["Mold","Mold","Sprout","Mold","Sprout2"])
@@ -4367,8 +4382,10 @@ Press ESC to close this window.
                 quest.activate()
                 enemy.quests.append(quest)
 
+        print("generate stuff")
         for x in range(1,14):
             for y in range(1,14):
+                print((x,y))
                 if (x,y) == (8,5):
                     continue
 
@@ -4410,15 +4427,25 @@ Press ESC to close this window.
                     if currentTerrain.getItemByPosition((xPos,yPos,0)):
                         continue
 
-                    if placedMines:
-                        landmine = src.items.itemMap["LandMine"]()
-                        currentTerrain.addItem(landmine,(xPos,yPos,0))
+                    if not difficulty == "easy":
+                        if placedMines:
+                            landmine = src.items.itemMap["LandMine"]()
+                            currentTerrain.addItem(landmine,(xPos,yPos,0))
 
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
                     currentTerrain.addItem(scrap,(xPos,yPos,0))
 
-                if random.random() > 0.8 and not (x,y) in blockerRingPositions:
-                    for j in range(0,random.randint(1,3)):
+                spawnChance = 0.2
+                maxNumSpawns = 3
+                if difficulty == "easy":
+                    spawnChance = 0.05
+                    maxNumSpawns = 2
+                if difficulty == "difficult":
+                    spawnChance = 0.5
+                    maxNumSpawns = 5
+
+                if random.random() < spawnChance and not (x,y) in blockerRingPositions:
+                    for j in range(0,random.randint(1,maxNumSpawns)):
                         enemy = src.characters.Monster(4,4)
                         enemy.godMode = True
                         enemy.health = 15*j
@@ -4456,6 +4483,11 @@ Press ESC to close this window.
             quest.activate()
             enemy.quests.append(quest)
 
+        numGuards = 10
+        if not difficulty == "easy":
+            numGuards = 5
+        if not difficulty == "difficult":
+            numGuards = 30
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
         for i in range(1,10):
             waypoints = waypoints[1:]+[waypoints[0]]
@@ -4475,24 +4507,25 @@ Press ESC to close this window.
             quest.activate()
             enemy.quests.append(quest)
 
-        waypoints = [(5,4),(9,4),(9,10),(5,10)]
-        for i in range(1,10):
-            waypoints = waypoints[1:]+[waypoints[0]]
+        if not difficulty == "easy":
+            waypoints = [(5,4),(9,4),(9,10),(5,10)]
+            for i in range(1,10):
+                waypoints = waypoints[1:]+[waypoints[0]]
 
-            enemy = src.characters.Monster(4,4)
-            enemy.godMode = True
-            enemy.health = 100
-            enemy.baseDamage = 7
-            currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
-            enemy.specialDisplay = "X-"
-            enemy.faction = "invader"
-            enemy.tag = "patrol"
+                enemy = src.characters.Monster(4,4)
+                enemy.godMode = True
+                enemy.health = 100
+                enemy.baseDamage = 7
+                currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
+                enemy.specialDisplay = "X-"
+                enemy.faction = "invader"
+                enemy.tag = "patrol"
 
-            quest = src.quests.PatrolQuest(waypoints=waypoints)
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
+                quest = src.quests.PatrolQuest(waypoints=waypoints)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
 
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
 
@@ -4677,7 +4710,7 @@ class Siege(BasicPhase):
 
         super().__init__("Siege", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up terrain and spawn main character
 
@@ -4987,7 +5020,7 @@ class DesertSurvival(BasicPhase):
         super().__init__("DesertSurvival", seed=seed)
 
     # bad code: superclass call should not be prevented
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up terrain and place char
 
@@ -5143,7 +5176,7 @@ class FactoryDream(BasicPhase):
         """
         super().__init__("FactoryDream", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         set up terrain and place main char
 
@@ -5293,7 +5326,7 @@ class Tour(BasicPhase):
     def __init__(self, seed=0):
         super().__init__("Tour", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
 
         src.gamestate.gamestate.mainChar.terrain = src.gamestate.gamestate.terrain
         src.gamestate.gamestate.mainChar.godMode = True
@@ -5823,7 +5856,7 @@ class CreativeMode(BasicPhase):
 
         super().__init__("CreativeMode", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         """
         place main char and add godmode items
         """
@@ -5891,7 +5924,7 @@ class Tutorial(BasicPhase):
     bad code: superclass call should not be prevented
     """
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         showText(
             "Your current sitiuation is:\n\n\nYour memory has been resetted and you have been dumped here for manual work.\n\nIf you keep getting caught violating order XXI you will be killed.\nIf it were not for your heritage you would be dead a long time ago.\n\nAs your Implant i can only strictly advise against getting caught again."
         )
@@ -6392,7 +6425,7 @@ class RoguelikeStart(BasicPhase):
     def __init__(self, seed=0):
         super().__init__("RoguelikeStart", seed=seed)
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         showText(
             "you traveled to the city #1A23 destroyed by an artisan a century ago.\nAfter arriving at the cities core to inspect the citybuilder you find it destroyed.\n\nThis setback was expected and the contingency plan is to find and activate the citys reserve citybuilder"
         )
@@ -6448,7 +6481,7 @@ class Testing_1(BasicPhase):
     bad code: superclass call should not be prevented
     """
 
-    def start(self, seed=0):
+    def start(self, seed=0, difficulty=None):
         showText(
             "Your current sitiuation is:\n\n\nYour memory has been resetted and you have been dumped here for manual work.\n\nIf you keep getting caught violating order XXI you will be killed.\nIf it were not for your heritage you would be dead a long time ago.\n\nAs your Implant i can only strictly advise against getting caught again."
         )

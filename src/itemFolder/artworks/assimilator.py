@@ -96,6 +96,48 @@ To help you with that you got the universal leaders blessing.
             character.macroState["submenue"] = submenue
             return
 
+        if character.rank == 4:
+            if character.reputation < 1000:
+                text = """
+
+you need 1000 reputation to be promoted.
+
+gain reputation by completing quests and killing enemies.
+"""
+            else:
+                text = """
+
+you are hereby rank 3.
+This means you are the commander of this base now.
+
+Continue to be useful.
+
+To help you with that you got the universal leaders blessing.
+(base damage +2 max health +20, health +50)
+
+"""
+                character.rank = 3
+
+                character.baseDamage += 2
+                character.addMessage("your base damage increased by 2")
+                character.maxHealth += 20
+                character.heal(50)
+                character.addMessage("your max heath increased by 20")
+
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            return
+        
+        if character.rank == 3:
+                text = """
+
+you this bases commander.
+you can not increase your rank.
+
+"""
+
         super().apply(character)
 
     def shortIntroduction(self,extraParams):

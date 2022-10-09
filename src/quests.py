@@ -2485,6 +2485,9 @@ class BeUsefull(MetaQuestSequence):
             self.addQuest(GetPromotion(4))
             return
 
+        if character.rank == 4 and character.reputation >= 1000:
+            self.addQuest(GetPromotion(3))
+            return
 
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
@@ -8260,6 +8263,8 @@ class ReachBase(MetaQuestSequence):
                     direction = "north"
                 else:
                     direction = "east"
+            else:
+                direction = "north"
         else:
             if pos[0] < 4:
                 direction = "south"
@@ -8557,8 +8562,8 @@ class SecureCargo(MetaQuestSequence):
         if not character:
             return False
 
-        if not self.isLooted(character):
-            character.awardReputation(amount=400, reason="killing the patrolers")
+        if not self.getLoot(character):
+            character.awardReputation(amount=400, reason="secured the cargo")
             self.postHandler()
             return True
 
@@ -8568,24 +8573,33 @@ class SecureCargo(MetaQuestSequence):
         self.triggerCompletionCheck(character)
 
         if not self.subQuests:
-            quest = SecureTile(toSecure=(7,4,0),endWhenCleared=False)
-            self.addQuest(quest)
+            if not character.getFreeInventorySpace():
+                quest = ClearInventory()
+                self.addQuest(quest)
+                return
+            if not character.getBigPosition() == (7,13,0):
+                quest = SecureTile(toSecure=(7,13,0),endWhenCleared=True)
+                self.addQuest(quest)
+                return
+            item = self.getLoot(character)
+            self.addQuest(RunCommand(command="k", description="pick up loot"))
+            self.addQuest(GoToPosition(targetPosition=item.getPosition(),description="go to loot"))
             return
 
         super().solver(character)
 
-    def isLooted(self,character):
+    def getLoot(self,character):
         currentTerrain = character.getTerrain()
-        rooms = currentTerrain.getRoomByPosition((13,7,0))
+        rooms = currentTerrain.getRoomByPosition((7,13,0))
         print(rooms)
         if not rooms:
-            return True
+            return None
 
-        for item in room.itemsOnFloor:
-            if item.type in ("Weapon","Armor"):
-                return True
+        for item in rooms[0].itemsOnFloor:
+            if item.type in ("Sword","Armor"):
+                return item
 
-        return False
+        return None
 
 class SecureTile(GoToTile):
     def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False):

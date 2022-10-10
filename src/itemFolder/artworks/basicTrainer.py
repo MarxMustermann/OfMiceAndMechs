@@ -83,8 +83,6 @@ Equip yourself to proceed with the training.
 
 You will fetch your weapon and armor directly from the production line.
 
-The weapon production of this base is located on the tile (6,9).
-
 ----
 
 you got the quest to equip yourself.
@@ -119,6 +117,26 @@ The equip quest will not take this into consideration.
 Selecting good equipment will give you an edge.
 
 This is one example where you beat the auto solver.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        params = {"character":character}
+        character.macroState["submenue"].followUp = {"container":self,"method":"requireWeapon3","params":params}
+
+    def requireWeapon3(self,extraParams):
+        character = extraParams["character"]
+        text = """
+
+Go fetch your weapons and armor now.
+
+----
+
+press "+" to expand the euip quest.
+This will show you where to go.
+This will be important going forward.
 
 """
         character.addMessage("----------------"+text+"-----------------")

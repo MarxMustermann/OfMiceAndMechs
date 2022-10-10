@@ -10,13 +10,16 @@ class Assimilator(src.items.Item):
 
     type = "Assimilator"
 
-    def __init__(self, name="Assimilator", noId=False):
+    def __init__(self, name="Assimilator", noId=False, healingEffect = 50, baseDamageEffect = 2, healthIncrease = 20):
         """
         set up the initial state
         """
 
         super().__init__(display="AS", name=name)
 
+        self.healingEffect = healingEffect
+        self.baseDamageEffect = baseDamageEffect
+        self.healthIncrease = healthIncrease
         self.usageInfo = """
 Use it by activating it."""
 
@@ -46,16 +49,16 @@ you are hereby rank 5.
 Continue to be useful.
 
 To help you with that you got the universal leaders blessing.
-(base damage +2 max health +20, health +50)
+(base damage +%s max health +%s, health +%s)
 
-"""
+"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
                 character.rank = 5
 
-                character.baseDamage += 2
-                character.addMessage("your base damage increased by 2")
-                character.maxHealth += 20
-                character.heal(50)
-                character.addMessage("your max heath increased by 20")
+                character.baseDamage += self.baseDamageEffect
+                character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+                character.maxHealth += self.healthIncrease
+                character.heal(self.healingEffect)
+                character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
             character.addMessage("----------------"+text+"-----------------")
 
@@ -79,16 +82,17 @@ you are hereby rank 4.
 Continue to be useful.
 
 To help you with that you got the universal leaders blessing.
-(base damage +2 max health +20, health +50)
+(base damage +%s max health +%s, health +%s)
 
-"""
+"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
                 character.rank = 4
 
-                character.baseDamage += 2
-                character.addMessage("your base damage increased by 2")
-                character.maxHealth += 20
-                character.heal(50)
-                character.addMessage("your max heath increased by 20")
+                character.baseDamage += self.baseDamageEffect
+                character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+                character.maxHealth += self.healthIncrease
+                character.heal(self.healingEffect)
+                character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+
 
             character.addMessage("----------------"+text+"-----------------")
 
@@ -113,16 +117,16 @@ This means you are the commander of this base now.
 Continue to be useful.
 
 To help you with that you got the universal leaders blessing.
-(base damage +2 max health +20, health +50)
+(base damage +%s, max health +%s, health +%s)
 
-"""
+"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
                 character.rank = 3
 
-                character.baseDamage += 2
-                character.addMessage("your base damage increased by 2")
-                character.maxHealth += 20
-                character.heal(50)
-                character.addMessage("your max heath increased by 20")
+                character.baseDamage += self.baseDamageEffect
+                character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+                character.maxHealth += self.healthIncrease
+                character.heal(self.healingEffect)
+                character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
             character.addMessage("----------------"+text+"-----------------")
 

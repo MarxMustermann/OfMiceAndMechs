@@ -7888,22 +7888,22 @@ class TrainSkill(MetaQuestSequence):
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                quest = RunCommand(command=list("Ja.")+["esc"]*3,description="activate the basic trainer \nby pressing ")
+                quest = RunCommand(command=list("Ja.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                quest = RunCommand(command=list("Jd.")+["esc"]*3,description="activate the basic trainer \nby pressing ")
+                quest = RunCommand(command=list("Jd.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                quest = RunCommand(command=list("Jw.")+["esc"]*3,description="activate the basic trainer \nby pressing ")
+                quest = RunCommand(command=list("Jw.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                quest = RunCommand(command=list("Js.")+["esc"]*3,description="activate the basic training \nby pressing ")
+                quest = RunCommand(command=list("Js.")+["enter"]*4,description="activate the basic training \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return

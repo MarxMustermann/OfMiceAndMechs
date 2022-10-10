@@ -6951,7 +6951,7 @@ def showMainMenu(args):
     ]
 
     selectedScenario = "siege2"
-    difficulty = "medium"
+    difficulty = "easy"
 
     def fixRoomRender(render):
         for row in render:

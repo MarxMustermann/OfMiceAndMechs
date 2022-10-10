@@ -3954,6 +3954,19 @@ class Siege2(BasicPhase):
 
         self.epochLength = 1000
 
+        numGuards = 10
+        baseHealth = 100
+        baseDamage = 100
+        baseMovementSpeed = 0.8
+        if difficulty == "easy":
+            numGuards = 5
+            baseHealth = 25
+            baseMovementSpeed = 1.1
+        if difficulty == "difficult":
+            numGuards = 30
+            baseHealth = 200
+            baseMovementSpeed = 0.5
+
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
             "NaiveMoveQuest",
@@ -3993,6 +4006,12 @@ class Siege2(BasicPhase):
         src.gamestate.gamestate.mainChar.faction = "city test"
         if difficulty == "easy":
             src.gamestate.gamestate.mainChar.baseDamage = 5
+            src.gamestate.gamestate.mainChar.health = 200
+            src.gamestate.gamestate.mainChar.maxHealth = 200
+        if difficulty == "difficult":
+            src.gamestate.gamestate.mainChar.baseDamage = 2
+            src.gamestate.gamestate.mainChar.health = 50
+            src.gamestate.gamestate.mainChar.maxHealth = 50
 
         mainRoom = architect.doAddRoom(
                 {
@@ -4197,9 +4216,20 @@ Press ESC to close this window.
         self.epochArtwork = epochArtwork
         mainRoom.addItem(epochArtwork,(6,6,0))
 
-        epochArtwork = src.items.itemMap["Assimilator"]()
-        self.epochArtwork = epochArtwork
-        mainRoom.addItem(epochArtwork,(11,5,0))
+        healingEffect = 50
+        healthIncrease = 20
+        baseDamageEffect = 2
+        if difficulty == "easy":
+            healingEffect = 100
+            healthIncrease = 30
+            baseDamageEffect = 3
+        if difficulty == "difficult":
+            healingEffect = 25
+            healthIncrease = 10
+            baseDamageEffect = 1
+        assimilator = src.items.itemMap["Assimilator"](healingEffect=healingEffect,healthIncrease=healthIncrease,baseDamageEffect=baseDamageEffect)
+        self.assimilator = assimilator
+        mainRoom.addItem(assimilator,(11,5,0))
 
         basicTrainer = src.items.itemMap["BasicTrainer"]()
         self.basicTrainer = basicTrainer
@@ -4450,7 +4480,7 @@ Press ESC to close this window.
                         enemy.godMode = True
                         enemy.health = 15*j
                         enemy.baseDamage = 4*j
-                        enemy.movementSpeed = 0.8
+                        enemy.movementSpeed = baseMovementSpeed
                         currentTerrain.addCharacter(enemy, 15*x+random.randint(2,11), 15*y+random.randint(2,11))
                         enemy.specialDisplay = "ss"
                         enemy.faction = "invader"
@@ -4462,11 +4492,17 @@ Press ESC to close this window.
                         quest.activate()
                         enemy.quests.append(quest)
 
-        for i in range(1,12):
+        numChasers = 12
+        if difficulty == "easy":
+            numChasers = 5
+        if difficulty == "difficult":
+            numChasers = 20
+
+        for i in range(1,numChasers):
             enemy = src.characters.Monster(4,4)
             enemy.godMode = True
-            enemy.health = 10*i
-            enemy.baseDamage = i
+            enemy.health = baseHealth//10*i
+            enemy.baseDamage = baseDamage
             currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
             enemy.specialDisplay = "[-"
             enemy.faction = "invader"
@@ -4483,38 +4519,14 @@ Press ESC to close this window.
             quest.activate()
             enemy.quests.append(quest)
 
-        numGuards = 10
-        if not difficulty == "easy":
-            numGuards = 5
-        if not difficulty == "difficult":
-            numGuards = 30
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
-        for i in range(1,10):
-            waypoints = waypoints[1:]+[waypoints[0]]
-
-            enemy = src.characters.Monster(4,4)
-            enemy.godMode = True
-            enemy.health = 100
-            enemy.baseDamage = 7
-            currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
-            enemy.specialDisplay = "X-"
-            enemy.faction = "invader"
-            enemy.tag = "patrol"
-
-            quest = src.quests.PatrolQuest(waypoints=waypoints)
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
-
         if not difficulty == "easy":
-            waypoints = [(5,4),(9,4),(9,10),(5,10)]
             for i in range(1,10):
                 waypoints = waypoints[1:]+[waypoints[0]]
 
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
-                enemy.health = 100
+                enemy.health = baseHealth
                 enemy.baseDamage = 7
                 currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
                 enemy.specialDisplay = "X-"
@@ -4526,6 +4538,25 @@ Press ESC to close this window.
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
+
+        waypoints = [(5,4),(9,4),(9,10),(5,10)]
+        for i in range(1,10):
+            waypoints = waypoints[1:]+[waypoints[0]]
+
+            enemy = src.characters.Monster(4,4)
+            enemy.godMode = True
+            enemy.health = baseHealth
+            enemy.baseDamage = 7
+            currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
+            enemy.specialDisplay = "X-"
+            enemy.faction = "invader"
+            enemy.tag = "patrol"
+
+            quest = src.quests.PatrolQuest(waypoints=waypoints)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
 
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
 
@@ -4679,7 +4710,7 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
             enemy.faction = "invader"
             enemy.tag = "wave"
             monsterStartRoom.addCharacter(enemy, 6, 6)
-            enemy.movementSpeed = 0.7
+            enemy.movementSpeed = 0.8
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True

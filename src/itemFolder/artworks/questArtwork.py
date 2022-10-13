@@ -104,6 +104,8 @@ The guards are shown as white ss.
 
 Eliminate them to build on breaking up the innermost siege ring.
 """
+                character.addMessage("----------------"+text+"-----------------")
+
                 submenue = src.interaction.TextMenu(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
@@ -124,6 +126,9 @@ Eliminate the patrolers
 
 Eliminate them to start breaking up the innermost siege ring.
 """
+
+                character.addMessage("----------------"+text+"-----------------")
+
                 submenue = src.interaction.TextMenu(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
@@ -163,9 +168,11 @@ Eliminate them to start breaking up the innermost siege ring.
             else:
                 character.quests.insert(0,quest)
             text = """
-Destroy the spawners to end the siege
+Secore the cargo
 
 """
+            character.addMessage("----------------"+text+"-----------------")
+
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")
@@ -182,6 +189,8 @@ Destroy the spawners to end the siege
 Destroy the spawners to end the siege
 
 """
+            character.addMessage("----------------"+text+"-----------------")
+
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")

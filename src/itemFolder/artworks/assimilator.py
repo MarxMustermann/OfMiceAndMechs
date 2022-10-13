@@ -326,6 +326,8 @@ When you press "+" that quest generates sub quests.
             quest.postHandler()
 
         character.quests = []
-        character.quests.append(src.quests.BeUsefull())
+        quest = src.quests.BeUsefull()
+        quest.assignToCharacter(character)
+        character.quests.append(quest)
 
 src.items.addType(Assimilator)

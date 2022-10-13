@@ -8602,11 +8602,22 @@ class SecureCargo(MetaQuestSequence):
         return None
 
 class SecureTile(GoToTile):
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None):
         super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.type = "SecureTile"
         self.endWhenCleared = endWhenCleared
+        self.reputationReward = reputationReward
+        self.rewardText = rewardText
+
+    def postHandler(self,character):
+        if self.reputationReward and character:
+            if self.rewardText:
+                text = self.rewardText
+            else:
+                text = "securing a tile"
+            character.awardReputation(amount=50, reason=text)
+        super().postHandler()
 
     def triggerCompletionCheck(self,character=None):
 
@@ -8624,7 +8635,7 @@ class SecureTile(GoToTile):
                         continue
                     foundEnemy = enemy
                 if not foundEnemy:
-                    self.postHandler()
+                    self.postHandler(character)
                     return True
         else:
             if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
@@ -8636,7 +8647,7 @@ class SecureTile(GoToTile):
                         continue
                     foundEnemy = enemy
                 if not foundEnemy:
-                    self.postHandler()
+                    self.postHandler(character)
                     return True
         return False
 

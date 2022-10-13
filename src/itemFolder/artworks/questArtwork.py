@@ -83,6 +83,32 @@ Eliminate them to start breaking up the innermost siege ring.
                 character.changed("got quest assigned")
                 return
 
+            enemies = self.getEnemiesWithTag("lurker")
+            if enemies:
+                quest = src.quests.SecureTile(endWhenCleared=True, description="clear lurkers on tile ", reputationReward=50, rewardText="clearing lurkers")
+                quest.setParameters({"targetPosition":enemies[0].getBigPosition()})
+                quest.assignToCharacter(character)
+                quest.activate()
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+Eliminate the lurkers
+
+There are enemy units scattered around the terrain.
+Eliminate those groups of enemies to further our ability to move.
+The guards are shown as white ss.
+
+Eliminate them to build on breaking up the innermost siege ring.
+"""
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.changed("got quest assigned")
+                return
+
         elif character.rank == 5:
             enemies = self.getEnemiesWithTag("patrol")
             if enemies:

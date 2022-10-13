@@ -4520,7 +4520,7 @@ Press ESC to close this window.
             enemy.quests.append(quest)
 
         if difficulty == "easy":
-            toClear = [(7,1),(7,14),(1,7),(14,7)]
+            toClear = [(7,1),(7,13),(1,7),(13,7)]
             for bigX in range(0,14):
                 for bigY in range(0,14):
                     for (x,y) in toClear:

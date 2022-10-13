@@ -4474,14 +4474,17 @@ Press ESC to close this window.
                     spawnChance = 0.5
                     maxNumSpawns = 5
 
-                if random.random() < spawnChance and not (x,y) in blockerRingPositions:
+                if random.random() < spawnChance and not (x,y) in blockerRingPositions and not (x,y) in farmPlots:
+                    if (x <= 5 and (y <= 5 or y >= 9)) or (x >= 9 and (y <= 5 or y >= 9)):
+                        continue
                     for j in range(0,random.randint(1,maxNumSpawns)):
                         enemy = src.characters.Monster(4,4)
                         enemy.godMode = True
                         enemy.health = 15*j
                         enemy.baseDamage = 4*j
                         enemy.movementSpeed = baseMovementSpeed
-                        currentTerrain.addCharacter(enemy, 15*x+random.randint(2,11), 15*y+random.randint(2,11))
+                        pos = (15*x+random.randint(2,11), 15*y+random.randint(2,11))
+                        currentTerrain.addCharacter(enemy, pos[0],pos[1])
                         enemy.specialDisplay = "ss"
                         enemy.faction = "invader"
                         enemy.tag = "lurker"

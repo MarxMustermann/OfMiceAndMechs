@@ -4519,6 +4519,13 @@ Press ESC to close this window.
             quest.activate()
             enemy.quests.append(quest)
 
+        if difficulty == "easy":
+            toClear = [(7,1),(7,14),(1,7),(14,7)]
+            for bigX in range(0,14):
+                for bigY in range(0,14):
+                    for (x,y) in toClear:
+                        currentTerrain.removeItems(currentTerrain.getItemByPosition((bigX*15+x,bigY*15+y,0)))
+
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
         if not difficulty == "easy":
             for i in range(1,10):

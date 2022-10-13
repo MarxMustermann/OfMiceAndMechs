@@ -3956,16 +3956,15 @@ class Siege2(BasicPhase):
 
         numGuards = 10
         baseHealth = 100
-        baseDamage = 100
-        baseMovementSpeed = 0.8
+        self.baseMovementSpeed = 0.8
         if difficulty == "easy":
             numGuards = 5
             baseHealth = 25
-            baseMovementSpeed = 1.1
+            self.baseMovementSpeed = 1.1
         if difficulty == "difficult":
             numGuards = 30
             baseHealth = 200
-            baseMovementSpeed = 0.5
+            self.baseMovementSpeed = 0.5
 
         # add basic set of abilities in openworld phase
         src.gamestate.gamestate.mainChar.questsDone = [
@@ -4480,9 +4479,9 @@ Press ESC to close this window.
                     for j in range(0,random.randint(1,maxNumSpawns)):
                         enemy = src.characters.Monster(4,4)
                         enemy.godMode = True
-                        enemy.health = 15*j
-                        enemy.baseDamage = 4*j
-                        enemy.movementSpeed = baseMovementSpeed
+                        enemy.health = 15
+                        enemy.baseDamage = 12
+                        enemy.movementSpeed = self.baseMovementSpeed
                         pos = (15*x+random.randint(2,11), 15*y+random.randint(2,11))
                         currentTerrain.addCharacter(enemy, pos[0],pos[1])
                         enemy.specialDisplay = "ss"
@@ -4505,7 +4504,7 @@ Press ESC to close this window.
             enemy = src.characters.Monster(4,4)
             enemy.godMode = True
             enemy.health = baseHealth//10*i
-            enemy.baseDamage = baseDamage
+            enemy.baseDamage = 10*10
             currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
             enemy.specialDisplay = "[-"
             enemy.faction = "invader"
@@ -4643,6 +4642,7 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
             currentTerrain.addEvent(event)
 
     def startRound(self):
+        print("start round")
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         
         remainingEnemyCounter = 0
@@ -4723,6 +4723,39 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
             enemy.movementSpeed = 0.8
 
             quest = src.quests.ClearTerrain()
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+        numLurkers = 10
+        if not self.difficulty == "easy":
+            numLurkers = 5
+        if not self.difficulty == "difficult":
+            numLurkers = 20
+
+        numLurkers = int(numLurkers*random.random()*2)
+        for i in range(0,numLurkers):
+            x = random.randint(1,13)
+            y = random.randint(1,13)
+
+            if self.numRounds == 1:
+                continue
+
+            if (x <= 5 and (y <= 5 or y >= 9)) or (x >= 9 and (y <= 5 or y >= 9)):
+                continue
+
+            enemy = src.characters.Monster(4,4)
+            enemy.godMode = True
+            enemy.health = 15
+            enemy.baseDamage = 12
+            enemy.movementSpeed = self.baseMovementSpeed
+            monsterStartRoom.addCharacter(enemy, 6, 6)
+            enemy.specialDisplay = "ss"
+            enemy.faction = "invader"
+            enemy.tag = "lurker"
+
+            quest = src.quests.SecureTile(toSecure=(x,y,0))
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()

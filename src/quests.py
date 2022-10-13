@@ -2455,7 +2455,18 @@ class BeUsefull(MetaQuestSequence):
             self.setParameters({"targetPosition":targetPosition})
 
         self.shortCode = " "
+
+    def awardnearbyKillReputation(self,extraInfo):
+        print("awardnearbyKillReputation")
+        if not extraInfo["deadChar"].faction == self.character.faction:
+            self.character.awardReputation(20,reason="an enemy dying nearby")
+        else:
+            self.character.revokeReputation(50,reason="an ally dying nearby")
     
+    def assignToCharacter(self, character):
+        character.addListener(self.awardnearbyKillReputation, "character died on tile")
+        super().assignToCharacter(character)
+
     def triggerCompletionCheck(self,character=None):
         return
 

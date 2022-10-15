@@ -1453,6 +1453,12 @@ class Terrain(src.saveing.Saveable):
         if homePos[0] and homePos[1]:
             chars[homePos[1]][homePos[0]] = "HH"
 
+        for scrapField in self.scrapFields:
+            chars[scrapField[1]][scrapField[0]] = "ss"
+
+        for (k,v) in self.minimapOverride.items():
+            chars[k[1]][k[0]] = v
+
         for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
@@ -1477,12 +1483,6 @@ class Terrain(src.saveing.Saveable):
 
                 chars[pos[1]][pos[0]] = display
             pass
-
-        for scrapField in self.scrapFields:
-            chars[scrapField[1]][scrapField[0]] = "ss"
-
-        for (k,v) in self.minimapOverride.items():
-            chars[k[1]][k[0]] = v
 
         displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
         if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):

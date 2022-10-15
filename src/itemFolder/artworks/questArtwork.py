@@ -100,7 +100,7 @@ Eliminate the lurkers
 
 There are enemy units scattered around the terrain.
 Eliminate those groups of enemies to further our ability to move.
-The guards are shown as white ss.
+The lurkers are shown as white ss.
 
 Eliminate them to build on breaking up the innermost siege ring.
 """
@@ -112,6 +112,7 @@ Eliminate them to build on breaking up the innermost siege ring.
                 return
 
         elif character.rank == 5:
+            print("rank5 quest")
             enemies = self.getEnemiesWithTag("patrol")
             if enemies:
                 quest = src.quests.questMap["KillPatrolers"]()
@@ -134,32 +135,70 @@ Eliminate them to start breaking up the innermost siege ring.
                 character.changed("got quest assigned")
                 return
 
-        elif character.rank == 4:
-            """
-            for room in self.container.container.rooms:
-                for target in room.characters:
-                    if target.faction == character.faction:
+            print("check for outer hive guards")
+            enemies = self.getEnemiesWithTag("hiveGuard")
+            if enemies:
+                print(enemies)
+                enemiesMap = {}
+                for enemy in enemies:
+                    pos = enemy.getBigPosition()
+                    if not pos in enemiesMap:
+                        enemiesMap[pos] = 0
+                    enemiesMap[pos] += 1
+
+                lowestEnemyAmount = None
+                candidates = []
+                for (key, value) in enemiesMap.items():
+                    if lowestEnemyAmount == None or value < lowestEnemyAmount:
+                        candidates = []
+                        lowestEnemyAmount = value
+
+                    if value > lowestEnemyAmount:
                         continue
-                    containerQuest = src.quests.MetaQuestSequence()
-                    quest = src.quests.GoToTile()
-                    quest.setParameters({"targetPosition":(self.container.xPosition,self.container.yPosition)})
-                    quest.assignToCharacter(character)
-                    containerQuest.addQuest(quest)
-                    quest = src.quests.SecureTile(endWhenCleared=True)
-                    quest.setParameters({"targetPosition":(room.xPosition,room.yPosition)})
+
+                    candidates.append(key)
+
+                print(candidates)
+                pos = random.choice(candidates)
+
+                minDistance = None
+                for candidate in candidates:
+                    distance = abs(candidate[0]-7)+abs(candidate[1]-7)
+                    if minDistance == None or distance < minDistance:
+                        minDistance = distance
+                        pos = candidate
+
+                quest = src.quests.SecureTile(endWhenCleared=True, description="clear hive guards from tile ", reputationReward=150, rewardText="clearing hive guards")
+                quest.setParameters({"targetPosition":pos})
+                quest.assignToCharacter(character)
+                quest.activate()
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
                     quest.assignToCharacter(character)
                     quest.activate()
-                    containerQuest.addQuest(quest)
-                    containerQuest.assignToCharacter(character)
-                    containerQuest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+Eliminate the hive guards
 
-                    if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
-                        character.quests[0].addQuest(containerQuest)
-                    else:
-                        character.quests.insert(0,containerQuest)
-                    character.changed("got quest assigned")
-                    return
-            """
+To stop the siege the hives must be destroyed.
+Eliminate the hive guards to lighten their defence.
+
+---
+
+The hives spawn a big wave of enemies at the beginning of each epoch.
+So try to not be nearby at that point.
+
+"""
+                character.addMessage("----------------"+text+"-----------------")
+
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.changed("got quest assigned")
+                return
+
+
+        elif character.rank == 4:
             quest = src.quests.questMap["SecureCargo"]()
             if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
                 quest.assignToCharacter(character)
@@ -195,6 +234,31 @@ Destroy the spawners to end the siege
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")
             return
+        
+        """
+        for room in self.container.container.rooms:
+            for target in room.characters:
+                if target.faction == character.faction:
+                    continue
+                containerQuest = src.quests.MetaQuestSequence()
+                quest = src.quests.GoToTile()
+                quest.setParameters({"targetPosition":(self.container.xPosition,self.container.yPosition)})
+                quest.assignToCharacter(character)
+                containerQuest.addQuest(quest)
+                quest = src.quests.SecureTile(endWhenCleared=True)
+                quest.setParameters({"targetPosition":(room.xPosition,room.yPosition)})
+                quest.assignToCharacter(character)
+                quest.activate()
+                containerQuest.addQuest(quest)
+                containerQuest.assignToCharacter(character)
+                containerQuest.activate()
+
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    character.quests[0].addQuest(containerQuest)
+                else:
+                    character.quests.insert(0,containerQuest)
+                character.changed("got quest assigned")
+                return
 
         for line in src.gamestate.gamestate.terrainMap:
             for terrain in line:
@@ -212,6 +276,7 @@ Destroy the spawners to end the siege
                         character.quests.insert(0,quest)
                     character.changed("got quest assigned")
                     return
+        """
 
         character.addMessage("no quest assigned")
         return

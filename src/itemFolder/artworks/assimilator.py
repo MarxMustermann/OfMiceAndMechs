@@ -53,6 +53,7 @@ To help you with that you got the universal leaders blessing.
 
 """%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
                 character.rank = 5
+                character.reputation = 0
 
                 character.baseDamage += self.baseDamageEffect
                 character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
@@ -86,6 +87,7 @@ To help you with that you got the universal leaders blessing.
 
 """%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
                 character.rank = 4
+                character.reputation = 0
 
                 character.baseDamage += self.baseDamageEffect
                 character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
@@ -121,6 +123,7 @@ To help you with that you got the universal leaders blessing.
 
 """%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
                 character.rank = 3
+                character.reputation = 0
 
                 character.baseDamage += self.baseDamageEffect
                 character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
@@ -290,6 +293,7 @@ This happens when you complete a story section.
 
 """
             character.rank = 6
+            character.reputation = 0
             character.registers["HOMEx"] = 7
             character.registers["HOMEy"] = 7
 

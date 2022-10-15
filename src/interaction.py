@@ -796,6 +796,17 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
                 if isinstance(item, src.items.itemMap["Corpse"]):
                     item.apply(character)
                     break
+        elif key == "h" or key == "H":
+            character = char
+            for item in character.inventory:
+                if isinstance(item, src.items.itemMap["Vial"]):
+                    if item.uses > 0:
+                        if key == "h":
+                            item.apply(character)
+                            break
+                        else:
+                            while item.uses and character.health < character.maxHealth:
+                                item.apply(character)
         del char.interactionState["advancedInteraction"]
         return
 
@@ -2373,6 +2384,8 @@ press key for the advanced interaction
 * d = activate south
 * . = activate item on floor
 * f = eat food
+* h = heal
+* H = heal fully
 * j = activate job order
 
 """

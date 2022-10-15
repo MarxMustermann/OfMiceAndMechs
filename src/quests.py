@@ -2457,7 +2457,6 @@ class BeUsefull(MetaQuestSequence):
         self.shortCode = " "
 
     def awardnearbyKillReputation(self,extraInfo):
-        print("awardnearbyKillReputation")
         if not extraInfo["deadChar"].faction == self.character.faction:
             self.character.awardReputation(20,reason="an enemy dying nearby")
         else:

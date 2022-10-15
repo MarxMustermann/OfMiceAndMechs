@@ -2196,10 +2196,11 @@ class GatherScrap(MetaQuestSequence):
 
 class CleanTraps(MetaQuestSequence):
 
-    def __init__(self, description="clean traps", creator=None):
+    def __init__(self, description="clean traps", creator=None, reputationReward=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reputationReward = reputationReward
 
         self.type = "CleanTraps"
 
@@ -2254,6 +2255,12 @@ class CleanTraps(MetaQuestSequence):
                 self.addQuest(quest)
 
         super().solver(character)
+
+    def postHandler(self):
+        if self.reputationReward and self.character:
+            text = "cleaning the trap rooms"
+            self.character.awardReputation(amount=self.reputationReward, reason=text)
+        super().postHandler()
 
 class ClearInventory(MetaQuestSequence):
     def __init__(self, description="clear inventory", creator=None, targetPosition=None):

@@ -111,6 +111,30 @@ Eliminate them to build on breaking up the innermost siege ring.
                 character.changed("got quest assigned")
                 return
 
+            quest = src.quests.CleanTraps(reputationReward=50)
+            quest.assignToCharacter(character)
+            quest.activate()
+            if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                quest.assignToCharacter(character)
+                quest.activate()
+                character.quests[0].addQuest(quest)
+            else:
+                character.quests.insert(0,quest)
+            text = """
+Eliminate the lurkers
+
+There are enemy units scattered around the terrain.
+Eliminate those groups of enemies to further our ability to move.
+The lurkers are shown as white ss.
+
+Eliminate them to build on breaking up the innermost siege ring.
+"""
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            character.changed("got quest assigned")
+
         elif character.rank == 5:
             print("rank5 quest")
             enemies = self.getEnemiesWithTag("patrol")

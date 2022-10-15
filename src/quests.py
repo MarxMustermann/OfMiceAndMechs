@@ -1628,7 +1628,7 @@ class Equip(MetaQuestSequence):
         return super().solver(character)
 
 class RunCommand(MetaQuestSequence):
-    def __init__(self, description="run command", creator=None, command=None):
+    def __init__(self, description="press ", creator=None, command=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.command = None

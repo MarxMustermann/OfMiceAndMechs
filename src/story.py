@@ -4382,9 +4382,11 @@ Press ESC to close this window.
             for i in range(1,4):
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
-                enemy.health = 100
-                enemy.baseDamage = 10
+                enemy.health = 200
+                enemy.baseDamage = 7
                 enemy.faction = "invader"
+                enemy.tag = "hiveGuard"
+                enemy.specialDisplay = "O-"
                 currentTerrain.addCharacter(enemy,farmPlot[0]*15+random.randint(2,11),farmPlot[1]*15+random.randint(2,11))
 
                 quest = src.quests.SecureTile(toSecure=farmPlot)
@@ -4537,6 +4539,7 @@ Press ESC to close this window.
                 enemy.godMode = True
                 enemy.health = baseHealth
                 enemy.baseDamage = 7
+                enemy.movementSpeed = self.baseMovementSpeed
                 currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
                 enemy.specialDisplay = "X-"
                 enemy.faction = "invader"
@@ -4557,6 +4560,7 @@ Press ESC to close this window.
             enemy.health = baseHealth
             enemy.baseDamage = 7
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
+            enemy.movementSpeed = self.baseMovementSpeed
             enemy.specialDisplay = "X-"
             enemy.faction = "invader"
             enemy.tag = "patrol"
@@ -4644,7 +4648,7 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
     def startRound(self):
         print("start round")
         terrain = src.gamestate.gamestate.terrainMap[7][7]
-        
+
         remainingEnemyCounter = 0
         for character in terrain.characters:
             if not character.tag == "wave":
@@ -4709,9 +4713,14 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
         #    numMonsters = self.numRounds-8
         numMonsters = 10+self.numRounds+remainingEnemyCounter
 
-        if self.numRounds == 1:
-            numMonsters = 0
-            print("skipped wave")
+        if self.difficulty == "easy":
+            if self.numRounds < 3:
+                numMonsters = 0
+                return
+        if self.difficulty == "medium":
+            if self.numRounds == 1:
+                numMonsters = 0
+                print("skipped wave")
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(6,6)

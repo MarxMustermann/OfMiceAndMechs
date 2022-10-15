@@ -4382,7 +4382,7 @@ Press ESC to close this window.
             for i in range(1,4):
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
-                enemy.health = 200
+                enemy.health = baseHealth*4
                 enemy.baseDamage = 7
                 enemy.faction = "invader"
                 enemy.tag = "hiveGuard"

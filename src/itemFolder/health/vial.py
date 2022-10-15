@@ -49,7 +49,7 @@ class Vial(src.items.Item):
         # change state
         self.uses -= 1
         self.changed()
-        character.heal(10+(100-character.health)//10)
+        character.heal(10+min((character.maxHealth-character.health)//10,10))
         character.changed()
 
     def render(self):

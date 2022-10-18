@@ -86,7 +86,7 @@ Eliminate them to start breaking up the innermost siege ring.
             enemies = self.getEnemiesWithTag("lurker")
             if enemies:
                 quest = src.quests.SecureTile(endWhenCleared=True, description="clear lurkers on tile ", reputationReward=50, rewardText="clearing lurkers")
-                quest.setParameters({"targetPosition":enemies[0].getBigPosition()})
+                quest.setParameters({"targetPosition":random.choice(enemies).getBigPosition()})
                 quest.assignToCharacter(character)
                 quest.activate()
                 if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
@@ -121,13 +121,14 @@ Eliminate them to build on breaking up the innermost siege ring.
             else:
                 character.quests.insert(0,quest)
             text = """
-Eliminate the lurkers
+Clean the traps
 
-There are enemy units scattered around the terrain.
-Eliminate those groups of enemies to further our ability to move.
-The lurkers are shown as white ss.
+The trap rooms are the bases first line of defence.
+The trap rooms work by shocking enemies that step on the floor.
+This does not work when items are lying on the floor.
 
-Eliminate them to build on breaking up the innermost siege ring.
+Often corpses litter the trap rooms and reduce the traps effectiveness.
+Clear the trap rooms to ensure that the bases first line of defence works.
 """
             character.addMessage("----------------"+text+"-----------------")
 
@@ -223,23 +224,42 @@ So try to not be nearby at that point.
 
 
         elif character.rank == 4:
-            quest = src.quests.questMap["SecureCargo"]()
-            if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
-                quest.assignToCharacter(character)
-                quest.activate()
-                character.quests[0].addQuest(quest)
-            else:
-                character.quests.insert(0,quest)
-            text = """
-Secore the cargo
+            currentTerrain = self.container.container
+            rooms = currentTerrain.getRoomByPosition((7,13,0))
+            room = None
+            if rooms:
+                room = rooms[0]
+            items = []
+            if room:
+                items = room.itemsOnFloor
+            foundItems = False
+            for item in items:
+                if item.type in ("Sword","Armor",):
+                    foundItems = True
+                    break
 
-"""
-            character.addMessage("----------------"+text+"-----------------")
+            if foundItems:
+                quest = src.quests.questMap["SecureCargo"]()
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+    Secure the cargo
 
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            character.changed("got quest assigned")
-            return
+    There was a supply run intended for the base.
+    It got ambushed and the suplies were left there.
+    Go there and fetch the weapons and armor.
+
+    """
+                character.addMessage("----------------"+text+"-----------------")
+
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.changed("got quest assigned")
+                return
         elif character.rank == 3:
             quest = src.quests.questMap["DestroySpawners"]()
             if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):

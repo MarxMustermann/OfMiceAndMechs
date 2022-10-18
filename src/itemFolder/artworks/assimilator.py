@@ -23,6 +23,10 @@ class Assimilator(src.items.Item):
         self.usageInfo = """
 Use it by activating it."""
 
+        self.requiredReputationForRank5 = 300
+        self.requiredReputationForRank4 = 500
+        self.requiredReputationForRank3 = 750
+
     def apply(self,character):
         if character.registers.get("gotMostBasicTraining") == None:
             character.registers["gotMostBasicTraining"] = True
@@ -34,47 +38,29 @@ Use it by activating it."""
             return
         
         if character.rank == 6:
-            if character.reputation < 300:
+            if character.reputation < self.requiredReputationForRank5:
                 text = """
 
-you need 300 reputation to be promoted.
+you need %s reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
-"""
+"""%(self.requiredReputationForRank5,)
+                character.addMessage("----------------"+text+"-----------------")
+
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
             else:
-                text = """
-
-you are hereby rank 5.
-
-Continue to be useful.
-
-To help you with that you got the universal leaders blessing.
-(base damage +%s max health +%s, health +%s)
-
-"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
-                character.rank = 5
-                character.reputation = 0
-
-                character.baseDamage += self.baseDamageEffect
-                character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
-                character.maxHealth += self.healthIncrease
-                character.heal(self.healingEffect)
-                character.addMessage("your max heath increased by %s"%(self.healingEffect,))
-
-            character.addMessage("----------------"+text+"-----------------")
-
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
+                self.doRank5Promotion({"character":character,"step":1})
             return
 
         if character.rank == 5:
-            if character.reputation < 600:
+            if character.reputation < self.requiredReputationForRank4:
                 text = """
 
-you need 600 reputation to be promoted.
+you need %s reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
-"""
+"""%(self.requiredReputationForRank4,)
             else:
                 text = """
 
@@ -83,9 +69,9 @@ you are hereby rank 4.
 Continue to be useful.
 
 To help you with that you got the universal leaders blessing.
-(base damage +%s max health +%s, health +%s)
+Additionally you recieve 2 health vials.
 
-"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
+"""
                 character.rank = 4
                 character.reputation = 0
 
@@ -95,6 +81,13 @@ To help you with that you got the universal leaders blessing.
                 character.heal(self.healingEffect)
                 character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
+            item = src.items.itemMap["Vial"]()
+            item.uses = item.maxUses
+            character.addToInventory(item,force=True)
+
+            item = src.items.itemMap["Vial"]()
+            item.uses = item.maxUses
+            character.addToInventory(item,force=True)
 
             character.addMessage("----------------"+text+"-----------------")
 
@@ -103,13 +96,13 @@ To help you with that you got the universal leaders blessing.
             return
 
         if character.rank == 4:
-            if character.reputation < 1000:
+            if character.reputation < self.requiredReputationForRank3:
                 text = """
 
-you need 1000 reputation to be promoted.
+you need %s reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
-"""
+"""%(self.requiredReputationForRank3,)
             else:
                 text = """
 
@@ -119,9 +112,9 @@ This means you are the commander of this base now.
 Continue to be useful.
 
 To help you with that you got the universal leaders blessing.
-(base damage +%s, max health +%s, health +%s)
+Additionally you recieve 2 health vials.
 
-"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
+"""
                 character.rank = 3
                 character.reputation = 0
 
@@ -131,7 +124,15 @@ To help you with that you got the universal leaders blessing.
                 character.heal(self.healingEffect)
                 character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
-            character.addMessage("----------------"+text+"-----------------")
+                item = src.items.itemMap["Vial"]()
+                item.uses = item.maxUses
+                character.addToInventory(item,force=True)
+
+                item = src.items.itemMap["Vial"]()
+                item.uses = item.maxUses
+                character.addToInventory(item,force=True)
+
+                character.addMessage("----------------"+text+"-----------------")
 
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
@@ -159,6 +160,72 @@ Showing short introduction.
         character.macroState["submenue"] = submenue
         params = {"character":character}
         character.macroState["submenue"].followUp = {"container":self,"method":"basicIntegration1","params":params}
+
+    def doRank5Promotion(self,extraParams):
+        character = extraParams["character"]
+        if extraParams["step"] == 0:
+            text = """
+
+you are hereby rank 5.
+
+That means you can have up to 3 subordinates.
+
+Use the personnel artwork to request a subordinate.
+
+---
+
+Most items in the command center are trank locked.
+As you gain rank, more of the items on the base will become usable.
+You now unlocked the personnel artwork (PA).
+
+"""
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            extraParams["step"] += 1
+            character.macroState["submenue"].followUp = {"container":self,"method":"doRank5Promotion","params":extraParams}
+            return
+
+        elif extraParams["step"] == 1:
+            text = """
+you are hereby rank 5.
+
+Continue to be useful.
+
+To help you with that you got the following:
+
+* the universal leaders blessing.
+(base damage +%s max health +%s, health +%s)
+* 2 health vials
+
+---
+
+You can heal using the vials. The vials are consumables so it is limited healing.
+Use the vial or press Jh to heal once or JH to fully heal.
+
+"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
+            character.rank = 5
+            character.reputation = 0
+
+            character.baseDamage += self.baseDamageEffect
+            character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+            character.maxHealth += self.healthIncrease
+            character.heal(self.healingEffect)
+            character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+
+            item = src.items.itemMap["Vial"]()
+            item.uses = item.maxUses
+            character.addToInventory(item,force=True)
+
+            item = src.items.itemMap["Vial"]()
+            item.uses = item.maxUses
+            character.addToInventory(item,force=True)
+
+            character.addMessage("----------------"+text+"-----------------")
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            return
 
     def implantIntroduction(self,extraParams):
         character = extraParams["character"]

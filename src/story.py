@@ -4614,8 +4614,10 @@ Go to the command centre and get further instrucions.
 
 ----
 
-Activate the epoch artwork shown as EA in the middle of the command centre to do this.
-The command centre is located at the core of this base. (coordinate (7,7,0))
+Continue following the instructions the quests give you.
+They will lead you to the epoch artwork.
+Activate it.
+
 """
         submenu = src.interaction.TextMenu(text)
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -4675,9 +4677,7 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
 
         spawnerRooms = []
         for room in terrain.rooms:
-            print(room.getPosition())
             for item in room.getItemByPosition((6,6,0)):
-                print(item)
                 if item.type == "MonsterSpawner":
                     spawnerRooms.append(room)
         
@@ -4716,7 +4716,6 @@ The command centre is located at the core of this base. (coordinate (7,7,0))
         if self.difficulty == "easy":
             if self.numRounds < 3:
                 numMonsters = 0
-                return
         if self.difficulty == "medium":
             if self.numRounds == 1:
                 numMonsters = 0

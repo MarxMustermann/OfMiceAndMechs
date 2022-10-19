@@ -2465,9 +2465,20 @@ class BeUsefull(MetaQuestSequence):
 
     def awardnearbyKillReputation(self,extraInfo):
         if not extraInfo["deadChar"].faction == self.character.faction:
-            self.character.awardReputation(20,reason="an enemy dying nearby")
+            amount = 2*self.character.rank
+            amount += extraInfo["deadChar"].maxHealth//3
+            self.character.awardReputation(amount,reason="an enemy dying nearby")
         else:
-            self.character.revokeReputation(50,reason="an ally dying nearby")
+            amount = 2*self.character.rank
+            if extraInfo["deadChar"].rank == 3:
+                amount = 500
+            if extraInfo["deadChar"].rank == 4:
+                amount = 250
+            if extraInfo["deadChar"].rank == 5:
+                amount = 100
+            if extraInfo["deadChar"].rank == 6:
+                amount = 50
+            self.character.revokeReputation(amount,reason="an ally dying nearby")
     
     def assignToCharacter(self, character):
         character.addListener(self.awardnearbyKillReputation, "character died on tile")
@@ -2498,11 +2509,11 @@ class BeUsefull(MetaQuestSequence):
             self.addQuest(GetPromotion(5))
             return
 
-        if character.rank == 5 and character.reputation >= 600:
+        if character.rank == 5 and character.reputation >= 500:
             self.addQuest(GetPromotion(4))
             return
 
-        if character.rank == 4 and character.reputation >= 1000:
+        if character.rank == 4 and character.reputation >= 750:
             self.addQuest(GetPromotion(3))
             return
 

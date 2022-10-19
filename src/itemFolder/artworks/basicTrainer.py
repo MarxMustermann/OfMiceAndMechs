@@ -72,12 +72,6 @@ You can also press "m" to attack a nearby enemy.
 
     def requireWeapon(self,character):
         text = """
-you will be trained in:
-
-fighting
-"""
-
-        text = """
 
 Equip yourself to proceed with the training.
 

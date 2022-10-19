@@ -4125,6 +4125,10 @@ Press ESC to close this window.
             architect.doClearField(farmPos[0],farmPos[1]+1)
             architect.doClearField(farmPos[0]-1,farmPos[1]+1)
             farm = cityBuilder.addFarmFromMap({"coordinate":farmPos,"character":src.gamestate.gamestate.mainChar},forceSpawn=10)
+            for x in range(3,10):
+                gooFlask = src.items.itemMap["GooFlask"]()
+                gooFlask.uses = 100
+                farm.addItem(gooFlask,(x,1,0))
             for i in range(1,30):
                 farm.damage()
 

@@ -1747,7 +1747,7 @@ class Character(src.saveing.Saveable):
             self.events.remove(event)
 
         # handle satiation
-        self.satiation -= 1
+        #self.satiation -= 1
         if self.satiation < 100:
             if self.satiation < 10:
                 self.frustration += 10

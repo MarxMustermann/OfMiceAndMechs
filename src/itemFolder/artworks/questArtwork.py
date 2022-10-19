@@ -247,11 +247,11 @@ So try to not be nearby at that point.
                 else:
                     character.quests.insert(0,quest)
                 text = """
-    Secure the cargo
+Secure the cargo
 
-    There was a supply run intended for the base.
-    It got ambushed and the suplies were left there.
-    Go there and fetch the weapons and armor.
+There was a supply run intended for the base.
+It got ambushed and the suplies were left there.
+Go there and fetch the weapons and armor.
 
     """
                 character.addMessage("----------------"+text+"-----------------")

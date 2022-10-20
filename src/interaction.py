@@ -5997,6 +5997,12 @@ def keyboardListener(key, targetCharacter=None):
         activeQuest = char.getActiveQuest()
         if activeQuest and activeQuest.autoSolve:
             activeQuest.autoSolve = False
+        for quest in char.quests[:]:
+            if quest.type == "BeUsefull":
+                break
+            char.quests.remove(quest)
+        char.guarding = 0
+        char.runCommandString("~")
 
     elif key == "ctrl t":
         if src.gamestate.gamestate.gameHalted:

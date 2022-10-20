@@ -8285,6 +8285,8 @@ class ReachBase(MetaQuestSequence):
             if pos[0] <= 7:
                 if pos[0] == 4:
                     direction = "north"
+                if pos[0] == 5:
+                    direction = "north"
                 else:
                     direction = "east"
             else:

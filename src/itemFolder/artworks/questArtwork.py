@@ -41,7 +41,6 @@ This artwork generates and can assign quests."""
         self.usageInfo = """
 Use it to generate a quest and assign it to you."""
         
-
     def getEnemiesWithTag(self,tag):
         enemies = []
         currentTerrain = self.container.container
@@ -56,6 +55,16 @@ Use it to generate a quest and assign it to you."""
                     enemies.append(enemy)
 
         return enemies
+
+    def getRoomsWithTag(self,tag):
+        rooms = []
+        currentTerrain = self.container.container
+        for room in currentTerrain.rooms:
+            if not room.tag == "farm":
+                continue
+            rooms.append(room)
+        print(rooms)
+        return rooms
 
     def getQuest(self, character):
         print(character.rank)
@@ -150,7 +159,12 @@ Clear the trap rooms to ensure that the bases first line of defence works.
                 text = """
 Eliminate the patrolers
 
-Eliminate them to start breaking up the innermost siege ring.
+There are groups of enemies patroling around the base.
+They make movement around the base harder and hinder operations outside the base.
+The patrols are shown as white X-
+
+Eliminate them to break up the second siege ring.
+
 """
 
                 character.addMessage("----------------"+text+"-----------------")
@@ -160,10 +174,8 @@ Eliminate them to start breaking up the innermost siege ring.
                 character.changed("got quest assigned")
                 return
 
-            print("check for outer hive guards")
             enemies = self.getEnemiesWithTag("hiveGuard")
             if enemies:
-                print(enemies)
                 enemiesMap = {}
                 for enemy in enemies:
                     pos = enemy.getBigPosition()
@@ -183,7 +195,6 @@ Eliminate them to start breaking up the innermost siege ring.
 
                     candidates.append(key)
 
-                print(candidates)
                 pos = random.choice(candidates)
 
                 minDistance = None
@@ -260,6 +271,51 @@ Go there and fetch the weapons and armor.
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
+
+            rooms = self.getRoomsWithTag("farm")
+
+            nearestDistance = None
+            candidates = []
+            for room in rooms:
+                for item in room.itemsOnFloor:
+                    if item.type in ("Scrap",):
+                        continue
+                    if item.bolted:
+                        continue
+                    
+                    distance = abs(room.xPosition-7)+abs(room.yPosition-7)
+                    if nearestDistance == None or distance < nearestDistance:
+                        candidates = []
+                        nearestDistance = distance
+
+                    if distance > nearestDistance:
+                        continue
+
+                    candidates.append(room)
+
+            if candidates:
+                room = random.choice(candidates)
+                quest = src.quests.questMap["LootRoom"](roomPos=room.getPosition(),description="loot farm")
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+Secure goo flasks
+
+The ruined farms still have useful items in them.
+Secure the farms on the position %s and loot the items there.
+
+"""%(room.getPosition(),)
+                character.addMessage("----------------"+text+"-----------------")
+
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.changed("got quest assigned")
+                return
+
         elif character.rank == 3:
             quest = src.quests.questMap["DestroySpawners"]()
             if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
@@ -269,7 +325,16 @@ Go there and fetch the weapons and armor.
             else:
                 character.quests.insert(0,quest)
             text = """
-Destroy the spawners to end the siege
+Destroy the hives to end the siege
+
+The waves of enemies spawn from hives.
+The hives are located inbetween the overrun farms.
+Destroy the hives to end the siege.
+
+---
+
+The waves spawn at tick 0 of each epoch from the hives.
+Try to not get caught up in the waves.
 
 """
             character.addMessage("----------------"+text+"-----------------")

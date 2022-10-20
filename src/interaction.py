@@ -2226,6 +2226,7 @@ select what you want to observe
                 newPos = (charPos[0]+1,charPos[1],charPos[2])
 
             quest = src.quests.GoToTile(targetPosition=newPos,paranoid=True)
+            quest.selfAssigned = True
             quest.autoSolve = True
             quest.assignToCharacter(char)
             quest.activate()
@@ -5998,7 +5999,7 @@ def keyboardListener(key, targetCharacter=None):
         if activeQuest and activeQuest.autoSolve:
             activeQuest.autoSolve = False
         for quest in char.quests[:]:
-            if quest.type == "BeUsefull":
+            if not quest.selfAssigned:
                 break
             char.quests.remove(quest)
         char.guarding = 0

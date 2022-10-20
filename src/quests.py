@@ -229,6 +229,7 @@ class Quest(src.saveing.Saveable):
         self.watched = []
         self.randomSeed = None
         self.autoSolve = False
+        self.selfAssigned = False
 
         # set up saving
         # bad code: extend would be better

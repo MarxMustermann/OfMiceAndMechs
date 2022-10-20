@@ -5376,6 +5376,7 @@ class TextMenu(SubMenu):
             "enter",
             "space",
             " ",
+            "j",
         ):
             if self.followUp:
                 self.callIndirect(self.followUp)

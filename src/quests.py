@@ -1924,11 +1924,9 @@ class RestockRoom(MetaQuestSequence):
         if isinstance(character.container,src.rooms.Room):
             room = character.container
 
-            character.addMessage("triggerCompletionCheck")
             foundNeighbour = None
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             for slot in inputSlots:
-                character.addMessage("found input slot")
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                     if not neighbour in room.walkingSpace:
@@ -1972,7 +1970,6 @@ class RestockRoom(MetaQuestSequence):
 
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             random.shuffle(inputSlots)
-            character.addMessage(inputSlots)
 
             # find neighboured input fields
             foundDirectDrop = None
@@ -2596,7 +2593,6 @@ class BeUsefull(MetaQuestSequence):
         if "trap setting" in character.duties:
             if hasattr(room,"electricalCharges"):
                 if room.electricalCharges < room.maxElectricalCharges:
-                    character.addMessage("should recharge now")
 
                     foundCharger = None
                     for item in room.itemsOnFloor:
@@ -8480,6 +8476,7 @@ class DestroySpawners(MetaQuestSequence):
 
         if not self.getSpawners(character):
             self.postHandler()
+            return True
         return
 
     def solver(self,character):
@@ -8628,6 +8625,59 @@ class SecureCargo(MetaQuestSequence):
                 return item
 
         return None
+
+class LootRoom(MetaQuestSequence):
+    def __init__(self, description="loot room", roomPos = None):
+        super().__init__()
+        self.metaDescription = description
+        self.type = "LootRoom"
+        self.roomPos = roomPos
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        if not self.getLoot(character):
+            character.awardReputation(amount=200, reason="looted a room")
+            self.postHandler()
+            return True
+
+        return False
+
+    def solver(self,character):
+        self.triggerCompletionCheck(character)
+
+        if not self.subQuests:
+            if not character.getFreeInventorySpace():
+                quest = ClearInventory()
+                self.addQuest(quest)
+                return
+            if not character.getBigPosition() == self.roomPos:
+                quest = SecureTile(toSecure=self.roomPos,endWhenCleared=True)
+                self.addQuest(quest)
+                return
+            item = self.getLoot(character)
+            self.addQuest(RunCommand(command="k", description="pick up loot"))
+            self.addQuest(GoToPosition(targetPosition=item.getPosition(),description="go to loot"))
+            return
+
+        super().solver(character)
+
+    def getLoot(self,character):
+        currentTerrain = character.getTerrain()
+        rooms = currentTerrain.getRoomByPosition(self.roomPos)
+        print(rooms)
+        if not rooms:
+            return None
+
+        for item in rooms[0].itemsOnFloor:
+            if item.type in ("Scrap",):
+                continue
+            if not item.bolted:
+                return item
+
+        return None
+
 
 class SecureTile(GoToTile):
     def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None):
@@ -9464,6 +9514,7 @@ questMap = {
     "Assimilate": Assimilate,
     "TrainSkill": TrainSkill,
     "SecureCargo": SecureCargo,
+    "LootRoom": LootRoom,
 }
 
 def getQuestFromState(state):

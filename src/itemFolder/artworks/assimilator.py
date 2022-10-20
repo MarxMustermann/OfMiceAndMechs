@@ -132,7 +132,7 @@ Additionally you recieve 2 health vials.
                 item.uses = item.maxUses
                 character.addToInventory(item,force=True)
 
-                character.addMessage("----------------"+text+"-----------------")
+            character.addMessage("----------------"+text+"-----------------")
 
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
@@ -344,6 +344,7 @@ Retrain a skill and return to integrate into the bases systems
         else:
             text = """
 You hereby have a rank of 6.
+You can request promotions here.
 
 Your duties are:
 

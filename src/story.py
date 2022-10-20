@@ -4288,6 +4288,7 @@ Press ESC to close this window.
             currentTerrain.minimapOverride[pos] = (src.interaction.urwid.AttrSpec("#484", "black"), "##")
 
             room.addItem(src.items.itemMap["MonsterSpawner"](),(6,6,0))
+            room.tag = "hive"
 
             hiveStyle = hiveStyles.pop()
             print(pos)

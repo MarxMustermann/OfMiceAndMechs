@@ -54,6 +54,7 @@ class Room(src.saveing.Saveable):
         self.storageSlots = []
         self.floorPlan = {}
         self.sources = []
+        self.tag = None
 
         super().__init__()
 

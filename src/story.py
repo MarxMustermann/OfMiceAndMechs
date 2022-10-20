@@ -4131,6 +4131,7 @@ Press ESC to close this window.
                 farm.addItem(gooFlask,(x,1,0))
             for i in range(1,30):
                 farm.damage()
+            farm.tag = "farm"
 
         for farmPlot in farmPlots:
             currentTerrain.minimapOverride[farmPlot] = (src.interaction.urwid.AttrSpec("#030", "black"), ",.")

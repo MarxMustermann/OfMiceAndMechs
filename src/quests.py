@@ -7898,10 +7898,6 @@ class TrainSkill(MetaQuestSequence):
             return
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = RunCommand(command="w")
-            quest.active = True
-            quest.assignToCharacter(character)
-            self.addQuest(quest)
             return
 
         room = character.container
@@ -7943,6 +7939,10 @@ class TrainSkill(MetaQuestSequence):
     def solver(self,character):
         self.triggerCompletionCheck(character)
         if not self.subQuests:
+            if not isinstance(character.container, src.rooms.Room):
+                character.runCommandString("w")
+                return
+
             self.generateSubquests(character)
             return
         super().solver(character)
@@ -9425,7 +9425,6 @@ class DummyQuest(Quest):
 
     def triggerCompletionCheck(self):
         return
-
 
 # map strings to Classes
 questMap = {

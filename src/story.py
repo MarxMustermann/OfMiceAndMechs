@@ -4002,7 +4002,7 @@ class Siege2(BasicPhase):
         ]
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
         src.gamestate.gamestate.mainChar.godMode = True
-        src.gamestate.gamestate.mainChar.faction = "city test"
+        src.gamestate.gamestate.mainChar.faction = "city #456"
         if difficulty == "easy":
             src.gamestate.gamestate.mainChar.baseDamage = 5
             src.gamestate.gamestate.mainChar.health = 200

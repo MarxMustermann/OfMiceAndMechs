@@ -109,7 +109,7 @@ gain reputation by completing quests and killing enemies.
 you are hereby rank 3.
 This means you are the commander of this base now.
 
-Continue to be useful.
+You will carry the burden of the epoch quest now.
 
 To help you with that you got the universal leaders blessing.
 Additionally you recieve 2 health vials.
@@ -131,6 +131,14 @@ Additionally you recieve 2 health vials.
                 item = src.items.itemMap["Vial"]()
                 item.uses = item.maxUses
                 character.addToInventory(item,force=True)
+
+                for quest in character.quests:
+                    quest.postHandler()
+
+                character.quests = []
+                quest = src.quests.EpochQuest()
+                quest.assignToCharacter(character)
+                character.quests.append(quest)
 
             character.addMessage("----------------"+text+"-----------------")
 

@@ -77,6 +77,7 @@ class Terrain(src.saveing.Saveable):
         self.hidden = True
         self.characterByFieldMap = {}
         self.minimapOverride = {(7,7,0):"CC"}
+        self.animations = []
 
         self.microBiomeMap = {}
         moisture = self.biomeInfo["moisture"]
@@ -119,6 +120,9 @@ class Terrain(src.saveing.Saveable):
             "listeners"
             ])
 
+    def addAnimation(self,coordinate,animationType,duration,extraInfo):
+        self.animations.append([coordinate,animationType,duration,extraInfo])
+
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
             return
@@ -148,6 +152,8 @@ class Terrain(src.saveing.Saveable):
             src.gamestate.gamestate.mainChar.runCommandString("~")
 
     def advance(self):
+        self.animations = []
+
         for character in self.characters:
             character.advance()
 
@@ -1432,6 +1438,80 @@ class Terrain(src.saveing.Saveable):
 
                 chars[pos[1]][pos[0]] = display
             pass
+
+        usedAnimationSlots = set()
+        for animation in self.animations[:]:
+            (pos,animationType,duration,extraInfo) = animation
+            pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+
+            if pos in usedAnimationSlots:
+                continue
+            usedAnimationSlots.add(pos)
+
+            if animationType == "attack":
+                if duration > 75:
+                    display = "XX"
+                elif duration > 50:
+                    display = "xX"
+                elif duration > 25:
+                    display = "xx"
+                elif duration > 10:
+                    display = ".x"
+                else:
+                    display = ".."
+                try:
+                    chars[pos[1]][pos[0]] = display
+                except:
+                    continue
+
+                if duration > 10:
+                    animation[2] -= 10
+                else:
+                    self.animations.remove(animation)
+            elif animationType in ("hurt","shielded",):
+                display = "++"
+                if animationType == "hurt":
+                    display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
+                if animationType == "shielded":
+                    display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
+                try:
+                    chars[pos[1]][pos[0]] = display
+                except:
+                    continue
+
+                if duration > 10:
+                    animation[2] -= 10
+                    if animationType == "hurt":
+                        distance = int(5*(duration/extraInfo["health"])+1)
+                        if not extraInfo["mainChar"]:
+                            print(distance)
+                        offset = (random.randint(-distance,distance),random.randint(-distance,distance))
+                        newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])
+                        self.addAnimation(newPos,"splatter",int(10*(duration/extraInfo["maxHealth"]))+1,{"mainChar":extraInfo["mainChar"]})
+                else:
+                    self.animations.remove(animation)
+            elif animationType in ("splatter",):
+                if not "display" in extraInfo:
+                    letters = ["*","+",".",",","'","~"]
+                    character = random.choice(letters)+random.choice(letters)
+                    extraInfo["display"] = character
+                display = extraInfo["display"]
+                display = (src.interaction.urwid.AttrSpec("#000","#600"),display)
+                if extraInfo["mainChar"]:
+                    display = "!!"
+                    display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
+                try:
+                    chars[pos[1]][pos[0]] = display
+                except:
+                    continue
+                animation[2] -= 1
+                if duration < 1:
+                    self.animations.remove(animation)
+            else:
+                display = "??"
+                chars[pos[1]][pos[0]] = display
+                #self.animations.remove(animation)
+
 
         return chars
 

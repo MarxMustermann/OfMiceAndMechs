@@ -55,6 +55,7 @@ class Room(src.saveing.Saveable):
         self.floorPlan = {}
         self.sources = []
         self.tag = None
+        self.animations = []
 
         super().__init__()
 
@@ -156,6 +157,9 @@ class Room(src.saveing.Saveable):
             "boilers",
             "furnaces",
             ])
+
+    def addAnimation(self,coordinate,animationType,duration,extraInfo):
+        self.animations.append([coordinate,animationType,duration,extraInfo])
 
     def addBuildSite(self,position,specification,extraInfo=None):
         if extraInfo == None:
@@ -1108,6 +1112,78 @@ class Room(src.saveing.Saveable):
                         "chracter is rendered outside of room"
                     )
 
+            usedAnimationSlots = set()
+            for animation in self.animations[:]:
+                (pos,animationType,duration,extraInfo) = animation
+
+                if pos in usedAnimationSlots:
+                    continue
+                usedAnimationSlots.add(pos)
+
+                if animationType == "attack":
+                    if duration > 75:
+                        display = "XX"
+                    elif duration > 50:
+                        display = "xX"
+                    elif duration > 25:
+                        display = "xx"
+                    elif duration > 10:
+                        display = ".x"
+                    else:
+                        display = ".."
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+
+                    if duration > 10:
+                        animation[2] -= 10
+                    else:
+                        self.animations.remove(animation)
+                elif animationType in ("hurt","shielded",):
+                    display = "++"
+                    if animationType == "hurt":
+                        display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
+                    if animationType == "shielded":
+                        display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+
+                    if duration > 10:
+                        animation[2] -= 10
+                        if animationType == "hurt":
+                            distance = int(5*(duration/extraInfo["health"])+1)
+                            if not extraInfo["mainChar"]:
+                                print(distance)
+                            offset = (random.randint(-distance,distance),random.randint(-distance,distance))
+                            newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])
+                            self.addAnimation(newPos,"splatter",int(10*(duration/extraInfo["maxHealth"]))+1,{"mainChar":extraInfo["mainChar"]})
+                    else:
+                        self.animations.remove(animation)
+                elif animationType in ("splatter",):
+                    if not "display" in extraInfo:
+                        letters = ["*","+",".",",","'","~"]
+                        character = random.choice(letters)+random.choice(letters)
+                        extraInfo["display"] = character
+                    display = extraInfo["display"]
+                    display = (src.interaction.urwid.AttrSpec("#000","#600"),display)
+                    if extraInfo["mainChar"]:
+                        display = "!!"
+                        display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+                    animation[2] -= 1
+                    if duration < 1:
+                        self.animations.remove(animation)
+                else:
+                    display = "??"
+                    chars[pos[1]][pos[0]] = display
+                    #self.animations.remove(animation)
+
             if src.gamestate.gamestate.dragState:
                 if src.gamestate.gamestate.dragState["start"]["container"] == self:
                     pos = src.gamestate.gamestate.dragState["start"]["pos"]
@@ -1539,6 +1615,7 @@ class Room(src.saveing.Saveable):
 
         # change own state
         self.timeIndex += 1
+        self.animations = []
 
         # advance each character
         for character in self.characters:

@@ -664,15 +664,26 @@ class Character(src.saveing.Saveable):
             self.addMessage("your armor absorbs %s damage" % (damageAbsorbtion,))
             damage -= damageAbsorbtion
 
+            if self == src.gamestate.gamestate.mainChar:
+                self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
+            if actor == src.gamestate.gamestate.mainChar:
+                self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
+
+
         if damage <= 0:
             return
 
         if self.health - damage > 0:
             staggerThreshold = self.health // 4 + 1
 
+            if self == src.gamestate.gamestate.mainChar:
+                self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":True,"health":self.health})
+            if actor == src.gamestate.gamestate.mainChar:
+                self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":False,"health":self.health})
+
             self.health -= damage
             self.frustration += 10 * damage
-            self.addMessage("you took " + str(damage) + " damage. You have %s health left"%(self.health,))
+            self.addMessage("you took " + str(damage) + " damage. You have %s/%s health left"%(self.health,self.maxHealth))
 
             if self.combatMode == "defensive":
                 staggerThreshold *= 2
@@ -703,12 +714,17 @@ class Character(src.saveing.Saveable):
 
         if self.weapon:
             baseDamage += self.weapon.baseDamage
-
         damage = baseDamage
+
+        if self == src.gamestate.gamestate.mainChar:
+            self.container.addAnimation(target.getPosition(),"attack",damage,{})
+        if target == src.gamestate.gamestate.mainChar:
+            self.container.addAnimation(target.getPosition(),"attack",damage,{})
+
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
-            "you attack the enemy for %s damage, the enemy has %s health left"
-            % (damage, target.health)
+            "you attack the enemy for %s damage, the enemy has %s/%s health left"
+            % (damage, target.health, target.maxHealth)
         )
 
         if self.personality.get("autoAttackOnCombatSuccess") and not self.submenue and not self.charState["submenue"]:

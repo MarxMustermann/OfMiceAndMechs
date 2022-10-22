@@ -8121,6 +8121,7 @@ def gameLoop(loop, user_data=None):
 
     firstRun = True
     lastcheck = time.time()
+    lastRender = time.time()
 
     while not loop or firstRun:
         #profiler = cProfile.Profile()
@@ -8209,6 +8210,10 @@ def gameLoop(loop, user_data=None):
                 for char in removeChars:
                     multi_chars.remove(char)
 
+                renderGameDisplay()
+                lastRender = time.time()
+
+            if time.time()-lastRender > 0.1:
                 renderGameDisplay()
 
         #endTime = time.time()

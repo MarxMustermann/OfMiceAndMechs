@@ -132,13 +132,13 @@ Additionally you recieve 2 health vials.
                 item.uses = item.maxUses
                 character.addToInventory(item,force=True)
 
-                for quest in character.quests:
-                    quest.postHandler()
+                #for quest in character.quests:
+                #    quest.postHandler()
 
-                character.quests = []
-                quest = src.quests.EpochQuest()
-                quest.assignToCharacter(character)
-                character.quests.append(quest)
+                #character.quests = []
+                #quest = src.quests.EpochQuest()
+                #quest.assignToCharacter(character)
+                #character.quests.append(quest)
 
             character.addMessage("----------------"+text+"-----------------")
 

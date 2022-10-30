@@ -65,6 +65,20 @@ protects you in combat
 
         character.addMessage("you equip the armor and wear a %s armor now"%(self.armorValue,))
 
+        charSequence = []
+        for i in range(1,self.armorValue+1):
+            char = str(i)
+            if i < 10:
+                char = " "+char
+            charSequence.append(char)
+            charSequence.append(char)
+            charSequence.append(char)
+            charSequence.append(char)
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"), "ar")})
+        character.container.addAnimation(character.getPosition(),"charsequence",len(charSequence)-1,{"chars":charSequence})
+        character.container.addAnimation(character.getPosition(),"showchar",5,{"char":charSequence[-1]})
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"), "ar")})
+
         if character.armor:
             oldArmor = character.armor
             character.armor = None

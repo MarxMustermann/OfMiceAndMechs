@@ -520,7 +520,7 @@ class Character(src.saveing.Saveable):
             "submenue": None,
         }
 
-    def getPosition(self):
+    def getPosition(self,offset=(0,0,0)):
         """
         returns the characters position
 
@@ -528,7 +528,7 @@ class Character(src.saveing.Saveable):
             the position
         """
 
-        return self.xPosition, self.yPosition, self.zPosition
+        return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 
     def searchInventory(self, itemType, extra={}):
         """
@@ -717,9 +717,15 @@ class Character(src.saveing.Saveable):
         damage = baseDamage
 
         if self == src.gamestate.gamestate.mainChar:
-            self.container.addAnimation(target.getPosition(),"attack",damage,{})
+            try:
+                self.container.addAnimation(target.getPosition(),"attack",damage,{})
+            except:
+                pass
         if target == src.gamestate.gamestate.mainChar:
-            self.container.addAnimation(target.getPosition(),"attack",damage,{})
+            try:
+                self.container.addAnimation(target.getPosition(),"attack",damage,{})
+            except:
+                pass
 
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
@@ -756,13 +762,9 @@ class Character(src.saveing.Saveable):
             other: the other character
         """
 
-        self.messages.append("collided")
         if not other.faction == self.faction:
             if self.personality.get("attacksEnemiesOnContact"):
-                self.messages.append("attack!")
-                self.runCommandString("m")
-                if self == actor:
-                    self.timeTaken -= 0.70
+                self.attack(other)
         else:
             if self.personality.get("annoyenceByNpcCollisions"):
                 self.frustration += self.personality.get("annoyenceByNpcCollisions")
@@ -1676,6 +1678,7 @@ class Character(src.saveing.Saveable):
         if foundScrap and item.type == "Scrap":
             foundScrap.amount += item.amount
             foundScrap.setWalkable()
+            self.container.addAnimation(foundScrap.getPosition(),"scrapChange",1,{})
         else:
             # add item to floor
             self.container.addItem(item, position, actor=self)

@@ -147,14 +147,17 @@ class Item(src.saveing.Saveable):
         self.yPosition = pos[1]
         self.zPosition = pos[2]
 
-    def getPosition(self):
+    def getPosition(self,offset=(0,0,0)):
         """
         get the position
 
         Returns:
             the position
         """
-        return self.xPosition, self.yPosition, self.zPosition
+        try:
+            return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
+        except:
+            return None,None,None
 
     def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information={}):
         """

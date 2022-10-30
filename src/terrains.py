@@ -401,22 +401,27 @@ class Terrain(src.saveing.Saveable):
             print("nopos")
             return
 
+        char.container.addAnimation(char.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "  ")})
         if direction == "west":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
                 return
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
                     direction = "south"
+                    char.container.addAnimation(char.getPosition(offset=(-1,1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 elif char.yPosition % 15 > 7:
                     direction = "north"
+                    char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.xPosition == 16 and 1==0:
                         return
                     else:
                         # char.stasis = True
                         char.runCommandString("aa")
+                        char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
-                char.addMessage("a force field pushes you")
+                char.addMessage("a force field pushes you test")
+                char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
 
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
@@ -427,16 +432,20 @@ class Terrain(src.saveing.Saveable):
             if char.xPosition % 15 == 13:
                 if char.yPosition % 15 < 7:
                     direction = "south"
+                    char.container.addAnimation(char.getPosition(offset=(1,1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 elif char.yPosition % 15 > 7:
                     direction = "north"
+                    char.container.addAnimation(char.getPosition(offset=(1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.xPosition == 15 * 14 - 2 and 1==0:
                         return
                     else:
                         # char.stasis = True
                         char.runCommandString("dd")
+                        char.container.addAnimation(char.getPosition(offset=(2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.addMessage("a force field pushes you")
+                char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
@@ -446,16 +455,20 @@ class Terrain(src.saveing.Saveable):
             if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
                     direction = "east"
+                    char.container.addAnimation(char.getPosition(offset=(1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 elif char.xPosition % 15 > 7:
                     direction = "west"
+                    char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.yPosition == 16 and 1==0:
                         return
                     else:
                         # char.stasis = True
                         char.runCommandString("ww")
+                        char.container.addAnimation(char.getPosition(offset=(0,-2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.addMessage("a force field pushes you")
+                char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
@@ -465,16 +478,20 @@ class Terrain(src.saveing.Saveable):
             if char.yPosition % 15 == 13:
                 if char.xPosition % 15 < 7:
                     direction = "east"
+                    char.container.addAnimation(char.getPosition(offset=(1,1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 elif char.xPosition % 15 > 7:
                     direction = "west"
+                    char.container.addAnimation(char.getPosition(offset=(-1,1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.yPosition == 15 * 14 - 2 and 1 == 0:
                         return
                     else:
                         # char.stasis = True
                         char.runCommandString("ss")
+                        char.container.addAnimation(char.getPosition(offset=(0,2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.addMessage("a force field pushes you")
+                char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
                 #while self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)):
@@ -1443,6 +1460,8 @@ class Terrain(src.saveing.Saveable):
         for animation in self.animations[:]:
             (pos,animationType,duration,extraInfo) = animation
             pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+            if pos[0] < 0 or pos[1] < 0:
+                continue
 
             if pos in usedAnimationSlots:
                 continue
@@ -1485,7 +1504,8 @@ class Terrain(src.saveing.Saveable):
                         distance = int(5*(duration/extraInfo["health"])+1)
                         if not extraInfo["mainChar"]:
                             print(distance)
-                        offset = (random.randint(-distance,distance),random.randint(-distance,distance))
+                        xDistance = random.randint(-distance,distance)
+                        offset = (xDistance,random.choice([distance-abs(xDistance),-(distance-abs(xDistance))]))
                         newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])
                         self.addAnimation(newPos,"splatter",int(10*(duration/extraInfo["maxHealth"]))+1,{"mainChar":extraInfo["mainChar"]})
                 else:
@@ -1505,6 +1525,56 @@ class Terrain(src.saveing.Saveable):
                 except:
                     continue
                 animation[2] -= 1
+
+                if duration < 1:
+                    self.animations.remove(animation)
+            elif animationType in ("scrapChange",):
+                letters = ["*","+","#",";","%"]
+                character = random.choice(letters)+random.choice(letters)
+                display = character
+                display = (src.interaction.urwid.AttrSpec("#740","#000"),display)
+
+                try:
+                    chars[pos[1]][pos[0]] = display
+                except:
+                    continue
+                animation[2] -= 1
+
+                if duration < 1:
+                    self.animations.remove(animation)
+            elif animationType in ("explosion",):
+                display = "##"
+                display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
+
+                try:
+                    chars[pos[1]][pos[0]] = display
+                except:
+                    continue
+                animation[2] -= 1
+
+                if duration < 1:
+                    self.animations.remove(animation)
+            elif animationType in ("showchar",):
+                display = extraInfo["char"]
+
+                try:
+                    chars[pos[1]][pos[0]] = display
+                except:
+                    continue
+                animation[2] -= 1
+
+                if duration < 1:
+                    self.animations.remove(animation)
+            elif animationType in ("charsequence",):
+                display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
+
+                if display:
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+                animation[2] -= 1
+
                 if duration < 1:
                     self.animations.remove(animation)
             else:

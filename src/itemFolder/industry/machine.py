@@ -136,6 +136,8 @@ Activate the machine to produce.
                 % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
             )
             self.runCommand("cooldown", character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             return
 
         if self.toProduce in src.items.rawMaterialLookup:
@@ -214,6 +216,8 @@ Activate the machine to produce.
                 "the target area is full, the machine does not produce anything"
             )
             self.runCommand("targetFull", character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             return
 
         if self.charges:
@@ -225,7 +229,15 @@ Activate the machine to produce.
 
         # remove resources
         for item in resourcesFound:
+            self.container.addAnimation(item.getPosition(),"showchar",2,{"char":"--"})
+            self.container.addAnimation(item.getPosition(),"showchar",1,{"char":item.render()})
             self.container.removeItem(item)
+
+        self.container.addAnimation(self.getPosition(),"charsequence",2,{"chars":[
+            (src.interaction.urwid.AttrSpec("#aaa", "black"),"X\\"),
+            (src.interaction.urwid.AttrSpec("#aaa", "black"),"X|"),
+            (src.interaction.urwid.AttrSpec("#aaa", "black"),"X/"),
+           ]})
 
         # spawn new item
         new = src.items.itemMap[self.toProduce]()
@@ -239,6 +251,7 @@ Activate the machine to produce.
             new.coolDown = random.randint(new.coolDown, int(new.coolDown * 1.25))
 
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
+        self.container.addAnimation(new.getPosition(),"showchar",2,{"char":"++"})
 
         if hasattr(new, "level"):
             new.level = self.level

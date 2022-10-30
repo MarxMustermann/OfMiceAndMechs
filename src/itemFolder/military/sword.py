@@ -57,6 +57,16 @@ baseDamage:
         """
 
         character.addMessage("you equip the sword and wield a %s weapon now"%(self.baseDamage,))
+        charSequence = []
+        for i in range(2,self.baseDamage+1):
+            char = str(i)
+            if i < 10:
+                char = " "+char
+            charSequence.append(char)
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"), "wt")})
+        character.container.addAnimation(character.getPosition(),"charsequence",len(charSequence)-1,{"chars":charSequence})
+        character.container.addAnimation(character.getPosition(),"showchar",5,{"char":charSequence[-1]})
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"), "wt")})
 
         if character.weapon:
             oldWeapon = character.weapon

@@ -88,12 +88,16 @@ class ScrapCompactor(src.items.Item):
                 % (self.coolDown - (tick - self.coolDownTimer),)
             )
             self.runCommand("cooldown", character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             return
 
         # refuse to produce without resources
         if not scrap:
             character.addMessage("no scraps available")
             self.runCommand("material Scrap", character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         targetPos = (self.xPosition + 1, self.yPosition, self.zPosition)
@@ -111,6 +115,11 @@ class ScrapCompactor(src.items.Item):
                 "the target area is full, the machine does not produce anything"
             )
             self.runCommand("targetFull", character)
+            color = "#740"
+            if not itemList[0].type == "MetalBars":
+                color = "#f00"
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})
             return
 
         if self.charges:
@@ -132,12 +141,20 @@ class ScrapCompactor(src.items.Item):
         else:
             scrap.amount -= 1
             scrap.setWalkable()
+        self.container.addAnimation(scrap.getPosition(),"scrapChange",2,{})
+
+        self.container.addAnimation(self.getPosition(),"charsequence",2,{"chars":[
+            (src.interaction.urwid.AttrSpec("#aaa", "black"),"R["),
+            (src.interaction.urwid.AttrSpec("#aaa", "black"),"R-"),
+            (src.interaction.urwid.AttrSpec("#aaa", "black"),"RK"),
+           ]})
 
         # spawn the metal bar
         new = src.items.itemMap["MetalBars"]()
         self.container.addItem(
             new, (self.xPosition + 1, self.yPosition, self.zPosition)
         )
+        self.container.addAnimation(new.getPosition(),"showchar",2,{"char":"++"})
 
         #HACK: sound effect
         if src.gamestate.gamestate.mainChar in self.container.characters:

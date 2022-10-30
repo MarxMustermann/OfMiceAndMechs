@@ -70,6 +70,8 @@ Activate it to trigger a exlosion.
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)
 
+            self.container.addAnimation(new.getPosition(),"explosion",5,{})
+
         super().destroy(generateScrap=False)
 
 src.items.addType(Bomb)

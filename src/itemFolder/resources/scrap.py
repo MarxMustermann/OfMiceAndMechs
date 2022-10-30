@@ -169,6 +169,8 @@ There is %s in this pile
         )
         self.setWalkable()
 
+        self.container.addAnimation(self.getPosition(),"scrapChange",1,{})
+
         # add item to characters inventory
         character.addToInventory(Scrap(amount=1))
 
@@ -194,6 +196,8 @@ There is %s in this pile
                     % (self.amount,)
                 )
                 character.inventory.remove(item)
+
+        self.container.addAnimation(self.getPosition(),"scrapChange",1,{})
 
         self.setWalkable()
 

@@ -1206,7 +1206,6 @@ class ControlBase(MetaQuestSequence):
     def triggerCompletionCheck(self,character=None):
         if not character:
             return 
-
         return
 
     def solver(self, character):
@@ -1219,6 +1218,11 @@ class ManageBase(MetaQuestSequence):
         self.metaDescription = description
         self.type = "ManageBase"
         self.shortCode = "M"
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return 
+        return
 
     def solver(self, character):
         return super().solver(character)
@@ -1413,10 +1417,16 @@ class DefendBase(MetaQuestSequence):
     def triggerCompletionCheck(self,character=None):
         if not character:
             return 
-
+        return
         super().triggerCompletionCheck()
+    
+    def generateSubquests(self,character):
+        self.subQuests.append(CleanTraps())
 
     def solver(self, character):
+        if not self.subQuests:
+            self.generateSubquests(character)
+            return
         self.triggerCompletionCheck(character)
         return super().solver(character)
 
@@ -9426,6 +9436,52 @@ class DummyQuest(Quest):
     def triggerCompletionCheck(self):
         return
 
+class DoEpochChallenge(MetaQuestSequence):
+    def __init__(self, description="do epoch challenge", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+
+        self.type = "DoEpochChallenge"
+
+    """
+    never complete
+    """
+    def triggerCompletionCheck(self):
+        return
+
+# every epoch:
+#  go to epoch artwork and fetch epoch challenge
+#  defend base
+#  get rewards/punishment
+class EpochQuest(MetaQuestSequence):
+    """
+    state initialization
+    """
+
+    def __init__(self, description="epoch quest", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+
+        # save initial state and register
+        self.type = "EpochQuest"
+
+        quest = DefendBase()
+        self.subQuests.append(quest)
+
+        quest = ManageBase()
+        self.subQuests.append(quest)
+
+        quest = DoEpochChallenge()
+        self.subQuests.append(quest)
+
+    """
+    never complete
+    """
+    def triggerCompletionCheck(self):
+        return
+
 # map strings to Classes
 questMap = {
     "Quest": Quest,
@@ -9517,6 +9573,7 @@ questMap = {
     "TrainSkill": TrainSkill,
     "SecureCargo": SecureCargo,
     "LootRoom": LootRoom,
+    "EpochQuest": EpochQuest,
 }
 
 def getQuestFromState(state):

@@ -52,6 +52,9 @@ class Explosion(src.items.Item):
         """
 
         if self.container:
+            self.container.addAnimation(self.getPosition(),"explosion",3,{})
+
+        if self.container:
             self.container.damage()
 
         if self.xPosition and self.yPosition:

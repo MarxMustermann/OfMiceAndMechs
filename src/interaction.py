@@ -390,7 +390,9 @@ def handleCollision(char,charState):
     if charState["itemMarkedLast"] and char.personality["avoidItems"]:
         char.runCommandString(random.choice(("a","w","s","d",)))
         return
+    char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
 
+            
 def handleActivityKeypress(char, header, main, footer, flags):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
         text = """
@@ -2244,34 +2246,29 @@ select what you want to observe
                 char.combatMode = None
             char.addMessage("switched combatMode to: %s" % (char.combatMode,))
         if key in (commandChars.attack,):
-            if (
-                "NaiveMurderQuest" not in char.solvers and not char.godMode
-            ):  # disabled
-                char.addMessage("you do not have the nessecary solver yet (murder)")
-            else:
-                # bad code: should be part of a position object
-                adjascentFields = [
-                    (char.xPosition, char.yPosition),
-                    (char.xPosition - 1, char.yPosition),
-                    (char.xPosition + 1, char.yPosition),
-                    (char.xPosition, char.yPosition - 1),
-                    (char.xPosition, char.yPosition + 1),
-                ]
-                for enemy in char.container.characters:
-                    if enemy == char:
-                        continue
-                    if (
-                        not char.combatMode == "agressive"
-                        and enemy.faction == char.faction
-                    ):
-                        continue
-                    if (enemy.xPosition, enemy.yPosition) not in adjascentFields:
-                        continue
-                    if isinstance(char, src.characters.Monster) and char.phase == 4:
-                        char.addMessage("entered stage 5")
-                        char.enterPhase5()
-                    char.attack(enemy)
-                    break
+            # bad code: should be part of a position object
+            adjascentFields = [
+                (char.xPosition, char.yPosition),
+                (char.xPosition - 1, char.yPosition),
+                (char.xPosition + 1, char.yPosition),
+                (char.xPosition, char.yPosition - 1),
+                (char.xPosition, char.yPosition + 1),
+            ]
+            for enemy in char.container.characters:
+                if enemy == char:
+                    continue
+                if (
+                    not char.combatMode == "agressive"
+                    and enemy.faction == char.faction
+                ):
+                    continue
+                if (enemy.xPosition, enemy.yPosition) not in adjascentFields:
+                    continue
+                if isinstance(char, src.characters.Monster) and char.phase == 4:
+                    char.addMessage("entered stage 5")
+                    char.enterPhase5()
+                char.attack(enemy)
+                break
 
         # activate an item
         if key in ("c",):
@@ -2368,7 +2365,9 @@ select what you want to observe
                 char.addMessage("you do not have the nessecary solver yet (drop)")
             else:
                 if len(char.inventory):
-                    char.drop(char.inventory[-1])
+                    item = char.inventory[-1]
+                    char.drop(item)
+                    char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["--",item.render()]})
 
         # drink from the first available item in inventory
         # bad pattern: the user has to have the choice from what item to drink from
@@ -2506,6 +2505,8 @@ press key for advanced drop
                     return
 
                 item.pickUp(char)
+
+                char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["++",item.render()]})
 
         # open chat partner selection
         if key in (commandChars.hail,) and 1 == 0:

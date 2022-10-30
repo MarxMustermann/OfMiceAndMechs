@@ -1157,7 +1157,8 @@ class Room(src.saveing.Saveable):
                             distance = int(5*(duration/extraInfo["health"])+1)
                             if not extraInfo["mainChar"]:
                                 print(distance)
-                            offset = (random.randint(-distance,distance),random.randint(-distance,distance))
+                            xDistance = random.randint(-distance,distance)
+                            offset = (xDistance,random.choice([distance-abs(xDistance),-(distance-abs(xDistance))]))
                             newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])
                             self.addAnimation(newPos,"splatter",int(10*(duration/extraInfo["maxHealth"]))+1,{"mainChar":extraInfo["mainChar"]})
                     else:
@@ -1179,6 +1180,70 @@ class Room(src.saveing.Saveable):
                     animation[2] -= 1
                     if duration < 1:
                         self.animations.remove(animation)
+                elif animationType in ("scrapChange",):
+                    letters = ["*","+","#",";","%"]
+                    character = random.choice(letters)+random.choice(letters)
+                    display = character
+                    display = (src.interaction.urwid.AttrSpec("#740","#000"),display)
+
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+                    animation[2] -= 1
+
+                    if duration < 1:
+                        self.animations.remove(animation)
+                elif animationType in ("explosion",):
+                    display = "##"
+                    display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
+
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+                    animation[2] -= 1
+
+                    if duration < 1:
+                        self.animations.remove(animation)
+                elif animationType in ("showchar",):
+                    display = extraInfo["char"]
+
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+                    animation[2] -= 1
+
+                    if duration < 1:
+                        self.animations.remove(animation)
+                elif animationType in ("charsequence",):
+                    display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
+
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+                    animation[2] -= 1
+
+                    if duration < 1:
+                        self.animations.remove(animation)
+                elif animationType in ("smoke",):
+                    display = (src.interaction.urwid.AttrSpec("#555", "black"), "##")
+
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
+
+                    direction = random.choice([(1,0,0),(0,1,0),(-1,0,0),(1,0,0),])
+
+                    animation[2] -= 1
+                    
+
+                    self.animations.remove(animation)
+                    if duration > 0:
+                        self.addAnimation((animation[0][0]+direction[0],animation[0][1]+direction[1],animation[0][2]+direction[2],),animation[1],animation[2],extraInfo)
                 else:
                     display = "??"
                     chars[pos[1]][pos[0]] = display
@@ -2262,7 +2327,12 @@ class TrapRoom(EmptyRoom):
         if not oldPos == newPos and character.container == self:
             if self.electricalCharges > 0 and not character.faction == self.faction:
                 if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
-                    character.hurt(self.chargeStrength,reason="the floor shocks you")
+                    damage = self.chargeStrength
+
+                    self.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+                    self.addAnimation(character.getPosition(),"smoke",damage,{})
+
+                    character.hurt(damage,reason="the floor shocks you")
                     self.electricalCharges -= 1
                     character.awardReputation(amount=2,reason="discharging a trap room",carryOver=True)
 
@@ -2304,6 +2374,8 @@ class TrapRoom(EmptyRoom):
                         actor.revokeReputation(amount=2,reason="discharging a trap room",carryOver=True)
                     else:
                         actor.awardReputation(amount=2,reason="discharging a trap room",carryOver=True)
+                if actor:
+                    self.addAnimation(itemPair[1],"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
 
         super().addItems(items, actor=actor)
 

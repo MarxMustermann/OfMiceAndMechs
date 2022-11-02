@@ -4194,6 +4194,7 @@ Press ESC to close this window.
         mainRoom.addItem(produtionArtwork,(3,11,0))
 
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        self.personnelArtwork = personnelArtwork
         mainRoom.addItem(personnelArtwork,(9,1,0))
         personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
@@ -4677,6 +4678,9 @@ Activate it.
                 room.damage()
             counter += 1
         """
+
+        npc = self.personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
+        npc.duties.append("Questing")
 
         counter = 0
 

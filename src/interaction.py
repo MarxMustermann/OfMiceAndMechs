@@ -4856,7 +4856,7 @@ class JobAsMatrixMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
+        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing","Questing"]
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -5967,6 +5967,9 @@ def keyboardListener(key, targetCharacter=None):
         char = src.gamestate.gamestate.mainChar
     else:
         char = targetCharacter
+
+    if char.macroState["commandKeyQueue"]:
+        return
 
     global multi_currentChar
     multi_chars = src.gamestate.gamestate.multi_chars

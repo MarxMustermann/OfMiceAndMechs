@@ -8296,7 +8296,7 @@ class ReachBase(MetaQuestSequence):
             if pos[0] <= 7:
                 if pos[0] == 4:
                     direction = "north"
-                if pos[0] == 5:
+                elif pos[0] == 5:
                     direction = "north"
                 else:
                     direction = "east"
@@ -8701,7 +8701,7 @@ class SecureTile(GoToTile):
         self.reputationReward = reputationReward
         self.rewardText = rewardText
 
-    def postHandler(self,character):
+    def postHandler(self,character=None):
         if self.reputationReward and character:
             if self.rewardText:
                 text = self.rewardText

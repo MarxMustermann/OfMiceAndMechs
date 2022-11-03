@@ -23,6 +23,7 @@ class PersonnelArtwork(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("viewNPCs", "view npcs"),
+                                                                ("spawnBodyguard", "spawn bodyguard"),
                         ]
                         )
         self.applyMap = {
@@ -34,6 +35,7 @@ class PersonnelArtwork(src.items.Item):
                     "spawnMilitary": self.spawnMilitary,
                     "spawnSet": self.spawnSet,
                     "spawnRankUnranked": self.spawnRankUnranked,
+                    "spawnBodyguard": self.spawnBodyguard,
                         }
         self.cityLeader = None
         self.description = """
@@ -100,8 +102,32 @@ Use the item so see an overview over the NPCs in this base."""
         return self.spawnRank(3,character)
     def spawnRankUnranked(self,character):
         return self.spawnRank(None,character)
+    def spawnBodyguard(self,character):
+        return self.spawnRank(None,character)
     def spawnMilitary(self,character):
         return self.spawnRank(None,character,isMilitary=True)
+
+    def spawnBodyguard(self,character):
+        if character.rank == None or character.rank > 5:
+            character.addMessage("you need to be rank 5 or higher to spawn a bodyguard") 
+            return None
+
+        char = src.characters.Character()
+        char.registers["HOMEx"] = self.container.xPosition
+        char.registers["HOMEy"] = self.container.yPosition
+        char.rank = 6
+
+        character.subordinates.append(char)
+        char.superior = character
+        char.faction = character.faction
+
+        quest = src.quests.ProtectSuperior()
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.quests.append(quest)
+
+        self.container.addCharacter(char,5,6)
+        char.runCommandString("********")
 
     def spawnRank(self,rank,actor,isMilitary=False):
         cityLeader = self.fetchCityleader()

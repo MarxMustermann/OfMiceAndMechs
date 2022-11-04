@@ -4028,7 +4028,7 @@ class CreateQuestMenu(SubMenu):
                         break
 
                 if not foundQuest:
-                    char.assignQuest(quest)
+                    char.assignQuest(quest,active=True)
                 else:
                     foundQuest.addQuest(quest)
                 quest.activate()
@@ -4173,6 +4173,7 @@ class AdvancedQuestMenu(SubMenu):
                 # add quests to select from
                 if not self.options and not self.getSelection():
                     options = []
+                    """
                     for key, value in src.quests.questMap.items():
 
                         # show only quests the character has done
@@ -4184,6 +4185,9 @@ class AdvancedQuestMenu(SubMenu):
                             continue
 
                         options.append((value.type, key))
+                    """
+                    options.append(("SecureTile", "SecureTile"))
+                    options.append(("ProtectSuperior", "ProtectSuperior"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection
@@ -5968,7 +5972,7 @@ def keyboardListener(key, targetCharacter=None):
     else:
         char = targetCharacter
 
-    if char.macroState["commandKeyQueue"]:
+    if char.macroState["commandKeyQueue"] and not "ctrl" in key:
         return
 
     global multi_currentChar
@@ -6144,8 +6148,7 @@ def keyboardListener(key, targetCharacter=None):
                 break
 
         if foundChar:
-            char = character
-            state = char.macroState
+            src.gamestate.gamestate.mainChar = foundChar
     elif src.gamestate.gamestate.gameHalted:
         if key == "M":
             # 1000 moves and then stop

@@ -4680,7 +4680,8 @@ Activate it.
         """
 
         npc = self.personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        npc.duties.append("Questing")
+        if npc:
+            npc.duties.append("Questing")
 
         counter = 0
 

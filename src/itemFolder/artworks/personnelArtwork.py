@@ -24,6 +24,9 @@ class PersonnelArtwork(src.items.Item):
                         [
                                                                 ("viewNPCs", "view npcs"),
                                                                 ("spawnBodyguard", "spawn bodyguard"),
+                                                                ("spawnRank4", "spawn rank4"),
+                                                                ("spawnIndependentFighter", "spawn independent fighter"),
+                                                                ("spawnIndependentWorker", "spawn independent worker"),
                         ]
                         )
         self.applyMap = {
@@ -36,6 +39,8 @@ class PersonnelArtwork(src.items.Item):
                     "spawnSet": self.spawnSet,
                     "spawnRankUnranked": self.spawnRankUnranked,
                     "spawnBodyguard": self.spawnBodyguard,
+                    "spawnIndependentWorker": self.spawnIndependentWorker,
+                    "spawnIndependentFighter": self.spawnIndependentFighter,
                         }
         self.cityLeader = None
         self.description = """
@@ -44,6 +49,10 @@ This item allows to manage the clones in this base."""
         self.usageInfo = """
 Activate the item to use it.
 Use the item so see an overview over the NPCs in this base."""
+        self.charges = 3
+
+    def changeCharges(self,delta):
+        self.charges += delta
 
     def viewNPCs(self,character):
         submenue = src.interaction.ViewNPCsMenu(self)
@@ -80,7 +89,12 @@ Use the item so see an overview over the NPCs in this base."""
         return personel
         
     def fetchCityleader(self):
+        if self.cityLeader and self.cityLeader.dead:
+            self.cityLeader = None
         return self.cityLeader
+
+    def setCityleader(self,character):
+        self.cityLeader = character
 
     def spawnSet(self,character):
         cityleader = self.spawnRank(3,character)
@@ -102,16 +116,106 @@ Use the item so see an overview over the NPCs in this base."""
         return self.spawnRank(3,character)
     def spawnRankUnranked(self,character):
         return self.spawnRank(None,character)
-    def spawnBodyguard(self,character):
-        return self.spawnRank(None,character)
+
     def spawnMilitary(self,character):
         return self.spawnRank(None,character,isMilitary=True)
+
+    def spawnIndependentFighter(self,character):
+        if not self.charges:
+            character.addMessage("no charges left. Use the epoch artwork to recharge")
+            return None
+        self.charges -= 1
+
+        char = src.characters.Character()
+        char.registers["HOMEx"] = self.container.xPosition
+        char.registers["HOMEy"] = self.container.yPosition
+        char.rank = None
+
+        char.faction = character.faction
+
+        quest = src.quests.ActivateEpochArtwork(epochArtwork=self.container.getItemByPosition((6,6,0))[0])
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.quests.append(quest)
+        char.baseDamage = 10
+        char.movementSpeed = 1.5
+
+        char.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest",
+            "NaiveDropQuest",
+            "NaiveMurderQuest",
+            "DropQuestMeta",
+            "DeliverSpecialItem",
+        ] 
+
+        self.container.addCharacter(char,5,6)
+        char.runCommandString("********")
+
+    def spawnIndependentWorker(self,character):
+        if not self.charges:
+            character.addMessage("no charges left. Use the epoch artwork to recharge")
+            return None
+        self.charges -= 1
+
+        char = src.characters.Character()
+        char.registers["HOMEx"] = self.container.xPosition
+        char.registers["HOMEy"] = self.container.yPosition
+        char.rank = None
+        char.baseDamage = 5
+        char.movementSpeed = 0.5
+
+        char.faction = character.faction
+
+        quest = src.quests.ActivateEpochArtwork(epochArtwork=self.container.getItemByPosition((6,6,0))[0])
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.quests.append(quest)
+
+        char.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest",
+            "NaiveDropQuest",
+            "NaiveMurderQuest",
+            "DropQuestMeta",
+            "DeliverSpecialItem",
+        ] 
+
+        self.container.addCharacter(char,5,6)
+        char.runCommandString("********")
 
     def spawnBodyguard(self,character):
         if character.rank == None or character.rank > 5:
             character.addMessage("you need to be rank 5 or higher to spawn a bodyguard") 
             return None
 
+        if not self.charges:
+            character.addMessage("no charges left. Use the epoch artwork to recharge")
+            return None
+
+        self.charges -= 1
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
@@ -183,6 +287,9 @@ Use the item so see an overview over the NPCs in this base."""
                 for subsubleader in subleader.subordinates:
                     if subsubleader.dead:
                         continue
+                    for subordinate in subsubleader.subordinates[:]:
+                        if subordinate.dead:
+                            subsubleader.subordinates.remove(subordinate)
                     if len(subsubleader.subordinates) > 2:
                         continue
                     foundSubsubleader = subsubleader
@@ -206,7 +313,7 @@ Use the item so see an overview over the NPCs in this base."""
 
         if rank == 5:
             foundSubleader.subordinates.append(char)
-            char.duties.extend(["resource fetching","trap setting","hauling"])
+            char.duties.extend(["resource fetching","trap setting","hauling","machine placing"])
 
         if rank == 6:
             foundSubsubleader.subordinates.append(char)

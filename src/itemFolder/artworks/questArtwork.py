@@ -146,6 +146,88 @@ Clear the trap rooms to ensure that the bases first line of defence works.
             character.changed("got quest assigned")
 
         elif character.rank == 5:
+            currentTerrain = self.container.container
+            rooms = currentTerrain.getRoomByPosition((7,13,0))
+            room = None
+            if rooms:
+                room = rooms[0]
+            items = []
+            if room:
+                items = room.itemsOnFloor
+            foundItems = False
+            for item in items:
+                if item.type in ("Sword","Armor",):
+                    foundItems = True
+                    break
+
+            if foundItems:
+                quest = src.quests.questMap["SecureCargo"]()
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+Secure the cargo
+
+There was a supply run intended for the base.
+It got ambushed and the suplies were left there.
+Go there and fetch the weapons and armor.
+
+    """
+                character.addMessage("----------------"+text+"-----------------")
+
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.changed("got quest assigned")
+                return
+
+            rooms = self.getRoomsWithTag("farm")
+
+            nearestDistance = None
+            candidates = []
+            for room in rooms:
+                for item in room.itemsOnFloor:
+                    if item.type in ("Scrap",):
+                        continue
+                    if item.bolted:
+                        continue
+                    
+                    distance = abs(room.xPosition-7)+abs(room.yPosition-7)
+                    if nearestDistance == None or distance < nearestDistance:
+                        candidates = []
+                        nearestDistance = distance
+
+                    if distance > nearestDistance:
+                        continue
+
+                    candidates.append(room)
+
+            if candidates:
+                room = random.choice(candidates)
+                quest = src.quests.questMap["LootRoom"](roomPos=room.getPosition(),description="loot farm")
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+Secure goo flasks
+
+The ruined farms still have useful items in them.
+Secure the farms on the position %s and loot the items there.
+
+"""%(room.getPosition(),)
+                character.addMessage("----------------"+text+"-----------------")
+
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.changed("got quest assigned")
+                return
+
+        elif character.rank == 4:
             print("rank5 quest")
             enemies = self.getEnemiesWithTag("patrol")
             if enemies:
@@ -233,88 +315,6 @@ So try to not be nearby at that point.
                 character.changed("got quest assigned")
                 return
 
-
-        elif character.rank == 4:
-            currentTerrain = self.container.container
-            rooms = currentTerrain.getRoomByPosition((7,13,0))
-            room = None
-            if rooms:
-                room = rooms[0]
-            items = []
-            if room:
-                items = room.itemsOnFloor
-            foundItems = False
-            for item in items:
-                if item.type in ("Sword","Armor",):
-                    foundItems = True
-                    break
-
-            if foundItems:
-                quest = src.quests.questMap["SecureCargo"]()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    character.quests[0].addQuest(quest)
-                else:
-                    character.quests.insert(0,quest)
-                text = """
-Secure the cargo
-
-There was a supply run intended for the base.
-It got ambushed and the suplies were left there.
-Go there and fetch the weapons and armor.
-
-    """
-                character.addMessage("----------------"+text+"-----------------")
-
-                submenue = src.interaction.TextMenu(text)
-                character.macroState["submenue"] = submenue
-                character.changed("got quest assigned")
-                return
-
-            rooms = self.getRoomsWithTag("farm")
-
-            nearestDistance = None
-            candidates = []
-            for room in rooms:
-                for item in room.itemsOnFloor:
-                    if item.type in ("Scrap",):
-                        continue
-                    if item.bolted:
-                        continue
-                    
-                    distance = abs(room.xPosition-7)+abs(room.yPosition-7)
-                    if nearestDistance == None or distance < nearestDistance:
-                        candidates = []
-                        nearestDistance = distance
-
-                    if distance > nearestDistance:
-                        continue
-
-                    candidates.append(room)
-
-            if candidates:
-                room = random.choice(candidates)
-                quest = src.quests.questMap["LootRoom"](roomPos=room.getPosition(),description="loot farm")
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    character.quests[0].addQuest(quest)
-                else:
-                    character.quests.insert(0,quest)
-                text = """
-Secure goo flasks
-
-The ruined farms still have useful items in them.
-Secure the farms on the position %s and loot the items there.
-
-"""%(room.getPosition(),)
-                character.addMessage("----------------"+text+"-----------------")
-
-                submenue = src.interaction.TextMenu(text)
-                character.macroState["submenue"] = submenue
-                character.changed("got quest assigned")
-                return
 
         elif character.rank == 3:
             quest = src.quests.questMap["DestroySpawners"]()

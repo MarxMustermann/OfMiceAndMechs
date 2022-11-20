@@ -25,7 +25,7 @@ class Shocker(src.items.Item):
 
         compressorFound = None
         for item in character.inventory:
-            if isinstance(item,src.items.itemMap["CrystalCompressor"]):
+            if isinstance(item,src.items.itemMap["LightningRod"]):
                 compressorFound = item
                 break
 
@@ -36,6 +36,8 @@ class Shocker(src.items.Item):
                         self.container.electricalCharges += 1
                         character.addMessage("you activate the shocker and increase the rooms charges to %s"%(self.container.electricalCharges,))
                         character.inventory.remove(compressorFound)
+
+                        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"~*"})
                     else:
                         character.addMessage("this room is fully charged")
                 else:

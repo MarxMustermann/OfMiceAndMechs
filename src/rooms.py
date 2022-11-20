@@ -158,6 +158,16 @@ class Room(src.saveing.Saveable):
             "furnaces",
             ])
 
+    def getItemsByType(self,itemType, needsBolted = False):
+        result = []
+        for item in self.itemsOnFloor:
+            if needsBolted and not item.bolted:
+                continue
+            if not item.type == itemType:
+                continue
+            result.append(item)
+        return result
+
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
@@ -2316,6 +2326,16 @@ class TrapRoom(EmptyRoom):
 
         self.electricalCharges = 90
         self.maxElectricalCharges = 500
+
+    def needsCharges(self):
+        return  self.electricalCharges < self.maxElectricalCharges
+
+    def changeCharges(self,delta):
+        self.electricalCharges += delta
+        if self.electricalCharges < 0:
+            self.electricalCharges = 0
+        if self.electricalCharges > self.maxElectricalCharges:
+            self.electricalCharges = self.maxElectricalCharges
 
     def moveCharacterDirection(self, character, direction):
         oldPos = character.getPosition()

@@ -1292,17 +1292,25 @@ class ReloadTraproom(MetaQuestSequence):
                         continue
                     foundCharger = item
 
-                if character.inventory and character.inventory[-1].type == "CrystalCompressor":
+                if character.inventory and character.inventory[-1].type == "LightningRod":
                     chargerPos = foundCharger.getPosition()
                     characterPos = character.getPosition()
                     if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
-                        self.addQuest(RunCommand(command=10*"Ja"))
+                        quest = RunCommand(command=10*"Ja")
+                        quest.activate()
+                        self.addQuest(quest)
                     elif chargerPos == (characterPos[0]+1,characterPos[1],characterPos[2]):
-                        self.addQuest(RunCommand(command=10*"Jd"))
+                        quest = RunCommand(command=10*"Jd")
+                        quest.activate()
+                        self.addQuest(quest)
                     elif chargerPos == (characterPos[0],characterPos[1]-1,characterPos[2]):
-                        self.addQuest(RunCommand(command=10*"Jw"))
+                        quest = RunCommand(command=10*"Jw")
+                        quest.activate()
+                        self.addQuest(quest)
                     elif chargerPos == (characterPos[0],characterPos[1]+1,characterPos[2]):
-                        self.addQuest(RunCommand(command=10*"Js"))
+                        quest = RunCommand(command=10*"Js")
+                        quest.activate()
+                        self.addQuest(quest)
                     else:
                         quest = GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True)
                         quest.activate()
@@ -1312,8 +1320,8 @@ class ReloadTraproom(MetaQuestSequence):
 
                 if foundCharger:
                     source = None
-                    for sourceCandidate in room.sources:
-                        if not sourceCandidate[1] == "CrystalCompressor":
+                    for sourceCandidate in random.sample(room.sources,len(room.sources)):
+                        if not sourceCandidate[1] == "LightningRod":
                            continue 
 
                         sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
@@ -1331,7 +1339,7 @@ class ReloadTraproom(MetaQuestSequence):
 
                         self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
                         self.addQuest(GoToTile(targetPosition=room.getPosition()))
-                        self.addQuest(FetchItems(toCollect="CrystalCompressor"))
+                        self.addQuest(FetchItems(toCollect="LightningRod"))
                         self.addQuest(GoToTile(targetPosition=source[0]))
                         return
 
@@ -1347,8 +1355,9 @@ class ReloadTraproom(MetaQuestSequence):
             room = rooms[0]
 
         try:
-            if room.electricalCharges > 30:
-                return True
+            if room.electricalCharges < room.maxElectricalCharges:
+                return False
+            return True
         except:
             pass
 
@@ -1624,18 +1633,36 @@ class Equip(MetaQuestSequence):
                 if not source:
                     character.runCommandString(".14.")
                     return
+            
+                quest = GoToTile(targetPosition=source[0],description="go to weapon production ")
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
+                return
 
-                if not (room.xPosition,room.yPosition) == source[0]:
-                    quest = GoToTile(targetPosition=source[0],description="go to weapon production ")
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    self.addQuest(quest)
-                    return
-
-            self.addQuest(RunCommand(command="j", description="equip "+itemType+" by pressing"))
-            self.addQuest(GoToPosition(targetPosition=sourceSlots[0][0],description="go to "+itemType))
-
-            return
+            characterPos = character.getPosition()
+            if sourceSlots[0][0] == (characterPos[0],characterPos[1],characterPos[2]):
+                self.addQuest(RunCommand(command="j", description="equip "+itemType+" by pressing"))
+                return
+            elif sourceSlots[0][0] == (characterPos[0]-1,characterPos[1],characterPos[2]):
+                self.addQuest(RunCommand(command="Ja", description="equip "+itemType+" by pressing"))
+                return
+            elif sourceSlots[0][0] == (characterPos[0],characterPos[1]-1,characterPos[2]):
+                self.addQuest(RunCommand(command="Jd", description="equip "+itemType+" by pressing"))
+                return
+            elif sourceSlots[0][0] == (characterPos[0],characterPos[1]+1,characterPos[2]):
+                self.addQuest(RunCommand(command="Js", description="equip "+itemType+" by pressing"))
+                return
+            elif sourceSlots[0][0] == (characterPos[0],characterPos[1]-1,characterPos[2]):
+                self.addQuest(RunCommand(command="Jw", description="equip "+itemType+" by pressing"))
+                return
+            else:
+                quest = GoToPosition(targetPosition=sourceSlots[0][0],description="go to weapon production ",ignoreEndBlocked=True)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.addQuest(quest)
+                return
+            
         return super().solver(character)
 
 class RunCommand(MetaQuestSequence):
@@ -2114,18 +2141,9 @@ class GatherScrap(MetaQuestSequence):
             return
 
         if len(character.inventory) < 10:
-            foundItem = None
-            if isinstance(character.container,src.rooms.Room):
-                for item in character.container.itemsOnFloor:
-                    if item.type == "Scrap":
-                        foundItem = item
-                        break
-            else:
-                foundItem = True
-            if foundItem:
-                return
+            return
 
-        super().triggerCompletionCheck()
+        self.postHandler()
 
     def solver(self, character):
 
@@ -2168,39 +2186,52 @@ class GatherScrap(MetaQuestSequence):
             if foundScrap:
                 break
 
-        if foundScrap:
-            command = ""
+        if not foundScrap:
+            room = character.container
+            if not isinstance(room,src.rooms.Room):
+                return
 
-            for step in pathMap[foundScrap[0]]:
-                if step == (-1,0):
-                    command += "a"
-                if step == (1,0):
-                    command += "d"
-                if step == (0,-1):
-                    command += "w"
-                if step == (0,1):
-                    command += "s"
+            print("check for source")
+            source = None
+            for potentialSource in random.sample(room.sources,len(room.sources)):
+                if potentialSource[1] == "rawScrap":
+                    source = potentialSource
+                    print("found src")
+                    print(source)
+                    break
 
-            if foundScrap[2] == (-1,0):
-                pickUpCommand = "Ka"
-            if foundScrap[2] == (1,0):
-                pickUpCommand = "Kd"
-            if foundScrap[2] == (0,1):
-                pickUpCommand = "Ks"
-            if foundScrap[2] == (0,-1):
-                pickUpCommand = "Kw"
-            if foundScrap[2] == (0,0):
-                pickUpCommand = "k"
+            if source == None:
+                self.fail()
+                return
 
-            command += pickUpCommand*min(10-len(character.inventory),character.container.getItemByPosition(foundScrap[1])[0].amount)
-            character.runCommandString(command)
+            self.addQuest(GoToTile(targetPosition=(source[0][0],source[0][1],0)))
             return
 
-        """
-        toCheck = [character.getPosition()]
-        while toCheck:
-        """
-        character.runCommandString("20.")
+        command = ""
+
+        for step in pathMap[foundScrap[0]]:
+            if step == (-1,0):
+                command += "a"
+            if step == (1,0):
+                command += "d"
+            if step == (0,-1):
+                command += "w"
+            if step == (0,1):
+                command += "s"
+
+        if foundScrap[2] == (-1,0):
+            pickUpCommand = "Ka"
+        if foundScrap[2] == (1,0):
+            pickUpCommand = "Kd"
+        if foundScrap[2] == (0,1):
+            pickUpCommand = "Ks"
+        if foundScrap[2] == (0,-1):
+            pickUpCommand = "Kw"
+        if foundScrap[2] == (0,0):
+            pickUpCommand = "k"
+
+        command += pickUpCommand*min(10-len(character.inventory),character.container.getItemByPosition(foundScrap[1])[0].amount)
+        character.runCommandString(command)
 
 class CleanTraps(MetaQuestSequence):
 
@@ -2271,24 +2302,33 @@ class CleanTraps(MetaQuestSequence):
         super().postHandler()
 
 class ClearInventory(MetaQuestSequence):
-    def __init__(self, description="clear inventory", creator=None, targetPosition=None):
+    def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.returnToTile = True
+        if returnToTile:
+            self.setParameters({"returnToTile":returnToTile})
 
         self.type = "ClearInventory"
+        self.tileToReturnTo = None
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
 
         if not character.inventory:
+            if self.returnToTile and not character.getBigPosition() == self.tileToReturnTo:
+                return
             super().triggerCompletionCheck()
             return
         return
 
     def solver(self, character):
         self.triggerCompletionCheck(character)
+
+        if self.returnToTile and not self.tileToReturnTo:
+            self.tileToReturnTo = character.getBigPosition()
 
         if not self.subQuests:
             if not isinstance(character.container,src.rooms.Room):
@@ -2308,27 +2348,35 @@ class ClearInventory(MetaQuestSequence):
 
             # clear inventory local
             room = character.getRoom()
-            if len(character.inventory) > 1 and room:
+            if len(character.inventory) and room:
                 emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                 if emptyInputSlots:
                     self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
                     return True
 
-            # go to garbage stockpile and unload
-            if len(character.inventory) > 6:
-                if not "HOMEx" in character.registers:
-                    return True
+            if not "HOMEx" in character.registers:
+                return True
 
-                terrain = character.getTerrain()
+            if character.inventory:
+                homeRoom = character.getHomeRoom()
 
-                homeRoom = terrain.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
                 if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
                     return True
                 self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
                 return True
+
+            if self.returnToTile and not character.getBigPosition() == self.returnToTile:
+                self.addQuest(GoToTile(targetPosition=self.tileToReturnTo))
+                return True
+
             return False
 
         super().solver(character)
+
+    def setParameters(self,parameters):
+        if "returnToTile" in parameters and "returnToTile" in parameters:
+            self.returnToTile = parameters["returnToTile"]
+        return super().setParameters(parameters)
 
 class ClearTile(MetaQuestSequence):
     def __init__(self, description="clear tile", creator=None, targetPosition=None):
@@ -2381,7 +2429,10 @@ class ClearTile(MetaQuestSequence):
                     character.runCommandString("d")
                     return
 
-            if not character.getBigPosition() == self.targetPosition:
+            if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
+                print("--------")
+                print(character.getBigPosition())
+                print(self.targetPosition)
                 quest = src.quests.GoToTile(targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 return
@@ -2423,7 +2474,7 @@ class ClearTile(MetaQuestSequence):
             if items:
                 item = random.choice(items)
 
-                quest = src.quests.GoToPosition(targetPosition=item.getPosition())
+                quest = src.quests.GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True)
                 self.addQuest(quest)
                 return
 
@@ -2605,6 +2656,11 @@ class BeUsefull(MetaQuestSequence):
             if hasattr(room,"electricalCharges"):
                 if room.electricalCharges < room.maxElectricalCharges:
 
+                    quest = ReloadTraproom(targetPosition=room.getPosition())
+                    self.addQuest(quest)
+                    quest.activate()
+                    return
+                """
                     foundCharger = None
                     for item in room.itemsOnFloor:
                         if not item.bolted:
@@ -2613,7 +2669,7 @@ class BeUsefull(MetaQuestSequence):
                             continue
                         foundCharger = item
 
-                    if character.inventory and character.inventory[-1].type == "CrystalCompressor":
+                    if character.inventory and character.inventory[-1].type == "LightningRod":
                         chargerPos = foundCharger.getPosition()
                         characterPos = character.getPosition()
                         if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
@@ -2634,7 +2690,7 @@ class BeUsefull(MetaQuestSequence):
                     if foundCharger:
                         source = None
                         for sourceCandidate in room.sources:
-                            if not sourceCandidate[1] == "CrystalCompressor":
+                            if not sourceCandidate[1] == "LightningRod":
                                continue 
 
                             sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
@@ -2652,9 +2708,10 @@ class BeUsefull(MetaQuestSequence):
 
                             self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
                             self.addQuest(GoToTile(targetPosition=room.getPosition()))
-                            self.addQuest(FetchItems(toCollect="CrystalCompressor"))
+                            self.addQuest(FetchItems(toCollect="LightningRod"))
                             self.addQuest(GoToTile(targetPosition=source[0]))
                             return
+                """
 
         if "resource gathering" in character.duties:
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
@@ -2697,7 +2754,7 @@ class BeUsefull(MetaQuestSequence):
 
         if "clearing" in character.duties:
             # clean up room
-            if not room.floorPlan and len(character.inventory) < 10:
+            if not room.floorPlan:
                 for position in random.sample(room.walkingSpace,len(room.walkingSpace)):
                     items = room.getItemByPosition(position)
 
@@ -2706,20 +2763,13 @@ class BeUsefull(MetaQuestSequence):
                     if items[0].bolted:
                         continue
 
-                    if triggerClearIneventory():
+                    if not character.getFreeInventorySpace():
+                        quest = ClearInventory()
+                        self.addQuest(quest)
                         return
 
-                    if position == (character.xPosition+1,character.yPosition,0):
-                        self.addQuest(RunCommand(command=10*"Kd"))
-                    elif position == (character.xPosition-1,character.yPosition,0):
-                        self.addQuest(RunCommand(command=10*"Ka"))
-                    elif position == (character.xPosition,character.yPosition+1,0):
-                        self.addQuest(RunCommand(command=10*"Ks"))
-                    elif position == (character.xPosition,character.yPosition-1,0):
-                        self.addQuest(RunCommand(command=10*"Kw"))
-                    else: 
-                        self.addQuest(RunCommand(command="10k"))
-                        self.addQuest(GoToPosition(targetPosition=position,ignoreEndBlocked=True))
+                    quest = src.quests.ClearTile(targetPosition=room.getPosition())
+                    self.addQuest(quest)
                     return
 
         if "hauling" in character.duties:
@@ -7631,6 +7681,7 @@ class GoToTile(Quest):
                 else:
                     direction = path[-1]
 
+            """
             if self.paranoid:
                 if not self.sentSubordinates and character.subordinates:
                     if not dryRun:
@@ -7639,6 +7690,7 @@ class GoToTile(Quest):
                     return command
                 if not dryRun:
                     self.sentSubordinates = False
+            """
 
             if direction == (1,0):
                 if charPos == (12,6,0):
@@ -7737,6 +7789,7 @@ class GoToTile(Quest):
                 else:
                     direction = path[-1]
 
+            """
             if self.paranoid:
                 if not self.sentSubordinates and character.subordinates:
                     if not dryRun:
@@ -7744,6 +7797,7 @@ class GoToTile(Quest):
                     command = "QSNSecureTile\n%s,%s\nlifetime:40; ."%(tilePos[0]+direction[0],tilePos[1]+direction[1],)
                     return command
                 self.sentSubordinates = False
+            """
 
             if direction == (1,0):
                 if charPos == (13,7,0):
@@ -7887,7 +7941,7 @@ class TrainSkill(MetaQuestSequence):
         if not character:
             return
 
-        if "fighting" in character.skills:
+        if character.skills:
             self.postHandler()
             return True
         return False
@@ -7896,6 +7950,7 @@ class TrainSkill(MetaQuestSequence):
         if not self.active:
             return
 
+        """
         while self.subQuests:
             self.subQuests[-1].triggerCompletionCheck(character)
             if not self.subQuests:
@@ -7903,21 +7958,20 @@ class TrainSkill(MetaQuestSequence):
             if not self.subQuests[-1].completed:
                 break
             self.subQuests.pop()
+        """
 
         if self.subQuests:
             return
 
         if not isinstance(character.container, src.rooms.Room):
+            quest = GoHome()
+            quest.activate()
+            self.addQuest(quest)
             return
 
         room = character.container
 
-        for item in room.itemsOnFloor:
-            if not item.bolted:
-                continue
-            if not item.type == "BasicTrainer":
-                continue
-
+        for item in room.getItemsByType("BasicTrainer",needsBolted=True):
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
                 quest = RunCommand(command=list("Ja.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
                 quest.activate()
@@ -7943,16 +7997,12 @@ class TrainSkill(MetaQuestSequence):
             quest.assignToCharacter(character)
             self.addQuest(quest)
             return
-        self.addQuest(GoToTile(targetPosition=(7,7,0),description="go to command centre"))
+        self.addQuest(GoHome(description="go to command centre"))
         return
 
     def solver(self,character):
         self.triggerCompletionCheck(character)
         if not self.subQuests:
-            if not isinstance(character.container, src.rooms.Room):
-                character.runCommandString("w")
-                return
-
             self.generateSubquests(character)
             return
         super().solver(character)
@@ -7963,15 +8013,8 @@ class TrainSkill(MetaQuestSequence):
 
         self.generateSubquests(extraInfo[0])
 
-    def handleTileChange(self):
-        for quest in self.subQuests:
-            quest.postHandler()
-
-        self.subQuests = []
-
     def assignToCharacter(self, character):
         character.addListener(self.handleMovement, "moved")
-        character.addListener(self.handleTileChange, "changedTile")
 
         super().assignToCharacter(character)
 
@@ -7985,6 +8028,10 @@ class GetPromotion(MetaQuestSequence):
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
+
+        if character.reputation == 0:
+            self.fail()
+            return True
 
         if character.rank <= self.targetRank:
             self.postHandler()
@@ -9574,6 +9621,8 @@ questMap = {
     "SecureCargo": SecureCargo,
     "LootRoom": LootRoom,
     "EpochQuest": EpochQuest,
+    "ClearTile": ClearTile,
+    "ReloadTraproom": ReloadTraproom,
 }
 
 def getQuestFromState(state):

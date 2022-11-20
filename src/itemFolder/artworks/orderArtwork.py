@@ -181,7 +181,7 @@ That should usually be around 10-20 ticks."""
                 target.quests = []
                 continue
             if extraInfo["questType"] == "shelter":
-                quest = src.quests.questMap["WaitQuest"](lifetime=100)
+                quest = src.quests.questMap["WaitQuest"]()
                 quest.assignToCharacter(target)
                 quest.activate()
                 target.quests.insert(0,quest)
@@ -276,6 +276,24 @@ That should usually be around 10-20 ticks."""
                         "description":"send npcs to restock room",
                     }
 
+                functionMap[(x,y)]["c"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"amount":0,"questType":"ClearTile"},
+                        },
+                        "description":"send npcs to that tile",
+                    }
+
+                functionMap[(x,y)]["t"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"amount":0,"questType":"ReloadTraproom"},
+                        },
+                        "description":"send npcs to reload traps on that tile",
+                    }
+
                 functionMap[(x,y)]["Q"] = {
                         "function": {
                             "container":self,
@@ -308,13 +326,29 @@ That should usually be around 10-20 ticks."""
                         },
                         "description":"send npcs to that tile (specific number)",
                     }
+                functionMap[(x,y)]["C"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"questType":"ClearTile"},
+                        },
+                        "description":"send npcs to clear that tile",
+                    }
+                functionMap[(x,y)]["T"] = {
+                        "function": {
+                            "container":self,
+                            "method":"questFromMap",
+                            "params":{"character":character,"questType":"ReloadTraproom"},
+                        },
+                        "description":"send npcs to reload traps on that tile",
+                    }
 
         plot = (self.container.xPosition,self.container.yPosition)
         mapContent[plot[1]][plot[0]] = "CB"
 
         extraText = "\n\n"
 
-        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
+        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=character.getBigPosition())
         character.macroState["submenue"] = self.submenue
 
     def fetchCityleader(self):

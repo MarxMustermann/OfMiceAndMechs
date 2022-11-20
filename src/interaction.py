@@ -163,6 +163,11 @@ def setUpTcod():
     global tcodAudio
     tcodAudio = audio
 
+    tcod.lib.SDL_SetWindowFullscreen(
+        context.sdl_window_p,
+        tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+    )
+
     global tcodMixer
     global tcodAudioDevice
     device = src.interaction.tcodAudio.open()
@@ -3915,7 +3920,11 @@ class CharacterInfoMenu(SubMenu):
             text += ": %s \n" % json.dumps(jobOrder.tasks)#,indent=4)
         text += "\n"
         text += "lastJobOrder: %s\n" % char.lastJobOrder
+        text += "skills: %s\n" % char.skills
+        text += "duties: %s\n" % char.duties
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
+        text += "position: %s\n" % (char.getPosition(),)
+        text += "big position: %s\n" % (char.getBigPosition(),)
 
         return text
 
@@ -3996,12 +4005,15 @@ class CreateQuestMenu(SubMenu):
             elif param["type"] == "string":
                 self.questParams[param["name"]] = rawParameter
             elif param["type"] == "coordinate":
-                try:
-                    self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0) 
-                except:
-                    print(rawParameter)
-                    print(self.quest)
-                    return True
+                if rawParameter == ".":
+                    self.questParams[param["name"]] = character.getBigPosition() 
+                else:
+                    try:
+                        self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0) 
+                    except:
+                        print(rawParameter)
+                        print(self.quest)
+                        return True
             self.submenu = None
 
         if self.requiredParams == None:
@@ -4009,7 +4021,10 @@ class CreateQuestMenu(SubMenu):
 
         if self.requiredParams and not self.submenu:
             param = self.requiredParams[-1]
-            self.submenu = src.interaction.InputMenu("%s"%(param,))
+            description = "set param: "
+            if param["type"] == "coordinate":
+                description += str(character.getBigPosition())
+            self.submenu = src.interaction.InputMenu("%s%s"%(description,param,))
             self.submenu.handleKey("~", noRender=noRender, character=character)
             self.stealAllKeys = True
             return False
@@ -4187,7 +4202,11 @@ class AdvancedQuestMenu(SubMenu):
                         options.append((value.type, key))
                     """
                     options.append(("SecureTile", "SecureTile"))
+                    options.append(("ClearTile", "ClearTile"))
+                    options.append(("ClearInventory", "ClearInventory"))
+                    options.append(("BeUsefull", "BeUsefull"))
                     options.append(("ProtectSuperior", "ProtectSuperior"))
+                    options.append(("Equip", "Equip"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection
@@ -4712,6 +4731,10 @@ class ViewNPCsMenu(SubMenu):
 
         characters = self.personnelArtwork.getPersonnelList()
 
+        if not characters:
+            main.set_text((urwid.AttrSpec("default", "default"), "no city leader found"))
+            return
+
         if key in ("w","a",):
             if self.index > 0:
                 self.index -= 1
@@ -4883,6 +4906,8 @@ class JobAsMatrixMenu(SubMenu):
             rowCounter += 1
 
             for subleader in self.cityLeader.subordinates:
+                if subleader.dead:
+                    continue
                 if rowCounter == self.index[0]:
                     dutyname = duties[self.index[1]]
                     if dutyname in subleader.duties:
@@ -4892,6 +4917,8 @@ class JobAsMatrixMenu(SubMenu):
                 rowCounter += 1
 
             for subleader in self.cityLeader.subordinates:
+                if subleader.dead:
+                    continue
                 for subsubleader in subleader.subordinates:
                     if rowCounter == self.index[0]:
                         dutyname = duties[self.index[1]]
@@ -4902,6 +4929,8 @@ class JobAsMatrixMenu(SubMenu):
                     rowCounter += 1
 
             for subleader in self.cityLeader.subordinates:
+                if subleader.dead:
+                    continue
                 for subsubleader in subleader.subordinates:
                     for worker in subsubleader.subordinates:
                         if rowCounter == self.index[0]:
@@ -4961,6 +4990,8 @@ class JobAsMatrixMenu(SubMenu):
 
         text.append("\nrank 4 ----\n")
         for subleader in cityLeader.subordinates:
+            if subleader.dead:
+                continue
             color = "default"
             if lineCounter == self.index[0]:
                 color = "#333"
@@ -4988,6 +5019,8 @@ class JobAsMatrixMenu(SubMenu):
 
         text.append("rank 5 ----\n")
         for subleader in cityLeader.subordinates:
+            if subleader.dead:
+                continue
             for subsubleader in subleader.subordinates:
                 color = "default"
                 if lineCounter == self.index[0]:
@@ -5016,6 +5049,8 @@ class JobAsMatrixMenu(SubMenu):
 
         text.append("rank 6 ----\n")
         for subleader in cityLeader.subordinates:
+            if subleader.dead:
+                continue
             for subsubleader in subleader.subordinates:
                 for worker in subsubleader.subordinates:
 
@@ -5079,7 +5114,7 @@ class JobByRankMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
+        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing","Questing"]
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -5274,7 +5309,7 @@ class MapMenu(SubMenu):
         self.functionMap = functionMap
         self.extraText = extraText
         if cursor:
-            self.cursor = cursor
+            self.cursor = (cursor[0],cursor[1],)
         else:
             self.cursor = (7,7)
 
@@ -5607,7 +5642,7 @@ class RoomMenu(SubMenu):
         else:
                 self.persistentText.append("There is no staff assigned assign staff by using the staff artwork (SA)")
 
-        self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources")
+        self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources\n- o: issue room orders")
 
         main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
@@ -5620,6 +5655,19 @@ class RoomMenu(SubMenu):
 
         if character and key in ("r",):
             character.macroState["submenue"] = RoomSourceMenu(self.room)
+
+        if character and key in ("o",):
+            homeRoom = character.getHomeRoom()
+            print(homeRoom)
+            items = homeRoom.getItemsByType("OrderArtwork",needsBolted=True)
+            if not items:
+                character.addMessage("order artwork not found")
+                return True
+            item = items[0]
+            print(item)
+            item.showMap(character)
+            self.done = True
+            return True
 
         # exit the submenu
         if key in ("esc",):
@@ -7316,6 +7364,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         events = tcod.event.get()
         for event in events:
+            print(event)
             if submenu == "gameslot":
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
@@ -8181,7 +8230,7 @@ def gameLoop(loop, user_data=None):
 
             if tcod:
                 getTcodEvents()
-                getNetworkedEvents()
+                #getNetworkedEvents()
 
 
             hasAutosolveQuest = False
@@ -8315,7 +8364,7 @@ def advanceChar(char,removeChars):
                             hasAutosolveQuest = True
 
                         getTcodEvents()
-                        getNetworkedEvents()
+                        #getNetworkedEvents()
 
                         if shadowCharacter:
                             while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":

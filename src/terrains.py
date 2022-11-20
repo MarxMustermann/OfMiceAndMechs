@@ -420,7 +420,7 @@ class Terrain(src.saveing.Saveable):
                         char.runCommandString("aa")
                         char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
-                char.addMessage("a force field pushes you test")
+                char.addMessage("a force field pushes you")
                 char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
 
             if char.xPosition % 15 == 14:

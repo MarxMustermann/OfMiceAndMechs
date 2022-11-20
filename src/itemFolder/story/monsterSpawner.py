@@ -1,4 +1,5 @@
 import src
+import random
 
 
 class MonsterSpawner(src.items.Item):
@@ -31,6 +32,26 @@ class MonsterSpawner(src.items.Item):
         event.setCallback({"container": new, "method": "explode"})
         self.container.addEvent(event)
         self.destroy()
+
+    def spawnMonster(self,mass=1):
+        for i in range(0,mass):
+            pos = self.getPosition()
+            room = self.container
+            enemy = src.characters.Monster(pos[0],pos[1])
+            enemy.health = 100
+            enemy.baseDamage = 7
+            enemy.faction = "invader"
+            room.addCharacter(enemy,pos[0],pos[1])
+
+            quest = src.quests.ClearTerrain()
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+    def destroy(self):
+        self.spawnMonster(mass=100)
+        super().destroy()
 
     def render(self):
         return "MS"

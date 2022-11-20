@@ -31,6 +31,8 @@ Use it by activating it."""
         if character.registers.get("gotMostBasicTraining") == None:
             character.registers["gotMostBasicTraining"] = True
             self.implantIntroduction({"character":character,"step":0})
+            character.registers["HOMEx"] = 7
+            character.registers["HOMEy"] = 7
             return
         
         if character.rank == None:
@@ -96,49 +98,63 @@ Additionally you recieve 2 health vials.
             return
 
         if character.rank == 4:
-            if character.reputation < self.requiredReputationForRank3:
+            cityleader = self.container.getItemsByType("PersonnelArtwork")[0].fetchCityleader()
+            print(cityleader)
+            if cityleader:
                 text = """
 
-you need %s reputation to be promoted.
+you cannot be promoted further. The base already has a leader.
 
-gain reputation by completing quests and killing enemies.
-"""%(self.requiredReputationForRank3,)
-            else:
-                text = """
-
-you are hereby rank 3.
-This means you are the commander of this base now.
-
-You will carry the burden of the epoch quest now.
-
-To help you with that you got the universal leaders blessing.
-Additionally you recieve 2 health vials.
+Reapply after this changes.
 
 """
-                character.rank = 3
                 character.reputation = 0
+            else:
+                if character.reputation < self.requiredReputationForRank3:
+                    text = """
 
-                character.baseDamage += self.baseDamageEffect
-                character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
-                character.maxHealth += self.healthIncrease
-                character.heal(self.healingEffect)
-                character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+    you need %s reputation to be promoted.
 
-                item = src.items.itemMap["Vial"]()
-                item.uses = item.maxUses
-                character.addToInventory(item,force=True)
+    gain reputation by completing quests and killing enemies.
+    """%(self.requiredReputationForRank3,)
+                else:
+                    text = """
 
-                item = src.items.itemMap["Vial"]()
-                item.uses = item.maxUses
-                character.addToInventory(item,force=True)
+    you are hereby rank 3.
+    This means you are the commander of this base now.
 
-                #for quest in character.quests:
-                #    quest.postHandler()
+    You will carry the burden of the epoch quest now.
 
-                #character.quests = []
-                #quest = src.quests.EpochQuest()
-                #quest.assignToCharacter(character)
-                #character.quests.append(quest)
+    To help you with that you got the universal leaders blessing.
+    Additionally you recieve 2 health vials.
+
+    """
+                    character.rank = 3
+                    character.reputation = 0
+
+                    character.baseDamage += self.baseDamageEffect
+                    character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+                    character.maxHealth += self.healthIncrease
+                    character.heal(self.healingEffect)
+                    character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+
+                    item = src.items.itemMap["Vial"]()
+                    item.uses = item.maxUses
+                    character.addToInventory(item,force=True)
+
+                    item = src.items.itemMap["Vial"]()
+                    item.uses = item.maxUses
+                    character.addToInventory(item,force=True)
+
+                    self.container.getItemsByType("PersonnelArtwork")[0].setCityleader(character)
+
+                    #for quest in character.quests:
+                    #    quest.postHandler()
+
+                    #character.quests = []
+                    #quest = src.quests.EpochQuest()
+                    #quest.assignToCharacter(character)
+                    #character.quests.append(quest)
 
             character.addMessage("----------------"+text+"-----------------")
 
@@ -328,7 +344,7 @@ To find tasks to complete just walk around until you find somewhere to be useful
 
     def basicIntegration2(self,extraParams):
         character = extraParams["character"]
-        if not "fighting" in character.skills: 
+        if not character.skills: 
             text = """
 
 You need to retrain your skills for this base.
@@ -348,16 +364,27 @@ Retrain a skill and return to integrate into the bases systems
             quest.activate()
             quest.generateSubquests(character)
             character.quests.insert(0,quest)
+            return
 
         else:
+            print(character.skills)
+            if "fighting" in character.skills:
+                duty = "Questing"
+                dutytext = "Go to the QuestArtwork and complete the quests given."
+            if "gathering" in character.skills:
+                duty = "resource gathering"
+                dutytext = "Collect Scrap and other things"
+            if "trapReloading" in character.skills:
+                duty = "trap setting"
+                dutytext = "Reload the trap rooms"
             text = """
 You hereby have a rank of 6.
 You can request promotions here.
 
 Your duties are:
 
-Questing:
-Go to the QuestArtwork and complete the quests given.
+%s:
+%s
 
 To help you with that you got the universal leaders blessing.
 (base damage +2 max health +20, health +50)
@@ -367,11 +394,9 @@ To help you with that you got the universal leaders blessing.
 your stats were increased and you got healing.
 This happens when you complete a story section.
 
-"""
+"""%(duty, dutytext,)
             character.rank = 6
             character.reputation = 0
-            character.registers["HOMEx"] = 7
-            character.registers["HOMEy"] = 7
 
             character.baseDamage += 2
             character.addMessage("your base damage increased by 2")
@@ -384,6 +409,8 @@ This happens when you complete a story section.
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"basicIntegration3","params":extraParams}
+
+            character.duties = [duty]
 
     def basicIntegration3(self,extraParams):
         character = extraParams["character"]
@@ -400,7 +427,6 @@ When you press "+" that quest generates sub quests.
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        character.duties = ["Questing"]
 
         for quest in character.quests:
             quest.postHandler()

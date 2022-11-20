@@ -37,5 +37,5 @@ import src.itemFolder.resources.stripe
 import src.itemFolder.resources.tank
 import src.itemFolder.resources.token
 import src.itemFolder.resources.wall
-import src.itemFolder.resources.crystalCompressor
+import src.itemFolder.resources.lightningRod
 import src.itemFolder.resources.glassCrystal

@@ -21,19 +21,170 @@ class BasicTrainer(src.items.Item):
 Use it by activating it."""
 
     def apply(self,character):
-        text = """
+        numTries = character.registers.get("numTrainingTries")
+        if not numTries:
+            numTries = 1
+            character.registers["numTrainingTries"] = numTries
+        character.registers["numTrainingTries"] = numTries + 1
+
+        print("numTries")
+        print(numTries)
+
+        if numTries > 5:
+            text = """
+
+you seem to have some trouble. You will be trained in:
+
+gathering
+
+"""
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            params = {"character":character}
+            character.macroState["submenue"].followUp = {"container":self,"method":"checkScrap","params":params}
+
+        elif character.baseDamage > 5:
+            text = """
 
 you will be trained in:
 
 fighting
 
 """
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            params = {"character":character}
+            character.macroState["submenue"].followUp = {"container":self,"method":"checkWeapon","params":params}
+        else:
+            text = """
+
+you will be trained in:
+
+trap maintenence
+
+"""
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            params = {"character":character}
+            character.macroState["submenue"].followUp = {"container":self,"method":"checkLightningRod","params":params}
+
+    def checkScrap(self,extraParams):
+        character = extraParams["character"]
+        foundItem = None
+        for item in character.inventory:
+            if item.type == "Scrap":
+                foundItem = item
+                break
+
+        if not foundItem:
+            self.requireScrap(character)
+            return
+
+        super().apply(character)
+        text = """
+
+This scrap in your hands is the foundation of every industry.
+The scrap is pressed into metal bars and then processed into the things around us.
+So there always needs for some scrap and other materials.
+
+
+"""
         character.addMessage("----------------"+text+"-----------------")
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        params = {"character":character}
-        character.macroState["submenue"].followUp = {"container":self,"method":"checkWeapon","params":params}
+        if not "gathering" in character.skills:
+            character.skills.append("gathering")
+
+
+    def requireScrap(self,character):
+        text = """
+
+Fetch a piece of scrap to proceed with the training.
+
+Fetching the scrap is easy, just pick it up and bring it in.
+The scrap pile can be found in many places, but primarily on scrap fields.
+You will fetch the scrap from a scrap field.
+The scrap field is marked with a white ss on the mini map.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+
+        quest = src.quests.GatherScrap()
+        quest.assignToCharacter(character)
+        quest.activate()
+        character.quests.insert(0,quest)
+
+
+    def checkLightningRod(self,extraParams):
+        character = extraParams["character"]
+        foundItem = None
+        for item in character.inventory:
+            if item.type == "LightningRod":
+                foundItem = item
+                break
+
+        if not foundItem:
+            self.requireLightningRod(character)
+            return
+
+        super().apply(character)
+        text = """
+
+The lightning rods are used to reload the shockers.
+
+One of the main defence systems of this base are the Trap rooms.
+The trap rooms shock enemies that move through them.
+Each shock uses up one charge.
+
+When all charges are used up, the trap room is useless.
+The trap rooms can be recharged using the shockers.
+Use a shocker with lightning rods in your inventory to recharge the rooms.
+
+When doing trap setting duty, your job is to ensure that the trap rooms are charged.
+Training complete.
+
+---
+
+The trap rooms are your primary defence,
+so do try to keep them charged.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        if not "trapReloading" in character.skills:
+            character.skills.append("trapReloading")
+
+
+    def requireLightningRod(self,character):
+        text = """
+
+Fetch a lightning rod to proceed with the training.
+
+You will fetch the lightning rod directly from the production line.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+
+        quest = src.quests.FetchItems(toCollect="LightningRod")
+        quest.assignToCharacter(character)
+        quest.activate()
+        character.quests.insert(0,quest)
+
 
     def checkWeapon(self,extraParams):
         character = extraParams["character"]

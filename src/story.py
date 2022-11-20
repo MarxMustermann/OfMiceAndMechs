@@ -4002,12 +4002,16 @@ class Siege2(BasicPhase):
         ]
         src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
         src.gamestate.gamestate.mainChar.faction = "city #456"
+
+        src.gamestate.gamestate.mainChar.baseDamage = 10
+        src.gamestate.gamestate.mainChar.health = 100
+        src.gamestate.gamestate.mainChar.maxHealth = 100
         if difficulty == "easy":
-            src.gamestate.gamestate.mainChar.baseDamage = 5
+            src.gamestate.gamestate.mainChar.baseDamage = 15
             src.gamestate.gamestate.mainChar.health = 200
             src.gamestate.gamestate.mainChar.maxHealth = 200
         if difficulty == "difficult":
-            src.gamestate.gamestate.mainChar.baseDamage = 2
+            src.gamestate.gamestate.mainChar.baseDamage = 5
             src.gamestate.gamestate.mainChar.health = 50
             src.gamestate.gamestate.mainChar.maxHealth = 50
 
@@ -4196,7 +4200,7 @@ Press ESC to close this window.
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         self.personnelArtwork = personnelArtwork
         mainRoom.addItem(personnelArtwork,(9,1,0))
-        personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
+        leader = personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
@@ -4209,6 +4213,7 @@ Press ESC to close this window.
         personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
+        leader.die(reason="natural causes")
 
         questArtwork = src.items.itemMap["QuestArtwork"]()
         mainRoom.addItem(questArtwork,(1,3,0))
@@ -4403,7 +4408,7 @@ Press ESC to close this window.
 
         blockerRingPositions = [(7,4,0),(6,5,0)]
         for pos in blockerRingPositions:
-            for i in range(0,2):
+            for i in range(0,3):
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
                 enemy.health = 100
@@ -4543,7 +4548,7 @@ Press ESC to close this window.
 
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
-                enemy.health = baseHealth
+                enemy.health = baseHealth*5
                 enemy.baseDamage = 7
                 enemy.movementSpeed = self.baseMovementSpeed
                 currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
@@ -4563,7 +4568,7 @@ Press ESC to close this window.
 
             enemy = src.characters.Monster(4,4)
             enemy.godMode = True
-            enemy.health = baseHealth
+            enemy.health = baseHealth*5
             enemy.baseDamage = 7
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
             enemy.movementSpeed = self.baseMovementSpeed
@@ -4679,9 +4684,9 @@ Activate it.
             counter += 1
         """
 
-        npc = self.personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        if npc:
-            npc.duties.append("Questing")
+        self.personnelArtwork.charges += 2
+        npc = self.personnelArtwork.spawnIndependentFighter(src.gamestate.gamestate.mainChar)
+        npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
 
         counter = 0
 
@@ -4691,7 +4696,7 @@ Activate it.
                 if item.type == "MonsterSpawner":
                     spawnerRooms.append(room)
         
-        if self.numRounds == 15 or not spawnerRooms:
+        if not spawnerRooms:
             src.gamestate.gamestate.uiElements = [
                     {"type":"text","offset":(15,10), "text":"You won the game"},
                     ]
@@ -4721,7 +4726,7 @@ Activate it.
         #numMonsters = 1
         #if self.numRounds > 8:
         #    numMonsters = self.numRounds-8
-        numMonsters = 10+self.numRounds+remainingEnemyCounter
+        numMonsters = self.numRounds+remainingEnemyCounter
 
         if self.difficulty == "easy":
             if self.numRounds < 3:
@@ -4733,12 +4738,12 @@ Activate it.
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(6,6)
-            enemy.health = 10*i
-            enemy.baseDamage = i
+            enemy.health = 10*(i%10+1)
+            enemy.baseDamage = (i%10+1)
             enemy.faction = "invader"
             enemy.tag = "wave"
             monsterStartRoom.addCharacter(enemy, 6, 6)
-            enemy.movementSpeed = 0.8
+            enemy.movementSpeed = random.random()+0.5
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True

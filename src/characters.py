@@ -314,6 +314,12 @@ class Character(src.saveing.Saveable):
 
         return terrain
 
+    def getHomeRoom(self):
+        terrain = self.getTerrain()
+
+        homeRoom = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))[0]
+        return homeRoom
+        
     def getRoom(self):
         room = None
         if isinstance(self.container,src.rooms.Room):

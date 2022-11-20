@@ -308,7 +308,7 @@ class CityBuilder2(src.items.Item):
         self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
 
     def addProductionLine2(self,character,instaSpawn=False):
-        toAdd = ["CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor","CrystalCompressor"]
+        toAdd = ["LightningRod","LightningRod","LightningRod","LightningRod","LightningRod","LightningRod","LightningRod","LightningRod","LightningRod"]
         self.addProductionLine(character,instaSpawn=instaSpawn,toAdd=toAdd)
 
     def addProductionLine3(self,character,instaSpawn=False):
@@ -363,6 +363,7 @@ class CityBuilder2(src.items.Item):
         
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         guardRoom.chargeStrength = 20
+        guardRoom.electricalCharges = guardRoom.maxElectricalCharges
 
         guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-2),"character":character})
         guardRoom.chargeStrength = 30
@@ -373,6 +374,7 @@ class CityBuilder2(src.items.Item):
 
         backGuardRoom = self.addTrapRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
         backGuardRoom.chargeStrength = 20
+        backGuardRoom.electricalCharges = guardRoom.maxElectricalCharges
 
         generalStorage = self.addStorageRoomFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
         for i in range(1,10):
@@ -391,7 +393,7 @@ class CityBuilder2(src.items.Item):
 
         for x in range(1,6):
             for i in range(1,25):
-                generalStorage.addItem(src.items.itemMap["CrystalCompressor"](),(x,11,0))
+                generalStorage.addItem(src.items.itemMap["LightningRod"](),(x,11,0))
 
         for x in range(1,6):
             for i in range(1,25):
@@ -417,11 +419,8 @@ class CityBuilder2(src.items.Item):
         self.addScrapCompactorFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+1),"character":character,"type":"random"},instaSpawn=True)
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+2),"character":character})
 
-        guardRoom2 = self.addTrapRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]-1),"character":character})
-        guardRoom2.chargeStrength = 5
-
-        guardRoom3 = self.addTrapRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]-1),"character":character})
-        guardRoom3.chargeStrength = 5
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]-1),"character":character})
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]-1),"character":character})
 
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-1),"selection":"w"},noFurtherInteraction=True)
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]),"selection":"w"},noFurtherInteraction=True)
@@ -434,6 +433,8 @@ class CityBuilder2(src.items.Item):
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"a"},noFurtherInteraction=True)
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"s"},noFurtherInteraction=True)
         self.setConnectionsFromMap({"character":character,"coordinate":(citylocation[0],citylocation[1]-2),"selection":"d"},noFurtherInteraction=True)
+
+        random.shuffle(self.workshopRooms)
 
         self.addProductionLine1(character,instaSpawn=True)
         self.addProductionLine2(character,instaSpawn=True)
@@ -719,7 +720,7 @@ class CityBuilder2(src.items.Item):
             otherRoom.sources.insert(0,(pos,"Painter"))
             otherRoom.sources.insert(0,(pos,"ScratchPlate"))
             otherRoom.sources.insert(0,(pos,"CorpseAnimator"))
-            otherRoom.sources.insert(0,(pos,"CrystalCompressor"))
+            otherRoom.sources.insert(0,(pos,"LightningRod"))
 
         if instaSpawn:
             room.spawnPlaned()

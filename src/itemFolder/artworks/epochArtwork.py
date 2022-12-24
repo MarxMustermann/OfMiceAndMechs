@@ -19,19 +19,26 @@ class EpochArtwork(src.items.Item):
 
         self.applyOptions.extend(
                         [
-                                                                ("showEpochQuests", "show available epoch quests"),
+                                                                ("getEpochChallenge", "get epoch challenge"),
                                                                 ("getEpochRewards", "get epoch rewards (0)"),
+                                                                ("getEpochEvaluation", "get epoch evaluation"),
                         ]
                         )
         self.applyMap = {
-                            "showEpochQuests":self.showEpochQuests,
+                            "getEpochChallenge":self.getEpochChallenge,
                             "getEpochRewards":self.getEpochRewards,
+                            "getEpochEvaluation":self.getEpochEvaluation,
                         }
         self.firstUse = True
         self.epochLength = epochLength
         self.lastEpochSurvivedReward = 0
+        self.lastNumSpawners = 4
+        self.shadowCharges = 1000
 
         self.charges = 0
+        self.leader = None
+
+        self.registeredWon = False
 
         self.description = """
 This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
@@ -41,13 +48,22 @@ It generates missions and hands out rewards."""
 Use it by activating it. You will recieve further instructions."""
 
     def changeCharges(self,delta):
+        delta = min(self.shadowCharges,delta)
+
+        if delta > 0:
+            self.shadowCharges -= delta
+
         self.charges += delta
         self.applyOptions[1] = ("getEpochRewards", "get epoch rewards (%s)"%(self.charges,))
+
+    def getEpochEvaluation(self,character):
+        character.addMessage("NIY")
 
     def getEpochRewards(self,character):
 
             options = []
             options.append(("None","(0) None"))
+            options.append(("autoSpend","(?) auto spend rewards"))
             options.append(("HealingOnce","(1) healing (once)"))
             amount = character.maxHealth-character.health
             amount = min(amount,self.charges*10)
@@ -55,16 +71,20 @@ Use it by activating it. You will recieve further instructions."""
             if amount%10:
                 cost += 1
             options.append(("Healing","(%s) healing"%(cost,)))
-            options.append(("weapon","(1) weapon upgrade"))
-            options.append(("armor","(5) armor upgrade"))
+            options.append(("weaponUpgradeOnce","(1) weapon upgrade (once)"))
+            options.append(("weaponUpgrade","(?) weapon upgrade"))
+            options.append(("armorUpgradeOnce","(5) armor upgrade (once)"))
+            options.append(("armorUpgrade","(?) armor upgrade"))
             options.append(("rank 4","(20) rank 4 NPCs"))
             options.append(("rank 5","(15) rank 5 NPCs"))
             options.append(("rank 6","(10) rank 6 NPCs"))
             options.append(("chargePersonel","(10) charge personel artwork"))
             options.append(("repairCommandCentre","(100) repair command centre"))
-            options.append(("recharge trap rooms","(10) recharge trap rooms for 10"))
+            options.append(("recharge trap rooms once","(10) recharge trap roomsby 10 charges (once)"))
+            options.append(("recharge trap rooms","(?) recharge trap rooms"))
             options.append(("respawn scrapfield","(100) respawn scrap field"))
             options.append(("spawn lightning rods","(10) spawn 25 ligthning rods"))
+            options.append(("spawn new clone","(15) spawn new clone"))
             submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"dispenseEpochRewards","params":{"character":character}}
@@ -73,7 +93,7 @@ Use it by activating it. You will recieve further instructions."""
         self.getEpochRewards(extraInfo["character"])
 
     def dispenseEpochRewards(self,extraInfo):
-        character = extraInfo["character"]
+        character = extraInfo.get("character")
 
         if not "rewardType" in extraInfo:
             return
@@ -82,6 +102,9 @@ Use it by activating it. You will recieve further instructions."""
             return
 
         text = "NIY"
+        if extraInfo["rewardType"] == "autoSpend":
+            self.autoSpendRewards(character)
+            return
         if extraInfo["rewardType"] == "HealingOnce":
             if not self.charges > 0:
                 text = "not enough glass tears"
@@ -92,22 +115,8 @@ Use it by activating it. You will recieve further instructions."""
                 text = "you got healed for 10 health for the cost of 1 glass tear"
                 self.changeCharges(-1)
         elif extraInfo["rewardType"] == "Healing":
-            if not self.charges > 0:
-                text = "not enough glass tears"
-            elif not character.health < character.maxHealth:
-                text = "no healing needed"
-            else:
-                amount = character.maxHealth-character.health
-                amount = min(amount,self.charges*10)
-                character.heal(amount)
-
-                cost = amount//10
-                if amount%10:
-                    cost += 1
-
-                text = "you got healed for %s health for the cost of %s glass tears"%(amount,cost,)
-                self.changeCharges(-cost)
-        elif extraInfo["rewardType"] == "weapon":
+            self.heal(character)
+        elif extraInfo["rewardType"] == "weaponUpgradeOnce":
             if not self.charges > 0:
                 text = "not enough glass tears"
             elif not character.weapon:
@@ -118,7 +127,9 @@ Use it by activating it. You will recieve further instructions."""
                 character.weapon.baseDamage += 1
                 text = "weapon upgraded to %s"%(character.weapon.baseDamage,)
                 self.changeCharges(-1)
-        elif extraInfo["rewardType"] == "armor":
+        elif extraInfo["rewardType"] == "weaponUpgrade":
+            self.weaponUpgrade(character)
+        elif extraInfo["rewardType"] == "armorUpgradeOnce":
             if not self.charges > 4:
                 text = "not enough glass tears"
             elif not character.armor:
@@ -129,6 +140,8 @@ Use it by activating it. You will recieve further instructions."""
                 character.armor.armorValue += 1
                 text = "armor upgraded to %s"%(character.armor.armorValue,)
                 self.changeCharges(-5)
+        elif extraInfo["rewardType"] == "armorUpgrade":
+            self.armorUpgrade(character)
         elif extraInfo["rewardType"] == "rank 6":
             if not self.charges > 9:
                 text = "not enough glass tears"
@@ -195,7 +208,7 @@ Use it by activating it. You will recieve further instructions."""
                         break
 
                 text = "command centre repaired"
-        elif extraInfo["rewardType"] == "recharge trap rooms":
+        elif extraInfo["rewardType"] == "recharge trap rooms once":
             if not self.charges > 10:
                 text = "not enough glass tears"
             else:
@@ -210,6 +223,8 @@ Use it by activating it. You will recieve further instructions."""
                     room.changeCharges(10)
                     text = "trap room recharged"
                     break
+        elif extraInfo["rewardType"] == "recharge trap rooms":
+            self.rechargeTrapRooms(character)
         elif extraInfo["rewardType"] == "respawn scrapfield":
             if not self.charges > 100:
                 text = "not enough glass tears"
@@ -231,36 +246,231 @@ Use it by activating it. You will recieve further instructions."""
                         storageRoom.addItem(item,inputSlot[0])
                     self.changeCharges(-10)
                     break
+        elif extraInfo["rewardType"] == "spawn new clone":
+            text = "spawning new clone"
+            self.spawnNewClone(character)
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"getEpochRewardsProxy","params":{"character":character}}
         return
 
-    def showEpochQuests(self,character):
+    def rechargeTrapRooms(self, character):
         text = ""
-        text += """
-1. Survive this epoch.
+        if not self.charges > 10:
+            text = "not enough glass tears"
+        else:
+            while self.charges > 10:
+                for room in self.getTerrain().rooms:
+                    if not isinstance(room,src.rooms.TrapRoom):
+                        continue
+                    if not room.needsCharges():
+                        continue
 
-Each epoch a wave of enemies is spawned that you need to defend against.
-Survive this epoch and you get some extra resources.
+                    amount = (room.maxElectricalCharges - room.electricalCharges)//10+1
+                    amount = min(amount,self.charges//10)
 
-The current epoch is still running for %s ticks.
-You are in epoch %s.
-"""%(self.epochLength-(src.gamestate.gamestate.tick%self.epochLength),src.gamestate.gamestate.tick//self.epochLength,)
+                    self.changeCharges(-10*amount)
+                    room.changeCharges(10*amount)
+                    text += "\ntrap room %s recharged"%(room.getPosition(),)
+                    break
+                text = "no trap room to charge"
+                break
+        if character:
+            character.addMessage(text)
 
-        text += """
-2. Destroy the spawners
+    def armorUpgrade(self,character):
+        if not self.charges > 4:
+            text = "not enough glass tears"
+        elif not character.armor:
+            text = "you have no armor"
+        elif character.armor.armorValue >= 5:
+            text = "you cant upgrade your armor further"
+        else:
+            amount = 5-character.armor.armorValue
+            amount = min(amount,self.charges//5)
+
+            character.armor.armorValue += amount
+            text = "armor upgraded to %s"%(character.armor.armorValue,)
+            self.changeCharges(-amount*5)
+        if character:
+            character.addMessage(text)
+
+    def weaponUpgrade(self,character):
+        if not self.charges > 0:
+            text = "not enough glass tears"
+        elif not character.weapon:
+            text = "you have no weapon"
+        elif character.weapon.baseDamage >= 25:
+            text = "you cant upgrade your weapon further"
+        else:
+            amount = 25-character.weapon.baseDamage
+            amount = min(amount,self.charges*1)
+
+            character.weapon.baseDamage += amount
+            text = "weapon upgraded to %s"%(character.weapon.baseDamage,)
+            self.changeCharges(-amount*1)
+        if character:
+            character.addMessage(text)
+
+    def heal(self,character):
+        if not self.charges > 0:
+            text = "not enough glass tears"
+        elif not character.health < character.maxHealth:
+            text = "no healing needed"
+        else:
+            amount = character.maxHealth-character.health
+            amount = min(amount,self.charges*10)
+            character.heal(amount)
+
+            cost = amount//10
+            if amount%10:
+                cost += 1
+
+            text = "you got healed for %s health for the cost of %s glass tears"%(amount,cost,)
+            self.changeCharges(-cost)
+        if character:
+            character.addMessage(text)
+
+    def spawnNewClone(self,character):
+        cost = 15
+        if not self.charges > cost:
+            text = "not enough glass tears"
+        else:
+            personnelArtwork = self.container.getItemByType("PersonnelArtwork")
+            if personnelArtwork:
+                personnelArtwork.changeCharges(1)
+                npc = personnelArtwork.spawnIndependentClone(character)
+                self.changeCharges(-15)
+                text = "spawned new clone"
+            else:
+                text = "Something went wrong. No Personel artwork found"
+
+        if character:
+            character.addMessage(text)
+
+    def getEpochChallenge(self,character):
+        epochQuest = None
+        for quest in character.quests:
+            character.addMessage(quest)
+            character.addMessage(quest.type)
+            if not quest.type == "EpochQuest":
+                continue
+            epochQuest = quest
+
+        if not epochQuest:
+            character.addMessage("no epoch quest found")
+            return
+
+        text = ""
+        foundSpawner = False
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemByPosition((6,6,0))
+            for item in items:
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                    foundSpawner = True
+                    break
+
+        if foundSpawner:
+            text += """
+Destroy the spawners.
 
 The waves of enemies are spawned by spawners.
 
-Destroy them and end the siege now
+Destroy one of the spawners to stop enemies from coming in.
+
+Once you destroy a spawner nearby enemies will rush the base.
+Prepare your base to brace the impact before you destroy the spawner.
 
 """
 
+            character.addMessage(text)
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+
+            quest = src.quests.questMap["DestroySpawners"]()
+            quest.active = True
+            quest.assignToCharacter(character)
+
+            epochQuest.addQuest(quest)
+            return
+
+        terrain = self.getTerrain()
+
+        foundEnemy = None
+        for otherChar in terrain.characters:
+            if otherChar.faction == "invader":
+                foundEnemy = otherChar
+                break
+
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction == "invader":
+                    foundEnemy = otherChar
+                    break
+
+        if foundEnemy:
+            text += """
+Clear the remaining enemies.
+
+Kill all remaining enemies to end the siege.
+
+"""
+
+            character.addMessage(text)
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+
+            quest = src.quests.questMap["ClearTerrain"]()
+            quest.active = True
+            quest.assignToCharacter(character)
+
+            epochQuest.addQuest(quest)
+            return
+
+        if not self.registeredWon:
+            text += """
+you won the game!
+
+
+Have fun and remember to give me some feedback.
+If you want to dicuss things you are very welcome to join my discord and talk to me.
+
+That is actually the best way to support the games development for now.
+Feeling a bit lonely with it.
+
+"""
+
+            character.addMessage(text)
+            submenue = src.interaction.Menu(text)
+            character.macroState["submenue"] = submenue
+
+            character.clearCommandString()
+
+            self.registeredWon = True
+            self.changeCharges(self.shadowCharges)
+            return
+
+        text += """
+you won the game!
+
+That is it content wise for now.
+The game will continue to run so you can use it as a sandbox for a bit.
+
+While you can be useful and repair the base.
+The quest you get will try to guide you, but that is WIP and may require guesswork.
+
+"""
         character.addMessage(text)
-        submenue = src.interaction.TextMenu(text)
+        submenue = src.interaction.Menu(text)
         character.macroState["submenue"] = submenue
+
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.active = True
+        quest.assignToCharacter(character)
+
+        epochQuest.addQuest(quest)
         return
 
     def getEnemiesWithTag(self,tag):
@@ -287,9 +497,17 @@ Destroy them and end the siege now
             self.showLocked(character)
             return
             
-        if src.gamestate.gamestate.tick//self.epochLength > self.lastEpochSurvivedReward:
+        if not self.leader or self.leader.dead:
+            self.leader = character
 
-            self.getEpochSurvivedReward(character)
+            text = """
+you hereby take control over the base and are commander now.
+
+Use the artworks to manage your quest and complete your epoch quests to get extra resources."""
+            character.addMessage(text)
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            self.recalculateGlasstears(character)
             return
 
         super().apply(character)
@@ -351,17 +569,51 @@ You will recieve your duties and instructions later.
         quest.activate()
         quest.generateSubquests(character)
 
-    def getEpochSurvivedReward(self,character):
-        amount = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)*30
-        text = """
-You survived the siege so far and a new epoch has started with the invaders dead.
+    def recalculateGlasstears(self,character = None):
+        amount = 0
 
-For surviving and eliminating the invaders you get an additional %s glass tears.
-"""%(amount,)
+        epochsSurvived = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)
         self.lastEpochSurvivedReward = src.gamestate.gamestate.tick//self.epochLength
+        stepAmount = epochsSurvived*30
+        amount += stepAmount
+
+        if character and epochsSurvived:
+            character.addMessage("you got %s glass tears for surviving %s epochs"%(stepAmount,epochsSurvived,))
+
+        numSpawners = 0
+        terrain = self.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemByPosition((6,6,0))
+            for item in items:
+                if item == self:
+                    continue
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                    numSpawners += 1
+                break
+
+        numSpawnersDestroyed = (self.lastNumSpawners-numSpawners)
+        self.lastNumSpawners = numSpawners
+        stepAmount = numSpawnersDestroyed*30
+        amount += stepAmount
+
+        if character and numSpawnersDestroyed:
+            character.addMessage("you got %s glass tears for surviving %s epochs"%(stepAmount,epochsSurvived,))
+
+        if character:
+            character.changed(tag="got epoch evaluation")
+
         self.changeCharges(amount)
 
-        submenue = src.interaction.TextMenu(text)
-        character.macroState["submenue"] = submenue
+    def autoSpendRewards(self,character = None):
+        self.recalculateGlasstears()
+
+        if character:
+            self.heal(character)
+            self.weaponUpgrade(character)
+            self.armorUpgrade(character)
+            pass
+        self.spawnNewClone(character)
+        self.spawnNewClone(character)
+        self.rechargeTrapRooms(character)
 
 src.items.addType(EpochArtwork)

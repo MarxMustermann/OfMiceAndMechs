@@ -21,31 +21,41 @@ class BasicTrainer(src.items.Item):
 Use it by activating it."""
 
     def apply(self,character):
-        numTries = character.registers.get("numTrainingTries")
-        if not numTries:
-            numTries = 1
-            character.registers["numTrainingTries"] = numTries
-        character.registers["numTrainingTries"] = numTries + 1
+        trainingType = character.registers.get("trainingFor")
+        if trainingType:
+            self.startTraining({"character":character,"skillType":trainingType})
+            return
 
-        print("numTries")
-        print(numTries)
-
-        if numTries > 5:
-            text = """
-
-you seem to have some trouble. You will be trained in:
-
-gathering
-
+        text = """
+select the skill you want to train:
 """
-            character.addMessage("----------------"+text+"-----------------")
+        candidates = self.getMatchingCandidates(character)
+        random.shuffle(candidates)
 
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            params = {"character":character}
-            character.macroState["submenue"].followUp = {"container":self,"method":"checkScrap","params":params}
+        options = []
+        for candidate in candidates:
+            options.append((candidate,candidate))
 
-        elif character.baseDamage > 5:
+        submenue = src.interaction.SelectionMenu(text,options,targetParamName="skillType")
+        character.macroState["submenue"] = submenue
+        params = {"character":character}
+        character.macroState["submenue"].followUp = {"container":self,"method":"startTraining","params":params}
+
+    def getMatchingCandidates(self,character):
+        if character.baseDamage > 5:
+            candidates = ["fighting"]
+        else:
+            candidates = ["gathering","trap maintenence","cleaning"]
+        return candidates
+
+    def startTraining(self,extraParams):
+    
+        trainingType = extraParams["skillType"]
+        character = extraParams["character"]
+
+        character.registers["trainingFor"] = trainingType
+
+        if trainingType == "fighting":
             text = """
 
 you will be trained in:
@@ -59,7 +69,23 @@ fighting
             character.macroState["submenue"] = submenue
             params = {"character":character}
             character.macroState["submenue"].followUp = {"container":self,"method":"checkWeapon","params":params}
-        else:
+
+        elif trainingType == "gathering":
+            text = """
+
+You will be trained in:
+
+gathering
+
+"""
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            params = {"character":character}
+            character.macroState["submenue"].followUp = {"container":self,"method":"checkScrap","params":params}
+
+        elif trainingType == "trap maintenence":
             text = """
 
 you will be trained in:
@@ -74,6 +100,48 @@ trap maintenence
             params = {"character":character}
             character.macroState["submenue"].followUp = {"container":self,"method":"checkLightningRod","params":params}
 
+        elif trainingType == "cleaning":
+            text = """
+
+you will be trained in:
+
+cleaning
+
+"""
+            character.addMessage("----------------"+text+"-----------------")
+
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            params = {"character":character}
+            character.macroState["submenue"].followUp = {"container":self,"method":"giveSkillCleaning","params":params}
+
+    def giveSkillCleaning(self,extraParams):
+        character = extraParams["character"]
+        text = """
+
+To clean simply pick up items from the walkways.
+When your inventory is full put the collected items into storage.
+
+Items cluttering the base can have several negative consequences:
+
+* cluttered trap rooms do not work properly
+This is because the enemies need to step on the electrified floor.
+Items lying on the floor prevent that.
+
+* the ghul automation might break.
+This is because the ghuls can collide with items and get disoriented.
+
+* entry to and passage through rooms might not be possible
+This happens rarely but can interrupt a base.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        if not "cleaning" in character.skills:
+            character.skills.append("cleaning")
+
     def checkScrap(self,extraParams):
         character = extraParams["character"]
         foundItem = None
@@ -86,7 +154,6 @@ trap maintenence
             self.requireScrap(character)
             return
 
-        super().apply(character)
         text = """
 
 This scrap in your hands is the foundation of every industry.

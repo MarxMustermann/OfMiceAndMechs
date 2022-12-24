@@ -56,16 +56,6 @@ Use it to generate a quest and assign it to you."""
 
         return enemies
 
-    def getRoomsWithTag(self,tag):
-        rooms = []
-        currentTerrain = self.container.container
-        for room in currentTerrain.rooms:
-            if not room.tag == "farm":
-                continue
-            rooms.append(room)
-        print(rooms)
-        return rooms
-
     def getQuest(self, character):
         print(character.rank)
         if character.rank == 6:
@@ -146,14 +136,11 @@ Clear the trap rooms to ensure that the bases first line of defence works.
             character.changed("got quest assigned")
 
         elif character.rank == 5:
-            currentTerrain = self.container.container
-            rooms = currentTerrain.getRoomByPosition((7,13,0))
-            room = None
-            if rooms:
-                room = rooms[0]
+            currentTerrain = character.getTerrain()
+            rooms = currentTerrain.getRoomsByTag("cargo")
             items = []
-            if room:
-                items = room.itemsOnFloor
+            if rooms:
+                items = rooms[0].itemsOnFloor
             foundItems = False
             for item in items:
                 if item.type in ("Sword","Armor",):
@@ -183,7 +170,8 @@ Go there and fetch the weapons and armor.
                 character.changed("got quest assigned")
                 return
 
-            rooms = self.getRoomsWithTag("farm")
+            terrain = character.getTerrain()
+            rooms = terrain.getRoomsByTag("farm")
 
             nearestDistance = None
             candidates = []
@@ -317,14 +305,24 @@ So try to not be nearby at that point.
 
 
         elif character.rank == 3:
-            quest = src.quests.questMap["DestroySpawners"]()
-            if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
-                quest.assignToCharacter(character)
-                quest.activate()
-                character.quests[0].addQuest(quest)
-            else:
-                character.quests.insert(0,quest)
-            text = """
+            foundSpawner = False
+            terrain = character.getTerrain()
+            for room in terrain.rooms:
+                items = room.getItemByPosition((6,6,0))
+                for item in items:
+                    if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                        foundSpawner = True
+                        break
+
+            if foundSpawner:
+                quest = src.quests.questMap["DestroySpawners"]()
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
 Destroy the hives to end the siege
 
 The waves of enemies spawn from hives.
@@ -337,8 +335,19 @@ The waves spawn at tick 0 of each epoch from the hives.
 Try to not get caught up in the waves.
 
 """
-            character.addMessage("----------------"+text+"-----------------")
+            else:
+                quest = src.quests.questMap["ClearTerrain"]()
+                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    character.quests[0].addQuest(quest)
+                else:
+                    character.quests.insert(0,quest)
+                text = """
+kill all remaining enemies
+"""
 
+            character.addMessage("----------------"+text+"-----------------")
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")

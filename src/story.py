@@ -3952,7 +3952,7 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 1000
+        self.epochLength = 15*15*15
 
         numGuards = 10
         baseHealth = 100
@@ -4027,15 +4027,17 @@ class Siege2(BasicPhase):
            )
         mainRoom.storageRooms = []
 
+        spawnRoomPos = random.choice([(6,13),(6,12),(6,11),(7,13),(8,13),(7,12),(8,12),(7,11)])
         spawnRoom = architect.doAddRoom(
                 {
-                       "coordinate": (7,13),
+                       "coordinate": spawnRoomPos,
                        "roomType": "EmptyRoom",
                        "doors": "0,6 6,0 12,6 6,12",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None)
+        spawnRoom.tag = "cargo"
 
         src.gamestate.gamestate.mainChar.registers["HOMEx"] = spawnRoom.xPosition
         src.gamestate.gamestate.mainChar.registers["HOMEy"] = spawnRoom.yPosition
@@ -4194,11 +4196,12 @@ Press ESC to close this window.
         orderArtwork = src.items.itemMap["OrderArtwork"]()
         mainRoom.addItem(orderArtwork,(3,1,0))
 
-        produtionArtwork = src.items.itemMap["ProductionArtwork"]()
-        mainRoom.addItem(produtionArtwork,(3,11,0))
+        #produtionArtwork = src.items.itemMap["ProductionArtwork"]()
+        #mainRoom.addItem(produtionArtwork,(3,11,0))
 
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         self.personnelArtwork = personnelArtwork
+        self.personnelArtwork.faction = src.gamestate.gamestate.mainChar.faction
         mainRoom.addItem(personnelArtwork,(9,1,0))
         leader = personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
         personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
@@ -4389,8 +4392,15 @@ Press ESC to close this window.
         for farmPlot in farmPlots:
             if farmPlot in hivePositions:
                 continue
+            
+            if difficulty == "easy":
+                amount = int(random.random()*4)+1
+            elif difficulty == "difficult":
+                amount = int(random.random()*8)+3
+            else:
+                amount = int(random.random()*6)+2
 
-            for i in range(1,4):
+            for i in range(1,amount):
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
                 enemy.health = baseHealth*4
@@ -4684,9 +4694,16 @@ Activate it.
             counter += 1
         """
 
-        self.personnelArtwork.charges += 2
-        npc = self.personnelArtwork.spawnIndependentFighter(src.gamestate.gamestate.mainChar)
-        npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
+        """
+        if not self.numRounds == 1:
+            self.personnelArtwork.charges += 2
+            npc = self.personnelArtwork.spawnIndependentFighter(src.gamestate.gamestate.mainChar)
+            npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
+        """
+
+        if not src.gamestate.gamestate.mainChar.rank == 3:
+            if not self.epochArtwork.leader or self.epochArtwork.leader.dead:
+                self.epochArtwork.dispenseEpochRewards({"rewardType":"autoSpend"})
 
         counter = 0
 
@@ -4697,14 +4714,9 @@ Activate it.
                     spawnerRooms.append(room)
         
         if not spawnerRooms:
-            src.gamestate.gamestate.uiElements = [
-                    {"type":"text","offset":(15,10), "text":"You won the game"},
-                    ]
-            return
-
-
-        if not spawnerRooms:
-            print("ending siege")
+            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
+            event.setCallback({"container": self, "method": "startRound"})
+            terrain.addEvent(event)
             return
 
         monsterStartRoom = random.choice(spawnerRooms)

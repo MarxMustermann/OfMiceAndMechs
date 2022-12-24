@@ -87,6 +87,11 @@ class CityBuilder(src.items.Item):
             "clearError": self.clearError,
         }
 
+    def apply(self,character):
+        if not character.rank < 4:
+            character.addMessage("you need to have rank 3 to use this machine")
+            return
+        super().apply()
 
     def addTasksToLocalRoom(self, tasks, character):
         """
@@ -642,8 +647,6 @@ class CityBuilder(src.items.Item):
         self.useJoborderRelayToLocalRoom(
             character,
             [
-                # {"task":"set up","type":"stockPile","name":task["metalBarStorageName"],"coordinate":task["metalBarStorageCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"MetalBars"},
-                # {"task":"set up","type":"stockPile","name":task["stockPileName"],"coordinate":task["stockPileCoordinate"],"command":None,"StockpileType":"UniformStockpileManager","ItemType":"Scrap"},
                 {"task": "set up", "type": "factory", "coordinate": plot},
             ],
             "ArchitectArtwork",

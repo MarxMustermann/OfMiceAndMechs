@@ -20,14 +20,11 @@ class DutyArtwork(src.items.Item):
                 
         self.applyOptions.extend(
                                                 [
-                                                    ("showRankBased", "show rank based"),
                                                     ("showMatrix", "show matrix based"),
                                                 ]
                                 )
 
         self.applyMap = {
-                                    "showTree": self.showTree,
-                                    "showRankBased": self.showRankBased,
                                     "showMatrix": self.showMatrix,
                                 }
 
@@ -38,6 +35,12 @@ This will change what work the clones are doing when told to be useful."""
         self.usageInfo = """
 Use it by activating it and selecting in what mode you want to set the duties.
 After changing the duties the clones should change their behaviour after completing their current task."""
+
+    def apply(self,character):
+        if not character.rank < 4:
+            character.addMessage("you need to have rank 3 to use this machine")
+            return
+        super().apply(character)
 
     def changeCharges(self,delta):
         self.charges += delta
@@ -54,31 +57,8 @@ After changing the duties the clones should change their behaviour after complet
 
         return personnelArtwork.cityLeader
 
-    def showTree(self, character):
-        cityLeader = self.fetchCityleader()
-        if not cityLeader:
-            character.addMessage("no city leader")
-            return
-
-        self.submenue = src.interaction.JobByRankMenu(cityLeader)
-        character.macroState["submenue"] = self.submenue
-
-    def showRankBased(self, character):
-        cityLeader = self.fetchCityleader()
-        if not cityLeader:
-            character.addMessage("no city leader")
-            return
-
-        self.submenue = src.interaction.JobByRankMenu(cityLeader)
-        character.macroState["submenue"] = self.submenue
-
     def showMatrix(self, character):
-        cityLeader = self.fetchCityleader()
-        if not cityLeader:
-            character.addMessage("no city leader")
-            return
-
-        self.submenue = src.interaction.JobAsMatrixMenu(cityLeader)
+        self.submenue = src.interaction.JobAsMatrixMenu(self)
         character.macroState["submenue"] = self.submenue
 
 src.items.addType(DutyArtwork)

@@ -32,6 +32,12 @@ class StaffArtwork(src.items.Item):
                                     "connect": self.connect,
                                 }
 
+    def apply(self,character):
+        if not character.rank < 4:
+            character.addMessage("you need to have rank 3 to use this machine")
+            return
+        super().apply()
+
     def connect(self, character):
         character.macroState["submenue"] = src.interaction.ImplantConnection(self)
 

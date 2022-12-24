@@ -292,6 +292,12 @@ class Character(src.saveing.Saveable):
     def getDistance(self,position):
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])+abs(self.zPosition-position[2])
 
+    def getBigDistance(self,position):
+        if not isinstance(self.container, src.rooms.Room):
+            return abs(self.xPosition//15-position[0])+abs(self.yPosition//15-position[1])+abs(self.zPosition/15-position[2])
+        else:
+            return abs(self.container.xPosition-position[0])+abs(self.container.yPosition-position[1])+abs(self.container.zPosition-position[2])
+
     def getFreeInventorySpace(self):
         return 10-len(self.inventory)
 
@@ -699,6 +705,15 @@ class Character(src.saveing.Saveable):
 
             if reason:
                 self.addMessage("reason: %s" % (reason,))
+
+            if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):
+                self.addMessage("you are hurt you should heal")
+                for item in self.inventory:
+                    if not item.type == "Vial":
+                        continue
+                    if not item.uses:
+                        continue
+                    self.runCommandString("JH")
         else:
             self.health = 0
             self.die(reason="you died from injuries")

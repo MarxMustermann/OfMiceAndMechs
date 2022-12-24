@@ -27,6 +27,7 @@ class PersonnelArtwork(src.items.Item):
                                                                 ("spawnRank4", "spawn rank4"),
                                                                 ("spawnIndependentFighter", "spawn independent fighter"),
                                                                 ("spawnIndependentWorker", "spawn independent worker"),
+                                                                ("spawnIndependentClone", "spawn independent clone"),
                         ]
                         )
         self.applyMap = {
@@ -41,6 +42,7 @@ class PersonnelArtwork(src.items.Item):
                     "spawnBodyguard": self.spawnBodyguard,
                     "spawnIndependentWorker": self.spawnIndependentWorker,
                     "spawnIndependentFighter": self.spawnIndependentFighter,
+                    "spawnIndependentClone": self.spawnIndependentClone,
                         }
         self.cityLeader = None
         self.description = """
@@ -48,7 +50,11 @@ This is a one of its kind machine. It cannot be reproduced and was created by an
 This item allows to manage the clones in this base."""
         self.usageInfo = """
 Activate the item to use it.
-Use the item so see an overview over the NPCs in this base."""
+Use the item so see an overview over the NPCs in this base.
+
+Use the complex interaction to recharge the personel artwork
+"""
+        self.faction = ""
         self.charges = 3
 
     def changeCharges(self,delta):
@@ -129,13 +135,15 @@ Use the item so see an overview over the NPCs in this base."""
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
+        char.personality["abortMacrosOnAttack"] = False
         char.rank = None
 
-        char.faction = character.faction
+        char.faction = self.faction
 
         quest = src.quests.ActivateEpochArtwork(epochArtwork=self.container.getItemByPosition((6,6,0))[0])
         quest.assignToCharacter(char)
         quest.activate()
+        quest.autoSolve = True
         char.quests.append(quest)
         char.baseDamage = 10
         char.movementSpeed = 1.5
@@ -161,7 +169,16 @@ Use the item so see an overview over the NPCs in this base."""
         ] 
 
         self.container.addCharacter(char,5,6)
+        char.automated = True
         char.runCommandString("********")
+
+        return char
+
+    def spawnIndependentClone(self,character):
+        if random.random() > 0.5:
+            return self.spawnIndependentWorker(character)
+        else:
+            return self.spawnIndependentFighter(character)
 
     def spawnIndependentWorker(self,character):
         if not self.charges:
@@ -172,15 +189,17 @@ Use the item so see an overview over the NPCs in this base."""
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
+        char.personality["abortMacrosOnAttack"] = False
         char.rank = None
         char.baseDamage = 5
         char.movementSpeed = 0.5
 
-        char.faction = character.faction
+        char.faction = self.faction
 
         quest = src.quests.ActivateEpochArtwork(epochArtwork=self.container.getItemByPosition((6,6,0))[0])
         quest.assignToCharacter(char)
         quest.activate()
+        quest.autoSolve = True
         char.quests.append(quest)
 
         char.solvers = [
@@ -205,6 +224,8 @@ Use the item so see an overview over the NPCs in this base."""
 
         self.container.addCharacter(char,5,6)
         char.runCommandString("********")
+
+        return char
 
     def spawnBodyguard(self,character):
         if character.rank == None or character.rank > 5:
@@ -232,6 +253,32 @@ Use the item so see an overview over the NPCs in this base."""
 
         self.container.addCharacter(char,5,6)
         char.runCommandString("********")
+
+    def apply(self,character):
+        if not character.rank or not character.rank < 4:
+            character.addMessage("you need to have rank 3 to use this machine")
+            return
+        super().apply(character)
+
+    def configure(self,character):
+        foundFlasks = []
+        for item in character.inventory:
+            if not item.type == "GooFlask":
+                continue
+            if not item.uses == 100:
+                continue
+            foundFlasks.append(item)
+
+        if not foundFlasks:
+            character.addMessage("you need to have at least one goo flask in inventory to recharge this item")
+            return
+
+        for flask in foundFlasks:
+            character.inventory.remove(flask)
+
+        amount = len(foundFlasks)
+        self.changeCharges(amount)
+        character.addMessage("you use your flasks to recharge the personell artwork for %s charges"%(amount,))
 
     def spawnRank(self,rank,actor,isMilitary=False):
         cityLeader = self.fetchCityleader()

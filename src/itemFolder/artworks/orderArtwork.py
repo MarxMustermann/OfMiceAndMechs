@@ -43,6 +43,12 @@ The issued quest will be added at the front of the clones quest queue.
 So they will start to run it as soon as their command queue is empty.
 That should usually be around 10-20 ticks."""
 
+    def apply(self,character):
+        if not character.rank < 4:
+            character.addMessage("you need to have rank 3 to use this machine")
+            return
+        super().apply(character)
+
     def assignQuestFromMenu(self, character):
         self.assignQuest({"character":character})
 
@@ -96,15 +102,12 @@ That should usually be around 10-20 ticks."""
             return
 
         targets = []
-        cityLeader = self.fetchCityleader()
-
-        if not cityLeader:
-            character.addMessage("no city leader")
-            return
 
         mode = extraInfo["groupType"]
 
         def checkAdd(person):
+            if not person.faction == character.faction:
+                return
             if mode == "all":
                 targets.append(person)
                 return
@@ -148,25 +151,15 @@ That should usually be around 10-20 ticks."""
                 targets.append(person)
                 return
 
-        checkAdd(cityLeader)
+        terrain = self.getTerrain()
+        for char in terrain.characters:
+            checkAdd(char)
+        for room in terrain.rooms:
+            for char in room.characters:
+                checkAdd(char)
 
-        for subleader in cityLeader.subordinates:
-            if not subleader or subleader.dead:
-                continue
-
-            checkAdd(subleader)
-
-            for subsubleader in subleader.subordinates:
-                if not subsubleader or subsubleader.dead:
-                    continue
-
-                checkAdd(subsubleader)
-
-                for worker in subsubleader.subordinates:
-                    if not worker or worker.dead:
-                        continue
-
-                    checkAdd(worker)
+        random.shuffle(targets)
+        print(targets)
 
         counter = 0
         extraInfo["amount"] = int(extraInfo["amount"])
@@ -203,12 +196,14 @@ That should usually be around 10-20 ticks."""
                 quest.activate()
                 target.quests.insert(0,quest)
                 continue
+            print(target)
             quest = src.quests.questMap[extraInfo["questType"]]()
+            print(quest)
             if "coordinate" in extraInfo:
                 quest.setParameters({"targetPosition":extraInfo["coordinate"]})
-            quest.activate()
-            quest.assignToCharacter(target)
             target.quests.insert(0,quest)
+            quest.assignToCharacter(target)
+            quest.activate()
             counter += 1
 
     def showMap(self, character):
@@ -282,7 +277,7 @@ That should usually be around 10-20 ticks."""
                             "method":"questFromMap",
                             "params":{"character":character,"amount":0,"questType":"ClearTile"},
                         },
-                        "description":"send npcs to that tile",
+                        "description":"send npcs to clear that tile",
                     }
 
                 functionMap[(x,y)]["t"] = {
@@ -421,89 +416,9 @@ That should usually be around 10-20 ticks."""
         if params == None:
             params = {}
 
-        cityLeader = self.fetchCityleader()
-        if not cityLeader:
-            character.addMessage("no city leader")
-            return
-
         numQuestsAssigned = 0
 
         # assign to idle NPCs
-        for subleader in cityLeader.subordinates:
-            if not subleader or subleader.dead:
-                continue
-            for subsubleader in subleader.subordinates:
-                if not subsubleader or subsubleader.dead:
-                    continue
-                for worker in subsubleader.subordinates:
-                    if not worker or worker.dead:
-                        continue
-
-                    if numQuestsAssigned < numNPCs and not worker.quests:
-                        numQuestsAssigned += 1
-                        quest = src.quests.questMap[questType]()
-                        quest.setParameters(params)
-                        quest.assignToCharacter(worker)
-                        quest.activate()
-                        worker.quests.insert(0,quest)
-
-                if numQuestsAssigned < numNPCs and not subsubleader.quests:
-                    numQuestsAssigned += 1
-                    quest = src.quests.questMap[questType]()
-                    quest.setParameters(params)
-                    quest.assignToCharacter(subsubleader)
-                    quest.activate()
-                    subsubleader.quests.insert(0,quest)
-
-            if numQuestsAssigned < numNPCs and not subleader.quests:
-                numQuestsAssigned += 1
-                quest = src.quests.questMap[questType]()
-                quest.setParameters(params)
-                quest.assignToCharacter(subleader)
-                quest.activate()
-                subleader.quests.insert(0,quest)
-
-        if numQuestsAssigned < numNPCs and not cityLeader.quests:
-            numQuestsAssigned += 1
-            quest = src.quests.questMap[questType]()
-            quest.setParameters(params)
-            quest.assignToCharacter(cityLeader)
-            quest.activate()
-            cityLeader.quests.insert(0,quest)
-
-        for subleader in cityLeader.subordinates:
-            if not subleader or subleader.dead:
-                continue
-            for subsubleader in subleader.subordinates:
-                if not subsubleader or subsubleader.dead:
-                    continue
-                for worker in subsubleader.subordinates:
-                    if not worker or worker.dead:
-                        continue
-                    if numQuestsAssigned < numNPCs:
-                        numQuestsAssigned += 1
-                        quest = src.quests.questMap[questType]()
-                        quest.setParameters(params)
-                        quest.assignToCharacter(worker)
-                        quest.activate()
-                        worker.quests.insert(0,quest)
-
-                if numQuestsAssigned < numNPCs:
-                    numQuestsAssigned += 1
-                    quest = src.quests.questMap[questType]()
-                    quest.setParameters(params)
-                    quest.assignToCharacter(subsubleader)
-                    quest.activate()
-                    subsubleader.quests.insert(0,quest)
-
-            if numQuestsAssigned < numNPCs:
-                numQuestsAssigned += 1
-                quest = src.quests.questMap[questType]()
-                quest.setParameters(params)
-                quest.assignToCharacter(subleader)
-                quest.activate()
-                subleader.quests.insert(0,quest)
-
         if numQuestsAssigned < numNPCs:
             numQuestsAssigned += 1
             quest = src.quests.questMap[questType]()

@@ -874,7 +874,6 @@ class Room(src.saveing.Saveable):
                     chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                 except:
                     src.logger.debugMessages.append("room drawing failed")
-                    print("room drawing failed")
 
             # draw characters
             viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
@@ -1712,6 +1711,9 @@ class Room(src.saveing.Saveable):
         """
         pass
 
+    def getDistance(self,position):
+        return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])
+
 class MiniBase(Room):
     """
     a room sized base for small off mech missions
@@ -2325,7 +2327,7 @@ class TrapRoom(EmptyRoom):
         self.duties = ["clearing","trap setting","guarding","painting"]
 
         self.electricalCharges = 90
-        self.maxElectricalCharges = 500
+        self.maxElectricalCharges = 250
 
     def needsCharges(self):
         return  self.electricalCharges < self.maxElectricalCharges

@@ -50,7 +50,46 @@ class MonsterSpawner(src.items.Item):
             enemy.quests.append(quest)
 
     def destroy(self):
-        self.spawnMonster(mass=100)
+        #self.spawnMonster(mass=30)
+
+        foundSpawner = False
+        terrain = self.getTerrain()
+        for room in terrain.rooms:
+            items = room.getItemByPosition((6,6,0))
+            for item in items:
+                if item == self:
+                    continue
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                    foundSpawner = True
+                    break
+
+        terrain = self.getTerrain()
+        for character in terrain.characters:
+            if not character.faction == "invader":
+                continue
+            if foundSpawner:
+                distance = character.getBigDistance(self.container.getPosition())
+                if distance > 3:
+                    continue
+
+            quest = src.quests.ClearTerrain()
+            quest.autoSolve = True
+            character.assignQuest(quest,active=True)
+            print("sent enemy")
+        for room in terrain.rooms:
+            if foundSpawner:
+                distance = room.getDistance(self.container.getPosition())
+                if distance > 3:
+                    continue
+
+            for character in room.characters:
+                if not character.faction == "invader":
+                    continue
+                quest = src.quests.ClearTerrain()
+                quest.autoSolve = True
+                character.assignQuest(quest,active=True)
+                print("sent enemy")
+
         super().destroy()
 
     def render(self):

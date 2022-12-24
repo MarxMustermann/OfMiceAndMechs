@@ -4202,7 +4202,6 @@ class AdvancedQuestMenu(SubMenu):
                         options.append((value.type, key))
                     """
                     options.append(("SecureTile", "SecureTile"))
-                    options.append(("ClearTile", "ClearTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
                     options.append(("ProtectSuperior", "ProtectSuperior"))
@@ -4863,9 +4862,9 @@ class StaffAsMatrixMenu(SubMenu):
 class JobAsMatrixMenu(SubMenu):
     type = "JobAsMatrixMenu"
 
-    def __init__(self,cityLeader):
+    def __init__(self,dutyArtwork):
         super().__init__()
-        self.cityLeader = cityLeader 
+        self.dutyArtwork = dutyArtwork 
         self.index = [0,0]
 
     def handleKey(self, key, noRender=False, character = None):
@@ -4882,6 +4881,14 @@ class JobAsMatrixMenu(SubMenu):
         # exit the submenu
         if key in ("esc"," ",):
             return True
+
+        terrain = self.dutyArtwork.getTerrain()
+        npcs = []
+        for char in terrain.characters:
+            npcs.append(char)
+        for room in terrain.rooms:
+            for char in room.characters:
+                npcs.append(char)
 
         duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing","Questing"]
         if key == "w":
@@ -4897,51 +4904,19 @@ class JobAsMatrixMenu(SubMenu):
                 self.index[1] += 1
         if key == "j":
             rowCounter = 0
-            if rowCounter == self.index[0]:
-                dutyname = duties[self.index[1]]
-                if dutyname in self.cityLeader.duties:
-                    self.cityLeader.duties.remove(dutyname)
-                else:
-                    self.cityLeader.duties.append(dutyname)
-            rowCounter += 1
-
-            for subleader in self.cityLeader.subordinates:
-                if subleader.dead:
+            for npc in npcs:
+                if not npc.faction == character.faction:
                     continue
+                if isinstance(npc,src.characters.Ghul):
+                    continue
+
                 if rowCounter == self.index[0]:
                     dutyname = duties[self.index[1]]
-                    if dutyname in subleader.duties:
-                        subleader.duties.remove(dutyname)
+                    if dutyname in npc.duties:
+                        npc.duties.remove(dutyname)
                     else:
-                        subleader.duties.append(dutyname)
+                        npc.duties.append(dutyname)
                 rowCounter += 1
-
-            for subleader in self.cityLeader.subordinates:
-                if subleader.dead:
-                    continue
-                for subsubleader in subleader.subordinates:
-                    if rowCounter == self.index[0]:
-                        dutyname = duties[self.index[1]]
-                        if dutyname in subsubleader.duties:
-                            subsubleader.duties.remove(dutyname)
-                        else:
-                            subsubleader.duties.append(dutyname)
-                    rowCounter += 1
-
-            for subleader in self.cityLeader.subordinates:
-                if subleader.dead:
-                    continue
-                for subsubleader in subleader.subordinates:
-                    for worker in subsubleader.subordinates:
-                        if rowCounter == self.index[0]:
-                            dutyname = duties[self.index[1]]
-                            if dutyname in worker.duties:
-                                worker.duties.remove(dutyname)
-                            else:
-                                worker.duties.append(dutyname)
-                        rowCounter += 1
-
-        cityLeader = self.cityLeader
 
         text = "press wasd to move cursor"
         text += "press j to enable/disable"
@@ -4953,9 +4928,9 @@ class JobAsMatrixMenu(SubMenu):
         for duty in duties:
             color = "default"
             if rowCounter == self.index[1]:
-                color = "#333"
-            text.append(" | ")
-            text.append((urwid.AttrSpec("default", color),duty))
+                color = "#555"
+            text.append("|")
+            text.append((urwid.AttrSpec("default", color)," "+duty+" "))
             rowCounter += 1
 
         def convertName(name):
@@ -4963,39 +4938,23 @@ class JobAsMatrixMenu(SubMenu):
 
 
         lineCounter = 0
-        text.append("\nrank 3 ----\n")
         color = "default"
         rowCounter = 0
         if lineCounter == self.index[0]:
             color = "#333"
-        text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(cityLeader.name),)))
-        for duty in duties:
-            if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                text.append("=>")
-            else:
-                color = "default"
-                if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                    color = "#333"
-                text.append((urwid.AttrSpec("default", color),"  "))
-            if duty in cityLeader.duties:
-                text.append("X")
-            else:
-                color = "default"
-                if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                    color = "#333"
-                text.append((urwid.AttrSpec("default", color)," "))
-            text.append("|")
-            rowCounter += 1
-        lineCounter += 1
 
-        text.append("\nrank 4 ----\n")
-        for subleader in cityLeader.subordinates:
-            if subleader.dead:
+        lineCounter = 0
+        for npc in npcs:
+            if not npc.faction == character.faction:
                 continue
-            color = "default"
+            if isinstance(npc,src.characters.Ghul):
+                continue
+            text.append("\n")
             if lineCounter == self.index[0]:
                 color = "#333"
-            text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(subleader.name),)))
+            else:
+                color = "default"
+            text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(npc.name),)))
             rowCounter = 0
             for duty in duties:
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
@@ -5005,7 +4964,8 @@ class JobAsMatrixMenu(SubMenu):
                     if rowCounter == self.index[1] or lineCounter == self.index[0]:
                         color = "#333"
                     text.append((urwid.AttrSpec("default", color),"  "))
-                if duty in subleader.duties:
+
+                if duty in npc.duties:
                     text.append("X")
                 else:
                     color = "default"
@@ -5015,70 +4975,6 @@ class JobAsMatrixMenu(SubMenu):
                 text.append("|")
                 rowCounter += 1
             lineCounter += 1
-            text.append("\n")
-
-        text.append("rank 5 ----\n")
-        for subleader in cityLeader.subordinates:
-            if subleader.dead:
-                continue
-            for subsubleader in subleader.subordinates:
-                color = "default"
-                if lineCounter == self.index[0]:
-                    color = "#333"
-                text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(subsubleader.name),)))
-                rowCounter = 0
-                for duty in duties:
-                    if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                        text.append("=>")
-                    else:
-                        color = "default"
-                        if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                            color = "#333"
-                        text.append((urwid.AttrSpec("default", color),"  "))
-                    if duty in subsubleader.duties:
-                        text.append("X")
-                    else:
-                        color = "default"
-                        if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                            color = "#333"
-                        text.append((urwid.AttrSpec("default", color)," "))
-                    text.append("|")
-                    rowCounter += 1
-                lineCounter += 1
-                text.append("\n")
-
-        text.append("rank 6 ----\n")
-        for subleader in cityLeader.subordinates:
-            if subleader.dead:
-                continue
-            for subsubleader in subleader.subordinates:
-                for worker in subsubleader.subordinates:
-
-                    color = "default"
-                    if lineCounter == self.index[0]:
-                        color = "#333"
-                    text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(worker.name),)))
-
-                    rowCounter = 0
-                    for duty in duties:
-                        if lineCounter == self.index[0] and rowCounter == self.index[1]:
-                            text.append("=>")
-                        else:
-                            color = "default"
-                            if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                                color = "#333"
-                            text.append((urwid.AttrSpec("default", color),"  "))
-                        if duty in worker.duties:
-                            text.append("X")
-                        else:
-                            color = "default"
-                            if rowCounter == self.index[1] or lineCounter == self.index[0]:
-                                color = "#333"
-                            text.append((urwid.AttrSpec("default", color)," "))
-                        text.append("|")
-                        rowCounter += 1
-                    lineCounter += 1
-                    text.append("\n")
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
@@ -5087,208 +4983,6 @@ class JobAsMatrixMenu(SubMenu):
 
         return False
         
-class JobByRankMenu(SubMenu):
-    """
-    the help submenue
-    """
-
-    type = "JobByRankMenu"
-
-    def __init__(self,cityLeader):
-        super().__init__()
-        self.cityLeader = cityLeader 
-        self.index = [0,0]
-
-    def handleKey(self, key, noRender=False, character = None):
-        """
-        show the help text and ignore keypresses
-
-        Parameters:
-            key: the key pressed
-            noRender: flag to skip rendering
-        Returns:
-            returns True when done
-        """
-
-        # exit the submenu
-        if key in ("esc"," ",):
-            return True
-
-        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing","Questing"]
-        if key == "w":
-            if not self.index[0] < 1:
-                self.index[0] -= 1
-        if key == "s":
-            if not self.index[0] > 2:
-                self.index[0] += 1
-        if key == "a":
-            if not self.index[1] < 1:
-                self.index[1] -= 1
-        if key == "d":
-            if not self.index[1] > len(duties)-2:
-                self.index[1] += 1
-        if key == "j":
-            if self.index[0] == 0:
-                dutyname = duties[self.index[1]]
-                if not dutyname in self.cityLeader.duties:
-                   self.cityLeader.duties.append(dutyname)
-            if self.index[0] == 1:
-                dutyname = duties[self.index[1]]
-                for subleader in self.cityLeader.subordinates:
-                    if not dutyname in subleader.duties:
-                       subleader.duties.append(dutyname)
-                       break
-            if self.index[0] == 2:
-                dutyname = duties[self.index[1]]
-                firstSubsubleaderFound = None
-                for subleader in self.cityLeader.subordinates:
-                    for subsubleader in subleader.subordinates:
-                        if not dutyname in subsubleader.duties:
-                           subsubleader.duties.append(dutyname)
-                           firstSubsubleaderFound = subsubleader
-                           break
-                    if firstSubsubleaderFound:
-                        break
-            if self.index[0] == 3:
-                dutyname = duties[self.index[1]]
-                firstWorkerFound = None
-                for subleader in self.cityLeader.subordinates:
-                    for subsubleader in subleader.subordinates:
-                        for worker in subsubleader.subordinates:
-                            if not dutyname in worker.duties:
-                               worker.duties.append(dutyname)
-                               firstWorkerFound = worker
-                               break
-                        if firstWorkerFound:
-                            break
-                    if firstWorkerFound:
-                        break
-
-        if key == "k":
-            if self.index[0] == 0:
-                dutyname = duties[self.index[1]]
-                if dutyname in self.cityLeader.duties:
-                   self.cityLeader.duties.remove(dutyname)
-            if self.index[0] == 1:
-                dutyname = duties[self.index[1]]
-                for subleader in self.cityLeader.subordinates:
-                    if dutyname in subleader.duties:
-                       subleader.duties.remove(dutyname)
-                       break
-            if self.index[0] == 2:
-                dutyname = duties[self.index[1]]
-                firstSubsubleaderFound = None
-                for subleader in self.cityLeader.subordinates:
-                    for subsubleader in subleader.subordinates:
-                        if dutyname in subsubleader.duties:
-                           subsubleader.duties.remove(dutyname)
-                           firstSubsubleaderFound = subsubleader
-                           break
-                    if firstSubsubleaderFound:
-                        break
-            if self.index[0] == 3:
-                dutyname = duties[self.index[1]]
-                firstWorkerFound = None
-                for subleader in self.cityLeader.subordinates:
-                    for subsubleader in subleader.subordinates:
-                        for worker in subsubleader.subordinates:
-                            if dutyname in worker.duties:
-                               worker.duties.remove(dutyname)
-                               firstWorkerFound = worker
-                               break
-                        if firstWorkerFound:
-                            break
-                    if firstWorkerFound:
-                        break
-
-
-        cityLeader = self.cityLeader
-
-        text = "press wasd to move cursor\n\n"
-        text += "press j to increase\n"
-        text += "press k to decrease\n"
-
-        dutyCount = {}
-        for duty in duties:
-            dutyCount[duty] = 0
-        npcCount = 0
-        npcCount += 1
-        for duty in cityLeader.duties:
-            dutyCount[duty] += 1
-        text += "rank 3 (%s): \n"%(npcCount,)
-        counter = 0
-        for duty in duties:
-            count = dutyCount[duty]
-            if self.index[0] == 0 and self.index[1] == counter:
-                text += "=> "
-            text += "%s: %s "%(duty,count)
-            counter += 1
-        text += "\n"
-
-        dutyCount = {}
-        for duty in duties:
-            dutyCount[duty] = 0
-        npcCount = 0
-        for subleader in cityLeader.subordinates:
-            npcCount += 1
-            for duty in subleader.duties:
-                dutyCount[duty] += 1
-        text += "rank 4 (%s): \n"%(npcCount,)
-        counter = 0
-        for duty in duties:
-            count = dutyCount[duty]
-            if self.index[0] == 1 and self.index[1] == counter:
-                text += "=> "
-            text += "%s: %s "%(duty,count)
-            counter += 1
-        text += "\n"
-
-        dutyCount = {}
-        for duty in duties:
-            dutyCount[duty] = 0
-        npcCount = 0
-        for subleader in cityLeader.subordinates:
-            for subsubleader in subleader.subordinates:
-                npcCount += 1
-                for duty in subsubleader.duties:
-                    dutyCount[duty] += 1
-        text += "rank 5 (%s): \n"%(npcCount,)
-        counter = 0
-        for duty in duties:
-            count = dutyCount[duty]
-            if self.index[0] == 2 and self.index[1] == counter:
-                text += "=> "
-            text += "%s: %s "%(duty,count)
-            counter += 1
-        text += "\n"
-
-        dutyCount = {}
-        for duty in duties:
-            dutyCount[duty] = 0
-        npcCount = 0
-        for subleader in cityLeader.subordinates:
-            for subsubleader in subleader.subordinates:
-                for worker in subsubleader.subordinates:
-                    npcCount += 1
-                    for duty in worker.duties:
-                        dutyCount[duty] += 1
-        text += "rank 6 (%s): \n"%(npcCount,)
-        counter = 0
-        for duty in duties:
-            count = dutyCount[duty]
-            if self.index[0] == 3 and self.index[1] == counter:
-                text += "=> "
-            text += "%s: %s "%(duty,count)
-            counter += 1
-        text += "\n"
-
-        # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
-        self.persistentText = text
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
-
-        return False
-
 class MapMenu(SubMenu):
     """
     a menu for triggering actions from a map
@@ -6874,70 +6568,58 @@ def renderGameDisplay(renderChar=None):
             offsetLeft = max(screen_width//2-width//2,1)
             offsetTop = max(screen_height//2-height//2,1)
 
-            counter = offsetTop
-            tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft] = "|"
-            tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
-            tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
-            src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
-            tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
-            src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
-            tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
-            src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
+            try:
+                counter = offsetTop
+                tcodConsole.print(x=offsetLeft, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter-1][offsetLeft] = "|"
+                tcodConsole.print(x=offsetLeft+width+3, y=counter-1, string="|",fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter-1][offsetLeft+width+3] = "|"
+                tcodConsole.print(x=offsetLeft+width+0, y=counter-1, string="<",fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter-1][offsetLeft+width+0] = "<"
+                src.gamestate.gamestate.clickMap[(offsetLeft+width+0,counter-1)] = ["lESC"]
+                tcodConsole.print(x=offsetLeft+width+1, y=counter-1, string="X",fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter-1][offsetLeft+width+1] = "X"
+                src.gamestate.gamestate.clickMap[(offsetLeft+width+1,counter-1)] = ["esc"]
+                tcodConsole.print(x=offsetLeft+width+2, y=counter-1, string=">",fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
+                src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
 
-            tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
-            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
-            pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
-            extraX = 0
-            for char in "--+-"+"-"*width+"-+--":
-                pseudoDisplay[counter][offsetLeft-2+extraX] = char
-                extraX += 1
-            counter += 1
-            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-            extraX = 0
-            for char in "| "+" "*width+" |":
-                pseudoDisplay[counter][offsetLeft+extraX] = char
-                extraX += 1
-            counter += 1
-            for line in plainText.split("\n"):
+                tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
+                tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
+                pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
+                extraX = 0
+                for char in "--+-"+"-"*width+"-+--":
+                    pseudoDisplay[counter][offsetLeft-2+extraX] = char
+                    extraX += 1
+                counter += 1
                 tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                 extraX = 0
                 for char in "| "+" "*width+" |":
-                    try:
-                        pseudoDisplay[counter][offsetLeft+extraX] = char
-                    except:
-                        pass
+                    pseudoDisplay[counter][offsetLeft+extraX] = char
                     extraX += 1
                 counter += 1
-            tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
-            extraX = 0
-            for char in "| "+" "*width+" |":
-                try:
+                for line in plainText.split("\n"):
+                    tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+                    extraX = 0
+                    for char in "| "+" "*width+" |":
+                        pseudoDisplay[counter][offsetLeft+extraX] = char
+                        extraX += 1
+                    counter += 1
+                tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
+                extraX = 0
+                for char in "| "+" "*width+" |":
                     pseudoDisplay[counter][offsetLeft+extraX] = char
-                except:
-                    pass
-                extraX += 1
-            counter += 1
-            tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
-            extraX = 0
-            for char in "--+-"+"-"*width+"-+--":
-                try:
+                    extraX += 1
+                counter += 1
+                tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
+                extraX = 0
+                for char in "--+-"+"-"*width+"-+--":
                     pseudoDisplay[counter][offsetLeft-2+extraX] = char
-                except:
-                    pass
-                extraX += 1
-            tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
-            try:
+                    extraX += 1
+                tcodConsole.print(x=offsetLeft, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
                 pseudoDisplay[counter+1][offsetLeft] = "|"
-            except:
-                pass
-            tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
-            try:
+                tcodConsole.print(x=offsetLeft+width+3, y=counter+1, string="|",fg=(255,255,255),bg=(0,0,0))
                 pseudoDisplay[counter+1][offsetLeft+width+3] = "|"
             except:
                 pass
@@ -8572,7 +8254,6 @@ subMenuMap = {
     "MapMenu": MapMenu,
     "OneKeystrokeMenu": OneKeystrokeMenu,
     "CreateQuestMenu": CreateQuestMenu,
-    "JobByRankMenu": JobByRankMenu,
     "JobAsMatrixMenu": JobAsMatrixMenu,
     "StaffAsMatrixMenu": StaffAsMatrixMenu,
     "RoomMenu": RoomMenu,

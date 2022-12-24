@@ -303,7 +303,7 @@ class Item(src.saveing.Saveable):
         """
 
         if isinstance(self.container, src.rooms.Room):
-            terrain = self.container.terrain
+            terrain = self.container.container
         elif self.container:
             terrain = self.container
         return terrain

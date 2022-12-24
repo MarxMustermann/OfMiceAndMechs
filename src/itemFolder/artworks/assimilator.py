@@ -81,6 +81,7 @@ Additionally you recieve 2 health vials.
                 character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
                 character.maxHealth += self.healthIncrease
                 character.heal(self.healingEffect)
+                character.movementSpeed *= 0.9
                 character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
             item = src.items.itemMap["Vial"]()
@@ -113,22 +114,22 @@ Reapply after this changes.
                 if character.reputation < self.requiredReputationForRank3:
                     text = """
 
-    you need %s reputation to be promoted.
+you need %s reputation to be promoted.
 
-    gain reputation by completing quests and killing enemies.
-    """%(self.requiredReputationForRank3,)
+gain reputation by completing quests and killing enemies.
+"""%(self.requiredReputationForRank3,)
                 else:
                     text = """
 
-    you are hereby rank 3.
-    This means you are the commander of this base now.
+you are hereby rank 3.
+This means you are the commander of this base now.
 
-    You will carry the burden of the epoch quest now.
+You will carry the burden of the epoch quest now.
 
-    To help you with that you got the universal leaders blessing.
-    Additionally you recieve 2 health vials.
+To help you with that you got the universal leaders blessing.
+Additionally you recieve 2 health vials.
 
-    """
+"""
                     character.rank = 3
                     character.reputation = 0
 
@@ -136,6 +137,7 @@ Reapply after this changes.
                     character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
                     character.maxHealth += self.healthIncrease
                     character.heal(self.healingEffect)
+                    character.movementSpeed *= 0.9
                     character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
                     item = src.items.itemMap["Vial"]()
@@ -148,13 +150,13 @@ Reapply after this changes.
 
                     self.container.getItemsByType("PersonnelArtwork")[0].setCityleader(character)
 
-                    #for quest in character.quests:
-                    #    quest.postHandler()
+                    for quest in character.quests:
+                        quest.postHandler()
 
-                    #character.quests = []
-                    #quest = src.quests.EpochQuest()
-                    #quest.assignToCharacter(character)
-                    #character.quests.append(quest)
+                    character.quests = []
+                    quest = src.quests.EpochQuest()
+                    quest.assignToCharacter(character)
+                    character.quests.append(quest)
 
             character.addMessage("----------------"+text+"-----------------")
 
@@ -236,6 +238,7 @@ Use the vial or press Jh to heal once or JH to fully heal.
             character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
             character.maxHealth += self.healthIncrease
             character.heal(self.healingEffect)
+            character.movementSpeed *= 0.9
             character.addMessage("your max heath increased by %s"%(self.healingEffect,))
 
             item = src.items.itemMap["Vial"]()
@@ -367,7 +370,6 @@ Retrain a skill and return to integrate into the bases systems
             return
 
         else:
-            print(character.skills)
             if "fighting" in character.skills:
                 duty = "Questing"
                 dutytext = "Go to the QuestArtwork and complete the quests given."

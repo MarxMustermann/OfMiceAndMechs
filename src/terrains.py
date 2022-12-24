@@ -123,6 +123,14 @@ class Terrain(src.saveing.Saveable):
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
+    def getRoomsByTag(self,tag):
+        result = []
+        for room in self.rooms:
+            if not room.tag == tag:
+                continue
+            result.append(room)
+        return result
+
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
             return

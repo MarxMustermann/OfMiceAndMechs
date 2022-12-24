@@ -216,8 +216,11 @@ Activate the machine to produce.
                 "the target area is full, the machine does not produce anything"
             )
             self.runCommand("targetFull", character)
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+            color = "#740"
+            if not self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.zPosition))[0].type == self.toProduce:
+                color = "#f00"
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})
             return
 
         if self.charges:

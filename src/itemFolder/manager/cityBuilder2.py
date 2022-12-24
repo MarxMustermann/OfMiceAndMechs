@@ -353,6 +353,7 @@ class CityBuilder2(src.items.Item):
             room.spawnPlaned()
             room.spawnPlaned()
             room.addRandomItems()
+            room.spawnGhuls(character)
 
     def spawnCity(self,character):
         if len(self.rooms) > 1:
@@ -361,16 +362,17 @@ class CityBuilder2(src.items.Item):
         citylocation = self.container.getPosition()
         backGuardRoom = self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
         
-        guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
+        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
+        #guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
+        #guardRoom.chargeStrength = 20
+        #guardRoom.electricalCharges = guardRoom.maxElectricalCharges
+
+        guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-2),"character":character})
         guardRoom.chargeStrength = 20
         guardRoom.electricalCharges = guardRoom.maxElectricalCharges
 
-        guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-2),"character":character})
-        guardRoom.chargeStrength = 30
-        guardRoom.electricalCharges = guardRoom.maxElectricalCharges
-
-        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character})
-        self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})
+        room = self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]),"character":character})
+        room = self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]),"character":character})
 
         backGuardRoom = self.addTrapRoomFromMap({"character":character,"coordinate":(citylocation[0]+0,citylocation[1]+2)})
         backGuardRoom.chargeStrength = 20
@@ -607,6 +609,7 @@ class CityBuilder2(src.items.Item):
 
     def addWorkshopRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="WorkshopRoom")
+        room.doBasicSetup()
         self.workshopRooms.append(room)
         return room
 
@@ -966,7 +969,6 @@ class CityBuilder2(src.items.Item):
         if not smallMachinesToAdd and not bigMachinesToAdd:
             return
 
-        room.doBasicSetup()
         room.addGhulSquare((6,6,0))
 
         newOutputs = []

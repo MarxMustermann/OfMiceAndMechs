@@ -289,6 +289,11 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def learnSkill(self,skill):
+        if not skill in self.skills:
+            self.skills.append(skill)
+        self.changed("learnedSkill",self)
+
     def getDistance(self,position):
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])+abs(self.zPosition-position[2])
 
@@ -676,10 +681,8 @@ class Character(src.saveing.Saveable):
             self.addMessage("your armor absorbs %s damage" % (damageAbsorbtion,))
             damage -= damageAbsorbtion
 
-            if self == src.gamestate.gamestate.mainChar:
-                self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
-            if actor == src.gamestate.gamestate.mainChar:
-                self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
+            self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
+            self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
 
 
         if damage <= 0:
@@ -688,10 +691,7 @@ class Character(src.saveing.Saveable):
         if self.health - damage > 0:
             staggerThreshold = self.health // 4 + 1
 
-            if self == src.gamestate.gamestate.mainChar:
-                self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":True,"health":self.health})
-            if actor == src.gamestate.gamestate.mainChar:
-                self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":False,"health":self.health})
+            self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":self==src.gamestate.gamestate.mainChar,"health":self.health})
 
             self.health -= damage
             self.frustration += 10 * damage
@@ -737,16 +737,14 @@ class Character(src.saveing.Saveable):
             baseDamage += self.weapon.baseDamage
         damage = baseDamage
 
-        if self == src.gamestate.gamestate.mainChar:
-            try:
-                self.container.addAnimation(target.getPosition(),"attack",damage,{})
-            except:
-                pass
-        if target == src.gamestate.gamestate.mainChar:
-            try:
-                self.container.addAnimation(target.getPosition(),"attack",damage,{})
-            except:
-                pass
+        try:
+            self.container.addAnimation(target.getPosition(),"attack",damage,{})
+        except:
+            pass
+        try:
+            self.container.addAnimation(target.getPosition(),"attack",damage,{})
+        except:
+            pass
 
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
@@ -1429,12 +1427,6 @@ class Character(src.saveing.Saveable):
         if src.gamestate.gamestate.mainChar == self:
             src.interaction.playSound("playerDeath","importantActions")
 
-        # notify nearby characters
-        if self.container:
-            for otherCharacter in self.container.characters:
-                if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
-                    otherCharacter.changed("character died on tile",{"deadChar":self})
-
         # replace character with corpse
         if self.container:
             container = self.container
@@ -1453,6 +1445,12 @@ class Character(src.saveing.Saveable):
 
                 corpse = src.items.itemMap["Corpse"]()
                 container.addItem(corpse, pos)
+
+            # notify nearby characters
+            for otherCharacter in container.characters:
+                if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
+                    otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
+
         # log impossible state
         else:
             src.logger.debugMessages.append(
@@ -1703,6 +1701,8 @@ class Character(src.saveing.Saveable):
         else:
             # add item to floor
             self.container.addItem(item, position, actor=self)
+
+        self.changed("dropped",(self,item))
 
     def examine(self, item):
         """

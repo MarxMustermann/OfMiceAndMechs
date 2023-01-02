@@ -1419,6 +1419,8 @@ class Room(src.saveing.Saveable):
         item.yPosition = None
         item.container = None
 
+        self.changed("removed item",self)
+
     def removeItems(self, items):
         """
         remove items from the room

@@ -18,6 +18,7 @@ class MonsterSpawner(src.items.Item):
 
         self.walkable = False
         self.bolted = True
+        self.disabled = False
 
     def apply(self, character):
         if isinstance(character,src.characters.Monster):
@@ -50,7 +51,8 @@ class MonsterSpawner(src.items.Item):
             enemy.quests.append(quest)
 
     def destroy(self):
-        #self.spawnMonster(mass=30)
+        self.disabled = True
+        self.changed("spawner will be destroyed")
 
         foundSpawner = False
         terrain = self.getTerrain()
@@ -71,6 +73,8 @@ class MonsterSpawner(src.items.Item):
                 distance = character.getBigDistance(self.container.getPosition())
                 if distance > 3:
                     continue
+                if not character.tag == "hiveGuard":
+                    continue
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True
@@ -90,6 +94,7 @@ class MonsterSpawner(src.items.Item):
                 character.assignQuest(quest,active=True)
                 print("sent enemy")
 
+        
         super().destroy()
 
     def render(self):

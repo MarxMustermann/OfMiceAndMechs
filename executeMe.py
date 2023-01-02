@@ -10,6 +10,7 @@ if you are a first time visitor, interaction.py, story.py and gamestate.py are p
 import sys
 import json
 import time
+import traceback
 
 # import basic internal libs
 import src.items as items
@@ -181,7 +182,24 @@ if not args.urwid:
     interaction.showIntro()
     interaction.showMainMenu(args)
     while 1:
-        interaction.gameLoop(None, None)
+        try:
+            interaction.gameLoop(None, None)
+        except Exception as e:
+            interaction.tcodContext.close()
+            answer = input("something happened and the game crashed. Do you consent to uploading the bug report? (type yes for yes)\n")
+
+            exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
+
+            if answer == "yes":
+                import requests
+                requests.post("http://ofmiceandmechs.com/bugReportDump.php",{"bugReport":exceptionText})
+                print("thanks a lot, i hope i'll get to fixing the bug soon")
+                raise SystemExit()
+            else:
+                print("ohkay then, here is the trace as text in case you feel better writing me an email")
+                print(exceptionText)
+                raise SystemExit()
+
 
 # print death messages
 if gamestate.gamestate.mainChar.dead:

@@ -53,6 +53,7 @@ gain reputation by completing quests and killing enemies.
                 character.macroState["submenue"] = submenue
             else:
                 self.doRank5Promotion({"character":character,"step":1})
+                character.changed("got promotion",character)
             return
 
         if character.rank == 5:
@@ -74,6 +75,7 @@ To help you with that you got the universal leaders blessing.
 Additionally you recieve 2 health vials.
 
 """
+                character.changed("got promotion",character)
                 character.rank = 4
                 character.reputation = 0
 
@@ -130,6 +132,7 @@ To help you with that you got the universal leaders blessing.
 Additionally you recieve 2 health vials.
 
 """
+                    character.changed("got promotion",character)
                     character.rank = 3
                     character.reputation = 0
 
@@ -363,8 +366,8 @@ Retrain a skill and return to integrate into the bases systems
             character.macroState["submenue"] = submenue
 
             quest = src.quests.TrainSkill()
-            quest.assignToCharacter(character)
             quest.activate()
+            quest.assignToCharacter(character)
             quest.generateSubquests(character)
             character.quests.insert(0,quest)
             return
@@ -379,6 +382,9 @@ Retrain a skill and return to integrate into the bases systems
             if "trapReloading" in character.skills:
                 duty = "trap setting"
                 dutytext = "Reload the trap rooms"
+            if "cleaning" in character.skills:
+                duty = "cleaning"
+                dutytext = "clean"
             text = """
 You hereby have a rank of 6.
 You can request promotions here.

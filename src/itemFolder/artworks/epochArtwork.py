@@ -57,7 +57,7 @@ Use it by activating it. You will recieve further instructions."""
         self.applyOptions[1] = ("getEpochRewards", "get epoch rewards (%s)"%(self.charges,))
 
     def getEpochEvaluation(self,character):
-        character.addMessage("NIY")
+        self.recalculateGlasstears(character)
 
     def getEpochRewards(self,character):
 
@@ -443,7 +443,7 @@ Feeling a bit lonely with it.
 """
 
             character.addMessage(text)
-            submenue = src.interaction.Menu(text)
+            submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
 
             character.clearCommandString()
@@ -463,7 +463,7 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
 
 """
         character.addMessage(text)
-        submenue = src.interaction.Menu(text)
+        submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
         quest = src.quests.questMap["BeUsefull"]()
@@ -597,7 +597,7 @@ You will recieve your duties and instructions later.
         amount += stepAmount
 
         if character and numSpawnersDestroyed:
-            character.addMessage("you got %s glass tears for surviving %s epochs"%(stepAmount,epochsSurvived,))
+            character.addMessage("you got %s glass tears for destroying %s hives"%(stepAmount,numSpawnersDestroyed,))
 
         if character:
             character.changed(tag="got epoch evaluation")

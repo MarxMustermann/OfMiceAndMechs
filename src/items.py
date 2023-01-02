@@ -382,6 +382,8 @@ class Item(src.saveing.Saveable):
         else:
             character.addMessage("no pickup action found")
 
+        character.changed("itemPickedUp",(character,self))
+
     def getLongInfo(self):
         """
         returns a long text description to show to the player

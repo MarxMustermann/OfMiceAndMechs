@@ -85,6 +85,7 @@ protects you in combat
             character.container.addItem(oldArmor,character.getPosition())
 
         character.armor = self
+        character.changed("equipedItem",(character,self))
         if self.container:
             self.container.removeItem(self)
         else:

@@ -139,8 +139,7 @@ This happens rarely but can interrupt a base.
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        if not "cleaning" in character.skills:
-            character.skills.append("cleaning")
+        character.learnSkill("cleaning")
 
     def checkScrap(self,extraParams):
         character = extraParams["character"]
@@ -166,8 +165,7 @@ So there always needs for some scrap and other materials.
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        if not "gathering" in character.skills:
-            character.skills.append("gathering")
+        character.learnSkill("gathering")
 
 
     def requireScrap(self,character):
@@ -230,8 +228,7 @@ so do try to keep them charged.
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        if not "trapReloading" in character.skills:
-            character.skills.append("trapReloading")
+        character.learnSkill("trapReloading")
 
 
     def requireLightningRod(self,character):
@@ -285,8 +282,7 @@ You can also press "m" to attack a nearby enemy.
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        if not "fighting" in character.skills:
-            character.skills.append("fighting")
+        character.learnSkill("fighting")
 
     def requireWeapon(self,character):
         text = """

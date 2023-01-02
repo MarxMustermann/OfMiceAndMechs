@@ -5736,6 +5736,8 @@ def keyboardListener(key, targetCharacter=None):
     state = char.macroState
 
     if key == "ctrl d":
+        print(char.guarding)
+        print(char.hasOwnAction)
         char.clearCommandString()
         state["loop"] = []
         state["replay"].clear()
@@ -5752,6 +5754,7 @@ def keyboardListener(key, targetCharacter=None):
                 break
             char.quests.remove(quest)
         char.guarding = 0
+        char.hasOwnAction = False
         char.runCommandString("~")
 
     elif key == "ctrl t":

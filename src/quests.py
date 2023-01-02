@@ -1050,12 +1050,9 @@ class ClearTerrain(MetaQuestSequence):
         self.type = "ClearTerrain"
 
     def triggerCompletionCheck(self,character=None):
-        print("trigger completion check")
         if not character:
-            print("no character")
             return
         if not character.container:
-            print("no character container")
             return
 
         if isinstance(character.container,src.rooms.Room):
@@ -1066,18 +1063,13 @@ class ClearTerrain(MetaQuestSequence):
         for otherChar in terrain.characters:
             if otherChar.faction == character.faction:
                 continue
-            print(otherChar)
-            print(otherChar.faction)
-            print("enemy found on terrain")
             return
         for room in terrain.rooms:
             for otherChar in room.characters:
                 if otherChar.faction == character.faction:
                     continue
-                print("enemy found in room")
                 return
 
-        print("trigger end")
         super().triggerCompletionCheck()
         return False
 
@@ -1124,7 +1116,7 @@ class ClearTerrain(MetaQuestSequence):
                         for otherChar in room.characters:
                             if otherChar.faction == character.faction:
                                 continue
-                            self.addQuest(src.quests.SecureTile(toSecure=room.getPosition()))
+                            self.addQuest(src.quests.SecureTile(toSecure=room.getPosition(),endWhenCleared=True))
                             return
 
 class DestroyRoom(MetaQuestSequence):
@@ -1235,7 +1227,8 @@ class ManageBase(MetaQuestSequence):
 class ReloadTraproom(MetaQuestSequence):
     def __init__(self, description="reload traproom", creator=None, command=None, lifetime=None, targetPosition=None, noDelegate=False):
         super().__init__(creator=creator, lifetime=lifetime)
-        self.metaDescription = description+" %s"%(targetPosition,)
+        self.baseDescription = description
+        self.metaDescription = self.baseDescription+" %s"%(targetPosition,)
         self.type = "ReloadTraproom"
         self.shortCode = "R"
 
@@ -1260,6 +1253,7 @@ class ReloadTraproom(MetaQuestSequence):
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
+            self.metaDescription = self.baseDescription+" %s"%(self.targetPosition,)
         return super().setParameters(parameters)
 
     def solver(self, character):
@@ -1316,67 +1310,77 @@ class ReloadTraproom(MetaQuestSequence):
             if rooms:
                 room = rooms[0]
 
-            if room:
-                character.addMessage("should recharge now")
+            if not room == character.container:
+                quest = src.quests.GoToTile(targetPosition=self.targetPosition)
+                self.addQuest(quest)
+                return
 
-                foundCharger = None
-                for item in room.itemsOnFloor:
-                    if not item.bolted:
-                        continue
-                    if not item.type == "Shocker":
-                        continue
-                    foundCharger = item
+            character.addMessage("should recharge now")
 
-                if character.inventory and character.inventory[-1].type == "LightningRod":
-                    chargerPos = foundCharger.getPosition()
-                    characterPos = character.getPosition()
-                    if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
-                        quest = RunCommand(command=10*"Ja")
-                        quest.activate()
-                        self.addQuest(quest)
-                    elif chargerPos == (characterPos[0]+1,characterPos[1],characterPos[2]):
-                        quest = RunCommand(command=10*"Jd")
-                        quest.activate()
-                        self.addQuest(quest)
-                    elif chargerPos == (characterPos[0],characterPos[1]-1,characterPos[2]):
-                        quest = RunCommand(command=10*"Jw")
-                        quest.activate()
-                        self.addQuest(quest)
-                    elif chargerPos == (characterPos[0],characterPos[1]+1,characterPos[2]):
-                        quest = RunCommand(command=10*"Js")
-                        quest.activate()
-                        self.addQuest(quest)
-                    else:
-                        quest = GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True)
-                        quest.activate()
-                        quest.assignToCharacter(character)
-                        self.addQuest(quest)
+            foundCharger = None
+            for item in room.itemsOnFloor:
+                if not item.bolted:
+                    continue
+                if not item.type == "Shocker":
+                    continue
+                foundCharger = item
+
+            if character.inventory and character.inventory[-1].type == "LightningRod":
+                chargerPos = foundCharger.getPosition()
+                characterPos = character.getPosition()
+                if chargerPos == (characterPos[0]-1,characterPos[1],characterPos[2]):
+                    quest = RunCommand(command=10*"Ja")
+                    quest.activate()
+                    self.addQuest(quest)
+                elif chargerPos == (characterPos[0]+1,characterPos[1],characterPos[2]):
+                    quest = RunCommand(command=10*"Jd")
+                    quest.activate()
+                    self.addQuest(quest)
+                elif chargerPos == (characterPos[0],characterPos[1]-1,characterPos[2]):
+                    quest = RunCommand(command=10*"Jw")
+                    quest.activate()
+                    self.addQuest(quest)
+                elif chargerPos == (characterPos[0],characterPos[1]+1,characterPos[2]):
+                    quest = RunCommand(command=10*"Js")
+                    quest.activate()
+                    self.addQuest(quest)
+                else:
+                    quest = GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True)
+                    quest.activate()
+                    quest.assignToCharacter(character)
+                    self.addQuest(quest)
+                return
+
+            if character.getFreeInventorySpace() < 1:
+                quest = ClearInventory(returnToTile=False)
+                quest.activate()
+                quest.assignToCharacter(character)
+                self.addQuest(quest)
+                return
+
+            if foundCharger:
+                source = None
+                for sourceCandidate in random.sample(list(room.sources),len(room.sources)):
+                    if not sourceCandidate[1] == "LightningRod":
+                       continue 
+
+                    sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
+                    if not sourceRoom:
+                        continue
+
+                    sourceRoom = sourceRoom[0]
+                    if not sourceRoom.getNonEmptyOutputslots(itemType=sourceCandidate[1]):
+                        continue
+
+                    source = sourceCandidate
+                if source:
+
+
+                    self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
+                    self.addQuest(GoToTile(targetPosition=room.getPosition()))
+                    self.addQuest(FetchItems(toCollect="LightningRod"))
+                    self.addQuest(GoToTile(targetPosition=source[0]))
                     return
-
-                if foundCharger:
-                    source = None
-                    for sourceCandidate in random.sample(list(room.sources),len(room.sources)):
-                        if not sourceCandidate[1] == "LightningRod":
-                           continue 
-
-                        sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
-                        if not sourceRoom:
-                            continue
-
-                        sourceRoom = sourceRoom[0]
-                        if not sourceRoom.getNonEmptyOutputslots(itemType=sourceCandidate[1]):
-                            continue
-
-                        source = sourceCandidate
-                    if source:
-                        #if triggerClearIneventory():
-                        #    return
-
-                        self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
-                        self.addQuest(GoToTile(targetPosition=room.getPosition()))
-                        self.addQuest(FetchItems(toCollect="LightningRod"))
-                        self.addQuest(GoToTile(targetPosition=source[0]))
-                        return
 
         super().solver(character)
 
@@ -1594,6 +1598,16 @@ class Equip(MetaQuestSequence):
         self.type = "Equip"
 
         self.shortCode = "e"
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        character.addListener(self.wrapedTriggerCompletionCheck, "equipedItem")
+        super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -2279,8 +2293,8 @@ class CleanTraps(MetaQuestSequence):
             return
 
         if not self.getClutteredTraprooms(character):
-            super().triggerCompletionCheck()
-            return
+            self.postHandler()
+            return True
 
         return
 
@@ -2297,24 +2311,16 @@ class CleanTraps(MetaQuestSequence):
                 for item in room.itemsOnFloor:
                     if item.bolted:
                         continue
+                    if item.getPosition() == (None, None, None):
+                        continue
                     filledTraproom.append(room)
                     break
         
         return filledTraproom 
 
-    def triggerCompletionCheck(self,character=None):
-
-        if not character:
-            return
-
-        if not self.getClutteredTraprooms(character):
-            super().triggerCompletionCheck()
-            return
-
-        return
-
     def solver(self, character):
-        self.triggerCompletionCheck(character)
+        if self.triggerCompletionCheck(character):
+            return
 
         if not self.subQuests:
             for room in self.getClutteredTraprooms(character):
@@ -2336,12 +2342,34 @@ class ClearInventory(MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
-        self.returnToTile = True
+        self.returnToTile = False
         if returnToTile:
             self.setParameters({"returnToTile":returnToTile})
 
         self.type = "ClearInventory"
         self.tileToReturnTo = None
+
+    def droppedItem(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def handleTileChange(self):
+        self.triggerCompletionCheck(self.character)
+
+    def activate(self):
+        if self.character:
+            if self.returnToTile and not self.tileToReturnTo:
+                self.tileToReturnTo = self.character.getBigPosition()
+            self.triggerCompletionCheck(self.character)
+        super().activate()
+
+    def assignToCharacter(self, character):
+        character.addListener(self.droppedItem, "dropped")
+        character.addListener(self.handleTileChange, "changedTile")
+        if self.active:
+            if self.returnToTile and not self.tileToReturnTo:
+                self.tileToReturnTo = character.getBigPosition()
+            self.triggerCompletionCheck(character)
+        return super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -2350,7 +2378,7 @@ class ClearInventory(MetaQuestSequence):
         if not character.inventory:
             if self.returnToTile and not character.getBigPosition() == self.tileToReturnTo:
                 return
-            super().triggerCompletionCheck()
+            self.postHandler()
             return
         return
 
@@ -2381,7 +2409,10 @@ class ClearInventory(MetaQuestSequence):
             if len(character.inventory) and room:
                 emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                 if emptyInputSlots:
-                    self.addQuest(RestockRoom(toRestock=character.inventory[-1].type, allowAny=True))
+                    quest = RestockRoom(toRestock=character.inventory[-1].type, allowAny=True)
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
                     return True
 
             if not "HOMEx" in character.registers:
@@ -2392,11 +2423,17 @@ class ClearInventory(MetaQuestSequence):
 
                 if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
                     return True
-                self.addQuest(GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0)))
+                quest = GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 return True
 
             if self.returnToTile and not character.getBigPosition() == self.returnToTile:
-                self.addQuest(GoToTile(targetPosition=self.tileToReturnTo))
+                quest = GoToTile(targetPosition=self.tileToReturnTo)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 return True
 
             return False
@@ -2426,11 +2463,18 @@ class ClearTile(MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
 
+        if character == src.gamestate.gamestate.mainChar:
+            print("triggerCompletionCheck clear")
+
         if not character:
             return
 
+        if character == src.gamestate.gamestate.mainChar:
+            print(self.getLeftoverItems(character))
         if not self.getLeftoverItems(character):
-            super().triggerCompletionCheck()
+            if character == src.gamestate.gamestate.mainChar:
+                print("done")
+            self.postHandler()
             return
 
         return
@@ -2442,6 +2486,8 @@ class ClearTile(MetaQuestSequence):
         return super().setParameters(parameters)
 
     def solver(self, character):
+        if character == src.gamestate.gamestate.mainChar:
+            print("solver clear")
         self.triggerCompletionCheck(character=character)
 
         if not self.subQuests:
@@ -2598,8 +2644,18 @@ class BeUsefull(MetaQuestSequence):
                 amount = 50
             self.character.revokeReputation(amount,reason="an ally dying nearby")
     
+    def handleMovement(self, extraInfo):
+        toRemove = []
+        for quest in self.subQuests:
+            if quest.completed:
+                toRemove.append(quest)
+
+        for quest in toRemove:
+            self.subQuests.remove(quest)
+
     def assignToCharacter(self, character):
         character.addListener(self.awardnearbyKillReputation, "character died on tile")
+        character.addListener(self.handleMovement, "moved")
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
@@ -2624,15 +2680,24 @@ class BeUsefull(MetaQuestSequence):
             return super().solver(character)
 
         if character.rank == 6 and character.reputation >= 300:
-            self.addQuest(GetPromotion(5))
+            quest = GetPromotion(5)
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
             return
 
         if character.rank == 5 and character.reputation >= 500:
-            self.addQuest(GetPromotion(4))
+            quest = GetPromotion(4)
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
             return
 
         if character.rank == 4 and character.reputation >= 750:
-            self.addQuest(GetPromotion(3))
+            quest = GetPromotion(3)
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
             return
 
         if not isinstance(character.container,src.rooms.Room):
@@ -2650,7 +2715,10 @@ class BeUsefull(MetaQuestSequence):
                 return
 
         if not isinstance(character.container,src.rooms.Room):
-            self.addQuest(GoHome())
+            quest = GoHome()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
             return
 
         room = character.container
@@ -2669,7 +2737,10 @@ class BeUsefull(MetaQuestSequence):
                 foundItem = item
 
             if foundItem:
-                self.addQuest(RunCommand(command="JH",description="heal"))
+                quest = Heal()
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
             return
 
         if "guarding" in character.duties:
@@ -2687,9 +2758,9 @@ class BeUsefull(MetaQuestSequence):
 
         if character.isMilitary or "Questing" in character.duties:
             quest = GetQuestFromQuestArtwork()
+            self.addQuest(quest)
             quest.active = True
             quest.assignToCharacter(character)
-            self.addQuest(quest)
             return
 
         """
@@ -2849,6 +2920,8 @@ class BeUsefull(MetaQuestSequence):
 
                     quest = src.quests.ClearTile(targetPosition=room.getPosition())
                     self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
                     return
 
         if "hauling" in character.duties:
@@ -2998,6 +3071,8 @@ class BeUsefull(MetaQuestSequence):
                         if not character.getFreeInventorySpace() > 0:
                             quest = ClearInventory()
                             self.addQuest(quest)
+                            quest.assignToCharacter(character)
+                            quest.activate()
                             return
 
                         roomPos = (room.xPosition,room.yPosition)
@@ -3218,6 +3293,7 @@ class LootRuin(MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
+        self.baseDescription = description
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
@@ -3233,6 +3309,7 @@ class LootRuin(MetaQuestSequence):
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
+            self.metaDescription = self.baseDescription+" "+str(self.targetPosition)
         return super().setParameters(parameters)
 
     def solver(self, character):
@@ -3254,9 +3331,9 @@ class LootRuin(MetaQuestSequence):
                 return
 
             quest = ClearTerrain()
+            self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
-            self.addQuest(quest)
 
 class FetchItems(MetaQuestSequence):
     def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True):
@@ -3284,6 +3361,13 @@ class FetchItems(MetaQuestSequence):
 
         self.shortCode = "f"
 
+    def pickedUpItem(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        character.addListener(self.pickedUpItem, "itemPickedUp")
+        return super().assignToCharacter(character)
+
     def setParameters(self,parameters):
         if "toCollect" in parameters and "toCollect" in parameters:
             self.toCollect = parameters["toCollect"]
@@ -3304,16 +3388,6 @@ class FetchItems(MetaQuestSequence):
         if not character:
             return
 
-        if self.subQuests:
-            return
-
-        if self.collectedItems:
-            if self.tileToReturnTo:
-                return
-            self.postHandler()
-            character.addMessage("self.collectedItems")
-            return
-
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
@@ -3325,8 +3399,11 @@ class FetchItems(MetaQuestSequence):
                 self.collectedItems = True
                 return
 
-        if len(character.inventory) > 9:
+        if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
             self.collectedItems = True
+
+        if self.collectedItems:
+            self.postHandler()
             return
 
         if isinstance(character.container,src.rooms.Room):
@@ -3339,7 +3416,7 @@ class FetchItems(MetaQuestSequence):
             if self.getSource():
                 return
 
-            character.addMessage("failes fetching items")
+            character.addMessage("failed fetching items")
             self.fail()
             self.postHandler()
         return
@@ -7643,7 +7720,10 @@ class GoToTile(Quest):
         if not self.active:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        try:
+            self.triggerCompletionCheck(extraInfo[0])
+        except:
+            pass
 
     def assignToCharacter(self, character):
         if not self.hasListener:
@@ -7891,6 +7971,12 @@ class GoToTile(Quest):
                 if not command and not dryRun:
                     self.path = None
                     self.lastDirection = None
+                    items = character.container.getItemByPosition(character.getPosition(offset=(1,0,0)))
+                    if not items:
+                        return "d"
+                    else:
+                        dropDirection = random.choice(["l","La","Ls","Lw"])
+                        return "dk"+dropDirection
                     return ".12.."
                 return command
             if direction == (-1,0):
@@ -7904,6 +7990,12 @@ class GoToTile(Quest):
                 if not command and not dryRun:
                     self.path = None
                     self.lastDirection = None
+                    items = character.container.getItemByPosition(character.getPosition(offset=(-1,0,0)))
+                    if not items:
+                        return "a"
+                    else:
+                        dropDirection = random.choice(["l","Ls","Lw","Ld"])
+                        return "ak"+dropDirection
                     return ".12.."
                 return command
             if direction == (0,1):
@@ -7917,6 +8009,12 @@ class GoToTile(Quest):
                 if not command and not dryRun:
                     self.path = None
                     self.lastDirection = None
+                    items = character.container.getItemByPosition(character.getPosition(offset=(0,1,0)))
+                    if not items:
+                        return "s"
+                    else:
+                        dropDirection = random.choice(["l","La","Lw","Ld"])
+                        return "sk"+dropDirection
                     return ".12.."
                 return command
             if direction == (0,-1):
@@ -7930,6 +8028,12 @@ class GoToTile(Quest):
                 if not command and not dryRun:
                     self.path = None
                     self.lastDirection = None
+                    items = character.container.getItemByPosition(character.getPosition(offset=(0,-1,0)))
+                    if not items:
+                        return "w"
+                    else:
+                        dropDirection = random.choice(["l","La","Ls","Ld"])
+                        return "wk"+dropDirection
                     return ".12.."
                 return command
             return ".17.."
@@ -7976,18 +8080,23 @@ class GetQuestFromQuestArtwork(MetaQuestSequence):
                 if not item.bolted:
                     continue
                 if item.type == "QuestArtwork":
+                    direction = None
                     if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                        self.addQuest(RunCommand(command=list("Ja.j")+3*["enter"],description="activate quest artwork "))
-                        return
+                        direction = "a"
                     if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                        self.addQuest(RunCommand(command=list("Jd.j")+3*["enter"],description="activate quest artwork "))
-                        return
+                        direction = "d"
                     if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                        self.addQuest(RunCommand(command=list("Jw.j")+3*["enter"],description="activate quest artwork "))
-                        return
+                        direction = "w"
                     if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                        self.addQuest(RunCommand(command=list("Js.j")+3*["enter"],description="activate quest artwork "))
-                        return
+                        direction = "s"
+                    
+                    if direction:
+                        quest = RunCommand(command=list("J"+direction+".j")+3*["enter"],description="activate quest artwork ")
+                        self.addQuest(quest)
+                        quest.assignToCharacter(character)
+                        quest.activate()
+                        return 
+
                     quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to quest artwork ")
                     quest.active = True
                     quest.assignToCharacter(character)
@@ -8023,6 +8132,9 @@ class TrainSkill(MetaQuestSequence):
             return True
         return False
 
+    def handleSkillLearned(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo)
+
     def generateSubquests(self,character):
         if not self.active:
             return
@@ -8041,31 +8153,31 @@ class TrainSkill(MetaQuestSequence):
             return
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = GoHome()
-            quest.activate()
+            quest = GoHome(description="go back to command centre")
             self.addQuest(quest)
+            quest.activate()
             return
 
         room = character.container
 
         for item in room.getItemsByType("BasicTrainer",needsBolted=True):
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                quest = RunCommand(command=list("Ja.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
+                quest = RunCommand(command=list("Ja.")+["enter"]*6,description="activate the basic trainer \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                quest = RunCommand(command=list("Jd.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
+                quest = RunCommand(command=list("Jd.")+["enter"]*6,description="activate the basic trainer \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                quest = RunCommand(command=list("Jw.")+["enter"]*4,description="activate the basic trainer \nby pressing ")
+                quest = RunCommand(command=list("Jw.")+["enter"]*6,description="activate the basic trainer \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                quest = RunCommand(command=list("Js.")+["enter"]*4,description="activate the basic training \nby pressing ")
+                quest = RunCommand(command=list("Js.")+["enter"]*6,description="activate the basic training \nby pressing ")
                 quest.activate()
                 self.addQuest(quest)
                 return
@@ -8074,7 +8186,9 @@ class TrainSkill(MetaQuestSequence):
             quest.assignToCharacter(character)
             self.addQuest(quest)
             return
-        self.addQuest(GoHome(description="go to command centre"))
+        quest = GoHome(description="go to command centre")
+        self.addQuest(quest)
+        quest.activate()
         return
 
     def solver(self,character):
@@ -8092,6 +8206,7 @@ class TrainSkill(MetaQuestSequence):
 
     def assignToCharacter(self, character):
         character.addListener(self.handleMovement, "moved")
+        character.addListener(self.handleSkillLearned, "learnedSkill")
 
         super().assignToCharacter(character)
 
@@ -8101,6 +8216,17 @@ class GetPromotion(MetaQuestSequence):
         self.metaDescription = description
         self.type = "GetPromotion"
         self.targetRank = targetRank
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo)
+
+    def assignToCharacter(self, character):
+        character.addListener(self.wrapedTriggerCompletionCheck, "got promotion")
+
+        super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -8126,9 +8252,9 @@ class GetPromotion(MetaQuestSequence):
 
         if not isinstance(character.container, src.rooms.Room):
             quest = GoHome()
-            quest.active = True
-            quest.assignToCharacter(character)
             self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             return
 
         for item in room.itemsOnFloor:
@@ -8162,7 +8288,10 @@ class GetPromotion(MetaQuestSequence):
             quest.assignToCharacter(character)
             self.addQuest(quest)
             return
-        self.addQuest(GoToTile(targetPosition=(7,7,0),description="go to command centre"))
+        quest = GoToTile(targetPosition=(7,7,0),description="go to command centre")
+        self.addQuest(quest)
+        quest.assignToCharacter(character)
+        quest.activate()
         return
 
     def solver(self,character):
@@ -8208,22 +8337,22 @@ class Assimilate(MetaQuestSequence):
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                quest = RunCommand(command=list("Ja.")+["esc"]*6,description="activate the assimilator \nby pressing")
+                quest = RunCommand(command=list("Ja.")+["enter"]*6,description="activate the assimilator \nby pressing")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                quest = RunCommand(command=list("Jd.")+["esc"]*6,description="activate the assimilator \nby pressing")
+                quest = RunCommand(command=list("Jd.")+["enter"]*6,description="activate the assimilator \nby pressing")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                quest = RunCommand(command=list("Jw.")+["esc"]*6,description="activate the assimilator \nby pressing")
+                quest = RunCommand(command=list("Jw.")+["enter"]*6,description="activate the assimilator \nby pressing")
                 quest.activate()
                 self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                quest = RunCommand(command=list("Js.")+["esc"]*6,description="activate the assimilator \nby pressing")
+                quest = RunCommand(command=list("Js.")+["enter"]*6,description="activate the assimilator \nby pressing")
                 quest.activate()
                 self.addQuest(quest)
                 return
@@ -8321,7 +8450,10 @@ class ActivateEpochArtwork(MetaQuestSequence):
                 self.addQuest(quest)
                 return
 
-            self.addQuest(RunCommand(command=list("Jw.")+["enter"]*2, description="activate the epoch artwork\nby pressing "))
+            quest = RunCommand(command=list("Jw.")+["enter"]*2, description="activate the epoch artwork\nby pressing ")
+            self.addQuest(quest)
+            quest.activate()
+            self.addQuest(quest)
             return
 
         directions = {
@@ -8343,6 +8475,7 @@ class ActivateEpochArtwork(MetaQuestSequence):
         if direction == None:
             quest = src.quests.ReachBase()
             self.addQuest(quest)
+            quest.activate()
             return
 
         if direction == "north":
@@ -8356,6 +8489,7 @@ class ActivateEpochArtwork(MetaQuestSequence):
 
         quest = src.quests.GoToTile(description="go "+direction,targetPosition=targetPos)
         self.addQuest(quest)
+        quest.activate()
 
     def handleMovement(self, extraInfo):
         if not self.active:
@@ -8543,8 +8677,29 @@ class DestroySpawner(MetaQuestSequence):
         self.type = "DestroySpawners"
         self.targetPosition = targetPosition
 
+    def handleSpawnerKill(self):
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self,character):
+        foundSpawner = False
+        terrain = character.getTerrain()
+        rooms = terrain.getRoomByPosition(self.targetPosition)
+        for room in rooms:
+            items = room.getItemByPosition((6,6,0))
+            for item in items:
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                    foundSpawner = item
+
+        if foundSpawner:
+            foundSpawner.addListener(self.handleSpawnerKill, "spawner will be destroyed")
+        
+        super().assignToCharacter(character)
+
     def triggerCompletionCheck(self,character=None):
         if not character:
+            return
+
+        if not self.active:
             return
 
         foundSpawner = False
@@ -8553,7 +8708,7 @@ class DestroySpawner(MetaQuestSequence):
         for room in rooms:
             items = room.getItemByPosition((6,6,0))
             for item in items:
-                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
+                if isinstance(item, src.items.itemMap["MonsterSpawner"]) and not item.disabled:
                     foundSpawner = True
 
         if not foundSpawner:
@@ -8646,8 +8801,21 @@ class KillGuards(MetaQuestSequence):
             guard = random.choice(self.getGuards(character))
             quest = SecureTile(toSecure=guard.getBigPosition(),endWhenCleared=True,description="kill guards on tile ")
             self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             return
         super().solver(character)
+
+    def wrapedTriggerCompletionCheck2(self, extraInfo):
+        if not self.active:
+            return
+
+        self.triggerCompletionCheck(extraInfo["character"])
+
+    def assignToCharacter(self, character):
+        character.addListener(self.wrapedTriggerCompletionCheck2, "character died on tile")
+
+        super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -8686,6 +8854,9 @@ class KillPatrolers(MetaQuestSequence):
         if not character:
             return False
 
+        if not self.active:
+            return False
+
         if not self.getPatrolers(character):
             character.awardReputation(amount=400, reason="killing the patrolers")
             self.postHandler()
@@ -8699,6 +8870,8 @@ class KillPatrolers(MetaQuestSequence):
         if not self.subQuests:
             quest = SecureTile(toSecure=(7,4,0),endWhenCleared=False)
             self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             return
 
         super().solver(character)
@@ -8718,6 +8891,18 @@ class KillPatrolers(MetaQuestSequence):
 
         return enemies
 
+    def wrapedTriggerCompletionCheck2(self, extraInfo):
+        self.triggerCompletionCheck(extraInfo["character"])
+
+    def handleTileChange(self):
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        character.addListener(self.wrapedTriggerCompletionCheck2, "character died on tile")
+        character.addListener(self.handleTileChange, "changedTile")
+
+        super().assignToCharacter(character)
+
 class Heal(MetaQuestSequence):
     def __init__(self, description="heal"):
         super().__init__()
@@ -8728,18 +8913,20 @@ class Heal(MetaQuestSequence):
         if not character:
             return False
 
-        if character.health < character.maxHealth:
-            return False
-
         foundVial = None
         for item in character.inventory:
             if item.type == "Vial" and item.uses > 0:
                 foundVial = item
 
         if not foundVial:
+            self.postHandler()
+            return True
+
+        if character.health < character.maxHealth:
             return False
 
-        super().triggerCompletionCheck()
+        self.postHandler()
+        return True
 
     def solver(self,character):
         self.triggerCompletionCheck(character)
@@ -8747,6 +8934,8 @@ class Heal(MetaQuestSequence):
         if not self.subQuests:
             quest = RunCommand(command="JH")
             self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             return
 
         super().solver(character)
@@ -8756,6 +8945,14 @@ class SecureCargo(MetaQuestSequence):
         super().__init__()
         self.metaDescription = description
         self.type = "SecureCargo"
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        character.addListener(self.wrapedTriggerCompletionCheck, "removed item")
+
+        super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -8778,6 +8975,8 @@ class SecureCargo(MetaQuestSequence):
             if not character.getFreeInventorySpace() > 0:
                 quest = ClearInventory()
                 self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 return
             currentTerrain = character.getTerrain()
             targetRooms = currentTerrain.getRoomsByTag("cargo")
@@ -8787,16 +8986,23 @@ class SecureCargo(MetaQuestSequence):
             if not character.container == targetRoom:
                 quest = SecureTile(toSecure=targetRoom.getPosition(),endWhenCleared=True)
                 self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 return
             item = self.getLoot(character)
             if not item:
                 if len(character.inventory) > 0:
                     quest = ClearInventory(returnToTile=False)
                     self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
                     return
 
             self.addQuest(RunCommand(command="k", description="pick up loot"))
-            self.addQuest(GoToPosition(targetPosition=item.getPosition(),description="go to loot"))
+            quest = GoToPosition(targetPosition=item.getPosition(),description="go to loot")
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             return
 
         super().solver(character)
@@ -8818,7 +9024,8 @@ class SecureCargo(MetaQuestSequence):
 class LootRoom(MetaQuestSequence):
     def __init__(self, description="loot room", roomPos = None):
         super().__init__()
-        self.metaDescription = description
+        self.baseDescription = description
+        self.metaDescription = self.baseDescription+" %s"%(roomPos,)
         self.type = "LootRoom"
         self.roomPos = roomPos
 
@@ -8843,20 +9050,28 @@ class LootRoom(MetaQuestSequence):
             if not character.getFreeInventorySpace() > 0:
                 quest = ClearInventory(returnToTile=False)
                 self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 return
             if not character.getBigPosition() == self.roomPos:
                 if len(character.inventory) > 0:
                     quest = ClearInventory(returnToTile=False)
                     self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
                     return
                 quest = SecureTile(toSecure=self.roomPos,endWhenCleared=True)
                 self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
                 return
             item = self.getLoot(character)
             if not item:
                 if len(character.inventory) > 0:
                     quest = ClearInventory(returnToTile=False)
                     self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
                     return
 
             self.addQuest(RunCommand(command="k", description="pick up loot"))
@@ -8879,6 +9094,12 @@ class LootRoom(MetaQuestSequence):
 
         return None
 
+    def droppedItem(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        character.addListener(self.droppedItem, "dropped")
+        return super().assignToCharacter(character)
 
 class SecureTile(GoToTile):
     def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None):
@@ -8888,6 +9109,18 @@ class SecureTile(GoToTile):
         self.endWhenCleared = endWhenCleared
         self.reputationReward = reputationReward
         self.rewardText = rewardText
+
+    def wrapedTriggerCompletionCheck2(self, extraInfo):
+        self.triggerCompletionCheck(extraInfo["character"])
+
+    def handleTileChange(self):
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        character.addListener(self.wrapedTriggerCompletionCheck2, "character died on tile")
+        character.addListener(self.handleTileChange, "changedTile")
+
+        super().assignToCharacter(character)
 
     def postHandler(self,character=None):
         if self.reputationReward and character:
@@ -8928,6 +9161,7 @@ class SecureTile(GoToTile):
                 if not foundEnemy:
                     self.postHandler(character)
                     return True
+
         return False
 
     def solver(self,character):
@@ -9685,7 +9919,7 @@ class GetEpochReward(MetaQuestSequence):
                 return
 
             if self.doEpochEvaluation and not self.gotEpochEvaluation:
-                self.addQuest(RunCommand(command=list("Jw."+"sssj")+3*["enter"]+["esc"], description="claim epoch rewards\nby pressing "))
+                self.addQuest(RunCommand(command=list("Jw."+"ssj")+3*["enter"]+["esc"], description="claim epoch rewards\nby pressing "))
             else:
                 self.addQuest(RunCommand(command=list("Jw."+"sj"+"sj")+["enter"]+["esc"], description="activate the epoch artwork\nby pressing "))
             return
@@ -9726,7 +9960,6 @@ class GetEpochReward(MetaQuestSequence):
         return
 
     def solver(self,character):
-        print("solver")
         self.triggerCompletionCheck(character)
         self.generateSubquests(character)
 
@@ -9761,6 +9994,8 @@ class DoEpochChallenge(MetaQuestSequence):
         if pos == (7,7,0):
             quest = Heal()
             self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             if not character.getPosition() == (6,7,0):
                 quest = GoToPosition(targetPosition=(6,7,0), description="go to epoch artwork")
                 quest.activate()
@@ -9770,6 +10005,8 @@ class DoEpochChallenge(MetaQuestSequence):
             self.addQuest(RunCommand(command=list("Jw.")+["enter"]*2, description="activate the epoch artwork\nby pressing "))
             quest = Heal()
             self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
             return
 
         directions = {
@@ -9838,6 +10075,7 @@ class EpochQuest(MetaQuestSequence):
 
         quest = DoEpochChallenge()
         self.subQuests.append(quest)
+        quest.activate()
 
     """
     never complete

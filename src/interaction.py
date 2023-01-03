@@ -2026,7 +2026,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if hasattr(urwid,"ExitMainLoop"):
                     raise urwid.ExitMainLoop()
                 else:
-                    raise SystemExit()
+                    showMainMenu()
                 return
             elif selection == "actions":
                 pass
@@ -2582,7 +2582,7 @@ press key for advanced drop
         charState["submenue"] = CharacterInfoMenu(char=char)
 
     # open the character information
-    if key in (commandChars.show_characterInfo,"t",):
+    if key in ("t",):
         charState["submenue"] = ChangeViewsMenu()
 
     # open the character information
@@ -2744,7 +2744,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         lastSubmenu = charState["submenue"]
         done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
-        if not lastSubmenu == charState["submenue"]:
+        if not lastSubmenu == charState["submenue"] and charState["submenue"]:
             charState["submenue"].handleKey("~", noRender=noRender, character=char)
             done = False
 
@@ -5736,6 +5736,7 @@ def keyboardListener(key, targetCharacter=None):
     state = char.macroState
 
     if key == "ctrl d":
+        print("abort abort abort")
         print(char.guarding)
         print(char.hasOwnAction)
         char.clearCommandString()
@@ -5746,9 +5747,11 @@ def keyboardListener(key, targetCharacter=None):
             char.interactionState["ifCondition"].clear()
             char.interactionState["ifParam1"].clear()
             char.interactionState["ifParam2"].clear()
-        activeQuest = char.getActiveQuest()
-        if activeQuest and activeQuest.autoSolve:
-            activeQuest.autoSolve = False
+        for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            if not quest.autoSolve:
+                continue
+            quest.autoSolve = False
+
         for quest in char.quests[:]:
             if not quest.selfAssigned:
                 break
@@ -5883,12 +5886,16 @@ def keyboardListener(key, targetCharacter=None):
 
         if not foundChar:
             for character in char.container.characters:
-                if abs(character.xPosition-char.xPosition) + abs(character.yPosition-char.yPosition):
+                if character == char:
+                    continue
+                if character.getBigPosition() == char.getBigPosition():
                     foundChar = character
                     break
 
         if not foundChar:
             for character in char.container.characters:
+                if character == char:
+                    continue
                 foundChar = character
                 break
 
@@ -5960,6 +5967,7 @@ def getTcodEvents():
                     translatedKey = "enter"
                 if key == tcod.event.KeySym.BACKSPACE:
                     translatedKey = "backspace"
+                """
                 if key == tcod.event.KeySym.SPACE:
                     translatedKey = " "
                 if key == tcod.event.KeySym.PERIOD:
@@ -5969,6 +5977,7 @@ def getTcodEvents():
                         translatedKey = "."
                 if key == tcod.event.KeySym.HASH:
                     translatedKey = "#"
+                """
                 if key == tcod.event.KeySym.ESCAPE:
                     if event.mod in (tcod.event.Modifier.RSHIFT,4097):
                         translatedKey = "rESC"
@@ -5978,6 +5987,7 @@ def getTcodEvents():
                         translatedKey = "ESC"
                     else:
                         translatedKey = "esc"
+                """
                 if key == tcod.event.KeySym.N1:
                     translatedKey = "1"
                 if key == tcod.event.KeySym.N2:
@@ -6025,16 +6035,20 @@ def getTcodEvents():
                         translatedKey = "B"
                     else:
                         translatedKey = "b"
+                """
                 if key == tcod.event.KeySym.c:
                     if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
                         translatedKey = "ctrl c"
+                """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                         translatedKey = "C"
                     else:
                         translatedKey = "c"
+                """
                 if key == tcod.event.KeySym.d:
                     if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
                         translatedKey = "ctrl d"
+                """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                         translatedKey = "D"
                     else:
@@ -6059,9 +6073,11 @@ def getTcodEvents():
                         translatedKey = "H"
                     else:
                         translatedKey = "h"
+                """
                 if key == tcod.event.KeySym.i:
                     if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
                         translatedKey = "ctrl i"
+                """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                         translatedKey = "I"
                     else:
@@ -6116,9 +6132,11 @@ def getTcodEvents():
                         translatedKey = "S"
                     else:
                         translatedKey = "s"
+                """
                 if key == tcod.event.KeySym.t:
                     if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
                         translatedKey = "ctrl t"
+                """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                         translatedKey = "T"
                     else:
@@ -6133,9 +6151,11 @@ def getTcodEvents():
                         translatedKey = "V"
                     else:
                         translatedKey = "v"
+                """
                 if key == tcod.event.KeySym.w:
                     if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
                         translatedKey = "ctrl w"
+                """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                         translatedKey = "W"
                     else:
@@ -6155,13 +6175,32 @@ def getTcodEvents():
                         translatedKey = "Z"
                     else:
                         translatedKey = "z"
+                """
+                if key == tcod.event.KeySym.F11:
+                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                    )
+                    tcod.lib.SDL_SetWindowFullscreen(
+                        tcodContext.sdl_window_p,
+                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                    )
 
                 if translatedKey == None:
                     print(event)
                     continue
 
                 keyboardListener(translatedKey)
-                lastcheck = time.time()
+
+            if isinstance(event,tcod.event.TextInput):
+                translatedKey = event.text
+
+                if translatedKey == None:
+                    print(event)
+                    continue
+
+                keyboardListener(translatedKey)
+
+        lastcheck = time.time()
 
 class UiAnchor(object):
     def __init__(self,tag=""):
@@ -6641,7 +6680,7 @@ def renderGameDisplay(renderChar=None):
         if shadowCharacter:
             renderGameDisplay(shadowCharacter)
 
-def showMainMenu(args):
+def showMainMenu(args=None):
 
     try:
         with open("gamestate/globalInfo.json", "r") as globalInfoFile:
@@ -6892,58 +6931,58 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 setUpNoUrwid()
 
                 if selectedScenario == "siege":
-                    args.terrain = "test"
-                    args.phase = "Siege"
+                    terrain = "test"
+                    phase = "Siege"
                 elif selectedScenario == "siege2":
-                    args.terrain = "test"
-                    args.phase = "Siege2"
+                    terrain = "test"
+                    phase = "Siege2"
                 elif selectedScenario == "basebuilding":
-                    args.terrain = "nothingness"
-                    args.phase = "BaseBuilding"
+                    terrain = "nothingness"
+                    phase = "BaseBuilding"
                 elif selectedScenario == "survival":
-                    args.terrain = "desert"
-                    args.phase = "DesertSurvival"
+                    terrain = "desert"
+                    phase = "DesertSurvival"
                 elif selectedScenario == "creative":
-                    args.terrain = "nothingness"
-                    args.phase = "CreativeMode"
+                    terrain = "nothingness"
+                    phase = "CreativeMode"
                 elif selectedScenario == "dungeon":
-                    args.terrain = "nothingness"
-                    args.phase = "Dungeon"
+                    terrain = "nothingness"
+                    phase = "Dungeon"
                 elif selectedScenario == "WorldBuildingPhase":
-                    args.terrain = "nothingness"
-                    args.phase = "WorldBuildingPhase"
+                    terrain = "nothingness"
+                    phase = "WorldBuildingPhase"
                 elif selectedScenario == "RoguelikeStart":
-                    args.terrain = "nothingness"
-                    args.phase = "RoguelikeStart"
+                    terrain = "nothingness"
+                    phase = "RoguelikeStart"
                 elif selectedScenario == "Tour":
-                    args.terrain = "nothingness"
-                    args.phase = "Tour"
+                    terrain = "nothingness"
+                    phase = "Tour"
                 elif selectedScenario == "BackToTheRoots":
-                    args.terrain = "nothingness"
-                    args.phase = "BackToTheRoots"
+                    terrain = "nothingness"
+                    phase = "BackToTheRoots"
                 elif selectedScenario == "PrefabDesign":
-                    args.terrain = "nothingness"
-                    args.phase = "PrefabDesign"
+                    terrain = "nothingness"
+                    phase = "PrefabDesign"
                 elif selectedScenario == "Tutorials":
-                    args.terrain = "nothingness"
-                    args.phase = "Tutorials"
+                    terrain = "nothingness"
+                    phase = "Tutorials"
 
-                if args.terrain and args.terrain == "scrapField":
+                if terrain and terrain == "scrapField":
                     src.gamestate.gamestate.terrainType = src.terrains.ScrapField
-                elif args.terrain and args.terrain == "nothingness":
+                elif terrain and terrain == "nothingness":
                     src.gamestate.gamestate.terrainType = src.terrains.Nothingness
-                elif args.terrain and args.terrain == "test":
+                elif terrain and terrain == "test":
                     src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
-                elif args.terrain and args.terrain == "tutorial":
+                elif terrain and terrain == "tutorial":
                     src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
-                elif args.terrain and args.terrain == "desert":
+                elif terrain and terrain == "desert":
                     src.gamestate.gamestate.terrainType = src.terrains.Desert
                 else:
                     src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
 
                 src.gamestate.gamestate.mainChar = src.characters.Character()
 
-                src.gamestate.gamestate.setup(phase=args.phase, seed=seed)
+                src.gamestate.gamestate.setup(phase=phase, seed=seed)
                 src.gamestate.gamestate.currentPhase.start(seed=seed,difficulty=difficulty)
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
                 

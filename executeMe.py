@@ -200,7 +200,6 @@ if not args.urwid:
                 print(exceptionText)
                 raise SystemExit()
 
-
 # print death messages
 if gamestate.gamestate.mainChar.dead:
     print("you died.")

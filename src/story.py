@@ -4538,10 +4538,14 @@ Press ESC to close this window.
             quest.activate()
             enemy.quests.append(quest)
 
-            quest = src.quests.Huntdown(target=mainChar)
+            quest = src.quests.Huntdown(target=mainChar,lifetime=500)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
-            quest.activate()
+            enemy.quests.append(quest)
+
+            quest = src.quests.ClearTerrain()
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
 
         if difficulty == "easy":

@@ -79,7 +79,6 @@ class MonsterSpawner(src.items.Item):
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True
             character.assignQuest(quest,active=True)
-            print("sent enemy")
         for room in terrain.rooms:
             if foundSpawner:
                 distance = room.getDistance(self.container.getPosition())
@@ -92,8 +91,6 @@ class MonsterSpawner(src.items.Item):
                 quest = src.quests.ClearTerrain()
                 quest.autoSolve = True
                 character.assignQuest(quest,active=True)
-                print("sent enemy")
-
         
         super().destroy()
 

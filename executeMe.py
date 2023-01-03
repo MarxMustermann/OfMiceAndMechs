@@ -182,6 +182,7 @@ if not args.urwid:
     interaction.showIntro()
     interaction.showMainMenu(args)
     while 1:
+        """
         try:
             interaction.gameLoop(None, None)
         except Exception as e:
@@ -199,6 +200,7 @@ if not args.urwid:
                 print("ohkay then, here is the trace as text in case you feel better writing me an email")
                 print(exceptionText)
                 raise SystemExit()
+        """
 
 # print death messages
 if gamestate.gamestate.mainChar.dead:

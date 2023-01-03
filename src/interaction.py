@@ -6991,6 +6991,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 global lastTerrain
                 lastTerrain = terrain
 
+            gameLoop(None,None)
+
             break
 
         if time.time() - lastStep > 1:

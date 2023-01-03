@@ -1021,9 +1021,10 @@ class Terrain(src.saveing.Saveable):
                     continue
 
                 if not tryHard:
-                    items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
-                    if items and items[0].type == "LandMine":
-                        continue
+                    if character and character.stepsOnMines == False:
+                        items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
+                        if items and items[0].type == "LandMine":
+                            continue
 
                 if not costMap.get(newPos) == None:
                     continue

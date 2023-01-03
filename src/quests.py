@@ -7862,7 +7862,6 @@ class GoToTile(Quest):
             return
 
         tilePos = (self.character.xPosition//15,self.character.yPosition//15,0)
-        self.character.addMessage("reCheckPath triggered")
 
         if self.expectedPosition and not (tilePos == self.expectedPosition):
             if not tilePos == self.lastPos:

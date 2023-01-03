@@ -55,6 +55,7 @@ class Character(src.saveing.Saveable):
         self.superior = None
         self.rank = None
         self.isStaff = False
+        self.stepsOnMines = False
 
         self.showThinking = False
         self.showGotCommand = False
@@ -2195,6 +2196,7 @@ class Monster(Character):
         )
 
         self.faction = "monster"
+        self.stepsOnMines = True
 
         self.personality["moveItemsOnCollision"] = True
 

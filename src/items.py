@@ -54,7 +54,7 @@ class Item(src.saveing.Saveable):
     usageInfo = None
     tasks = []
     container = None
-
+    name = "unknown"
 
     def callInit(self):
         super().__init__()
@@ -78,7 +78,6 @@ class Item(src.saveing.Saveable):
         self.settings = {}
         self.charges = 0
 
-        self.name = "unknown"
         self.callInit()
 
         self.doOwnInit(display=display,name=name,seed=seed,noId=noId)
@@ -372,6 +371,8 @@ class Item(src.saveing.Saveable):
         if src.gamestate.gamestate.mainChar in character.container.characters:
             src.interaction.playSound("itemPickedUp","actions")
 
+        oldPos = self.getPosition()
+
         # gather the actions
         actions = self.gatherPickupActions()
 
@@ -382,7 +383,7 @@ class Item(src.saveing.Saveable):
         else:
             character.addMessage("no pickup action found")
 
-        character.changed("itemPickedUp",(character,self))
+        character.changed("itemPickedUp",(character,self,oldPos))
 
     def getLongInfo(self):
         """

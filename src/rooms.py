@@ -1587,12 +1587,16 @@ class Room(src.saveing.Saveable):
         )
         if direction == "south":
             newYPos += 1
+            character.runCommandString("s")
         elif direction == "north":
             newYPos -= 1
+            character.runCommandString("w")
         elif direction == "west":
             newXPos -= 1
+            character.runCommandString("a")
         elif direction == "east":
             newXPos += 1
+            character.runCommandString("d")
         else:
             src.logger.debugMessages.append("invalid movement direction")
 

@@ -537,7 +537,6 @@ You are free to equip yourself from the bases stocks.
         text = """
 The commander has fallen.
 Siege ongoing.
-No specific instructions available.
 
 You have no rank.
 Follow emergency protocol by integrating into the base.
@@ -562,6 +561,8 @@ You will recieve your duties and instructions later.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
+        for quest in character.quests:
+            quest.postHandler()
         character.quests = []
         quest = src.quests.Assimilate()
         character.quests.append(quest)

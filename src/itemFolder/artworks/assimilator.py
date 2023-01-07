@@ -27,6 +27,111 @@ Use it by activating it."""
         self.requiredReputationForRank4 = 500
         self.requiredReputationForRank3 = 750
 
+    def getPossibleDuties(self,character, exclude=None):
+        out = []
+        if "fighting" in character.skills:
+            duty = "Questing"
+            dutytext = duty+": Get quests from the QuestArtwork and kill things."
+            out.append((duty,dutytext))
+        if "gathering" in character.skills:
+            duty = "resource gathering"
+            dutytext = duty+": Collect Scrap and other things"
+            out.append((duty,dutytext))
+        if "trap maintence" in character.skills:
+            duty = "trap setting"
+            dutytext = duty+": Reload the trap rooms"
+            out.append((duty,dutytext))
+        if "cleaning" in character.skills:
+            duty = "cleaning"
+            dutytext = duty+": clean"
+            out.append((duty,dutytext))
+
+        if exclude:
+            for option in out[:]:
+                if option[0] in exclude:
+                    out.remove(option)
+
+        return out
+
+    def selectDuties(self,extraParams):
+        character = extraParams["character"]
+
+        duty1 = extraParams.get("duty1")
+        if not duty1:
+            if character.rank == 6:
+                text = """
+you can chose to do one duty based on your skills.
+Choose how you are gooing to serve:\n"""
+            else:
+                text = """
+Choose your primary duty:\n"""
+
+            options = self.getPossibleDuties(character)
+
+            if not options:
+                character.addMessage("no duty found")
+                character.changed("changed duties",character)
+                return
+
+            submenue = src.interaction.SelectionMenu(text,options,targetParamName="duty1")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":extraParams}
+            return
+
+        if character.rank == 6:
+            character.duties = [duty1]
+            character.changed("changed duties",character)
+            return
+
+        duty2 = extraParams.get("duty2")
+        if not duty2:
+            text = """
+Choose your secondary duty:\n"""
+
+            options = self.getPossibleDuties(character,exclude=[duty1])
+
+            if not options:
+                character.addMessage("no duty found")
+                character.duties = [duty1]
+                character.changed("changed duties",character)
+                return
+
+            submenue = src.interaction.SelectionMenu(text,options,targetParamName="duty2")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":extraParams}
+            return
+
+        if character.rank == 5:
+            character.duties = [duty1,duty2]
+            character.changed("changed duties",character)
+            return
+
+        duty3 = extraParams.get("duty3")
+        if not duty3:
+            text = """
+Choose your tertiary duty:\n"""
+
+            options = self.getPossibleDuties(character,exclude=[duty1,duty2])
+
+            if not options:
+                character.addMessage("no duty found")
+                character.duties = [duty1,duty2]
+                character.changed("changed duties",character)
+                return
+
+            submenue = src.interaction.SelectionMenu(text,options,targetParamName="duty3")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":extraParams}
+            return
+
+        if character.rank == 4:
+            character.duties = [duty1,duty2,duty3]
+            character.changed("changed duties",character)
+            return
+
+        1/0
+
+
     def apply(self,character):
         if character.registers.get("gotMostBasicTraining") == None:
             character.registers["gotMostBasicTraining"] = True
@@ -47,10 +152,13 @@ you need %s reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
 """%(self.requiredReputationForRank5,)
-                character.addMessage("----------------"+text+"-----------------")
 
+                params = {"character":character}
+                character.addMessage("----------------"+text+"-----------------")
                 submenue = src.interaction.TextMenu(text)
                 character.macroState["submenue"] = submenue
+                character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
+                return
             else:
                 self.doRank5Promotion({"character":character,"step":1})
                 character.changed("got promotion",character)
@@ -64,6 +172,13 @@ you need %s reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
 """%(self.requiredReputationForRank4,)
+
+                params = {"character":character}
+                character.addMessage("----------------"+text+"-----------------")
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
+                return
             else:
                 text = """
 
@@ -120,6 +235,12 @@ you need %s reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
 """%(self.requiredReputationForRank3,)
+                    params = {"character":character}
+                    character.addMessage("----------------"+text+"-----------------")
+                    submenue = src.interaction.TextMenu(text)
+                    character.macroState["submenue"] = submenue
+                    character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
+                    return
                 else:
                     text = """
 
@@ -160,6 +281,7 @@ Additionally you recieve 2 health vials.
                     quest = src.quests.EpochQuest()
                     quest.assignToCharacter(character)
                     character.quests.append(quest)
+                    quest.activate()
 
             character.addMessage("----------------"+text+"-----------------")
 
@@ -379,7 +501,7 @@ Retrain a skill and return to integrate into the bases systems
             if "gathering" in character.skills:
                 duty = "resource gathering"
                 dutytext = "Collect Scrap and other things"
-            if "trapReloading" in character.skills:
+            if "trap maintence" in character.skills:
                 duty = "trap setting"
                 dutytext = "Reload the trap rooms"
             if "cleaning" in character.skills:
@@ -442,6 +564,7 @@ When you press "+" that quest generates sub quests.
         character.quests = []
         quest = src.quests.BeUsefull()
         quest.assignToCharacter(character)
+        quest.activate()
         character.quests.append(quest)
 
 src.items.addType(Assimilator)

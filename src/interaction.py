@@ -1958,6 +1958,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     if key in ("ESC","lESC",):
         if char.rememberedMenu:
             menu = char.rememberedMenu.pop()
+            menu.sidebared = False
             char.macroState["submenue"] = menu
             char.macroState["submenue"].handleKey("~", noRender=False, character=char)
             char.specialRender = True
@@ -1965,6 +1966,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     if key in ("rESC",):
         if char.rememberedMenu2:
             menu = char.rememberedMenu2.pop()
+            menu.sidebared = False
             char.macroState["submenue"] = menu
             char.macroState["submenue"].handleKey("~", noRender=False, character=char)
             char.specialRender = True
@@ -3434,11 +3436,12 @@ class QuestMenu(SubMenu):
             char = src.gamestate.gamestate.mainChar
         self.char = char
         self.offsetX = 0
-        self.questIndex = 0
+        self.questCursor = [0]
+        self.sidebared = False
         super().__init__()
     
     def render(self, char):
-        return renderQuests(char=self.char, asList=True, questIndex=self.questIndex)
+        return renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 
     # overrides the superclasses method completely
     def handleKey(self, key, noRender=False, character = None):
@@ -3457,38 +3460,60 @@ class QuestMenu(SubMenu):
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)
+            self.sidebared = True
             return True
         if key in ("rESC",):
             self.char.rememberedMenu2.append(self)
+            self.sidebared = True
             return True
-
-        # scrolling
-        # bad code: doesn't actually work
-        if key == "W":
-            self.offsetX -= 1
-        if key == "S":
-            self.offsetX += 1
-        if self.offsetX < 0:
-            self.offsetX = 0
 
         # move the marker that marks the selected quest
         if key == "w":
-            self.questIndex -= 1
+            self.questCursor[0] -= 1
         if key == "s":
-            self.questIndex += 1
+            self.questCursor[0] += 1
+        if key == "d":
+            self.questCursor.append(0)
+        if key == "a":
+            self.questCursor.pop()
+        """
         if self.questIndex < 0:
             self.questIndex = 0
         if self.questIndex > len(self.char.quests) - 1:
             self.questIndex = len(self.char.quests) - 1
+        """
 
         # make the selected quest active
         if key == "j":
-            if self.questIndex:
-                quest = self.char.quests[self.questIndex]
+            if self.questCursor[0]:
+                quest = self.char.quests[self.questCursor[0]]
                 self.char.quests.remove(quest)
                 self.char.quests.insert(0, quest)
                 self.char.setPathToQuest(quest)
-                self.questIndex = 0
+                self.questCursor[0] = 0
+                self.char.runCommandString(["esc"])
+        if key == "c":
+            baseList = self.char.quests
+            for index in self.questCursor:
+                quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                except:
+                    baseList = None
+            quest.autoSolve = True
+            self.char.runCommandString(["esc"])
+        if key == "x":
+            baseList = self.char.quests
+            for index in self.questCursor:
+                quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                except:
+                    baseList = None
+            if quest.selfAssigned:
+                quest.fail()
+            else:
+                self.char.addMessage("you cannot cancel that quest, because it was not self assigned")
 
         # render the quests
         addition = ""
@@ -3501,9 +3526,7 @@ class QuestMenu(SubMenu):
                 + self.char.name
                 + ""
                 + addition
-                + "\n(press "
-                + commandChars.show_quests_detailed
-                + " for the extended quest menu)\n\n",
+                + "\n\n",
             )
         )
         self.persistentText = []
@@ -3517,11 +3540,10 @@ class QuestMenu(SubMenu):
         self.persistentText.extend(
             [
                 "\n",
-                "* press q for advanced quests\n",
-                "* press W to scroll up",
-                "\n",
-                "* press S to scroll down",
-                "\n",
+                "* press wasd to select quest\n",
+                "* press j to make selected quest the active quest\n",
+                "* press x to delete selected quest\n",
+                "* press c to mark the selected quest for auto completion\n",
                 "\n",
             ]
         )
@@ -3569,11 +3591,12 @@ class InventoryMenu(SubMenu):
         self.activate = False
         self.drop = False
         self.char = char
+        self.sidebared = False
         super().__init__()
         self.footerText = "press j to activate, press l to drop, press esc to exit"
 
     def render(self,char=None):
-        return renderInventory()
+        return renderInventory(sidebared=self.sidebared)
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -3668,9 +3691,11 @@ class InventoryMenu(SubMenu):
                 return True
             if key in ("ESC","lESC",):
                 self.char.rememberedMenu.append(self)
+                self.sidebared = True
                 return True
             if key in ("rESC",):
                 self.char.rememberedMenu2.append(self)
+                self.sidebared = True
                 return True
 
             if key == "j":
@@ -3906,7 +3931,12 @@ class CharacterInfoMenu(SubMenu):
         text += "health:     %s" % char.health + "\n"
         text += "max health: %s" % char.maxHealth + "\n"
 
-        text += "\n"
+        print(char.listeners)
+        sumListeners = 0
+        for listener in char.listeners:
+            print("%s" % listener + ":"+str(len(char.listeners[listener])))
+            sumListeners += len(char.listeners[listener])
+        print("%s"%(sumListeners,))
 
         if hasattr(char,"rank"):
             text += "rank:       %s\n" % char.rank
@@ -4047,6 +4077,8 @@ class CreateQuestMenu(SubMenu):
                 else:
                     foundQuest.addQuest(quest)
                 quest.activate()
+                if char == self.activeChar:
+                    quest.selfAssigned = True
                 char.showGotCommand = True
             self.activeChar.showGaveCommand = True
             return True
@@ -4429,6 +4461,7 @@ class AdvancedQuestMenu(SubMenu):
                         questInstance = self.quest()
 
                     # assign the quest
+                    
                     self.character.assignQuest(questInstance, active=True)
 
                     self.state = "done"
@@ -4558,7 +4591,7 @@ def renderMessages(character, maxMessages=5):
     return txt
 
 # bad code: the asList and questIndex parameters are out of place
-def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
+def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebared=False):
     """
     render the quests into a string or list
 
@@ -4582,61 +4615,62 @@ def renderQuests(maxQuests=0, char=None, asList=False, questIndex=0):
 
     # render the quests
     if len(char.quests):
-        solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
-        if isinstance(solvingCommangString,list):
-            solvingCommangString = "".join(solvingCommangString)
-        if solvingCommangString:
-            solvingCommangString = solvingCommangString.replace("\n","\\n")
+        if sidebared:
+            solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
+            if isinstance(solvingCommangString,list):
+                solvingCommangString = "".join(solvingCommangString)
+            if solvingCommangString:
+                solvingCommangString = solvingCommangString.replace("\n","\\n")
 
-        nextstep = "next step: %s \n"%(solvingCommangString,)
-        if asList:
+            if solvingCommangString:
+                nextstep = "suggested action: \npress %s \n\n"%(solvingCommangString,)
+            else:
+                nextstep = "suggested action: \npress + \n\n"
             txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
-        else:
-            txt += nextstep
+
+        if not sidebared:
+            txt.append("description for selected quest:")
+            txt.append("\n")
+
+            baseList = char.quests
+            for index in questCursor:
+                quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                except:
+                    baseList = None
+            txt.append(quest.generateTextDescription())
+            print(quest.watched)
+            print(quest.listeners)
+            txt.append("\n")
+            txt.append("\n")
+
+            solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
+
+        if not sidebared:
+            txt.append("Quests:\n\n")
 
         counter = 0
         for quest in char.quests:
-            # render quest
-            if asList:
-                if counter == questIndex:
-                    txt.extend(
-                        [
-                            (urwid.AttrSpec("#0f0", "default"), "QUEST: "),
-                            quest.getDescription(
-                                asList=asList, colored=True, active=True
-                            ),
-                            "\n",
-                        ]
-                    )
-                else:
-                    txt.extend(
-                        [
-                            (urwid.AttrSpec("#090", "default"), "QUEST: "),
-                            quest.getDescription(asList=asList, colored=True),
-                            "\n",
-                        ]
-                    )
+            if questCursor and counter == questCursor[0]:
+                newCursor = questCursor[1:]
             else:
-                txt += "QUEST: " + quest.getDescription(asList=asList) + "\n"
-
-            # break if maximum reached
+                newCursor = None
+            txt.extend(
+                quest.render(cursor=newCursor)
+                    )
+            txt.extend("\n\n")
             counter += 1
-            if counter == maxQuests:
-                break
 
-    # return placeholder for no quests
     else:
-        if asList:
-            txt.append("No Quest")
-        else:
-            txt += "No Quest"
+        txt.append("No Quest")
 
     return txt
 
 
 #bad code: global function
 #bad code: should be abstracted
-def renderInventory():
+def renderInventory(sidebared=False):
     """
     render the inventory of the player into a string
 
@@ -4658,11 +4692,13 @@ def renderInventory():
                         src.canvas.displayChars.indexedMapping[item.render()],
                         " - ",
                         item.name,
-                        "\n     ",
-                        item.getDetailedInfo(),
-                        "\n",
-                    ]
-                )
+                        "\n"])
+                if not sidebared:
+                    txt.extend([
+                            item.getDetailedInfo(),
+                            "\n\n",
+                        ]
+                    )
             else:
                 txt.extend(
                     [
@@ -4671,11 +4707,14 @@ def renderInventory():
                         item.render(),
                         " - ",
                         item.name,
-                        "\n     ",
+                        "\n"])
+                if not sidebared:
+                    txt.extend([
                         item.getDetailedInfo(),
-                        "\n",
-                    ]
-                )
+                        "\n\n",
+                        ]
+                    )
+        txt.extend("\n")
     else:
         txt = "empty Inventory"
     return txt
@@ -5183,6 +5222,7 @@ class ImplantConnection(SubMenu):
         super().__init__()
         self.connectionTarget = connectionTarget
         self.submenu = None
+        self.sidebared = False
 
     def handleKey(self, key, noRender=False, character = None):
         if not noRender:

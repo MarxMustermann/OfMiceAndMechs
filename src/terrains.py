@@ -377,7 +377,6 @@ class Terrain(src.saveing.Saveable):
                     return room.itemByCoordinates[localisedEntry][0]
 
             char.changed("moved", (char, direction))
-            char.changed("entered room", (char, room, direction))
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -388,6 +387,7 @@ class Terrain(src.saveing.Saveable):
             except:
                 char.addMessage("fail,fail,fail")
 
+            char.changed("entered room", (char, room, direction))
             return
 
         # do not move player into the room

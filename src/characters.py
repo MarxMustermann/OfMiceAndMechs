@@ -726,6 +726,8 @@ class Character(src.saveing.Saveable):
         Parameters:
             target: the target to attack
         """
+        if self.dead:
+            return
 
         if self.numAttackedWithoutResponse > 2:
             self.numAttackedWithoutResponse = int(self.numAttackedWithoutResponse/2)
@@ -747,11 +749,11 @@ class Character(src.saveing.Saveable):
         except:
             pass
 
-        target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
             "you attack the enemy for %s damage, the enemy has %s/%s health left"
             % (damage, target.health, target.maxHealth)
         )
+        target.hurt(damage, reason="attacked", actor=self)
 
         if self.personality.get("autoAttackOnCombatSuccess") and not self.submenue and not self.charState["submenue"]:
             self.runCommandString(
@@ -1429,6 +1431,7 @@ class Character(src.saveing.Saveable):
             src.interaction.playSound("playerDeath","importantActions")
 
         # replace character with corpse
+        container = None
         if self.container:
             container = self.container
             pos = self.getPosition()
@@ -1446,11 +1449,6 @@ class Character(src.saveing.Saveable):
 
                 corpse = src.items.itemMap["Corpse"]()
                 container.addItem(corpse, pos)
-
-            # notify nearby characters
-            for otherCharacter in container.characters:
-                if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
-                    otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
 
         # log impossible state
         else:
@@ -1472,6 +1470,12 @@ class Character(src.saveing.Saveable):
 
         # notify listeners
         self.changed("died", {"character": self, "reason": reason})
+
+        if container:
+            # notify nearby characters
+            for otherCharacter in container.characters:
+                if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
+                    otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
 
     # obsolete: needs to be reintegrated
     # bad pattern: should be contained in quest solver
@@ -1699,6 +1703,7 @@ class Character(src.saveing.Saveable):
             foundScrap.amount += item.amount
             foundScrap.setWalkable()
             self.container.addAnimation(foundScrap.getPosition(),"scrapChange",1,{})
+            item = foundScrap
         else:
             # add item to floor
             self.container.addItem(item, position, actor=self)
@@ -1896,11 +1901,6 @@ class Character(src.saveing.Saveable):
 
         if tag == "moved":
             self.timeTaken += self.movementSpeed-1
-
-        if tag == "character died on tile":
-            if not info["deadChar"].faction == self.faction and hasattr(self,"superior") and self.superior:
-                reutation = 0
-                self.awardReputation(amount=2,reason="enemy died on tile",carryOver=True)
 
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
             if isinstance(info[1],src.rooms.WorkshopRoom):

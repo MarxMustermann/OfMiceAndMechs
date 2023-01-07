@@ -63,7 +63,7 @@ class GameState(src.saveing.Saveable):
                         {"type":"indicators","offset":(40,3),"width":82},
                         {"type":"text","offset":(74,4), "text":[src.interaction.ActionMeta(content="press z for help",payload="z")]},
                         {"type":"guiButtons","offset":(40,4),"width":82},
-                        {"type":"rememberedMenu","offset":(2,18),"size":(36,80)},
+                        {"type":"rememberedMenu","offset":(2,18),"size":(35,80)},
                         {"type":"rememberedMenu2","offset":(133,2),"size":(62,80)},
                         ]
 

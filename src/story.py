@@ -3942,6 +3942,7 @@ class Siege2(BasicPhase):
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         
         questMenu = src.interaction.QuestMenu(mainChar)
+        questMenu.sidebared = True
         mainChar.rememberedMenu.append(questMenu)
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)

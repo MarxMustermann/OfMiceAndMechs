@@ -162,6 +162,8 @@ There is %s in this pile
         if self.xPosition is None or self.yPosition is None:
             return
 
+        oldPos = self.getPosition()
+
         # remove a singe piece of scrap
         self.amount -= 1
         character.addMessage(
@@ -173,6 +175,8 @@ There is %s in this pile
 
         # add item to characters inventory
         character.addToInventory(Scrap(amount=1))
+
+        character.changed("itemPickedUp",(character,self,oldPos))
 
     def apply(self, character):
         """
@@ -196,6 +200,7 @@ There is %s in this pile
                     % (self.amount,)
                 )
                 character.inventory.remove(item)
+                character.changed("dropped",(character,self))
 
         self.container.addAnimation(self.getPosition(),"scrapChange",1,{})
 

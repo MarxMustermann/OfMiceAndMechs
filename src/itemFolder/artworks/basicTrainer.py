@@ -22,6 +22,10 @@ Use it by activating it."""
 
     def apply(self,character):
         trainingType = character.registers.get("trainingFor")
+
+        if trainingType in character.skills:
+            trainingType = None
+            del character.registers["trainingFor"]
         if trainingType:
             self.startTraining({"character":character,"skillType":trainingType})
             return
@@ -32,9 +36,23 @@ select the skill you want to train:
         candidates = self.getMatchingCandidates(character)
         random.shuffle(candidates)
 
+        allCandidates = ["fighting","gathering","trap maintence","cleaning"]
+        for candidate in allCandidates:
+            if not candidate in candidates:
+                candidates.append(candidate)
+
+        for candidate in candidates[:]:
+            if candidate in character.skills:
+                candidates.remove(candidate)
+
         options = []
         for candidate in candidates:
             options.append((candidate,candidate))
+
+        if not options:
+            character.addMessage("There are no skills for you to learn")
+            character.changed("learnedSkill",character)
+            return
 
         submenue = src.interaction.SelectionMenu(text,options,targetParamName="skillType")
         character.macroState["submenue"] = submenue
@@ -45,12 +63,15 @@ select the skill you want to train:
         if character.baseDamage > 5:
             candidates = ["fighting"]
         else:
-            candidates = ["gathering","trap maintenence","cleaning"]
+            candidates = ["gathering","trap maintence","cleaning"]
         return candidates
 
     def startTraining(self,extraParams):
     
-        trainingType = extraParams["skillType"]
+        trainingType = extraParams.get("skillType")
+        if not trainingType:
+            return
+
         character = extraParams["character"]
 
         character.registers["trainingFor"] = trainingType
@@ -85,12 +106,12 @@ gathering
             params = {"character":character}
             character.macroState["submenue"].followUp = {"container":self,"method":"checkScrap","params":params}
 
-        elif trainingType == "trap maintenence":
+        elif trainingType == "trap maintence":
             text = """
 
 you will be trained in:
 
-trap maintenence
+trap maintence
 
 """
             character.addMessage("----------------"+text+"-----------------")
@@ -228,7 +249,7 @@ so do try to keep them charged.
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        character.learnSkill("trapReloading")
+        character.learnSkill("trap maintence")
 
 
     def requireLightningRod(self,character):
@@ -355,6 +376,7 @@ This will be important going forward.
         quest = src.quests.Equip()
         quest.assignToCharacter(character)
         quest.activate()
+        quest.solver(character)
         character.quests.insert(0,quest)
 
 src.items.addType(BasicTrainer)

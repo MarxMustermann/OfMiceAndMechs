@@ -38,6 +38,7 @@ class Shocker(src.items.Item):
                         character.inventory.remove(compressorFound)
 
                         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"~*"})
+                        character.changed("charged traproom",(character,self.container))
                     else:
                         character.addMessage("this room is fully charged")
                 else:

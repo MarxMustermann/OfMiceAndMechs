@@ -4629,9 +4629,6 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
             txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
 
         if not sidebared:
-            txt.append("description for selected quest:")
-            txt.append("\n")
-
             baseList = char.quests
             for index in questCursor:
                 quest = baseList[index]
@@ -4648,7 +4645,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
             solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
 
         if not sidebared:
-            txt.append("Quests:\n\n")
+            txt.append("select quest:\n\n")
 
         counter = 0
         for quest in char.quests:

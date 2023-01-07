@@ -7936,10 +7936,11 @@ class DeliverSpecialItem(Quest):
         return command
 
 class GoToTile(Quest):
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False):
+    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.targetPosition = None
+        self.showCoordinates = False
         self.description = description
         self.metaDescription = description
         self.path = None
@@ -8313,6 +8314,42 @@ class GoToTile(Quest):
                 return command
             return ".17.."
         return ".20.."
+
+class GoToTileStory(GoToTile):
+    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True, direction=None):
+        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
+        self.direction = direction
+
+    def generateTextDescription(self):
+        command = ""
+        if self.direction == "south":
+            command = "s"
+        if self.direction == "north":
+            command = "w"
+        if self.direction == "west":
+            command = "a"
+        if self.direction == "east":
+            command = "d"
+
+        item1 = src.items.itemMap["Scrap"](amount=6)
+        return ["""
+This quest is a pretty basic quest. It wants you to go one tile to the """+self.direction+""".
+The quest ends when you do that.
+
+The playing field is divided into tiles by the blue borders.
+You can pass from tile to tile using the pathway in the middle.
+
+So go to the %s side of this tile and press """+command+""" to switch tile.
+On your way you have to avoid obstacles (""","XX",""").
+Avoid fighting with the enemies, you are not equipped for it.
+Also try not to step on the land mines (XX).
+
+A suggested way to do this, is to press the following keystrokes:
+
+%s
+
+That should avoid the obstacles, but doesn't avoid enemies.
+So use the suggested keystrokes as orientation and don't follow them blindly."""%(self.getSolvingCommandString(self.character))]
 
 class GetQuestFromQuestArtwork(MetaQuestSequence):
     def __init__(self, description="get quest from quest artwork"):
@@ -8874,7 +8911,7 @@ class ActivateEpochArtwork(MetaQuestSequence):
 
         direction = directions.get(pos)
         if direction == None:
-            quest = src.quests.ReachBase()
+            quest = src.quests.GoHome()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
@@ -8927,13 +8964,44 @@ class ReachBase(MetaQuestSequence):
         super().__init__()
         self.metaDescription = description
         self.type = "ReachBase"
+        self.lastDirection = None
 
     def solver(self,character):
         self.generateSubquests(character)
         super().solver(character)
 
     def generateTextDescription(self):
-        return "reach the base for temporary safety"
+        text = """
+Reach the base for temporary safety.
+
+The base is shown in the middle of the minimap. It looks like this:
+
+XXXXXX
+XXXXXX
+XXXXXX
+XXXXXX
+XXXXXX
+
+The entry is on the north side and you need to go around the base.
+You have to cross several tiles to find your path to the entry of the base.
+You are likely getting chased and need to evade to enemy patrols.
+
+So you should move fast, but stay out of danger tiles.
+Avoid the moldy (green) areas for now.
+Watch how the patrolers move. Avoid or run past enemy groups.
+
+The sugggested solution is currently to go one tile to the %s.
+This quest has a sub quest representing that.
+After changing a tile the sub quest will be recalculated.
+
+The suggested sub quest will guide you to the base entry.
+It might also steer you into groups of enemies.
+You can choose other paths, So don't follow it blindy.
+
+You can see the description for the sub quest, too.
+Press d to move the quest cursor to select the sub quest.
+"""%(self.lastDirection,)
+        return text
 
     def generateSubquests(self,character):
         if self.subQuests:
@@ -9006,8 +9074,12 @@ class ReachBase(MetaQuestSequence):
         if direction == "east":
             targetPos = (pos[0]+1,pos[1],pos[2])
 
-        character.addMessage("move one tile to the "+direction)
-        quest = src.quests.GoToTile(description="go "+direction,targetPosition=targetPos)
+        extra = ""
+        if self.lastDirection == direction:
+            extra = "another "
+        character.addMessage("move "+extra+"one tile to the "+direction)
+        self.lastDirection = direction
+        quest = src.quests.GoToTileStory(description="go one tile to the "+direction,targetPosition=targetPos,showCoordinates=False,direction=direction)
         self.addQuest(quest)
         quest.assignToCharacter(character)
         quest.activate()
@@ -10472,7 +10544,7 @@ class GetEpochReward(MetaQuestSequence):
 
         direction = directions.get(pos)
         if direction == None:
-            quest = src.quests.ReachBase()
+            quest = src.quests.GoHome()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
@@ -10559,7 +10631,7 @@ class DoEpochChallenge(MetaQuestSequence):
 
         direction = directions.get(pos)
         if direction == None:
-            quest = src.quests.ReachBase()
+            quest = src.quests.GoHome()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()

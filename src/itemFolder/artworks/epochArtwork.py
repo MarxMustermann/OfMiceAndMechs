@@ -489,6 +489,7 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
         return enemies
 
     def apply(self,character):
+        self.changed("epoch artwork used",(character,))
         if character.rank == None:
             self.getInitialReward1(character)
             return
@@ -535,17 +536,13 @@ You are free to equip yourself from the bases stocks.
 
     def getInitialReward1(self,character):
         text = """
-The commander has fallen.
-Siege ongoing.
-
-You have no rank.
-Follow emergency protocol by integrating into the base.
+This base has no commander.
+Activity reduced to maintenance.
 """
         character.addMessage("----------------"+text+"-----------------")
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
-        character.macroState["submenue"].followUp = {"container":self,"method":"getInitialReward2","params":{"character":character}}
 
     def getInitialReward2(self,extraParams):
         character = extraParams["character"]

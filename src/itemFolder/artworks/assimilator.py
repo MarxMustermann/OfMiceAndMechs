@@ -133,6 +133,9 @@ Choose your tertiary duty:\n"""
 
 
     def apply(self,character):
+        if character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.save()
+
         if character.registers.get("gotMostBasicTraining") == None:
             character.registers["gotMostBasicTraining"] = True
             self.implantIntroduction({"character":character,"step":0})

@@ -3946,6 +3946,7 @@ class Siege2(BasicPhase):
         mainChar.rememberedMenu.append(questMenu)
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
+        self.playerActivatedEpochArtwork = False
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4028,7 +4029,7 @@ class Siege2(BasicPhase):
            )
         mainRoom.storageRooms = []
 
-        spawnRoomPos = random.choice([(6,13),(6,12),(6,11),(7,13),(8,13),(7,12),(8,12),(7,11)])
+        spawnRoomPos = random.choice([(6,13),(6,12),(6,11),(7,12),(7,11)])
         spawnRoom = architect.doAddRoom(
                 {
                        "coordinate": spawnRoomPos,
@@ -4081,17 +4082,37 @@ class Siege2(BasicPhase):
             src.gamestate.gamestate.mainChar, 6, 6
         )
 
-        text = """
-You are ambushed and you need to flee.
+        # You see ... nothing
+        # You hear ... nothing
+        # You know ... nothing
+        # You remember ... nothing
+        # You feel ... A sharp pain burrowing through you mind.
+        # You remember how tendrils of pain grew from from your implant.
+        # How they played your thoughts and burried them.
+        # How they dug up your memories and ripped them apart.
+        # you know that something ss broken within your implant.
+        # And you also know that after the pain ate your mind,
+        # it will burn your flesh.
+        # -------------
+        # The pain grows and grows and grows
+        # -------------
+        # until something breaks.
+        # Your implant stopped emitting pain.
+        # For a moment you thought the implant completely broke.
+        # But it slowly comes back.
+        # You hear that accustomed voice again.
+        # It urges you to open your eyes.
+        #
+        # press enter
+        #
+        # -------------
+        # You see ...
+        # walls (XX) made out solid steel and
+        # feel the touch of the cold hard floor.
+        # The room if filled with items and has logistical markings.
+        # You notice some corpses and wonder what happened.
+        # ..until the explosions fully wake you.
 
-Try to reach the safety of the base in the north.
-
-
-Press ESC to close this window.
-"""
-        submenu = src.interaction.TextMenu(text)
-        submenu.followUp = {"container": self, "method": "showSecondText"}
-        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
@@ -4264,13 +4285,6 @@ Press ESC to close this window.
         room.addItem(src.items.itemMap["Pile"](),(4,2,0))
         currentTerrain.addRoom(room)
         """
-
-        containerQuest = src.quests.ReachBase()
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.activate()
-        containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
-        containerQuest.endTrigger = {"container": self, "method": "reachedBase"}
 
         #orderArtwork = src.items.itemMap["BluePrintingArtwork"]()
         #mainRoom.addItem(orderArtwork,(9,1,0))
@@ -4529,25 +4543,27 @@ Press ESC to close this window.
             enemy.godMode = True
             enemy.health = baseHealth//10*i
             enemy.baseDamage = 10*10
-            currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*11+random.randint(2,11))
+            currentTerrain.addCharacter(enemy, 15*8+random.randint(2,11), 15*13+random.randint(2,11))
             enemy.specialDisplay = "[-"
             enemy.faction = "invader"
 
             quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition(),endWhenCleared=True)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
-            quest.activate()
             enemy.quests.append(quest)
+            quest.activate()
 
             quest = src.quests.Huntdown(target=mainChar,lifetime=500)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
+            quest.activate()
 
             quest = src.quests.ClearTerrain()
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
+            quest.activate()
 
         if difficulty == "easy":
             toClear = [(7,1),(7,13),(1,7),(13,7)]
@@ -4563,7 +4579,7 @@ Press ESC to close this window.
 
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
-                enemy.health = baseHealth*5
+                enemy.health = baseHealth*2
                 enemy.baseDamage = 7
                 enemy.movementSpeed = self.baseMovementSpeed
                 currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
@@ -4583,7 +4599,7 @@ Press ESC to close this window.
 
             enemy = src.characters.Monster(4,4)
             enemy.godMode = True
-            enemy.health = baseHealth*5
+            enemy.health = baseHealth*2
             enemy.baseDamage = 7
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
             enemy.movementSpeed = self.baseMovementSpeed
@@ -4606,53 +4622,100 @@ Press ESC to close this window.
 
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
 
-        mainChar.messages = []
-        mainChar.addMessage("press z for help")
-        mainChar.addMessage("Try to reach the safety of the base in the north.")
-        mainChar.addMessage("You are ambushed and you need to flee.")
-        mainChar.addMessage("----------------")
+        self.showSecondText()
+
 
     def showSecondText(self):
-        text = """
-Follow the instructions on the left side of the screen.
+        containerQuest = src.quests.ReachOutStory()
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.activate()
+        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        
+        src.gamestate.gamestate.mainChar.messages = []
 
-On the right side of the screen is a message log.
-
-Close this window and press z to see the movement keys.
+        text = ["""
 
 On the left top is a mini map.
-"""
+On the right side of the screen is a message log.
+Follow the instructions on the left side of the screen.
 
-        submenu = src.interaction.TextMenu(text)
-        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
+press enter to close this window
+"""]
 
-        src.gamestate.gamestate.mainChar.addMessage("On the left top is a mini map.")
-        src.gamestate.gamestate.mainChar.addMessage("Close this window and press z to see the movement keys.")
-        src.gamestate.gamestate.mainChar.addMessage("On the right side of the screen is a message log.")
-        src.gamestate.gamestate.mainChar.addMessage("Follow the instructions on the left side of the screen.")
-        src.gamestate.gamestate.mainChar.addMessage("----------------")
+        #submenu = src.interaction.TextMenu(text)
+        #src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
-    def reachedBase(self):
-        text = """
-You arrived at the base. You are safe for now.
-The base is under siege, so that safety is temporary.
-Go to the command centre and get further instrucions.
+        #src.gamestate.gamestate.mainChar.addMessage("On the left top is a mini map.")
+        #src.gamestate.gamestate.mainChar.addMessage("Close this window and press z to see the movement keys.")
+        #src.gamestate.gamestate.mainChar.addMessage("On the right side of the screen is a message log.")
+        #src.gamestate.gamestate.mainChar.addMessage("Follow the instructions on the left side of the screen.")
+        #src.gamestate.gamestate.mainChar.addMessage("----------------")
 
-----
+    def openedQuests(self):
 
-Continue following the instructions the quests give you.
-They will lead you to the epoch artwork.
-Activate it.
+        if not isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
+            containerQuest = src.quests.ReachBase()
+            src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            containerQuest.activate()
+            containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "reachedBase"}
+            return
 
-"""
-        submenu = src.interaction.TextMenu(text)
-        src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-        src.gamestate.gamestate.mainChar.addMessage("------------------"+text+"--------------------")
+        if src.gamestate.gamestate.mainChar.container.tag == "cargo":
+            offset = (-1,0,0)
+            direction = "west"
+            if src.gamestate.gamestate.mainChar.getBigPosition()[0] == 6:
+                offset = (0,-1,0)
+                direction = "north"
+            src.gamestate.gamestate.mainChar.addMessage("press z to see the movement keys")
+            src.gamestate.gamestate.mainChar.addMessage("leave room to the "+direction)
+            containerQuest = src.quests.EscapeAmbushStory(description="leave room",targetPosition=src.gamestate.gamestate.mainChar.getBigPosition(offset=offset),direction=direction)
+            src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            containerQuest.activate()
+            containerQuest.endTrigger = {"container": self, "method": "escapedAmbush"}
+            return
 
-        containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.epochArtwork)
+        if not self.playerActivatedEpochArtwork:
+            containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.epochArtwork)
+            src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+            containerQuest.activate()
+            containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "activatedEpochArtwork"}
+            return
+
+        containerQuest = src.quests.TakeOverBase(description="join base")
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
         containerQuest.activate()
+        containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
+
+    def escapedAmbush(self):
+        containerQuest = src.quests.ReachOutStory()
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        containerQuest.activate()
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        src.gamestate.gamestate.mainChar.addMessage("reach out to implant")
+        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
+
+    def reachedBase(self):
+        containerQuest = src.quests.ReachOutStory()
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.activate()
+        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
+        src.gamestate.gamestate.save()
+
+    def activatedEpochArtwork(self):
+        self.playerActivatedEpochArtwork = True
+        containerQuest = src.quests.ReachOutStory()
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.activate()
+        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
     def checkDead(self):
 

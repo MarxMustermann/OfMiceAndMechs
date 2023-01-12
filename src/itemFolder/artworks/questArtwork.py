@@ -216,7 +216,6 @@ Secure the farms on the position %s and loot the items there.
                 return
 
         elif character.rank == 4:
-            print("rank5 quest")
             enemies = self.getEnemiesWithTag("patrol")
             if enemies:
                 quest = src.quests.questMap["KillPatrolers"]()

@@ -295,6 +295,9 @@ class Character(src.saveing.Saveable):
             self.skills.append(skill)
         self.changed("learnedSkill",self)
 
+    def getOffset(self,position):
+        return (self.xPosition-position[0],self.yPosition-position[1],self.zPosition-position[2])
+
     def getDistance(self,position):
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])+abs(self.zPosition-position[2])
 
@@ -409,11 +412,11 @@ class Character(src.saveing.Saveable):
             command = "."
         return command
 
-    def getBigPosition(self):
+    def getBigPosition(self,offset=(0,0,0)):
         if isinstance(self.container, src.rooms.Room):
-            charPos = (self.container.xPosition,self.container.yPosition,0)
+            charPos = (self.container.xPosition+offset[0],self.container.yPosition+offset[1],0+offset[2])
         else:
-            charPos = (self.xPosition//15,self.yPosition//15,0)
+            charPos = (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
         return charPos
 
     def huntkill(self):
@@ -707,6 +710,7 @@ class Character(src.saveing.Saveable):
             if reason:
                 self.addMessage("reason: %s" % (reason,))
 
+            """
             if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):
                 self.addMessage("you are hurt you should heal")
                 for item in self.inventory:
@@ -715,9 +719,29 @@ class Character(src.saveing.Saveable):
                     if not item.uses:
                         continue
                     self.runCommandString("JH")
+            """
         else:
             self.health = 0
             self.die(reason="you died from injuries")
+
+    def getNumMaxPosSubordinates(self):
+        if self.rank == 5:
+            return 1
+        if self.rank == 4:
+            return 2
+        if self.rank == 3:
+            return 3
+        return 0
+
+    def getNumSubordinates(self):
+        return len(self.subordinates)
+
+    def getIsHome(self):
+        charPos = self.getBigPosition()
+        if (self.registers.get("HOMEx"),self.registers.get("HOMEy"),0) == charPos:
+            return True
+        else:
+            return False
 
     def attack(self, target):
         """
@@ -1390,9 +1414,6 @@ class Character(src.saveing.Saveable):
             self.quests[0].solver(self)
             return
         return
-
-        if not self.unconcious and not self.dead:
-            solver(self)
 
     def fallUnconcious(self):
         """

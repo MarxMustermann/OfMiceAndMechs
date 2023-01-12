@@ -139,6 +139,19 @@ class GameState(src.saveing.Saveable):
 
     # bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
     def save(self):
+        tcodConsole = src.interaction.tcodConsole
+        tcodContext = src.interaction.tcodContext
+        printUrwidToTcod = src.interaction.printUrwidToTcod
+
+        offsetX = 51
+        offsetY = 10
+
+        tcodConsole.clear()
+        printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+13))
+        printUrwidToTcod("| saving game |",(offsetX+3+16,offsetY+14))
+        printUrwidToTcod("+-------------+",(offsetX+3+16,offsetY+15))
+        tcodContext.present(tcodConsole)
+
         """
         save the game state to disc
         """

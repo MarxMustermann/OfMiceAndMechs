@@ -53,8 +53,8 @@ def advanceGame():
 
     src.gamestate.gamestate.tick += 1
 
-    if src.gamestate.gamestate.tick%100 == 15:
-        src.gamestate.gamestate.save()
+    #if src.gamestate.gamestate.tick%100 == 15:
+    #    src.gamestate.gamestate.save()
 
 class AbstractedDisplay(object):
     """
@@ -111,7 +111,7 @@ def setUpTcod():
     )
     """
     tileset = tcod.tileset.load_tilesheet(
-        "Acorntileset2.png", 16, 16, tcod.tileset.CHARMAP_CP437
+        "Acorntileset.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)
@@ -2533,6 +2533,7 @@ press key for advanced drop
                 char.applysolver()
             else:
                 pass
+            char.timeTaken += 0.3
 
         """
         # recalculate the questmarker since it could be tainted
@@ -2565,6 +2566,7 @@ press key for advanced drop
     # open quest menu
     if key in (commandChars.show_quests,):
         charState["submenue"] = QuestMenu()
+        char.changed("opened quest menu",(char,))
 
     # open help menu
     if key in (commandChars.show_help,"z"):
@@ -4616,7 +4618,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
     # render the quests
     if len(char.quests):
         if sidebared:
-            solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
+            solvingCommangString = char.quests[0].getSolvingCommandString(char)
             if isinstance(solvingCommangString,list):
                 solvingCommangString = "".join(solvingCommangString)
             if solvingCommangString:
@@ -5155,8 +5157,7 @@ class TextMenu(SubMenu):
         if not noRender:
             # show info
             header.set_text((urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = ""
-            self.persistentText += self.text
+            self.persistentText = self.text
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
@@ -8074,7 +8075,9 @@ def advanceChar(char,removeChars):
 
     # do random action
     if not (len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest):
-        char.startIdling()
+        #char.die(reason="idle")
+        #char.startIdling()
+        char.runCommandString("100.")
 
     """
     while len(state["commandKeyQueue"]) > 1000:

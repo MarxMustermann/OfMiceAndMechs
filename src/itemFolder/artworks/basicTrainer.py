@@ -76,65 +76,18 @@ select the skill you want to train:
 
         character.registers["trainingFor"] = trainingType
 
+        params = {"character":character}
         if trainingType == "fighting":
-            text = """
-
-you will be trained in:
-
-fighting
-
-"""
-            character.addMessage("----------------"+text+"-----------------")
-
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            params = {"character":character}
-            character.macroState["submenue"].followUp = {"container":self,"method":"checkWeapon","params":params}
+            self.checkWeapon(params)
 
         elif trainingType == "gathering":
-            text = """
-
-You will be trained in:
-
-gathering
-
-"""
-            character.addMessage("----------------"+text+"-----------------")
-
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            params = {"character":character}
-            character.macroState["submenue"].followUp = {"container":self,"method":"checkScrap","params":params}
+            self.checkScrap(params)
 
         elif trainingType == "trap maintence":
-            text = """
-
-you will be trained in:
-
-trap maintence
-
-"""
-            character.addMessage("----------------"+text+"-----------------")
-
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            params = {"character":character}
-            character.macroState["submenue"].followUp = {"container":self,"method":"checkLightningRod","params":params}
+            self.checkLightningRod(params)
 
         elif trainingType == "cleaning":
-            text = """
-
-you will be trained in:
-
-cleaning
-
-"""
-            character.addMessage("----------------"+text+"-----------------")
-
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            params = {"character":character}
-            character.macroState["submenue"].followUp = {"container":self,"method":"giveSkillCleaning","params":params}
+            self.giveSkillCleaning(params)
 
     def giveSkillCleaning(self,extraParams):
         character = extraParams["character"]
@@ -180,6 +133,9 @@ This scrap in your hands is the foundation of every industry.
 The scrap is pressed into metal bars and then processed into the things around us.
 So there always needs for some scrap and other materials.
 
+Search for rooms with scrap input stockpiles that are not filled.
+Then go to the scrap fields and collect scrap.
+Return to the room and fill the scrap input stockpiles.
 
 """
         character.addMessage("----------------"+text+"-----------------")
@@ -226,7 +182,7 @@ The scrap field is marked with a white ss on the mini map.
         super().apply(character)
         text = """
 
-The lightning rods are used to reload the shockers.
+These lightning rods are used to reload the shockers.
 
 One of the main defence systems of this base are the Trap rooms.
 The trap rooms shock enemies that move through them.

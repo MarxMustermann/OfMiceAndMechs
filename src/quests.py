@@ -570,7 +570,7 @@ class Quest(src.saveing.Saveable):
                 }
         return state
 
-    def getSolvingCommandString(self,character):
+    def getSolvingCommandString(self,character,dryRun=True):
         return None
 
 class MetaQuestSequence(Quest):
@@ -861,6 +861,9 @@ class MetaQuestSequence(Quest):
         self.stopWatching(extraInfo[0],self.triggerCompletionCheck2,"completed")
         self.triggerCompletionCheck()
 
+        if extraInfo[0] in self.subQuests:
+            self.subQuests.remove(extraInfo[0])
+
     def triggerCompletionCheck(self):
 
         # smooth over impossible state
@@ -882,6 +885,7 @@ class MetaQuestSequence(Quest):
     """
 
     def recalculate(self):
+        return
 
         # smooth over impossible state
         if not self.active:
@@ -908,7 +912,11 @@ class MetaQuestSequence(Quest):
     add a quest
     """
 
-    def addQuest(self, quest, addFront=True):
+    def addQuest(self, quest, addFront=True, noActivate=False, noAssign=False):
+        if not noActivate and not quest.active and (addFront or not self.subQuests):
+            quest.activate()
+        if not noAssign and not quest.character and self.character:
+            quest.assignToCharacter(self.character)
 
         # add quest
         if addFront:
@@ -958,7 +966,12 @@ class MetaQuestSequence(Quest):
                 return
             self.subQuests[0].solver(character)
         else:
-            self.triggerCompletionCheck()
+            if self.triggerCompletionCheck():
+                return
+
+            command = self.getSolvingCommandString(character)
+            if command:
+                character.runCommandString(command)
 
     """
     deactivate self and first subquest
@@ -970,12 +983,26 @@ class MetaQuestSequence(Quest):
                 self.subQuests[0].deactivate()
         super().deactivate()
 
+    def getSolvingCommandString(self,character,dryRun=True):
+        if self.subQuests:
+            commandString = self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)
+            if commandString:
+                return commandString
+        super().getSolvingCommandString(character)
+
 class ClearTerrain(MetaQuestSequence):
     def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.type = "ClearTerrain"
+
+    def generateTextDescription(self,character):
+        text = """
+Clear the whole terrain from enemies.
+
+Just clear the whole terrain tile for tile.
+"""
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -1147,6 +1174,38 @@ class PrepareAttack(MetaQuestSequence):
         self.shortCode = "P"
         self.targetPosition = targetPosition
 
+    def generateTextDescription(self):
+        (numCharges,discard,numItemsOnFloor) = self.getTrapInfo(self.character)
+        numGuards = len(self.getGuards(self.character))
+        text = """
+When you destroy the hive the hive guards will become agitated.
+This means they will start to attack everybody on this terrain.
+Likely that means a wave of insects is rushing at the base.
+This can overwhelm the bases defences and cause damage.
+
+Before starting the attack prepare for that wave.
+Ensure the trap rooms are maintaned to kill the incoming guards.
+Destroying the hive will agitate hive guards within a distance of 3 tiles.
+Killing those insects before killing the hive will reduce the waves size.
+So you have two ways you can prepare for the wave.
+
+This quest will end when you have prepared enough.
+Your current prepardness score is %s, bring it to below 0.
+
+
+The formula for the preparedness score is:
+    10*numGuards-numCharges+numItemsOnFloor*20 = 10*%s-%s+%s*20 = %s"""%(self.getPreparednessScore(self.character),numGuards,numCharges,numItemsOnFloor,self.getPreparednessScore(self.character),)
+        text += """
+
+
+
+This quest works a bit different to previous quests.
+It can handle mutiple subquests at once.
+The idea is to issue orders to the NPCs to mainain the traps and
+Attack the hive guards while you are waiting for the work complete.
+"""
+        return text
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return 
@@ -1165,13 +1224,16 @@ class PrepareAttack(MetaQuestSequence):
             return True
 
         # end when preparedness reached
-        numGuards = len(self.getGuards(character))
-        (numCharges,discard,numItemsOnFloor) = self.getTrapInfo(character)
-        rating = 10*numGuards-numCharges+numItemsOnFloor*20
-        if rating < 0:
+        if self.getPreparednessScore(character) < 0:
             self.postHandler()
             return True
         return False
+
+    def getPreparednessScore(self,character):
+        numGuards = len(self.getGuards(character))
+        (numCharges,discard,numItemsOnFloor) = self.getTrapInfo(character)
+        rating = 10*numGuards-numCharges+numItemsOnFloor*20
+        return rating
 
     def getTrapInfo(self,character):
         terrain = character.getTerrain()
@@ -1186,6 +1248,8 @@ class PrepareAttack(MetaQuestSequence):
 
             for item in room.itemsOnFloor:
                 if item.bolted:
+                    continue
+                if item.getPosition() == (None,None,None):
                     continue
                 numItemsOnFloor += 1
         return (numCharges,maxCharges,numItemsOnFloor)
@@ -1288,6 +1352,40 @@ class ReloadTraproom(MetaQuestSequence):
 
         self.timesDelegated = 0
         self.noDelegate = noDelegate
+
+    def generateTextDescription(self):
+        text = """
+Reload the trap room on tile %s."""
+        if self.character.rank == 3:
+            text = """
+Ensure that the trap room on %s is reloaded.
+
+Since you are the commander of the base you can make other people do it.
+Send the rank 5-6 NPCs and proceed to do something else in the meantime.
+
+
+You can send NPCs to do tasks in rooms by using the room menu.
+It work like this:
+* go to the room
+* press r to open room menu
+* press o to issue command for this room
+* press t to issue the order to reload the trap room.
+* select the group to execute the order
+
+After you do this the NPCs should stop what they are doing and start working on the new order.
+If the task is not completed after some time, reload the trap room yourself.
+Use the shockers in the trap room for this.
+"""%(self.targetPosition,)
+        else:
+            text = """
+Reload the trap room on %s.
+
+Do this by using the shockers in the trap rooms.
+Activate the shockers with lightning rods in your inventory.
+
+This will reload the trap room and consume the lightning rods.
+"""%(self.targetPosition,)
+        return text
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -1423,8 +1521,6 @@ class ReloadTraproom(MetaQuestSequence):
 
                     source = sourceCandidate
                 if source:
-
-
                     self.addQuest(GoToPosition(targetPosition=foundCharger.getPosition(),ignoreEndBlocked=True))
                     self.addQuest(GoToTile(targetPosition=room.getPosition()))
                     self.addQuest(FetchItems(toCollect="LightningRod"))
@@ -1458,6 +1554,17 @@ class ReloadTraps(MetaQuestSequence):
         self.metaDescription = description
         self.type = "ReloadTraps"
         self.shortCode = "R"
+
+    def generateTextDescription(self):
+        text = """
+Reload all trap rooms.
+
+Trap rooms that need to be reloaded:
+
+"""
+        for traproom in self.getUnfilledTrapRooms(self.character):
+            text += str(traproom.getPosition())+"\n"
+        return text
 
     def triggerCompletionCheck(self,character=None):
 
@@ -1644,6 +1751,16 @@ class EnterRoom(MetaQuestSequence):
         super().__init__([], creator=creator, lifetime=lifetime)
         self.metaDescription = description
 
+    def generateTextDescription(self):
+        return """
+Enter the room.
+
+This quest is a workaround quest.
+This means it is needed for other quests to work,
+but has no purpose on its own.
+
+So just complete the quest and don't think about it too much."""
+
     def triggerCompletionCheck(self,character=None):
         return
 
@@ -1679,7 +1796,23 @@ class Equip(MetaQuestSequence):
         self.shortCode = "e"
 
     def generateTextDescription(self):
-        return "equip yourself with weapons and armor"
+        sword = src.items.itemMap["Sword"]()
+        armor = src.items.itemMap["Armor"]()
+        return ["""
+The world is a dangerous place.
+You need to be able to defend yourself.
+Equip yourself with weapons preferably a sword (""",sword.render(),""") and armor (""",armor.render(),""").
+
+You can try to find euqipment in storage.
+Alternatively fetch your equipment directly from the production line.
+If you find some other source for equipment, that is fine, too.
+
+Take care to select a good weapon and armor.
+The differences are significant.
+
+Armor can absorb 1 to 5 damage depending on quality.
+Swords can range from 10 to 25 damage per hit.
+"""]
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -1744,7 +1877,7 @@ class Equip(MetaQuestSequence):
                 return "Js"
             if offset == (0,-1,0):
                 return "Jw"
-        return super().getSolvingCommandString(character)
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character):
         toSearchFor = []
@@ -1797,8 +1930,12 @@ class Equip(MetaQuestSequence):
             if not source:
                 character.runCommandString(".14.")
                 return
-        
-            quest = GoToTile(targetPosition=source[0],description="go to weapon production ")
+
+            description="go to weapon production "
+            if source[0] == (8,9,0):
+                description="go storage room "
+
+            quest = GoToTile(targetPosition=source[0],description=description)
             quest.assignToCharacter(character)
             self.startWatching(quest,self.subQuestCompleted,"completed")
             quest.activate()
@@ -1837,7 +1974,7 @@ class Equip(MetaQuestSequence):
                 return
 
         if not self.subQuests:
-            command = self.getSolvingCommandString(character)
+            command = self.getSolvingCommandString(character,dryRun=False)
             if command:
                 character.runCommandString(command)
                 return
@@ -1857,6 +1994,21 @@ class RunCommand(MetaQuestSequence):
 
         if command:
             self.setParameters({"command":command})
+
+    def generateTextDescription(self):
+        return """
+This quest wants you to press the following keys:
+
+%s
+
+To be honest:
+This quest is deprecated and should be removed.
+If you see this that means that did not happen, yet.
+This stuff does not work very well, so just do exactly that.
+Do nothing else like moving around.
+
+good luck!
+"""%(self.command,)
 
     def setParameters(self,parameters):
         if "command" in parameters:
@@ -2298,9 +2450,16 @@ class GatherScrap(MetaQuestSequence):
         self.type = "GatherScrap"
 
     def generateTextDescription(self):
-        return """
+        scrap1 = src.items.itemMap["Scrap"](amount=1)
+        scrap2 = src.items.itemMap["Scrap"](amount=6)
+        scrap3 = src.items.itemMap["Scrap"](amount=20)
+        return ["""
 Fill your inventory with scrap.
-Scrapfields are shown on the minimap as white ss"""
+Scrap can be found in scrapfields and
+looks like this: """,scrap1.render()," or ",scrap2.render()," or ",scrap3.render(),"""
+
+
+Scrapfields are shown on the minimap as white ss"""]
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -2435,6 +2594,24 @@ class CleanTraps(MetaQuestSequence):
 
         self.type = "CleanTraps"
 
+    def generateTextDescription(self):
+        text = """
+Clean all trap room.
+
+Items like corpses cluttering the trap rooms are a problem.
+The traps work by shocking enemies when they step on the floor.
+For this to work they need to directly step onto the floor.
+Item lying on the floor prevent that.
+
+So clean all trap rooms.
+
+Trap rooms that need to be cleaned are:
+
+"""
+        for traproom in self.getClutteredTraprooms(self.character):
+            text += str(traproom.getPosition())+"\n"
+        return text
+
     def triggerCompletionCheck(self,character=None):
 
         if not character:
@@ -2499,8 +2676,14 @@ class ClearInventory(MetaQuestSequence):
 
     def generateTextDescription(self):
         return """
-Clear your inventory.
-The storage room is a good place to put your items."""
+You should clear your inventory.
+
+The storage room is a good place to put your items.
+Put the items into the stockpiles to make then accessible to the base.
+
+
+
+To see your items open the your inventory by pressing i."""
 
     def droppedItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0])
@@ -2603,7 +2786,7 @@ The storage room is a good place to put your items."""
         return super().setParameters(parameters)
 
 class ClearTile(MetaQuestSequence):
-    def __init__(self, description="clear tile", creator=None, targetPosition=None, noDelegate=False):
+    def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -2617,6 +2800,32 @@ class ClearTile(MetaQuestSequence):
 
         self.tuplesToStore.append("targetPosition")
         self.noDelegate = noDelegate
+
+    def generateTextDescription(self):
+        if self.character.rank == 3:
+            text = """
+Ensure that the trap room on %s is cleaned.
+
+Since you are the commander of the base you can make other people do it.
+Send the rank 5-6 NPCs and proceed to do something else in the meantime.
+
+You can send NPCs to do tasks in rooms by using the room menu.
+It work like this:
+* go to the room
+* press r to open room menu
+* press o to issue command for this room
+* press c for issuing the order to clean traps
+* select the group to execute the order
+
+After you do this the NPCs should stop what they are doing and start working on the new order.
+If the task is not completed after some time, reload the trap room yourself.
+Use the shockers in the trap room for this."""%(self.targetPosition,)
+        else:
+            text = """
+Clean the room on tile %s.
+
+Remove all items from the walkways."""%(self.targetPosition,)
+        return text
 
     def triggerCompletionCheck(self,character=None):
 
@@ -2749,7 +2958,7 @@ class ClearTile(MetaQuestSequence):
             return []
 
         foundItems = []
-        for position in random.sample(list(room.walkingSpace)+[(6,0,0),(0,6,0),(13,6,0),(6,13,0)],len(room.walkingSpace)+4):
+        for position in random.sample(list(room.walkingSpace)+[(6,0,0),(0,6,0),(12,6,0),(6,12,0)],len(room.walkingSpace)+4):
             items = room.getItemByPosition(position)
 
             if not items:
@@ -2779,6 +2988,7 @@ class BeUsefull(MetaQuestSequence):
     def generateTextDescription(self):
         out = """
 Be useful.
+
 Try fulfill your duties on this base with the skills you have.
 
 You can lern new skills at the basic trainer in the command centre.
@@ -2799,19 +3009,37 @@ Kill more enemies for additional reputation.\n\n"""
             elif duty == "resource gathering":
                 out += duty+""":
 Search for rooms with empty scrap input stockpiles.
-Gather scrap and fill up those stockpiles.\n\n"""
+Gather scrap and fill up those stockpiles.
+Reputation is rewarded for filling up stockpiles.\n\n"""
             elif duty == "trap setting":
                 out += duty+""":
 Search for trap rooms without full charge.
-Recharge them with ligthning rods.\n\n"""
+Recharge them with ligthning rods.
+Reputation is rewarded for recharging trap rooms.\n\n"""
             elif duty == "cleaning":
                 out += duty+""":
 Search for rooms with items cluttering the floor.
-Remove those items.\n\n"""
+Remove those items.
+Reputation is rewarded for picking up items from walkways.\n\n"""
             else:
                 out += "%s\n\n"%(duty,)
 
-        out += "\n\n%s"%(self.idleCounter,)
+        if not self.character.rank == 3:
+            if self.character.rank == 6:
+                reputationForPromotion = 300
+            if self.character.rank == 5:
+                reputationForPromotion = 500
+            if self.character.rank == 4:
+                reputationForPromotion = 750
+
+            out += """
+
+You need %s reputation for a promotion.
+You currently have %s reputation.
+Do your duty to gain more reputation.
+Try to avoid losing reputation due to beeing careless.
+
+"""%(reputationForPromotion,self.character.reputation,)
         return out
 
     def awardnearbyKillReputation(self,extraInfo):
@@ -2926,6 +3154,7 @@ Remove those items.\n\n"""
             if quest.completed:
                 self.subQuests.remove(quest)
                 break
+
         self.triggerCompletionCheck(character)
 
         if not character.container:
@@ -2950,6 +3179,27 @@ Remove those items.\n\n"""
 
         if character.rank == 4 and character.reputation >= 750:
             quest = GetPromotion(3)
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+
+        if character.rank == 5 and character.getNumSubordinates() < 1:
+            quest = GetBodyGuards()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+
+        if character.rank == 4 and character.getNumSubordinates() < 2:
+            quest = GetBodyGuards()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+
+        if character.rank == 3 and character.getNumSubordinates() < 3:
+            quest = GetBodyGuards()
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -3314,6 +3564,162 @@ Remove those items.\n\n"""
                     return
         character.runCommandString("20.")
 
+class GetBodyGuards(MetaQuestSequence):
+    def __init__(self, description="get body guards"):
+        questList = []
+        super().__init__(questList)
+        self.metaDescription = description
+
+    def generateTextDescription(self):
+        numMaxPosSubordinates = self.character.getNumMaxPosSubordinates()
+        numSubordinates = self.character.getNumSubordinates()
+        extraS = "s"
+        if numSubordinates == 1:
+            extraS = ""
+        text = """
+Since you are rank %s you can have %s subordinate"""+extraS+""".
+You currently only have %s subordinates.
+"""%(self.character.rank, numMaxPosSubordinates, numSubordinates, )
+
+        if (numMaxPosSubordinates-numSubordinates) == 1:
+            extra = "a "
+            if numSubordinates > 0:
+                extra = "one more "
+            text += """
+Get """+extra+"""body guard to replenish your subordinates."""
+        else:
+            extra = ""
+            if numSubordinates > 0:
+                extra = "more "
+            text += """
+Get """+extra+""" body guards to replenish your subordinates."""
+        text += """
+Body guards will follow you around and will try to protect you."""
+
+        text += """
+
+
+Go to the personnel artwork in the command centre.
+Use it to gain a new body guard."""
+        return text
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+        if not self.active:
+            return False
+        if self.completed:
+            1/0
+
+        numMaxPosSubordinates = self.character.getNumMaxPosSubordinates()
+        numSubordinates = self.character.getNumSubordinates()
+        print(numMaxPosSubordinates)
+        print(numSubordinates)
+        if not numMaxPosSubordinates > numSubordinates:
+            self.postHandler()
+            return True
+
+        personnelArtwork = self.getPersonnelArtwork(character)
+        if personnelArtwork and personnelArtwork.charges < 1:
+            self.fail()
+            return True
+
+        return False
+
+    def getPersonnelArtwork(self,character):
+        homeRoom = character.getHomeRoom()
+        if not homeRoom:
+            return None
+        return homeRoom.getItemByType("PersonnelArtwork")
+        
+    def generateSubquests(self,character):
+        if not self.activate:
+            return
+
+        if self.completed:
+            1/0
+
+        if self.subQuests:
+            return
+
+        if not character.getIsHome():
+            quest = GoHome(description="go to command centre")
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+
+        personnelArtwork = self.getPersonnelArtwork(character)
+        if personnelArtwork and character.getDistance(personnelArtwork.getPosition()) > 1:
+            quest = GoToPosition(description="go to personnel artwork",targetPosition=personnelArtwork.getPosition(),ignoreEndBlocked=True)
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+
+    def getSolvingCommandString(self,character,dryRun=True):
+        personnelArtwork = self.getPersonnelArtwork(character)
+        if not personnelArtwork:
+            1/0
+            return
+        offset = character.getOffset(personnelArtwork.getPosition())
+        baseCommand = None
+        if offset == (0,0,0):
+            baseCommand = "j"
+        if offset == (-1,0,0):
+            baseCommand = "Jd."
+        if offset == (0,-1,0):
+            baseCommand = "Js."
+        if offset == (1,0,0):
+            baseCommand = "Ja."
+        if offset == (0,1,0):
+            baseCommand = "Jw."
+
+        if baseCommand:
+            return baseCommand+"sj"
+
+    def handleGotBodyguard(self,extraInfo=None):
+        if not self.active:
+            return
+        if self.completed:
+            1/0
+        self.triggerCompletionCheck(self.character)
+
+    def handleTileChange(self,extraInfo=None):
+        if not self.active:
+            return
+        if self.completed:
+            1/0
+
+        if self.triggerCompletionCheck(self.character):
+            return
+
+        self.generateSubquests(self.character)
+
+    def assignToCharacter(self,character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.handleTileChange, "changedTile")
+        self.startWatching(character,self.handleTileChange, "got subordinate")
+
+        return super().assignToCharacter(character)
+
+    def solver(self,character):
+        if self.triggerCompletionCheck(character):
+            if character == src.gamestate.gamestate.mainChar:
+                1/0
+            return
+
+        if not self.subQuests:
+            self.generateSubquests(character)
+            if self.subQuests:
+                if character == src.gamestate.gamestate.mainChar:
+                    2/0
+                return
+
+        super().solver(character)
+
 class StandAttention(MetaQuestSequence):
 
     """
@@ -3368,7 +3774,7 @@ class StandAttention(MetaQuestSequence):
             quest.generateSubquests(character)
             self.addQuest(quest)
 
-    def getSolvingCommandString(self, character):
+    def getSolvingCommandString(self, character, dryRun=True):
         if self.lifetimeEvent:
             return "10."
             return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
@@ -3379,7 +3785,7 @@ class StandAttention(MetaQuestSequence):
         if self.subQuests:
             super().solver(character)
         else:
-            commandString = self.getSolvingCommandString(character)
+            commandString = self.getSolvingCommandString(character,dryRun=dryRun)
             self.randomSeed = random.random()
             if commandString:
                 character.runCommandString(commandString)
@@ -3580,6 +3986,29 @@ class FetchItems(MetaQuestSequence):
         self.tuplesToStore.append("tileToReturnTo")
 
         self.shortCode = "f"
+
+    def generateTextDescription(self):
+        if not self.amount:
+            text = """
+Fetch an inventory full of %ss.
+
+"""%(self.toCollect,)
+        else:
+            extraS = "s"
+            if self.amount == 1:
+                extraS = ""
+            text = """
+Fetch %s %s"""+extraS+""".
+
+"""%(self.toCollect,)
+
+        if self.returnToTile:
+            tile = self.tileToReturnTo
+            if not tile:
+                tile = "this tile"
+            text += """
+Return to %s after to complete this quest."""%(tile,)
+        return text
 
     def pickedUpItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0])
@@ -5104,19 +5533,28 @@ class WaitQuest(Quest):
     do nothing
     """
 
+    def generateTextDescription(self):
+        text = """
+Wait."""
+        if self.lifetimeEvent:
+            text += """
+
+This quest will end in %s ticks"""%(str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick),) 
+        return text
+
     def isPaused(self):
         if not self.completed and self.active:
             return True
         return False
 
-    def getSolvingCommandString(self, character):
+    def getSolvingCommandString(self, character, dryRun=True):
         if self.lifetimeEvent:
             return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
         else:
             return "10."
 
     def solver(self, character):
-        commandString = self.getSolvingCommandString(character)
+        commandString = self.getSolvingCommandString(character,dryRun=False)
         self.randomSeed = random.random()
         if commandString:
             character.runCommandString(commandString)
@@ -7940,7 +8378,7 @@ class GoToTile(Quest):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.targetPosition = None
-        self.showCoordinates = False
+        self.showCoordinates = showCoordinates
         self.description = description
         self.metaDescription = description
         self.path = None
@@ -7968,10 +8406,21 @@ class GoToTile(Quest):
         self.shortCode = "G"
 
     def generateTextDescription(self):
-        return "go to tile %s"%(self.targetPosition,)
+        return """
+Go to tile %s
 
-    def getQuestMarkersSmall(self,character):
-        self.getSolvingCommandString(character)
+This is a pretty common quest.
+You have to go from one place to another pretty often.
+
+
+
+Quests like this can be pretty boring.
+Press c now to use auto move to complete this quest.
+Press crtl-d to stop your character from moving.%s
+"""%(self.targetPosition,self.showCoordinates,)
+
+    def getQuestMarkersSmall(self,character,dryRun=True):
+        self.getSolvingCommandString(character, dryRun=dryRun)
         result = super().getQuestMarkersSmall(character)
         if self.smallPath:
             if isinstance(character.container,src.rooms.Room):
@@ -8060,7 +8509,9 @@ class GoToTile(Quest):
             if not len(parameters["targetPosition"]) > 2:
                 parameters["targetPosition"] = (parameters["targetPosition"][0],parameters["targetPosition"][1],0)
             self.targetPosition = parameters["targetPosition"]
-            self.description = self.metaDescription+" %s"%(self.targetPosition,)
+            self.description = self.metaDescription
+            if self.showCoordinates:
+                self.description += " %s"%(self.targetPosition,)
         return super().setParameters(parameters)
 
     def getRequiredParameters(self):
@@ -8315,6 +8766,70 @@ class GoToTile(Quest):
             return ".17.."
         return ".20.."
 
+class ReachOutStory(Quest):
+    def __init__(self, description="reach out to implant", creator=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.description = description
+
+    def triggerCompletionCheck(self):
+        return
+
+    def handleQuestsOpened(self,extraInfo=None):
+        self.postHandler()
+
+    def assignToCharacter(self,character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.handleQuestsOpened,"opened quest menu")
+        return super().assignToCharacter(character)
+
+    def getSolvingCommandString(self,character,dryRun=True):
+        if character.macroState.get("submenue"):
+            return ["esc"]
+        else:
+            return "q"
+
+class EscapeAmbushStory(GoToTile):
+    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
+        self.direction = direction
+
+    def generateTextDescription(self):
+        door = src.items.itemMap["Door"]()
+        door.open = True
+        enemyDirection = " the south and east"
+        if self.character.getBigPosition()[1] == 13:
+            enemyDirection = " the east"
+        return ["""
+You reach out to your implant and it answers.
+It whispers, but you understand clearly:
+
+
+This room is not a safe place to stay.
+Enemies are on their way to hunt you down.
+They look like [- and come from """+enemyDirection+""".
+
+So get moving and leave this room.
+Use the wasd movement keys to move.
+Pass through the door (""",door.render(),""") in the """+self.direction+""". 
+
+
+
+Right now you are looking at the quest menu.
+Detailed instructions and explainations are shown here.
+For now ignore the options below and press esc to continue.
+
+"""]
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+        if isinstance(character.container,src.rooms.Room):
+            return False
+        self.postHandler()
+
 class GoToTileStory(GoToTile):
     def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True, direction=None):
         super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
@@ -8332,24 +8847,34 @@ class GoToTileStory(GoToTile):
             command = "d"
 
         item1 = src.items.itemMap["Scrap"](amount=6)
+        item2 = src.items.itemMap["LandMine"]()
         return ["""
-This quest is a pretty basic quest. It wants you to go one tile to the """+self.direction+""".
+Go one tile to the """+self.direction+""".
 The quest ends when you do that.
+This quest is part of the reaching the base.
+
+Avoid fighting with the enemies, you are not equipped for it.
+Also avoid running into obstacles (""",item1.render(),""")
+and try not to step on the land mines (""",item2.render(),""").
+
 
 The playing field is divided into tiles by the blue borders.
 You can pass from tile to tile using the pathway in the middle.
-
-So go to the %s side of this tile and press """+command+""" to switch tile.
-On your way you have to avoid obstacles (""","XX",""").
-Avoid fighting with the enemies, you are not equipped for it.
-Also try not to step on the land mines (XX).
+So go to the """+self.direction+""" side of this tile and press """+command+""" to switch tile.
 
 A suggested way to do this, is to press the following keystrokes:
 
 %s
 
-That should avoid the obstacles, but doesn't avoid enemies.
-So use the suggested keystrokes as orientation and don't follow them blindly."""%(self.getSolvingCommandString(self.character))]
+Those keystrokes are shown during normal gameplay on the left.
+Following that suggestion should avoid the obstacles and most landmines.
+The suggestion doesn't avoid enemies and might even run into them.
+So use the suggested keystrokes as orientation and don't follow them blindly.
+
+
+
+Press a to move the quest cursor back to the main quest
+"""%(self.getSolvingCommandString(self.character))]
 
 class GetQuestFromQuestArtwork(MetaQuestSequence):
     def __init__(self, description="get quest from quest artwork"):
@@ -8440,13 +8965,58 @@ Activate the quest artwork to fetch a quest."""
                 return
         super().solver(character)
 
+class TakeOverBase(MetaQuestSequence):
+    def __init__(self, description="join base"):
+        super().__init__()
+        self.metaDescription = description
+
+    def generateTextDescription(self):
+        return """
+There is no commander. This is a problem.
+
+Insects are growing within the hives in the abbandoned farms.
+Without a commander the hives will continue growing.
+Sooner or later their attacks will break the bases defences.
+
+Also the base is in maintenance mode.
+So leaving is not an option. You are stuck here. 
+It is not safe here, but it is safer in the base than outside.
+
+So stay here until those issues are resolved.
+Join the crew of this base and help defend it against the insects.
+The harder you work the safer you will be.
+
+
+press d to get a description on how to join the base
+"""
+
+    def generateSubquests(self,character=None):
+        if not self.subQuests:
+            if self.character.rank == None:
+                quest = Assimilate()
+                quest.assignToCharacter(self.character)
+                quest.activate()
+                self.addQuest(quest)
+                quest.generateSubquests(character)
+                return
+        super().generateSubquests()
+
+    def solver(self,character):
+        if not self.subQuests:
+            self.generateSubquests(character)
+            return
+        return super().solver(character)
+
+    def triggerCompletionCheck(self):
+        return
+
 class ChangeJob(MetaQuestSequence):
     def __init__(self, description="take on new duty"):
         super().__init__()
         self.metaDescription = description
         self.type = "ChangeJob"
 
-        self.addQuest(Assimilate())
+        self.addQuest(Assimilate(description="set new duties"))
         self.addQuest(TrainSkill())
 
     def generateTextDescription(self):
@@ -8464,9 +9034,20 @@ class TrainSkill(MetaQuestSequence):
         self.type = "TrainSkill"
 
     def generateTextDescription(self):
-        return """
-learn to use a skill.
-use the basic trainer in the command centre for further instructions"""
+        if not self.character.skills:
+            return """
+Without skills you are useless to the base.
+Train a skill or the base won't accept you.
+
+Activate the basic trainer in the command centre to start training a skill"""
+        else:
+            return """
+Skills are what part of what makes you useful to the base.
+Train an additional skill.
+This will allow you to do a different duty.
+
+Activate the basic trainer in the command centre to start training a skill"""
+
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -8480,16 +9061,8 @@ use the basic trainer in the command centre for further instructions"""
     def generateSubquests(self,character):
         if not self.active:
             return
-
-        """
-        while self.subQuests:
-            self.subQuests[-1].triggerCompletionCheck(character)
-            if not self.subQuests:
-                break
-            if not self.subQuests[-1].completed:
-                break
-            self.subQuests.pop()
-        """
+        if self.completed:
+            1/0
 
         if self.subQuests:
             return
@@ -8504,24 +9077,12 @@ use the basic trainer in the command centre for further instructions"""
 
         for item in room.getItemsByType("BasicTrainer",needsBolted=True):
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                #quest = RunCommand(command=list("Ja.")+["enter"]*6,description="activate the basic trainer \nby pressing ")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                #quest = RunCommand(command=list("Jd.")+["enter"]*6,description="activate the basic trainer \nby pressing ")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                #quest = RunCommand(command=list("Jw.")+["enter"]*6,description="activate the basic trainer \nby pressing ")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                #quest = RunCommand(command=list("Js.")+["enter"]*6,description="activate the basic training \nby pressing ")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to basic trainer  ")
             quest.active = True
@@ -8533,12 +9094,12 @@ use the basic trainer in the command centre for further instructions"""
         quest.activate()
         return
 
-    def getSolvingCommandString(self,character):
+    def getSolvingCommandString(self,character,dryRun=True):
         if not self.subQuests:
             room = character.container
 
             if not isinstance(character.container, src.rooms.Room):
-                return super().getSolvingCommandString(character)
+                return super().getSolvingCommandString(character,dryRun=dryRun)
 
             for item in room.itemsOnFloor:
                 if not item.bolted:
@@ -8555,7 +9116,7 @@ use the basic trainer in the command centre for further instructions"""
                 if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                     return list("Js.")+["enter"]*6
 
-        return super().getSolvingCommandString(character)
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def solver(self,character):
         self.triggerCompletionCheck(character)
@@ -8594,6 +9155,28 @@ class GetPromotion(MetaQuestSequence):
         self.type = "GetPromotion"
         self.targetRank = targetRank
 
+    def generateTextDescription(self):
+        text = """
+You have gained enough reputation to be promoted.
+Promotions are handled by the assimilator.
+
+Getting promoted has several advantages:
+
+* Your implant will be upgraded and you will be faster and hit harder.
+* You can take on more duties. Each extra duty gives you some extra reputation."""
+        if self.character.rank == 6:
+            text += """
+* You will be able to get subordinates."""
+        else:
+            text += """
+* You will be able to handle more subordinates.
+
+Use the assimilator to fetch your promottion.
+You need to reach rank %s to complete the quest.
+"""%(self.character.rank-1,)
+
+        return text
+
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
             return
@@ -8631,7 +9214,7 @@ class GetPromotion(MetaQuestSequence):
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = GoHome()
+            quest = GoHome(description="go to command centre")
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
@@ -8691,8 +9274,16 @@ class Assimilate(MetaQuestSequence):
         return False
 
     def generateTextDescription(self):
-        return """
-assimilate into the base.
+        if self.character.rank == None:
+            return """
+When the base grows or clones are dying, replacement personel is needed.
+The base can create new clones, but they need to be integrated into the bases sytems.
+Every base should have an assimilator for exactly that purpose.
+
+There is an assimilatior in the command centre.
+Activate the assimilator to get integrated into the base."""
+        else:
+            return """
 Use the assimilator to get further instructions.
 The assimilator is in the command centre.
 """
@@ -8715,7 +9306,7 @@ The assimilator is in the command centre.
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = GoHome()
+            quest = GoHome(description="go to command centre")
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -8755,12 +9346,12 @@ The assimilator is in the command centre.
         self.addQuest(GoToTile(targetPosition=(7,7,0),description="go to command centre"))
         return
 
-    def getSolvingCommandString(self,character):
+    def getSolvingCommandString(self,character,dryRun=True):
         if not self.subQuests:
             room = character.container
 
             if not isinstance(character.container, src.rooms.Room):
-                return super().getSolvingCommandString(character)
+                return super().getSolvingCommandString(character,dryRun=dryRun)
 
             for item in room.itemsOnFloor:
                 if not item.bolted:
@@ -8777,7 +9368,7 @@ The assimilator is in the command centre.
                 if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                     return list("Js.")+["enter"]*6
 
-        return super().getSolvingCommandString(character)
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def solver(self,character):
         if not self.subQuests:
@@ -8798,6 +9389,9 @@ The assimilator is in the command centre.
         self.generateSubquests(extraInfo[0])
 
     def handleTileChange(self):
+        if self.completed:
+            1/0
+
         for quest in self.subQuests:
             quest.postHandler()
 
@@ -8813,15 +9407,6 @@ The assimilator is in the command centre.
 
         super().assignToCharacter(character)
 
-class TakeOverBase(MetaQuestSequence):
-    def __init__(self, description="take over base"):
-        super().__init__()
-        self.metaDescription = description
-        self.type = "TakeOverBase"
-
-    def triggerCompletionCheck(self,character=None):
-        return False
-
 class ActivateEpochArtwork(MetaQuestSequence):
     def __init__(self, description="activate epoch artwork",epochArtwork=None):
         questList = []
@@ -8830,20 +9415,37 @@ class ActivateEpochArtwork(MetaQuestSequence):
         self.type = "ActivateEpochArtwork"
         self.epochArtwork = epochArtwork
 
-        self.startWatching(epochArtwork,self.registerFirstUse, "first use")
+        self.startWatching(epochArtwork,self.handleEpochrArtworkUsed, "epoch artwork used")
 
-    def registerFirstUse(self):
-        #self.postHandler()
-        pass
+    def generateTextDescription(self):
+        return """
+You reached the base and you are safe for now.
+The farms have been neglected and hives have developed.
+But it has defences.
+
+Find out who is commanding this base.
+Maybe you will be safe for longer here.
+
+
+
+Go to the command centre and activate the epoch artwork.
+That should reveal who is commanding this base.
+
+
+
+You can move using full tiles by pressing WASD. Your character will automove.
+This is a lot less keys to press, but should only be done in safe areas.
+Remember to press ctrl-d if you lose control over your character.
+"""
+
+
+    def handleEpochrArtworkUsed(self,extraInfo):
+        if extraInfo[0] == self.character:
+            self.postHandler()
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
-
-        if character.rank == 2:
-            self.postHandler()
-            return True
-
         return False
 
     def solver(self,character):
@@ -8858,11 +9460,38 @@ class ActivateEpochArtwork(MetaQuestSequence):
             
         super().solver(character)
 
-    def getSolvingCommandString(self,character):
+    def getSolvingCommandString(self,character,dryRun=True):
+        directions = {
+
+                (7,5,0):"south",
+                (7,6,0):"west",
+                (8,6,0):"south",
+                (6,6,0):"south",
+                (8,7,0):"south",
+                (6,7,0):"south",
+                (8,8,0):"south",
+                (6,8,0):"south",
+                (8,9,0):"west",
+                (6,9,0):"east",
+                (7,9,0):"north",
+                (7,8,0):"north",
+                }
+
+        direction = directions.get(character.getBigPosition())
+        if direction:
+            if direction == "north":
+                return "W"
+            if direction == "south":
+                return "S"
+            if direction == "west":
+                return "A"
+            if direction == "east":
+                return "D"
+
         if not self.subQuests:
             if character.getPosition() == (6,7,0):
                 return list("Jw.")+["enter"]*2
-        super().getSolvingCommandString(character)
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character,silent=False):
         
@@ -8887,14 +9516,10 @@ class ActivateEpochArtwork(MetaQuestSequence):
                 quest.activate()
                 self.addQuest(quest)
                 return
-
-            #quest = RunCommand(command=list("Jw.")+["enter"]*2, description="activate the epoch artwork\nby pressing ")
-            #self.addQuest(quest)
-            #quest.activate()
-            #self.addQuest(quest)
             return
 
         directions = {
+
                 (7,5,0):"south",
                 (7,6,0):"west",
                 (8,6,0):"south",
@@ -8911,10 +9536,6 @@ class ActivateEpochArtwork(MetaQuestSequence):
 
         direction = directions.get(pos)
         if direction == None:
-            quest = src.quests.GoHome()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
             return
 
         if direction == "north":
@@ -8928,7 +9549,7 @@ class ActivateEpochArtwork(MetaQuestSequence):
 
         if not silent:
             character.addMessage("move one tile to the "+direction)
-        quest = src.quests.GoToTile(description="go "+direction,targetPosition=targetPos)
+        quest = src.quests.GoToTile(description="go one tile "+direction,targetPosition=targetPos,showCoordinates=False)
         self.addQuest(quest)
         quest.activate()
 
@@ -8971,35 +9592,30 @@ class ReachBase(MetaQuestSequence):
         super().solver(character)
 
     def generateTextDescription(self):
+
         text = """
-Reach the base for temporary safety.
+You reach out to your implant and in answers:
 
-The base is shown in the middle of the minimap. It looks like this:
+There is a base in the north. The base belongs to your faction.
+Enter the base to get into the safety of the bases defences.
 
-XXXXXX
-XXXXXX
-XXXXXX
-XXXXXX
-XXXXXX
 
-The entry is on the north side and you need to go around the base.
+The entry is on the northern side of the base.
+You need to go around the base to actually enter it.
+You are likely getting chased and the area is overrun with insects.
+So you have to be careful.
+
+
 You have to cross several tiles to find your path to the entry of the base.
-You are likely getting chased and need to evade to enemy patrols.
+Currently the sugggested next step is to go one tile to the %s.
+Following the suggestions will guide you into the base.
+It might also steer you into groups of enemies on the way.
+So watch the environment and don't follow all suggestions blindly.
 
-So you should move fast, but stay out of danger tiles.
-Avoid the moldy (green) areas for now.
-Watch how the patrolers move. Avoid or run past enemy groups.
 
-The sugggested solution is currently to go one tile to the %s.
-This quest has a sub quest representing that.
-After changing a tile the sub quest will be recalculated.
 
-The suggested sub quest will guide you to the base entry.
-It might also steer you into groups of enemies.
-You can choose other paths, So don't follow it blindy.
-
-You can see the description for the sub quest, too.
-Press d to move the quest cursor to select the sub quest.
+You can see description for sub quests.
+Press d now to move the quest cursor to select the sub quest.
 """%(self.lastDirection,)
         return text
 
@@ -9085,6 +9701,13 @@ Press d to move the quest cursor to select the sub quest.
         quest.activate()
 
     def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        print(character.getBigPosition())
+        if character.getBigPosition() == (7,6,0):
+            self.postHandler()
+            return
         return False
 
     def handleMovement(self, extraInfo):
@@ -9093,6 +9716,8 @@ Press d to move the quest cursor to select the sub quest.
         if self.completed:
             1/0
 
+        if self.triggerCompletionCheck(self.character):
+            return
         self.generateSubquests(extraInfo[0])
 
     def handleTileChange(self):
@@ -9127,7 +9752,7 @@ class Huntdown(MetaQuestSequence):
         self.target = target
 
     def triggerCompletionCheck(self):
-        if self.target:
+        if self.target and self.target.dead:
             self.postHandler()
             return True
         return False
@@ -9195,11 +9820,20 @@ class Huntdown(MetaQuestSequence):
         super().solver(character)
 
 class DestroySpawner(MetaQuestSequence):
-    def __init__(self, description="destroy spawner",targetPosition=None):
+    def __init__(self, description="destroy hive",targetPosition=None):
         super().__init__()
         self.metaDescription = description+" %s"%(targetPosition,)
-        self.type = "DestroySpawners"
+        self.type = "DestroySpawner"
         self.targetPosition = targetPosition
+
+    def generateTextDescription(self):
+        text = """
+Destroy the hive on tile %s.
+
+
+To destroy the hive, go to the monster spawner (MS) in the middle of the hive and activate it.
+You may want to plan an escape route."""%(self.targetPosition,)
+        return text
 
     def handleSpawnerKill(self):
         self.triggerCompletionCheck(self.character)
@@ -9274,10 +9908,33 @@ class DestroySpawner(MetaQuestSequence):
 
 
 class DestroySpawners(MetaQuestSequence):
-    def __init__(self, description="destroy spawners"):
+    def __init__(self, description="destroy hives"):
         super().__init__()
         self.metaDescription = description
         self.type = "DestroySpawners"
+
+    def generateTextDescription(self):
+        hiveText = """Insects near to the hive"""
+        text = []
+        text.extend(["""
+Hives have developed in the abbandoned farms.
+Insect grow there and attack the base.
+Put an end to those attacks by destroying those hives.
+
+Keep in mind that destroying the hives will agitate the insects.
+"""+hiveText+""" will try to kill anybody on the terrain.
+
+This will likely result in a wave of enemies attacking the base.
+This may destroy the base so prepare for that attack.
+
+There are hives on the following tiles:
+
+"""])
+        for spawner in self.getSpawners(self.character):
+            text.extend([str(spawner.getPosition()),"\n"])
+        text.extend(["""
+The Hives are shown on the minimap as: """,(src.interaction.urwid.AttrSpec("#484", "black"), "##")])
+        return text
 
     def getSpawners(self,character):
         currentTerrain = character.getTerrain()
@@ -9319,6 +9976,22 @@ class KillGuards(MetaQuestSequence):
         super().__init__()
         self.metaDescription = description
         self.type = "KillGuards"
+
+    def generateTextDescription(self):
+        return """
+Eliminate the siege guard.
+
+There is a group of enemies near entry of the base.
+They guard the entrance of the base against outbreak or resupplies.
+The guards are shown as white <-
+
+Eliminate them to start breaking up the innermost siege ring.
+Remove guards from the tiles (7,4,0) and (6,5,0)"""
+
+    def postHandler(self):
+        if self.character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.save()
+        super().postHandler()
 
     def solver(self,character):
         if self.triggerCompletionCheck(character):
@@ -9388,6 +10061,11 @@ The patrols are shown as white X-
 
 Ambush them in front of the base to break up the second siege ring."""
 
+    def postHandler(self):
+        if self.character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.save()
+        super().postHandler()
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
@@ -9450,6 +10128,17 @@ class Heal(MetaQuestSequence):
         self.metaDescription = description
         self.type = "heal"
 
+    def generateTextDescription(self):
+        text = """
+You are hurt. Heal yourself.
+
+You can heal yourself using vials.
+Use vials to heal yourself.
+
+Press JH to auto heal.
+"""
+        return text
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
@@ -9469,17 +10158,13 @@ class Heal(MetaQuestSequence):
         self.postHandler()
         return True
 
+    def getSolvingCommandString(self,character,dryRun=True):
+        return "JH"
+
     def solver(self,character):
-        self.triggerCompletionCheck(character)
-
-        if not self.subQuests:
-            quest = RunCommand(command="JH")
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
+        if self.triggerCompletionCheck(character):
             return
-
-        super().solver(character)
+        return super().solver(character)
 
 class SecureCargo(MetaQuestSequence):
     def __init__(self, description="secure cargo"):
@@ -9584,8 +10269,11 @@ class LootRoom(MetaQuestSequence):
 
     def generateTextDescription(self):
         return """
+Loot a room. Take everything that is valuable and bring it home.
+
+
 Go to the room on tile %s and take everything not bolted and valuable.
-Return the items to storage to complete the quest."""
+Clear your inventory afterwards to complete the quest."""%(self.roomPos,)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -9670,6 +10358,17 @@ class SecureTiles(MetaQuestSequence):
         self.type = "SecureTiles"
         self.toSecure = toSecure
 
+    def generateTextDescription(self):
+        text = """
+Secure a group of tiles.
+
+Secure the following tiles:
+
+"""
+        for tile in self.toSecure:
+            text += str(tile)+"\n"
+        return text
+
     def triggerCompletionCheck(self,character=None):
         if self.toSecure:
             return False
@@ -9699,9 +10398,20 @@ class SecureTile(GoToTile):
         self.rewardText = rewardText
 
     def generateTextDescription(self):
-        text  = """go to tile %s and kill all enemies you find"""%(self.targetPosition,)
+        text  = """
+Secure the tile %s.
+
+This means you should go to the tile and kill all enemies you find."""%(self.targetPosition,)
         if not self.endWhenCleared:
             text = "\n"+text+"\n\nStay there and kill all enemies arriving"
+        else:
+            text = "\n"+text+"\n\nthe quest will end after you do this"
+        text += """
+
+You can attack enemies by walking into them.
+But you can use your environment to your advantage, too.
+Try luring enemies into landmines or detonating some bombs."""
+
         return text
 
     def wrapedTriggerCompletionCheck2(self, extraInfo):
@@ -9787,7 +10497,19 @@ class GoToPosition(Quest):
         self.smallPath = []
 
     def generateTextDescription(self):
-        return "go to position %s"%(self.targetPosition,)
+        extraText = ""
+        if self.ignoreEndBlocked:
+            extraText = """
+
+The position you should go might be blocked.
+So it is enough to go next to the target position to end this quest.
+"""
+
+        text = """
+go to position %s in the same room you are in.
+
+This quest ends after you do this."""%(self.targetPosition,) 
+        return text
 
     def getQuestMarkersSmall(self,character):
         self.getSolvingCommandString(character)
@@ -9818,7 +10540,7 @@ class GoToPosition(Quest):
 
         super().assignToCharacter(character)
 
-    def getSolvingCommandString(self, character):
+    def getSolvingCommandString(self, character, dryRun=True):
         if character.xPosition%15 == 0:
             return "d"
         if character.xPosition%15 == 14:
@@ -9907,6 +10629,25 @@ class GoHome(MetaQuestSequence):
 
         self.tuplesToStore.append("cityLocation")
 
+    def generateTextDescription(self):
+        return """
+Go home.
+
+You consider the command center of the base your home.
+That command centre holds the assimilator and
+other important artworks like the quest artwork.
+
+Many activities can be started from the command centre.
+Go there and be ready for action.
+
+
+
+Quests like this can be pretty boring.
+Press c now to use auto move to complete this quest.
+Be careful with auto move, while danger is nearby. 
+Press crtl-d to stop your character from moving.
+"""
+
     def triggerCompletionCheck(self, character=None):
         if not character:
             return
@@ -9949,11 +10690,14 @@ class GoHome(MetaQuestSequence):
             quest.setParameters({"targetPosition":(self.cityLocation[0],self.cityLocation[1])})
 
             self.addedSubQuests = True
-            return
-        self.triggerCompletionCheck(character)
+            return True
+        if self.triggerCompletionCheck(character):
+            return True
+        return False
 
     def solver(self, character):
-        self.generateSubquests(character)
+        if self.generateSubquests(character):
+            return False
 
         if self.subQuests:
             return super().solver(character)
@@ -9961,9 +10705,9 @@ class GoHome(MetaQuestSequence):
         character.runCommandString(self.getSolvingCommandString(character))
         return False
 
-    def getSolvingCommandString(self,character):
+    def getSolvingCommandString(self,character,dryRun=True):
         if self.subQuests:
-            return self.subQuests[0].getSolvingCommandString(character)
+            return self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)
         else:
             charPos = (character.xPosition%15,character.yPosition%15,0)
             if charPos in ((0,7,0),(0,6,0)):
@@ -9974,7 +10718,6 @@ class GoHome(MetaQuestSequence):
                 return "s"
             if charPos in ((14,7,0),(12,6,0)):
                 return "a"
-            return "..."
 
 class GrabSpecialItem(Quest):
     def __init__(self, description="grab special item", creator=None,lifetime=None):
@@ -10109,7 +10852,7 @@ class EnterEnemyCity(MetaQuestSequence):
         
         super().assignToCharacter(character)
 
-    def getSolvingCommandString(self, character, realRun = False):
+    def getSolvingCommandString(self, character, realRun = False, dryRun=True):
         localRandom = random.Random(self.randomSeed)
 
         if isinstance(character.container, src.rooms.Room):
@@ -10466,6 +11209,38 @@ class GetEpochReward(MetaQuestSequence):
         self.type = "GetEpochReward"
         self.gotEpochEvaluation = False
 
+    def getSolvingCommandString(self,character):
+        if pos == (7,7,0):
+            if character.getPosition() == (6,7,0):
+                if self.doEpochEvaluation and not self.gotEpochEvaluation:
+                    return list("Jw."+"ssj")+3*["enter"]+["esc"]
+                else:
+                    return list("Jw."+"sj"+"sj")+["enter"]+["esc"]
+        return super().getSolvingCommandString(character)
+
+    def generateTextDescription(self):
+        text = ""
+        if self.doEpochEvaluation and not self.gotEpochEvaluation:
+            text += """
+You completed a task for the epoch artwork.
+Get a epoch review to get credited with the glass tears you earned.
+Use the epoch artwork to get the epoch review.
+
+"""
+        text += """
+You accumulated some glass tears.
+You can use them at the epoch artwork to buy upgrades for yourself and the base.
+
+
+In auto mode this quest will use the auto spend option.
+That option will spend your glass tears on something.
+So you might want to check out the other option and buy useful stuff.
+
+
+Use the epoch artwork to spend your glass tears.
+"""
+        return text
+
     def triggerCompletionCheck(self, character=None):
         if not character:
             return
@@ -10521,10 +11296,6 @@ class GetEpochReward(MetaQuestSequence):
                 self.addQuest(quest)
                 return
 
-            if self.doEpochEvaluation and not self.gotEpochEvaluation:
-                self.addQuest(RunCommand(command=list("Jw."+"ssj")+3*["enter"]+["esc"], description="claim epoch rewards\nby pressing "))
-            else:
-                self.addQuest(RunCommand(command=list("Jw."+"sj"+"sj")+["enter"]+["esc"], description="activate the epoch artwork\nby pressing "))
             return
 
         directions = {
@@ -10542,24 +11313,7 @@ class GetEpochReward(MetaQuestSequence):
                 (7,8,0):"north",
                 }
 
-        direction = directions.get(pos)
-        if direction == None:
-            quest = src.quests.GoHome()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
-        if direction == "north":
-            targetPos = (pos[0],pos[1]-1,pos[2])
-        if direction == "south":
-            targetPos = (pos[0],pos[1]+1,pos[2])
-        if direction == "west":
-            targetPos = (pos[0]-1,pos[1],pos[2])
-        if direction == "east":
-            targetPos = (pos[0]+1,pos[1],pos[2])
-
-        quest = src.quests.GoToTile(description="go "+direction,targetPosition=targetPos)
+        quest = src.quests.GoHome(description="go to command centre")
         self.addQuest(quest)
 
         return
@@ -10578,11 +11332,26 @@ class DoEpochChallenge(MetaQuestSequence):
 
         self.type = "DoEpochChallenge"
 
+    def generateTextDescription(self):
+        text = """
+Complete a task for the epoch artwork.
+
+Use the epoch artwork to fetch a task and complete it.
+"""
+        return text
+
     """
     never complete
     """
     def triggerCompletionCheck(self, character=None):
         return
+
+    def getSolvingCommandString(self,character):
+        pos = character.getBigPosition()
+        if pos == (7,7,0):
+            if character.getPosition() == (6,7,0):
+                return list("Jw.")+["enter"]*2
+        return super().getSolvingCommandString(character)
 
     def generateSubquests(self,character): 
         
@@ -10606,49 +11375,12 @@ class DoEpochChallenge(MetaQuestSequence):
                 quest.activate()
                 self.addQuest(quest)
                 return
-
-            self.addQuest(RunCommand(command=list("Jw.")+["enter"]*2, description="activate the epoch artwork\nby pressing "))
-            quest = Heal()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
             return
 
-        directions = {
-                (7,5,0):"south",
-                (7,6,0):"west",
-                (8,6,0):"south",
-                (6,6,0):"south",
-                (8,7,0):"south",
-                (6,7,0):"south",
-                (8,8,0):"south",
-                (6,8,0):"south",
-                (8,9,0):"west",
-                (6,9,0):"east",
-                (7,9,0):"north",
-                (7,8,0):"north",
-                }
-
-        direction = directions.get(pos)
-        if direction == None:
-            quest = src.quests.GoHome()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
-        if direction == "north":
-            targetPos = (pos[0],pos[1]-1,pos[2])
-        if direction == "south":
-            targetPos = (pos[0],pos[1]+1,pos[2])
-        if direction == "west":
-            targetPos = (pos[0]-1,pos[1],pos[2])
-        if direction == "east":
-            targetPos = (pos[0]+1,pos[1],pos[2])
-
-        quest = src.quests.GoToTile(description="go "+direction,targetPosition=targetPos)
+        quest = src.quests.GoHome(description="go to command centre")
         self.addQuest(quest)
-
+        quest.assignToCharacter(character)
+        quest.activate()
         return
 
     def solver(self,character):
@@ -10683,6 +11415,20 @@ class EpochQuest(MetaQuestSequence):
         quest = DoEpochChallenge()
         self.subQuests.append(quest)
         quest.activate()
+
+    def generateTextDescription(self):
+        text = """
+When you were promoted to commander of this base you recieved the burden of the epoch quest.
+
+This means you will have to complete the tasks the epoch artwork gives you.
+
+Completing tasks will reward you with glass tears.
+Those glass tears can be used to upgrade your character or your base.
+
+
+Use the epoch artwork to get tasks and collect your rewards.
+"""
+        return text
 
     """
     never complete

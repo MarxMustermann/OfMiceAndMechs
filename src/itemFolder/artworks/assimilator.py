@@ -395,44 +395,72 @@ Showing full introduction.
         elif step == 1:
             text = """
 You are a clone and serve in faction %s.
-
 After assimilation you will serve on this base.
-All clones on this base work together.
-Ranks on this base are 3,4,5,6 and it supports ghuls.
-You will have rank 6 the lowest rank beside ghuls.
+
+You are not the only worker working in this base.
+The base commander has rank 3, you will have rank 6.
+Besides the clones, ghuls are working on the base.
 
 ---
 
-The green @3, @4, @5, @6 and @x are your allies.
+The green @3, @4, @5, @6, @N and @x are your allies.
 Try to work with them.
 
 """%(character.faction,)
         elif step == 2:
             text = """
+Industry requires machines to produce actual goods.
+Operating simple machines is done by ghuls, not by clones.
 
-Most coordination is done by the implants.
-No clone is complete without it.
-It stores your tasks and can direct your steps.
-Most day to day tasks can be solved completely by the implant.
+The ghuls don't have implants and can only execute simple commands.
+Usually each production room has its own reanimator and
+a set of commands in the room for ghuls to execute.
 
-Ghuls don't have implants and can only execute simple commands.
+The reanimator creates a ghul by reanmating a corpse.
+The ghul starts to execute the commands.
+The commands directs the ghul to use the machine. 
+
+The machines turn raw resources into usable goods.
 
 ---
 
-Try pressing "+", if you are lost or a quest doesn't complete correctly.
+Ghuls are shown as @x.
+They are are important for production.
+You don't have to understand what they are doing,
+but try to not to disturb them.
 
-The Implant is represented by the quests in your UI.
-Press "+" to autosolve a step of your quest.
-
-This can result in 2 effects:
-* The quest splits into subquests
-* The character will move some steps to solve the deepest subquest.
-
-If you want to stop your character from moving automatically press "ctrl-d".
-Alternatively click the red "*" in the upper part of your UI to stop.
 """
+        elif step == 3:
+            text = """
+If left alone the ghuls and machines will produce goods,
+but the raw resources will run out and produced goods will pile up.
+Clones are used to prevent that and to make use of the produced goods.
+
+Work for clones on this base is primarily organised by a job system.
+Each clone has a duty and does work that fits that duty.
+The "be useful" quest binds clones into that system.
+The details are handled by the implants. No clone is complete without it.
+
+For example a clone can have the duty of scrap gathering:
+
+The clone starts by walking through the rooms of the base looking for work.
+Machines are set up to take from input stockpiles and into output stockpiles.
+So the clone looks for empty scrap input stockpiles to fill up.
+After finding such a stockpile the clone goes outside and collects scrap.
+That scrap is used to fill up that stockpile.
+"""
+        elif step == 4:
+            text = """
+Some clones work outside of that job system.
+Bodyguards don't have a duty, but follow and protect their superior.
+
+Clones also work outside the job system when orders are issued directly.
+Their implant will direct them to complete that order first.
+Afterwards the clones go back to work within the job system.
+"""
+
         else:
-            self.basicIntegration1({"character":character})
+            self.basicIntegration2({"character":character})
             return
 
         character.addMessage("----------------"+text+"-----------------")
@@ -451,18 +479,6 @@ That means you just will told to be useful.
 What you will be doing exactly will be decided by your duties.
 The implant will guide you through the steps.
 
-Main duties that have to be taken care of on this base are:
-
-* Hauling:
-Carry resources between stockpiles
-* Clearing:
-Pick up items from the walkways
-* Resource fetching:
-Transport resources between rooms 
-* Resource gathering:
-Go outside and collect resources
-* Trap reloading:
-Reloading the trap rooms
 
 To find tasks to complete just walk around until you find somewhere to be useful.
 """
@@ -478,11 +494,10 @@ To find tasks to complete just walk around until you find somewhere to be useful
         if not character.skills: 
             text = """
 
-You need to retrain your skills for this base.
+You have no skill. This means you are useless to the base.
+You need to train a skill before getting assimilated.
 
-You have no skills retrained.
-
-Retrain a skill and return to integrate into the bases systems
+Train a skill and return to integrate into the bases systems
 
 """
             character.addMessage("----------------"+text+"-----------------")
@@ -553,7 +568,7 @@ Now go on and be useful
 ----
 You were assigned the "be useful" quest.
 Initially it will show up as one line only.
-When you press "+" that quest generates sub quests.
+Open the quest to get more information.
 """
 
         character.addMessage("----------------"+text+"-----------------")

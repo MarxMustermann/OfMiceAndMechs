@@ -1059,7 +1059,6 @@ class Terrain(src.saveing.Saveable):
         character.yPosition = y
         character.changed()
         self.changed("entered terrain", character)
-        src.interaction.new_chars.add(character)
 
     def addRooms(self, rooms):
         """

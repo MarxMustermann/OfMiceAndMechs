@@ -42,15 +42,23 @@ def advanceGame():
     """
     advance the game
     """
+    global multi_chars
+
+    multi_chars = set()
     for row in src.gamestate.gamestate.terrainMap:
         for specificTerrain in row:
+            for character in specificTerrain.characters:
+                multi_chars.add(character)
+            for room in specificTerrain.rooms:
+                for character in room.characters:
+                    multi_chars.add(character)
             specificTerrain.advance()
 
     for item in src.gamestate.gamestate.extraRoots:
-        for character in item.characters:
-            character.advance()
+        for character in specificTerrain.characters:
+            multi_chars.add(character)
 
-
+    src.gamestate.gamestate.multi_chars = multi_chars
     src.gamestate.gamestate.tick += 1
 
     #if src.gamestate.gamestate.tick%100 == 15:
@@ -5764,13 +5772,6 @@ def keyboardListener(key, targetCharacter=None):
 
     if not multi_currentChar:
         multi_currentChar = char
-    if multi_chars is None:
-        multi_chars = src.gamestate.gamestate.terrain.characters[:]
-        for room in src.gamestate.gamestate.terrain.rooms:
-            for character in room.characters[:]:
-                if character not in multi_chars:
-                    multi_chars.add(character)
-
     state = char.macroState
 
     if key == "ctrl d":
@@ -6953,6 +6954,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         saves = rawState["saves"]
 
         if startGame:
+            global new_chars
+            new_chars = set()
+
             tcodConsole.clear()
             printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
             printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
@@ -7029,11 +7033,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 global lastTerrain
                 lastTerrain = terrain
 
-            gameLoop(None,None)
-
             break
 
         if time.time() - lastStep > 1:
+            print("wtf")
             lastStep = time.time()
             terrain.advance()
             src.gamestate.gamestate.tick += 1
@@ -7045,7 +7048,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
             removeList = []
             for character in charList:
-                advanceChar(character,removeList)
+                advanceChar(character)
 
         height = 10
         width = 46
@@ -7936,7 +7939,6 @@ def gameLoop(loop, user_data=None):
         runFixedTick = True
 
     global multi_currentChar
-    multi_chars = src.gamestate.gamestate.multi_chars
     global new_chars
 
     firstRun = True
@@ -8018,17 +8020,23 @@ def gameLoop(loop, user_data=None):
                 if not len(cinematics.cinematicQueue):
                     lastAdvance = time.time()
                     advanceGame()
+                    multi_chars = src.gamestate.gamestate.multi_chars
 
-                removeChars = []
                 for char in multi_chars:
-                    advanceChar(char,removeChars)
+                    if char.dead:
+                        print("! dead char in multi chars !")
+                        continue
+                    if not char.container:
+                        print("! nowhere char in multi chars !")
+                        continue
+                    if not (char.getTerrain() == src.gamestate.gamestate.mainChar.getTerrain()):
+                        print(char.getTerrain())
+                        print(src.gamestate.gamestate.mainChar.getTerrain())
+                        print(char)
+                        print(char.container)
+                        5/0
+                    advanceChar(char)
                     pass
-
-                multi_chars.update(new_chars)
-                new_chars = set()
-
-                for char in removeChars:
-                    multi_chars.remove(char)
 
                 renderGameDisplay()
                 lastRender = time.time()
@@ -8051,9 +8059,7 @@ def gameLoop(loop, user_data=None):
 
     loop.set_alarm_in(0.001, gameLoop)
 
-def advanceChar(char,removeChars):
-    if char.dead and not char == src.gamestate.gamestate.mainChar:
-        removeChars.append(char)
+def advanceChar(char):
     if char.stasis:
         return
     if char.disabled:

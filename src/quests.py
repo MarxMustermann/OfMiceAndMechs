@@ -3707,15 +3707,11 @@ Use it to gain a new body guard."""
 
     def solver(self,character):
         if self.triggerCompletionCheck(character):
-            if character == src.gamestate.gamestate.mainChar:
-                1/0
             return
 
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:
-                if character == src.gamestate.gamestate.mainChar:
-                    2/0
                 return
 
         super().solver(character)

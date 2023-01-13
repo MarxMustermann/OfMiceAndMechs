@@ -258,20 +258,7 @@ Use the complex interaction to recharge the personel artwork
         char.superior = character
         char.faction = character.faction
 
-        print(character)
-        print(character.name)
-        print(character.getPosition())
-        print(character.container)
-        print(character.container.getPosition())
-        print(character.dead)
-        print(character.rank)
-        print(character.quests)
-        print(character.subordinates)
-        print(src.gamestate.gamestate.mainChar.getTerrain())
-        print(character.getTerrain())
-        1/0
-        #quest = src.quests.ProtectSuperior()
-        quest = src.quests.WaitQuest()
+        quest = src.quests.ProtectSuperior()
         quest.assignToCharacter(char)
         quest.activate()
         char.quests.append(quest)

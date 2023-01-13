@@ -1315,10 +1315,6 @@ class Room(src.saveing.Saveable):
         character.yPosition = y
         character.path = []
         self.changed("entered room", character)
-        if not noRegister:
-            src.interaction.new_chars.add(character)
-        if forceRegister:
-            src.interaction.multi_chars.add(character)
 
     def removeCharacter(self, character):
         """

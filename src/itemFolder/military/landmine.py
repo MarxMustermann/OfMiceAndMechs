@@ -53,18 +53,20 @@ class LandMine(src.items.Item):
         if not self.xPosition or not self.yPosition:
             return
 
-        offsets = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
+        offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         random.shuffle(offsets)
 
         for offset in offsets[:-1]:
             new = src.items.itemMap["Explosion"]()
-            self.container.addItem(new,(self.xPosition-offset[0],self.yPosition-offset[1],self.zPosition))
+            self.container.addItem(new,self.getPosition(offset=offset))
             event = src.events.RunCallbackEvent(
                 src.gamestate.gamestate.tick + 1
             )
             event.setCallback({"container": new, "method": "explode"})
             self.container.addEvent(event)
             self.container.addAnimation(new.getPosition(),"explosion",5,{})
+            for character in self.container.getCharactersOnPosition(self.getPosition(offset=offset)):
+                character.hurt(30,reason="hurt by an exploding land mine")
 
         super().destroy(generateScrap=False)
 

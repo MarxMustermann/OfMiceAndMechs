@@ -23,19 +23,14 @@ class PersonnelArtwork(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("viewNPCs", "view npcs"),
-                                                                ("spawnBodyguard", "spawn bodyguard"),
-                                                                ("spawnRank4", "spawn rank4"),
-                                                                ("spawnIndependentFighter", "spawn independent fighter"),
-                                                                ("spawnIndependentWorker", "spawn independent worker"),
-                                                                ("spawnIndependentClone", "spawn independent clone"),
+                                                                ("spawnBodyguard", "(1) spawn bodyguard"),
+                                                                ("spawnIndependentFighter", "(2) spawn independent fighter"),
+                                                                ("spawnIndependentWorker", "(2) pawn independent worker"),
+                                                                ("spawnIndependentClone", "(1) spawn independent clone"),
                         ]
                         )
         self.applyMap = {
                     "viewNPCs": self.viewNPCs,
-                    "spawnRank6": self.spawnRank6,
-                    "spawnRank5": self.spawnRank5,
-                    "spawnRank4": self.spawnRank4,
-                    "spawnRank3": self.spawnRank3,
                     "spawnMilitary": self.spawnMilitary,
                     "spawnSet": self.spawnSet,
                     "spawnRankUnranked": self.spawnRankUnranked,
@@ -126,11 +121,11 @@ Use the complex interaction to recharge the personel artwork
     def spawnMilitary(self,character):
         return self.spawnRank(None,character,isMilitary=True)
 
-    def spawnIndependentFighter(self,character):
-        if not self.charges:
+    def spawnIndependentFighter(self,character,extraCost=1):
+        if not self.charges > 0+extraCost:
             character.addMessage("no charges left. Use the epoch artwork to recharge")
             return None
-        self.charges -= 1
+        self.charges -= 1+extraCost
 
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
@@ -176,15 +171,15 @@ Use the complex interaction to recharge the personel artwork
 
     def spawnIndependentClone(self,character):
         if random.random() > 0.5:
-            return self.spawnIndependentWorker(character)
+            return self.spawnIndependentWorker(character,extraCost=0)
         else:
-            return self.spawnIndependentFighter(character)
+            return self.spawnIndependentFighter(character,extraCost=0)
 
-    def spawnIndependentWorker(self,character):
-        if not self.charges:
+    def spawnIndependentWorker(self,character,extraCost=1):
+        if not self.charges > 0+extraCost:
             character.addMessage("no charges left. Use the epoch artwork to recharge")
             return None
-        self.charges -= 1
+        self.charges -= 1+extraCost
 
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
@@ -228,6 +223,10 @@ Use the complex interaction to recharge the personel artwork
         return char
 
     def spawnBodyguard(self,character):
+        for subordinate in character.subordinates[:]:
+            if subordinate.dead:
+                character.subordinates.remove(subordinate)
+
         if character.rank == None or character.rank > 5:
             character.addMessage("you need to be rank 5 or higher to spawn a bodyguard") 
             return None
@@ -252,7 +251,9 @@ Use the complex interaction to recharge the personel artwork
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
+        char.personality["abortMacrosOnAttack"] = False
         char.rank = 6
+        char.movementSpeed = 0.5
 
         character.subordinates.append(char)
         char.superior = character

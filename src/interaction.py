@@ -749,24 +749,28 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
             )
             if items:
                 items[0].apply(char)
+                char.runCommandString("~",nativeKey=True)
         elif key == "s":
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition + 1, char.zPosition)
             )
             if items:
                 items[0].apply(char)
+                char.runCommandString("~",nativeKey=True)
         elif key == "d":
             items = char.container.getItemByPosition(
                 (char.xPosition + 1, char.yPosition, char.zPosition)
             )
             if items:
                 items[0].apply(char)
+                char.runCommandString("~",nativeKey=True)
         elif key == "a":
             items = char.container.getItemByPosition(
                 (char.xPosition - 1, char.yPosition, char.zPosition)
             )
             if items:
                 items[0].apply(char)
+                char.runCommandString("~",nativeKey=True)
         elif key == ".":
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition, char.zPosition)
@@ -2243,7 +2247,7 @@ select what you want to observe
                 newPos = (charPos[0]+1,charPos[1],charPos[2])
 
             quest = src.quests.GoToTile(targetPosition=newPos,paranoid=True)
-            quest.selfAssigned = True
+            #quest.selfAssigned = True
             quest.autoSolve = True
             quest.assignToCharacter(char)
             quest.activate()
@@ -2287,71 +2291,61 @@ select what you want to observe
 
         # activate an item
         if key in ("c",):
-            if "NaiveActivateQuest" not in char.solvers and not char.godMode:
-                char.addMessage(
-                    "you do not have the nessecary solver yet (activate)"
-                )
+            # activate the marked item
+            if charState["itemMarkedLast"]:
+                if not charState["itemMarkedLast"].container:
+                    if charState["itemMarkedLast"].room:
+                        charState["itemMarkedLast"].container = charState[
+                            "itemMarkedLast"
+                        ].room
+                    elif charState["itemMarkedLast"].terrain:
+                        charState["itemMarkedLast"].container = charState[
+                            "itemMarkedLast"
+                        ].terrain
+
+                charState["itemMarkedLast"].configure(char)
+
+            # activate an item on floor
             else:
-                # activate the marked item
-                if charState["itemMarkedLast"]:
-                    if not charState["itemMarkedLast"].container:
-                        if charState["itemMarkedLast"].room:
-                            charState["itemMarkedLast"].container = charState[
-                                "itemMarkedLast"
-                            ].room
-                        elif charState["itemMarkedLast"].terrain:
-                            charState["itemMarkedLast"].container = charState[
-                                "itemMarkedLast"
-                            ].terrain
-
-                    charState["itemMarkedLast"].configure(char)
-
-                # activate an item on floor
-                else:
-                    # for item in char.container.itemsOnFloor:
-                    #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                    #        item.apply(char)
-                    #        break
-                    if not char.container:
-                        return
-                    entry = char.container.getItemByPosition(
-                        (char.xPosition, char.yPosition, char.zPosition)
-                    )
-                    if len(entry):
-                        entry[0].configure(char)
+                # for item in char.container.itemsOnFloor:
+                #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                #        item.apply(char)
+                #        break
+                if not char.container:
+                    return
+                entry = char.container.getItemByPosition(
+                    (char.xPosition, char.yPosition, char.zPosition)
+                )
+                if len(entry):
+                    entry[0].configure(char)
 
         # activate an item
         if key in (commandChars.activate,):
-            if "NaiveActivateQuest" not in char.solvers and not char.godMode:
-                char.addMessage(
-                    "you do not have the nessecary solver yet (activate)"
-                )
+            # activate the marked item
+            if charState["itemMarkedLast"]:
+                if not charState["itemMarkedLast"].container:
+                    return
+
+                charState["itemMarkedLast"].apply(char)
+
+            # activate an item on floor
             else:
-                # activate the marked item
-                if charState["itemMarkedLast"]:
-                    if not charState["itemMarkedLast"].container:
-                        return
+                # for item in char.container.itemsOnFloor:
+                #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
+                #        item.apply(char)
+                #        break
+                if not (
+                    char.xPosition == None
+                    or char.yPosition == None
+                    or char.zPosition == None
+                    or char.container == None
+                ):
+                    entry = char.container.getItemByPosition(
+                        (char.xPosition, char.yPosition, char.zPosition)
+                    )
 
-                    charState["itemMarkedLast"].apply(char)
-
-                # activate an item on floor
-                else:
-                    # for item in char.container.itemsOnFloor:
-                    #    if item.xPosition == char.xPosition and item.yPosition == char.yPosition:
-                    #        item.apply(char)
-                    #        break
-                    if not (
-                        char.xPosition == None
-                        or char.yPosition == None
-                        or char.zPosition == None
-                        or char.container == None
-                    ):
-                        entry = char.container.getItemByPosition(
-                            (char.xPosition, char.yPosition, char.zPosition)
-                        )
-
-                        if entry:
-                            entry[0].apply(char)
+                    if entry:
+                        entry[0].apply(char)
 
         # examine an item
         if key in (commandChars.examine,):
@@ -3623,37 +3617,25 @@ class InventoryMenu(SubMenu):
             self.subMenu.handleKey(key, noRender=noRender, character=character)
             if not self.subMenu.getSelection() is None:
                 if self.activate:
-                    if (
-                        "NaiveActivateQuest" not in self.char.solvers
-                        and not char.godMode
-                    ):
-                        self.persistentText = (
-                            urwid.AttrSpec("default", "default"),
-                            "you do not have the nessecary solver yet (activate)",
-                        )
+                    text = (
+                        "you activate the "
+                        + self.char.inventory[self.subMenu.getSelection()].name
+                    )
+                    self.persistentText = (
+                        urwid.AttrSpec("default", "default"),
+                        text,
+                    )
+                    if not noRender:
                         main.set_text(
-                            (urwid.AttrSpec("default", "default"), self.persistentText)
-                        )
-                    else:
-                        text = (
-                            "you activate the "
-                            + self.char.inventory[self.subMenu.getSelection()].name
-                        )
-                        self.persistentText = (
-                            urwid.AttrSpec("default", "default"),
-                            text,
-                        )
-                        if not noRender:
-                            main.set_text(
-                                (
-                                    urwid.AttrSpec("default", "default"),
-                                    self.persistentText,
-                                )
+                            (
+                                urwid.AttrSpec("default", "default"),
+                                self.persistentText,
                             )
-                        self.char.addMessage(text)
-                        self.char.inventory[self.subMenu.getSelection()].apply(
-                            self.char
                         )
+                    self.char.addMessage(text)
+                    self.char.inventory[self.subMenu.getSelection()].apply(
+                        self.char
+                    )
                     self.activate = False
                     self.subMenu = None
                     return True
@@ -4087,6 +4069,7 @@ class CreateQuestMenu(SubMenu):
                 else:
                     foundQuest.addQuest(quest)
                 quest.activate()
+                quest.assignToCharacter(char)
                 if char == self.activeChar:
                     quest.selfAssigned = True
                 char.showGotCommand = True
@@ -5904,16 +5887,6 @@ def keyboardListener(key, targetCharacter=None):
         char = newChar
         state = char.macroState
 
-    elif key == "ctrl w":
-        if not char.room:
-            return
-        import json
-
-        state = char.room.getState()
-        serializedState = json.dumps(state, indent=10, sort_keys=True)
-
-        with open("roomExport.json", "w") as exportFile:
-            exportFile.write(serializedState)
     elif key == "ctrl i":
         foundChar = None
         for character in char.container.characters:
@@ -7036,7 +7009,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             break
 
         if time.time() - lastStep > 1:
-            print("wtf")
             lastStep = time.time()
             terrain.advance()
             src.gamestate.gamestate.tick += 1
@@ -7821,7 +7793,7 @@ You """+"."*stageState["substep"]+"""
 
                     removeList = []
                     for character in room.characters+terrain.characters:
-                        advanceChar(character,removeList)
+                        advanceChar(character)
 
                 if src.gamestate.gamestate.tick > 10470 and not stageState["endless"]:
                     stageState = None
@@ -7908,6 +7880,416 @@ FOLLOW YOUR ORDERS
         if not stageState:
             stage += 1
 
+
+def showSiegeIntro():
+
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    stage = 0
+    stageState = None
+    room = None
+    subStep = 0
+    subStep2 = 1
+    addedText = False
+    sleepAmountGrow = 0.125
+    painPositions = []
+    while 1:
+        tcodConsole.clear()
+
+        if stage == 0:
+            if stageState == None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         | 
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+
+"""
+            printUrwidToTcod(text,(40,14))
+            textBase = ["""
+You see """,".",".",".",""" nothing
+""","You hear ",".",".",".",""" nothing
+""","You know ",".",".",".",""" nothing
+""","You remember ",".",".",".",""" nothing
+""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     
+You remember how tendrils of pain grew from from your implant.     
+They played your thoughts and burried them.                           
+They dug up your memories and ripped them apart.     
+You know that something is broken within your implant.     
+
+The pain ate your mind and           
+starts to burn your flesh.                                                
+"""]
+            if not subStep < len(textBase)-1:
+                tcodContext.present(tcodConsole)
+                time.sleep(0.01)
+            text = "".join(textBase[0:subStep])
+            if not subStep < len(textBase)-1:
+                text += textBase[-1][0:subStep2]
+            printUrwidToTcod(text,(45,17))
+            tcodContext.present(tcodConsole)
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.03)
+            else:
+                stage += 1
+                subStep = 0
+                subStep2 = 0
+        elif stage == 1:
+            tcodConsole.clear()
+            painChars = ["#","%","&","*","+","`"] 
+            painColors = ["#fff","#55f","#f5f","#aaf","#a9f","#9af"] 
+            for painPos in painPositions:
+                painChar = random.choice(painChars)
+                painColor = random.choice(painColors)
+                printUrwidToTcod((src.interaction.urwid.AttrSpec(painColor, "black"), painChar),painPos)
+
+            tcodContext.present(tcodConsole)
+            time.sleep(0.01)
+            text = """
+                                                                                   
+    |                                                                         |    
+  --+-------------------------------------------------------------------------+--  
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+    |                                                                         |    
+  --+-------------------------------------------------------------------------+--  
+    |                                                                         |    
+                                                                                   
+"""
+            printUrwidToTcod(text,(38,13))
+            tcodContext.present(tcodConsole)
+            time.sleep(0.02)
+            textBase = """
+The pain grows and grows and grows and grows and grows and grows and
+grows and grows and grows and grows and grows and grows and grows and
+grows and grows and grows and grows and grows and grows and grows and
+grows and grows and grows and grows and grows and grows and grows and
+grows and grows and grows and grows 
+""".split(" ")
+            text = " ".join(textBase[0:subStep])
+            printUrwidToTcod(text,(45,17))
+            tcodContext.present(tcodConsole)
+            for i in range(0,100):
+                pos = (random.randint(1,199),random.randint(1,50))
+                if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
+                    continue
+                if not pos in painPositions:
+                    painPositions.append(pos)
+            
+            if subStep < len(textBase)-1:
+                time.sleep(sleepAmountGrow)
+                sleepAmountGrow -= 0.00075
+                subStep += 1
+            else:
+                stage += 1
+                subStep = 0
+                subStep2 = 0
+        elif stage == 2:
+            backgroundText = "You will rule the world some day, but first follow your orders.   "
+
+            l=len(backgroundText)-14
+            #if subStep < l*1:
+            #    color = "#000"
+            #    color2 = "#000"
+            #    color3 = "#000"
+            if subStep < l*1:
+                color = "#000"
+                color2 = "#000"
+                color3 = "#111"
+            elif subStep < l*2:
+                color = "#000"
+                color2 = "#111"
+                color3 = "#222"
+            elif subStep < l*3:
+                color = "#111"
+                color2 = "#222"
+                color3 = "#332"
+            else:
+                color = "#222"
+                color2 = "#222"
+                color3 = "#332"
+            """
+            elif subStep < l*5:
+                color = "#332"
+                color2 = "#442"
+                color3 = "#552"
+            else:
+                color = "#442"
+                color2 = "#442"
+                color3 = "#552"
+            elif subStep < l*7:
+                color = "#552"
+                color2 = "#662"
+                color3 = "#772"
+            elif subStep < l*8:
+                color = "#662"
+                color2 = "#772"
+                color3 = "#882"
+            elif subStep < l*9:
+                color = "#772"
+                color2 = "#882"
+                color3 = "#992"
+            elif subStep < l*10:
+                color = "#882"
+                color2 = "#992"
+                color3 = "#aa2"
+            elif subStep < l*11:
+                color = "#992"
+                color2 = "#aa2"
+                color3 = "#bb2"
+            else:
+                color = "#aa2"
+                color2 = "#aa2"
+                color3 = "#ff2"
+            elif subStep < l*12:
+                color = "#bb2"
+                color2 = "#cc2"
+            elif subStep < l*13:
+                color = "#cc2"
+                color2 = "#dd2"
+            elif subStep < l*14:
+                color = "#dd2"
+                color2 = "#ee2"
+            elif subStep < l*15:
+                color = "#ee2"
+                color2 = "#ff2"
+            else:
+                color = "#ff2"
+                color2 = "#ff2"
+            """
+            
+            """
+            convertedBackgroundText = []
+            counter = 0
+            for char in backgroundText:
+                if counter < 
+                    convertedBackgroundText.append((src.interaction.urwid.AttrSpec(color2, "black"), char))
+                else:
+                    convertedBackgroundText.append((src.interaction.urwid.AttrSpec(color, "black"), char))
+                counter += 1
+            backgroundText = convertedBackgroundText
+            """
+
+            attrSpec = src.interaction.urwid.AttrSpec(color2, "black")
+            attrSpec2 = src.interaction.urwid.AttrSpec(color, "black")
+            attrSpec3 = src.interaction.urwid.AttrSpec(color3, "black")
+            line = backgroundText*4
+            offset = 0
+            width = len(backgroundText)
+
+            index = subStep%l
+            backgroundText = "You will rule the world some day, but first follow your orders.   "
+            if index > 2:
+                index += 1
+            if index > 7:
+                index += 1
+            if index > 12:
+                index += 1
+            if index > 16:
+                index += 1
+            if index > 22:
+                index += 1
+            if index > 27:
+                index += 1
+            if index > 32:
+                index += 1
+            if index > 36:
+                index += 1
+            if index > 42:
+                index += 1
+            if index > 49:
+                index += 1
+            if index > 54:
+                index += 1
+            part1 = backgroundText[0:index]
+            part1len = len(part1)
+            part2 = backgroundText[index]
+            part3 = backgroundText[index+1:]
+
+            x = 0
+            y = 0
+            for i in range(0,150):
+                printUrwidToTcod((attrSpec,part1),(x,y))
+                printUrwidToTcod((attrSpec3,part2),(x+part1len,y))
+                printUrwidToTcod((attrSpec2,part3),(x+part1len+1,y))
+                offset = 200 - x
+                x += width
+                if x > 200:
+                    y += 2
+                    x = -offset
+            text = """
+                                                                                       
+      |                                                                         |      
+    --+-------------------------------------------------------------------------+--    
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+      |                                                                         |      
+    --+-------------------------------------------------------------------------+--    
+      |                                                                         |      
+                                                                                       
+"""
+            printUrwidToTcod(text,(36,13))
+            text = """
+until something breaks.
+
+Your implant stops emitting pain
+and for a moment you hear terrible silence.
+
+But it slowly comes back
+and you hear that familiar voice again."""
+            if subStep > l:
+                text += """
+
+
+suggested action:
+press enter to continue
+"""
+            printUrwidToTcod(text,(45,17))
+            tcodContext.present(tcodConsole)
+            time.sleep(0.2)
+            subStep += 1
+        elif stage ==  3:
+            text = """
+You."""
+            if subStep > 0:
+                text += """
+You see walls made out of solid steel"""
+            if subStep > 1:
+                text += """
+and feel the touch of the cold hard floor."""
+            if subStep > 2:
+                text += """
+The room is filled with various items."""
+            if subStep > 3:
+                text += """
+You recognise your hostile suroundings and
+try to remember how you got here ..."""
+                text2 = text+"""
+until the explosions fully wake you."""
+                if not addedText:
+                    src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text2)
+                    addedText = True
+
+            printUrwidToTcod(text,(133,6))
+            if subStep == 0:
+                text = """
+suggested action:
+press enter to open your eyes"""
+            elif subStep == 1:
+                text = """
+suggested action:
+press enter to look around"""
+            else:
+                text = """
+suggested action:
+press enter"""
+            
+            printUrwidToTcod(text,(2,19))
+            if subStep == 1:
+                wall = src.items.itemMap["Wall"]()
+                baseCoordinate = (70,22)
+                for i in range(0,13):
+                    if i == 6:
+                        continue
+                    printUrwidToTcod(wall.render(),(70+2*i,22))
+                    printUrwidToTcod(wall.render(),(70,22+i))
+                    printUrwidToTcod(wall.render(),(70+2*i,22+12))
+                    printUrwidToTcod(wall.render(),(70+12*2,22+i))
+            if subStep == 2:
+                room = src.rooms.EmptyRoom(None,None,None,None)
+                room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+                room.hidden = False
+                printUrwidToTcod(fixRoomRender(room.render()),(70,22))
+            if subStep == 3:
+                printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(70,22))
+            if subStep == 4:
+                roomPos = src.gamestate.gamestate.mainChar.container.getPosition() 
+                terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1),15*(roomPos[0]-1)),size=(44,44))
+                terrainRender = fixRoomRender(terrainRender)
+                printUrwidToTcod(terrainRender,(38,6))
+
+                miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
+                miniMapChars = fixRoomRender(miniMapChars)
+                printUrwidToTcod(miniMapChars,(4,2))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(82,28))
+            tcodContext.present(tcodConsole)
+            time.sleep(0.1)
+        else:
+            break
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.ESCAPE:
+                    stage = 7
+                if key == tcod.event.KeySym.RETURN:
+                    if not stage == 3:
+                        stage += 1
+                        subStep = 0
+                    else:
+                        subStep += 1
+
+                        if subStep > 4:
+                            bombs = []
+                            numExplosions = 0
+                            for item in src.gamestate.gamestate.mainChar.container.itemsOnFloor:
+                                if item.type == "Bomb":
+                                    numExplosions += 1
+                                    item.destroy()
+                                if numExplosions > 2:
+                                    break
+                            stage += 1
+                            subStep = 0
 def gameLoop(loop, user_data=None):
     """
     run the game for one tick

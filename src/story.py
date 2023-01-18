@@ -4075,44 +4075,12 @@ class Siege2(BasicPhase):
             item = src.items.itemMap["Bomb"]()
             spawnRoom.addItem(item,(x+6,11,0))
 
-        for i in range(1,20):
-            spawnRoom.damage()
+        #for i in range(1,20):
+        #    spawnRoom.damage()
 
         spawnRoom.addCharacter(
             src.gamestate.gamestate.mainChar, 6, 6
         )
-
-        # You see ... nothing
-        # You hear ... nothing
-        # You know ... nothing
-        # You remember ... nothing
-        # You feel ... A sharp pain burrowing through you mind.
-        # You remember how tendrils of pain grew from from your implant.
-        # How they played your thoughts and burried them.
-        # How they dug up your memories and ripped them apart.
-        # you know that something ss broken within your implant.
-        # And you also know that after the pain ate your mind,
-        # it will burn your flesh.
-        # -------------
-        # The pain grows and grows and grows
-        # -------------
-        # until something breaks.
-        # Your implant stopped emitting pain.
-        # For a moment you thought the implant completely broke.
-        # But it slowly comes back.
-        # You hear that accustomed voice again.
-        # It urges you to open your eyes.
-        #
-        # press enter
-        #
-        # -------------
-        # You see ...
-        # walls (XX) made out solid steel and
-        # feel the touch of the cold hard floor.
-        # The room if filled with items and has logistical markings.
-        # You notice some corpses and wonder what happened.
-        # ..until the explosions fully wake you.
-
 
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
@@ -4622,10 +4590,6 @@ class Siege2(BasicPhase):
 
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
 
-        self.showSecondText()
-
-
-    def showSecondText(self):
         containerQuest = src.quests.ReachOutStory()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
         containerQuest.activate()
@@ -4634,23 +4598,7 @@ class Siege2(BasicPhase):
         
         src.gamestate.gamestate.mainChar.messages = []
 
-        text = ["""
-
-On the left top is a mini map.
-On the right side of the screen is a message log.
-Follow the instructions on the left side of the screen.
-
-press enter to close this window
-"""]
-
-        #submenu = src.interaction.TextMenu(text)
-        #src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
-
-        #src.gamestate.gamestate.mainChar.addMessage("On the left top is a mini map.")
-        #src.gamestate.gamestate.mainChar.addMessage("Close this window and press z to see the movement keys.")
-        #src.gamestate.gamestate.mainChar.addMessage("On the right side of the screen is a message log.")
-        #src.gamestate.gamestate.mainChar.addMessage("Follow the instructions on the left side of the screen.")
-        #src.gamestate.gamestate.mainChar.addMessage("----------------")
+        src.interaction.showSiegeIntro()
 
     def openedQuests(self):
 

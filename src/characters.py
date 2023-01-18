@@ -412,6 +412,9 @@ class Character(src.saveing.Saveable):
             command = "."
         return command
 
+    def getNearbyEnemies(self):
+        return self.container.getEnemiesOnTile(self)
+
     def getBigPosition(self,offset=(0,0,0)):
         if isinstance(self.container, src.rooms.Room):
             charPos = (self.container.xPosition+offset[0],self.container.yPosition+offset[1],0+offset[2])
@@ -2224,6 +2227,7 @@ class Monster(Character):
         self.specialDisplay = None
 
         self.solvers.extend(["NaiveMurderQuest"])
+        self.skills.append("fighting")
 
     def getItemWalkable(self,item):
         if item.type in ["Bush","EncrustedBush"]:

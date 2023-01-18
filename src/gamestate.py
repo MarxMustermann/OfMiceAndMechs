@@ -104,14 +104,7 @@ class GameState(src.saveing.Saveable):
             src.canvas.displayChars.main_char,
             3,
             3,
-            automated=False,
-            name=config.names.characterFirstNames[
-                self.tick % len(config.names.characterFirstNames)
-            ]
-            + " "
-            + config.names.characterLastNames[
-                self.tick % len(config.names.characterLastNames)
-            ],
+            automated=False
         )
         self.mainChar.watched = True
         self.mainChar.terrain = None

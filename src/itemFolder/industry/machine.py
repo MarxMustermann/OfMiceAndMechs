@@ -172,10 +172,12 @@ Activate the machine to produce.
         # refuse production without resources
         if resourcesNeeded:
             character.addMessage(
-                "missing resources (place left/west or up/north or down/south): %s"
+                "missing resources (place left/west or up/north or down/south):\n%s"
                 % (", ".join(resourcesNeeded))
             )
             self.runCommand("material %s" % (resourcesNeeded[0]), character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         targetFull = False

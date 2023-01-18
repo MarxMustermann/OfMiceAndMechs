@@ -82,7 +82,7 @@ Use it by activating it. You will recieve further instructions."""
             options.append(("repairCommandCentre","(100) repair command centre"))
             options.append(("recharge trap rooms once","(10) recharge trap roomsby 10 charges (once)"))
             options.append(("recharge trap rooms","(?) recharge trap rooms"))
-            options.append(("respawn scrapfield","(100) respawn scrap field"))
+            options.append(("respawn scrapfield","(30) respawn scrap field"))
             options.append(("spawn lightning rods","(10) spawn 25 ligthning rods"))
             options.append(("spawn new clone","(15) spawn new clone"))
             submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType")
@@ -226,10 +226,10 @@ Use it by activating it. You will recieve further instructions."""
         elif extraInfo["rewardType"] == "recharge trap rooms":
             self.rechargeTrapRooms(character)
         elif extraInfo["rewardType"] == "respawn scrapfield":
-            if not self.charges > 100:
+            if not self.charges > 30:
                 text = "not enough glass tears"
             else:
-                self.changeCharges(-100)
+                self.changeCharges(-30)
                 cityBuilder = self.container.getItemByType("CityBuilder2")
                 cityBuilder.addScrapFieldFromMap({"coordinate":(8,5,0)})
                 text = "respawned scrap field"
@@ -591,7 +591,7 @@ You will recieve your duties and instructions later.
 
         numSpawnersDestroyed = (self.lastNumSpawners-numSpawners)
         self.lastNumSpawners = numSpawners
-        stepAmount = numSpawnersDestroyed*30
+        stepAmount = numSpawnersDestroyed*100
         amount += stepAmount
 
         if character and numSpawnersDestroyed:

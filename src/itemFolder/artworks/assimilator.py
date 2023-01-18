@@ -67,6 +67,7 @@ Choose how you are gooing to serve:\n"""
 Choose your primary duty:\n"""
 
             options = self.getPossibleDuties(character)
+            random.shuffle(options)
 
             if not options:
                 character.addMessage("no duty found")
@@ -89,6 +90,7 @@ Choose your primary duty:\n"""
 Choose your secondary duty:\n"""
 
             options = self.getPossibleDuties(character,exclude=[duty1])
+            random.shuffle(options)
 
             if not options:
                 character.addMessage("no duty found")
@@ -112,6 +114,7 @@ Choose your secondary duty:\n"""
 Choose your tertiary duty:\n"""
 
             options = self.getPossibleDuties(character,exclude=[duty1,duty2])
+            random.shuffle(options)
 
             if not options:
                 character.addMessage("no duty found")
@@ -230,6 +233,14 @@ Reapply after this changes.
 
 """
                 character.reputation = 0
+                character.changed("got promotion",character)
+
+                params = {"character":character}
+                character.addMessage("----------------"+text+"-----------------")
+                submenue = src.interaction.TextMenu(text)
+                character.macroState["submenue"] = submenue
+                character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
+                return
             else:
                 if character.reputation < self.requiredReputationForRank3:
                     text = """
@@ -425,7 +436,7 @@ The machines turn raw resources into usable goods.
 ---
 
 Ghuls are shown as @x.
-They are are important for production.
+They are important for production.
 You don't have to understand what they are doing,
 but try to not to disturb them.
 

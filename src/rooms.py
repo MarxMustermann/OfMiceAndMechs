@@ -675,6 +675,26 @@ class Room(src.saveing.Saveable):
                         convertedListeners[key] = value
             self.listeners = convertedListeners
 
+    def getCharactersOnPosition(self,position):
+        out = []
+        for character in self.characters:
+            if character.getPosition() == position:
+                out.append(character)
+        return out
+
+    def getEnemiesOnTile(self,character,pos=None):
+        if not pos:
+            pos = character.getBigPosition()
+
+        out = []
+        otherChars = self.characters
+        for otherChar in otherChars:
+            if character.faction == otherChar.faction:
+               continue
+            out.append(otherChar)
+
+        return out
+
     def getResistance(self):
         """
         get physical resistance against beeing moved

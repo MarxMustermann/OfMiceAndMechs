@@ -131,6 +131,13 @@ class Terrain(src.saveing.Saveable):
             result.append(room)
         return result
 
+    def getCharactersOnPosition(self,position):
+        out = []
+        for character in self.characters:
+            if character.getPosition() == position:
+                out.append(character)
+        return out
+
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
             return
@@ -709,8 +716,6 @@ class Terrain(src.saveing.Saveable):
             # move the character
             if not foundItem:
 
-                for item in stepOnActiveItems:
-                    item.doStepOnAction(char)
                 if direction == "north":
                     char.yPosition -= 1
                 elif direction == "south":
@@ -823,6 +828,8 @@ class Terrain(src.saveing.Saveable):
 
 
                 char.changed("moved", (char, direction))
+                for item in stepOnActiveItems:
+                    item.doStepOnAction(char)
 
             return foundItem
 
@@ -1254,6 +1261,21 @@ class Terrain(src.saveing.Saveable):
                 rooms.append(room)
         return rooms
 
+    def getEnemiesOnTile(self,character,pos=None):
+        if not pos:
+            pos = character.getBigPosition()
+
+        out = []
+        otherChars = self.characters
+        for otherChar in otherChars:
+            if character.faction == otherChar.faction:
+               continue
+            if not otherChar.getBigPosition() == pos:
+               continue
+            out.append(otherChar)
+
+        return out
+
     def render(self,size=None,coordinateOffset=(0,0)):
         """
         render the terrain and its contents
@@ -1430,14 +1452,10 @@ class Terrain(src.saveing.Saveable):
             )
 
         for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
-            for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar):
+            for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                 pos = marker[0]
-                pos = (src.gamestate.gamestate.mainChar.xPosition-2,src.gamestate.gamestate.mainChar.yPosition)
-                pos = (pos[0]+coordinateOffset[1],pos[1]+coordinateOffset[0])
-                try:
-                    display = chars[pos[1]][pos[0]]
-                except:
-                    continue
+                pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+                display = chars[pos[1]][pos[0]]
 
                 actionMeta = None
                 if isinstance(display,src.interaction.ActionMeta):

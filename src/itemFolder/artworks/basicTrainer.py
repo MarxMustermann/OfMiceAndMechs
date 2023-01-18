@@ -26,6 +26,7 @@ Use it by activating it."""
         if trainingType in character.skills:
             trainingType = None
             del character.registers["trainingFor"]
+            del character.registers["numTrainingFailed"]
         if trainingType:
             self.startTraining({"character":character,"skillType":trainingType})
             return
@@ -37,6 +38,7 @@ select the skill you want to train:
         random.shuffle(candidates)
 
         allCandidates = ["fighting","gathering","trap maintence","cleaning"]
+        random.shuffle(allCandidates)
         for candidate in allCandidates:
             if not candidate in candidates:
                 candidates.append(candidate)
@@ -60,20 +62,30 @@ select the skill you want to train:
         character.macroState["submenue"].followUp = {"container":self,"method":"startTraining","params":params}
 
     def getMatchingCandidates(self,character):
-        if character.baseDamage > 5:
-            candidates = ["fighting"]
-        else:
-            candidates = ["gathering","trap maintence","cleaning"]
-        return candidates
+        out = []
+        if character.baseDamage > 8:
+            out.extend(["fighting"])
+        if character.movementSpeed < 1:
+            out.extend(["gathering","trap maintence","cleaning"])
+        return out
 
     def startTraining(self,extraParams):
-    
+
         trainingType = extraParams.get("skillType")
         if not trainingType:
             return
 
         character = extraParams["character"]
 
+        if not character.registers.get("numTrainingFailed"):
+            character.registers["numTrainingFailed"] = 0
+        character.registers["numTrainingFailed"] +=1
+        if character.registers["numTrainingFailed"] > 3:
+            del character.registers["numTrainingFailed"]
+            del character.registers["trainingFor"]
+            character.addMessage("you failed the training too often - reseting")
+            return
+        character.registers["trainingFor"] = trainingType
         character.registers["trainingFor"] = trainingType
 
         params = {"character":character}
@@ -161,7 +173,7 @@ The scrap field is marked with a white ss on the mini map.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-        quest = src.quests.GatherScrap()
+        quest = src.quests.GatherScrap(lifetime=500)
         quest.assignToCharacter(character)
         quest.activate()
         character.quests.insert(0,quest)
@@ -221,7 +233,7 @@ You will fetch the lightning rod directly from the production line.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-        quest = src.quests.FetchItems(toCollect="LightningRod")
+        quest = src.quests.FetchItems(toCollect="LightningRod",lifetime=500)
         quest.assignToCharacter(character)
         quest.activate()
         character.quests.insert(0,quest)
@@ -278,7 +290,7 @@ This quality will have a big effect on your combat power.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-        quest = src.quests.Equip()
+        quest = src.quests.Equip(lifetime=500)
         quest.assignToCharacter(character)
         quest.activate()
         quest.solver(character)

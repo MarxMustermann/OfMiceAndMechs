@@ -266,6 +266,7 @@ Use the complex interaction to recharge the personel artwork
 
         self.container.addCharacter(char,5,6)
         char.runCommandString("********")
+        src.gamestate.gamestate.mainChar = char
 
         character.changed("got subordinate",(character,char,))
 

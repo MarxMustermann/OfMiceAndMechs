@@ -290,9 +290,6 @@ class Item(src.saveing.Saveable):
         if not selection:
             return
 
-        print("self")
-        print(self)
-
         # call the function set for the selection
         self.applyMap[selection](character)
 

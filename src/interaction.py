@@ -777,6 +777,7 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
             )
             if items:
                 items[0].apply(char)
+                char.runCommandString("~",nativeKey=True)
         elif key == "j":
             character = char
             if not character.jobOrders:
@@ -1963,6 +1964,7 @@ current registers
     return (1,key)
 
 def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    # do automated movement for the main character
     if key in ("u",):
         char.setInterrupt = True
         return
@@ -2525,18 +2527,6 @@ press key for advanced drop
             if char.room:
                 charState["submenue"] = RoomMenu(char.room)
 
-        # do automated movement for the main character
-        if key in (commandChars.advance, commandChars.autoAdvance):
-            char.showThinking = True
-            if len(char.quests):
-                charState["lastMoveAutomated"] = True
-                if not char.automated:
-                    char.runCommandString("~")
-                char.applysolver()
-            else:
-                pass
-            char.timeTaken += 0.3
-
         """
         # recalculate the questmarker since it could be tainted
         elif key not in (commandChars.pause,):
@@ -2724,8 +2714,21 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     if key in (commandChars.autoAdvance,):
         if not charState["ignoreNextAutomated"]:
             char.runCommandString(commandChars.autoAdvance)
+            return
         else:
             charState["ignoreNextAutomated"] = False
+
+    if key in (commandChars.advance, commandChars.autoAdvance):
+        char.showThinking = True
+        if len(char.quests):
+            charState["lastMoveAutomated"] = True
+            char.applysolver()
+            if not char.automated:
+                char.runCommandString("~")
+        else:
+            pass
+        char.timeTaken += 0.3
+
 
     # handle a keystroke while on map or in cinematic
     if not charState["submenue"]:
@@ -2801,6 +2804,7 @@ class SubMenu(src.saveing.Saveable):
         self.footerText = "press w / s to move selection up / down, press enter / j / k to select, press esc to exit"
         self.followUp = None
         self.done = False
+        self.tag = None
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
@@ -2966,16 +2970,6 @@ class SubMenu(src.saveing.Saveable):
                 self.options[str(counter)] = oldOptions[str(counter - 1)]
                 self.niceOptions[str(counter)] = oldNiceOptions[str(counter - 1)]
                 counter += 1
-
-        if key in (commandChars.autoAdvance, commandChars.advance):
-            if self.default is not None:
-                self.selection = self.default
-            else:
-                self.selection = list(self.options.values())[0]
-            self.options = None
-            if self.followUp:
-                self.followUp()
-            return True
 
         # show question
         out = "\n"
@@ -3473,13 +3467,26 @@ class QuestMenu(SubMenu):
 
         # move the marker that marks the selected quest
         if key == "w":
-            self.questCursor[0] -= 1
+            if self.questCursor[0] > 0:
+                self.questCursor[0] -= 1
         if key == "s":
-            self.questCursor[0] += 1
+            if self.questCursor[0] < len(character.quests)-1:
+                self.questCursor[0] += 1
         if key == "d":
-            self.questCursor.append(0)
+            baseList = self.char.quests
+            failed = False
+            for index in self.questCursor:
+                quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                except:
+                    baseList = None
+                    failed = True
+            if not failed:
+                self.questCursor.append(0)
         if key == "a":
-            self.questCursor.pop()
+            if len(self.questCursor) > 1:
+                self.questCursor.pop()
         """
         if self.questIndex < 0:
             self.questIndex = 0
@@ -3500,10 +3507,7 @@ class QuestMenu(SubMenu):
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
-                try:
-                    baseList = quest.subQuests
-                except:
-                    baseList = None
+                baseList = quest.subQuests
             quest.autoSolve = True
             self.char.runCommandString(["esc"])
         if key == "x":

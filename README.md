@@ -20,10 +20,12 @@ These quests should usually not be player focused, but generated from the world 
 
 ## state of the game
 
-While there has been a lot of work sunk into this project, i'm still working on piecing a prototype together and i'm nowhere near a complete game. 
-My goal is to get it into a state, where i can release a demo this year.
+A lot of work has been sunk into this project. Currently i'd estimate the game to be 25% done.
+A lot of things are still missing. I did get simple playable version to try out.
+That way i got some player feedback, which resulted in masive changes an lot of ploishing.
+I'm pretty proud of it by now and think i may reach demo this year.
 
-The main game can be started by running executeMe.py or executeMe.exe and pressing "new game" "play now" with your mouse.
-The main game is pretty chaotic and confusing right now, so i'm currently working on toning things down and make them more understandable.
+Check the website for downloads, more in depth information and texts.
+But most important:
 
-There are more modes available, that are gameplay experiments of some sorts and can be accessed by starting the game and selecting "start specific scenario".
+Try the game and send me some feedback!

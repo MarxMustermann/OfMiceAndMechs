@@ -184,6 +184,7 @@ gain reputation by completing quests and killing enemies.
                 submenue = src.interaction.TextMenu(text)
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
+                submenue.tag = "assimilation"
                 return
             else:
                 text = """
@@ -219,11 +220,11 @@ Additionally you recieve 2 health vials.
 
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
+            submenue.tag = "assimilation"
             return
 
         if character.rank == 4:
             cityleader = self.container.getItemsByType("PersonnelArtwork")[0].fetchCityleader()
-            print(cityleader)
             if cityleader:
                 text = """
 
@@ -238,6 +239,7 @@ Reapply after this changes.
                 params = {"character":character}
                 character.addMessage("----------------"+text+"-----------------")
                 submenue = src.interaction.TextMenu(text)
+                submenue.tag = "assimilation"
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
                 return
@@ -252,6 +254,7 @@ gain reputation by completing quests and killing enemies.
                     params = {"character":character}
                     character.addMessage("----------------"+text+"-----------------")
                     submenue = src.interaction.TextMenu(text)
+                    submenue.tag = "assimilation"
                     character.macroState["submenue"] = submenue
                     character.macroState["submenue"].followUp = {"container":self,"method":"selectDuties","params":params}
                     return
@@ -300,6 +303,7 @@ Additionally you recieve 2 health vials.
             character.addMessage("----------------"+text+"-----------------")
 
             submenue = src.interaction.TextMenu(text)
+            submenue.tag = "assimilation"
             character.macroState["submenue"] = submenue
             return
         
@@ -333,7 +337,7 @@ Showing short introduction.
 
 you are hereby rank 5.
 
-That means you can have up to 3 subordinates.
+That means you can have one subordinate.
 
 Use the personnel artwork to request a subordinate.
 
@@ -354,6 +358,7 @@ You now unlocked the personnel artwork (PA).
 
         elif extraParams["step"] == 1:
             text = """
+
 you are hereby rank 5.
 
 Continue to be useful.

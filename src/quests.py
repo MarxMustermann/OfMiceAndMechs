@@ -8456,9 +8456,6 @@ Press crtl-d to stop your character from moving.%s
         self.triggerCompletionCheck(extraInfo[0])
 
     def handleTileChange(self):
-        print(self)
-        print("self.path")
-        print(self.path)
         converedDirection = None
         if self.character.xPosition%15 == 0:
             converedDirection = (1,0)
@@ -8468,13 +8465,10 @@ Press crtl-d to stop your character from moving.%s
             converedDirection = (-1,0)
         if self.character.yPosition%15 in (13,14):
             converedDirection = (0,-1)
-        print(converedDirection)
         if self.path:
-            print(self.path)
             if converedDirection == self.path[-1]:
                 self.expectedPosition = None
                 self.path = self.path[:-1]
-                print(self.path)
                 return
             else:
                 self.path = None
@@ -8794,11 +8788,23 @@ Press crtl-d to stop your character from moving.%s
             return ".17.."
         return ".20.."
 
-class ReachOutStory(Quest):
+class ReachOutStory(MetaQuestSequence):
     def __init__(self, description="reach out to implant", creator=None):
         questList = []
-        super().__init__(questList, creator=creator)
-        self.description = description
+        super().__init__(creator=creator)
+        self.metaDescription = description
+
+    def solver(self,character):
+        self.triggerCompletionCheck()
+        self.generateSubquests()
+
+        if not self.subQuests:
+            command = self.getSolvingCommandString(character)
+            if command:
+                character.runCommandString(command)
+                return
+            
+        super().solver(character)
 
     def triggerCompletionCheck(self):
         return
@@ -8998,6 +9004,12 @@ class TakeOverBase(MetaQuestSequence):
         super().__init__()
         self.metaDescription = description
 
+    def getSolvingCommandString(self,character,dryRun=True):
+        if not self.subQuests:
+            if character.macroState["submenue"]:
+                return ["esc"]
+        return super().getSolvingCommandString(character,dryRun=dryRun)
+
     def generateTextDescription(self):
         return """
 There is no commander. This is a problem.
@@ -9124,7 +9136,10 @@ Activate the basic trainer in the command centre to start training a skill"""
 
     def getSolvingCommandString(self,character,dryRun=True):
         if not self.subQuests:
-            if character.macroState["submenue"]:
+            submenue = character.macroState.get("submenue")
+            if submenue:
+                if isinstance(submenue,src.interaction.SelectionMenu):
+                    return ["enter"]
                 return ["esc"]
             room = character.container
 
@@ -9138,13 +9153,13 @@ Activate the basic trainer in the command centre to start training a skill"""
                     continue
 
                 if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                    return list("Ja.")+["enter"]*10
+                    return "Ja"
                 if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                    return list("Jd.")+["enter"]*10
+                    return "Jd"
                 if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                    return list("Jw.")+["enter"]*10
+                    return "Jw"
                 if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                    return list("Js.")+["enter"]*10
+                    return "Js"
 
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
@@ -9158,6 +9173,7 @@ Activate the basic trainer in the command centre to start training a skill"""
         if not self.subQuests:
             command = self.getSolvingCommandString(character)
             if command:
+                print(command)
                 character.runCommandString(command)
                 return
             
@@ -9377,6 +9393,8 @@ The assimilator is in the command centre.
         return
 
     def getSolvingCommandString(self,character,dryRun=True):
+        if character.macroState.get("submenue"):
+            return ["esc"]
         if not self.subQuests:
             room = character.container
 
@@ -9390,13 +9408,13 @@ The assimilator is in the command centre.
                     continue
 
                 if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                    return list("Ja.")+["enter"]*10
+                    return list("Ja")
                 if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                    return list("Jd.")+["enter"]*10
+                    return list("Jd")
                 if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                    return list("Jw.")+["enter"]*10
+                    return list("Jw")
                 if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                    return list("Js.")+["enter"]*10
+                    return list("Js")
 
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
@@ -9491,6 +9509,8 @@ Remember to press ctrl-d if you lose control over your character.
         super().solver(character)
 
     def getSolvingCommandString(self,character,dryRun=True):
+        if character.macroState.get("submenue"):
+            return ["esc"]
         directions = {
 
                 (7,5,0):"south",
@@ -9520,7 +9540,7 @@ Remember to press ctrl-d if you lose control over your character.
 
         if not self.subQuests:
             if character.getPosition() == (6,7,0):
-                return list("Jw.")+["enter"]*2
+                return "Jw"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character,silent=False):
@@ -9619,6 +9639,13 @@ class ReachBase(MetaQuestSequence):
 
     def solver(self,character):
         self.generateSubquests(character)
+
+        if not self.subQuests:
+            command = self.getSolvingCommandString(character)
+            if command:
+                character.runCommandString(command)
+                return
+            
         super().solver(character)
 
     def generateTextDescription(self):
@@ -10599,6 +10626,8 @@ This quest ends after you do this."""%(self.targetPosition,)
         super().assignToCharacter(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+        if character.macroState.get("submenue"):
+            return ["esc"]
         if character.xPosition%15 == 0:
             return "d"
         if character.xPosition%15 == 14:

@@ -54,7 +54,7 @@ Activate it to trigger a exlosion.
         if not self.xPosition or not self.yPosition:
             return
 
-        offsets = [(0,0),(1,0),(-1,0),(0,1),(0,-1)]
+        offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         random.shuffle(offsets)
 
         delay = 1
@@ -71,6 +71,7 @@ Activate it to trigger a exlosion.
             self.container.addEvent(event)
 
             self.container.addAnimation(new.getPosition(),"explosion",5,{})
+
             for character in self.container.getCharactersOnPosition(self.getPosition(offset=offset)):
                 character.hurt(30,reason="hurt by an exploding land mine")
 

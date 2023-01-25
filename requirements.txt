@@ -1,3 +1,6 @@
 urwid
 pre-commit
 pygame
+soundfile
+tcod
+requests

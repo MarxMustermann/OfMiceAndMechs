@@ -2714,6 +2714,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     if key in (commandChars.autoAdvance,):
         if not charState["ignoreNextAutomated"]:
             char.runCommandString(commandChars.autoAdvance)
+            char.runCommandString(commandChars.advance)
             return
         else:
             charState["ignoreNextAutomated"] = False
@@ -8416,11 +8417,11 @@ def gameLoop(loop, user_data=None):
                         print("! nowhere char in multi chars !")
                         continue
                     if not (char.getTerrain() == src.gamestate.gamestate.mainChar.getTerrain()):
+                        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                         print(char.getTerrain())
                         print(src.gamestate.gamestate.mainChar.getTerrain())
                         print(char)
                         print(char.container)
-                        5/0
                     advanceChar(char)
                     pass
 

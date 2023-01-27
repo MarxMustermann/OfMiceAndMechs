@@ -4193,20 +4193,6 @@ class Siege2(BasicPhase):
         self.personnelArtwork = personnelArtwork
         self.personnelArtwork.faction = src.gamestate.gamestate.mainChar.faction
         mainRoom.addItem(personnelArtwork,(9,1,0))
-        leader = personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-        personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
-        leader.die(reason="natural causes")
 
         questArtwork = src.items.itemMap["QuestArtwork"]()
         mainRoom.addItem(questArtwork,(1,3,0))
@@ -4808,8 +4794,8 @@ class Siege2(BasicPhase):
 
             quest = src.quests.SecureTile(toSecure=(x,y,0))
             quest.autoSolve = True
-            quest.assignToCharacter(enemy)
             quest.activate()
+            quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
 
         self.numRounds += 1

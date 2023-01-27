@@ -24,8 +24,12 @@ class Command(src.items.Item):
         self.command = ""
         self.extraName = ""
         self.level = 1
+        self.repeat = False
 
         self.attributesToStore.extend(["command", "extraName", "level", "description"])
+
+    def configure(self, character):
+        self.repeat = not self.repeat
 
     def apply(self, character):
         """
@@ -123,6 +127,8 @@ class Command(src.items.Item):
             character: the character to run the command on
         """
 
+        if self.repeat:
+            character.runCommandString("j")
         character.runCommandString(self.command)
 
     def setPayload(self, command):

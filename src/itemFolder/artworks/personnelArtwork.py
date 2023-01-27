@@ -262,13 +262,13 @@ Use the complex interaction to recharge the personel artwork
         quest = src.quests.ProtectSuperior()
         quest.assignToCharacter(char)
         quest.activate()
+        quest.autoSolve = True
         char.quests.append(quest)
 
         self.container.addCharacter(char,5,6)
-        char.runCommandString("********")
-        src.gamestate.gamestate.mainChar = char
 
         character.changed("got subordinate",(character,char,))
+        char.runCommandString("********")
 
     def apply(self,character):
         if not character.rank or character.rank > 5:

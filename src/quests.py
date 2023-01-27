@@ -997,7 +997,7 @@ class ClearTerrain(MetaQuestSequence):
         self.metaDescription = description
         self.type = "ClearTerrain"
 
-    def generateTextDescription(self,character):
+    def generateTextDescription(self):
         text = """
 Clear the whole terrain from enemies.
 
@@ -3042,7 +3042,17 @@ Do your duty to gain more reputation.
 Try to avoid losing reputation due to beeing careless.
 
 """%(reputationForPromotion,self.character.reputation,)
+
         return out
+
+    def getSolvingCommandString(self,character,dryRun=True):
+        if not self.subQuests:
+            submenue = character.macroState.get("submenue")
+            if submenue:
+                if isinstance(submenue,src.interaction.SelectionMenu):
+                    return ["enter"]
+                return ["esc"]
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def awardnearbyKillReputation(self,extraInfo):
         if not extraInfo["deadChar"].faction == self.character.faction:
@@ -8456,6 +8466,11 @@ Press crtl-d to stop your character from moving.%s
         self.triggerCompletionCheck(extraInfo[0])
 
     def handleTileChange(self):
+        pos = self.character.getBigPosition()
+        if pos == self.lastPos:
+            return
+        self.lastPos = pos
+
         converedDirection = None
         if self.character.xPosition%15 == 0:
             converedDirection = (1,0)
@@ -8659,13 +8674,15 @@ Press crtl-d to stop your character from moving.%s
             tilePos = (character.xPosition//15,character.yPosition//15,0)
             charPos = (character.xPosition%15,character.yPosition%15,0)
 
-            path = self.path
             direction = None
+            path = self.path
+            """
             if self.expectedPosition and not (tilePos == self.expectedPosition):
                 if tilePos == self.lastPos:
                     direction = self.lastDirection
                 else:
                     path = None
+            """
 
             targetPos = (self.targetPosition[0],self.targetPosition[1],0)
             if not path and not direction:
@@ -8691,13 +8708,7 @@ Press crtl-d to stop your character from moving.%s
                     return "a"
 
             if not direction:
-                if not dryRun:
-                    direction = self.path.pop()
-                    self.expectedPosition = (tilePos[0]+direction[0],tilePos[1]+direction[1],0)
-                    self.lastPos = tilePos
-                    self.lastDirection = direction
-                else:
-                    direction = path[-1]
+                direction = path[-1]
 
             """
             if self.paranoid:
@@ -8885,7 +8896,7 @@ class GoToTileStory(GoToTile):
         return ["""
 Go one tile to the """+self.direction+""".
 The quest ends when you do that.
-This quest is part of the reaching the base.
+This quest is part of the quest to reach the base.
 
 Avoid fighting with the enemies, you are not equipped for it.
 Also avoid running into obstacles (""",item1.render(),""")
@@ -8896,11 +8907,7 @@ The playing field is divided into tiles by the blue borders.
 You can pass from tile to tile using the pathway in the middle.
 So go to the """+self.direction+""" side of this tile and press """+command+""" to switch tile.
 
-A suggested way to do this, is to press the following keystrokes:
-
-%s
-
-Those keystrokes are shown during normal gameplay on the left.
+Those suggested action on how to do this are shown during normal gameplay on the left.
 Following that suggestion should avoid the obstacles and most landmines.
 The suggestion doesn't avoid enemies and might even run into them.
 So use the suggested keystrokes as orientation and don't follow them blindly.
@@ -9111,6 +9118,7 @@ Activate the basic trainer in the command centre to start training a skill"""
             quest = GoHome(description="go back to command centre")
             self.addQuest(quest)
             quest.activate()
+            quest.assignToCharacter(character)
             return
 
         room = character.container
@@ -9125,12 +9133,13 @@ Activate the basic trainer in the command centre to start training a skill"""
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                 return
             quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to basic trainer  ")
-            quest.active = True
+            quest.activate()
             quest.assignToCharacter(character)
             self.addQuest(quest)
             return
         quest = GoHome(description="go to command centre")
         self.addQuest(quest)
+        quest.assignToCharacter(character)
         quest.activate()
         return
 
@@ -9393,9 +9402,13 @@ The assimilator is in the command centre.
         return
 
     def getSolvingCommandString(self,character,dryRun=True):
-        if character.macroState.get("submenue"):
-            return ["esc"]
         if not self.subQuests:
+            submenue = character.macroState.get("submenue")
+            if submenue:
+                if isinstance(submenue,src.interaction.SelectionMenu):
+                    return ["enter"]
+                return ["esc"]
+
             room = character.container
 
             if not isinstance(character.container, src.rooms.Room):
@@ -9852,17 +9865,8 @@ class Huntdown(MetaQuestSequence):
                 if abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                     newPos = targetPos
                 else:
-                    offsets = [(-1,0),(1,0),(0,-1),(0,1)]
-                    if charPos[0] == 1:
-                        offsets.remove((-1,0))
-                    if charPos[0] == 13:
-                        offsets.remove((1,0))
-                    if charPos[1] == 1:
-                        offsets.remove((0,-1))
-                    if charPos[1] == 13:
-                        offsets.remove((0,1))
-                    offset = random.choice(offsets)
-                    newPos = (charPos[0]+offset[0],charPos[1]+offset[1])
+                    self.fail()
+                    return
 
                 quest = GoToTile(paranoid=True)
                 self.addQuest(quest)
@@ -10216,9 +10220,15 @@ Press JH to auto heal.
         return True
 
     def getSolvingCommandString(self,character,dryRun=True):
+        if not dryRun:
+            self.triggerCompletionCheck(character)
         return "JH"
 
     def solver(self,character):
+        command = self.getSolvingCommandString(character,dryRun=False)
+        if command:
+            character.runCommandString(command)
+            return
         if self.triggerCompletionCheck(character):
             return
         return super().solver(character)
@@ -10475,7 +10485,7 @@ Try luring enemies into landmines or detonating some bombs."""
     def wrapedTriggerCompletionCheck2(self, extraInfo):
         self.triggerCompletionCheck(extraInfo["character"])
 
-    def handleTileChange(self):
+    def handleTileChange2(self):
         self.triggerCompletionCheck(self.character)
 
     def assignToCharacter(self, character):
@@ -10483,7 +10493,7 @@ Try luring enemies into landmines or detonating some bombs."""
             return
         
         self.startWatching(character,self.wrapedTriggerCompletionCheck2, "character died on tile")
-        self.startWatching(character,self.handleTileChange, "changedTile")
+        self.startWatching(character,self.handleTileChange2, "changedTile")
 
         super().assignToCharacter(character)
 
@@ -10705,6 +10715,7 @@ class GoHome(MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.baseDescription = description
         # save initial state and register
         self.type = "GoHome"
         self.addedSubQuests = False
@@ -10765,7 +10776,7 @@ Press crtl-d to stop your character from moving.
 
     def setHomeLocation(self,character):
         self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
-        self.metaDescription = "go home %s/%s"%(self.cityLocation[0],self.cityLocation[1],)
+        self.metaDescription = self.baseDescription+" %s/%s"%(self.cityLocation[0],self.cityLocation[1],)
 
     def generateSubquests(self,character):
         if not self.addedSubQuests:
@@ -11453,10 +11464,6 @@ Use the epoch artwork to fetch a task and complete it.
         pos = character.getBigPosition()
 
         if pos == (7,7,0):
-            quest = Heal()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
             if not character.getPosition() == (6,7,0):
                 quest = GoToPosition(targetPosition=(6,7,0), description="go to epoch artwork")
                 quest.activate()
@@ -11479,10 +11486,12 @@ Use the epoch artwork to fetch a task and complete it.
             if self.subQuests:
                 return
 
+        """
         command = self.getSolvingCommandString(character)
         if command:
             character.runCommandString(command)
             return
+        """
 
         super().solver(character)
 

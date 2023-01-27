@@ -67,6 +67,8 @@ Use it to generate a quest and assign it to you."""
                     quest.activate()
                     character.quests[0].addQuest(quest)
                 else:
+                    quest.assignToCharacter(character)
+                    quest.activate()
                     character.quests.insert(0,quest)
                 text = """
 Eliminate the siege guard.
@@ -78,6 +80,7 @@ The guards are shown as white <-
 Eliminate them to start breaking up the innermost siege ring.
 """
                 submenue = src.interaction.TextMenu(text)
+                character.addMessage(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
@@ -106,6 +109,7 @@ Eliminate them to build on breaking up the innermost siege ring.
                 character.addMessage("----------------"+text+"-----------------")
 
                 submenue = src.interaction.TextMenu(text)
+                character.addMessage(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
@@ -132,6 +136,7 @@ Clear the trap rooms to ensure that the bases first line of defence works.
             character.addMessage("----------------"+text+"-----------------")
 
             submenue = src.interaction.TextMenu(text)
+            character.addMessage(text)
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")
 
@@ -166,6 +171,7 @@ Go there and fetch the weapons and armor.
                 character.addMessage("----------------"+text+"-----------------")
 
                 submenue = src.interaction.TextMenu(text)
+                character.addMessage(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
@@ -211,6 +217,7 @@ Secure the farms on the position %s and loot the items there.
                 character.addMessage("----------------"+text+"-----------------")
 
                 submenue = src.interaction.TextMenu(text)
+                character.addMessage(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
@@ -239,6 +246,7 @@ Eliminate them to break up the second siege ring.
                 character.addMessage("----------------"+text+"-----------------")
 
                 submenue = src.interaction.TextMenu(text)
+                character.addMessage(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
@@ -298,6 +306,7 @@ So try to not be nearby at that point.
                 character.addMessage("----------------"+text+"-----------------")
 
                 submenue = src.interaction.TextMenu(text)
+                character.addMessage(text)
                 character.macroState["submenue"] = submenue
                 character.changed("got quest assigned")
                 return
@@ -347,6 +356,7 @@ kill all remaining enemies
 """
 
             character.addMessage("----------------"+text+"-----------------")
+            character.addMessage(text)
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")

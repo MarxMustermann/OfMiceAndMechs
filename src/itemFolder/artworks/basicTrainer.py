@@ -253,6 +253,8 @@ You are equiped and ready to fight.
 Fighting is simple.
 Just hit into enemies until they die.
 
+If that is too complex for you, you can use the implant to fight.
+
 Training complete.
 
 ---
@@ -265,6 +267,8 @@ Assuming an enemy is to the field west to you.
 press "a" to attack it.
 
 You can also press "m" to attack a nearby enemy.
+
+You can auto fight by pressing gg
 
 """
         character.addMessage("----------------"+text+"-----------------")

@@ -1,5 +1,5 @@
 # OfMiceAndMechs
-a to-be prototype for a game
+a prototype for a game
 
 * [install and run](INSTALL.md)
 * [credits](CREDITS.md)

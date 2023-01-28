@@ -203,8 +203,3 @@ if not args.urwid:
                 raise SystemExit()
     """
 
-# print death messages
-if gamestate.gamestate.mainChar.dead:
-    print("you died.")
-    if gamestate.gamestate.mainChar.deathReason:
-        print("Cause of death:\n" + gamestate.gamestate.mainChar.deathReason)

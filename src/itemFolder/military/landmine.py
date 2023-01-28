@@ -21,7 +21,6 @@ class LandMine(src.items.Item):
         super().__init__(display=src.canvas.displayChars.landmine)
 
     def pickUp(self, character):
-        print("picked up")
         if random.random() < 0.5:
             self.destroy()
         else:

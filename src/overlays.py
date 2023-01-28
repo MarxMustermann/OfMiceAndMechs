@@ -110,11 +110,7 @@ class NPCsOverlay(object):
                 continue
         
             if not "city" in character.faction or not character.charType in ("Character","Ghul",):
-                try:
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
-                except:
-                    print("failed to show char")
-                    print(character.yPosition-coordinateOffset[0],character.xPosition-coordinateOffset[1])
+                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
             else:
                 if viewChar == "rank":
                     if not isinstance(character,src.characters.Ghul):
@@ -318,8 +314,4 @@ class MainCharOverlay(object):
                   mainChar.xPosition < coordinateOffset[1] or mainChar.xPosition > coordinateOffset[1]+size[1] or
                   mainChar.yPosition < coordinateOffset[0] or mainChar.yPosition > coordinateOffset[0]+size[0]):
 
-            try:
-                chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-            except:
-                print("failed to show main char")
-                print(mainChar.yPosition-coordinateOffset[0],mainChar.xPosition-coordinateOffset[1])
+            chars[mainChar.yPosition-coordinateOffset[0]][mainChar.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")

@@ -428,7 +428,6 @@ class Item(src.saveing.Saveable):
         if self.listeners:
             for (key,value) in self.listeners.items():
                 if value:
-                    print(self.listeners)
                     1/0
                 else:
                     convertedListeners[key] = value
@@ -443,7 +442,6 @@ class Item(src.saveing.Saveable):
             if self.listeners:
                 for (key,value) in self.listeners.items():
                     if value:
-                        print(self.listeners)
                         1/0
                     else:
                         convertedListeners[key] = value

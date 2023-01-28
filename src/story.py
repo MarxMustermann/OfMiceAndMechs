@@ -326,7 +326,7 @@ class Challenge(BasicPhase):
         handle a player loose
         """
 
-        print("you lost the challenge (winning is not always possible)")
+        pass
 
 class OpenWorld(BasicPhase):
     """
@@ -496,7 +496,6 @@ class PrefabDesign(BasicPhase):
         self.floorPlan = None
 
     def advance(self):
-        print("advance story")
         self.askAction()
         return
 
@@ -551,8 +550,6 @@ the floorplan is available in basebuilder mode and main game now""")
             self.addFloorPlan()
         if extraParams["selection"] == "donateFloorPlan":
             self.donateFloorPlan()
-        print("run action")
-        print(extraParams)
 
     def donateFloorPlan(self):
         options = [("yes", "Yes"), ("no", "No")]
@@ -794,21 +791,18 @@ the floorplan is available in basebuilder mode and main game now""")
                 command = ""
                 lastPos = commandPos
                 for compactorPos in scrapCompactorPositions:
-                    #print("generating path for scrap compactor")
                     newPos = (compactorPos[0],compactorPos[1]-1,compactorPos[2])
                     (moveComand,path) = self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)
                     if path:
                         command += moveComand+"Js"
                         lastPos = newPos
                     else:
-                        #print("generating path from north failed, try south")
                         newPos = (compactorPos[0],compactorPos[1]+1,compactorPos[2])
                         (moveComand,path) = self.toBuildRoomClone3.getPathCommandTile(lastPos,newPos)
                         if path:
                             command += moveComand+"Jw"
                             lastPos = newPos
                         else:
-                            #print("generating path from north and south failed, giving up")
                             src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on %s"%(compactorPos,))
 
                 feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
@@ -2077,7 +2071,6 @@ class BackToTheRoots(BasicPhase):
         elif foundNPCs:
             src.gamestate.gamestate.mainChar = random.choice(foundNPCs)
         else:
-            print("you lost the game")
             1/0
 
         src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
@@ -2089,7 +2082,7 @@ class BackToTheRoots(BasicPhase):
         mainChar.personality["avoidItems"] = False
 
     def rewardNPCDirect(self,character):
-        print("rewarding npc")
+        pass
 
     def startNewEpoch(self):
         src.gamestate.gamestate.mainChar.addMessage("starting new epoch")
@@ -2108,10 +2101,7 @@ class BackToTheRoots(BasicPhase):
                 if room.xPosition == cityLocation[0] and room.yPosition == cityLocation[1]+1:
                     foundRoom = room
 
-            if foundRoom:
-                print("found room")
-            else:
-                print("did not find room")
+            if not foundRoom:
                 return
         
             missingItems = []
@@ -2140,17 +2130,12 @@ class BackToTheRoots(BasicPhase):
                     candidates.remove(candidate)
 
             if not candidates:
-                print("city %s won the game"%(cityLocation,))
                 cityLeader = self.leaders[cityLocation]
-                print("%s won the game"%(cityLeader.name,))
                 if cityLeader == src.gamestate.gamestate.mainChar:
-                    print("you won the game")
                     showText("you won the game. Congratulations. entering free play now")
                     showText("you won the game. Congratulations. entering free play now\n(in case the previous screen was bugged)")
                     src.gamestate.gamestate.mainChar.quests = []
                     src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
-                else:
-                    print("you lost the game")
                 itemToFetch = None
                 break
              
@@ -2308,7 +2293,6 @@ press space to continue"""%(reputationTree))
 
 
             if cityLeader.dead:
-                print("leader dead")
                 continue
         
             # spawn reward npcs
@@ -2422,13 +2406,11 @@ press space to continue"""%(reputationTree))
                     continue
 
                 """
-                print("full tree adding machine")
                 placedItem = False
                 offset = (1,1)
                 for y in (92,94,96,98,100,102):
                     for x in (107,109,111,113,115,117):
                         if currentTerrain.getItemByPosition((x,y,0)):
-                            print("skipping"
                             continue
                         dropType = random.choice(["Machine","ItemUpgrader","ScrapCompactor"])
                         item = src.items.itemMap[dropType]()
@@ -3934,8 +3916,6 @@ class Siege2(BasicPhase):
             seed: rng seed
         """
 
-        print("phase difficulty:")
-        print(difficulty)
         self.difficulty = difficulty
 
         mainChar = src.gamestate.gamestate.mainChar
@@ -4268,8 +4248,6 @@ class Siege2(BasicPhase):
             room.tag = "hive"
 
             hiveStyle = hiveStyles.pop()
-            print(pos)
-            print(hiveStyle)
             
             if hiveStyle == "empty":
                 pass
@@ -4329,7 +4307,6 @@ class Siege2(BasicPhase):
                 quest.activate()
                 enemy.quests.append(quest)
             else:
-                print(hiveStyle)
                 1/0
 
             neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
@@ -4403,10 +4380,8 @@ class Siege2(BasicPhase):
                 quest.activate()
                 enemy.quests.append(quest)
 
-        print("generate stuff")
         for x in range(1,14):
             for y in range(1,14):
-                print((x,y))
                 if (x,y) == (8,5):
                     continue
 
@@ -4658,8 +4633,6 @@ class Siege2(BasicPhase):
         self.wavecounterUI["offset"] = (82-len(text)//2,5)
 
         if src.gamestate.gamestate.mainChar.dead:
-            print("dead")
-            print(src.gamestate.gamestate.tick)
             src.gamestate.gamestate.uiElements = [
                     {"type":"text","offset":(15,10), "text":"you were killed while holding against the siege"},
                     {"type":"text","offset":(15,12), "text":"you suvived %s ticks. That means wave no %s got you"%(src.gamestate.gamestate.tick,src.gamestate.gamestate.tick//1000+1,)},
@@ -4671,7 +4644,6 @@ class Siege2(BasicPhase):
             currentTerrain.addEvent(event)
 
     def startRound(self):
-        print("start round")
         terrain = src.gamestate.gamestate.terrainMap[7][7]
 
         remainingEnemyCounter = 0
@@ -4691,7 +4663,6 @@ class Siege2(BasicPhase):
         while counter < remainingEnemyCounter:
             if terrain.rooms:
                 room = random.choice(terrain.rooms)
-                print("damage room")
                 room.damage()
             counter += 1
         """
@@ -4748,7 +4719,6 @@ class Siege2(BasicPhase):
         if self.difficulty == "medium":
             if self.numRounds == 1:
                 numMonsters = 0
-                print("skipped wave")
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(6,6)

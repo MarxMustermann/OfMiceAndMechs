@@ -592,11 +592,8 @@ class Canvas(object):
                             if src.interaction.debug:
                                 raise Exception("unable to scale image")
                     else:
-                        try:
-                            char = self.displayChars.indexedMapping[char]
-                            renderText(char[1], char[0].get_rgb_values()[0:3])
-                        except:
-                            print(char)
+                        char = self.displayChars.indexedMapping[char]
+                        renderText(char[1], char[0].get_rgb_values()[0:3])
                 elif isinstance(char, str):
                     renderText(char, (255, 255, 255))
                 else:

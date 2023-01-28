@@ -57,7 +57,6 @@ Use it to generate a quest and assign it to you."""
         return enemies
 
     def getQuest(self, character):
-        print(character.rank)
         if character.rank == 6:
             enemies = self.getEnemiesWithTag("blocker")
             if enemies:

@@ -245,7 +245,7 @@ class Quest(src.saveing.Saveable):
                 try:
                     listenFunction(info)
                 except:
-                    print(listenFunction)
+                    2/0
                 listenFunction(info)
 
     """
@@ -421,10 +421,6 @@ class Quest(src.saveing.Saveable):
 
         # flag self as completed
         if not self.completed:
-            if self.character and self.character == src.gamestate.gamestate.mainChar:
-                print("triggering callback")
-                print(self)
-                print(self.listeners)
             self.changed("completed",(self,))
         self.completed = True
 
@@ -1294,7 +1290,6 @@ Attack the hive guards while you are waiting for the work complete.
                     if pos in toSecure:
                         continue
                     toSecure.append(pos)
-                print(toSecure)
                 self.addQuest(SecureTiles(toSecure=toSecure))
             if numItemsOnFloor > 0:
                 self.addQuest(CleanTraps())
@@ -3615,8 +3610,6 @@ Use it to gain a new body guard."""
 
         numMaxPosSubordinates = self.character.getNumMaxPosSubordinates()
         numSubordinates = self.character.getNumSubordinates()
-        print(numMaxPosSubordinates)
-        print(numSubordinates)
         if not numMaxPosSubordinates > numSubordinates:
             self.postHandler()
             return True
@@ -9182,7 +9175,6 @@ Activate the basic trainer in the command centre to start training a skill"""
         if not self.subQuests:
             command = self.getSolvingCommandString(character)
             if command:
-                print(command)
                 character.runCommandString(command)
                 return
             
@@ -9774,7 +9766,6 @@ Press d now to move the quest cursor to select the sub quest.
         if not character:
             return
 
-        print(character.getBigPosition())
         if character.getBigPosition() == (7,6,0):
             self.postHandler()
             return
@@ -9796,10 +9787,7 @@ Press d now to move the quest cursor to select the sub quest.
         if self.completed:
             1/0
 
-        print("handle Tile Change")
-
         for quest in self.subQuests:
-            print("removing quest")
             quest.postHandler()
 
         self.subQuests = []
@@ -10446,7 +10434,6 @@ Secure the following tiles:
     def solver(self,character):
         self.triggerCompletionCheck(character)
         if not self.subQuests:
-            print(self.toSecure)
             targetPosition = self.toSecure.pop()
             quest = src.quests.SecureTile(toSecure=targetPosition,endWhenCleared=True)
             quest.assignToCharacter(character)

@@ -159,7 +159,6 @@ That should usually be around 10-20 ticks."""
                 checkAdd(char)
 
         random.shuffle(targets)
-        print(targets)
 
         counter = 0
         extraInfo["amount"] = int(extraInfo["amount"])
@@ -196,9 +195,7 @@ That should usually be around 10-20 ticks."""
                 quest.activate()
                 target.quests.insert(0,quest)
                 continue
-            print(target)
             quest = src.quests.questMap[extraInfo["questType"]]()
-            print(quest)
             if "coordinate" in extraInfo:
                 quest.setParameters({"targetPosition":extraInfo["coordinate"]})
             target.quests.insert(0,quest)
@@ -428,7 +425,7 @@ That should usually be around 10-20 ticks."""
             cityLeader.quests.insert(0,quest)
 
     def guardTileFromMap(self, extraInfo):
-        print("guardTileFromMap")
+        pass
 
     def questFromMap(self, extraInfo):
         self.assignQuest(extraInfo)

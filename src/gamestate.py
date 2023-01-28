@@ -165,7 +165,6 @@ class GameState(src.saveing.Saveable):
             file = open("gamestate/gamestate_%s"%(self.gameIndex,), 'wb')
 
             # dump information to that file
-            print(src.gamestate.gamestate.mainChar.specialRender)
             pickle.dump(self, file)
 
             # close the file
@@ -202,10 +201,8 @@ class GameState(src.saveing.Saveable):
         except:
             pass
 
-        try:
-            gamedump = json.dumps(state, indent=4, sort_keys=True)
-        except:
-            print(gamedump)
+        
+        gamedump = json.dumps(state, indent=4, sort_keys=True)
 
         # write the savefile
         with open("gamestate/gamestate_%s.json"%(self.gameIndex,), "w") as saveFile:
@@ -295,14 +292,12 @@ class GameState(src.saveing.Saveable):
         self.terrain = self.terrainMap[7][7]
         terrain = self.terrain
 
-        print("checking for terrain")
         if state["mainChar"]["terrain"]:
             for terrainLine in self.terrainMap:
                 for iterTerrain in terrainLine:
                     if iterTerrain.id == state["mainChar"]["terrain"]:
                         terrain = iterTerrain
                         self.terrain = iterTerrain
-                        print("found terrain")
 
         # load the main character
         # bad code: should be simplified

@@ -413,7 +413,6 @@ class Terrain(src.saveing.Saveable):
         if not char.terrain:
             return
         if not (char.xPosition and char.yPosition):
-            print("nopos")
             return
 
         char.container.addAnimation(char.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "  ")})
@@ -1180,9 +1179,6 @@ class Terrain(src.saveing.Saveable):
             item.zPosition = position[2]
 
             if position in self.itemsByCoordinate:
-                if len(self.itemsByCoordinate[position]) > 20:
-                    print("stack of %s items found on %s"%(len(self.itemsByCoordinate[position]),position,))
-
                 self.itemsByCoordinate[position].insert(0, item)
             else:
                 self.itemsByCoordinate[position] = [item]
@@ -1528,8 +1524,6 @@ class Terrain(src.saveing.Saveable):
                     animation[2] -= 10
                     if animationType == "hurt":
                         distance = int(5*(duration/extraInfo["health"])+1)
-                        if not extraInfo["mainChar"]:
-                            print(distance)
                         xDistance = random.randint(-distance,distance)
                         offset = (xDistance,random.choice([distance-abs(xDistance),-(distance-abs(xDistance))]))
                         newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])
@@ -2049,7 +2043,6 @@ class Terrain(src.saveing.Saveable):
             if self.listeners:
                 for (key,value) in self.listeners.items():
                     if value:
-                        print(self.listeners)
                         1/0
                     else:
                         convertedListeners[key] = value
@@ -2101,7 +2094,6 @@ class Terrain(src.saveing.Saveable):
         if self.listeners:
             for (key,value) in self.listeners.items():
                 if value:
-                    print(self.listeners)
                     1/0
                 else:
                     convertedListeners[key] = value

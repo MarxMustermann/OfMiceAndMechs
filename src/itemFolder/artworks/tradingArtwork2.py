@@ -205,7 +205,6 @@ class TradingArtwork2(src.items.Item):
         super().apply(character)
 
     def tradeManually(self, extraInfo):
-        print(extraInfo)
         self.doTrade(extraInfo["character"],extraInfo["trade"])
 
     def doTrade(self, character, trade):

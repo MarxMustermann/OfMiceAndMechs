@@ -580,7 +580,6 @@ class Room(src.saveing.Saveable):
         if self.listeners:
             for (key,value) in self.listeners.items():
                 if value:
-                    print(self.listeners)
                     1/0
                 else:
                     convertedListeners[key] = value
@@ -669,7 +668,6 @@ class Room(src.saveing.Saveable):
             if self.listeners:
                 for (key,value) in self.listeners.items():
                     if value:
-                        print(self.listeners)
                         1/0
                     else:
                         convertedListeners[key] = value
@@ -1184,8 +1182,6 @@ class Room(src.saveing.Saveable):
                         animation[2] -= 10
                         if animationType == "hurt":
                             distance = int(5*(duration/extraInfo["health"])+1)
-                            if not extraInfo["mainChar"]:
-                                print(distance)
                             xDistance = random.randint(-distance,distance)
                             offset = (xDistance,random.choice([distance-abs(xDistance),-(distance-abs(xDistance))]))
                             newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])

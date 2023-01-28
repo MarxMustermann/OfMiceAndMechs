@@ -260,11 +260,7 @@ class Saveable(object):
                 continue
 
             foundMissingItem = True
-            print(item)
         if foundMissingItem:
-            print("vars")
-            print(self)
-            print(vars(self))
             1/0
         return state
 
@@ -287,8 +283,6 @@ class Saveable(object):
                 setattr(self, tupleDictName, convertedDict)
 
         for tupleListName in self.tupleListsToStore:
-            print("--tupleList--")
-            print("o"+tupleListName)
             if tupleListName in state:
                 items = state[tupleListName]
                 if items == None:
@@ -300,7 +294,6 @@ class Saveable(object):
                     convertedList.append(tuple(item))
 
                 setattr(self, tupleListName, convertedList)
-                print(convertedList)
 
         for tupleName in self.tuplesToStore:
             if tupleName in state:

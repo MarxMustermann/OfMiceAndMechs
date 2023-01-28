@@ -498,9 +498,7 @@ class CityBuilder2(src.items.Item):
             return
 
         if params["type"] == "random":
-            print("selected prefab")
             params["type"] = random.randint(1,len(self.prefabs["ScrapToMetalBars"]))
-            print(params["type"])
 
         character = params["character"]
 

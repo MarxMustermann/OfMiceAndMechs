@@ -3154,13 +3154,10 @@ class ListActionMenu(SubMenu):
         
         if key in self.actions:
             option = list(self.options.items())[self.selectionIndex - 1][1]
-            print("running the call")
             callback = self.actions[key]["callback"]
             if not callback.get("params"):
                 callback["params"] = {}
             self.callIndirect(callback,extraParams={self.targetParamName:option})
-            print(callback)
-            print("ran the call")
             return True
 
         if not noRender:
@@ -3839,15 +3836,10 @@ class InputMenu(SubMenu):
 
 class MessagesMenu(SubMenu):
     def render(self,char):
-        try:
-            if self.scrollIndex:
-                return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))
-            else:
-                return "\n".join(reversed(char.messages[-46:]))
-        except:
-            print(char.messages)
-            1/0
-            return "error"
+        if self.scrollIndex:
+            return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))
+        else:
+            return "\n".join(reversed(char.messages[-46:]))
 
     type = "MessagesMenu"
 
@@ -3927,13 +3919,6 @@ class CharacterInfoMenu(SubMenu):
         text += "faction:    %s\n" % char.faction
         text += "health:     %s" % char.health + "\n"
         text += "max health: %s" % char.maxHealth + "\n"
-
-        print(char.listeners)
-        sumListeners = 0
-        for listener in char.listeners:
-            print("%s" % listener + ":"+str(len(char.listeners[listener])))
-            sumListeners += len(char.listeners[listener])
-        print("%s"%(sumListeners,))
 
         if hasattr(char,"rank"):
             text += "rank:       %s\n" % char.rank
@@ -4023,24 +4008,14 @@ class CreateQuestMenu(SubMenu):
             
             rawParameter = self.submenu.text
             if param["type"] == "int":
-                try:
-                    self.questParams[param["name"]] = int(rawParameter)
-                except:
-                    print(rawParameter)
-                    print(self.quest)
-                    return True
+                self.questParams[param["name"]] = int(rawParameter)
             elif param["type"] == "string":
                 self.questParams[param["name"]] = rawParameter
             elif param["type"] == "coordinate":
                 if rawParameter == ".":
                     self.questParams[param["name"]] = character.getBigPosition() 
                 else:
-                    try:
-                        self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0) 
-                    except:
-                        print(rawParameter)
-                        print(self.quest)
-                        return True
+                    self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0) 
             self.submenu = None
 
         if self.requiredParams == None:
@@ -4256,7 +4231,6 @@ class AdvancedQuestMenu(SubMenu):
             if key == "enter":
                 self.state = "parameter selection"
                 if not self.selection in src.quests.questMap:
-                    print(self.selection)
                     return True
                 self.quest = self.selection
                 self.selection = None
@@ -4635,8 +4609,6 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
                 except:
                     baseList = None
             txt.append(quest.generateTextDescription())
-            print(quest.watched)
-            print(quest.listeners)
             txt.append("\n")
             txt.append("\n")
 
@@ -5386,13 +5358,11 @@ class RoomMenu(SubMenu):
 
         if character and key in ("o",):
             homeRoom = character.getHomeRoom()
-            print(homeRoom)
             items = homeRoom.getItemsByType("OrderArtwork",needsBolted=True)
             if not items:
                 character.addMessage("order artwork not found")
                 return True
             item = items[0]
-            print(item)
             item.showMap(character)
             self.done = True
             return True
@@ -5763,9 +5733,6 @@ def keyboardListener(key, targetCharacter=None):
     state = char.macroState
 
     if key == "ctrl d":
-        print("abort abort abort")
-        print(char.guarding)
-        print(char.hasOwnAction)
         char.clearCommandString()
         state["loop"] = []
         state["replay"].clear()
@@ -6203,7 +6170,6 @@ def getTcodEvents():
                     )
 
                 if translatedKey == None:
-                    print(event)
                     continue
 
                 keyboardListener(translatedKey)
@@ -6212,7 +6178,6 @@ def getTcodEvents():
                 translatedKey = event.text
 
                 if translatedKey == None:
-                    print(event)
                     continue
 
                 keyboardListener(translatedKey)
@@ -6504,7 +6469,6 @@ def renderGameDisplay(renderChar=None):
                             pseudoDisplay[offsetY+extraY][offsetX+extraX] = char[1]
                             extraX += len(char[1])
                         else:
-                            print(offsetY+extraY,offsetX+extraX)
                             pseudoDisplay[offsetY+extraY][offsetX+extraX] = "XX"
                     extraY += 1
 
@@ -6691,7 +6655,6 @@ def renderGameDisplay(renderChar=None):
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 
     if renderChar:
-        print("did draw")
         sendNetworkDraw(pseudoDisplay)
     else:
         if shadowCharacter:
@@ -7108,7 +7071,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         events = tcod.event.get()
         for event in events:
-            print(event)
             if submenu == "gameslot":
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
@@ -7201,9 +7163,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
 
-                    print("in delete")
                     if key == tcod.event.KeySym.y:
-                        print("go delete stuff")
                         try:
                             # register the save
                             with open("gamestate/globalInfo.json", "r") as globalInfoFile:
@@ -7227,7 +7187,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if key == tcod.event.KeySym.ESCAPE:
                         raise SystemExit()
                     if key == tcod.event.KeySym.p:
-                        print("should start game")
                         startGame = True
                     if key == tcod.event.KeySym.g:
                         submenu = "gameslot"
@@ -8396,7 +8355,6 @@ def gameLoop(loop, user_data=None):
                 while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
                     renderGameDisplay()
                     shadowCharacter.macroState["commandKeyQueue"].pop()
-                    print("skipping idle")
 
             global continousOperation
             if (
@@ -8411,17 +8369,10 @@ def gameLoop(loop, user_data=None):
 
                 for char in multi_chars:
                     if char.dead:
-                        print("! dead char in multi chars !")
                         continue
                     if not char.container:
-                        print("! nowhere char in multi chars !")
                         continue
-                    if not (char.getTerrain() == src.gamestate.gamestate.mainChar.getTerrain()):
-                        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                        print(char.getTerrain())
-                        print(src.gamestate.gamestate.mainChar.getTerrain())
-                        print(char)
-                        print(char.container)
+                    # 5/0
                     advanceChar(char)
                     pass
 
@@ -8529,7 +8480,6 @@ def advanceChar(char):
                             while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
                                 renderGameDisplay()
                                 shadowCharacter.macroState["commandKeyQueue"].pop()
-                                print("skipping idle")
 
                             if not state["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"]:
                                 char.timeTaken += 1
@@ -8609,8 +8559,6 @@ def getNetworkedEvents():
         for command in raw["commands"]:
             keyboardListener(command,targetCharacter=shadowCharacter)
 
-    print("networkfetch ended")
-
 import gzip
 def sendNetworkDraw(pseudoDisplay):
     """
@@ -8621,8 +8569,6 @@ def sendNetworkDraw(pseudoDisplay):
         user_data: parameter that needs to be there but is not used
     """
     
-    print("network draw started")
-
     global s
     global conn
 
@@ -8641,7 +8587,6 @@ def sendNetworkDraw(pseudoDisplay):
             conn = None
 
     if not conn:
-        print("no connection")
         return
 
     import json
@@ -8656,11 +8601,9 @@ def sendNetworkDraw(pseudoDisplay):
     seperator = b"\n-*_*-\n"
     
     if seperator in data:
-        print("seperator in data => hard fuckup")
-        1/0
+        raise Exception("seperator in data => hard fuckup")
     conn.sendall(data+seperator)
 
-    print("network draw done")
     return
 
 def handleMultiplayerClients():

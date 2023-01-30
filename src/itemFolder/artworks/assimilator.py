@@ -45,6 +45,10 @@ Use it by activating it."""
             duty = "cleaning"
             dutytext = duty+": clean"
             out.append((duty,dutytext))
+        if "machine operation" in character.skills:
+            duty = "machine operation"
+            dutytext = duty+": operate machines"
+            out.append((duty,dutytext))
 
         if exclude:
             for option in out[:]:
@@ -139,7 +143,7 @@ Choose your tertiary duty:\n"""
         if character == src.gamestate.gamestate.mainChar:
             src.gamestate.gamestate.save()
 
-        if character.registers.get("gotMostBasicTraining") == None:
+        if character.rank == None and character.registers.get("gotMostBasicTraining") == None:
             character.registers["gotMostBasicTraining"] = True
             self.implantIntroduction({"character":character,"step":0})
             character.registers["HOMEx"] = 7
@@ -541,6 +545,9 @@ Train a skill and return to integrate into the bases systems
             if "cleaning" in character.skills:
                 duty = "cleaning"
                 dutytext = "clean"
+            if "machine operation" in character.skills:
+                duty = "machine operation"
+                dutytext = "machine operation"
             text = """
 You hereby have a rank of 6.
 You can request promotions here.

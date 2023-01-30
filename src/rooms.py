@@ -2322,6 +2322,34 @@ class TeleporterRoom(EmptyRoom):
         teleporterArtwork = src.items.itemMap["TeleporterArtwork"]()
         self.addItem(teleporterArtwork,(6,6,0))
 
+class TempleRoom(EmptyRoom):
+
+    chargeStrength = 1
+    faction = "Temple"
+    objType = "TempleRoom"
+
+    def __init__(
+        self,
+        xPosition=None,
+        yPosition=None,
+        offsetX=None,
+        offsetY=None,
+        desiredPosition=None,
+        bio=False,
+    ):
+        super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
+        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
+
+        self.staff = []
+        self.duties = []
+
+    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+        super().reconfigure(sizeX,sizeY,items,bio,doorPos)
+
+        for x in range(1,12):
+            for y in range(1,12):
+                self.walkingSpace.add((x,y,0))
+
 class TrapRoom(EmptyRoom):
 
     chargeStrength = 1
@@ -3092,6 +3120,7 @@ roomMap = {
     "ScrapStorage": ScrapStorage,
     "TrapRoom": TrapRoom,
     "TeleporterRoom": TeleporterRoom,
+    "TempleRoom": TempleRoom,
     "WorkshopRoom": WorkshopRoom,
     "ComandCenter": ComandCenter,
 }

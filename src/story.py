@@ -2738,7 +2738,7 @@ class Tutorials(BasicPhase):
             industry: how things are produced
             ghuls: how to use ghuls and commands
         """
-        options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("Siege2","start main game")]
+        options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("MainGame","start main game")]
         submenu = src.interaction.SelectionMenu(
             "what do you want to know more about?\n(press w/s to change selection. press enter/space/d/j to select)\n", options,
             targetParamName="tutorialToStart",
@@ -2765,8 +2765,8 @@ class Tutorials(BasicPhase):
             self.restartTutorial()
             return
 
-        if extraInfo["tutorialToStart"] == "Siege2":
-            nextPhase = Siege2()
+        if extraInfo["tutorialToStart"] == "MainGame":
+            nextPhase = MainGame()
             nextPhase.start()
             return
 
@@ -3894,7 +3894,7 @@ class BaseBuilding(BasicPhase):
         #cityBuilder.spawnRank5(src.gamestate.gamestate.mainChar)
         #cityBuilder.spawnRank6(src.gamestate.gamestate.mainChar)
 
-class Siege2(BasicPhase):
+class MainGame(BasicPhase):
     """
     """
 
@@ -3906,6 +3906,7 @@ class Siege2(BasicPhase):
             seed: rng seed
         """
 
+        self.preselection = None
         super().__init__("BaseBuilding2", seed=seed)
 
     def start(self, seed=0, difficulty=None):
@@ -3916,17 +3917,107 @@ class Siege2(BasicPhase):
             seed: rng seed
         """
 
-        self.difficulty = difficulty
+        self.epochLength = 15*15*15
+        self.factionCounter = 1
 
-        mainChar = src.gamestate.gamestate.mainChar
-        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
-        
+        self.difficulty = difficulty
+        self.productionBaseInfos = []
+        self.productionBaseInfos.append(self.createProductiondBase((7,6)))
+        self.productionBaseInfos.append(self.createProductiondBase((7,8)))
+
+        self.siegedBaseInfos = []
+        self.siegedBaseInfos.append(self.createSiegedBase((6,7)))
+        self.siegedBaseInfos.append(self.createSiegedBase((8,7)))
+
+        if self.preselection == "Siege":
+            self.activeStory = random.choice(self.siegedBaseInfos[0])
+        elif self.preselection == "Production":
+            self.activeStory = random.choice(self.productionBaseInfos[0])
+        else:
+            self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos)
+
+
+        mainChar = self.activeStory["mainChar"]
+        src.gamestate.gamestate.mainChar = mainChar
+
+        self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
+        src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
+
         questMenu = src.interaction.QuestMenu(mainChar)
         questMenu.sidebared = True
         mainChar.rememberedMenu.append(questMenu)
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
-        self.playerActivatedEpochArtwork = False
+
+        self.numRounds = 1
+        self.startRound()
+
+        self.checkDead()
+
+
+        containerQuest = src.quests.ReachOutStory()
+        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        containerQuest.activate()
+        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
+        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
+        
+
+        src.gamestate.gamestate.mainChar.messages = []
+
+        src.interaction.showRunIntro()
+        self.kickoff()
+
+    def kickoff(self):
+        if self.activeStory["type"] == "siegedBase":
+            self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
+        else:
+            self.kickoffProduction()
+
+    def kickoffProduction(self):
+        self.activeStory["playerActivatedEpochArtwork"] = False
+        self.activeStory["mainChar"].messages.insert(0,("""but see nothing that could directly harm you."""))
+
+        for character in self.activeStory["terrain"].characters[:]:
+            print(character)
+            if not character == self.activeStory["mainChar"]:
+                print("killedchar")
+                character.die(reason="sudden death")
+
+        for room in self.activeStory["terrain"].rooms:
+            if isinstance(room, src.rooms.TrapRoom):
+                room.electricalCharges = 0
+            for character in room.characters[:]:
+                print(character)
+                if not character == self.activeStory["mainChar"]:
+                    print("killedchar")
+                    character.die(reason="sudden death")
+            for item in room.itemsOnFloor[:]:
+                if item.bolted:
+                    continue
+                room.removeItem(item)
+
+    def advanceProductionBase(self,state):
+        """
+        personnelArtwork = state["personnelArtwork"]
+        mainChar = state["mainChar"]
+
+        amountNPCs = 2
+        personnelArtwork.charges += amountNPCs*2
+        for i in range(0,amountNPCs):
+            npc = personnelArtwork.spawnIndependentClone(mainChar)
+        """
+        pass
+
+    def createProductiondBase(self,pos):
+        mainChar = src.characters.Character()
+        mainChar.faction = "city #%s"%(self.factionCounter,)
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+        self.factionCounter += 1
+        productionBaseInfo = {"type":"productionBase"}
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[0]][pos[1]]
+        productionBaseInfo["terrain"] = currentTerrain
+        productionBaseInfo["mainChar"] = mainChar
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -3934,22 +4025,111 @@ class Siege2(BasicPhase):
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        self.epochLength = 15*15*15
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        mainRoom.storageRooms = []
+
+        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        productionBaseInfo["epochArtwork"] = epochArtwork
+        mainRoom.addItem(epochArtwork,(6,6,0))
+
+        cityBuilder = src.items.itemMap["CityBuilder2"]()
+        cityBuilder.architect = architect
+        mainRoom.addItem(cityBuilder,(7,1,0))
+        cityBuilder.registerRoom(mainRoom)
+
+        farm = cityBuilder.addFarmFromMap({"coordinate":(2,2),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm.addCharacter(
+            mainChar, 6,6
+        )
+        farm = cityBuilder.addFarmFromMap({"coordinate":(5,2),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(2,5),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(12,12),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(9,12),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(12,9),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(2,12),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(5,12),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(2,9),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(12,2),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(12,5),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        farm = cityBuilder.addFarmFromMap({"coordinate":(9,2),"character":mainChar},forceSpawn=10)
+        farm.tag = "farm"
+        
+        questArtwork = src.items.itemMap["QuestArtwork"]()
+        mainRoom.addItem(questArtwork,(1,3,0))
+
+        personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        productionBaseInfo["personnelArtwork"] = personnelArtwork
+        personnelArtwork.faction = mainChar.faction
+        mainRoom.addItem(personnelArtwork,(9,1,0))
+
+        assimilator = src.items.itemMap["Assimilator"]()
+        self.assimilator = assimilator
+        mainRoom.addItem(assimilator,(11,5,0))
+
+        basicTrainer = src.items.itemMap["BasicTrainer"]()
+        self.basicTrainer = basicTrainer
+        mainRoom.addItem(basicTrainer,(11,7,0))
+
+        cityBuilder.spawnCity(mainChar)
+
+        return productionBaseInfo
+
+    def createSiegedBase(self,pos):
+
+        siegedBaseInfo = {"type":"siegedBase"}
+
+        mainChar = src.characters.Character()
+        mainChar.faction = "city #%s"%(self.factionCounter,)
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+        self.factionCounter += 1
+        siegedBaseInfo["mainChar"] = mainChar
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[0]][pos[1]]
+        siegedBaseInfo["terrain"] = currentTerrain
+        
+        siegedBaseInfo["playerActivatedEpochArtwork"] = False
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.bolted = False
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
 
         numGuards = 10
         baseHealth = 100
+        siegedBaseInfo["baseMovementSpeed"] = 0.8
         self.baseMovementSpeed = 0.8
-        if difficulty == "easy":
+        if self.difficulty == "easy":
             numGuards = 5
             baseHealth = 25
-            self.baseMovementSpeed = 1.1
-        if difficulty == "difficult":
+            siegedBaseInfo["baseMovementSpeed"] = 1.1
+        if self.difficulty == "difficult":
             numGuards = 30
             baseHealth = 200
-            self.baseMovementSpeed = 0.5
+            siegedBaseInfo["baseMovementSpeed"] = 0.5
 
         # add basic set of abilities in openworld phase
-        src.gamestate.gamestate.mainChar.questsDone = [
+        mainChar.questsDone = [
             "NaiveMoveQuest",
             "MoveQuestMeta",
             "NaiveActivateQuest",
@@ -3965,7 +4145,7 @@ class Siege2(BasicPhase):
             "LeaveRoomQuest",
         ]
 
-        src.gamestate.gamestate.mainChar.solvers = [
+        mainChar.solvers = [
             "SurviveQuest",
             "Serve",
             "NaiveMoveQuest",
@@ -3982,20 +4162,20 @@ class Siege2(BasicPhase):
             "NaiveDropQuest",
             "DropQuestMeta",
         ]
-        src.gamestate.gamestate.mainChar.macroState["macros"]["j"] = ["J", "f"]
-        src.gamestate.gamestate.mainChar.faction = "city #456"
+        mainChar.macroState["macros"]["j"] = ["J", "f"]
+        mainChar.faction = "city #456"
 
-        src.gamestate.gamestate.mainChar.baseDamage = 10
-        src.gamestate.gamestate.mainChar.health = 100
-        src.gamestate.gamestate.mainChar.maxHealth = 100
-        if difficulty == "easy":
-            src.gamestate.gamestate.mainChar.baseDamage = 15
-            src.gamestate.gamestate.mainChar.health = 200
-            src.gamestate.gamestate.mainChar.maxHealth = 200
-        if difficulty == "difficult":
-            src.gamestate.gamestate.mainChar.baseDamage = 5
-            src.gamestate.gamestate.mainChar.health = 50
-            src.gamestate.gamestate.mainChar.maxHealth = 50
+        mainChar.baseDamage = 10
+        mainChar.health = 100
+        mainChar.maxHealth = 100
+        if self.difficulty == "easy":
+            mainChar.baseDamage = 15
+            mainChar.health = 200
+            mainChar.maxHealth = 200
+        if self.difficulty == "difficult":
+            mainChar.baseDamage = 5
+            mainChar.health = 50
+            mainChar.maxHealth = 50
 
         mainRoom = architect.doAddRoom(
                 {
@@ -4021,9 +4201,6 @@ class Siege2(BasicPhase):
                 None)
         spawnRoom.tag = "cargo"
 
-        src.gamestate.gamestate.mainChar.registers["HOMEx"] = spawnRoom.xPosition
-        src.gamestate.gamestate.mainChar.registers["HOMEy"] = spawnRoom.yPosition
-        
         for x in range(1,6):
             item = src.items.itemMap["Sword"]()
             spawnRoom.addItem(item,(x,1,0))
@@ -4059,7 +4236,7 @@ class Siege2(BasicPhase):
         #    spawnRoom.damage()
 
         spawnRoom.addCharacter(
-            src.gamestate.gamestate.mainChar, 6, 6
+            mainChar, 6, 6
         )
 
         mainChar.personality["autoFlee"] = False
@@ -4099,7 +4276,7 @@ class Siege2(BasicPhase):
             architect.doClearField(farmPos[0]+1,farmPos[1]+1)
             architect.doClearField(farmPos[0],farmPos[1]+1)
             architect.doClearField(farmPos[0]-1,farmPos[1]+1)
-            farm = cityBuilder.addFarmFromMap({"coordinate":farmPos,"character":src.gamestate.gamestate.mainChar},forceSpawn=10)
+            farm = cityBuilder.addFarmFromMap({"coordinate":farmPos,"character":mainChar},forceSpawn=10)
             for x in range(3,10):
                 gooFlask = src.items.itemMap["GooFlask"]()
                 gooFlask.uses = 100
@@ -4155,7 +4332,7 @@ class Siege2(BasicPhase):
         #addTreasureRoom((3,11),"Rod")
         #addTreasureRoom((11,3),"MetalBars")
 
-        cityBuilder.spawnCity(src.gamestate.gamestate.mainChar)
+        cityBuilder.spawnCity(mainChar)
 
         staffArtwork = src.items.itemMap["StaffArtwork"]()
         mainRoom.addItem(staffArtwork,(1,1,0))
@@ -4170,37 +4347,38 @@ class Siege2(BasicPhase):
         #mainRoom.addItem(produtionArtwork,(3,11,0))
 
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        siegedBaseInfo["personnelArtwork"] = personnelArtwork
         self.personnelArtwork = personnelArtwork
-        self.personnelArtwork.faction = src.gamestate.gamestate.mainChar.faction
+        personnelArtwork.faction = mainChar.faction
         mainRoom.addItem(personnelArtwork,(9,1,0))
 
         questArtwork = src.items.itemMap["QuestArtwork"]()
         mainRoom.addItem(questArtwork,(1,3,0))
 
-        orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"cancel","groupType":"all","amount":0})
-        orderArtwork.assignQuest({"character":src.gamestate.gamestate.mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
+        orderArtwork.assignQuest({"character":mainChar,"questType":"cancel","groupType":"all","amount":0})
+        orderArtwork.assignQuest({"character":mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
         
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
-        self.epochArtwork = epochArtwork
+        siegedBaseInfo["epochArtwork"] = epochArtwork
         mainRoom.addItem(epochArtwork,(6,6,0))
 
         healingEffect = 50
         healthIncrease = 20
         baseDamageEffect = 2
-        if difficulty == "easy":
+        if self.difficulty == "easy":
             healingEffect = 100
             healthIncrease = 30
             baseDamageEffect = 3
-        if difficulty == "difficult":
+        if self.difficulty == "difficult":
             healingEffect = 25
             healthIncrease = 10
             baseDamageEffect = 1
         assimilator = src.items.itemMap["Assimilator"](healingEffect=healingEffect,healthIncrease=healthIncrease,baseDamageEffect=baseDamageEffect)
-        self.assimilator = assimilator
+        siegedBaseInfo["assimilator"] = assimilator
         mainRoom.addItem(assimilator,(11,5,0))
 
         basicTrainer = src.items.itemMap["BasicTrainer"]()
-        self.basicTrainer = basicTrainer
+        siegedBaseInfo["basicTrainer"] = basicTrainer
         mainRoom.addItem(basicTrainer,(11,7,0))
 
         """
@@ -4224,7 +4402,7 @@ class Siege2(BasicPhase):
         #mainRoom.addItem(orderArtwork,(9,1,0))
 
         hiveStyles = ["simple","empty","attackHeavy","healthHeavy","single"]
-        if difficulty == "easy":
+        if self.difficulty == "easy":
             hiveStyles = ["empty","empty","empty","empty","empty"]
                 
         random.shuffle(hiveStyles)
@@ -4311,7 +4489,7 @@ class Siege2(BasicPhase):
 
             neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
             fillMaterial = ["EncrustedBush","Bush","Sprout2"]
-            if difficulty == "easy":
+            if self.difficulty == "easy":
                 fillMaterial = ["Bush","Sprout2","Sprout2"]
             for neighbour in neighbours:
                 architect.doFillWith(neighbour[0],neighbour[1],fillMaterial)
@@ -4328,7 +4506,7 @@ class Siege2(BasicPhase):
             if not farmPlot in tmpList:
                 continue
             fillMaterial = ["Bush","Bush","EncrustedBush"]
-            if difficulty == "easy":
+            if self.difficulty == "easy":
                 fillMaterial = ["Bush","Bush","Sprout2"]
             architect.doSpawnItems(farmPlot[0],farmPlot[1],fillMaterial,20,repeat=10)
 
@@ -4339,9 +4517,9 @@ class Siege2(BasicPhase):
             if farmPlot in hivePositions:
                 continue
             
-            if difficulty == "easy":
+            if self.difficulty == "easy":
                 amount = int(random.random()*4)+1
-            elif difficulty == "difficult":
+            elif self.difficulty == "difficult":
                 amount = int(random.random()*8)+3
             else:
                 amount = int(random.random()*6)+2
@@ -4423,7 +4601,7 @@ class Siege2(BasicPhase):
                     if currentTerrain.getItemByPosition((xPos,yPos,0)):
                         continue
 
-                    if not difficulty == "easy":
+                    if not self.difficulty == "easy":
                         if placedMines:
                             landmine = src.items.itemMap["LandMine"]()
                             currentTerrain.addItem(landmine,(xPos,yPos,0))
@@ -4433,10 +4611,10 @@ class Siege2(BasicPhase):
 
                 spawnChance = 0.2
                 maxNumSpawns = 3
-                if difficulty == "easy":
+                if self.difficulty == "easy":
                     spawnChance = 0.05
                     maxNumSpawns = 2
-                if difficulty == "difficult":
+                if self.difficulty == "difficult":
                     spawnChance = 0.5
                     maxNumSpawns = 5
 
@@ -4448,7 +4626,7 @@ class Siege2(BasicPhase):
                         enemy.godMode = True
                         enemy.health = 15
                         enemy.baseDamage = 12
-                        enemy.movementSpeed = self.baseMovementSpeed
+                        enemy.movementSpeed = siegedBaseInfo["baseMovementSpeed"]
                         pos = (15*x+random.randint(2,11), 15*y+random.randint(2,11))
                         currentTerrain.addCharacter(enemy, pos[0],pos[1])
                         enemy.specialDisplay = "ss"
@@ -4462,9 +4640,9 @@ class Siege2(BasicPhase):
                         enemy.quests.append(quest)
 
         numChasers = 12
-        if difficulty == "easy":
+        if self.difficulty == "easy":
             numChasers = 5
-        if difficulty == "difficult":
+        if self.difficulty == "difficult":
             numChasers = 20
 
         for i in range(1,numChasers):
@@ -4494,7 +4672,7 @@ class Siege2(BasicPhase):
             enemy.quests.append(quest)
             quest.activate()
 
-        if difficulty == "easy":
+        if self.difficulty == "easy":
             toClear = [(7,1),(7,13),(1,7),(13,7)]
             for bigX in range(0,14):
                 for bigY in range(0,14):
@@ -4502,7 +4680,7 @@ class Siege2(BasicPhase):
                         currentTerrain.removeItems(currentTerrain.getItemByPosition((bigX*15+x,bigY*15+y,0)))
 
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
-        if not difficulty == "easy":
+        if not self.difficulty == "easy":
             for i in range(1,10):
                 waypoints = waypoints[1:]+[waypoints[0]]
 
@@ -4510,7 +4688,7 @@ class Siege2(BasicPhase):
                 enemy.godMode = True
                 enemy.health = baseHealth*2
                 enemy.baseDamage = 7
-                enemy.movementSpeed = self.baseMovementSpeed
+                enemy.movementSpeed = siegedBaseInfo["baseMovementSpeed"]
                 currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
                 enemy.specialDisplay = "X-"
                 enemy.faction = "invader"
@@ -4531,7 +4709,7 @@ class Siege2(BasicPhase):
             enemy.health = baseHealth*2
             enemy.baseDamage = 7
             currentTerrain.addCharacter(enemy, 15*waypoints[0][0]+random.randint(2,11), 15*waypoints[0][1]+random.randint(2,11))
-            enemy.movementSpeed = self.baseMovementSpeed
+            enemy.movementSpeed = siegedBaseInfo["baseMovementSpeed"]
             enemy.specialDisplay = "X-"
             enemy.faction = "invader"
             enemy.tag = "patrol"
@@ -4542,88 +4720,113 @@ class Siege2(BasicPhase):
             quest.activate()
             enemy.quests.append(quest)
 
-        self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
-
-        self.numRounds = 1
-        self.startRound()
-
-        self.checkDead()
-
-        src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
-
-        containerQuest = src.quests.ReachOutStory()
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.activate()
-        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-        
-        src.gamestate.gamestate.mainChar.messages = []
-
-        src.interaction.showSiegeIntro()
+        return siegedBaseInfo
 
     def openedQuests(self):
+        if self.activeStory["type"] == "siegedBase":
+            self.openedQuestsSieged()
+            return
+        elif self.activeStory["type"] == "productionBase":
+            self.openedQuestsProduction()
+            return
+        1/0
 
-        if not isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):
-            containerQuest = src.quests.ReachBase()
-            src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+    def openedQuestsProduction(self):
+        mainChar = self.activeStory["mainChar"]
+        pos = mainChar.getBigPosition()
+        rooms = mainChar.getTerrain().getRoomByPosition(pos)
+        if not rooms:
+            storyText = """
+There is a base in the center of this terrain.
+Go there to find out what is happening here.
+So far nothing suggests trouble on the way.
+
+The entry of the base is located to the north of the base.
+Enter the base that way."""
+            containerQuest = src.quests.ReachBase(storyText=storyText)
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
-            containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachedBase"}
+            containerQuest.generateSubquests(mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        if src.gamestate.gamestate.mainChar.container.tag == "cargo":
-            offset = (-1,0,0)
-            direction = "west"
-            if src.gamestate.gamestate.mainChar.getBigPosition()[0] == 6:
-                offset = (0,-1,0)
-                direction = "north"
-            src.gamestate.gamestate.mainChar.addMessage("press z to see the movement keys")
-            src.gamestate.gamestate.mainChar.addMessage("leave room to the "+direction)
-            containerQuest = src.quests.EscapeAmbushStory(description="leave room",targetPosition=src.gamestate.gamestate.mainChar.getBigPosition(offset=offset),direction=direction)
-            src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        if rooms[0] == "farm":
+            offset = (1,0,0)
+            direction = "east"
+            mainChar.addMessage("press z to see the movement keys")
+            mainChar.addMessage("leave room to the "+direction)
+            containerQuest = src.quests.InitialLeaveRoomStory(description="leave room to the "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
-            containerQuest.endTrigger = {"container": self, "method": "escapedAmbush"}
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        if not self.playerActivatedEpochArtwork:
-            containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.epochArtwork)
-            src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        if not mainChar.registers.get("baseCommander"):
+            containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.activeStory["epochArtwork"])
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
-            containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "activatedEpochArtwork"}
+            containerQuest.generateSubquests(mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
         containerQuest = src.quests.TakeOverBase(description="join base")
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
+        mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()
-        containerQuest.generateSubquests(src.gamestate.gamestate.mainChar)
+        containerQuest.generateSubquests(mainChar)
 
-    def escapedAmbush(self):
+    def openedQuestsSieged(self):
+        mainChar = self.activeStory["mainChar"]
+        pos = mainChar.getBigPosition()
+        rooms = mainChar.getTerrain().getRoomByPosition(pos)
+        if not rooms:
+            containerQuest = src.quests.ReachBase()
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
+            containerQuest.activate()
+            containerQuest.generateSubquests(mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        if rooms[0].tag == "cargo":
+            offset = (-1,0,0)
+            direction = "west"
+            if mainChar.getBigPosition()[0] == 6:
+                offset = (0,-1,0)
+                direction = "north"
+            mainChar.addMessage("press z to see the movement keys")
+            mainChar.addMessage("flee room to the "+direction)
+            containerQuest = src.quests.EscapeAmbushStory(description="flee room "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
+            containerQuest.activate()
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        if not mainChar.registers.get("baseCommander"):
+            containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.activeStory["epochArtwork"])
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
+            containerQuest.activate()
+            containerQuest.generateSubquests(mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        containerQuest = src.quests.TakeOverBase(description="join base")
+        mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(mainChar)
+        containerQuest.activate()
+        containerQuest.generateSubquests(mainChar)
+
+    def reachImplant(self):
         containerQuest = src.quests.ReachOutStory()
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.activate()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        src.gamestate.gamestate.mainChar.addMessage("reach out to implant")
-        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
-
-    def reachedBase(self):
-        containerQuest = src.quests.ReachOutStory()
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.activate()
-        containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
-        src.gamestate.gamestate.save()
-
-    def activatedEpochArtwork(self):
-        self.playerActivatedEpochArtwork = True
-        containerQuest = src.quests.ReachOutStory()
-        src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        containerQuest.activate()
+        src.gamestate.gamestate.mainChar.addMessage("reach out to implant by pressing q")
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
     def checkDead(self):
@@ -4644,7 +4847,22 @@ class Siege2(BasicPhase):
             currentTerrain.addEvent(event)
 
     def startRound(self):
+        for productionBaseInfo in self.productionBaseInfos:
+            self.advanceProductionBase(productionBaseInfo)
+
+        for siegedBaseInfo in self.siegedBaseInfos:
+            self.advanceSiegedBase(siegedBaseInfo)
+
+        self.numRounds += 1
+        
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
+        event.setCallback({"container": self, "method": "startRound"})
+
         terrain = src.gamestate.gamestate.terrainMap[7][7]
+        terrain.addEvent(event)
+
+    def advanceSiegedBase(self,state):
+        terrain = state["terrain"]
 
         remainingEnemyCounter = 0
         for character in terrain.characters:
@@ -4675,8 +4893,8 @@ class Siege2(BasicPhase):
         """
 
         if not src.gamestate.gamestate.mainChar.rank == 3:
-            if not self.epochArtwork.leader or self.epochArtwork.leader.dead:
-                self.epochArtwork.dispenseEpochRewards({"rewardType":"autoSpend"})
+            if not state["epochArtwork"].leader or state["pochArtwork"].leader.dead:
+                state["epochArtwork"].dispenseEpochRewards({"rewardType":"autoSpend"})
 
         counter = 0
 
@@ -4687,9 +4905,6 @@ class Siege2(BasicPhase):
                     spawnerRooms.append(room)
         
         if not spawnerRooms:
-            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
-            event.setCallback({"container": self, "method": "startRound"})
-            terrain.addEvent(event)
             return
 
         monsterStartRoom = random.choice(spawnerRooms)
@@ -4756,7 +4971,7 @@ class Siege2(BasicPhase):
             enemy.godMode = True
             enemy.health = 15
             enemy.baseDamage = 12
-            enemy.movementSpeed = self.baseMovementSpeed
+            enemy.movementSpeed = state["baseMovementSpeed"]
             monsterStartRoom.addCharacter(enemy, 6, 6)
             enemy.specialDisplay = "ss"
             enemy.faction = "invader"
@@ -4768,11 +4983,10 @@ class Siege2(BasicPhase):
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
 
-        self.numRounds += 1
-        
-        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
-        event.setCallback({"container": self, "method": "startRound"})
-        terrain.addEvent(event)
+class MainGameSiege(MainGame):
+    def __init__(self, seed=0):
+        self.preselection = "Siege"
+        super().__init(seed)
 
 class Siege(BasicPhase):
     """
@@ -7083,7 +7297,7 @@ def registerPhases():
     phasesByName["Test"] = Testing_1
     phasesByName["Testing_1"] = Testing_1
     phasesByName["Siege"] = Siege
-    phasesByName["Siege2"] = Siege2
+    phasesByName["MainGame"] = MainGame
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream

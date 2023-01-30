@@ -26,28 +26,30 @@ class ScrapCompactor(src.items.Item):
 
         self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level","commands"])
 
-    def apply(self, character):
-        """
-        handle a character trying to use this item to produce a metal bar
-
-        Parameters:
-            character: the character trying to use the item
-        """
-
+    def readyToUse(self):
         if not self.container:
-            character.addMessage("this machine has be somewhere to be used")
-            return
+            return False
 
-        jobOrder = None
-        for item in character.inventory:
-            if (
-                item.type == "JobOrder"
-                and not item.done
-                and item.tasks[-1]["task"] == "produce"
-                and item.tasks[-1]["toProduce"] == "MetalBars"
-            ):
-                jobOrder = item
-                break
+        if not self.checkCoolDownEnded():
+            return False
+
+        (targetFull,itemList) = self.checkTargetFull()
+        if targetFull:
+            return False
+
+        scrap = self.checkForInputScrap()
+        if not scrap:
+            return False
+
+        return True
+
+    def render(self):
+        if self.readyToUse():
+            return "RC"
+        else:
+            return self.display
+
+    def checkForInputScrap(self):
 
         # fetch input scrap
         scrap = None
@@ -74,32 +76,18 @@ class ScrapCompactor(src.items.Item):
                     if isinstance(item, itemMap["Scrap"]):
                         scrap = item
                         break
+        return scrap
 
-        tick = src.gamestate.gamestate.tick
-        if self.container and isinstance(self.container,src.rooms.Room):
-            tick = self.container.timeIndex
-
+    def checkCoolDownEnded(self):
+        tick = self.getTick()
         if (
             tick < self.coolDownTimer + self.coolDown
             and not self.charges
         ):
-            character.addMessage(
-                "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (tick - self.coolDownTimer),)
-            )
-            self.runCommand("cooldown", character)
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-            return
+            return False
+        return True
 
-        # refuse to produce without resources
-        if not scrap:
-            character.addMessage("no scraps available")
-            self.runCommand("material Scrap", character)
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
-            return
-
+    def checkTargetFull(self):
         targetPos = (self.xPosition + 1, self.yPosition, self.zPosition)
         targetFull = False
         itemList = self.container.getItemByPosition(targetPos)
@@ -110,9 +98,55 @@ class ScrapCompactor(src.items.Item):
             if item.walkable == False:
                 targetFull = True
 
+        return (targetFull,itemList)
+
+    def getTick(self):
+        tick = src.gamestate.gamestate.tick
+        if self.container and isinstance(self.container,src.rooms.Room):
+            tick = self.container.timeIndex
+        return tick
+
+    def apply(self, character):
+        """
+        handle a character trying to use this item to produce a metal bar
+
+        Parameters:
+            character: the character trying to use the item
+        """
+
+        if not self.container:
+            character.addMessage("this machine has be somewhere to be used")
+            return
+
+        character.changed("operated machine",{"character":character,"machine":self})
+
+        jobOrder = None
+        for item in character.inventory:
+            if (
+                item.type == "JobOrder"
+                and not item.done
+                and item.tasks[-1]["task"] == "produce"
+                and item.tasks[-1]["toProduce"] == "MetalBars"
+            ):
+                jobOrder = item
+                break
+
+        tick = self.getTick()
+
+        if not self.checkCoolDownEnded():
+            character.addMessage(
+                "cooldown not reached. Wait %s ticks"
+                % (self.coolDown - (tick - self.coolDownTimer),)
+            )
+            self.runCommand("cooldown", character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+            return
+
+        (targetFull,itemList) = self.checkTargetFull()
         if targetFull:
             character.addMessage(
-                "the target area is full, the machine does not produce anything"
+                "the target area is full, the machine can not produce anything"
             )
             self.runCommand("targetFull", character)
             color = "#740"
@@ -120,6 +154,14 @@ class ScrapCompactor(src.items.Item):
                 color = "#f00"
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})
+            return
+
+        scrap = self.checkForInputScrap()
+        if not scrap:
+            character.addMessage("no scraps available")
+            self.runCommand("material Scrap", character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         if self.charges:

@@ -2657,6 +2657,71 @@ Trap rooms that need to be cleaned are:
             self.character.awardReputation(amount=self.reputationReward, reason=text)
         super().postHandler()
 
+class OperateMachine(MetaQuestSequence):
+    def __init__(self, description="operate machine", creator=None, targetPosition=None):
+        questList = []
+        super().__init__(questList, creator=creator)
+        self.metaDescription = description
+        self.targetPosition = targetPosition
+
+    def handleOperatedMachine(self, extraInfo):
+        if self.completed:
+            1/0
+
+        if extraInfo["machine"].getPosition() == self.targetPosition:
+            self.postHandler()
+            return
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+        
+        self.startWatching(character,self.handleOperatedMachine, "operated machine")
+
+        return super().assignToCharacter(character)
+
+    def generateTextDescription(self):
+        return """
+operate the machine on %s
+"""%(self.targetPosition,)
+
+    def triggerCompletionCheck(self):
+        return False
+
+    def generateSubquests(self,character=None):
+        if character == None:
+            return
+
+        pos = character.getPosition()
+        if not self.targetPosition in (pos,(pos[0],pos[1],pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
+            self.addQuest(GoToPosition(targetPosition=self.targetPosition,ignoreEndBlocked=True))
+            return
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        pos = character.getPosition()
+        if (pos[0],pos[1],pos[2]) == self.targetPosition:
+            return "j"
+        if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
+            return "Ja"
+        if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
+            return "Jd"
+        if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
+            return "Jw"
+        if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
+            return "Js"
+        super().getSolvingCommandString(character,dryRun=dryRun)
+
+    def solver(self, character):
+        if not self.subQuests:
+            self.generateSubquests(character)
+            if self.subQuests:
+                return
+        command = self.getSolvingCommandString(character,dryRun=False)
+        if command:
+            character.runCommandString(command)
+            return
+        super().solver(character)
+
 class ClearInventory(MetaQuestSequence):
     def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True):
         questList = []
@@ -3029,6 +3094,8 @@ Reputation is rewarded for picking up items from walkways.\n\n"""
             if self.character.rank == 4:
                 reputationForPromotion = 750
 
+            out += "%s"%(self.idleCounter,)
+
             out += """
 
 You need %s reputation for a promotion.
@@ -3107,7 +3174,11 @@ Try to avoid losing reputation due to beeing careless.
                 if inputSlot[0] == itemPos:
                     if inputSlot[1] == item.type:
                         if "resource gathering" in self.character.duties:
-                            self.character.awardReputation(5, reason="delivering an item into an input stockpile")
+                            items = room.getItemByPosition(itemPos)
+                            if len(items) == 1 and not (items[0].type == "Scrap" and items[0].amount > 1):
+                                self.character.awardReputation(20, reason="delivering an item into an empty input stockpile")
+                            else:
+                                self.character.awardReputation(5, reason="delivering an item into an input stockpile")
                     else:
                         self.character.revokeReputation(50, reason="delivering a wrong item into an input stockpile")
             
@@ -3217,10 +3288,16 @@ Try to avoid losing reputation due to beeing careless.
                 return
 
         if not isinstance(character.container,src.rooms.Room):
-            quest = GoHome()
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
+            if self.targetPosition:
+                quest = GoToTile(targetPosition=self.targetPosition)
+                self.addQuest(quest)
+                quest.activate()
+                quest.assignToCharacter(character)
+            else:
+                quest = GoHome()
+                self.addQuest(quest)
+                quest.activate()
+                quest.assignToCharacter(character)
             return
 
         room = character.container
@@ -3318,6 +3395,22 @@ Try to avoid losing reputation due to beeing careless.
                     quest.activate()
                     self.idleCounter = 0
                     return
+
+        if "machine operation" in character.duties:
+            items = room.itemsOnFloor[:]
+            random.shuffle(items)
+            for item in items:
+                if not item.bolted:
+                    continue
+                if not item.type in ("Machine","ScrapCompactor",):
+                    continue
+                if not item.readyToUse():
+                    continue
+                quest = OperateMachine(targetPosition=item.getPosition())
+                self.addQuest(quest)
+                quest.activate()
+                self.idleCounter = 0
+                return
 
         if "resource gathering" in character.duties:
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
@@ -3559,6 +3652,8 @@ Try to avoid losing reputation due to beeing careless.
                     quest.assignToCharacter(character)
                     quest.activate()
                     return
+
+        self.idleCounter += 5
         character.runCommandString("20.")
 
 class GetBodyGuards(MetaQuestSequence):
@@ -8829,6 +8924,34 @@ class ReachOutStory(MetaQuestSequence):
         else:
             return "q"
 
+class InitialLeaveRoomStory(GoToTile):
+    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
+        self.direction = direction
+
+    def generateTextDescription(self):
+        door = src.items.itemMap["Door"]()
+        door.open = True
+        return ["""
+You reach out to your implant and it answers.
+It whispers, but you understand clearly:
+
+You are safe. You are in a farming complex.
+Something is not right, though.
+It looks freshly seeded, but the ghul is not active.
+
+You can not stay here forever, so start moving and leave this room.
+Use the wasd movement keys to move.
+Pass through the door (""",door.render(),""") in the """+self.direction+""". 
+
+
+
+Right now you are looking at the quest menu.
+Detailed instructions and explainations are shown here.
+For now ignore the options below and press esc to continue.
+
+"""]
+
 class EscapeAmbushStory(GoToTile):
     def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
         super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
@@ -9460,6 +9583,12 @@ The assimilator is in the command centre.
 
         super().assignToCharacter(character)
 
+class BeUsefullOnTile(BeUsefull):
+    def getRequiredParameters(self):
+        parameters = super().getRequiredParameters()
+        parameters.append({"name":"targetPosition","type":"coordinate"})
+        return parameters
+
 class ActivateEpochArtwork(MetaQuestSequence):
     def __init__(self, description="activate epoch artwork",epochArtwork=None):
         questList = []
@@ -9469,6 +9598,11 @@ class ActivateEpochArtwork(MetaQuestSequence):
         self.epochArtwork = epochArtwork
 
         self.startWatching(epochArtwork,self.handleEpochrArtworkUsed, "epoch artwork used")
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((7,7,0),"target"))
+        return result
 
     def generateTextDescription(self):
         return """
@@ -9636,11 +9770,17 @@ Remember to press ctrl-d if you lose control over your character.
         super().assignToCharacter(character)
 
 class ReachBase(MetaQuestSequence):
-    def __init__(self, description="reach base"):
+    def __init__(self, description="reach base",storyText=None):
         super().__init__()
         self.metaDescription = description
         self.type = "ReachBase"
         self.lastDirection = None
+        self.storyText = storyText
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((7,6,0),"target"))
+        return result
 
     def solver(self,character):
         self.generateSubquests(character)
@@ -9656,7 +9796,12 @@ class ReachBase(MetaQuestSequence):
     def generateTextDescription(self):
 
         text = """
-You reach out to your implant and in answers:
+You reach out to your implant and in answers:"""
+        if self.storyText:
+            text += """
+%s"""%(self.storyText,)
+        else:
+            text += """
 
 There is a base in the north. The base belongs to your faction.
 Enter the base to get into the safety of the bases defences.
@@ -9665,8 +9810,9 @@ Enter the base to get into the safety of the bases defences.
 The entry is on the northern side of the base.
 You need to go around the base to actually enter it.
 You are likely getting chased and the area is overrun with insects.
-So you have to be careful.
+So you have to be careful."""
 
+        text += """
 
 You have to cross several tiles to find your path to the entry of the base.
 Currently the sugggested next step is to go one tile to the %s.
@@ -9733,6 +9879,13 @@ Press d now to move the quest cursor to select the sub quest.
                     direction = "east"
             else:
                 direction = "north"
+        elif pos[1] == 4:
+            if pos[0] < 7:
+                direction = "east"
+            elif pos[0] < 7:
+                direction = "west"
+            else:
+                direction = "south"
         else:
             if pos[0] < 4:
                 direction = "south"
@@ -11587,6 +11740,7 @@ questMap = {
     "GatherItems": GatherItems,
     "FetchItems": FetchItems,
     "BeUsefull": BeUsefull,
+    "BeUsefullOnTile": BeUsefullOnTile,
     "GrabSpecialItem": GrabSpecialItem,
     "StandAttention": StandAttention,
     "ProtectSuperior": ProtectSuperior,

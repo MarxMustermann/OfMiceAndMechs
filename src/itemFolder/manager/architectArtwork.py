@@ -1437,7 +1437,7 @@ class ArchitectArtwork(src.items.Item):
             task["offset"][0],
             task["offset"][1],
         )
-        if task["roomType"] in ("EmptyRoom","TrapRoom","WorkshopRoom","ComandCenter","StorageRoom","TeleporterRoom"):
+        if task["roomType"] in ("EmptyRoom","TrapRoom","WorkshopRoom","ComandCenter","StorageRoom","TeleporterRoom","TempleRoom"):
             entryPoints = []
             for part in task["doors"].split(" "):
                 entryPointX = int(part.split(",")[0])

@@ -490,6 +490,7 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
 
     def apply(self,character):
         self.changed("epoch artwork used",(character,))
+        character.registers["baseCommander"] = "No"
         if character.rank == None:
             self.getInitialReward1(character)
             return

@@ -360,7 +360,7 @@ class CityBuilder2(src.items.Item):
             character.addMessage("need to remove old city first")
 
         citylocation = self.container.getPosition()
-        backGuardRoom = self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
+        backGuardRoom = self.addTempleRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
         
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         #guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
@@ -547,10 +547,12 @@ class CityBuilder2(src.items.Item):
         if not room:
             return
         for offset in [(-1,0),(1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)]:
-            self.clearFieldFromMap({"coordinate":(params["coordinate"][0]+offset[0],params["coordinate"][1]+offset[1])})
+            pos = (params["coordinate"][0]+offset[0],params["coordinate"][1]+offset[1])
+            self.clearFieldFromMap({"coordinate":pos})
 
             item = src.items.itemMap["AutoFarmer"]()
-            self.container.container.addItem(item,((params["coordinate"][0]+offset[0])*15+7,(params["coordinate"][1]+offset[1])*15+7,0))
+            self.getTerrain().addItem(item,((params["coordinate"][0]+offset[0])*15+7,(params["coordinate"][1]+offset[1])*15+7,0))
+            self.getTerrain().minimapOverride[pos] = (src.interaction.urwid.AttrSpec("#030", "black"), ",.")
 
             for x in (2,4,10,12):
                 for y in (2,4,10,12):
@@ -563,7 +565,7 @@ class CityBuilder2(src.items.Item):
         floorPlan["buildSites"].append([(4,5,0),"ScratchPlate", {"commands":{"noscratch":"jjaKsdJsJs"},"settings":{"scratchThreashold":1000}}])
 
         item = src.items.itemMap["Command"]()
-        item.command = "15dj13wj13aj13aj13sj13sj13dj13dj13wj13adja"
+        item.command = "14dj13wj13aj13aj13sj13sj13dj13dj13wj13adja"
         item.bolted = True
         room.addItem(item,(6,6,0))
 
@@ -613,6 +615,11 @@ class CityBuilder2(src.items.Item):
 
     def addTrapRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TrapRoom")
+        room.faction = params["character"].faction
+        return room
+
+    def addTempleRoomFromMap(self,params):
+        room = self.addRoom(params["coordinate"],roomType="TempleRoom")
         room.faction = params["character"].faction
         return room
 

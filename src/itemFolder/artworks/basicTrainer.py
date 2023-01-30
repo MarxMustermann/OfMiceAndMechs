@@ -37,7 +37,7 @@ select the skill you want to train:
         candidates = self.getMatchingCandidates(character)
         random.shuffle(candidates)
 
-        allCandidates = ["fighting","gathering","trap maintence","cleaning"]
+        allCandidates = ["fighting","gathering","trap maintence","cleaning","machine operation"]
         random.shuffle(allCandidates)
         for candidate in allCandidates:
             if not candidate in candidates:
@@ -66,7 +66,7 @@ select the skill you want to train:
         if character.baseDamage > 8:
             out.extend(["fighting"])
         if character.movementSpeed < 1:
-            out.extend(["gathering","trap maintence","cleaning"])
+            out.extend(["gathering","trap maintence","cleaning","machine operation"])
         return out
 
     def startTraining(self,extraParams):
@@ -101,6 +101,9 @@ select the skill you want to train:
         elif trainingType == "cleaning":
             self.giveSkillCleaning(params)
 
+        elif trainingType == "machine operation":
+            self.giveSkillMachineOperation(params)
+
     def giveSkillCleaning(self,extraParams):
         character = extraParams["character"]
         text = """
@@ -126,6 +129,23 @@ This happens rarely but can interrupt a base.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("cleaning")
+
+    def giveSkillMachineOperation(self,extraParams):
+        character = extraParams["character"]
+        text = """
+
+Find machines, that are ready to be operated.
+Those machines will be highlighted in white.
+Operate those machines.
+Each machine should have a manual.
+Read the amnual to understand how the amchine works.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        character.learnSkill("machine operation")
 
     def checkScrap(self,extraParams):
         character = extraParams["character"]

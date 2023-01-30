@@ -3501,13 +3501,19 @@ class QuestMenu(SubMenu):
                 self.char.setPathToQuest(quest)
                 self.questCursor[0] = 0
                 self.char.runCommandString(["esc"])
-        if key == "c":
+        if key == "R":
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
                 baseList = quest.subQuests
             quest.autoSolve = True
             self.char.runCommandString(["esc"])
+        if key == "r":
+            pass
+        if key == "R":
+            pass
+        if key == "R":
+            pass
         if key == "x":
             baseList = self.char.quests
             for index in self.questCursor:
@@ -3549,7 +3555,10 @@ class QuestMenu(SubMenu):
                 "* press wasd to select quest\n",
                 "* press j to make selected quest the active quest\n",
                 "* press x to delete selected quest\n",
-                "* press c to mark the selected quest for auto completion\n",
+                "* press r to generate sub quests\n",
+                "* press R to delete sub quests\n",
+                "* press k to check if that quest has been completed\n",
+                "* press K to mark the selected quest for auto completion\n",
                 "\n",
             ]
         )
@@ -4209,8 +4218,10 @@ class AdvancedQuestMenu(SubMenu):
                     options.append(("SecureTile", "SecureTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
+                    options.append(("BeUsefullOnTile", "BeUsefullOnTile"))
                     options.append(("ProtectSuperior", "ProtectSuperior"))
                     options.append(("Equip", "Equip"))
+                    options.append(("Assimilate", "Assimilate"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection
@@ -6673,9 +6684,19 @@ def showMainMenu(args=None):
 
     scenarios = [
         (
-        "siege2",
+        "mainGame",
         "main game",
         "m",
+        ),
+        (
+        "mainGameSieged",
+        "main game (sieged/roguelike)",
+        "s",
+        ),
+        (
+        "mainGameProduction",
+        "main game (production/base management)",
+        "p",
         ),
         (
         "Tutorials",
@@ -6712,11 +6733,11 @@ def showMainMenu(args=None):
         #"dungeon",
         #"d",
         #),
-        (
-        "siege2",
-        "siege",
-        "s",
-        ),
+        #(
+        #"mainGame",
+        #"mainGame",
+        #"s",
+        #),
         #(
         #"Tour",
         #"(Tour)",
@@ -6729,7 +6750,7 @@ def showMainMenu(args=None):
         #),
     ]
 
-    selectedScenario = "siege2"
+    selectedScenario = "mainGame"
     difficulty = "easy"
 
     def fixRoomRender(render):
@@ -6916,9 +6937,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if selectedScenario == "siege":
                     terrain = "test"
                     phase = "Siege"
-                elif selectedScenario == "siege2":
+                elif selectedScenario == "mainGame":
                     terrain = "test"
-                    phase = "Siege2"
+                    phase = "MainGame"
+                elif selectedScenario == "Siege":
+                    terrain = "test"
+                    phase = "MainGame"
                 elif selectedScenario == "basebuilding":
                     terrain = "nothingness"
                     phase = "BaseBuilding"
@@ -7845,7 +7869,7 @@ FOLLOW YOUR ORDERS
             stage += 1
 
 
-def showSiegeIntro():
+def showRunIntro():
 
     def fixRoomRender(render):
         for row in render:
@@ -8172,10 +8196,8 @@ The room is filled with various items."""
                 text += """
 You recognise your hostile suroundings and
 try to remember how you got here ..."""
-                text2 = text+"""
-until the explosions fully wake you."""
                 if not addedText:
-                    src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text2)
+                    src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text)
                     addedText = True
 
             printUrwidToTcod(text,(133,6))

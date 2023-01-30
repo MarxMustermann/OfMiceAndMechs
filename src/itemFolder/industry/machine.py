@@ -123,14 +123,13 @@ Activate the machine to produce.
         """
 
 
-        if not self.xPosition:
+        if not self.container:
             character.addMessage("this machine has to be placed to be used")
             return
 
-        if (
-            src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown
-            and not self.charges
-        ):
+        character.changed("operated machine",{"character":character,"machine":self})
+
+        if not self.checkCoolDownEnded():
             character.addMessage(
                 "cooldown not reached. Wait %s ticks"
                 % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
@@ -140,79 +139,7 @@ Activate the machine to produce.
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             return
 
-        if self.toProduce in src.items.rawMaterialLookup:
-            resourcesNeeded = src.items.rawMaterialLookup[self.toProduce][:]
-        else:
-            resourcesNeeded = ["MetalBars"]
-
-        # gather a metal bar
-        resourcesFound = []
-        for item in self.container.getItemByPosition(
-            (self.xPosition - 1, self.yPosition, self.zPosition)
-        ):
-            if item.type in resourcesNeeded:
-                resourcesFound.append(item)
-                resourcesNeeded.remove(item.type)
-
-        for item in self.container.getItemByPosition(
-            (self.xPosition, self.yPosition-1, self.zPosition)
-        ):
-            if item.type in resourcesNeeded:
-                resourcesFound.append(item)
-                resourcesNeeded.remove(item.type)
-
-        for item in self.container.getItemByPosition(
-            (self.xPosition, self.yPosition+1, self.zPosition)
-        ):
-            if item.type in resourcesNeeded:
-                resourcesFound.append(item)
-                resourcesNeeded.remove(item.type)
-
-
-        # refuse production without resources
-        if resourcesNeeded:
-            character.addMessage(
-                "missing resources (place left/west or up/north or down/south):\n%s"
-                % (", ".join(resourcesNeeded))
-            )
-            self.runCommand("material %s" % (resourcesNeeded[0]), character)
-            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
-            return
-
-        targetFull = False
-        new = src.items.itemMap[self.toProduce]()
-
-        itemList = self.container.getItemByPosition(
-            (self.xPosition + 1, self.yPosition, self.zPosition)
-        )
-        if itemList:
-            if new.walkable:
-                if (
-                    len(
-                        self.container.getItemByPosition(
-                            (self.xPosition + 1, self.yPosition, self.zPosition)
-                        )
-                    )
-                    > 15
-                ):
-                    targetFull = True
-                for item in self.container.getItemByPosition(
-                    (self.xPosition + 1, self.yPosition, self.zPosition)
-                ):
-                    if item.walkable == False:
-                        targetFull = True
-            else:
-                if (
-                    len(
-                        self.container.getItemByPosition(
-                            (self.xPosition + 1, self.yPosition, self.zPosition)
-                        )
-                    )
-                    > 0
-                ):
-                    targetFull = True
-
+        targetFull = self.checkTargetFull()
         if targetFull:
             character.addMessage(
                 "the target area is full, the machine does not produce anything"
@@ -223,6 +150,18 @@ Activate the machine to produce.
                 color = "#f00"
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})
+            return
+
+        (resourcesNeeded,resourcesFound) = self.checkForInput()
+        # refuse production without resources
+        if resourcesNeeded:
+            character.addMessage(
+                "missing resources (place left/west or up/north or down/south):\n%s"
+                % (", ".join(resourcesNeeded))
+            )
+            self.runCommand("material %s" % (resourcesNeeded[0]), character)
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         if self.charges:
@@ -443,5 +382,104 @@ Currently the machine has no charges
         super().setState(state)
         self.setDescription()
         self.resetDisplay()
+
+    def checkCoolDownEnded(self):
+        if (
+            src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown
+            and not self.charges
+        ):
+            return False
+        return True
+
+    def checkTargetFull(self):
+        targetFull = False
+        new = src.items.itemMap[self.toProduce]()
+
+        itemList = self.container.getItemByPosition(
+            (self.xPosition + 1, self.yPosition, self.zPosition)
+        )
+        if itemList:
+            if new.walkable:
+                if (
+                    len(
+                        self.container.getItemByPosition(
+                            (self.xPosition + 1, self.yPosition, self.zPosition)
+                        )
+                    )
+                    > 15
+                ):
+                    targetFull = True
+                for item in self.container.getItemByPosition(
+                    (self.xPosition + 1, self.yPosition, self.zPosition)
+                ):
+                    if item.walkable == False:
+                        targetFull = True
+            else:
+                if (
+                    len(
+                        self.container.getItemByPosition(
+                            (self.xPosition + 1, self.yPosition, self.zPosition)
+                        )
+                    )
+                    > 0
+                ):
+                    targetFull = True
+        return targetFull
+
+    def checkForInput(self):
+
+        if self.toProduce in src.items.rawMaterialLookup:
+            resourcesNeeded = src.items.rawMaterialLookup[self.toProduce][:]
+        else:
+            resourcesNeeded = ["MetalBars"]
+
+        resourcesFound = []
+        for item in self.container.getItemByPosition(
+            (self.xPosition - 1, self.yPosition, self.zPosition)
+        ):
+            if item.type in resourcesNeeded:
+                resourcesFound.append(item)
+                resourcesNeeded.remove(item.type)
+
+        for item in self.container.getItemByPosition(
+            (self.xPosition, self.yPosition-1, self.zPosition)
+        ):
+            if item.type in resourcesNeeded:
+                resourcesFound.append(item)
+                resourcesNeeded.remove(item.type)
+
+        for item in self.container.getItemByPosition(
+            (self.xPosition, self.yPosition+1, self.zPosition)
+        ):
+            if item.type in resourcesNeeded:
+                resourcesFound.append(item)
+                resourcesNeeded.remove(item.type)
+
+        return (resourcesNeeded,resourcesFound)
+
+
+    def readyToUse(self):
+        if not self.container:
+            return False
+
+        if not self.checkCoolDownEnded():
+            return False
+
+        targetFull = self.checkTargetFull()
+        if targetFull:
+            return False
+
+        (resourcesNeeded,resourcesFound) = self.checkForInput()
+        if resourcesNeeded:
+            return False
+
+        return True
+
+
+    def render(self):
+        if self.readyToUse():
+            return "X\\"
+        else:
+            return self.display
 
 src.items.addType(Machine)

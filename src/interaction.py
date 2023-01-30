@@ -3509,8 +3509,12 @@ class QuestMenu(SubMenu):
             quest.autoSolve = True
             self.char.runCommandString(["esc"])
         if key == "r":
-            pass
-        if key == "R":
+            baseList = self.char.quests
+            for index in self.questCursor:
+                quest = baseList[index]
+            quest.generateSubquests(self.char)
+            print(quest)
+            7/0
             pass
         if key == "R":
             pass

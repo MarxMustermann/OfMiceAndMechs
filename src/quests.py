@@ -133,7 +133,7 @@ class Quest(src.saveing.Saveable):
     def getActiveQuests(self):
         return [self]
 
-    def generateSubquests(self):
+    def generateSubquests(self,character=None):
         pass
 
     def startWatching(self, target, callback, tag=""):
@@ -10247,6 +10247,18 @@ Remove guards from the tiles (7,4,0) and (6,5,0)"""
                     enemies.append(enemy)
 
         return enemies
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        positions = []
+        for guard in self.getGuards(character):
+            pos = guard.getBigPosition()
+            if not pos in positions:
+                positions.append(pos)
+
+        for pos in positions:
+            result.append((pos,"target"))
+        return result
 
 
 class KillPatrolers(MetaQuestSequence):

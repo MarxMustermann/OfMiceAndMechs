@@ -1451,7 +1451,10 @@ class Terrain(src.saveing.Saveable):
             for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                 pos = marker[0]
                 pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
-                display = chars[pos[1]][pos[0]]
+                try:
+                    display = chars[pos[1]][pos[0]]
+                except:
+                    continue
 
                 actionMeta = None
                 if isinstance(display,src.interaction.ActionMeta):

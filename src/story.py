@@ -4720,6 +4720,11 @@ class MainGame(BasicPhase):
             quest.activate()
             enemy.quests.append(quest)
 
+        self.personnelArtwork.charges += 6
+        npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
+        npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
+        npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
+
         return siegedBaseInfo
 
     def openedQuests(self):

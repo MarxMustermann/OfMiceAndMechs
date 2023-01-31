@@ -9,7 +9,7 @@ class KillGuards(src.quests.MetaQuestSequence):
         self.metaDescription = description
 
     def generateTextDescription(self):
-        return """
+        out = """
 Eliminate the siege guard.
 
 There is a group of enemies near entry of the base.
@@ -18,6 +18,14 @@ The guards are shown as white <-
 
 Eliminate them to start breaking up the innermost siege ring.
 Remove guards from the tiles (7,4,0) and (6,5,0)"""
+
+        if not self.subQuests:
+            out += """
+
+This quest currently has no sub quests.
+Press r to generate subquest and recive detailed instructions
+"""
+        return out
 
     def postHandler(self):
         if self.character == src.gamestate.gamestate.mainChar:

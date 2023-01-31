@@ -657,6 +657,8 @@ class MetaQuestSequence(Quest):
             return [self]
 
     def clearSubQuests(self):
+        for quest in self.subQuests:
+            quest.fail()
         self.subQuests = []
 
     """

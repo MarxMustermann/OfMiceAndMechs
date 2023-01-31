@@ -196,6 +196,19 @@ Try to avoid losing reputation due to beeing careless.
         return super().setParameters(parameters)
 
     def solver(self, character):
+        if not self.subQuests:
+            self.generateSubquests(character)
+            if self.subQuests:
+                return
+
+            command = self.getSolvingCommandString(character)
+            if command:
+                character.runCommandString(command)
+                return
+
+        super().solver(character)
+
+    def generateSubquests(self,character):
 
         for quest in self.subQuests:
             if quest.completed:
@@ -206,9 +219,6 @@ Try to avoid losing reputation due to beeing careless.
 
         if not character.container:
             return
-
-        if self.subQuests:
-            return super().solver(character)
 
         if character.rank == 6 and character.reputation >= 300:
             quest = src.quests.questMap["GetPromotion"](5)

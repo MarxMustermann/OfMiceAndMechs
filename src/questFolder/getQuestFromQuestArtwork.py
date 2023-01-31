@@ -44,14 +44,14 @@ Activate the quest artwork to fetch a quest."""
             if self.subQuests:
                 return
 
-            command = self.getSolvingCommandString(character)
+            command = self.getSolvingCommandString(character,dryRun=False)
             if command:
                 character.runCommandString(command)
                 return
 
         super().solver(character)
 
-    def getSolvingCommandString(self,character):
+    def getSolvingCommandString(self,character,dryRun=True):
         if self.subQuests:
             return
 
@@ -62,6 +62,7 @@ Activate the quest artwork to fetch a quest."""
             return ["esc"]
 
         if isinstance(character.container, src.rooms.Room):
+            room = character.container
             for item in room.itemsOnFloor:
                 if not item.bolted:
                     continue
@@ -78,7 +79,7 @@ Activate the quest artwork to fetch a quest."""
                     
                     if direction:
                         return list("J"+direction+".j")+3*["enter"]
-        return super().getSolvingCommandString(character)
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character):
         if self.subQuests:

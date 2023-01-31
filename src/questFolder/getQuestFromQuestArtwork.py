@@ -28,7 +28,7 @@ Activate the quest artwork to fetch a quest."""
         return False
 
     def handleQuestAssigned(self):
-        self.triggerCompletionCheck(self.character)
+        self.postHandler()
 
     def assignToCharacter(self, character):
         if self.character:
@@ -78,7 +78,7 @@ Activate the quest artwork to fetch a quest."""
                         direction = "s"
                     
                     if direction:
-                        return list("J"+direction+".j")+3*["enter"]
+                        return "J"+direction
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character):

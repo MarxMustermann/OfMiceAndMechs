@@ -2338,7 +2338,7 @@ class TempleRoom(EmptyRoom):
         bio=False,
     ):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
-        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
+        self.displayChar = (src.interaction.urwid.AttrSpec("#fff", "black"), "§§")
 
         self.staff = []
         self.duties = []
@@ -2366,7 +2366,7 @@ class TrapRoom(EmptyRoom):
         bio=False,
     ):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
-        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TR")
+        self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "/\\")
 
         self.attributesToStore.extend(["faction","chargeStrength","maxElectricalCharges","electricalCharges"])
         self.staff = []

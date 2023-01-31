@@ -204,6 +204,12 @@ Press r to generate subquest and recive detailed instructions
         return super().setParameters(parameters)
 
     def solver(self, character):
+        for quest in self.subQuests[:]:
+            print(quest)
+            print(quest.completed)
+            if quest.completed:
+                self.subQuests.remove(quest)
+
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:

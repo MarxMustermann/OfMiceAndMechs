@@ -29,6 +29,7 @@ Activate the quest artwork to fetch a quest."""
 
     def handleQuestAssigned(self):
         self.postHandler()
+        self.completed = True
 
     def assignToCharacter(self, character):
         if self.character:

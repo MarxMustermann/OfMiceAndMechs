@@ -3978,18 +3978,14 @@ class MainGame(BasicPhase):
         self.activeStory["mainChar"].messages.insert(0,("""but see nothing that could directly harm you."""))
 
         for character in self.activeStory["terrain"].characters[:]:
-            print(character)
             if not character == self.activeStory["mainChar"]:
-                print("killedchar")
                 character.die(reason="sudden death")
 
         for room in self.activeStory["terrain"].rooms:
             if isinstance(room, src.rooms.TrapRoom):
                 room.electricalCharges = 0
             for character in room.characters[:]:
-                print(character)
                 if not character == self.activeStory["mainChar"]:
-                    print("killedchar")
                     character.die(reason="sudden death")
             for item in room.itemsOnFloor[:]:
                 if item.bolted:

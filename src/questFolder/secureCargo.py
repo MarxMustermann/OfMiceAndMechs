@@ -19,11 +19,15 @@ Clear your inventory afterwards to complete this quest.
     def wrapedTriggerCompletionCheck(self, extraInfo):
         self.triggerCompletionCheck(self.character)
 
+    def droppedItem(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo[0])
+
     def assignToCharacter(self, character):
         if self.character:
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "removed item")
+        self.startWatching(character,self.droppedItem, "dropped")
 
         super().assignToCharacter(character)
 

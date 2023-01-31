@@ -3898,7 +3898,7 @@ class MainGame(BasicPhase):
     """
     """
 
-    def __init__(self, seed=0):
+    def __init__(self, seed=0,preselection=None):
         """
         set up super class
 
@@ -3906,7 +3906,7 @@ class MainGame(BasicPhase):
             seed: rng seed
         """
 
-        self.preselection = None
+        self.preselection = preselection
         super().__init__("BaseBuilding2", seed=seed)
 
     def start(self, seed=0, difficulty=None):
@@ -3930,9 +3930,9 @@ class MainGame(BasicPhase):
         self.siegedBaseInfos.append(self.createSiegedBase((8,7)))
 
         if self.preselection == "Siege":
-            self.activeStory = random.choice(self.siegedBaseInfos[0])
+            self.activeStory = random.choice(self.siegedBaseInfos)
         elif self.preselection == "Production":
-            self.activeStory = random.choice(self.productionBaseInfos[0])
+            self.activeStory = random.choice(self.productionBaseInfos)
         else:
             self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos)
 
@@ -4988,10 +4988,13 @@ Enter the base that way."""
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
 
-class MainGameSiege(MainGame):
+class MainGameSieged(MainGame):
     def __init__(self, seed=0):
-        self.preselection = "Siege"
-        super().__init(seed)
+        super().__init__(seed,"Siege")
+
+class MainGameProduction(MainGame):
+    def __init__(self, seed=0):
+        super().__init__(seed,"Production")
 
 class Siege(BasicPhase):
     """
@@ -7303,6 +7306,8 @@ def registerPhases():
     phasesByName["Testing_1"] = Testing_1
     phasesByName["Siege"] = Siege
     phasesByName["MainGame"] = MainGame
+    phasesByName["MainGameSieged"] = MainGameSieged
+    phasesByName["MainGameProduction"] = MainGameProduction
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream

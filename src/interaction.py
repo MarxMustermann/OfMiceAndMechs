@@ -6944,6 +6944,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 elif selectedScenario == "mainGame":
                     terrain = "test"
                     phase = "MainGame"
+                elif selectedScenario == "mainGameSieged":
+                    terrain = "test"
+                    phase = "MainGameSieged"
+                elif selectedScenario == "mainGameProduction":
+                    terrain = "test"
+                    phase = "MainGameProduction"
                 elif selectedScenario == "Siege":
                     terrain = "test"
                     phase = "MainGame"

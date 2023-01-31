@@ -7748,7 +7748,7 @@ You """+"."*stageState["substep"]+"""
                 ]
 
 
-                quest = src.quests.BeUsefull(targetPosition=(7,7,0))
+                quest = src.quests.questMap["BeUsefull"](targetPosition=(7,7,0))
                 quest.autoSolve = True
                 quest.assignToCharacter(npc)
                 quest.activate()

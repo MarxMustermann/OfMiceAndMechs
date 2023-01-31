@@ -61,7 +61,7 @@ Use it to generate a quest and assign it to you."""
             enemies = self.getEnemiesWithTag("blocker")
             if enemies:
                 quest = src.quests.questMap["KillGuards"]()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -90,7 +90,7 @@ Eliminate them to start breaking up the innermost siege ring.
                 quest.setParameters({"targetPosition":random.choice(enemies).getBigPosition()})
                 quest.assignToCharacter(character)
                 quest.activate()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -116,7 +116,7 @@ Eliminate them to build on breaking up the innermost siege ring.
             quest = src.quests.CleanTraps(reputationReward=50)
             quest.assignToCharacter(character)
             quest.activate()
-            if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+            if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                 quest.assignToCharacter(character)
                 quest.activate()
                 character.quests[0].addQuest(quest)
@@ -153,7 +153,7 @@ Clear the trap rooms to ensure that the bases first line of defence works.
 
             if foundItems:
                 quest = src.quests.questMap["SecureCargo"]()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -200,7 +200,7 @@ Go there and fetch the weapons and armor.
             if candidates:
                 room = random.choice(candidates)
                 quest = src.quests.questMap["LootRoom"](roomPos=room.getPosition(),description="loot farm")
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -225,7 +225,7 @@ Secure the farms on the position %s and loot the items there.
             enemies = self.getEnemiesWithTag("patrol")
             if enemies:
                 quest = src.quests.questMap["KillPatrolers"]()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -284,7 +284,7 @@ Eliminate them to break up the second siege ring.
                 quest.setParameters({"targetPosition":pos})
                 quest.assignToCharacter(character)
                 quest.activate()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -323,7 +323,7 @@ So try to not be nearby at that point.
 
             if foundSpawner:
                 quest = src.quests.questMap["DestroySpawners"]()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -344,7 +344,7 @@ Try to not get caught up in the waves.
 """
             else:
                 quest = src.quests.questMap["ClearTerrain"]()
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     quest.assignToCharacter(character)
                     quest.activate()
                     character.quests[0].addQuest(quest)
@@ -379,7 +379,7 @@ kill all remaining enemies
                 containerQuest.assignToCharacter(character)
                 containerQuest.activate()
 
-                if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                     character.quests[0].addQuest(containerQuest)
                 else:
                     character.quests.insert(0,containerQuest)
@@ -394,7 +394,7 @@ kill all remaining enemies
                     quest.assignToCharacter(character)
                     quest.activate()
 
-                    if character.quests and isinstance(character.quests[0],src.quests.BeUsefull):
+                    if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):
                         quest.assignToCharacter(character)
                         quest.activate()
                         character.quests[0].addQuest(quest)

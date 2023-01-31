@@ -603,7 +603,7 @@ Open the quest to get more information.
             quest.postHandler()
 
         character.quests = []
-        quest = src.quests.BeUsefull()
+        quest = src.quests.questMap["BeUsefull"]()
         quest.assignToCharacter(character)
         quest.activate()
         character.quests.append(quest)

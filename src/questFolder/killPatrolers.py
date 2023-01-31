@@ -1,10 +1,11 @@
 import src
 
 class KillPatrolers(src.quests.MetaQuestSequence):
+    type = "KillPatrolers"
+
     def __init__(self, description="kill patrolers"):
         super().__init__()
         self.metaDescription = description
-        self.type = "KillPatrolers"
 
     def generateTextDescription(self):
         return """

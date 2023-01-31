@@ -173,7 +173,7 @@ class StaffArtwork(src.items.Item):
             character.addMessage("no worker found")
             return
 
-        quest = src.quests.BeUsefull(targetPosition=extraInfo["coordinate"])
+        quest = src.quests.questMap["BeUsefull"](targetPosition=extraInfo["coordinate"])
         quest.activate()
         quest.assignToCharacter(foundWorker)
         foundWorker.quests.insert(0,quest)

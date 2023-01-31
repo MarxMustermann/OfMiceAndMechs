@@ -382,7 +382,6 @@ Use the complex interaction to recharge the personel artwork
             foundSubsubleader.subordinates.append(char)
             char.duties.extend(["resource gathering"])
 
-        print(src.quests.questMap)
         quest = src.quests.questMap["BeUsefull"]()
         quest.assignToCharacter(char)
         quest.activate()

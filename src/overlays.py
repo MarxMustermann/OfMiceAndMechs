@@ -114,7 +114,10 @@ class NPCsOverlay(object):
             else:
                 if viewChar == "rank":
                     if not isinstance(character,src.characters.Ghul):
-                        char = "@"+str(character.rank)
+                        if character.superior:
+                            char = "@s"
+                        else:
+                            char = "@"+str(character.rank)
                     else:
                         char = "@x"
                 elif viewChar == "health":
@@ -183,6 +186,8 @@ class NPCsOverlay(object):
                         color = "#480"
                     if character.rank == 6:
                         color = "#662"
+                    if character.superior:
+                        color = "#f62"
                 if viewColour == "health":
                     color = "#fff"
                     health = character.health//(character.maxHealth//14)
@@ -251,6 +256,8 @@ class NPCsOverlay(object):
                         color = "#0aa"
                     else:
                         color = "#3f3"
+                    if character.superior == src.gamestate.gamestate.mainChar:
+                        color = "#aa2"
                 if viewColour == "name":
                     colormap = {
                             "A":"#aaa",

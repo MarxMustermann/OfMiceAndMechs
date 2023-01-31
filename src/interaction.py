@@ -3501,7 +3501,7 @@ class QuestMenu(SubMenu):
                 self.char.setPathToQuest(quest)
                 self.questCursor[0] = 0
                 self.char.runCommandString(["esc"])
-        if key == "R":
+        if key == "K":
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
@@ -3513,11 +3513,11 @@ class QuestMenu(SubMenu):
             for index in self.questCursor:
                 quest = baseList[index]
             quest.generateSubquests(self.char)
-            print(quest)
-            7/0
-            pass
         if key == "R":
-            pass
+            baseList = self.char.quests
+            for index in self.questCursor:
+                quest = baseList[index]
+            quest.clearSubQuests()
         if key == "x":
             baseList = self.char.quests
             for index in self.questCursor:

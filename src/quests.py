@@ -11083,6 +11083,7 @@ questMap = {
     "GetBodyGuards": GetBodyGuards,
     "OperateMachine": OperateMachine,
     "ChangeJob": ChangeJob,
+    "GetPromotion": GetPromotion,
 }
 
 def addType(toRegister):

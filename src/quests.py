@@ -10812,6 +10812,7 @@ questMap = {
     "OperateMachine": OperateMachine,
     "ChangeJob": ChangeJob,
     "GetPromotion": GetPromotion,
+    "RunCommand":RunCommand,
 }
 
 def addType(toRegister):

@@ -74,6 +74,14 @@ Try to avoid losing reputation due to beeing careless.
 
 """%(reputationForPromotion,self.character.reputation,)
 
+        if not self.subQuests:
+            out += """
+
+This quest currently has no sub quests.
+Press r to generate subquest and recive detailed instructions
+"""
+
+
         return out
 
     def getSolvingCommandString(self,character,dryRun=True):

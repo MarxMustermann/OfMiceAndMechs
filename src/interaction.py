@@ -3518,6 +3518,7 @@ class QuestMenu(SubMenu):
             for index in self.questCursor:
                 quest = baseList[index]
             quest.clearSubQuests()
+            quest.generateSubquests(self.char)
         if key == "x":
             baseList = self.char.quests
             for index in self.questCursor:
@@ -3530,6 +3531,11 @@ class QuestMenu(SubMenu):
                 quest.fail()
             else:
                 self.char.addMessage("you cannot cancel that quest, because it was not self assigned")
+        if key == "X":
+            baseList = self.char.quests
+            for index in self.questCursor:
+                quest = baseList[index]
+            quest.clearSubQuests()
 
         # render the quests
         addition = ""
@@ -3559,8 +3565,9 @@ class QuestMenu(SubMenu):
                 "* press wasd to select quest\n",
                 "* press j to make selected quest the active quest\n",
                 "* press x to delete selected quest\n",
+                "* press X to delete sub quests\n",
                 "* press r to generate sub quests\n",
-                "* press R to delete sub quests\n",
+                "* press R to regenerate sub quests\n",
                 "* press k to check if that quest has been completed\n",
                 "* press K to mark the selected quest for auto completion\n",
                 "\n",

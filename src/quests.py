@@ -9506,99 +9506,6 @@ Press JH to auto heal.
             return
         return super().solver(character)
 
-class SecureCargo(MetaQuestSequence):
-    def __init__(self, description="secure cargo"):
-        super().__init__()
-        self.metaDescription = description
-        self.type = "SecureCargo"
-
-    def generateTextDescription(self):
-        return """
-The last delivery was ambushed.
-Weapons and armor were left.
-
-Go there and fetch those items.
-Clear your inventory afterwards to complete this quest.
-"""
-
-    def wrapedTriggerCompletionCheck(self, extraInfo):
-        self.triggerCompletionCheck(self.character)
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.wrapedTriggerCompletionCheck, "removed item")
-
-        super().assignToCharacter(character)
-
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return False
-
-        if len(character.inventory) > 0:
-            return False
-
-        if not self.getLoot(character):
-            character.awardReputation(amount=400, reason="secured the cargo")
-            self.postHandler()
-            return True
-
-        return False
-
-    def solver(self,character):
-        self.triggerCompletionCheck(character)
-
-        if not self.subQuests:
-            if not character.getFreeInventorySpace() > 0:
-                quest = ClearInventory(returnToTile=False)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
-            currentTerrain = character.getTerrain()
-            targetRooms = currentTerrain.getRoomsByTag("cargo")
-            if not targetRooms:
-                return
-            targetRoom = targetRooms[0]
-            if not character.container == targetRoom:
-                quest = SecureTile(toSecure=targetRoom.getPosition(),endWhenCleared=True)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
-            item = self.getLoot(character)
-            if not item:
-                if len(character.inventory) > 0:
-                    quest = ClearInventory(returnToTile=False)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    return
-
-            self.addQuest(RunCommand(command="k", description="pick up loot"))
-            quest = GoToPosition(targetPosition=item.getPosition(),description="go to loot")
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
-        super().solver(character)
-
-    def getLoot(self,character):
-        currentTerrain = character.getTerrain()
-        targetRooms = currentTerrain.getRoomsByTag("cargo")
-        if not targetRooms:
-            self.postHandler()
-            return
-        targetRoom = targetRooms[0]
-
-        for item in targetRoom.itemsOnFloor:
-            if item.type in ("Sword","Armor"):
-                return item
-
-        return None
-
 class LootRoom(MetaQuestSequence):
     def __init__(self, description="loot room", roomPos = None):
         super().__init__()
@@ -10897,7 +10804,6 @@ questMap = {
     "TakeOverBase": TakeOverBase,
     "Assimilate": Assimilate,
     "TrainSkill": TrainSkill,
-    "SecureCargo": SecureCargo,
     "LootRoom": LootRoom,
     "EpochQuest": EpochQuest,
     "ClearTile": ClearTile,

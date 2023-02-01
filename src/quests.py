@@ -1236,20 +1236,6 @@ Attack the hive guards while you are waiting for the work complete.
             return
         character.runCommandString("10.")
 
-class ManageBase(MetaQuestSequence):
-    def __init__(self, description="manage base", creator=None, command=None, lifetime=None):
-        questList = []
-        super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = description
-        self.type = "ManageBase"
-        self.shortCode = "M"
-
-        self.addQuest(src.quests.questMap["ReloadTraps"]())
-        self.addQuest(src.quests.questMap["CleanTraps"]())
-
-    def solver(self, character):
-        return super().solver(character)
-
 class DefendBase(MetaQuestSequence):
     def __init__(self, description="defend base", creator=None, command=None, lifetime=None):
         questList = []
@@ -4597,46 +4583,6 @@ patrol along a circular path
 """
 
 
-class PatrolQuest(MetaQuestSequence):
-    """
-    state initialization
-    """
-
-    def __init__(self, description="patrol", waypoints=None, lifetime=None):
-        questList = []
-        super().__init__(questList, lifetime=lifetime)
-
-        self.metaDescription = description
-
-        # save initial state and register
-        self.type = "PatrolQuest"
-        self.waypointIndex = 0
-        self.waypoints = waypoints
-
-    def triggerCompletionCheck(self, character=None):
-        return False
-
-    def solver(self,character):
-        if not self.subQuests:
-            """
-            quest = src.quests.questMap["GoToTile"](targetPosition=self.waypoints[self.waypointIndex],paranoid=True)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-            """
-
-            quest = src.quests.questMap["SecureTile"](toSecure=self.waypoints[self.waypointIndex],endWhenCleared=True)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-
-
-            self.waypointIndex += 1
-            if self.waypointIndex >= len(self.waypoints):
-                self.waypointIndex = 0
-            return
-        super().solver(character)
-
 """
 quest to examine the environment
 bad pattern: has no solver
@@ -6030,98 +5976,6 @@ Press JH to auto heal.
             return
         return super().solver(character)
 
-class LootRoom(MetaQuestSequence):
-    def __init__(self, description="loot room", roomPos = None):
-        super().__init__()
-        self.baseDescription = description
-        self.metaDescription = self.baseDescription+" %s"%(roomPos,)
-        self.type = "LootRoom"
-        self.roomPos = roomPos
-
-    def generateTextDescription(self):
-        return """
-Loot a room. Take everything that is valuable and bring it home.
-
-
-Go to the room on tile %s and take everything not bolted and valuable.
-Clear your inventory afterwards to complete the quest."""%(self.roomPos,)
-
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return False
-
-        if len(character.inventory) > 0:
-            return False
-
-        if not self.getLoot(character):
-            character.awardReputation(amount=200, reason="looted a room")
-            self.postHandler()
-            return True
-
-        return False
-
-    def solver(self,character):
-        self.triggerCompletionCheck(character)
-
-        if not self.subQuests:
-            if not character.getFreeInventorySpace() > 0:
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
-            if not character.getBigPosition() == self.roomPos:
-                if len(character.inventory) > 0:
-                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    return
-                quest = src.quests.questMap["SecureTile"](toSecure=self.roomPos,endWhenCleared=True)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
-            item = self.getLoot(character)
-            if not item:
-                if len(character.inventory) > 0:
-                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    return
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="k", description="pick up loot"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to loot"))
-            return
-
-        super().solver(character)
-
-    def getLoot(self,character):
-        currentTerrain = character.getTerrain()
-        rooms = currentTerrain.getRoomByPosition(self.roomPos)
-        if not rooms:
-            return None
-
-        for item in rooms[0].itemsOnFloor:
-            if item.type in ("Scrap",):
-                continue
-            if not item.bolted:
-                return item
-
-        return None
-
-    def droppedItem(self,extraInfo):
-        self.triggerCompletionCheck(extraInfo[0])
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.droppedItem, "dropped")
-
-        return super().assignToCharacter(character)
-
 class SecureTiles(MetaQuestSequence):
     def __init__(self, description="secure tiles", toSecure=None):
         super().__init__()
@@ -6780,12 +6634,6 @@ class EpochQuest(MetaQuestSequence):
         # save initial state and register
         self.type = "EpochQuest"
 
-        #quest = DefendBase()
-        #self.subQuests.append(quest)
-
-        #quest = ManageBase()
-        #self.subQuests.append(quest)
-
         quest = src.quests.questMap["DoEpochChallenge"]()
         self.subQuests.append(quest)
         quest.activate()
@@ -6841,10 +6689,9 @@ questMap = {
     #"MurderQuest": MurderQuest,
     #"FillPocketsQuest": FillPocketsQuest,
     #"LeaveRoomQuest": LeaveRoomQuest,
-    "PatrolQuest": PatrolQuest,
     #"ExamineQuest": ExamineQuest,
-    "FetchFurniture": FetchFurniture,
-    "PlaceFurniture": PlaceFurniture,
+    #"FetchFurniture": FetchFurniture,
+    #"PlaceFurniture": PlaceFurniture,
     #"ConstructRoom": ConstructRoom,
     #"TransportQuest": TransportQuest,
     #"StoreCargo": StoreCargo,
@@ -6870,12 +6717,10 @@ questMap = {
     #"LootRuin": LootRuin,
     #"DestroyRooms": DestroyRooms,
     #"DestroyRoom": DestroyRoom,
-    "ManageBase": ManageBase,
     "DefendBase": DefendBase,
     "BreakSiege": BreakSiege,
     "ControlBase": ControlBase,
     #"AssignStaff": AssignStaff,
-    "LootRoom": LootRoom,
     "EpochQuest": EpochQuest,
 }
 

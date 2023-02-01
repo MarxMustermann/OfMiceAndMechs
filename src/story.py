@@ -4690,7 +4690,7 @@ class MainGame(BasicPhase):
                 enemy.faction = "invader"
                 enemy.tag = "patrol"
 
-                quest = src.quests.PatrolQuest(waypoints=waypoints)
+                quest = src.quests.questMap["PatrolQuest"](waypoints=waypoints)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
@@ -4710,7 +4710,7 @@ class MainGame(BasicPhase):
             enemy.faction = "invader"
             enemy.tag = "patrol"
 
-            quest = src.quests.PatrolQuest(waypoints=waypoints)
+            quest = src.quests.questMap["PatrolQuest"](waypoints=waypoints)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()

@@ -47,4 +47,4 @@ This quest will end in %s ticks"""%(str(self.lifetimeEvent.tick - src.gamestate.
         else:
             return True
 
-src.quests.addType(RestockRoom)
+src.quests.addType(WaitQuest)

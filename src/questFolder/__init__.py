@@ -22,4 +22,5 @@ import src.questFolder.takeOverBase
 import src.questFolder.reachBase
 import src.questFolder.huntdown
 import src.questFolder.destroySpawner
+import src.questFolder.destroySpawners
 

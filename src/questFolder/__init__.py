@@ -25,4 +25,5 @@ import src.questFolder.destroySpawner
 import src.questFolder.destroySpawners
 import src.questFolder.getBodyGuards
 import src.questFolder.clearTile
+import src.questFolder.clearInventory
 

@@ -4656,13 +4656,13 @@ class MainGame(BasicPhase):
             enemy.quests.append(quest)
             quest.activate()
 
-            quest = src.quests.Huntdown(target=mainChar,lifetime=500)
+            quest = src.quests.questMap["Huntdown"](target=mainChar,lifetime=500)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
             quest.activate()
 
-            quest = src.quests.ClearTerrain()
+            quest = src.quests.questMap["ClearTerrain"]()
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)

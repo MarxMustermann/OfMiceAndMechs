@@ -4773,7 +4773,7 @@ Enter the base that way."""
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        containerQuest = src.quests.TakeOverBase(description="join base")
+        containerQuest = src.quests.questMap["TakeOverBase"](description="join base")
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()

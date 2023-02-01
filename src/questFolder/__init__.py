@@ -14,4 +14,5 @@ import src.questFolder.fetchItems
 import src.questFolder.doEpochChallenge
 import src.questFolder.reloadTraps
 import src.questFolder.activateEpochArtwork
+import src.questFolder.operateMachine
 

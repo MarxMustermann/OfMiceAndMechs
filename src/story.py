@@ -4752,7 +4752,7 @@ Enter the base that way."""
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        if rooms[0] == "farm":
+        if rooms[0].tag == "farm":
             offset = (1,0,0)
             direction = "east"
             mainChar.addMessage("press z to see the movement keys")

@@ -259,7 +259,13 @@ Use the complex interaction to recharge the personel artwork
         char.superior = character
         char.faction = character.faction
 
-        quest = src.quests.ProtectSuperior()
+        quest = src.quests.questMap["Equip"](lifetime=1000)
+        quest.assignToCharacter(char)
+        quest.activate()
+        quest.autoSolve = True
+        char.quests.append(quest)
+
+        quest = src.quests.questMap["ProtectSuperior"]()
         quest.assignToCharacter(char)
         quest.activate()
         quest.autoSolve = True

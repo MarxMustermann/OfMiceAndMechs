@@ -54,6 +54,36 @@ You need to reach rank %s to complete the quest.
             return True
         return False
 
+    def getSolvingCommandString(self,character,dryRun=True):
+        if self.subQuests:
+            return
+
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if isinstance(submenue,src.interaction.SelectionMenu):
+                return ["enter"]
+            return ["esc"]
+
+        room = character.container
+        if not isinstance(character.container, src.rooms.Room):
+            return
+
+        for item in room.itemsOnFloor:
+            if not item.bolted:
+                continue
+            if not item.type == "Assimilator":
+                continue
+
+            if item.getPosition() == (character.xPosition-1,character.yPosition,0):
+                return "Ja."
+            if item.getPosition() == (character.xPosition+1,character.yPosition,0):
+                return "Jd."
+            if item.getPosition() == (character.xPosition+1,character.yPosition,0):
+                return "Jw."
+            if item.getPosition() == (character.xPosition,character.yPosition+1,0):
+                return "Js."
+        return super().getSolvingCommandString(character,dryRun=dryRun)
+
     def generateSubquests(self,character):
         if not self.active:
             return
@@ -77,24 +107,12 @@ You need to reach rank %s to complete the quest.
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                quest = src.quests.questMap["RunCommand"](command=list("Ja.")+["enter"]*10,description="activate the assimilator \nby pressing")
-                quest.activate()
-                self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                quest = src.quest.questMap["RunCommand"](command=list("Jd.")+["enter"]*10,description="activate the assimilator \nby pressing")
-                quest.activate()
-                self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                quest = src.quest.questMap["RunCommand"](command=list("Jw.")+["enter"]*10,description="activate the assimilator \nby pressing")
-                quest.activate()
-                self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                quest = src.quests.questMap["RunCommand"](command=list("Js.")+["enter"]*10,description="activate the assimilator \nby pressing")
-                quest.activate()
-                self.addQuest(quest)
                 return
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
             quest.active = True
@@ -111,7 +129,15 @@ You need to reach rank %s to complete the quest.
         self.triggerCompletionCheck(character)
         if not self.subQuests:
             self.generateSubquests(character)
-            return
+
+            if self.subQuests:
+                return
+
+            command = self.getSolvingCommandString(character,dryRun=False)
+            if command:
+                character.runCommandString(command)
+                return
+
         super().solver(character)
 
 src.quests.addType(GetPromotion)

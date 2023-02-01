@@ -96,7 +96,7 @@ You need to reach rank %s to complete the quest.
                 quest.activate()
                 self.addQuest(quest)
                 return
-            quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
             quest.active = True
             quest.assignToCharacter(character)
             self.addQuest(quest)

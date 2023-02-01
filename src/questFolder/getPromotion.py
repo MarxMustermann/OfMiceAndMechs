@@ -30,17 +30,14 @@ You need to reach rank %s to complete the quest.
 
         return text
 
-    def wrapedTriggerCompletionCheck(self, extraInfo):
-        if not self.active:
-            return
-
-        self.triggerCompletionCheck(extraInfo)
+    def handleGotPromotion(self, extraInfo):
+        self.postHandler()
 
     def assignToCharacter(self, character):
         if self.character:
             return
 
-        self.startWatching(character,self.wrapedTriggerCompletionCheck, "got promotion")
+        self.startWatching(character,self.handleGotPromotion, "got promotion")
 
         super().assignToCharacter(character)
 

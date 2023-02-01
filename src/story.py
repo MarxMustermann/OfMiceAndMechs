@@ -1969,7 +1969,7 @@ class BackToTheRoots(BasicPhase):
         ]
 
         def waitNPC(char):
-            newQuest = src.quests.WaitQuest()
+            newQuest = src.quests.questMap["WaitQuest"]()
             for charQuest in char.quests:
                 if charQuest.type == "Serve":
                     charQuest.addQuest(newQuest)

@@ -35,4 +35,5 @@ import src.questFolder.cleanTraps
 import src.questFolder.protectSuperior
 import src.questFolder.restockRoom
 import src.questFolder.goToPosition
+import src.questFolder.waitQuest
 

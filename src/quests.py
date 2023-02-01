@@ -3132,53 +3132,6 @@ wait until quest is aborted
 """
 
 
-class WaitQuest(Quest):
-    """
-    straightforward state initialization
-    """
-
-    def __init__(
-        self, followUp=None, startCinematics=None, lifetime=None, creator=None
-    ):
-        self.description = "wait"
-        super().__init__(lifetime=lifetime, creator=creator)
-
-        # save initial state and register
-        self.type = "WaitQuest"
-
-    """
-    do nothing
-    """
-
-    def generateTextDescription(self):
-        text = """
-Wait."""
-        if self.lifetimeEvent:
-            text += """
-
-This quest will end in %s ticks"""%(str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick),) 
-        return text
-
-    def isPaused(self):
-        if not self.completed and self.active:
-            return True
-        return False
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        if self.lifetimeEvent:
-            return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
-        else:
-            return "10."
-
-    def solver(self, character):
-        commandString = self.getSolvingCommandString(character,dryRun=False)
-        self.randomSeed = random.random()
-        if commandString:
-            character.runCommandString(commandString)
-            return False
-        else:
-            return True
-
 
 """
 wait till something was deactivated
@@ -4015,7 +3968,7 @@ class CollectQuestMeta(MetaQuestSequence):
         super().__init__([], creator=creator)
         self.toFind = toFind
         self.activateQuest = None
-        self.waitQuest = WaitQuest(creator=self)
+        self.waitQuest = src.quests.questMap.["WaitQuest"](creator=self)
         questList = [self.waitQuest]
         # bad code: looping over one entry
         for quest in reversed(questList):
@@ -4495,7 +4448,7 @@ class FillPocketsQuest(MetaQuestSequence):
     def __init__(
         self, followUp=None, startCinematics=None, lifetime=None, creator=None
     ):
-        self.waitQuest = WaitQuest(creator=self)
+        self.waitQuest = src.quests.questMap["WaitQuest"](creator=self)
         questList = [self.waitQuest]
         self.collectQuest = None
         super().__init__(questList, creator=creator)
@@ -5740,7 +5693,7 @@ class HopperDuty(MetaQuestSequence):
         if self.actualQuest:
             self.addQuest(self.actualQuest, addFront=False)
         else:
-            self.addQuest(WaitQuest(lifetime=10, creator=self), addFront=False)
+            self.addQuest(src.quests.questMap["WaitQuest"](lifetime=10, creator=self), addFront=False)
 
 
 """
@@ -6872,7 +6825,6 @@ questMap = {
     #"NaiveActivateQuest": NaiveActivateQuest,
     #"NaiveDropQuest": NaiveDropQuest,
     #"NaiveDelegateQuest": NaiveDelegateQuest,
-    "WaitQuest": WaitQuest,
     #"WaitForDeactivationQuest": WaitForDeactivationQuest,
     #"WaitForQuestCompletion": WaitForQuestCompletion,
     #"DrinkQuest": DrinkQuest,
@@ -6904,14 +6856,14 @@ questMap = {
     #"FillGrowthTankMeta": FillGrowthTankMeta,
     #"HopperDuty": HopperDuty,
     #"ClearRubble": ClearRubble,
-    "RoomDuty": RoomDuty,
+    #"RoomDuty": RoomDuty,
     #"Serve": Serve,
     "DummyQuest": DummyQuest,
     #"ObtainSpecialItem": ObtainSpecialItem,
     #"ObtainAllSpecialItems": ObtainAllSpecialItems,
     #"EnterEnemyCity": EnterEnemyCity,
     #"DeliverSpecialItem": DeliverSpecialItem,
-    "GatherItems": GatherItems,
+    #"GatherItems": GatherItems,
     #"GrabSpecialItem": GrabSpecialItem,
     #"StandAttention": StandAttention,
     #"TeleportToTerrain": TeleportToTerrain,

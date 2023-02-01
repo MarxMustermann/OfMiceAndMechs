@@ -253,7 +253,7 @@ You will fetch the lightning rod directly from the production line.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-        quest = src.quests.FetchItems(toCollect="LightningRod",lifetime=500)
+        quest = src.quests.questMap["FetchItems"](toCollect="LightningRod",lifetime=500)
         quest.assignToCharacter(character)
         quest.activate()
         character.quests.insert(0,quest)

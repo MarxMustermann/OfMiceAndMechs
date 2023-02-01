@@ -5,3 +5,4 @@ import src.questFolder.killGuards
 import src.questFolder.secureCargo
 import src.questFolder.getQuestFromQuestArtwork
 import src.questFolder.getPromotion
+import src.questFolder.fetchItems

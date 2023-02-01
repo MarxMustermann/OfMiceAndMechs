@@ -1033,7 +1033,7 @@ your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
 
-            quest = src.quests.FetchItems(targetPosition=(room.xPosition,room.yPosition,0),toCollect="MetalBars")
+            quest = src.quests.questMap["FetchItems"](targetPosition=(room.xPosition,room.yPosition,0),toCollect="MetalBars")
             quest.activate()
             quest.assignToCharacter(character)
             character.quests.append(quest)

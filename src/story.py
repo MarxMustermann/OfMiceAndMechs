@@ -3955,7 +3955,7 @@ class MainGame(BasicPhase):
         self.checkDead()
 
 
-        containerQuest = src.quests.ReachOutStory()
+        containerQuest = src.quests.questMap["ReachOutStory"]()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)
         containerQuest.activate()
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
@@ -4823,7 +4823,7 @@ Enter the base that way."""
         containerQuest.generateSubquests(mainChar)
 
     def reachImplant(self):
-        containerQuest = src.quests.ReachOutStory()
+        containerQuest = src.quests.questMap["ReachOutStory"]()
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
         containerQuest.activate()
         containerQuest.assignToCharacter(src.gamestate.gamestate.mainChar)

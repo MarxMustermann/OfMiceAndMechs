@@ -984,7 +984,7 @@ class MetaQuestSequence(Quest):
 
 
 
-class DestroyRoom(MetaQuestSequence):
+class delDestroyRoom(MetaQuestSequence):
     def __init__(self, description="destroyRoom", creator=None, command=None, lifetime=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -1059,7 +1059,7 @@ class DestroyRoom(MetaQuestSequence):
         parameters.append({"name":"targetPosition","type":"coordinate"})
         return parameters
 
-class ControlBase(MetaQuestSequence):
+class delControlBase(MetaQuestSequence):
     def __init__(self, description="control base", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -1075,7 +1075,7 @@ class ControlBase(MetaQuestSequence):
     def solver(self, character):
         return super().solver(character)
 
-class DefendBase(MetaQuestSequence):
+class delDefendBase(MetaQuestSequence):
     def __init__(self, description="defend base", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -1099,7 +1099,7 @@ class DefendBase(MetaQuestSequence):
         self.triggerCompletionCheck(character)
         return super().solver(character)
 
-class BreakSiege(MetaQuestSequence):
+class delBreakSiege(MetaQuestSequence):
     def __init__(self, description="break siege", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -1116,7 +1116,7 @@ class BreakSiege(MetaQuestSequence):
     def solver(self, character):
         return super().solver(character)
 
-class AssignStaff(MetaQuestSequence):
+class delAssignStaff(MetaQuestSequence):
     def __init__(self, description="assign staff", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -1167,7 +1167,7 @@ class AssignStaff(MetaQuestSequence):
 
         return super().solver(character)
 
-class DestroyRooms(MetaQuestSequence):
+class delDestroyRooms(MetaQuestSequence):
     def __init__(self, description="destroyRooms", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -1211,7 +1211,7 @@ class DestroyRooms(MetaQuestSequence):
             return
         return super().solver(character)
 
-class StandAttention(MetaQuestSequence):
+class delStandAttention(MetaQuestSequence):
 
     """
     state initialization
@@ -1284,7 +1284,7 @@ class StandAttention(MetaQuestSequence):
             else:
                 return True
 
-class GatherItems(Quest):
+class delGatherItems(Quest):
 
     """
     state initialization
@@ -1315,7 +1315,7 @@ class GatherItems(Quest):
         character.runCommandString(".30.")
         return False
 
-class TeleportToTerrain(MetaQuestSequence):
+class delTeleportToTerrain(MetaQuestSequence):
     def __init__(self, description="teleport to terrain", creator=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -1405,7 +1405,7 @@ class TeleportToTerrain(MetaQuestSequence):
                 self.addQuest(quest)
                 return
 
-class LootRuin(MetaQuestSequence):
+class delLootRuin(MetaQuestSequence):
     def __init__(self, description="loot ruin", creator=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -1452,7 +1452,7 @@ class LootRuin(MetaQuestSequence):
             quest.assignToCharacter(character)
             quest.activate()
 
-class ObtainAllSpecialItems(Quest):
+class delObtainAllSpecialItems(Quest):
 
     """
     state initialization
@@ -1576,7 +1576,7 @@ a container quest containing a list of quests that have to be handled in any ord
 """
 
 
-class MetaQuestParralel(Quest):
+class delMetaQuestParralel(Quest):
     """
     state initialization
     """
@@ -1952,7 +1952,7 @@ You probably want to use MoveQuestMeta instead
 """
 
 
-class NaiveMoveQuest(Quest):
+class delNaiveMoveQuest(Quest):
     """
     straightfoward state setting
     """
@@ -2080,7 +2080,7 @@ You probably want to use EnterRoomQuestMeta instead
 """
 
 
-class NaiveEnterRoomQuest(Quest):
+class delNaiveEnterRoomQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2192,7 +2192,7 @@ You probably want to use PickupQuest instead
 """
 
 
-class NaivePickupQuest(Quest):
+class delNaivePickupQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2278,7 +2278,7 @@ You probably want to use GetQuest instead
 """
 
 
-class NaiveGetQuest(Quest):
+class delNaiveGetQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2341,7 +2341,7 @@ You probably want to use GetReward instead
 """
 
 
-class NaiveGetReward(Quest):
+class delNaiveGetReward(Quest):
     """
     straightforward state initialization
     """
@@ -2399,7 +2399,7 @@ You probably want to use MurderQuest instead
 """
 
 
-class NaiveMurderQuest(Quest):
+class delNaiveMurderQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2442,7 +2442,7 @@ You probably want to use KnockOutQuest instead
 """
 
 
-class NaiveKnockOutQuest(Quest):
+class delNaiveKnockOutQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2482,7 +2482,7 @@ You probably want to use WakeUpQuest instead
 """
 
 
-class NaiveWakeUpQuest(Quest):
+class delNaiveWakeUpQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2533,7 +2533,7 @@ You probably want to use ActivateQuest instead
 """
 
 
-class NaiveActivateQuest(Quest):
+class delNaiveActivateQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2618,7 +2618,7 @@ bad code: does not register a manual drop
 """
 
 
-class NaiveDropQuest(Quest):
+class delNaiveDropQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2702,7 +2702,7 @@ You probably want to use DelegateQuest instead
 """
 
 
-class NaiveDelegateQuest(Quest):
+class delNaiveDelegateQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2760,7 +2760,7 @@ wait till something was deactivated
 """
 
 
-class WaitForDeactivationQuest(Quest):
+class delWaitForDeactivationQuest(Quest):
     """
     state initialization
     """
@@ -2808,7 +2808,7 @@ wail till a specific quest was completed
 """
 
 
-class WaitForQuestCompletion(Quest):
+class delWaitForQuestCompletion(Quest):
     """
     state initialization
     """
@@ -2852,7 +2852,7 @@ quest to drink something
 """
 
 
-class DrinkQuest(Quest):
+class delDrinkQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2915,7 +2915,7 @@ ensure own survival
 """
 
 
-class SurviveQuest(Quest):
+class delSurviveQuest(Quest):
     """
     straightforward state initialization
     """
@@ -2993,7 +2993,7 @@ quest for entering a room
 """
 
 
-class EnterRoomQuestMeta(MetaQuestSequence):
+class delEnterRoomQuestMeta(MetaQuestSequence):
     """
     basic state initialization
     """
@@ -3080,7 +3080,7 @@ move to a position
 """
 
 
-class MoveQuestMeta(MetaQuestSequence):
+class delMoveQuestMeta(MetaQuestSequence):
     """
     state initialization
     """
@@ -3185,7 +3185,7 @@ drop a item somewhere
 """
 
 
-class DropQuestMeta(MetaQuestSequence):
+class delDropQuestMeta(MetaQuestSequence):
     """
     generate quests to move and drop item
     """
@@ -3274,7 +3274,7 @@ pick up an item
 """
 
 
-class PickupQuestMeta(MetaQuestSequence):
+class delPickupQuestMeta(MetaQuestSequence):
     """
     generate quests to move and pick up
     """
@@ -3413,7 +3413,7 @@ activate an item
 """
 
 
-class ActivateQuestMeta(MetaQuestSequence):
+class delActivateQuestMeta(MetaQuestSequence):
     """
     generate quests to move and activate
     """
@@ -3547,7 +3547,7 @@ quest to refill the goo flask
 """
 
 
-class RefillDrinkQuest(ActivateQuestMeta):
+class delRefillDrinkQuest(ActivateQuestMeta):
     """
     call superconstructor with modified parameters
     """
@@ -3581,7 +3581,7 @@ collect items with some quality
 """
 
 
-class CollectQuestMeta(MetaQuestSequence):
+class delCollectQuestMeta(MetaQuestSequence):
     """
     state initialization
     """
@@ -3648,7 +3648,7 @@ a quest for fetching a quest from a quest dispenser
 """
 
 
-class GetQuest(MetaQuestSequence):
+class delGetQuest(MetaQuestSequence):
     """
     generate quests to move to the quest dispenser and get the quest
     """
@@ -3721,7 +3721,7 @@ get the reward for a completed quest
 """
 
 
-class GetReward(MetaQuestSequence):
+class delGetReward(MetaQuestSequence):
     def __init__(
         self,
         questDispenser=None,
@@ -3823,7 +3823,7 @@ the quest for murdering somebody
 """
 
 
-class MurderQuest(MetaQuestSequence):
+class delMurderQuest(MetaQuestSequence):
     """
     generate quests for moving to and murdering the target
     """
@@ -3917,7 +3917,7 @@ the quest for knocking out somebody
 """
 
 
-class KnockOutQuest(MetaQuestSequence):
+class delKnockOutQuest(MetaQuestSequence):
     """
     generate quests for moving to and kocking out the target
     """
@@ -3989,7 +3989,7 @@ the quest for waking somebody
 """
 
 
-class WakeUpQuest(MetaQuestSequence):
+class delWakeUpQuest(MetaQuestSequence):
     """
     generate quests for moving to and waking up the target
     """
@@ -4062,7 +4062,7 @@ bad code: only fetches fuel
 """
 
 
-class FillPocketsQuest(MetaQuestSequence):
+class delFillPocketsQuest(MetaQuestSequence):
     """
     state initialization
     """
@@ -4124,7 +4124,7 @@ quest to leave the room
 """
 
 
-class LeaveRoomQuest(Quest):
+class delLeaveRoomQuest(Quest):
     objectsToStore = []
     def __init__(self, room=None, followUp=None, startCinematics=None, creator=None):
         self.room = room
@@ -4225,7 +4225,7 @@ bad pattern: has no solver
 """
 
 
-class ExamineQuest(Quest):
+class delExamineQuest(Quest):
     """
     state initialization
     """
@@ -4308,7 +4308,7 @@ bad code: name lies somewhat
 """
 
 
-class FetchFurniture(MetaQuestParralel):
+class delFetchFurniture(MetaQuestParralel):
     """
     create subquest to move each piece of scrap to the metalworkshop
     """
@@ -4394,7 +4394,7 @@ place furniture within a contruction site
 """
 
 
-class PlaceFurniture(MetaQuestParralel):
+class delPlaceFurniture(MetaQuestParralel):
     """
     generates quests picking up the furniture and dropping it at the right place
     bad code: generating transport quests would be better
@@ -4449,7 +4449,7 @@ bad code: is broken
 """
 
 
-class ConstructRoom(MetaQuestParralel):
+class delConstructRoom(MetaQuestParralel):
     """
     straightforward state initialization
     """
@@ -4535,7 +4535,7 @@ transport an item to a position
 """
 
 
-class TransportQuest(MetaQuestSequence):
+class delTransportQuest(MetaQuestSequence):
     """
     generate quest for picking up the item
     """
@@ -4629,7 +4629,7 @@ move items from permanent storage to accesible storage
 """
 
 
-class StoreCargo(MetaQuestSequence):
+class delStoreCargo(MetaQuestSequence):
     """
     generate quests for transporting each item
     """
@@ -4684,7 +4684,7 @@ move items to accessible storage
 """
 
 
-class MoveToStorage(MetaQuestSequence):
+class delMoveToStorage(MetaQuestSequence):
     """
     generate the quests to transport each item
     """
@@ -4729,7 +4729,7 @@ bad pattern: the quest can only be solved by delegation
 """
 
 
-class HandleDelivery(MetaQuestSequence):
+class delHandleDelivery(MetaQuestSequence):
     """
     state initialization
     """
@@ -4808,7 +4808,7 @@ fire a list of furnaces an keep them fired
 """
 
 
-class KeepFurnacesFiredMeta(MetaQuestParralel):
+class delKeepFurnacesFiredMeta(MetaQuestParralel):
     """
     add a quest to keep each furnace fired
     """
@@ -4838,7 +4838,7 @@ fire a furnace an keep it fired
 """
 
 
-class KeepFurnaceFiredMeta(MetaQuestSequence):
+class delKeepFurnaceFiredMeta(MetaQuestSequence):
     """
     basic state initialization
     """
@@ -4924,7 +4924,7 @@ fire a furnace once
 """
 
 
-class FireFurnaceMeta(MetaQuestSequence):
+class delFireFurnaceMeta(MetaQuestSequence):
     """
     state initialization
     """
@@ -5065,7 +5065,7 @@ Fill a growth tank
 """
 
 
-class FillGrowthTankMeta(MetaQuestSequence):
+class delFillGrowthTankMeta(MetaQuestSequence):
     """
     state initialization
     """
@@ -5184,7 +5184,7 @@ basically janitor duty
 """
 
 
-class HopperDuty(MetaQuestSequence):
+class delHopperDuty(MetaQuestSequence):
     """
     straightforward state initialization
     """
@@ -5284,7 +5284,7 @@ bad pattern: there is no way to determine what is to be picked up
 """
 
 
-class ClearRubble(MetaQuestParralel):
+class delClearRubble(MetaQuestParralel):
     """
     create subquest to move each piece of scrap to the metal workshop
     """
@@ -5319,7 +5319,7 @@ dummy quest for doing the room duty
 """
 
 
-class RoomDuty(MetaQuestParralel):
+class delRoomDuty(MetaQuestParralel):
     """
     state initialization
     """
@@ -5345,7 +5345,7 @@ dummy quest for following somebodies orders
 """
 
 
-class Serve(MetaQuestParralel):
+class delServe(MetaQuestParralel):
     """
     state initialization
     """
@@ -5389,7 +5389,7 @@ class Serve(MetaQuestParralel):
     def setState(self,state):
         super().setState(state)
 
-class DeliverSpecialItem(Quest):
+class delDeliverSpecialItem(Quest):
     def __init__(self, description="deliverSpecialItem", creator=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -5524,93 +5524,6 @@ class DeliverSpecialItem(Quest):
         command += "sd"
 
         return command
-
-class ReachOutStory(MetaQuestSequence):
-    def __init__(self, description="reach out to implant", creator=None):
-        questList = []
-        super().__init__(creator=creator)
-        self.metaDescription = description
-
-    def solver(self,character):
-        self.triggerCompletionCheck()
-        self.generateSubquests()
-
-        if not self.subQuests:
-            command = self.getSolvingCommandString(character)
-            if command:
-                character.runCommandString(command)
-                return
-            
-        super().solver(character)
-
-    def triggerCompletionCheck(self):
-        return
-
-    def handleQuestsOpened(self,extraInfo=None):
-        self.postHandler()
-
-    def assignToCharacter(self,character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.handleQuestsOpened,"opened quest menu")
-        return super().assignToCharacter(character)
-
-    def getSolvingCommandString(self,character,dryRun=True):
-        if character.macroState.get("submenue"):
-            return ["esc"]
-        else:
-            return "q"
-
-class Heal(MetaQuestSequence):
-    def __init__(self, description="heal"):
-        super().__init__()
-        self.metaDescription = description
-        self.type = "heal"
-
-    def generateTextDescription(self):
-        text = """
-You are hurt. Heal yourself.
-
-You can heal yourself using vials.
-Use vials to heal yourself.
-
-Press JH to auto heal.
-"""
-        return text
-
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return False
-
-        foundVial = None
-        for item in character.inventory:
-            if item.type == "Vial" and item.uses > 0:
-                foundVial = item
-
-        if not foundVial:
-            self.postHandler()
-            return True
-
-        if character.health < character.maxHealth:
-            return False
-
-        self.postHandler()
-        return True
-
-    def getSolvingCommandString(self,character,dryRun=True):
-        if not dryRun:
-            self.triggerCompletionCheck(character)
-        return "JH"
-
-    def solver(self,character):
-        command = self.getSolvingCommandString(character,dryRun=False)
-        if command:
-            character.runCommandString(command)
-            return
-        if self.triggerCompletionCheck(character):
-            return
-        return super().solver(character)
 
 class SecureTiles(MetaQuestSequence):
     def __init__(self, description="secure tiles", toSecure=None):

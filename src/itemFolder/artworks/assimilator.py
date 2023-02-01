@@ -525,7 +525,7 @@ Train a skill and return to integrate into the bases systems
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
 
-            quest = src.quests.TrainSkill()
+            quest = src.quests.questMap["TrainSkill"]()
             quest.activate()
             quest.assignToCharacter(character)
             quest.generateSubquests(character)

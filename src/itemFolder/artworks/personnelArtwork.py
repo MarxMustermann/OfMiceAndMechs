@@ -135,7 +135,7 @@ Use the complex interaction to recharge the personel artwork
 
         char.faction = self.faction
 
-        quest = src.quests.Assimilate()
+        quest = src.quests.questMap["Assimilate"]()
         quest.assignToCharacter(char)
         quest.activate()
         quest.autoSolve = True
@@ -191,7 +191,7 @@ Use the complex interaction to recharge the personel artwork
 
         char.faction = self.faction
 
-        quest = src.quests.Assimilate()
+        quest = src.quests.questMap["Assimilate"]()
         quest.assignToCharacter(char)
         quest.activate()
         quest.autoSolve = True

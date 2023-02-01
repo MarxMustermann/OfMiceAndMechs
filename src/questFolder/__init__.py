@@ -17,4 +17,5 @@ import src.questFolder.activateEpochArtwork
 import src.questFolder.operateMachine
 import src.questFolder.changeJob
 import src.questFolder.trainSkill
+import src.questFolder.assimilate
 

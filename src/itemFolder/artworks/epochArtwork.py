@@ -562,7 +562,7 @@ You will recieve your duties and instructions later.
         for quest in character.quests:
             quest.postHandler()
         character.quests = []
-        quest = src.quests.Assimilate()
+        quest = src.quests.questMap["Assimilate"]()
         character.quests.append(quest)
         quest.assignToCharacter(character)
         quest.activate()

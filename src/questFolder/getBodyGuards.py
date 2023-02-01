@@ -1,6 +1,8 @@
 import src
 
 class GetBodyGuards(src.quests.MetaQuestSequence):
+    type = "GetBodyGuards"
+
     def __init__(self, description="get body guards"):
         questList = []
         super().__init__(questList)

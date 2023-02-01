@@ -15,4 +15,5 @@ import src.questFolder.doEpochChallenge
 import src.questFolder.reloadTraps
 import src.questFolder.activateEpochArtwork
 import src.questFolder.operateMachine
+import src.questFolder.changeJob
 

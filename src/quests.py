@@ -7545,23 +7545,6 @@ press d to get a description on how to join the base
     def triggerCompletionCheck(self):
         return
 
-class ChangeJob(MetaQuestSequence):
-    def __init__(self, description="take on new duty"):
-        super().__init__()
-        self.metaDescription = description
-        self.type = "ChangeJob"
-
-        self.addQuest(Assimilate(description="set new duties"))
-        self.addQuest(TrainSkill())
-
-    def generateTextDescription(self):
-        return """
-Retrain for a different duty.
-
-Use the basic trainer to learn a new skill.
-Reset your duties at the assimilator aftwerward.
-"""
-
 class TrainSkill(MetaQuestSequence):
     def __init__(self, description="train skill"):
         super().__init__()
@@ -9410,7 +9393,6 @@ questMap = {
     "ClearTile": ClearTile,
     "ReloadTraproom": ReloadTraproom,
     "GetBodyGuards": GetBodyGuards,
-    "ChangeJob": ChangeJob,
     "RunCommand":RunCommand,
 }
 

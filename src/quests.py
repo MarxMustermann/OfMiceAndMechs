@@ -1292,11 +1292,11 @@ Attack the hive guards while you are waiting for the work complete.
                     if pos in toSecure:
                         continue
                     toSecure.append(pos)
-                self.addQuest(SecureTiles(toSecure=toSecure))
+                self.addQuest(src.quests.questMap["SecureTiles"](toSecure=toSecure))
             if numItemsOnFloor > 0:
-                self.addQuest(CleanTraps())
+                self.addQuest(src.quests.questMap["CleanTraps"]())
             if numCharges < numMaxCharges:
-                self.addQuest(ReloadTraps())
+                self.addQuest(src.quests.questMap["ReloadTraps"())
             return
 
         # remove completed quests
@@ -1328,8 +1328,8 @@ class ManageBase(MetaQuestSequence):
         self.type = "ManageBase"
         self.shortCode = "M"
 
-        self.addQuest(ReloadTraps())
-        self.addQuest(CleanTraps())
+        self.addQuest(src.quests.questMap["ReloadTraps"]())
+        self.addQuest(src.quests.questMap["CleanTraps"]())
 
     def solver(self, character):
         return super().solver(character)
@@ -1545,69 +1545,6 @@ This will reload the trap room and consume the lightning rods.
             pass
 
         return False
-
-class ReloadTraps(MetaQuestSequence):
-    def __init__(self, description="reload traps", creator=None, command=None, lifetime=None):
-        questList = []
-        super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = description
-        self.type = "ReloadTraps"
-        self.shortCode = "R"
-
-    def generateTextDescription(self):
-        text = """
-Reload all trap rooms.
-
-Trap rooms that need to be reloaded:
-
-"""
-        for traproom in self.getUnfilledTrapRooms(self.character):
-            text += str(traproom.getPosition())+"\n"
-        return text
-
-    def triggerCompletionCheck(self,character=None):
-
-        if not character:
-            return 
-
-        if not self.getUnfilledTrapRooms(character):
-            super().triggerCompletionCheck()
-            return
-
-        return
-
-    def getUnfilledTrapRooms(self,character):
-        if isinstance(character.container,src.rooms.Room):
-            terrain = character.container.container
-        else:
-            terrain = character.container
-
-        foundTraprooms = []
-        for room in terrain.rooms:
-            if not isinstance(room,src.rooms.TrapRoom):
-                continue
-
-            if room.electricalCharges > room.maxElectricalCharges-30:
-                continue
-
-            foundTraprooms.append(room)
-        
-        return foundTraprooms
-
-    def solver(self, character):
-        self.triggerCompletionCheck(character)
-
-        if self.completed:
-            return
-
-        if not self.subQuests:
-            room = random.choice(self.getUnfilledTrapRooms(character))
-                
-            quest = ReloadTraproom(targetPosition=room.getPosition())
-            self.addQuest(quest)
-            return
-
-        return super().solver(character)
 
 class DefendBase(MetaQuestSequence):
     def __init__(self, description="defend base", creator=None, command=None, lifetime=None):
@@ -10368,7 +10305,6 @@ questMap = {
     "ControlBase": ControlBase,
     "AssignStaff": AssignStaff,
     "CleanTraps": CleanTraps,
-    "ReloadTraps": ReloadTraps,
     "ClearInventory": ClearInventory,
     "DestroySpawners": DestroySpawners,
     "TakeOverBase": TakeOverBase,

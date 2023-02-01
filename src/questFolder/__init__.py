@@ -7,3 +7,4 @@ import src.questFolder.getQuestFromQuestArtwork
 import src.questFolder.getPromotion
 import src.questFolder.fetchItems
 import src.questFolder.doEpochChallenge
+import src.questFolder.reloadTraps

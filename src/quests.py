@@ -6617,47 +6617,6 @@ Use the epoch artwork to spend your glass tears.
 
         super().solver(character)
 
-# every epoch:
-#  go to epoch artwork and fetch epoch challenge
-#  defend base
-#  get rewards/punishment
-class EpochQuest(MetaQuestSequence):
-    """
-    state initialization
-    """
-
-    def __init__(self, description="epoch quest", creator=None):
-        questList = []
-        super().__init__(questList, creator=creator)
-        self.metaDescription = description
-
-        # save initial state and register
-        self.type = "EpochQuest"
-
-        quest = src.quests.questMap["DoEpochChallenge"]()
-        self.subQuests.append(quest)
-        quest.activate()
-
-    def generateTextDescription(self):
-        text = """
-When you were promoted to commander of this base you recieved the burden of the epoch quest.
-
-This means you will have to complete the tasks the epoch artwork gives you.
-
-Completing tasks will reward you with glass tears.
-Those glass tears can be used to upgrade your character or your base.
-
-
-Use the epoch artwork to get tasks and collect your rewards.
-"""
-        return text
-
-    """
-    never complete
-    """
-    def triggerCompletionCheck(self):
-        return
-
 # map strings to Classes
 questMap = {
     "Quest": Quest,
@@ -6705,7 +6664,7 @@ questMap = {
     #"ClearRubble": ClearRubble,
     #"RoomDuty": RoomDuty,
     #"Serve": Serve,
-    "DummyQuest": DummyQuest,
+    #"DummyQuest": DummyQuest,
     #"ObtainSpecialItem": ObtainSpecialItem,
     #"ObtainAllSpecialItems": ObtainAllSpecialItems,
     #"EnterEnemyCity": EnterEnemyCity,
@@ -6717,11 +6676,10 @@ questMap = {
     #"LootRuin": LootRuin,
     #"DestroyRooms": DestroyRooms,
     #"DestroyRoom": DestroyRoom,
-    "DefendBase": DefendBase,
-    "BreakSiege": BreakSiege,
-    "ControlBase": ControlBase,
+    #"DefendBase": DefendBase,
+    #"BreakSiege": BreakSiege,
+    #"ControlBase": ControlBase,
     #"AssignStaff": AssignStaff,
-    "EpochQuest": EpochQuest,
 }
 
 def addType(toRegister):

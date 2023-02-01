@@ -299,7 +299,7 @@ Additionally you recieve 2 health vials.
                         quest.postHandler()
 
                     character.quests = []
-                    quest = src.quests.EpochQuest()
+                    quest = src.quests.questMap["EpochQuest"]()
                     quest.assignToCharacter(character)
                     character.quests.append(quest)
                     quest.activate()

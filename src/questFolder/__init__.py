@@ -29,4 +29,5 @@ import src.questFolder.clearInventory
 import src.questFolder.gatherScrap
 import src.questFolder.equip
 import src.questFolder.runCommand
+import src.questFolder.reloadTraproom
 

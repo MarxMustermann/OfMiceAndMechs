@@ -1296,7 +1296,7 @@ Attack the hive guards while you are waiting for the work complete.
             if numItemsOnFloor > 0:
                 self.addQuest(src.quests.questMap["CleanTraps"]())
             if numCharges < numMaxCharges:
-                self.addQuest(src.quests.questMap["ReloadTraps"())
+                self.addQuest(src.quests.questMap["ReloadTraps"]())
             return
 
         # remove completed quests
@@ -9658,6 +9658,7 @@ questMap = {
     "OperateMachine": OperateMachine,
     "ChangeJob": ChangeJob,
     "RunCommand":RunCommand,
+    "ActivateEpochArtwork":ActivateEpochArtwork,
 }
 
 def addType(toRegister):

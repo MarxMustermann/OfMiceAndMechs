@@ -2,6 +2,8 @@ import src
 import random
 
 class GoToTile(src.quests.Quest):
+    type = "GoToTile"
+
     def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)

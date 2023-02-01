@@ -1,4 +1,5 @@
 import src
+import random
 
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
@@ -103,7 +104,7 @@ Try luring enemies into landmines or detonating some bombs."""
             if enemies:
                 self.huntdownCooldown = 100
                 if random.random() < 0.3:
-                    quest = Huntdown(target=random.choice(enemies))
+                    quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
                     quest.autoSolve = True
                     character.assignQuest(quest,active=True)
                     return

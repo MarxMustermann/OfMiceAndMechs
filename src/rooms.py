@@ -751,7 +751,7 @@ class Room(src.saveing.Saveable):
 
     def handleAddActionSelection(self,extraInfo):
 
-        quest = src.quests.RunCommand(command=extraInfo["selected"])
+        quest = src.quests.questMap["RunCommand"](command=extraInfo["selected"])
         quest.autoSolve = True
         quest.activate()
         quest.assignToCharacter(src.gamestate.gamestate.mainChar)

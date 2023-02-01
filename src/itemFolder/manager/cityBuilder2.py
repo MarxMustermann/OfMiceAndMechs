@@ -469,7 +469,7 @@ class CityBuilder2(src.items.Item):
             enemy = src.characters.Monster()
             enemy.godMode = True
             self.container.container.addCharacter(enemy,params["coordinate"][0]*15+random.randint(2,11),params["coordinate"][1]*15+random.randint(2,11))
-            quest = src.quests.ClearTerrain()
+            quest = src.quests.questMap["ClearTerrain"]()
             quest.autoSolve = True
             enemy.quests.append(quest)
             enemy.runCommandString("**")

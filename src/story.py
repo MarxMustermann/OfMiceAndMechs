@@ -4945,7 +4945,7 @@ Enter the base that way."""
             monsterStartRoom.addCharacter(enemy, 6, 6)
             enemy.movementSpeed = random.random()+0.5
 
-            quest = src.quests.ClearTerrain()
+            quest = src.quests.questMap["ClearTerrain"]()
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()

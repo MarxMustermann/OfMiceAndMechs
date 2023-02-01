@@ -44,7 +44,7 @@ class MonsterSpawner(src.items.Item):
             enemy.faction = "invader"
             room.addCharacter(enemy,pos[0],pos[1])
 
-            quest = src.quests.ClearTerrain()
+            quest = src.quests.questMap["ClearTerrain"]()
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()
@@ -76,7 +76,7 @@ class MonsterSpawner(src.items.Item):
                 if not character.tag == "hiveGuard":
                     continue
 
-            quest = src.quests.ClearTerrain()
+            quest = src.quests.questMap["ClearTerrain"]()
             quest.autoSolve = True
             character.assignQuest(quest,active=True)
         for room in terrain.rooms:
@@ -88,7 +88,7 @@ class MonsterSpawner(src.items.Item):
             for character in room.characters:
                 if not character.faction == "invader":
                     continue
-                quest = src.quests.ClearTerrain()
+                quest = src.quests.questMap["ClearTerrain"]()
                 quest.autoSolve = True
                 character.assignQuest(quest,active=True)
         

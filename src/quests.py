@@ -988,90 +988,6 @@ class MetaQuestSequence(Quest):
                 return commandString
         super().getSolvingCommandString(character)
 
-class ClearTerrain(MetaQuestSequence):
-    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):
-        questList = []
-        super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = description
-        self.type = "ClearTerrain"
-
-    def generateTextDescription(self):
-        text = """
-Clear the whole terrain from enemies.
-
-Just clear the whole terrain tile for tile.
-"""
-
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return
-        if not character.container:
-            return
-
-        if isinstance(character.container,src.rooms.Room):
-            terrain = character.container.container
-        else:
-            terrain = character.container
-
-        for otherChar in terrain.characters:
-            if otherChar.faction == character.faction:
-                continue
-            return
-        for room in terrain.rooms:
-            for otherChar in room.characters:
-                if otherChar.faction == character.faction:
-                    continue
-                return
-
-        super().triggerCompletionCheck()
-        return False
-
-    def solver(self, character):
-        if len(self.subQuests):
-            return super().solver(character)
-        else:
-            self.triggerCompletionCheck(character)
-
-            if character.yPosition%15 == 14:
-                character.runCommandString("w")
-                return
-            if character.yPosition%15 == 0:
-                character.runCommandString("s")
-                return
-            if character.xPosition%15 == 14:
-                character.runCommandString("a")
-                return
-            if character.xPosition%15 == 0:
-                character.runCommandString("d")
-                return
-
-            if isinstance(character.container,src.rooms.Room):
-                terrain = character.container.container
-            else:
-                terrain = character.container
-
-            steps = ["clearOutside","clearRooms"]
-            if random.random() < 0.3:
-                steps = ["clearRooms","clearOutside"]
-
-            for step in steps:
-                if step == "clearRooms":
-                    for otherChar in terrain.characters:
-                        if otherChar.faction == character.faction:
-                            continue
-                        quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
-                        quest.assignToCharacter(character)
-                        quest.activate()
-                        self.addQuest(quest)
-                        return
-                if step == "clearOutside":
-                    for room in terrain.rooms:
-                        for otherChar in room.characters:
-                            if otherChar.faction == character.faction:
-                                continue
-                            self.addQuest(src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True))
-                            return
-
 class DestroyRoom(MetaQuestSequence):
     def __init__(self, description="destroyRoom", creator=None, command=None, lifetime=None, targetPosition=None):
         questList = []
@@ -1901,84 +1817,6 @@ Place the items in the correct input stockpile."""
             return False
         else:
             return True
-
-class CleanTraps(MetaQuestSequence):
-
-    def __init__(self, description="clean traps", creator=None, reputationReward=None):
-        questList = []
-        super().__init__(questList, creator=creator)
-        self.metaDescription = description
-        self.reputationReward = reputationReward
-
-        self.type = "CleanTraps"
-
-    def generateTextDescription(self):
-        text = """
-Clean all trap room.
-
-Items like corpses cluttering the trap rooms are a problem.
-The traps work by shocking enemies when they step on the floor.
-For this to work they need to directly step onto the floor.
-Item lying on the floor prevent that.
-
-So clean all trap rooms.
-
-Trap rooms that need to be cleaned are:
-
-"""
-        for traproom in self.getClutteredTraprooms(self.character):
-            text += str(traproom.getPosition())+"\n"
-        return text
-
-    def triggerCompletionCheck(self,character=None):
-
-        if not character:
-            return
-
-        if not self.getClutteredTraprooms(character):
-            self.postHandler()
-            return True
-
-        return
-
-    def getClutteredTraprooms(self,character):
-
-        if isinstance(character.container,src.rooms.Room):
-            terrain = character.container.container
-        else:
-            terrain  = character.container
-
-        filledTraproom = []
-        for room in terrain.rooms:
-            if isinstance(room,src.rooms.TrapRoom):
-                for item in room.itemsOnFloor:
-                    if item.bolted:
-                        continue
-                    if item.getPosition() == (None, None, None):
-                        continue
-                    filledTraproom.append(room)
-                    break
-        
-        return filledTraproom 
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        if not self.subQuests:
-            for room in self.getClutteredTraprooms(character):
-                quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
-                quest.activate()
-                quest.assignToCharacter(character)
-                self.addQuest(quest)
-
-        super().solver(character)
-
-    def postHandler(self):
-        if self.reputationReward and self.character:
-            text = "cleaning the trap rooms"
-            self.character.awardReputation(amount=self.reputationReward, reason=text)
-        super().postHandler()
 
 class StandAttention(MetaQuestSequence):
 
@@ -7464,7 +7302,6 @@ questMap = {
     "BreakSiege": BreakSiege,
     "ControlBase": ControlBase,
     #"AssignStaff": AssignStaff,
-    "CleanTraps": CleanTraps,
     "LootRoom": LootRoom,
     "EpochQuest": EpochQuest,
 }

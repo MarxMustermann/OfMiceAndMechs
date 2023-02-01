@@ -6702,12 +6702,12 @@ def showMainMenu(args=None):
         (
         "mainGameSieged",
         "main game (sieged/roguelike)",
-        "s",
+        "r",
         ),
         (
         "mainGameProduction",
         "main game (production/base management)",
-        "p",
+        "b",
         ),
         (
         "Tutorials",

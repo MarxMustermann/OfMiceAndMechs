@@ -45,4 +45,5 @@ import src.questFolder.enterRoom
 import src.questFolder.getEpochReward
 import src.questFolder.reachOutStory
 import src.questFolder.heal
+import src.questFolder.secureTiles
 

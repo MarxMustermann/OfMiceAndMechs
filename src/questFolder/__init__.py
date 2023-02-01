@@ -21,4 +21,5 @@ import src.questFolder.assimilate
 import src.questFolder.takeOverBase
 import src.questFolder.reachBase
 import src.questFolder.huntdown
+import src.questFolder.destroySpawner
 

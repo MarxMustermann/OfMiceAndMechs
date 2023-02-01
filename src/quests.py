@@ -7494,94 +7494,6 @@ class ReachOutStory(MetaQuestSequence):
         else:
             return "q"
 
-class DestroySpawner(MetaQuestSequence):
-    def __init__(self, description="destroy hive",targetPosition=None):
-        super().__init__()
-        self.metaDescription = description+" %s"%(targetPosition,)
-        self.type = "DestroySpawner"
-        self.targetPosition = targetPosition
-
-    def generateTextDescription(self):
-        text = """
-Destroy the hive on tile %s.
-
-
-To destroy the hive, go to the monster spawner (MS) in the middle of the hive and activate it.
-You may want to plan an escape route."""%(self.targetPosition,)
-        return text
-
-    def handleSpawnerKill(self):
-        self.triggerCompletionCheck(self.character)
-
-    def assignToCharacter(self,character):
-        if self.character:
-            return
-
-        foundSpawner = False
-        terrain = character.getTerrain()
-        rooms = terrain.getRoomByPosition(self.targetPosition)
-        for room in rooms:
-            items = room.getItemByPosition((6,6,0))
-            for item in items:
-                if isinstance(item, src.items.itemMap["MonsterSpawner"]):
-                    foundSpawner = item
-
-        if foundSpawner:
-            self.startWatching(foundSpawner,self.handleSpawnerKill, "spawner will be destroyed")
-        
-        super().assignToCharacter(character)
-
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return
-
-        if not self.active:
-            return
-
-        foundSpawner = False
-        terrain = character.getTerrain()
-        rooms = terrain.getRoomByPosition(self.targetPosition)
-        for room in rooms:
-            items = room.getItemByPosition((6,6,0))
-            for item in items:
-                if isinstance(item, src.items.itemMap["MonsterSpawner"]) and not item.disabled:
-                    foundSpawner = True
-
-        if not foundSpawner:
-            self.postHandler()
-            return True
-        return
-
-    def solver(self,character):
-        if self.triggerCompletionCheck(character):
-            return
-        if not self.subQuests:
-            if not character.getBigPosition() == self.targetPosition:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                self.addQuest(quest)
-                return
-            if character.getDistance((6,6,0)) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0),ignoreEndBlocked=True)
-                self.addQuest(quest)
-                return
-
-            offset = (6-character.xPosition,6-character.yPosition,0-character.zPosition)
-            commandMap = {
-                    (1,0,0):"Jd",
-                    (0,1,0):"Js",
-                    (-1,0,0):"Ja",
-                    (0,-1,0):"Jw",
-                    (0,0,0):"j",
-                }
-            
-            if offset in commandMap:
-                quest = src.quests.questMap["RunCommand"](command=commandMap[offset])
-                self.addQuest(quest)
-                return
-
-        super().solver(character)
-
-
 class DestroySpawners(MetaQuestSequence):
     def __init__(self, description="destroy hives"):
         super().__init__()
@@ -7635,14 +7547,14 @@ The Hives are shown on the minimap as: """,(src.interaction.urwid.AttrSpec("#484
             return
 
         if not self.subQuests:
-            quest = Heal()
+            quest = src.quest.questMap["Heal"]()
             self.addQuest(quest)
-            quest = GetEpochReward(doEpochEvaluation=True)
+            quest = src.quests.questMap["GetEpochReward"](doEpochEvaluation=True)
             self.addQuest(quest)
             spawner = random.choice(self.getSpawners(character))
-            quest = DestroySpawner(targetPosition=spawner.getPosition())
+            quest = src.quests.questMap["DestroySpawner"](targetPosition=spawner.getPosition())
             self.addQuest(quest)
-            quest = PrepareAttack(targetPosition=spawner.getPosition())
+            quest = src.quests.questMap["PrepareAttack"](targetPosition=spawner.getPosition())
             self.addQuest(quest)
         super().solver(character)
 

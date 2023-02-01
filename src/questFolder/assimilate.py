@@ -56,24 +56,12 @@ The assimilator is in the command centre.
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                #quest = RunCommand(command=list("Ja.")+["enter"]*6,description="activate the assimilator \nby pressing")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                #quest = RunCommand(command=list("Jd.")+["enter"]*6,description="activate the assimilator \nby pressing")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                #quest = RunCommand(command=list("Jw.")+["enter"]*6,description="activate the assimilator \nby pressing")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                #quest = RunCommand(command=list("Js.")+["enter"]*6,description="activate the assimilator \nby pressing")
-                #quest.activate()
-                #self.addQuest(quest)
                 return
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
             quest.active = True

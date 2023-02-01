@@ -1,4 +1,5 @@
 import src
+import random
 
 class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
@@ -174,7 +175,7 @@ Return to %s after to complete this quest."""%(tile,)
                 return "..24.."
 
             if not dryRun:
-                quest = GoToPosition(ignoreEnd=True)
+                quest = src.quests.questMap["GoToPosition"](ignoreEnd=True)
                 quest.assignToCharacter(character)
                 quest.setParameters({"targetPosition":foundNeighbour[0]})
                 quest.activate()

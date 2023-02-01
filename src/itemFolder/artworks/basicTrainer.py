@@ -314,7 +314,7 @@ This quality will have a big effect on your combat power.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-        quest = src.quests.Equip(lifetime=500)
+        quest = src.quests.questMap["Equip"](lifetime=500)
         quest.assignToCharacter(character)
         quest.activate()
         quest.solver(character)

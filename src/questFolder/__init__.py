@@ -27,4 +27,5 @@ import src.questFolder.getBodyGuards
 import src.questFolder.clearTile
 import src.questFolder.clearInventory
 import src.questFolder.gatherScrap
+import src.questFolder.equip
 

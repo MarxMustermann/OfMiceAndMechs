@@ -10245,79 +10245,6 @@ Use the epoch artwork to spend your glass tears.
 
         super().solver(character)
 
-class DoEpochChallenge(MetaQuestSequence):
-    def __init__(self, description="do epoch challenge", creator=None):
-        questList = []
-        super().__init__(questList, creator=creator)
-        self.metaDescription = description
-
-        self.type = "DoEpochChallenge"
-
-    def generateTextDescription(self):
-        text = """
-Complete a task for the epoch artwork.
-
-Use the epoch artwork to fetch a task and complete it.
-"""
-        return text
-
-    """
-    never complete
-    """
-    def triggerCompletionCheck(self, character=None):
-        return
-
-    def getSolvingCommandString(self,character,dryRun=True):
-        pos = character.getBigPosition()
-        if pos == (7,7,0):
-            if character.getPosition() == (6,7,0):
-                return list("Jw.")+["enter"]*2
-        return super().getSolvingCommandString(character)
-
-    def generateSubquests(self,character): 
-        
-        while self.subQuests:
-            if not self.subQuests[-1].completed:
-                break
-            self.subQuests.pop()
-
-        if self.subQuests:
-            return
-
-        pos = character.getBigPosition()
-
-        if pos == (7,7,0):
-            if not character.getPosition() == (6,7,0):
-                quest = GoToPosition(targetPosition=(6,7,0), description="go to epoch artwork")
-                quest.activate()
-                self.addQuest(quest)
-                return
-            return
-
-        quest = src.quests.GoHome(description="go to command centre")
-        self.addQuest(quest)
-        quest.assignToCharacter(character)
-        quest.activate()
-        return
-
-    def solver(self,character):
-        if self.triggerCompletionCheck(character):
-            return
-        if not self.subQuests:
-            self.generateSubquests(character)
-
-            if self.subQuests:
-                return
-
-        """
-        command = self.getSolvingCommandString(character)
-        if command:
-            character.runCommandString(command)
-            return
-        """
-
-        super().solver(character)
-
 # every epoch:
 #  go to epoch artwork and fetch epoch challenge
 #  defend base
@@ -10341,7 +10268,7 @@ class EpochQuest(MetaQuestSequence):
         #quest = ManageBase()
         #self.subQuests.append(quest)
 
-        quest = DoEpochChallenge()
+        quest = src.quests.questMap["DoEpochChallenge"]()
         self.subQuests.append(quest)
         quest.activate()
 

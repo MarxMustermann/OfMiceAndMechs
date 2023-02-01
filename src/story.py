@@ -4784,7 +4784,7 @@ Enter the base that way."""
         pos = mainChar.getBigPosition()
         rooms = mainChar.getTerrain().getRoomByPosition(pos)
         if not rooms:
-            containerQuest = src.quests.ReachBase()
+            containerQuest = src.quests.questMap["ReachBase"]()
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()

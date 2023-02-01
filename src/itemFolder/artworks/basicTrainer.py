@@ -193,7 +193,7 @@ The scrap field is marked with a white ss on the mini map.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 
-        quest = src.quests.GatherScrap(lifetime=500)
+        quest = src.quests.questMap["GatherScrap"](lifetime=500)
         quest.assignToCharacter(character)
         quest.activate()
         character.quests.insert(0,quest)

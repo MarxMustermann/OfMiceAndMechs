@@ -1,4 +1,5 @@
 import src
+import random
 
 class GoToPosition(src.quests.Quest):
     type = "GoToPosition"

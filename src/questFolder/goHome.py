@@ -1,6 +1,8 @@
 import src
 
-class GoHome(MetaQuestSequence):
+class GoHome(src.quests.MetaQuestSequence):
+    type = "GoHome"
+
     def __init__(self, description="go home", creator=None, paranoid=False):
         questList = []
         super().__init__(questList, creator=creator)

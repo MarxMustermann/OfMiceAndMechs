@@ -3547,7 +3547,7 @@ quest to refill the goo flask
 """
 
 
-class delRefillDrinkQuest(ActivateQuestMeta):
+class delRefillDrinkQuest(delActivateQuestMeta):
     """
     call superconstructor with modified parameters
     """
@@ -3590,7 +3590,7 @@ class delCollectQuestMeta(MetaQuestSequence):
         super().__init__([], creator=creator)
         self.toFind = toFind
         self.activateQuest = None
-        self.waitQuest = src.quests.questMap.["WaitQuest"](creator=self)
+        self.waitQuest = src.quests.questMap["WaitQuest"](creator=self)
         questList = [self.waitQuest]
         # bad code: looping over one entry
         for quest in reversed(questList):
@@ -4308,7 +4308,7 @@ bad code: name lies somewhat
 """
 
 
-class delFetchFurniture(MetaQuestParralel):
+class delFetchFurniture(delMetaQuestParralel):
     """
     create subquest to move each piece of scrap to the metalworkshop
     """
@@ -4394,7 +4394,7 @@ place furniture within a contruction site
 """
 
 
-class delPlaceFurniture(MetaQuestParralel):
+class delPlaceFurniture(delMetaQuestParralel):
     """
     generates quests picking up the furniture and dropping it at the right place
     bad code: generating transport quests would be better
@@ -4449,7 +4449,7 @@ bad code: is broken
 """
 
 
-class delConstructRoom(MetaQuestParralel):
+class delConstructRoom(delMetaQuestParralel):
     """
     straightforward state initialization
     """
@@ -4808,7 +4808,7 @@ fire a list of furnaces an keep them fired
 """
 
 
-class delKeepFurnacesFiredMeta(MetaQuestParralel):
+class delKeepFurnacesFiredMeta(delMetaQuestParralel):
     """
     add a quest to keep each furnace fired
     """
@@ -5284,7 +5284,7 @@ bad pattern: there is no way to determine what is to be picked up
 """
 
 
-class delClearRubble(MetaQuestParralel):
+class delClearRubble(delMetaQuestParralel):
     """
     create subquest to move each piece of scrap to the metal workshop
     """
@@ -5319,7 +5319,7 @@ dummy quest for doing the room duty
 """
 
 
-class delRoomDuty(MetaQuestParralel):
+class delRoomDuty(delMetaQuestParralel):
     """
     state initialization
     """
@@ -5345,7 +5345,7 @@ dummy quest for following somebodies orders
 """
 
 
-class delServe(MetaQuestParralel):
+class delServe(delMetaQuestParralel):
     """
     state initialization
     """
@@ -5525,7 +5525,7 @@ class delDeliverSpecialItem(Quest):
 
         return command
 
-class GrabSpecialItem(Quest):
+class delGrabSpecialItem(Quest):
     def __init__(self, description="grab special item", creator=None,lifetime=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -5601,7 +5601,7 @@ class GrabSpecialItem(Quest):
         self.fail()
         return
 
-class EnterEnemyCity(MetaQuestSequence):
+class delEnterEnemyCity(MetaQuestSequence):
     def __init__(self, description="enter enemy city", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
@@ -5776,7 +5776,7 @@ class EnterEnemyCity(MetaQuestSequence):
         else:
             return True
 
-class ObtainSpecialItem(MetaQuestSequence):
+class delObtainSpecialItem(MetaQuestSequence):
 
     hasParams = True
 
@@ -5985,7 +5985,7 @@ class ObtainSpecialItem(MetaQuestSequence):
 """
 dummy quest
 """
-class DummyQuest(Quest):
+class delDummyQuest(Quest):
     """
     state initialization
     """

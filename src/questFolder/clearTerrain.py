@@ -1,4 +1,5 @@
 import src
+import random
 
 class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"

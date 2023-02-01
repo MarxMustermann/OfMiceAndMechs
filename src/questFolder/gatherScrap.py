@@ -1,4 +1,5 @@
 import src
+import random
 
 class GatherScrap(src.quests.MetaQuestSequence):
     type = "GatherScrap"

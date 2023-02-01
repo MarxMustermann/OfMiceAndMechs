@@ -24,4 +24,5 @@ import src.questFolder.huntdown
 import src.questFolder.destroySpawner
 import src.questFolder.destroySpawners
 import src.questFolder.getBodyGuards
+import src.questFolder.clearTile
 

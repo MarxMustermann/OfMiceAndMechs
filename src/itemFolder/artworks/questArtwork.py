@@ -86,7 +86,7 @@ Eliminate them to start breaking up the innermost siege ring.
 
             enemies = self.getEnemiesWithTag("lurker")
             if enemies:
-                quest = src.quests.SecureTile(endWhenCleared=True, description="clear lurkers on tile ", reputationReward=50, rewardText="clearing lurkers")
+                quest = src.quests.questMap["SecureTile"](endWhenCleared=True, description="clear lurkers on tile ", reputationReward=50, rewardText="clearing lurkers")
                 quest.setParameters({"targetPosition":random.choice(enemies).getBigPosition()})
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -280,7 +280,7 @@ Eliminate them to break up the second siege ring.
                         minDistance = distance
                         pos = candidate
 
-                quest = src.quests.SecureTile(endWhenCleared=True, description="clear hive guards from tile ", reputationReward=150, rewardText="clearing hive guards")
+                quest = src.quests.questMap["SecureTile"](endWhenCleared=True, description="clear hive guards from tile ", reputationReward=150, rewardText="clearing hive guards")
                 quest.setParameters({"targetPosition":pos})
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -367,11 +367,11 @@ kill all remaining enemies
                 if target.faction == character.faction:
                     continue
                 containerQuest = src.quests.MetaQuestSequence()
-                quest = src.quests.GoToTile()
+                quest = src.quests.questMap["GoToTile"]()
                 quest.setParameters({"targetPosition":(self.container.xPosition,self.container.yPosition)})
                 quest.assignToCharacter(character)
                 containerQuest.addQuest(quest)
-                quest = src.quests.SecureTile(endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](endWhenCleared=True)
                 quest.setParameters({"targetPosition":(room.xPosition,room.yPosition)})
                 quest.assignToCharacter(character)
                 quest.activate()

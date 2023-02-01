@@ -3176,7 +3176,7 @@ reminder:
             enemy.maxHealth = 10
             enemy.godMode = True
 
-            quest = src.quests.SecureTile(toSecure=charPos)
+            quest = src.quests.questMap["SecureTile"](toSecure=charPos)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()
@@ -4317,7 +4317,7 @@ class MainGame(BasicPhase):
                 enemy.godMode = True
                 treasureRoom.addCharacter(enemy, random.randint(2,11), random.randint(2,11))
 
-                quest = src.quests.SecureTile(toSecure=treasureRoom.getPosition())
+                quest = src.quests.questMap["SecureTile"](toSecure=treasureRoom.getPosition())
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
@@ -4434,7 +4434,7 @@ class MainGame(BasicPhase):
                     enemy.faction = "invader"
                     room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
-                    quest = src.quests.SecureTile(toSecure=pos)
+                    quest = src.quests.questMap["SecureTile"](toSecure=pos)
                     quest.autoSolve = True
                     quest.assignToCharacter(enemy)
                     quest.activate()
@@ -4448,7 +4448,7 @@ class MainGame(BasicPhase):
                     enemy.faction = "invader"
                     room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
-                    quest = src.quests.SecureTile(toSecure=pos)
+                    quest = src.quests.questMap["SecureTile"](toSecure=pos)
                     quest.autoSolve = True
                     quest.assignToCharacter(enemy)
                     quest.activate()
@@ -4462,7 +4462,7 @@ class MainGame(BasicPhase):
                     enemy.faction = "invader"
                     room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
-                    quest = src.quests.SecureTile(toSecure=pos)
+                    quest = src.quests.questMap["SecureTile"](toSecure=pos)
                     quest.autoSolve = True
                     quest.assignToCharacter(enemy)
                     quest.activate()
@@ -4475,7 +4475,7 @@ class MainGame(BasicPhase):
                 enemy.faction = "invader"
                 room.addCharacter(enemy,random.randint(2,11),random.randint(2,11))
 
-                quest = src.quests.SecureTile(toSecure=pos)
+                quest = src.quests.questMap["SecureTile"](toSecure=pos)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
@@ -4530,7 +4530,7 @@ class MainGame(BasicPhase):
                 enemy.specialDisplay = "O-"
                 currentTerrain.addCharacter(enemy,farmPlot[0]*15+random.randint(2,11),farmPlot[1]*15+random.randint(2,11))
 
-                quest = src.quests.SecureTile(toSecure=farmPlot)
+                quest = src.quests.questMap["SecureTile"](toSecure=farmPlot)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
@@ -4548,7 +4548,7 @@ class MainGame(BasicPhase):
                 enemy.faction = "invader"
                 enemy.tag = "blocker"
 
-                quest = src.quests.SecureTile(toSecure=pos)
+                quest = src.quests.questMap["SecureTile"](toSecure=pos)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
@@ -4629,7 +4629,7 @@ class MainGame(BasicPhase):
                         enemy.faction = "invader"
                         enemy.tag = "lurker"
 
-                        quest = src.quests.SecureTile(toSecure=(x,y,0))
+                        quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
                         quest.autoSolve = True
                         quest.assignToCharacter(enemy)
                         quest.activate()
@@ -4650,7 +4650,7 @@ class MainGame(BasicPhase):
             enemy.specialDisplay = "[-"
             enemy.faction = "invader"
 
-            quest = src.quests.SecureTile(toSecure=spawnRoom.getPosition(),endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=spawnRoom.getPosition(),endWhenCleared=True)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
@@ -4744,7 +4744,7 @@ So far nothing suggests trouble on the way.
 
 The entry of the base is located to the north of the base.
 Enter the base that way."""
-            containerQuest = src.quests.ReachBase(storyText=storyText)
+            containerQuest = src.quests.questMap["ReachBase"](storyText=storyText)
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
@@ -4757,7 +4757,7 @@ Enter the base that way."""
             direction = "east"
             mainChar.addMessage("press z to see the movement keys")
             mainChar.addMessage("leave room to the "+direction)
-            containerQuest = src.quests.InitialLeaveRoomStory(description="leave room to the "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
+            containerQuest = src.quests.questMap["InitialLeaveRoomStory"](description="leave room to the "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
@@ -4765,7 +4765,7 @@ Enter the base that way."""
             return
 
         if not mainChar.registers.get("baseCommander"):
-            containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.activeStory["epochArtwork"])
+            containerQuest = src.quests.questMap["ActivateEpochArtwork"](epochArtwork=self.activeStory["epochArtwork"])
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
@@ -4800,7 +4800,7 @@ Enter the base that way."""
                 direction = "north"
             mainChar.addMessage("press z to see the movement keys")
             mainChar.addMessage("flee room to the "+direction)
-            containerQuest = src.quests.EscapeAmbushStory(description="flee room "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
+            containerQuest = src.quests.questMap["EscapeAmbushStory"](description="flee room "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
@@ -4808,7 +4808,7 @@ Enter the base that way."""
             return
 
         if not mainChar.registers.get("baseCommander"):
-            containerQuest = src.quests.ActivateEpochArtwork(epochArtwork=self.activeStory["epochArtwork"])
+            containerQuest = src.quests.questMap["ActivateEpochArtwork"](epochArtwork=self.activeStory["epochArtwork"])
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
@@ -4816,7 +4816,7 @@ Enter the base that way."""
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        containerQuest = src.quests.TakeOverBase(description="join base")
+        containerQuest = src.quests.questMap["TakeOverBase"](description="join base")
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()
@@ -4978,7 +4978,7 @@ Enter the base that way."""
             enemy.faction = "invader"
             enemy.tag = "lurker"
 
-            quest = src.quests.SecureTile(toSecure=(x,y,0))
+            quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(enemy)

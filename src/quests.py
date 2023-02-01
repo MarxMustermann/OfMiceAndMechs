@@ -1059,7 +1059,7 @@ Just clear the whole terrain tile for tile.
                     for otherChar in terrain.characters:
                         if otherChar.faction == character.faction:
                             continue
-                        quest = src.quests.SecureTile(toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                        quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
                         quest.assignToCharacter(character)
                         quest.activate()
                         self.addQuest(quest)
@@ -1069,7 +1069,7 @@ Just clear the whole terrain tile for tile.
                         for otherChar in room.characters:
                             if otherChar.faction == character.faction:
                                 continue
-                            self.addQuest(src.quests.SecureTile(toSecure=room.getPosition(),endWhenCleared=True))
+                            self.addQuest(src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True))
                             return
 
 class DestroyRoom(MetaQuestSequence):
@@ -1614,7 +1614,7 @@ class AssignStaff(MetaQuestSequence):
                 charPos = character.getBigPosition()
 
             if not charPos == (7,7,0):
-                subQuest = GoToTile(targetPosition=(7,7,0))
+                subQuest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
                 self.addQuest(subQuest)
                 subQuest.activate()
                 subQuest.assignToCharacter(character)
@@ -1622,7 +1622,7 @@ class AssignStaff(MetaQuestSequence):
 
             charPos = character.getPosition()
             if not charPos == (1,2,0):
-                subQuest = GoToPosition(targetPosition=(1,2,0))
+                subQuest = src.quests.questMap["GoToPosition"](targetPosition=(1,2,0))
                 self.addQuest(subQuest)
                 subQuest.activate()
                 subQuest.assignToCharacter(character)
@@ -1871,7 +1871,7 @@ Swords can range from 10 to 25 damage per hit.
             if source[0] == (8,9,0):
                 description="go storage room "
 
-            quest = GoToTile(targetPosition=source[0],description=description)
+            quest = src.quests.questMap["GoToTile"](targetPosition=source[0],description=description)
             quest.assignToCharacter(character)
             self.startWatching(quest,self.subQuestCompleted,"completed")
             quest.activate()
@@ -1894,7 +1894,7 @@ Swords can range from 10 to 25 damage per hit.
         if command:
             return
         else:
-            quest = GoToPosition(targetPosition=sourceSlots[0][0],description="go to "+itemType,ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=sourceSlots[0][0],description="go to "+itemType,ignoreEndBlocked=True)
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
@@ -2019,7 +2019,7 @@ class ProtectSuperior(MetaQuestSequence):
             return
         
         self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
-        self.addQuest(GoToTile(targetPosition=self.lastSuperiorPos,paranoid=True))
+        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))
         return
 
 class DrawFloorPlan(MetaQuestSequence):
@@ -2329,7 +2329,7 @@ Place the items in the correct input stockpile."""
                 return "..24.."
 
             if not dryRun:
-                quest = GoToPosition()
+                quest = src.quests.questMap["GoToPosition"]()
                 quest.assignToCharacter(character)
                 quest.setParameters({"targetPosition":foundNeighbour[0]})
                 quest.activate()
@@ -2486,7 +2486,7 @@ Scrapfields are shown on the minimap as white ss"""]
                 self.fail()
                 return
 
-            quest = GoToTile(targetPosition=(source[0][0],source[0][1],0),description="go to scrap field")
+            quest = src.quests.questMap["GoToTile"](targetPosition=(source[0][0],source[0][1],0),description="go to scrap field")
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -2633,7 +2633,7 @@ operate the machine on %s
 
         pos = character.getPosition()
         if not self.targetPosition in (pos,(pos[0],pos[1],pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
-            self.addQuest(GoToPosition(targetPosition=self.targetPosition,ignoreEndBlocked=True))
+            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True))
             return
 
     def getSolvingCommandString(self, character, dryRun=True):
@@ -2762,14 +2762,14 @@ To see your items open the your inventory by pressing i."""
 
                 if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
                     return True
-                quest = GoToTile(targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+                quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
                 return True
 
             if self.returnToTile and not character.getBigPosition() == self.returnToTile:
-                quest = GoToTile(targetPosition=self.tileToReturnTo)
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.tileToReturnTo)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -2849,7 +2849,7 @@ Remove all items from the walkways."""%(self.targetPosition,)
         if not self.subQuests:
             if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:
                 if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
-                    quest = src.quests.GoToTile(targetPosition=self.targetPosition)
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                     self.addQuest(quest)
                     return
 
@@ -2896,7 +2896,7 @@ Remove all items from the walkways."""%(self.targetPosition,)
                     return
 
             if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
-                quest = src.quests.GoToTile(targetPosition=self.targetPosition)
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 return
 
@@ -2937,7 +2937,7 @@ Remove all items from the walkways."""%(self.targetPosition,)
             if items:
                 item = random.choice(items)
 
-                quest = src.quests.GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
                 self.addQuest(quest)
                 return
 
@@ -3048,7 +3048,7 @@ Use it to gain a new body guard."""
             return
 
         if not character.getIsHome():
-            quest = GoHome(description="go to command centre")
+            quest = src.quests.questMap["GoHome"](description="go to command centre")
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -3056,7 +3056,7 @@ Use it to gain a new body guard."""
 
         personnelArtwork = self.getPersonnelArtwork(character)
         if personnelArtwork and character.getDistance(personnelArtwork.getPosition()) > 1:
-            quest = GoToPosition(description="go to personnel artwork",targetPosition=personnelArtwork.getPosition(),ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](description="go to personnel artwork",targetPosition=personnelArtwork.getPosition(),ignoreEndBlocked=True)
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -3155,7 +3155,7 @@ class StandAttention(MetaQuestSequence):
 
     def generateSubquests(self,character):
         if not self.addedSubQuests:
-            quest = GoToPosition()
+            quest = src.quests.questMap["GoToPosition"]()
             quest.assignToCharacter(character)
             if not character.registers.get("ATTNPOSx") or not character.registers.get("ATTNPOSy"):
                 return
@@ -3163,7 +3163,7 @@ class StandAttention(MetaQuestSequence):
             quest.setParameters({"targetPosition":targetpos})
             self.addQuest(quest)
 
-            quest = GoToPosition()
+            quest = src.quests.questMap["GoToPosition"]()
             quest.assignToCharacter(character)
             quest.setParameters({"targetPosition":(6,6,0)})
             self.addQuest(quest)
@@ -3289,15 +3289,15 @@ class TeleportToTerrain(MetaQuestSequence):
                         itemPos = item.getPosition()
                         teleportCommand = ".j"+str(self.targetPosition[0])+","+str(self.targetPosition[1])+"\n"
                         if charPos == (itemPos[0]-1,itemPos[1],itemPos[2]):
-                            self.addQuest(RunCommand(command="Jd"+teleportCommand))
+                            self.addQuest(src.quests.questMap["RunCommand"](command="Jd"+teleportCommand))
                         elif charPos == (itemPos[0],itemPos[1]-1,itemPos[2]):
-                            self.addQuest(RunCommand(command="Js"+teleportCommand))
+                            self.addQuest(src.quests.questMap["RunCommand"](command="Js"+teleportCommand))
                         elif charPos == (itemPos[0]+1,itemPos[1],itemPos[2]):
-                            self.addQuest(RunCommand(command="Ja"+teleportCommand))
+                            self.addQuest(src.quests.questMap["RunCommand"](command="Ja"+teleportCommand))
                         elif charPos == (itemPos[0],itemPos[1]+1,itemPos[2]):
-                            self.addQuest(RunCommand(command="Jw"+teleportCommand))
+                            self.addQuest(src.quests.questMap["RunCommand"](command="Jw"+teleportCommand))
                         else:
-                            quest = GoToPosition(targetPosition=itemPos,ignoreEndBlocked=True)
+                            quest = src.quests.questMap["GoToPosition"](targetPosition=itemPos,ignoreEndBlocked=True)
                             quest.assignToCharacter(character)
                             quest.activate()
                             self.addQuest(quest)
@@ -3309,7 +3309,7 @@ class TeleportToTerrain(MetaQuestSequence):
             for room in terrain.rooms:
                 if not isinstance(room,src.rooms.TeleporterRoom):
                     continue
-                quest = GoToTile(targetPosition=room.getPosition())
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
@@ -6198,13 +6198,13 @@ class PatrolQuest(MetaQuestSequence):
     def solver(self,character):
         if not self.subQuests:
             """
-            quest = GoToTile(targetPosition=self.waypoints[self.waypointIndex],paranoid=True)
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.waypoints[self.waypointIndex],paranoid=True)
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
             """
 
-            quest = SecureTile(toSecure=self.waypoints[self.waypointIndex],endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=self.waypoints[self.waypointIndex],endWhenCleared=True)
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
@@ -7522,446 +7522,6 @@ class DeliverSpecialItem(Quest):
 
         return command
 
-class GoToTile(Quest):
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True):
-        questList = []
-        super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.targetPosition = None
-        self.showCoordinates = showCoordinates
-        self.description = description
-        self.metaDescription = description
-        self.path = None
-        self.expectedPosition = None
-        self.lastPos = None
-        self.lastDirection = None
-        self.smallPath = None
-        self.paranoid = paranoid
-        self.sentSubordinates = False
-
-        if targetPosition: 
-            self.setParameters({"targetPosition":targetPosition})
-
-        self.attributesToStore.extend([
-            "hasListener","paranoid","sentSubordinates" ])
-
-        self.tupleListsToStore.extend([
-            "path", "smallPath" ])
-
-        self.tuplesToStore.extend([
-            "targetPosition","expectedPosition","lastPos","lastDirection"])
-
-        self.type = "GoToTile"
-
-        self.shortCode = "G"
-
-    def generateTextDescription(self):
-        return """
-Go to tile %s
-
-This is a pretty common quest.
-You have to go from one place to another pretty often.
-
-
-
-Quests like this can be pretty boring.
-Press c now to use auto move to complete this quest.
-Press crtl-d to stop your character from moving.%s
-"""%(self.targetPosition,self.showCoordinates,)
-
-    def getQuestMarkersSmall(self,character,dryRun=True,renderForTile=False):
-        if isinstance(character.container,src.rooms.Room):
-            if renderForTile:
-                return []
-        else:
-            if not renderForTile:
-                return []
-        self.getSolvingCommandString(character, dryRun=dryRun)
-        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
-        if self.smallPath:
-            pos = (character.xPosition,character.yPosition)
-            for step in self.smallPath:
-                pos = (pos[0]+step[0],pos[1]+step[1])
-                result.append((pos,"path"))
-        return result
-
-    def getQuestMarkersTile(self,character):
-        if self.character.xPosition%15 == 0 or  self.character.yPosition%15 == 0 or self.character.xPosition%15 == 14 or self.character.yPosition%15 == 14:
-            return []
-        result = super().getQuestMarkersTile(character)
-        self.getSolvingCommandString(character)
-        if self.expectedPosition:
-            result.append((self.expectedPosition,"path"))
-        if self.path:
-            if self.expectedPosition:
-                pos = self.expectedPosition
-            elif isinstance(character.container,src.rooms.Room):
-                pos = (character.container.xPosition,character.container.yPosition)
-            else:
-                pos = (character.xPosition//15,character.yPosition//15)
-            for step in reversed(self.path):
-                pos = (pos[0]+step[0],pos[1]+step[1])
-                result.append((pos,"path"))
-        result.append((self.targetPosition,"target"))
-        return result
-
-    def handleMoved(self, extraInfo):
-        if self.completed:
-            1/0
-        if not self.active:
-            return
-
-        converedDirection = None
-        if extraInfo[1] == "west":
-            converedDirection = (-1,0)
-        if extraInfo[1] == "east":
-            converedDirection = (1,0)
-        if extraInfo[1] == "north":
-            converedDirection = (0,-1)
-        if extraInfo[1] == "south":
-            converedDirection = (0,1)
-        if self.smallPath:
-            if converedDirection == self.smallPath[0]:
-                self.smallPath = self.smallPath[1:]
-                return
-            else:
-                self.smallPath = None
-
-        self.triggerCompletionCheck(extraInfo[0])
-
-    def handleTileChange(self):
-        pos = self.character.getBigPosition()
-        if pos == self.lastPos:
-            return
-        self.lastPos = pos
-
-        converedDirection = None
-        if self.character.xPosition%15 == 0:
-            converedDirection = (1,0)
-        if self.character.yPosition%15 == 0:
-            converedDirection = (0,1)
-        if self.character.xPosition%15 in (13,14):
-            converedDirection = (-1,0)
-        if self.character.yPosition%15 in (13,14):
-            converedDirection = (0,-1)
-        if self.path:
-            if converedDirection == self.path[-1]:
-                self.expectedPosition = None
-                self.path = self.path[:-1]
-                return
-            else:
-                self.path = None
-                self.getSolvingCommandString(self.character,dryRun=False)
-                return
-        return
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.handleMoved, "moved")
-        self.startWatching(character,self.handleTileChange, "changedTile")
-
-        super().assignToCharacter(character)
-
-    def triggerCompletionCheck(self, character=None):
-        if not self.targetPosition:
-            return False
-        if not character:
-            return False
-        if not self.active:
-            return
-        if isinstance(character.container,src.rooms.Room):
-            if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
-                self.postHandler()
-                return True
-        elif character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
-            self.postHandler()
-            return True
-        return False
-
-    def solver(self, character):
-        self.activate()
-        self.assignToCharacter(character)
-        self.smallPath = None
-        self.triggerCompletionCheck(character)
-        commandString = self.getSolvingCommandString(character,dryRun=False)
-        self.randomSeed = random.random()
-        if commandString:
-            character.runCommandString(commandString)
-            return False
-        else:
-            return True
-
-    def setParameters(self,parameters):
-        if "targetPosition" in parameters and "targetPosition" in parameters:
-            if not len(parameters["targetPosition"]) > 2:
-                parameters["targetPosition"] = (parameters["targetPosition"][0],parameters["targetPosition"][1],0)
-            self.targetPosition = parameters["targetPosition"]
-            self.description = self.metaDescription
-            if self.showCoordinates:
-                self.description += " %s"%(self.targetPosition,)
-        return super().setParameters(parameters)
-
-    def getRequiredParameters(self):
-        parameters = super().getRequiredParameters()
-        parameters.append({"name":"targetPosition","type":"coordinate"})
-        return parameters
-
-    def reroll(self):
-        self.path = None
-        super().reroll()
-
-    def getSolvingCommandString(self, character, dryRun = True):
-        if not self.targetPosition:
-            return ".10.."
-
-        if self.smallPath:
-            command = ""
-            for step in self.smallPath:
-                if step == (-1,0):
-                    command += "a"
-                elif step == (1,0):
-                    command += "d"
-                elif step == (0,-1):
-                    command += "w"
-                elif step == (0,1):
-                    command += "s"
-
-            return command
-
-        if character.macroState.get("submenue"):
-            return ["esc"]
-
-        localRandom = random.Random(self.randomSeed)
-        if isinstance(character.container, src.rooms.Room):
-            if not self.paranoid and localRandom.random() < 0.5 and "fighting" in self.character.skills:
-                for otherCharacter in character.container.characters:
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    return "gg"
-
-            charPos = (character.xPosition,character.yPosition,0)
-            tilePos = (character.container.xPosition,character.container.yPosition,0)
-
-            direction = None
-            path = self.path
-            """
-            if self.expectedPosition and not (tilePos == self.expectedPosition):
-                if tilePos == self.lastPos:
-                    direction = self.lastDirection
-                else:
-                    path = None
-            """
-
-            targetPos = (self.targetPosition[0],self.targetPosition[1],0)
-            if not path:
-                basePath = character.container.container.getPath(tilePos,targetPos,localRandom=localRandom,character=character)
-                if not basePath:
-                    return ".14..."
-                path = list(reversed(basePath))
-
-            if not dryRun:
-                self.path = path
-
-            if not path:
-                return ".13.."
-
-            if not direction:
-                direction = path[-1]
-
-            """
-            if self.paranoid:
-                if not self.sentSubordinates and character.subordinates:
-                    if not dryRun:
-                        self.sentSubordinates = True
-                    command = "QSNSecureTile\n%s,%s\nlifetime:40; ."%(tilePos[0]+direction[0],tilePos[1]+direction[1],)
-                    return command
-                if not dryRun:
-                    self.sentSubordinates = False
-            """
-
-            if direction == (1,0):
-                if charPos == (12,6,0):
-                    return "d"
-                (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(12,6,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    return ".19.."
-                return command
-            if direction == (-1,0):
-                if charPos == (0,6,0):
-                    return "a"
-                (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(0,6,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    return ".18.."
-                return command
-            if direction == (0,1):
-                if charPos == (6,12,0):
-                    return "s"
-                (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,12,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    return ".17.."
-                return command
-            if direction == (0,-1):
-                if charPos == (6,0,0):
-                    return "w"
-                (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(charPos,(6,0,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    return ".16.."
-                return command
-            return ".15.."
-        else:
-            if not self.paranoid and localRandom.random() < 0.5 and "fighting" in self.character.skills:
-                for otherCharacter in character.container.characters:
-                    if not (otherCharacter.xPosition//15 == character.xPosition//15 and otherCharacter.yPosition//15 == character.yPosition//15):
-                        continue
-                    if otherCharacter.faction == character.faction:
-                        continue
-                    return "gg"
-
-            tilePos = (character.xPosition//15,character.yPosition//15,0)
-            charPos = (character.xPosition%15,character.yPosition%15,0)
-
-            direction = None
-            path = self.path
-            """
-            if self.expectedPosition and not (tilePos == self.expectedPosition):
-                if tilePos == self.lastPos:
-                    direction = self.lastDirection
-                else:
-                    path = None
-            """
-
-            targetPos = (self.targetPosition[0],self.targetPosition[1],0)
-            if not path and not direction:
-                basePath = character.container.getPath(tilePos,targetPos,localRandom=localRandom)
-                if not basePath:
-                    return ".3.."
-                path = list(reversed(basePath))
-
-            if not dryRun:
-                self.path = path
-
-            if not path and not direction:
-                return ".26.."
-
-            if direction == None:
-                if charPos == (0,7,0):
-                    return "d"
-                if charPos == (7,14,0):
-                    return "w"
-                if charPos == (7,0,0):
-                    return "s"
-                if charPos == (14,7,0):
-                    return "a"
-
-            if not direction:
-                direction = path[-1]
-
-            """
-            if self.paranoid:
-                if not self.sentSubordinates and character.subordinates:
-                    if not dryRun:
-                        self.sentSubordinates = True
-                    command = "QSNSecureTile\n%s,%s\nlifetime:40; ."%(tilePos[0]+direction[0],tilePos[1]+direction[1],)
-                    return command
-                self.sentSubordinates = False
-            """
-
-            if direction == (1,0):
-                if charPos == (13,7,0):
-                    return "d"
-                if charPos == (14,7,0):
-                    return "d"
-                (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(13,7,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(13,7,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    items = character.container.getItemByPosition(character.getPosition(offset=(1,0,0)))
-                    if not items:
-                        return "d"
-                    else:
-                        dropDirection = random.choice(["l","La","Ls","Lw"])
-                        return "dk"+dropDirection
-                    return ".12.."
-                return command
-            if direction == (-1,0):
-                if charPos == (1,7,0):
-                    return "a"
-                if charPos == (0,7,0):
-                    return "a"
-                (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(1,7,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(1,7,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    items = character.container.getItemByPosition(character.getPosition(offset=(-1,0,0)))
-                    if not items:
-                        return "a"
-                    else:
-                        dropDirection = random.choice(["l","Ls","Lw","Ld"])
-                        return "ak"+dropDirection
-                    return ".12.."
-                return command
-            if direction == (0,1):
-                if charPos == (7,13,0):
-                    return "s"
-                if charPos == (7,14,0):
-                    return "s"
-                (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,13,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,13,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    items = character.container.getItemByPosition(character.getPosition(offset=(0,1,0)))
-                    if not items:
-                        return "s"
-                    else:
-                        dropDirection = random.choice(["l","La","Lw","Ld"])
-                        return "sk"+dropDirection
-                    return ".12.."
-                return command
-            if direction == (0,-1):
-                if charPos == (7,1,0):
-                    return "w"
-                if charPos == (7,0,0):
-                    return "w"
-                (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,1,0),localRandom=localRandom,character=character)
-                if not command:
-                    (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,(7,1,0),localRandom=localRandom,tryHard=True,character=character)
-                if not command and not dryRun:
-                    self.path = None
-                    self.lastDirection = None
-                    items = character.container.getItemByPosition(character.getPosition(offset=(0,-1,0)))
-                    if not items:
-                        return "w"
-                    else:
-                        dropDirection = random.choice(["l","La","Ls","Ld"])
-                        return "wk"+dropDirection
-                    return ".12.."
-                return command
-            return ".17.."
-        return ".20.."
-
 class ReachOutStory(MetaQuestSequence):
     def __init__(self, description="reach out to implant", creator=None):
         questList = []
@@ -7998,115 +7558,6 @@ class ReachOutStory(MetaQuestSequence):
             return ["esc"]
         else:
             return "q"
-
-class InitialLeaveRoomStory(GoToTile):
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
-        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
-        self.direction = direction
-
-    def generateTextDescription(self):
-        door = src.items.itemMap["Door"]()
-        door.open = True
-        return ["""
-You reach out to your implant and it answers.
-It whispers, but you understand clearly:
-
-You are safe. You are in a farming complex.
-Something is not right, though.
-It looks freshly seeded, but the ghul is not active.
-
-You can not stay here forever, so start moving and leave this room.
-Use the wasd movement keys to move.
-Pass through the door (""",door.render(),""") in the """+self.direction+""". 
-
-
-
-Right now you are looking at the quest menu.
-Detailed instructions and explainations are shown here.
-For now ignore the options below and press esc to continue.
-
-"""]
-
-class EscapeAmbushStory(GoToTile):
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
-        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
-        self.direction = direction
-
-    def generateTextDescription(self):
-        door = src.items.itemMap["Door"]()
-        door.open = True
-        enemyDirection = " the south and east"
-        if self.character.getBigPosition()[1] == 13:
-            enemyDirection = " the east"
-        return ["""
-You reach out to your implant and it answers.
-It whispers, but you understand clearly:
-
-
-This room is not a safe place to stay.
-Enemies are on their way to hunt you down.
-They look like [- and come from """+enemyDirection+""".
-
-So get moving and leave this room.
-Use the wasd movement keys to move.
-Pass through the door (""",door.render(),""") in the """+self.direction+""". 
-
-
-
-Right now you are looking at the quest menu.
-Detailed instructions and explainations are shown here.
-For now ignore the options below and press esc to continue.
-
-"""]
-
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return
-        if isinstance(character.container,src.rooms.Room):
-            return False
-        self.postHandler()
-
-class GoToTileStory(GoToTile):
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True, direction=None):
-        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates)
-        self.direction = direction
-
-    def generateTextDescription(self):
-        command = ""
-        if self.direction == "south":
-            command = "s"
-        if self.direction == "north":
-            command = "w"
-        if self.direction == "west":
-            command = "a"
-        if self.direction == "east":
-            command = "d"
-
-        item1 = src.items.itemMap["Scrap"](amount=6)
-        item2 = src.items.itemMap["LandMine"]()
-        return ["""
-Go one tile to the """+self.direction+""".
-The quest ends when you do that.
-This quest is part of the quest to reach the base.
-
-Avoid fighting with the enemies, you are not equipped for it.
-Also avoid running into obstacles (""",item1.render(),""")
-and try not to step on the land mines (""",item2.render(),""").
-
-
-The playing field is divided into tiles by the blue borders.
-You can pass from tile to tile using the pathway in the middle.
-So go to the """+self.direction+""" side of this tile and press """+command+""" to switch tile.
-
-Those suggested action on how to do this are shown during normal gameplay on the left.
-Following that suggestion should avoid the obstacles and most landmines.
-The suggestion doesn't avoid enemies and might even run into them.
-So use the suggested keystrokes as orientation and don't follow them blindly.
-
-
-
-Press a to move the quest cursor back to the main quest
-"""%(self.getSolvingCommandString(self.character))]
 
 class TakeOverBase(MetaQuestSequence):
     def __init__(self, description="join base"):
@@ -8217,7 +7668,7 @@ Activate the basic trainer in the command centre to start training a skill"""
             return
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = GoHome(description="go back to command centre")
+            quest = src.quests.questMap["GoHome"](description="go back to command centre")
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -8234,12 +7685,12 @@ Activate the basic trainer in the command centre to start training a skill"""
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                 return
-            quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to basic trainer  ")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to basic trainer  ")
             quest.activate()
             quest.assignToCharacter(character)
             self.addQuest(quest)
             return
-        quest = GoHome(description="go to command centre")
+        quest = src.quests.questMap["GoHome"](description="go to command centre")
         self.addQuest(quest)
         quest.assignToCharacter(character)
         quest.activate()
@@ -8346,7 +7797,7 @@ The assimilator is in the command centre.
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
-            quest = GoHome(description="go to command centre")
+            quest = src.quests.questMap["GoHome"](description="go to command centre")
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
@@ -8378,12 +7829,12 @@ The assimilator is in the command centre.
                 #quest.activate()
                 #self.addQuest(quest)
                 return
-            quest = GoToPosition(targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
             quest.active = True
             quest.assignToCharacter(character)
             self.addQuest(quest)
             return
-        self.addQuest(GoToTile(targetPosition=(7,7,0),description="go to command centre"))
+        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to command centre"))
         return
 
     def getSolvingCommandString(self,character,dryRun=True):
@@ -8565,7 +8016,7 @@ Remember to press ctrl-d if you lose control over your character.
 
         if pos == (7,7,0):
             if not character.getPosition() == (6,7,0):
-                quest = GoToPosition(targetPosition=(6,7,0), description="go to epoch artwork")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,7,0), description="go to epoch artwork")
                 quest.activate()
                 self.addQuest(quest)
                 return
@@ -8602,7 +8053,7 @@ Remember to press ctrl-d if you lose control over your character.
 
         if not silent:
             character.addMessage("move one tile to the "+direction)
-        quest = src.quests.GoToTile(description="go one tile "+direction,targetPosition=targetPos,showCoordinates=False)
+        quest = src.quests.questMap["GoToTile"](description="go one tile "+direction,targetPosition=targetPos,showCoordinates=False)
         self.addQuest(quest)
         quest.activate()
 
@@ -8774,7 +8225,7 @@ Press d now to move the quest cursor to select the sub quest.
             extra = "another "
         character.addMessage("move "+extra+"one tile to the "+direction)
         self.lastDirection = direction
-        quest = src.quests.GoToTileStory(description="go one tile to the "+direction,targetPosition=targetPos,showCoordinates=False,direction=direction)
+        quest = src.quests.questMap["GoToTileStory"](description="go one tile to the "+direction,targetPosition=targetPos,showCoordinates=False,direction=direction)
         self.addQuest(quest)
         quest.assignToCharacter(character)
         quest.activate()
@@ -8873,7 +8324,7 @@ class Huntdown(MetaQuestSequence):
                     self.fail()
                     return
 
-                quest = GoToTile(paranoid=True)
+                quest = src.quests.questMap["GoToTile"](paranoid=True)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -8948,11 +8399,11 @@ You may want to plan an escape route."""%(self.targetPosition,)
             return
         if not self.subQuests:
             if not character.getBigPosition() == self.targetPosition:
-                quest = GoToTile(targetPosition=self.targetPosition)
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 return
             if character.getDistance((6,6,0)) > 1:
-                quest = GoToPosition(targetPosition=(6,6,0),ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0),ignoreEndBlocked=True)
                 self.addQuest(quest)
                 return
 
@@ -8966,7 +8417,7 @@ You may want to plan an escape route."""%(self.targetPosition,)
                 }
             
             if offset in commandMap:
-                quest = src.quests.RunCommand(command=commandMap[offset])
+                quest = src.quests.questMap["RunCommand"](command=commandMap[offset])
                 self.addQuest(quest)
                 return
 
@@ -9122,19 +8573,19 @@ Clear your inventory afterwards to complete the quest."""%(self.roomPos,)
 
         if not self.subQuests:
             if not character.getFreeInventorySpace() > 0:
-                quest = ClearInventory(returnToTile=False)
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
                 return
             if not character.getBigPosition() == self.roomPos:
                 if len(character.inventory) > 0:
-                    quest = ClearInventory(returnToTile=False)
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     quest.activate()
                     return
-                quest = SecureTile(toSecure=self.roomPos,endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=self.roomPos,endWhenCleared=True)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -9142,14 +8593,14 @@ Clear your inventory afterwards to complete the quest."""%(self.roomPos,)
             item = self.getLoot(character)
             if not item:
                 if len(character.inventory) > 0:
-                    quest = ClearInventory(returnToTile=False)
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     quest.activate()
                     return
 
-            self.addQuest(RunCommand(command="k", description="pick up loot"))
-            self.addQuest(GoToPosition(targetPosition=item.getPosition(),description="go to loot"))
+            self.addQuest(src.quests.questMap["RunCommand"](command="k", description="pick up loot"))
+            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to loot"))
             return
 
         super().solver(character)
@@ -9208,120 +8659,11 @@ Secure the following tiles:
         self.triggerCompletionCheck(character)
         if not self.subQuests:
             targetPosition = self.toSecure.pop()
-            quest = src.quests.SecureTile(toSecure=targetPosition,endWhenCleared=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=targetPosition,endWhenCleared=True)
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
             return
-        super().solver(character)
-
-class SecureTile(GoToTile):
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None):
-        super().__init__(description=description,targetPosition=toSecure)
-        self.metaDescription = description
-        self.type = "SecureTile"
-        self.endWhenCleared = endWhenCleared
-        self.reputationReward = reputationReward
-        self.rewardText = rewardText
-        self.huntdownCooldown = 0
-
-    def generateTextDescription(self):
-        text  = """
-Secure the tile %s.
-
-This means you should go to the tile and kill all enemies you find."""%(self.targetPosition,)
-        if not self.endWhenCleared:
-            text = "\n"+text+"\n\nStay there and kill all enemies arriving"
-        else:
-            text = "\n"+text+"\n\nthe quest will end after you do this"
-        text += """
-
-You can attack enemies by walking into them.
-But you can use your environment to your advantage, too.
-Try luring enemies into landmines or detonating some bombs."""
-
-        return text
-
-    def wrapedTriggerCompletionCheck2(self, extraInfo):
-        self.triggerCompletionCheck(extraInfo["character"])
-
-    def handleTileChange2(self):
-        self.triggerCompletionCheck(self.character)
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-        
-        self.startWatching(character,self.wrapedTriggerCompletionCheck2, "character died on tile")
-        self.startWatching(character,self.handleTileChange2, "changedTile")
-
-        super().assignToCharacter(character)
-
-    def postHandler(self,character=None):
-        if self.reputationReward and character:
-            if self.rewardText:
-                text = self.rewardText
-            else:
-                text = "securing a tile"
-            character.awardReputation(amount=50, reason=text)
-        super().postHandler()
-
-    def triggerCompletionCheck(self,character=None):
-
-        if not character:
-            return False
-
-        if not self.endWhenCleared:
-            return False
-
-        if isinstance(character.container,src.rooms.Room):
-            if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
-                foundEnemy = None
-                for enemy in character.container.characters:
-                    if enemy.faction == character.faction:
-                        continue
-                    foundEnemy = enemy
-                if not foundEnemy:
-                    self.postHandler(character)
-                    return True
-        else:
-            if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
-                foundEnemy = None
-                for enemy in character.container.characters:
-                    if not (enemy.xPosition//15 == character.xPosition//15 and enemy.yPosition//15 == character.yPosition//15):
-                        continue
-                    if enemy.faction == character.faction:
-                        continue
-                    foundEnemy = enemy
-                if not foundEnemy:
-                    self.postHandler(character)
-                    return True
-
-        return False
-
-    def solver(self,character):
-        if self.completed:
-            return
-        if not self.active:
-            return
-
-        if self.triggerCompletionCheck(character):
-            return
-
-        try:
-            self.huntdownCooldown -= 1
-        except:
-            self.huntdownCooldown = 0
-        if self.huntdownCooldown < 0:
-            enemies = character.getNearbyEnemies()
-            if enemies:
-                self.huntdownCooldown = 100
-                if random.random() < 0.3:
-                    quest = Huntdown(target=random.choice(enemies))
-                    quest.autoSolve = True
-                    character.assignQuest(quest,active=True)
-                    return
-
         super().solver(character)
 
 class GoToPosition(Quest):
@@ -9541,7 +8883,7 @@ Press crtl-d to stop your character from moving.
     def generateSubquests(self,character):
         if not self.addedSubQuests:
 
-            quest = GoToTile(paranoid=self.paranoid)
+            quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid)
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
@@ -9896,7 +9238,7 @@ class ObtainSpecialItem(MetaQuestSequence):
                 quest = src.quests.questMap["BeUsefull"]()
                 self.addQuest(quest)
 
-                quest = Equip(lifetime=400)
+                quest = src.quests.questMap["Equip"](lifetime=400)
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
@@ -9916,7 +9258,7 @@ class ObtainSpecialItem(MetaQuestSequence):
                     self.addedSubQuests = True
                     return
 
-                #quest = StandAttention()
+                #quest = src.quests.questMap["StandAttention"]()
                 #self.addQuest(quest)
                 homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
 
@@ -9927,16 +9269,16 @@ class ObtainSpecialItem(MetaQuestSequence):
                 self.addQuest(quest)
                 quest.itemID = self.itemID
 
-                quest = GoToTile()
+                quest = src.quests.questMap["GoToTile"]()
                 quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]+1)})
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
 
-                quest = GoHome(paranoid=self.paranoid)
+                quest = src.quests.questMap["GoHome"](paranoid=self.paranoid)
                 self.addQuest(quest)
 
-                quest = GoToTile(paranoid=self.paranoid)
+                quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -9947,28 +9289,28 @@ class ObtainSpecialItem(MetaQuestSequence):
                     lifetime = self.initialLifetime//2
 
                 # grab the item
-                quest = GrabSpecialItem(lifetime=lifetime)
+                quest = src.quests.questMap["GrabSpecialItem"](lifetime=lifetime)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
                 quest.itemID = self.itemID
 
                 # enter the city
-                quest = EnterEnemyCity(lifetime=lifetime)
+                quest = src.quests.questMap["EnterEnemyCity"](lifetime=lifetime)
                 self.addQuest(quest)
                 quest.setCityLocation(self.itemLocation)
                 quest.assignToCharacter(character)
                 quest.activate()
 
                 # enter the city
-                quest = GoToTile(lifetime=lifetime,paranoid=self.paranoid)
+                quest = src.quests.questMap["GoToTile"](lifetime=lifetime,paranoid=self.paranoid)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1])})
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
 
                 # go near enemy city
-                quest = GoToTile(lifetime=lifetime,paranoid=self.paranoid)
+                quest = src.quests.questMap["GoToTile"](lifetime=lifetime,paranoid=self.paranoid)
                 quest.setParameters({"targetPosition":(self.itemLocation[0],self.itemLocation[1]-3)})
                 quest.assignToCharacter(character)
                 quest.activate()
@@ -9976,13 +9318,13 @@ class ObtainSpecialItem(MetaQuestSequence):
                 self.addQuest(quest)
 
                 # leave city
-                quest = GoToTile(lifetime=lifetime,paranoid=False)
+                quest = src.quests.questMap["GoToTile"](lifetime=lifetime,paranoid=False)
                 quest.setParameters({"targetPosition":(homeLocation[0],homeLocation[1]-2)})
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
 
-                quest = Equip(lifetime=300)
+                quest = src.quests.questMap["Equip"](lifetime=300)
                 quest.assignToCharacter(character)
                 quest.activate()
                 self.addQuest(quest)
@@ -10149,7 +9491,7 @@ Use the epoch artwork to spend your glass tears.
 
         if pos == (7,7,0):
             if not character.getPosition() == (6,7,0):
-                quest = GoToPosition(targetPosition=(6,7,0), description="go to epoch artwork")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,7,0), description="go to epoch artwork")
                 quest.activate()
                 self.addQuest(quest)
                 return
@@ -10171,7 +9513,7 @@ Use the epoch artwork to spend your glass tears.
                 (7,8,0):"north",
                 }
 
-        quest = src.quests.GoHome(description="go to command centre")
+        quest = src.quests.questMap["GoHome"](description="go to command centre")
         self.addQuest(quest)
 
         return
@@ -10288,8 +9630,6 @@ questMap = {
     "GrabSpecialItem": GrabSpecialItem,
     "StandAttention": StandAttention,
     "ProtectSuperior": ProtectSuperior,
-    "SecureTile": SecureTile,
-    "GoToTile": GoToTile,
     "Equip": Equip,
     "RestockRoom": RestockRoom,
     "GoToPosition": GoToPosition,

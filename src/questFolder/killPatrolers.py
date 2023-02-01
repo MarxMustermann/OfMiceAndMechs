@@ -47,7 +47,7 @@ Press r to generate subquest and recive detailed instructions
         self.triggerCompletionCheck(character)
 
         if not self.subQuests:
-            quest = SecureTile(toSecure=(7,4,0),endWhenCleared=False,description="ambush patrolers on tile ")
+            quest = src.quests.questMap["SecureTile"](toSecure=(7,4,0),endWhenCleared=False,description="ambush patrolers on tile ")
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()

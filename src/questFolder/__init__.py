@@ -1,3 +1,8 @@
+import src.questFolder.goToTile
+import src.questFolder.secureTile
+import src.questFolder.initialLeaveRoomStory
+import src.questFolder.escapeAmbushStory
+import src.questFolder.goToTileStory
 import src.questFolder.beUsefull
 import src.questFolder.beUsefullOnTile
 import src.questFolder.killPatrolers

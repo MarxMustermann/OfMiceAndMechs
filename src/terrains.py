@@ -147,19 +147,19 @@ class Terrain(src.saveing.Saveable):
         smallNewPos = (extraInfo["pos"][0]%15,extraInfo["pos"][1]%15,0)
 
         if src.gamestate.gamestate.mainChar.container == self and charPos == newPos:
-            quest = src.quests.GoToPosition(targetPosition=smallNewPos)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=smallNewPos)
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
         else:
-            quest = src.quests.GoToPosition(targetPosition=smallNewPos)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=smallNewPos)
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-            quest = src.quests.GoToTile(targetPosition=newPos)
+            quest = src.quests.questMap["GoToTile"](targetPosition=newPos)
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)

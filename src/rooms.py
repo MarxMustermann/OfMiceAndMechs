@@ -757,7 +757,7 @@ class Room(src.saveing.Saveable):
         quest.assignToCharacter(src.gamestate.gamestate.mainChar)
         src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
 
-        quest = src.quests.GoToPosition(targetPosition=(src.gamestate.gamestate.dragState["start"]["pos"]))
+        quest = src.quests.questMap["GoToPosition"](targetPosition=(src.gamestate.gamestate.dragState["start"]["pos"]))
         quest.autoSolve = True
         quest.activate()
         quest.assignToCharacter(src.gamestate.gamestate.mainChar)
@@ -787,19 +787,19 @@ class Room(src.saveing.Saveable):
         #src.gamestate.gamestate.mainChar.addMessage("should stop draggin")
 
         if dragState["end"]["container"] == self:
-            quest = src.quests.GoToPosition(targetPosition=(dragState["end"]["pos"]))
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(dragState["end"]["pos"]))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
         else:
-            quest = src.quests.GoToPosition(targetPosition=(dragState["end"]["pos"]))
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(dragState["end"]["pos"]))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-            quest = src.quests.GoToTile(targetPosition=(self.xPosition,self.yPosition,0))
+            quest = src.quests.questMap["GoToTile"](targetPosition=(self.xPosition,self.yPosition,0))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
@@ -807,19 +807,19 @@ class Room(src.saveing.Saveable):
             src.gamestate.gamestate.mainChar.runCommandString("~")
 
         if dragState["start"]["container"] == self:
-            quest = src.quests.GoToPosition(targetPosition=(dragState["start"]["pos"]))
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(dragState["start"]["pos"]))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
         else:
-            quest = src.quests.GoToPosition(targetPosition=(dragState["start"]["pos"]))
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(dragState["start"]["pos"]))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-            quest = src.quests.GoToTile(targetPosition=(self.xPosition,self.yPosition,0))
+            quest = src.quests.questMap["GoToTile"](targetPosition=(self.xPosition,self.yPosition,0))
             quest.autoSolve = True
             quest.activate()
             quest.assignToCharacter(src.gamestate.gamestate.mainChar)

@@ -2248,7 +2248,7 @@ select what you want to observe
             if key in ("D",):
                 newPos = (charPos[0]+1,charPos[1],charPos[2])
 
-            quest = src.quests.GoToTile(targetPosition=newPos,paranoid=True)
+            quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
             #quest.selfAssigned = True
             quest.autoSolve = True
             quest.assignToCharacter(char)

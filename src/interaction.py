@@ -7050,7 +7050,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         printUrwidToTcod("|",(offsetX+width,offsetY+22+height))
         printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1))
 
-        printUrwidToTcod("try playing the \"tutorials\" scenario,\nif you have trouble with the game",(offsetX+3,offsetY+20))
+        printUrwidToTcod("press p to play",(offsetX+3,offsetY+20))
 
         if canLoad:
             printUrwidToTcod("press p to load game",(offsetX+3,offsetY+27))

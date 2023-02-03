@@ -3948,6 +3948,7 @@ class CharacterInfoMenu(SubMenu):
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
         text += "position: %s\n" % (char.getPosition(),)
         text += "big position: %s\n" % (char.getBigPosition(),)
+        text += "big position: %s\n" % (char.getTerrainPosition(),)
 
         return text
 

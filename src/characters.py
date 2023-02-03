@@ -422,6 +422,9 @@ class Character(src.saveing.Saveable):
             charPos = (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
         return charPos
 
+    def getTerrainPosition(self,offset=(0,0,0)):
+        return (self.getTerrain().xPosition,self.getTerrain().yPosition,0)
+
     def huntkill(self):
         self.addMessage("should start huntkill now")
         self.huntkilling = True

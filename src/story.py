@@ -4765,7 +4765,12 @@ Enter the base that way."""
             return
 
         if not mainChar.registers.get("baseCommander"):
-            containerQuest = src.quests.questMap["ActivateEpochArtwork"](epochArtwork=self.activeStory["epochArtwork"])
+            storyText = """
+You reached the base. The trap rooms are not charged and there are no other signs of activity.
+
+This may be a bad thing.
+Find the commander of this base to find out what is happening."""
+            containerQuest = src.quests.questMap["ActivateEpochArtwork"](epochArtwork=self.activeStory["epochArtwork"],storyText=storyText)
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
@@ -4773,7 +4778,17 @@ Enter the base that way."""
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        containerQuest = src.quests.questMap["TakeOverBase"](description="join base")
+        storyText = """
+There is no commander. That explains the inactivity-
+
+This is a bit of a bad thing.
+You are safe and you wont starve.
+But you will be unable to leave.
+
+You are in no hurry, but there is only one choice.
+Integrate as the only worker into the base.
+When you rise in rank you will be able to build a way out of here."""
+        containerQuest = src.quests.questMap["TakeOverBase"](description="join base",storyText=storyText)
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()

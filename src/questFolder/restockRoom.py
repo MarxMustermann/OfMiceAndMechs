@@ -1,6 +1,9 @@
 import src
+import random
 
 class RestockRoom(src.quests.MetaQuestSequence):
+    type = "RestockRoom"
+
     def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None,allowAny=False):
         questList = []
         super().__init__(questList, creator=creator)

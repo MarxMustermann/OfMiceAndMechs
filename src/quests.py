@@ -597,19 +597,22 @@ class MetaQuestSequence(Quest):
     def render(self,depth=0,cursor=None):
         description = [self.description]
 
-        if self.active:
-            description = ["> "]+description
-        elif self.completed:
-            description = ["X "]+description
-        else:
-            description = ["x "]+description
-
         if cursor == None:
             color = "#fff"
         elif cursor == []:
             color = "#0f0"
         else:
             color = "#070"
+
+        if self.active:
+            description = ["> "]+description
+        elif self.completed:
+            description = ["X "]+description
+        elif self.isPaused():
+            description = ["# "]+description
+        else:
+            description = ["x "]+description
+        description = [[(src.interaction.urwid.AttrSpec(color, "default"), description)]]
 
         counter = 0
         for quest in self.subQuests:
@@ -619,7 +622,8 @@ class MetaQuestSequence(Quest):
                 newCursor = None
 
             description.append(["\n"]+["     "*(depth+1)]+quest.render(depth=depth+1,cursor=newCursor))
-        return [[(src.interaction.urwid.AttrSpec(color, "default"), description)]]
+            counter += 1
+        return description
 
     def isPaused(self):
         if not self.subQuests:

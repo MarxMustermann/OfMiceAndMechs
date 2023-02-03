@@ -75,13 +75,13 @@ You need to reach rank %s to complete the quest.
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return "Ja."
+                return "Ja"
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return "Jd."
-            if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return "Jw."
+                return "Jd"
+            if item.getPosition() == (character.xPosition,character.yPosition-1,0):
+                return "Jw"
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return "Js."
+                return "Js"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character):

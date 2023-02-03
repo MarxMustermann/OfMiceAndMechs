@@ -591,7 +591,8 @@ Now go on and be useful
 ----
 You were assigned the "be useful" quest.
 Initially it will show up as one line only.
-Open the quest to get more information.
+
+Open the quest by pressing q to get more information.
 """
 
         character.addMessage("----------------"+text+"-----------------")

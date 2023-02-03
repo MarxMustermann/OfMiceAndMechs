@@ -1734,6 +1734,72 @@ class Character(src.saveing.Saveable):
 
         self.changed("dropped",(self,item))
 
+    def examinePosition(self, pos):
+        text = "you are examining the position: %s\n\n"%(pos,)
+
+        if isinstance(self.container,src.rooms.Room):
+            room = self.container
+
+            text += "special fields:\n"
+            found = False
+            if pos in room.walkingSpace:
+                found = True
+                text += "is walking space\n"
+            for inputSlot in room.inputSlots:
+                if pos == inputSlot[0]:
+                    found = True
+                    text += "is input slot for %s (%s)\n"%(inputSlot[1],inputSlot[2],)
+            for outputSlot in room.outputSlots:
+                if pos == outputSlot[0]:
+                    found = True
+                    text += "is output slot for %s (%s)\n"%(outputSlot[1],outputSlot[2],)
+            for storageSlot in room.storageSlots:
+                if pos == storageSlot[0]:
+                    found = True
+                    text += "is storage slot for %s (%s)\n"%(storageSlot[1],storageSlot[2],)
+            for buildSite in room.buildSites:
+                if pos == buildSite[0]:
+                    found = True
+                    text += "is build site for %s (%s)\n"%(buildSite[1],buildSite[2],)
+            if not found:
+                text += "this field is not special\n"
+            text += "\n"
+
+        items = self.container.getItemByPosition(pos)
+        mainItem = None
+        if items:
+            if len(items) == 1:
+                text += "there is an item:\n\n"
+            else:
+                text += "there are some items:\n"
+                for item in items:
+                    text += "* %s\n"%(item.name,)
+                text += "\nOn the top is:\n\n"
+            mainItem = items[-1]
+        else:
+            text += "there are no items"
+
+        if mainItem:
+            registerInfo = ""
+            for (key, value) in mainItem.fetchSpecialRegisterInformation().items():
+                self.setRegisterValue(key, value)
+                registerInfo += "%s: %s\n" % (
+                    key,
+                    value,
+                )
+
+            # print info
+            info = mainItem.getLongInfo()
+            if info:
+                text += info
+
+            # notify listeners
+            self.changed("examine", mainItem)
+
+        self.submenue = src.interaction.OneKeystrokeMenu(text)
+        self.macroState["submenue"] = self.submenue
+        return
+
     def examine(self, item):
         """
         make the character examine an item
@@ -1753,7 +1819,6 @@ class Character(src.saveing.Saveable):
         # print info
         info = item.getLongInfo()
         if info:
-            self.addMessage("go show a menu")
             info += "\n\nregisterinformation:\n\n" + registerInfo
             self.submenue = src.interaction.OneKeystrokeMenu(info)
             self.macroState["submenue"] = self.submenue

@@ -2358,16 +2358,11 @@ select what you want to observe
             else:
                 # examine the marked item
                 if charState["itemMarkedLast"]:
-                    char.examine(charState["itemMarkedLast"])
+                    char.examinePosition(charState["itemMarkedLast"].getPosition())
 
                 # examine an item on floor
                 else:
-                    itemList = char.container.getItemByPosition(
-                        (char.xPosition, char.yPosition, char.zPosition)
-                    )
-                    for item in itemList:
-                        char.examine(item)
-                        break
+                    char.examinePosition(char.getPosition())
 
         # drop first item from inventory
         # bad pattern: the user has to have the choice for what item to drop

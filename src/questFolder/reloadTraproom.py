@@ -1,4 +1,5 @@
 import src
+import random
 
 class ReloadTraproom(src.quests.MetaQuestSequence):
     type = "ReloadTraproom"

@@ -92,7 +92,10 @@ class MonsterSpawner(src.items.Item):
                 quest.autoSolve = True
                 character.assignQuest(quest,active=True)
         
+        room = self.container
         super().destroy()
+        room.destroy()
+
 
     def render(self):
         return "MS"

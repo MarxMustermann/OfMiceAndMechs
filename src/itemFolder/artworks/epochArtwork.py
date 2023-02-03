@@ -352,9 +352,7 @@ Use it by activating it. You will recieve further instructions."""
     def getEpochChallenge(self,character):
         epochQuest = None
         for quest in character.quests:
-            character.addMessage(quest)
-            character.addMessage(quest.type)
-            if not quest.type == "EpochQuest":
+            if not isinstance(quest,src.quests.questMap["EpochQuest"]):
                 continue
             epochQuest = quest
 

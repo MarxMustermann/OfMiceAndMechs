@@ -3485,12 +3485,6 @@ class QuestMenu(SubMenu):
         if key == "a":
             if len(self.questCursor) > 1:
                 self.questCursor.pop()
-        """
-        if self.questIndex < 0:
-            self.questIndex = 0
-        if self.questIndex > len(self.char.quests) - 1:
-            self.questIndex = len(self.char.quests) - 1
-        """
 
         # make the selected quest active
         if key == "j":

@@ -893,7 +893,8 @@ class Room(src.saveing.Saveable):
             for item in self.itemsOnFloor:
                 try:
                     display = item.render()
-                    chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
+                    #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
+                    chars[item.yPosition][item.xPosition] = display
                 except:
                     src.logger.debugMessages.append("room drawing failed")
 

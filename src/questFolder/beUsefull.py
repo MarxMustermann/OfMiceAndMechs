@@ -247,7 +247,7 @@ Press r to generate subquest and recive detailed instructions
             return
 
         if character.rank == 4 and character.reputation >= 750:
-            quest = rc.quests.questMap["GetPromotion"](3)
+            quest = src.quests.questMap["GetPromotion"](3)
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)

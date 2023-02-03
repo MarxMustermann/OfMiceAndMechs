@@ -360,7 +360,7 @@ class CityBuilder2(src.items.Item):
             character.addMessage("need to remove old city first")
 
         citylocation = self.container.getPosition()
-        backGuardRoom = self.addTempleRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
+        temple = self.addTempleRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
         
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         #guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
@@ -445,7 +445,7 @@ class CityBuilder2(src.items.Item):
 
         self.addScrapFieldFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]-2)})
 
-        return {"backGuardRoom":backGuardRoom}
+        return {"temple":temple}
 
     def addEnemyRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],addEnemyRoom=False)
@@ -621,6 +621,18 @@ class CityBuilder2(src.items.Item):
     def addTempleRoomFromMap(self,params):
         room = self.addRoom(params["coordinate"],roomType="TempleRoom")
         room.faction = params["character"].faction
+
+        #specialItemSlotPositions = [(1,1),(2,1),(3,1),(4,1),(5,1),(7,1),(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
+        specialItemSlotPositions = [(1,1,0),(2,1,0),(3,1,0),(4,1,0)] #,(5,1),(7,1),(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
+        counter = 1
+        for pos in specialItemSlotPositions:
+            slotItem = src.items.itemMap["SpecialItemSlot"]()
+            slotItem.itemID = counter
+            slotItem.faction = room.faction
+            slotItem.hasItem = False
+            room.addItem(slotItem,pos)
+            counter += 1
+
         return room
 
     def addTeleporterRoomFromMap(self,params):

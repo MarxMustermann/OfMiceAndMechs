@@ -55,7 +55,7 @@ The Hives are shown on the minimap as: """,(src.interaction.urwid.AttrSpec("#484
             return
 
         if not self.subQuests:
-            quest = src.quest.questMap["Heal"]()
+            quest = src.quests.questMap["Heal"]()
             self.addQuest(quest)
             quest = src.quests.questMap["GetEpochReward"](doEpochEvaluation=True)
             self.addQuest(quest)

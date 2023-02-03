@@ -1,4 +1,5 @@
 import src
+import random
 
 class WaitQuest(src.quests.Quest):
     """

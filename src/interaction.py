@@ -3477,6 +3477,8 @@ class QuestMenu(SubMenu):
                 quest = baseList[index]
                 try:
                     baseList = quest.subQuests
+                    if len(baseList) < 1:
+                        failed = True
                 except:
                     baseList = None
                     failed = True

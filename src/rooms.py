@@ -409,6 +409,10 @@ class Room(src.saveing.Saveable):
                     return False
         return True
 
+    def destroy(self):
+        while self.health:
+            self.damage()
+
     def damage(self):
         """
         damage the room

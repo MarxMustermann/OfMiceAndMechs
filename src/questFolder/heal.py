@@ -1,7 +1,7 @@
 import src
 
 class Heal(src.quests.MetaQuestSequence):
-    type = "heal"
+    type = "Heal"
 
     def __init__(self, description="heal"):
         super().__init__()

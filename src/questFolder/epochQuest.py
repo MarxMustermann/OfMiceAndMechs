@@ -1,10 +1,6 @@
 import src
 
 class EpochQuest(src.quests.MetaQuestSequence):
-    """
-    state initialization
-    """
-
     type = "EpochQuest"
 
     def __init__(self, description="epoch quest", creator=None):

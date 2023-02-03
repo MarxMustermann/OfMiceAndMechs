@@ -2,9 +2,7 @@ import src
 import random
 
 class WaitQuest(src.quests.Quest):
-    """
-    straightforward state initialization
-    """
+    type = "WaitQuest"
 
     def __init__(
         self, followUp=None, startCinematics=None, lifetime=None, creator=None
@@ -13,7 +11,6 @@ class WaitQuest(src.quests.Quest):
         super().__init__(lifetime=lifetime, creator=creator)
 
         # save initial state and register
-        self.type = "WaitQuest"
 
     """
     do nothing

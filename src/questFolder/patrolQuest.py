@@ -1,9 +1,6 @@
 import src
 
 class PatrolQuest(src.quests.MetaQuestSequence):
-    """
-    state initialization
-    """
     type = "PatrolQuest"
 
     def __init__(self, description="patrol", waypoints=None, lifetime=None):

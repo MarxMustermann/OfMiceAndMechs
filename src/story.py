@@ -3922,12 +3922,13 @@ class MainGame(BasicPhase):
 
         self.difficulty = difficulty
         self.productionBaseInfos = []
-        self.productionBaseInfos.append(self.createProductiondBase((7,6)))
-        self.productionBaseInfos.append(self.createProductiondBase((7,8)))
+        positions = [(7,6),(7,8),(6,7),(8,7)]
+        self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
+        self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
 
         self.siegedBaseInfos = []
-        self.siegedBaseInfos.append(self.createSiegedBase((6,7)))
-        self.siegedBaseInfos.append(self.createSiegedBase((8,7)))
+        self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
+        self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
 
         if self.preselection == "Siege":
             self.activeStory = random.choice(self.siegedBaseInfos)
@@ -4086,7 +4087,15 @@ class MainGame(BasicPhase):
         self.basicTrainer = basicTrainer
         mainRoom.addItem(basicTrainer,(11,7,0))
 
-        cityBuilder.spawnCity(mainChar)
+        cityInfo = cityBuilder.spawnCity(mainChar)
+
+        temple = cityInfo["temple"]
+
+        for item in temple.itemsOnFloor:
+            if not item.type == "SpecialItemSlot":
+                continue
+            if item.itemID == self.factionCounter:
+                item.hasItem = True
 
         return productionBaseInfo
 
@@ -4328,7 +4337,14 @@ class MainGame(BasicPhase):
         #addTreasureRoom((3,11),"Rod")
         #addTreasureRoom((11,3),"MetalBars")
 
-        cityBuilder.spawnCity(mainChar)
+        cityData = cityBuilder.spawnCity(mainChar)
+        temple = cityData["temple"]
+
+        for item in temple.itemsOnFloor:
+            if not item.type == "SpecialItemSlot":
+                continue
+            if item.itemID == self.factionCounter:
+                item.hasItem = True
 
         staffArtwork = src.items.itemMap["StaffArtwork"]()
         mainRoom.addItem(staffArtwork,(1,1,0))

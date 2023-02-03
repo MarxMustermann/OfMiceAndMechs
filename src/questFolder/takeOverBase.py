@@ -1,9 +1,12 @@
 import src
 
 class TakeOverBase(src.quests.MetaQuestSequence):
-    def __init__(self, description="join base"):
+    type = "TakeOverBase"
+
+    def __init__(self, description="join base",storyText=None):
         super().__init__()
         self.metaDescription = description
+        self.storyText = storyText
 
     def getSolvingCommandString(self,character,dryRun=True):
         if not self.subQuests:
@@ -12,7 +15,9 @@ class TakeOverBase(src.quests.MetaQuestSequence):
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateTextDescription(self):
-        return """
+        out = ""
+        if not self.storyText:
+            out += """
 There is no commander. This is a problem.
 
 Insects are growing within the hives in the abbandoned farms.
@@ -25,11 +30,16 @@ It is not safe here, but it is safer in the base than outside.
 
 So stay here until those issues are resolved.
 Join the crew of this base and help defend it against the insects.
-The harder you work the safer you will be.
+The harder you work the safer you will be."""
+        else:
+            out += self.storyText
+        out += """
 
 
 press d to get a description on how to join the base
 """
+        return out
+    
 
     def generateSubquests(self,character=None):
         if not self.subQuests:

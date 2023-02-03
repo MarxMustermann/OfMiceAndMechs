@@ -3,11 +3,12 @@ import src
 class ActivateEpochArtwork(src.quests.MetaQuestSequence):
     type = "ActivateEpochArtwork"
 
-    def __init__(self, description="activate epoch artwork",epochArtwork=None):
+    def __init__(self, description="activate epoch artwork",epochArtwork=None,storyText=None):
         questList = []
         super().__init__(questList)
         self.metaDescription = description
         self.epochArtwork = epochArtwork
+        self.storyText = storyText
 
         self.startWatching(epochArtwork,self.handleEpochrArtworkUsed, "epoch artwork used")
 
@@ -17,14 +18,18 @@ class ActivateEpochArtwork(src.quests.MetaQuestSequence):
         return result
 
     def generateTextDescription(self):
-        return """
+        out = ""
+        if not self.storyText:
+            out += """
 You reached the base and you are safe for now.
 The farms have been neglected and hives have developed.
 But it has defences.
 
 Find out who is commanding this base.
-Maybe you will be safe for longer here.
-
+Maybe you will be safe for longer here."""
+        else:
+            out += self.storyText
+        out += """
 
 
 Go to the command centre and activate the epoch artwork.
@@ -36,6 +41,7 @@ You can move using full tiles by pressing WASD. Your character will automove.
 This is a lot less keys to press, but should only be done in safe areas.
 Remember to press ctrl-d if you lose control over your character.
 """
+        return out
 
 
     def handleEpochrArtworkUsed(self,extraInfo):

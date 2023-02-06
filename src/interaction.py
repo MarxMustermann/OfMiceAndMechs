@@ -6929,6 +6929,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
             loadingControl = {}
             loadingControl["done"] = False
+            loadingControl["needsStart"] = False
             def showLoading():
                 tcodConsole.clear()
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
@@ -7009,15 +7010,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
 
                     src.gamestate.gamestate.mainChar = src.characters.Character()
-
                     src.gamestate.gamestate.setup(phase=phase, seed=seed)
-                    src.gamestate.gamestate.currentPhase.start(seed=seed,difficulty=difficulty)
-                    terrain = src.gamestate.gamestate.terrainMap[7][7]
-                    
-                    src.gamestate.gamestate.mainChar.runCommandString("~")
 
-                    global lastTerrain
-                    lastTerrain = terrain
+                    loadingControl["needsStart"] = True
 
             def loader():
                 doLoad()
@@ -7027,13 +7022,22 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 while not loadingControl["done"]:
                     showLoading()
 
-            async def test():
+            async def asyncTask():
                 loop = asyncio.get_running_loop()
                 await asyncio.gather(
                     loop.run_in_executor(None,loader),
                     redrawer()
                 )
-            asyncio.run(test())
+            asyncio.run(asyncTask())
+
+            if loadingControl["needsStart"] == True:
+                src.gamestate.gamestate.currentPhase.start(seed=None,difficulty=difficulty)
+                terrain = src.gamestate.gamestate.terrainMap[7][7]
+                
+                src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                global lastTerrain
+                lastTerrain = terrain
 
             break
 
@@ -8324,6 +8328,10 @@ def gameLoop(loop, user_data=None):
 
     slowestTick = None
     slowestTickSpeed = None
+    totalTickSpeed = 0
+    numTrackedTicks = 0
+    if not os.path.exists("perfDebug"):
+        os.makedirs("perfDebug")
 
     if not src.gamestate.gamestate.stopGameInTicks is None:
         if src.gamestate.gamestate.stopGameInTicks == 0:
@@ -8354,6 +8362,9 @@ def gameLoop(loop, user_data=None):
     lastRender = time.time()
 
     while not loop or firstRun:
+        src.gamestate.gamestate.savedThisTurn = False
+        src.gamestate.gamestate.waitedForInputThisTurn = False
+
         profiler = cProfile.Profile()
         profiler.enable()
 
@@ -8437,12 +8448,12 @@ def gameLoop(loop, user_data=None):
                 advanceChar(char)
                 pass
 
-        if src.gamestate.gamestate.tick > origTick:
+        if src.gamestate.gamestate.tick > origTick and not src.gamestate.gamestate.savedThisTurn and not src.gamestate.gamestate.waitedForInputThisTurn:
             endTime = time.time()
             tickSpeed = endTime-startTime
-            if tickSpeed > 0.1:
-                if not os.path.exists("perfDebug"):
-                    os.makedirs("perfDebug")
+            totalTickSpeed += tickSpeed
+            numTrackedTicks += 1
+            if tickSpeed > 0.01:
                 profiler.dump_stats("perfDebug/tick%s"%(origTick,))
                 if slowestTickSpeed == None or slowestTickSpeed < tickSpeed:
                     print("new slowest tick")
@@ -8450,12 +8461,17 @@ def gameLoop(loop, user_data=None):
                     slowestTick = origTick
                 print("tick time %s for %s"%(tickSpeed,origTick,))
                 print("slowest tick %s for %s"%(slowestTickSpeed,slowestTick,))
+            else:
+                print("yay, a fast tick!!")
+                print("tick time %s for %s"%(tickSpeed,origTick,))
+            print("average tick length on %s ticks: %s"%(numTrackedTicks,(totalTickSpeed/numTrackedTicks),))
 
-            endTime = time.time()
-            if endTime-startTime < 0.09999:
-                time.sleep(0.1-(endTime-startTime))
 
         renderGameDisplay()
+
+        endTime = time.time()
+        if endTime-startTime < 0.009999:
+            time.sleep(0.01-(endTime-startTime))
     else:
         continousOperation = 0
 
@@ -8537,6 +8553,7 @@ def advanceChar(char):
                                 continue
                             hasAutosolveQuest = True
 
+                        src.gamestate.gamestate.waitedForInputThisTurn = True
                         getTcodEvents()
                         #getNetworkedEvents()
 

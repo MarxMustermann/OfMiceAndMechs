@@ -64,6 +64,7 @@ class Terrain(src.saveing.Saveable):
 
         # store terrain content
         self.characters = []
+        self.charactersByTile = {}
         self.rooms = []
         self.roomByMap = {}
         self.floordisplay = src.canvas.displayChars.floor
@@ -348,6 +349,9 @@ class Terrain(src.saveing.Saveable):
             character: the character to remove
         """
 
+        oldBigPos = character.getBigPosition()
+        self.charactersByTile[oldBigPos].remove(character)
+
         if character in self.characters:
             self.characters.remove(character)
         character.room = None
@@ -446,6 +450,14 @@ class Terrain(src.saveing.Saveable):
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
+
+                oldBigPos = char.getBigPosition((1,0,0))
+                self.charactersByTile[oldBigPos].remove(char)
+                bigPos = char.getBigPosition()
+                if not bigPos in self.charactersByTile:
+                    self.charactersByTile[bigPos] = []
+                self.charactersByTile[bigPos].append(char)
+
         elif direction == "east":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
                 return
@@ -469,6 +481,13 @@ class Terrain(src.saveing.Saveable):
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
+
+                oldBigPos = char.getBigPosition((-1,0,0))
+                self.charactersByTile[oldBigPos].remove(char)
+                bigPos = char.getBigPosition()
+                if not bigPos in self.charactersByTile:
+                    self.charactersByTile[bigPos] = []
+                self.charactersByTile[bigPos].append(char)
         elif direction == "north":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return
@@ -492,6 +511,13 @@ class Terrain(src.saveing.Saveable):
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
+
+                oldBigPos = char.getBigPosition((0,1,0))
+                self.charactersByTile[oldBigPos].remove(char)
+                bigPos = char.getBigPosition()
+                if not bigPos in self.charactersByTile:
+                    self.charactersByTile[bigPos] = []
+                self.charactersByTile[bigPos].append(char)
         elif direction == "south":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return
@@ -514,8 +540,15 @@ class Terrain(src.saveing.Saveable):
                 char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
-                #while self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)):
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
+
+                oldBigPos = char.getBigPosition((0,-1,0))
+                self.charactersByTile[oldBigPos].remove(char)
+                bigPos = char.getBigPosition()
+                if not bigPos in self.charactersByTile:
+                    self.charactersByTile[bigPos] = []
+                self.charactersByTile[bigPos].append(char)
+
         """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
             return
@@ -831,7 +864,6 @@ class Terrain(src.saveing.Saveable):
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
 
-
                 char.changed("moved", (char, direction))
                 for item in stepOnActiveItems:
                     item.doStepOnAction(char)
@@ -1069,6 +1101,12 @@ class Terrain(src.saveing.Saveable):
         character.room = None
         character.xPosition = x
         character.yPosition = y
+
+        bigPos = character.getBigPosition()
+        if not bigPos in self.charactersByTile:
+            self.charactersByTile[bigPos] = []
+        self.charactersByTile[bigPos].append(character)
+
         character.changed()
         self.changed("entered terrain", character)
 
@@ -1268,11 +1306,9 @@ class Terrain(src.saveing.Saveable):
             pos = character.getBigPosition()
 
         out = []
-        otherChars = self.characters
+        otherChars = self.charactersByTile.get(pos,[])
         for otherChar in otherChars:
             if character.faction == otherChar.faction:
-               continue
-            if not otherChar.getBigPosition() == pos:
                continue
             out.append(otherChar)
 

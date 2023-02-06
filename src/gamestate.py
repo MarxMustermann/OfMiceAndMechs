@@ -40,6 +40,8 @@ class GameState(src.saveing.Saveable):
         self.timedAutoAdvance = None
         self.gameOver = False
         self.gameOverText = ""
+        self.savedThisTurn = False
+        self.waitedForInputThisTurn = False
 
         self.multi_chars = set()
         self.header = None
@@ -132,6 +134,7 @@ class GameState(src.saveing.Saveable):
 
     # bad pattern: loading and saving one massive json will break on the long run. save function should be delegated down to be able to scale json size
     def save(self):
+        self.savedThisTurn = True
         tcodConsole = src.interaction.tcodConsole
         tcodContext = src.interaction.tcodContext
         printUrwidToTcod = src.interaction.printUrwidToTcod

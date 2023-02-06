@@ -1341,6 +1341,8 @@ class BackToTheRoots(BasicPhase):
         npc.faction = "city #%s"%(cityCounter,)
         npc.registers["HOMEx"] = citylocation[0]
         npc.registers["HOMEy"] = citylocation[1]
+        npc.registers["HOMETx"] = 7
+        npc.registers["HOMETy"] = 7
 
         # add basic set of abilities in openworld phase
         npc.questsDone = [
@@ -3817,6 +3819,8 @@ class BaseBuilding(BasicPhase):
            )
         src.gamestate.gamestate.mainChar.registers["HOMEx"] = 7
         src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
+        src.gamestate.gamestate.mainChar.registers["HOMETx"] = 7
+        src.gamestate.gamestate.mainChar.registers["HOMETy"] = 7
         mainRoom.storageRooms = []
 
         questArtwork = src.items.itemMap["QuestArtwork"]()
@@ -3920,9 +3924,12 @@ class MainGame(BasicPhase):
         self.epochLength = 15*15*15
         self.factionCounter = 1
 
+        self.specialItemMap = {}
+
         self.difficulty = difficulty
         self.productionBaseInfos = []
-        positions = [(7,6),(7,8),(6,7),(8,7)]
+        positions = [(7,6,0),(7,8,0),(6,7,0),(8,7,0),(7,7,0),(8,8,0)]
+        positions = [(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0)]
         self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
         self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
 
@@ -3930,13 +3937,23 @@ class MainGame(BasicPhase):
         self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
         self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
 
+        self.raidBaseInfos = []
+        self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
+        self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
+
+        print(self.specialItemMap)
+
         if self.preselection == "Siege":
             self.activeStory = random.choice(self.siegedBaseInfos)
         elif self.preselection == "Production":
             self.activeStory = random.choice(self.productionBaseInfos)
+        elif self.preselection == "Raid":
+            self.activeStory = random.choice(self.raidBaseInfos)
         else:
-            self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos)
+            self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos)
 
+        for story in self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos:
+            story["epochArtwork"].setSpecialItemMap(self.specialItemMap)
 
         mainChar = self.activeStory["mainChar"]
         src.gamestate.gamestate.mainChar = mainChar
@@ -3971,6 +3988,8 @@ class MainGame(BasicPhase):
     def kickoff(self):
         if self.activeStory["type"] == "siegedBase":
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
+        elif self.activeStory["type"] == "raidBase":
+            self.activeStory["mainChar"].messages.insert(0,("""until you notice eneryone looking at you expectingly."""))
         else:
             self.kickoffProduction()
 
@@ -4007,12 +4026,15 @@ class MainGame(BasicPhase):
 
     def createProductiondBase(self,pos):
         mainChar = src.characters.Character()
-        mainChar.faction = "city #%s"%(self.factionCounter,)
+        thisFactionId = self.factionCounter
+        mainChar.faction = "city #%s"%(thisFactionId,)
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
+        mainChar.registers["HOMETx"] = pos[0]
+        mainChar.registers["HOMETy"] = pos[1]
         self.factionCounter += 1
         productionBaseInfo = {"type":"productionBase"}
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[0]][pos[1]]
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         productionBaseInfo["terrain"] = currentTerrain
         productionBaseInfo["mainChar"] = mainChar
 
@@ -4094,22 +4116,92 @@ class MainGame(BasicPhase):
         for item in temple.itemsOnFloor:
             if not item.type == "SpecialItemSlot":
                 continue
-            if item.itemID == self.factionCounter:
+            if item.itemID == thisFactionId:
                 item.hasItem = True
+                self.specialItemMap[item.itemID] = pos
 
         return productionBaseInfo
+
+    def createRaidBase(self,pos):
+        raidBaseInfo = {"type":"raidBase"}
+        
+        mainChar = src.characters.Character()
+        thisFactionId = self.factionCounter
+        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+        mainChar.registers["HOMETx"] = pos[0]
+        mainChar.registers["HOMETy"] = pos[1]
+        mainChar.rank = 3
+        self.factionCounter += 1
+        raidBaseInfo["mainChar"] = mainChar
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        raidBaseInfo["terrain"] = currentTerrain
+
+        item = src.items.itemMap["Scrap"](amount=1)
+        mainChar.inventory.append(item)
+        item = src.items.itemMap["Scrap"](amount=1)
+        mainChar.inventory.append(item)
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.bolted = False
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        mainRoom.storageRooms = []
+
+        mainRoom.addCharacter(
+            mainChar, 3, 3
+        )
+
+        cityBuilder = src.items.itemMap["CityBuilder2"]()
+        cityBuilder.architect = architect
+        mainRoom.addItem(cityBuilder,(7,1,0))
+        cityBuilder.registerRoom(mainRoom)
+
+        cityData = cityBuilder.spawnCity(mainChar)
+        cityBuilder.addTeleporterRoomFromMap({"coordinate":(7,4,0),"character":mainChar})
+        temple = cityData["temple"]
+
+        for item in temple.itemsOnFloor:
+            if not item.type == "SpecialItemSlot":
+                continue
+            if item.itemID == thisFactionId:
+                item.hasItem = True
+                self.specialItemMap[item.itemID] = pos
+
+        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        raidBaseInfo["epochArtwork"] = epochArtwork
+        mainRoom.addItem(epochArtwork,(6,6,0))
+
+        return raidBaseInfo
+
 
     def createSiegedBase(self,pos):
 
         siegedBaseInfo = {"type":"siegedBase"}
 
         mainChar = src.characters.Character()
-        mainChar.faction = "city #%s"%(self.factionCounter,)
+        thisFactionId = self.factionCounter
+        mainChar.faction = "city #%s"%(thisFactionId,)
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
+        mainChar.registers["HOMETx"] = pos[0]
+        mainChar.registers["HOMETy"] = pos[1]
         self.factionCounter += 1
         siegedBaseInfo["mainChar"] = mainChar
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[0]][pos[1]]
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         siegedBaseInfo["terrain"] = currentTerrain
         
         siegedBaseInfo["playerActivatedEpochArtwork"] = False
@@ -4168,7 +4260,6 @@ class MainGame(BasicPhase):
             "DropQuestMeta",
         ]
         mainChar.macroState["macros"]["j"] = ["J", "f"]
-        mainChar.faction = "city #456"
 
         mainChar.baseDamage = 10
         mainChar.health = 100
@@ -4343,8 +4434,9 @@ class MainGame(BasicPhase):
         for item in temple.itemsOnFloor:
             if not item.type == "SpecialItemSlot":
                 continue
-            if item.itemID == self.factionCounter:
+            if item.itemID == thisFactionId:
                 item.hasItem = True
+                self.specialItemMap[item.itemID] = pos
 
         staffArtwork = src.items.itemMap["StaffArtwork"]()
         mainRoom.addItem(staffArtwork,(1,1,0))
@@ -4743,10 +4835,32 @@ class MainGame(BasicPhase):
         if self.activeStory["type"] == "siegedBase":
             self.openedQuestsSieged()
             return
+        elif self.activeStory["type"] == "raidBase":
+            self.openedQuestsRaid()
+            return
         elif self.activeStory["type"] == "productionBase":
             self.openedQuestsProduction()
             return
         1/0
+
+    def openedQuestsRaid(self):
+        mainChar = self.activeStory["mainChar"]
+        if mainChar.armor == None or mainChar.weapon == None:
+            containerQuest = src.quests.questMap["Equip"]()
+            mainChar.quests.append(containerQuest)
+            containerQuest.assignToCharacter(mainChar)
+            containerQuest.activate()
+            containerQuest.generateSubquests(mainChar)
+            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        containerQuest = src.quests.questMap["EpochQuest"]()
+        mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(mainChar)
+        containerQuest.activate()
+        containerQuest.generateSubquests(mainChar)
+        containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
+        return
 
     def openedQuestsProduction(self):
         mainChar = self.activeStory["mainChar"]
@@ -5022,6 +5136,10 @@ class MainGameSieged(MainGame):
 class MainGameProduction(MainGame):
     def __init__(self, seed=0):
         super().__init__(seed,"Production")
+
+class MainGameRaid(MainGame):
+    def __init__(self, seed=0):
+        super().__init__(seed,"Raid")
 
 class Siege(BasicPhase):
     """
@@ -7335,6 +7453,7 @@ def registerPhases():
     phasesByName["MainGame"] = MainGame
     phasesByName["MainGameSieged"] = MainGameSieged
     phasesByName["MainGameProduction"] = MainGameProduction
+    phasesByName["MainGameRaid"] = MainGameRaid
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream

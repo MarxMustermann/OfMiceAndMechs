@@ -423,7 +423,11 @@ class Character(src.saveing.Saveable):
         return charPos
 
     def getTerrainPosition(self,offset=(0,0,0)):
-        return (self.getTerrain().xPosition,self.getTerrain().yPosition,0)
+        terrain = self.getTerrain()
+        if not terrain:
+            return None
+        else:
+            return (self.getTerrain().xPosition,self.getTerrain().yPosition,0)
 
     def huntkill(self):
         self.addMessage("should start huntkill now")
@@ -2907,7 +2911,7 @@ class Ghul(Character):
         return
 
     def hurt(self, damage, reason=None, actor=None):
-        super().hurt(min(1,damage//2),reason=reason,actor=actor)
+        super().hurt(max(1,damage//2),reason=reason,actor=actor)
 
 characterMap = {
     "Character": Character,

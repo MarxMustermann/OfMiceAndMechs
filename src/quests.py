@@ -234,7 +234,7 @@ class Quest(src.saveing.Saveable):
     check whether the quest is solved or not (and trigger teardown if quest is solved)
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -848,7 +848,7 @@ class MetaQuestSequence(Quest):
         if extraInfo[0] in self.subQuests:
             self.subQuests.remove(extraInfo[0])
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -940,6 +940,9 @@ class MetaQuestSequence(Quest):
         if self.subQuests and self.subQuests[0].completed:
             self.subQuests.remove(self.subQuests[0])
 
+        if self.triggerCompletionCheck(character):
+            return
+
         if len(self.subQuests):
             subQuest = self.subQuests[0]
             if not subQuest.active:
@@ -950,9 +953,6 @@ class MetaQuestSequence(Quest):
                 return
             self.subQuests[0].solver(character)
         else:
-            if self.triggerCompletionCheck():
-                return
-
             command = self.getSolvingCommandString(character)
             if command:
                 character.runCommandString(command)
@@ -1319,7 +1319,7 @@ class delGatherItems(Quest):
         character.runCommandString(".30.")
         return False
 
-class delTeleportToTerrain(MetaQuestSequence):
+class TeleportToTerrain(MetaQuestSequence):
     def __init__(self, description="teleport to terrain", creator=None, targetPosition=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -1492,7 +1492,7 @@ class delObtainAllSpecialItems(Quest):
         self.didDelegate = False
         self.aborted = False
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
     def solver(self, character):
@@ -1858,22 +1858,6 @@ class delMetaQuestParralel(Quest):
         return out
 
     """
-    assign self and subquests to character
-    """
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        super().assignToCharacter(character)
-
-        # assign subquests
-        for quest in self.subQuests:
-            quest.assignToCharacter(self.character)
-
-        self.recalculate()
-
-    """
     make first unpaused quest active
     """
 
@@ -1903,7 +1887,7 @@ class delMetaQuestParralel(Quest):
     check if there are quests left to do
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if not self.subQuests:
             self.postHandler()
 
@@ -1991,7 +1975,7 @@ class delNaiveMoveQuest(Quest):
     check if character is in the right place
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -2160,7 +2144,7 @@ class delNaiveEnterRoomQuest(Quest):
     check if the character is in the correct roon
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -2229,7 +2213,7 @@ class delNaivePickupQuest(Quest):
     check whether item is in characters inventory
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -2312,7 +2296,7 @@ class delNaiveGetQuest(Quest):
     check whether the character has gotten a quest
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.active:
             if self.quest:
                 self.postHandler()
@@ -2372,7 +2356,7 @@ class delNaiveGetReward(Quest):
     bad code: general pattern is to actually check if the reward was given
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.active:
             if self.done:
                 self.postHandler()
@@ -2465,7 +2449,7 @@ class delNaiveKnockOutQuest(Quest):
     check whether target is dead
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.active:
             if self.target.unconcious:
                 self.postHandler()
@@ -2588,7 +2572,7 @@ class delNaiveActivateQuest(Quest):
     bad code: uses internal state
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.active:
             if self.activated:
                 self.postHandler()
@@ -2726,7 +2710,7 @@ class delNaiveDelegateQuest(Quest):
     check if the quest has a character assigned
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.active:
             if self.quest.character:
                 self.postHandler()
@@ -2795,7 +2779,7 @@ class delWaitForDeactivationQuest(Quest):
     check if item is inactive
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if not self.item.activated:
             self.postHandler()
 
@@ -2832,7 +2816,7 @@ class delWaitForQuestCompletion(Quest):
     check if the quest was completed
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.active:
             if self.quest.completed:
                 self.postHandler()
@@ -2897,7 +2881,7 @@ class delDrinkQuest(Quest):
     check if the character is still thirsty
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.character.satiation > 800:
             self.postHandler()
 
@@ -3573,7 +3557,7 @@ class delRefillDrinkQuest(delActivateQuestMeta):
     check whether the character has a filled goo flask
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         for item in self.character.inventory:
             if isinstance(item, src.items.GooFlask):
                 if item.uses > 99:
@@ -3698,7 +3682,7 @@ class delGetQuest(MetaQuestSequence):
     check if a quest was aquired
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -4197,7 +4181,7 @@ class delLeaveRoomQuest(Quest):
     check if the character left the room
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
 
         # smooth over impossible state
         if not self.active:
@@ -4250,7 +4234,7 @@ class delExamineQuest(Quest):
     check if some items were observed
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         # bad code: fixed threshold
         if len(self.examinedItems) >= 5:
             self.postHandler()
@@ -4522,7 +4506,7 @@ class delConstructRoom(delMetaQuestParralel):
     do not terminate until all fetching and placing was done
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if not self.didFetchQuest or not self.didPlaceQuest:
             return
         super().triggerCompletionCheck()
@@ -4919,7 +4903,7 @@ class delKeepFurnaceFiredMeta(MetaQuestSequence):
     never complete
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
 
@@ -5057,7 +5041,7 @@ class delFireFurnaceMeta(MetaQuestSequence):
     check if furnace is burning
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.furnace.activated:
             self.postHandler()
 
@@ -5170,7 +5154,7 @@ class delFillGrowthTankMeta(MetaQuestSequence):
     check if furnace is burning
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if not self.growthTank.filled:
             return
 
@@ -5340,7 +5324,7 @@ class delRoomDuty(delMetaQuestParralel):
     never complete
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
 
@@ -5378,7 +5362,7 @@ class delServe(delMetaQuestParralel):
     never complete
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
     def solver(self,character):
@@ -5813,7 +5797,7 @@ class delObtainSpecialItem(MetaQuestSequence):
         parameters.append({"name":"itemID","type":"int"})
         return parameters
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if not self.addedSubQuests:
             return
         super().triggerCompletionCheck()
@@ -5871,6 +5855,7 @@ class delObtainSpecialItem(MetaQuestSequence):
                 #quest = src.quests.questMap["StandAttention"]()
                 #self.addQuest(quest)
                 homeLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
+                homeLocationTerrain = (character.registers["HOMETx"],character.registers["HOMETy"])
 
                 # order is reverse to order in code
 
@@ -6006,7 +5991,7 @@ class delDummyQuest(Quest):
     never complete
     """
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
 # map strings to Classes
@@ -6064,7 +6049,7 @@ questMap = {
     #"GatherItems": GatherItems,
     #"GrabSpecialItem": GrabSpecialItem,
     #"StandAttention": StandAttention,
-    #"TeleportToTerrain": TeleportToTerrain,
+    "TeleportToTerrain": TeleportToTerrain,
     #"LootRuin": LootRuin,
     #"DestroyRooms": DestroyRooms,
     #"DestroyRoom": DestroyRoom,

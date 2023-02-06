@@ -119,6 +119,12 @@ class Terrain(src.saveing.Saveable):
             "floordisplay",
             "listeners"
             ])
+        self.xPosition = None
+        self.yPosition = None
+        self.zPosition = None
+
+    def getPosition(self):
+        return (self.xPosition,self.yPosition,0)
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
         self.animations.append([coordinate,animationType,duration,extraInfo])
@@ -1623,8 +1629,10 @@ class Terrain(src.saveing.Saveable):
             chars[room.yPosition][room.xPosition] = room.displayChar
 
         homePos = (src.gamestate.gamestate.mainChar.registers.get("HOMEx"),src.gamestate.gamestate.mainChar.registers.get("HOMEy"))
-        if homePos[0] and homePos[1]:
-            chars[homePos[1]][homePos[0]] = "HH"
+        homePosTerrain = (src.gamestate.gamestate.mainChar.registers.get("HOMETx"),src.gamestate.gamestate.mainChar.registers.get("HOMETy"),0)
+        if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition():
+            if homePos[0] and homePos[1]:
+                chars[homePos[1]][homePos[0]] = "HH"
 
         for scrapField in self.scrapFields:
             chars[scrapField[1]][scrapField[0]] = "ss"

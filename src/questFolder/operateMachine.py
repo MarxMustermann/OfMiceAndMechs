@@ -30,7 +30,7 @@ class OperateMachine(src.quests.MetaQuestSequence):
 operate the machine on %s
 """%(self.targetPosition,)
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return False
 
     def generateSubquests(self,character=None):

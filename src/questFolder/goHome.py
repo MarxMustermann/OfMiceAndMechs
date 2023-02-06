@@ -44,10 +44,10 @@ Press crtl-d to stop your character from moving.
         if not self.cityLocation:
             return
 
-        if isinstance(character.container, src.rooms.Room):
-            if (character.container.xPosition == self.cityLocation[0] and character.container.yPosition == self.cityLocation[1]):
-                character.reputation += 1
-                self.postHandler()
+        if character.getTerrainPosition() == self.terrainLocation and character.getBigPosition() == self.cityLocation:
+            self.postHandler()
+            return True
+        return False
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
         if not self.active:
@@ -67,23 +67,27 @@ Press crtl-d to stop your character from moving.
         super().assignToCharacter(character)
 
     def setHomeLocation(self,character):
-        self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"])
-        self.metaDescription = self.baseDescription+" %s/%s"%(self.cityLocation[0],self.cityLocation[1],)
+        self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"],0)
+        self.terrainLocation = (character.registers["HOMETx"],character.registers["HOMETy"],0)
+        self.metaDescription = self.baseDescription+" %s/%s on %s/%s"%(self.cityLocation[0],self.cityLocation[1],self.terrainLocation[0],self.terrainLocation[1],)
 
     def generateSubquests(self,character):
-        if not self.addedSubQuests:
+        if self.subQuests:
+            return
 
+        if not character.getTerrainPosition() == self.terrainLocation:
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.terrainLocation)
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            return
+        elif not character.getBigPosition() == self.cityLocation:
             quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid)
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
             quest.setParameters({"targetPosition":(self.cityLocation[0],self.cityLocation[1])})
-
-            self.addedSubQuests = True
-            return True
-        if self.triggerCompletionCheck(character):
-            return True
-        return False
+            return
 
     def solver(self, character):
         if self.generateSubquests(character):
@@ -92,7 +96,10 @@ Press crtl-d to stop your character from moving.
         if self.subQuests:
             return super().solver(character)
 
-        character.runCommandString(self.getSolvingCommandString(character))
+        command = self.getSolvingCommandString(character,dryRun=False)
+        if command:
+            character.runCommandString(command)
+            return
         return False
 
     def getSolvingCommandString(self,character,dryRun=True):

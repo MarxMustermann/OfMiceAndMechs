@@ -9,7 +9,7 @@ class Huntdown(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.target = target
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         if self.target and self.target.dead:
             self.postHandler()
             return True

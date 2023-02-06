@@ -58,7 +58,7 @@ press d to get a description on how to join the base
             return
         return super().solver(character)
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
 src.quests.addType(TakeOverBase)

@@ -49,3 +49,4 @@ import src.questFolder.secureTiles
 import src.questFolder.clearTerrain
 import src.questFolder.drawFloorPlan
 import src.questFolder.obtainSpecialItem
+import src.questFolder.goToTerrain

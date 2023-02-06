@@ -49,10 +49,21 @@ class TeleporterArtwork(src.items.Item):
         oldPosX = self.container.xPosition
         oldPosY = self.container.yPosition
         self.container.container.removeRoom(self.container)
+
         newTerrain = src.gamestate.gamestate.terrainMap[yPos][xPos]
-        self.container.xPosition = oldPosX
-        self.container.yPosition = oldPosY
+        if 1 == 1:
+            while True:
+                newRoomPos = (random.randint(1,13),random.randint(1,13),0)
+                if newTerrain.getRoomByPosition(newRoomPos):
+                    continue
+                break
+        else:
+            newRoomPos = (oldPosX,oldPosY,0)
+        self.container.xPosition = newRoomPos[0]
+        self.container.yPosition = newRoomPos[1]
         newTerrain.addRoom(self.container)
-        
+
+        for character in self.container.characters[:]:
+            character.changed("changedTerrain",{"character":character})
 
 src.items.addType(TeleporterArtwork)

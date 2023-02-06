@@ -20,7 +20,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
             
         super().solver(character)
 
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
     def handleQuestsOpened(self,extraInfo=None):

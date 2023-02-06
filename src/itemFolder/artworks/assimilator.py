@@ -148,6 +148,9 @@ Choose your tertiary duty:\n"""
             self.implantIntroduction({"character":character,"step":0})
             character.registers["HOMEx"] = 7
             character.registers["HOMEy"] = 7
+            terrainPosition = character.getTerrainPosition()
+            character.registers["HOMETx"] = terrainPosition[0]
+            character.registers["HOMETy"] = terrainPosition[1]
             return
         
         if character.rank == None:

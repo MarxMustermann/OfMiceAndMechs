@@ -47,6 +47,9 @@ It generates missions and hands out rewards."""
         self.usageInfo = """
 Use it by activating it. You will recieve further instructions."""
 
+    def setSpecialItemMap(self,specialItemMap):
+        self.specialItemMap = specialItemMap
+
     def changeCharges(self,delta):
         delta = min(self.shadowCharges,delta)
 
@@ -421,6 +424,37 @@ Kill all remaining enemies to end the siege.
             character.macroState["submenue"] = submenue
 
             quest = src.quests.questMap["ClearTerrain"]()
+            quest.active = True
+            quest.assignToCharacter(character)
+
+            epochQuest.addQuest(quest)
+            return
+
+        foundSpecialItems = []
+        for room in terrain.rooms:
+            if not isinstance(room, src.rooms.TempleRoom):
+                continue
+            for item in room.itemsOnFloor:
+                if not isinstance(item, src.items.itemMap["SpecialItemSlot"]):
+                    continue
+                if item.hasItem:
+                    foundSpecialItems.append(item)
+
+        if len(foundSpecialItems) < 4:
+            text += """
+NIY
+"""
+
+            character.addMessage(text)
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+
+            while True:
+                itemId = random.choice(list(self.specialItemMap.keys()))
+                if self.getTerrain().getPosition() == self.specialItemMap[itemId]:
+                    continue
+                break
+            quest = src.quests.questMap["ObtainSpecialItem"](targetTerrain=self.specialItemMap[itemId],itemId=itemId)
             quest.active = True
             quest.assignToCharacter(character)
 

@@ -3518,10 +3518,7 @@ class QuestMenu(SubMenu):
                     baseList = quest.subQuests
                 except:
                     baseList = None
-            if quest.selfAssigned:
-                quest.fail()
-            else:
-                self.char.addMessage("you cannot cancel that quest, because it was not self assigned")
+            quest.fail()
         if key == "X":
             baseList = self.char.quests
             for index in self.questCursor:
@@ -3948,7 +3945,8 @@ class CharacterInfoMenu(SubMenu):
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
         text += "position: %s\n" % (char.getPosition(),)
         text += "big position: %s\n" % (char.getBigPosition(),)
-        text += "big position: %s\n" % (char.getTerrainPosition(),)
+        text += "terrain position: %s\n" % (char.getTerrainPosition(),)
+        print(char.registers)
 
         return text
 
@@ -6702,10 +6700,15 @@ def showMainMenu(args=None):
         "b",
         ),
         (
-        "Tutorials",
-        "tutorials",
-        "t",
+        "mainGameRaid",
+        "main game (raid/capture the flag)",
+        "c",
         ),
+        #(
+        #"Tutorials",
+        #"tutorials",
+        #"t",
+        #),
         (
         "PrefabDesign",
         "PrefabDesign",
@@ -6949,6 +6952,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 elif selectedScenario == "mainGameProduction":
                     terrain = "test"
                     phase = "MainGameProduction"
+                elif selectedScenario == "mainGameRaid":
+                    terrain = "test"
+                    phase = "MainGameRaid"
                 elif selectedScenario == "Siege":
                     terrain = "test"
                     phase = "MainGame"

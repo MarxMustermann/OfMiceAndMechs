@@ -197,16 +197,14 @@ Press crtl-d to stop your character from moving.%s
             return ".10.."
 
         if self.smallPath:
+
+            if isinstance(character.container,src.rooms.TrapRoom) and not (character.faction == character.container.faction):
+                actionMap = {(1,0):"Lddk",(-1,0):"Laak",(0,1):"Lssk",(0,-1):"Lwwk"}
+            else:
+                actionMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
             command = ""
             for step in self.smallPath:
-                if step == (-1,0):
-                    command += "a"
-                elif step == (1,0):
-                    command += "d"
-                elif step == (0,-1):
-                    command += "w"
-                elif step == (0,1):
-                    command += "s"
+                command += actionMap[step]
 
             return command
 

@@ -310,7 +310,11 @@ class Room(src.saveing.Saveable):
             path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
 
         command = ""
-        movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
+        if isinstance(self,src.rooms.TrapRoom) and not (character.faction == self.faction):
+            movementMap = {(1,0):"Lddk",(-1,0):"Laak",(0,1):"Lssk",(0,-1):"Lwwk"}
+            print(movementMap)
+        else:
+            movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
         if path:
             for offset in path:
                 command += movementMap[offset]
@@ -855,7 +859,8 @@ class Room(src.saveing.Saveable):
                 subChars = []
                 for j in range(0, self.sizeX):
                     if fixedChar:
-                        subChars.append(src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i,0)}},content=fixedChar))
+                        #subChars.append(src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i,0)}},content=fixedChar))
+                        subChars.append(fixedChar)
                     else:
                         subChars.append(
                             self.floorDisplay[
@@ -867,27 +872,32 @@ class Room(src.saveing.Saveable):
             # draw path
             for pos in self.walkingSpace:
                 display = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
-                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                chars[pos[1]][pos[0]] = display
 
             for entry in self.inputSlots:
                 pos = entry[0]
                 display= (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
-                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                chars[pos[1]][pos[0]] = display
 
             for entry in self.outputSlots:
                 pos = entry[0]
                 display = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
-                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                chars[pos[1]][pos[0]] = display
 
             for entry in self.storageSlots:
                 pos = entry[0]
                 display = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
-                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                chars[pos[1]][pos[0]] = display
 
             for entry in self.buildSites:
                 pos = entry[0]
                 display = (src.interaction.urwid.AttrSpec("#88f", "black"), ";;")
-                chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                chars[pos[1]][pos[0]] = display
 
             # draw items
             for item in self.itemsOnFloor:

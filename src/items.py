@@ -56,6 +56,9 @@ class Item(src.saveing.Saveable):
     container = None
     name = "unknown"
 
+    def getTerrainPosition(self):
+        return self.getTerrain().getPosition()
+
     def callInit(self):
         super().__init__()
 

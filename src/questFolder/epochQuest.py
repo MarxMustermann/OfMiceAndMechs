@@ -30,7 +30,7 @@ Use the epoch artwork to get tasks and collect your rewards.
     """
     never complete
     """
-    def triggerCompletionCheck(self):
+    def triggerCompletionCheck(self,character=None):
         return
 
 src.quests.addType(EpochQuest)

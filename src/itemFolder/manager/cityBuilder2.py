@@ -255,7 +255,11 @@ class CityBuilder2(src.items.Item):
                 door = src.items.itemMap["Door"]()
                 door.walkable = True
                 neighbourRoom.addItem(door,reversePos)
-            doors = " ".join(doors)
+
+            if roomType in ("TeleporterRoom",):
+                doors = "6,0 0,6 6,12 12,6"
+            else:
+                doors = " ".join(doors)
 
         room = self.architect.doAddRoom(
             {
@@ -623,7 +627,7 @@ class CityBuilder2(src.items.Item):
         room.faction = params["character"].faction
 
         #specialItemSlotPositions = [(1,1),(2,1),(3,1),(4,1),(5,1),(7,1),(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
-        specialItemSlotPositions = [(1,1,0),(2,1,0),(3,1,0),(4,1,0)] #,(5,1),(7,1),(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
+        specialItemSlotPositions = [(1,1,0),(2,1,0),(3,1,0),(4,1,0),(5,1,0),(7,1,0)]#,(8,1),(9,1),(10,1),(11,1),(1,3),(1,4),(1,5),(1,7),(1,8)]
         counter = 1
         for pos in specialItemSlotPositions:
             slotItem = src.items.itemMap["SpecialItemSlot"]()

@@ -306,11 +306,7 @@ Press crtl-d to stop your character from moving.%s
             return ".15.."
         else:
             if not self.paranoid and localRandom.random() < 0.5 and "fighting" in self.character.skills:
-                for otherCharacter in character.container.characters:
-                    if not (otherCharacter.xPosition//15 == character.xPosition//15 and otherCharacter.yPosition//15 == character.yPosition//15):
-                        continue
-                    if otherCharacter.faction == character.faction:
-                        continue
+                if character.container.getEnemiesOnTile(character):
                     return "gg"
 
             tilePos = (character.xPosition//15,character.yPosition//15,0)

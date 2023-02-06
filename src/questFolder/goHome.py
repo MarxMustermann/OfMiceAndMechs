@@ -82,11 +82,10 @@ Press crtl-d to stop your character from moving.
             quest.activate()
             return
         elif not character.getBigPosition() == self.cityLocation:
-            quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid)
+            quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation)
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
-            quest.setParameters({"targetPosition":(self.cityLocation[0],self.cityLocation[1])})
             return
 
     def solver(self, character):

@@ -56,11 +56,10 @@ class Huntdown(src.quests.MetaQuestSequence):
                     self.fail()
                     return
 
-                quest = src.quests.questMap["GoToTile"](paranoid=True)
+                quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
-                quest.setParameters({"targetPosition":newPos})
                 return
             else:
                 character.runCommandString("gg")

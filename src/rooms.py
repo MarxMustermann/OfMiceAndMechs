@@ -312,7 +312,6 @@ class Room(src.saveing.Saveable):
         command = ""
         if isinstance(self,src.rooms.TrapRoom) and not (character.faction == self.faction):
             movementMap = {(1,0):"Lddk",(-1,0):"Laak",(0,1):"Lssk",(0,-1):"Lwwk"}
-            print(movementMap)
         else:
             movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
         if path:

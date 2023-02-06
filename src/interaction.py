@@ -9,6 +9,8 @@ import json
 import random
 import cProfile
 import collections
+import os
+import asyncio
 
 # load internal libraries
 import src.rooms
@@ -6925,93 +6927,113 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             global new_chars
             new_chars = set()
 
-            tcodConsole.clear()
-            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
-            printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
-            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
-            tcodContext.present(tcodConsole)
+            loadingControl = {}
+            loadingControl["done"] = False
+            def showLoading():
+                tcodConsole.clear()
+                printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
+                printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
+                printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
+                tcodContext.present(tcodConsole)
 
-            if canLoad:
-                src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
-                setUpNoUrwid()
-                src.gamestate.gamestate.mainChar.runCommandString("~")
-            else:
-                seed = 0
-                src.gamestate.setup(gameIndex) 
-                setUpNoUrwid()
-
-                if selectedScenario == "siege":
-                    terrain = "test"
-                    phase = "Siege"
-                elif selectedScenario == "mainGame":
-                    terrain = "test"
-                    phase = "MainGame"
-                elif selectedScenario == "mainGameSieged":
-                    terrain = "test"
-                    phase = "MainGameSieged"
-                elif selectedScenario == "mainGameProduction":
-                    terrain = "test"
-                    phase = "MainGameProduction"
-                elif selectedScenario == "mainGameRaid":
-                    terrain = "test"
-                    phase = "MainGameRaid"
-                elif selectedScenario == "Siege":
-                    terrain = "test"
-                    phase = "MainGame"
-                elif selectedScenario == "basebuilding":
-                    terrain = "nothingness"
-                    phase = "BaseBuilding"
-                elif selectedScenario == "survival":
-                    terrain = "desert"
-                    phase = "DesertSurvival"
-                elif selectedScenario == "creative":
-                    terrain = "nothingness"
-                    phase = "CreativeMode"
-                elif selectedScenario == "dungeon":
-                    terrain = "nothingness"
-                    phase = "Dungeon"
-                elif selectedScenario == "WorldBuildingPhase":
-                    terrain = "nothingness"
-                    phase = "WorldBuildingPhase"
-                elif selectedScenario == "RoguelikeStart":
-                    terrain = "nothingness"
-                    phase = "RoguelikeStart"
-                elif selectedScenario == "Tour":
-                    terrain = "nothingness"
-                    phase = "Tour"
-                elif selectedScenario == "BackToTheRoots":
-                    terrain = "nothingness"
-                    phase = "BackToTheRoots"
-                elif selectedScenario == "PrefabDesign":
-                    terrain = "nothingness"
-                    phase = "PrefabDesign"
-                elif selectedScenario == "Tutorials":
-                    terrain = "nothingness"
-                    phase = "Tutorials"
-
-                if terrain and terrain == "scrapField":
-                    src.gamestate.gamestate.terrainType = src.terrains.ScrapField
-                elif terrain and terrain == "nothingness":
-                    src.gamestate.gamestate.terrainType = src.terrains.Nothingness
-                elif terrain and terrain == "test":
-                    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
-                elif terrain and terrain == "tutorial":
-                    src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
-                elif terrain and terrain == "desert":
-                    src.gamestate.gamestate.terrainType = src.terrains.Desert
+            def doLoad():
+                if canLoad:
+                    src.gamestate.gamestate = src.gamestate.gamestate.loadP(gameIndex)
+                    setUpNoUrwid()
+                    src.gamestate.gamestate.mainChar.runCommandString("~")
                 else:
-                    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+                    seed = 0
+                    src.gamestate.setup(gameIndex) 
+                    setUpNoUrwid()
 
-                src.gamestate.gamestate.mainChar = src.characters.Character()
+                    if selectedScenario == "siege":
+                        terrain = "test"
+                        phase = "Siege"
+                    elif selectedScenario == "mainGame":
+                        terrain = "test"
+                        phase = "MainGame"
+                    elif selectedScenario == "mainGameSieged":
+                        terrain = "test"
+                        phase = "MainGameSieged"
+                    elif selectedScenario == "mainGameProduction":
+                        terrain = "test"
+                        phase = "MainGameProduction"
+                    elif selectedScenario == "mainGameRaid":
+                        terrain = "test"
+                        phase = "MainGameRaid"
+                    elif selectedScenario == "Siege":
+                        terrain = "test"
+                        phase = "MainGame"
+                    elif selectedScenario == "basebuilding":
+                        terrain = "nothingness"
+                        phase = "BaseBuilding"
+                    elif selectedScenario == "survival":
+                        terrain = "desert"
+                        phase = "DesertSurvival"
+                    elif selectedScenario == "creative":
+                        terrain = "nothingness"
+                        phase = "CreativeMode"
+                    elif selectedScenario == "dungeon":
+                        terrain = "nothingness"
+                        phase = "Dungeon"
+                    elif selectedScenario == "WorldBuildingPhase":
+                        terrain = "nothingness"
+                        phase = "WorldBuildingPhase"
+                    elif selectedScenario == "RoguelikeStart":
+                        terrain = "nothingness"
+                        phase = "RoguelikeStart"
+                    elif selectedScenario == "Tour":
+                        terrain = "nothingness"
+                        phase = "Tour"
+                    elif selectedScenario == "BackToTheRoots":
+                        terrain = "nothingness"
+                        phase = "BackToTheRoots"
+                    elif selectedScenario == "PrefabDesign":
+                        terrain = "nothingness"
+                        phase = "PrefabDesign"
+                    elif selectedScenario == "Tutorials":
+                        terrain = "nothingness"
+                        phase = "Tutorials"
 
-                src.gamestate.gamestate.setup(phase=phase, seed=seed)
-                src.gamestate.gamestate.currentPhase.start(seed=seed,difficulty=difficulty)
-                terrain = src.gamestate.gamestate.terrainMap[7][7]
-                
-                src.gamestate.gamestate.mainChar.runCommandString("~")
+                    if terrain and terrain == "scrapField":
+                        src.gamestate.gamestate.terrainType = src.terrains.ScrapField
+                    elif terrain and terrain == "nothingness":
+                        src.gamestate.gamestate.terrainType = src.terrains.Nothingness
+                    elif terrain and terrain == "test":
+                        src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+                    elif terrain and terrain == "tutorial":
+                        src.gamestate.gamestate.terrainType = src.terrains.TutorialTerrain
+                    elif terrain and terrain == "desert":
+                        src.gamestate.gamestate.terrainType = src.terrains.Desert
+                    else:
+                        src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
 
-                global lastTerrain
-                lastTerrain = terrain
+                    src.gamestate.gamestate.mainChar = src.characters.Character()
+
+                    src.gamestate.gamestate.setup(phase=phase, seed=seed)
+                    src.gamestate.gamestate.currentPhase.start(seed=seed,difficulty=difficulty)
+                    terrain = src.gamestate.gamestate.terrainMap[7][7]
+                    
+                    src.gamestate.gamestate.mainChar.runCommandString("~")
+
+                    global lastTerrain
+                    lastTerrain = terrain
+
+            def loader():
+                doLoad()
+                loadingControl["done"] = True
+
+            async def redrawer():
+                while not loadingControl["done"]:
+                    showLoading()
+
+            async def test():
+                loop = asyncio.get_running_loop()
+                await asyncio.gather(
+                    loop.run_in_executor(None,loader),
+                    redrawer()
+                )
+            asyncio.run(test())
 
             break
 
@@ -8300,6 +8322,9 @@ def gameLoop(loop, user_data=None):
         user_data: parameter have to handle but is ignored
     """
 
+    slowestTick = None
+    slowestTickSpeed = None
+
     if not src.gamestate.gamestate.stopGameInTicks is None:
         if src.gamestate.gamestate.stopGameInTicks == 0:
             src.gamestate.gamestate.gameHalted = True
@@ -8329,106 +8354,108 @@ def gameLoop(loop, user_data=None):
     lastRender = time.time()
 
     while not loop or firstRun:
-        #profiler = cProfile.Profile()
-        #profiler.enable()
+        profiler = cProfile.Profile()
+        profiler.enable()
 
         startTime = time.time()
         origTick = src.gamestate.gamestate.tick
 
-        if 1== 1:
-            if lastAutosave == 0:
-                lastAutosave = src.gamestate.gamestate.tick
-            if src.gamestate.gamestate.tick - lastAutosave > 1000:
-                # src.gamestate.gamestate.save()
-                lastAutosave = src.gamestate.gamestate.tick
+        if lastAutosave == 0:
+            lastAutosave = src.gamestate.gamestate.tick
+        if src.gamestate.gamestate.tick - lastAutosave > 1000:
+            # src.gamestate.gamestate.save()
+            lastAutosave = src.gamestate.gamestate.tick
 
-            firstRun = False
+        firstRun = False
 
-            # transform and store the keystrokes that accumulated in pygame
-            if useTiles:
-                import pygame
+        # transform and store the keystrokes that accumulated in pygame
+        if useTiles:
+            import pygame
 
-                for item in pygame.event.get():
-                    if item.type == pygame.QUIT:
-                        src.gamestate.gamestate.save()
-                        pygame.quit()
-                    if not hasattr(item, "unicode"):
-                        continue
-                    key = item.unicode
-                    if key == "":
-                        continue
-                    if key == "\x10":
-                        key = "ctrl p"
-                    if key == "\x18":
-                        key = "ctrl x"
-                    if key == "\x0f":
-                        key = "ctrl o"
-                    if key == "\x04":
-                        key = "ctrl d"
-                    if key == "\x0b":
-                        key = "ctrl k"
-                    if key == "\x01":
-                        key = "ctrl a"
-                    if key == "\x17":
-                        key = "ctrl w"
-                    if key == "\x1b":
-                        key = "esc"
-                    if key == "\r":
-                        key = "enter"
-                    keyboardListener(key)
-
-            if tcod:
-                getTcodEvents()
-                #getNetworkedEvents()
-
-
-            hasAutosolveQuest = False
-            for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
-                if not quest.autoSolve:
+            for item in pygame.event.get():
+                if item.type == pygame.QUIT:
+                    src.gamestate.gamestate.save()
+                    pygame.quit()
+                if not hasattr(item, "unicode"):
                     continue
-                hasAutosolveQuest = True
+                key = item.unicode
+                if key == "":
+                    continue
+                if key == "\x10":
+                    key = "ctrl p"
+                if key == "\x18":
+                    key = "ctrl x"
+                if key == "\x0f":
+                    key = "ctrl o"
+                if key == "\x04":
+                    key = "ctrl d"
+                if key == "\x0b":
+                    key = "ctrl k"
+                if key == "\x01":
+                    key = "ctrl a"
+                if key == "\x17":
+                    key = "ctrl w"
+                if key == "\x1b":
+                    key = "esc"
+                if key == "\r":
+                    key = "enter"
+                keyboardListener(key)
 
-            if shadowCharacter:
-                while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
-                    renderGameDisplay()
-                    shadowCharacter.macroState["commandKeyQueue"].pop()
+        if tcod:
+            getTcodEvents()
+            #getNetworkedEvents()
 
-            global continousOperation
-            if (
-                src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
-            ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest or (shadowCharacter and shadowCharacter.macroState["commandKeyQueue"]):
-                continousOperation += 1
 
-                if not len(cinematics.cinematicQueue):
-                    lastAdvance = time.time()
-                    advanceGame()
-                    multi_chars = src.gamestate.gamestate.multi_chars
+        hasAutosolveQuest = False
+        for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            if not quest.autoSolve:
+                continue
+            hasAutosolveQuest = True
 
-                for char in multi_chars:
-                    if char.dead:
-                        continue
-                    if not char.container:
-                        continue
-                    # 5/0
-                    advanceChar(char)
-                    pass
-
+        if shadowCharacter:
+            while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
                 renderGameDisplay()
-                lastRender = time.time()
+                shadowCharacter.macroState["commandKeyQueue"].pop()
 
-            if time.time()-lastRender > 0.1:
-                renderGameDisplay()
+        global continousOperation
+        if (
+            src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"] and not speed
+        ) or runFixedTick or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest or (shadowCharacter and shadowCharacter.macroState["commandKeyQueue"]):
+            continousOperation += 1
 
-        #endTime = time.time()
-        #if endTime-startTime > 0.1:
-        #    print("tick time %s for %s"%(endTime-startTime,origTick,))
+            if not len(cinematics.cinematicQueue):
+                lastAdvance = time.time()
+                advanceGame()
+                multi_chars = src.gamestate.gamestate.multi_chars
 
-        #profiler.dump_stats("tmpFolder/tick%s"%(origTick,))
+            for char in multi_chars:
+                if char.dead:
+                    continue
+                if not char.container:
+                    continue
+                # 5/0
+                advanceChar(char)
+                pass
 
-        endTime = time.time()
-        if endTime-startTime < 0.09999:
-            time.sleep(0.1-(endTime-startTime))
+        if src.gamestate.gamestate.tick > origTick:
+            endTime = time.time()
+            tickSpeed = endTime-startTime
+            if tickSpeed > 0.1:
+                if not os.path.exists("perfDebug"):
+                    os.makedirs("perfDebug")
+                profiler.dump_stats("perfDebug/tick%s"%(origTick,))
+                if slowestTickSpeed == None or slowestTickSpeed < tickSpeed:
+                    print("new slowest tick")
+                    slowestTickSpeed = tickSpeed
+                    slowestTick = origTick
+                print("tick time %s for %s"%(tickSpeed,origTick,))
+                print("slowest tick %s for %s"%(slowestTickSpeed,slowestTick,))
 
+            endTime = time.time()
+            if endTime-startTime < 0.09999:
+                time.sleep(0.1-(endTime-startTime))
+
+        renderGameDisplay()
     else:
         continousOperation = 0
 

@@ -63,28 +63,25 @@ Try luring enemies into landmines or detonating some bombs."""
 
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
-                foundEnemy = None
-                for enemy in character.container.characters:
-                    if enemy.faction == character.faction:
-                        continue
-                    foundEnemy = enemy
-                if not foundEnemy:
+                if not character.getNearbyEnemies():
                     self.postHandler(character)
                     return True
         else:
             if character.xPosition//15 == self.targetPosition[0] and character.yPosition//15 == self.targetPosition[1]:
-                foundEnemy = None
-                for enemy in character.container.characters:
-                    if not (enemy.xPosition//15 == character.xPosition//15 and enemy.yPosition//15 == character.yPosition//15):
-                        continue
-                    if enemy.faction == character.faction:
-                        continue
-                    foundEnemy = enemy
-                if not foundEnemy:
+                if not character.getNearbyEnemies():
                     self.postHandler(character)
                     return True
 
         return False
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        if character.getBigPosition() == self.targetPosition:
+            enemies = character.getNearbyEnemies()
+            if enemies:
+                return "gg"
+            else:
+                return "10."
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def solver(self,character):
         if self.completed:
@@ -108,6 +105,11 @@ Try luring enemies into landmines or detonating some bombs."""
                     quest.autoSolve = True
                     character.assignQuest(quest,active=True)
                     return
+
+        command = self.getSolvingCommandString(character)
+        if command:
+            character.runCommandString(command)
+            return
 
         super().solver(character)
 

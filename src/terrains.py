@@ -62,6 +62,7 @@ class Terrain(src.saveing.Saveable):
 
         super().__init__()
 
+        self.isRoom = False
         # store terrain content
         self.characters = []
         self.charactersByTile = {}
@@ -2260,6 +2261,7 @@ class Nothingness(Terrain):
         """
 
 
+        self.isRoom = False
         super().__init__(
             seed=seed,
             noContent=noContent,

@@ -47,6 +47,7 @@ class Room(src.saveing.Saveable):
             seed: the rng seed
 
         """
+        self.isRoom = True
         self.walkingSpace = set()
         self.inputSlots = []
         self.outputSlots = []

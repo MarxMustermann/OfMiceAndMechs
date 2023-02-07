@@ -130,7 +130,7 @@ Use the complex interaction to recharge the personel artwork
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
-        terrainPosition = character.getTerrainPosition()
+        terrainPosition = self.getTerrainPosition()
         char.registers["HOMETx"] = terrainPosition[0]
         char.registers["HOMETy"] = terrainPosition[1]
         char.personality["abortMacrosOnAttack"] = False
@@ -257,7 +257,7 @@ Use the complex interaction to recharge the personel artwork
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
-        terrainPosition = character.getTerrainPosition()
+        terrainPosition = self.getTerrainPosition()
         char.registers["HOMETx"] = terrainPosition[0]
         char.registers["HOMETy"] = terrainPosition[1]
         char.personality["abortMacrosOnAttack"] = False
@@ -379,7 +379,7 @@ Use the complex interaction to recharge the personel artwork
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition
         char.registers["HOMEy"] = self.container.yPosition
-        terrainPosition = actor.getTerrainPosition()
+        terrainPosition = self.getTerrainPosition()
         char.registers["HOMETx"] = terrainPosition[0]
         char.registers["HOMETy"] = terrainPosition[1]
         char.personality["abortMacrosOnAttack"] = False

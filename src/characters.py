@@ -322,7 +322,7 @@ class Character(src.saveing.Saveable):
         if not self.container:
             return
 
-        if isinstance(self.container,src.rooms.Room):
+        if self.container.isRoom:
             terrain = self.container.container
         else:
             terrain = self.container

@@ -1,4 +1,5 @@
 import src
+import random
 
 class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
@@ -99,11 +100,11 @@ operate the machine on %s
             return
 
         if isinstance(character.container,src.rooms.Room):
-            if not self.paranoid and localRandom.random() < 0.5 and "fighting" in self.character.skills:
+            if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
-                    self.addQuest(src.quests.questMap["RunCOmmand"](command="gg")
+                    self.addQuest(src.quests.questMap["RunCommand"](command="gg"))
                     return
 
             if self.path[0] == (0,1):
@@ -127,9 +128,9 @@ operate the machine on %s
                 self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(0,6,0)))
                 return
         else:
-            if not self.paranoid and localRandom.random() < 0.5 and "fighting" in self.character.skills:
+            if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
                 if character.container.getEnemiesOnTile(character):
-                    self.addQuest(src.quests.questMap["RunCOmmand"](command="gg")
+                    self.addQuest(src.quests.questMap["RunCommand"](command="gg"))
                     return
 
             if self.path[0] == (0,1):
@@ -197,9 +198,6 @@ operate the machine on %s
 
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition)
-        if character == src.gamestate.gamestate.mainChar:
-            print("!!!!!!!!!!!!!!!!!")
-            print(self.path)
 
     def solver(self, character):
         if not self.path:

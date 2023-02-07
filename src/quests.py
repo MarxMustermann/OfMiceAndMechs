@@ -972,7 +972,7 @@ class MetaQuestSequence(Quest):
             commandString = self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)
             if commandString:
                 return commandString
-        super().getSolvingCommandString(character)
+        return super().getSolvingCommandString(character)
 
 
 

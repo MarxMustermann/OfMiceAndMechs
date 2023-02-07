@@ -4949,6 +4949,7 @@ When you rise in rank you will be able to build a way out of here."""
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
+            containerQuest.generateSubquests(mainChar)
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 

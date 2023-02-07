@@ -47,6 +47,15 @@ class GoToTile(src.quests.MetaQuestSequence):
                 return
         return
 
+    def handleMoved(self,extraInfo):
+        if self.completed:
+            1/0
+
+        if not self.character:
+            return
+
+        self.generateSubquests(self.character)
+
     def getQuestMarkersTile(self,character):
         if self.character.xPosition%15 == 0 or  self.character.yPosition%15 == 0 or self.character.xPosition%15 == 14 or self.character.yPosition%15 == 14:
             return []
@@ -68,6 +77,7 @@ class GoToTile(src.quests.MetaQuestSequence):
             return
         
         self.startWatching(character,self.handleChangedTile, "changedTile")
+        self.startWatching(character,self.handleMoved, "moved")
 
         return super().assignToCharacter(character)
 
@@ -97,6 +107,12 @@ operate the machine on %s
             return
 
         if not self.path:
+            self.generatePath(character)
+
+            if not self.path:
+                return
+
+        if self.subQuests:
             return
 
         if isinstance(character.container,src.rooms.Room):
@@ -132,6 +148,14 @@ operate the machine on %s
                 if character.container.getEnemiesOnTile(character):
                     self.addQuest(src.quests.questMap["RunCommand"](command="gg"))
                     return
+            if character.xPosition%15 == 7 and character.yPosition%15 == 14:
+                return
+            if character.xPosition%15 == 7 and character.yPosition%15 == 0:
+                return
+            if character.xPosition%15 == 14 and character.yPosition%15 == 7:
+                return
+            if character.xPosition%15 == 0 and character.yPosition%15 == 7:
+                return
 
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
@@ -156,6 +180,9 @@ operate the machine on %s
             
 
     def getSolvingCommandString(self, character, dryRun=True):
+        if character.macroState.get("submenue"):
+            return ["esc"]
+
         if not self.path:
             return
 
@@ -163,38 +190,39 @@ operate the machine on %s
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
                     return "ss"
-                return
             if self.path[0] == (0,-1):
                 if character.getPosition() == (6,0,0):
                     return "ww"
-                return
             if self.path[0] == (1,0):
                 if character.getPosition() == (12,6,0):
                     return "dd"
-                return
             if self.path[0] == (-1,0):
                 if character.getPosition() == (0,6,0):
                     return "aa"
-                return
         else:
+            if character.xPosition%15 == 7 and character.yPosition%15 == 14:
+                return "w"
+            if character.xPosition%15 == 7 and character.yPosition%15 == 0:
+                return "s"
+            if character.xPosition%15 == 14 and character.yPosition%15 == 7:
+                return "a"
+            if character.xPosition%15 == 0 and character.yPosition%15 == 7:
+                return "d"
+
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
                     return "s"
-                return
             if self.path[0] == (0,-1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
                     return "w"
-                return
             if self.path[0] == (1,0):
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
                     return "d"
-                return
             if self.path[0] == (-1,0):
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
                     return "a"
-                return
 
-        super().getSolvingCommandString(character,dryRun=dryRun)
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition)

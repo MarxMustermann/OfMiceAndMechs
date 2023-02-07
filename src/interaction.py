@@ -3945,7 +3945,7 @@ class CharacterInfoMenu(SubMenu):
         text += "skills: %s\n" % char.skills
         text += "duties: %s\n" % char.duties
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-        text += "position: %s\n" % (char.getPosition(),)
+        text += "position: %s\n" % (char.getSpacePosition(),)
         text += "big position: %s\n" % (char.getBigPosition(),)
         text += "terrain position: %s\n" % (char.getTerrainPosition(),)
         print(char.registers)

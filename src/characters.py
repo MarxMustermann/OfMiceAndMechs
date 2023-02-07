@@ -561,6 +561,18 @@ class Character(src.saveing.Saveable):
 
         return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 
+    def getSpacePosition(self,offset=(0,0,0)):
+        """
+        returns the characters position
+
+        Returns:
+            the position
+        """
+        if self.container.isRoom:
+            return (self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2])
+        else:
+            return (self.xPosition%15+offset[0], self.yPosition%15+offset[1], self.zPosition%15+offset[2])
+
     def searchInventory(self, itemType, extra={}):
         """
         return a list of items from the characters inventory that statisfy some conditions

@@ -1,15 +1,15 @@
 import src
 import random
 
-class GoToPosition(src.quests.Quest):
+class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
     def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEnd=False,ignoreEndBlocked=False):
         questList = []
         super().__init__(questList, creator=creator)
-        self.targetPosition = None
-        self.description = description
         self.metaDescription = description
+        self.baseDescription = description
+        self.targetPosition = None
         self.hasListener = False
         self.ignoreEndBlocked = False
         if targetPosition:
@@ -21,6 +21,7 @@ class GoToPosition(src.quests.Quest):
         
         self.shortCode = "g"
         self.smallPath = []
+        self.path = []
 
     def generateTextDescription(self):
         extraText = ""
@@ -47,35 +48,64 @@ This quest ends after you do this."""%(self.targetPosition,)
 
         self.getSolvingCommandString(character)
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
-        if self.smallPath:
+        if self.path:
             if isinstance(character.container,src.rooms.Room):
                 pos = (character.xPosition,character.yPosition)
             else:
                 pos = (character.xPosition%15,character.yPosition%15)
-            for step in self.smallPath:
+            pos = character.getPosition()
+            for step in self.path:
                 pos = (pos[0]+step[0],pos[1]+step[1])
                 result.append((pos,"path"))
         return result
 
-    def wrapedTriggerCompletionCheck(self, extraInfo):
+    def handleMoved(self, extraInfo):
         if not self.active:
             return
         if self.completed:
             return
 
-        self.triggerCompletionCheck(extraInfo[0])
+        convertedDirection = None
+        if extraInfo[1] == "west":
+            convertedDirection = (-1,0)
+        if extraInfo[1] == "east":
+            convertedDirection = (1,0)
+        if extraInfo[1] == "north":
+            convertedDirection = (0,-1)
+        if extraInfo[1] == "south":
+            convertedDirection = (0,1)
+
+        if self.path and self.path[0] == convertedDirection:
+            self.path = self.path[1:]
+            if not self.path:
+                self.triggerCompletionCheck(extraInfo[0])
+                return
+            if self.ignoreEndBlocked and len(self.path) == 1:
+                self.triggerCompletionCheck(extraInfo[0])
+                return
+        else:
+            if self.path:
+                print(self.path)
+                print(extraInfo)
+                print(convertedDirection)
+            self.generatePath(self.character)
 
     def assignToCharacter(self, character):
         if self.character:
             return
 
-        self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
+        self.startWatching(character,self.handleMoved, "moved")
 
         super().assignToCharacter(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+
         if character.macroState.get("submenue"):
             return ["esc"]
+
+        if not self.path:
+            return
+
         if character.xPosition%15 == 0:
             return "d"
         if character.xPosition%15 == 14:
@@ -87,25 +117,17 @@ This quest ends after you do this."""%(self.targetPosition,)
         if not self.targetPosition:
             return ".12.."
 
-        localRandom = random.Random(self.randomSeed)
-
-        if isinstance(character.container,src.rooms.Room):
-            (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom,ignoreEndBlocked=self.ignoreEndBlocked,character=character)
-            if not command:
-                (command,self.smallPath) = character.container.getPathCommandTile(character.getPosition(),self.targetPosition,localRandom=localRandom,tryHard=True,ignoreEndBlocked=self.ignoreEndBlocked,character=character)
-            if not command:
-                return None
-            return command
-        else:
-            charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
-            tilePos = (character.xPosition//15,character.yPosition//15,character.zPosition//15)
-
-            (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,ignoreEndBlocked=self.ignoreEndBlocked,character=character)
-            if not command:
-                (command,self.smallPath) = character.container.getPathCommandTile(tilePos,charPos,self.targetPosition,localRandom=localRandom,tryHard=True,ignoreEndBlocked=self.ignoreEndBlocked,character=character)
-            if not command:
-                return None
-            return command
+        command  = ""
+        for step in self.path:
+            if step == (1,0):
+                command += "d"
+            if step == (-1,0):
+                command += "a"
+            if step == (0,1):
+                command += "s"
+            if step == (0,-1):
+                command += "w"
+        return command
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -124,24 +146,36 @@ This quest ends after you do this."""%(self.targetPosition,)
                 return True
         return False
 
+    def generatePath(self,character):
+        if character.container.isRoom:
+            self.path = character.container.getPathCommandTile(character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
+        else:
+            self.path = character.container.getPathCommandTile(character.getTilePosition(),character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
+
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
-            self.description = self.metaDescription+" %s"%(self.targetPosition,)
+            self.metaDescription = self.baseDescription+" %s"%(self.targetPosition,)
         if "ignoreEndBlocked" in parameters and "ignoreEndBlocked" in parameters:
             self.ignoreEndBlocked = parameters["ignoreEndBlocked"]
         return super().setParameters(parameters)
 
     def solver(self, character):
-        self.triggerCompletionCheck(character)
-        commandString = self.getSolvingCommandString(character)
-        self.randomSeed = random.random()
-        if commandString:
-            character.runCommandString(commandString)
-            return False
-        else:
-            self.fail()
-            return True
+        if not self.path:
+            self.generatePath(character)
+            return
+
+        if not self.subQuests:
+            self.generateSubquests(character)
+            if self.subQuests:
+                return
+
+        command = self.getSolvingCommandString(character,dryRun=False)
+        if command:
+            character.runCommandString(command)
+            return
+
+        super().solver(character)
 
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()

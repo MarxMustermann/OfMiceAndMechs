@@ -174,21 +174,22 @@ class Terrain(src.saveing.Saveable):
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
 
-    def advance(self):
-        self.animations = []
-
+    def advanceCharacters(self):
         for character in self.characters:
             character.advance()
 
+    def advanceRoom(self):
         for room in self.rooms:
             room.advance()
-        
+
+    def advanceBiomes(self):
         if src.gamestate.gamestate.tick//(15*15):
             moisture = self.biomeInfo["moisture"]
             for x in range(1,14):
                 for y in range(1,14):
                     self.microBiomeMap[(x,y,0)]["moisture"] = moisture
 
+    def handleEvents(self):
         while (
             self.events
             and self.events[0].tick <= src.gamestate.gamestate.tick
@@ -198,6 +199,14 @@ class Terrain(src.saveing.Saveable):
                 1/0
             event.handleEvent()
             self.events.remove(event)
+
+    def advance(self):
+        self.animations = []
+
+        self.advanceCharacters()
+        self.advanceRoom()
+        self.advanceBiomes()
+        self.handleEvents()
 
     def randomAddItems(self, items):
         for item in items:
@@ -258,10 +267,7 @@ class Terrain(src.saveing.Saveable):
             elif position[0] % 15 > 7:
                 position = (position[0] - 1, position[1] - 1, position[2])
 
-        try:
-            return self.itemsByCoordinate[(position[0], position[1], position[2])]
-        except KeyError:
-            return []
+        return self.itemsByCoordinate.get(position,[])
 
     # bad code: story specific code
     # obolete: used only by obsolete story
@@ -1012,6 +1018,7 @@ class Terrain(src.saveing.Saveable):
         toCheck = []
         nextPos = startPos
         paths = {startPos:[]}
+        blockedPositions = set()
 
         counter = 0
         while counter < 200:
@@ -1062,17 +1069,25 @@ class Terrain(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15),character) and not newPos == targetPos:
+                if not costMap.get(newPos) == None:
                     continue
+
+                if newPos in blockedPositions:
+                    if (not ignoreEndBlocked or not newPos == targetPos):
+                        continue
+
+                if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15),character):
+                    blockedPositions.add(newPos)
+                    if (not ignoreEndBlocked or not newPos == targetPos):
+                        continue
 
                 if not tryHard:
                     if character and character.stepsOnMines == False:
                         items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
                         if items and items[0].type == "LandMine":
+                            blockedPositions.add(newPos)
                             continue
 
-                if not costMap.get(newPos) == None:
-                    continue
 
                 costMap[newPos] = currentCost+1
                 paths[newPos] = paths[pos]+[offset]

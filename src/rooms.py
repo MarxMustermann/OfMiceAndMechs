@@ -306,6 +306,9 @@ class Room(src.saveing.Saveable):
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
 
+    def getTilePosition(self,offset=(0,0,0)):
+        return (self.xPosition+offset[0],self.yPosition+offset[1],0+offset[2])
+
     def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None,character=None):
         if path == None:
             path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
@@ -331,6 +334,7 @@ class Room(src.saveing.Saveable):
         toCheck = []
         nextPos = startPos
         paths = {startPos:[]}
+        blockedPositions = set()
 
         counter = 0
         while counter < 200:
@@ -381,11 +385,17 @@ class Room(src.saveing.Saveable):
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 0 or newPos[1] < 0:
                     continue
 
-                if not self.getPositionWalkable((newPos[0],newPos[1],newPos[2]),character=character) and (not ignoreEndBlocked or not newPos == targetPos):
-                    continue
-
                 if not costMap.get(newPos) == None:
                     continue
+
+                if newPos in blockedPositions:
+                    if (not ignoreEndBlocked or not newPos == targetPos):
+                        continue
+
+                if not self.getPositionWalkable(newPos,character=character):
+                    blockedPositions.add(newPos)
+                    if (not ignoreEndBlocked or not newPos == targetPos):
+                        continue
 
                 costMap[newPos] = currentCost+1
                 paths[newPos] = paths[pos]+[offset]
@@ -491,10 +501,7 @@ class Room(src.saveing.Saveable):
             position: the position the fetch the items for
         """
 
-        try:
-            return self.itemByCoordinates[position]
-        except:
-            return []
+        return self.itemByCoordinates.get(position,[])
 
     # bad code: probably misnamed
     # bad code: should be in extra class

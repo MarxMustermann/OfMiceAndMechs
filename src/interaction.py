@@ -642,21 +642,201 @@ type the macro name you want to record to
                 charState["macros"][charState["recordingTo"]].append(key)
     return (1,key)
 
-def checkStaggered(char):
-    if char.staggered and 1==0: # HACK: disabled staggering
-        char.staggered -= 1
-        char.addMessage("you are still staggered")
-        return
-    return (1,)
-
 def checkRecording(key,char,charState,main,header,footer,urwid,flags):
     return handleRecordingChar(key,char,charState,main,header,footer,urwid,flags)
 
+def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
+    if not char.container:
+        del char.interactionState["advancedInteraction"]
+        return
+    if key == "w":
+        items = char.container.getItemByPosition(
+            (char.xPosition, char.yPosition - 1, char.zPosition)
+        )
+        if items:
+            items[0].apply(char)
+            char.runCommandString("~",nativeKey=True)
+    elif key == "s":
+        items = char.container.getItemByPosition(
+            (char.xPosition, char.yPosition + 1, char.zPosition)
+        )
+        if items:
+            items[0].apply(char)
+            char.runCommandString("~",nativeKey=True)
+    elif key == "d":
+        items = char.container.getItemByPosition(
+            (char.xPosition + 1, char.yPosition, char.zPosition)
+        )
+        if items:
+            items[0].apply(char)
+            char.runCommandString("~",nativeKey=True)
+    elif key == "a":
+        items = char.container.getItemByPosition(
+            (char.xPosition - 1, char.yPosition, char.zPosition)
+        )
+        if items:
+            items[0].apply(char)
+            char.runCommandString("~",nativeKey=True)
+    elif key == ".":
+        items = char.container.getItemByPosition(
+            (char.xPosition, char.yPosition, char.zPosition)
+        )
+        if items:
+            items[0].apply(char)
+            char.runCommandString("~",nativeKey=True)
+    elif key == "j":
+        character = char
+        if not character.jobOrders:
+            char.addMessage("no job Order")
+            return
+
+        if not character.jobOrders[-1].getTask():
+            character.jobOrders.pop()
+            del char.interactionState["advancedInteraction"]
+            return
+
+        if character.jobOrders:
+            character.jobOrders[-1].apply(character)
+        else:
+            for item in reversed(character.inventory):
+                if isinstance(item, src.items.itemMap["JobOrder"]):
+                    item.apply(char)
+                    char.addMessage("ran job Order")
+                    break
+    elif key == "f":
+        character = char
+        for item in character.inventory:
+            if isinstance(item, src.items.itemMap["GooFlask"]):
+                if item.uses > 0:
+                    item.apply(character)
+                    break
+            if (
+                isinstance(item, src.items.itemMap["Bloom"])
+                or isinstance(item, src.items.itemMap["BioMass"])
+                or isinstance(item, src.items.itemMap["PressCake"])
+                or isinstance(item, src.items.itemMap["SickBloom"])
+            ):
+                item.apply(character)
+                character.inventory.remove(item)
+                break
+            if isinstance(item, src.items.itemMap["Corpse"]):
+                item.apply(character)
+                break
+    elif key == "h" or key == "H":
+        character = char
+        for item in character.inventory:
+            if isinstance(item, src.items.itemMap["Vial"]):
+                if item.uses > 0:
+                    if key == "h":
+                        item.apply(character)
+                        break
+                    else:
+                        while item.uses and character.health < character.maxHealth:
+                            item.apply(character)
+    del char.interactionState["advancedInteraction"]
+
+def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
+    if len(char.inventory) >= 10:
+        char.addMessage("you cannot carry more items")
+    elif not char.container:
+        pass
+    else:
+        if key == "w":
+            items = char.container.getItemByPosition(
+                (char.xPosition, char.yPosition - 1, char.zPosition)
+            )
+            if items:
+                item = items[0]
+                item.pickUp(char)
+        elif key == "s":
+            items = char.container.getItemByPosition(
+                (char.xPosition, char.yPosition + 1, char.zPosition)
+            )
+            if items:
+                item = items[0]
+                item.pickUp(char)
+        elif key == "d":
+            items = char.container.getItemByPosition(
+                (char.xPosition + 1, char.yPosition, char.zPosition)
+            )
+            if items:
+                item = items[0]
+                item.pickUp(char)
+        elif key == "a":
+            items = char.container.getItemByPosition(
+                (char.xPosition - 1, char.yPosition, char.zPosition)
+            )
+            if items:
+                item = items[0]
+                item.pickUp(char)
+        elif key == ".":
+            items = char.container.getItemByPosition(
+                (char.xPosition, char.yPosition, char.zPosition)
+            )
+            if items:
+                item = items[0]
+                item.pickUp(char)
+    del char.interactionState["advancedPickup"]
+
+def doAdvancedDrop(key,char,charState,main,header,footer,urwid,flags):
+    if key == "w":
+        if char.inventory:
+            char.drop(
+                char.inventory[-1],
+                (char.xPosition, char.yPosition - 1, char.zPosition),
+            )
+    elif key == "s":
+        if char.inventory:
+            char.drop(
+                char.inventory[-1],
+                (char.xPosition, char.yPosition + 1, char.zPosition),
+            )
+    elif key == "d":
+        if char.inventory:
+            char.drop(
+                char.inventory[-1],
+                (char.xPosition + 1, char.yPosition, char.zPosition),
+            )
+    elif key == "a":
+        if char.inventory:
+            char.drop(
+                char.inventory[-1],
+                (char.xPosition - 1, char.yPosition, char.zPosition),
+            )
+    elif key == ".":
+        if char.inventory:
+            char.drop(
+                char.inventory[-1], (char.xPosition, char.yPosition, char.zPosition)
+            )
+    del char.interactionState["advancedDrop"]
+
+def doStateChange(key,char,charState,main,header,footer,urwid,flags):
+    if key in (">",):
+        # do stateSave
+        char.interactionState["replay"] = charState["replay"]
+        char.interactionState["submenue"] = charState["submenue"]
+        char.interactionState["number"] = charState["number"]
+        char.interactionState["itemMarkedLast"] = charState["itemMarkedLast"]
+        char.interactionState["macrostate"] = charState
+        char.interactionStateBackup.append(char.interactionState)
+        char.interactionState = {}
+        charState["replay"] = []
+        charState["submenue"] = None
+        charState["number"] = None
+        charState["itemMarkedLast"] = None
+    elif key in ("<",):
+        if len(char.interactionStateBackup):
+            char.interactionState = char.interactionStateBackup.pop()
+            charState["replay"] = char.interactionState["replay"]
+            charState["submenue"] = char.interactionState["submenue"]
+            charState["number"] = char.interactionState["number"]
+            charState["itemMarkedLast"] = char.interactionState["itemMarkedLast"]
+        else:
+            char.addMessage("nothing to restore")
+        del char.interactionState["stateChange"]
+
 def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
     char.specialRender = False
-
-    if not checkStaggered(char):
-        return
 
     if charState["recording"]:
         result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
@@ -693,29 +873,7 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         return
 
     if "stateChange" in char.interactionState and char.interactionState["stateChange"]:
-        if key in (">",):
-            # do stateSave
-            char.interactionState["replay"] = charState["replay"]
-            char.interactionState["submenue"] = charState["submenue"]
-            char.interactionState["number"] = charState["number"]
-            char.interactionState["itemMarkedLast"] = charState["itemMarkedLast"]
-            char.interactionState["macrostate"] = charState
-            char.interactionStateBackup.append(char.interactionState)
-            char.interactionState = {}
-            charState["replay"] = []
-            charState["submenue"] = None
-            charState["number"] = None
-            charState["itemMarkedLast"] = None
-        elif key in ("<",):
-            if len(char.interactionStateBackup):
-                char.interactionState = char.interactionStateBackup.pop()
-                charState["replay"] = char.interactionState["replay"]
-                charState["submenue"] = char.interactionState["submenue"]
-                charState["number"] = char.interactionState["number"]
-                charState["itemMarkedLast"] = char.interactionState["itemMarkedLast"]
-            else:
-                char.addMessage("nothing to restore")
-            del char.interactionState["stateChange"]
+        doStateChange()
         return
 
     if char.doStackPop:
@@ -742,138 +900,11 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         return
 
     if "advancedInteraction" in char.interactionState:
-        if not char.container:
-            del char.interactionState["advancedInteraction"]
-            return
-        if key == "w":
-            items = char.container.getItemByPosition(
-                (char.xPosition, char.yPosition - 1, char.zPosition)
-            )
-            if items:
-                items[0].apply(char)
-                char.runCommandString("~",nativeKey=True)
-        elif key == "s":
-            items = char.container.getItemByPosition(
-                (char.xPosition, char.yPosition + 1, char.zPosition)
-            )
-            if items:
-                items[0].apply(char)
-                char.runCommandString("~",nativeKey=True)
-        elif key == "d":
-            items = char.container.getItemByPosition(
-                (char.xPosition + 1, char.yPosition, char.zPosition)
-            )
-            if items:
-                items[0].apply(char)
-                char.runCommandString("~",nativeKey=True)
-        elif key == "a":
-            items = char.container.getItemByPosition(
-                (char.xPosition - 1, char.yPosition, char.zPosition)
-            )
-            if items:
-                items[0].apply(char)
-                char.runCommandString("~",nativeKey=True)
-        elif key == ".":
-            items = char.container.getItemByPosition(
-                (char.xPosition, char.yPosition, char.zPosition)
-            )
-            if items:
-                items[0].apply(char)
-                char.runCommandString("~",nativeKey=True)
-        elif key == "j":
-            character = char
-            if not character.jobOrders:
-                char.addMessage("no job Order")
-                return
-
-            if not character.jobOrders[-1].getTask():
-                character.jobOrders.pop()
-                del char.interactionState["advancedInteraction"]
-                return
-
-            if character.jobOrders:
-                character.jobOrders[-1].apply(character)
-            else:
-                for item in reversed(character.inventory):
-                    if isinstance(item, src.items.itemMap["JobOrder"]):
-                        item.apply(char)
-                        char.addMessage("ran job Order")
-                        break
-        elif key == "f":
-            character = char
-            for item in character.inventory:
-                if isinstance(item, src.items.itemMap["GooFlask"]):
-                    if item.uses > 0:
-                        item.apply(character)
-                        break
-                if (
-                    isinstance(item, src.items.itemMap["Bloom"])
-                    or isinstance(item, src.items.itemMap["BioMass"])
-                    or isinstance(item, src.items.itemMap["PressCake"])
-                    or isinstance(item, src.items.itemMap["SickBloom"])
-                ):
-                    item.apply(character)
-                    character.inventory.remove(item)
-                    break
-                if isinstance(item, src.items.itemMap["Corpse"]):
-                    item.apply(character)
-                    break
-        elif key == "h" or key == "H":
-            character = char
-            for item in character.inventory:
-                if isinstance(item, src.items.itemMap["Vial"]):
-                    if item.uses > 0:
-                        if key == "h":
-                            item.apply(character)
-                            break
-                        else:
-                            while item.uses and character.health < character.maxHealth:
-                                item.apply(character)
-        del char.interactionState["advancedInteraction"]
+        doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags)
         return
 
     if "advancedPickup" in char.interactionState:
-        if len(char.inventory) >= 10:
-            char.addMessage("you cannot carry more items")
-        elif not char.container:
-            pass
-        else:
-            if key == "w":
-                items = char.container.getItemByPosition(
-                    (char.xPosition, char.yPosition - 1, char.zPosition)
-                )
-                if items:
-                    item = items[0]
-                    item.pickUp(char)
-            elif key == "s":
-                items = char.container.getItemByPosition(
-                    (char.xPosition, char.yPosition + 1, char.zPosition)
-                )
-                if items:
-                    item = items[0]
-                    item.pickUp(char)
-            elif key == "d":
-                items = char.container.getItemByPosition(
-                    (char.xPosition + 1, char.yPosition, char.zPosition)
-                )
-                if items:
-                    item = items[0]
-                    item.pickUp(char)
-            elif key == "a":
-                items = char.container.getItemByPosition(
-                    (char.xPosition - 1, char.yPosition, char.zPosition)
-                )
-                if items:
-                    item = items[0]
-                    item.pickUp(char)
-            elif key == ".":
-                items = char.container.getItemByPosition(
-                    (char.xPosition, char.yPosition, char.zPosition)
-                )
-                if items:
-                    item = items[0]
-                    item.pickUp(char)
-        del char.interactionState["advancedPickup"]
+        doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags)
         return
 
     if "functionCall" in char.interactionState:
@@ -910,36 +941,7 @@ call function %s
         return
 
     if "advancedDrop" in char.interactionState:
-        if key == "w":
-            if char.inventory:
-                char.drop(
-                    char.inventory[-1],
-                    (char.xPosition, char.yPosition - 1, char.zPosition),
-                )
-        elif key == "s":
-            if char.inventory:
-                char.drop(
-                    char.inventory[-1],
-                    (char.xPosition, char.yPosition + 1, char.zPosition),
-                )
-        elif key == "d":
-            if char.inventory:
-                char.drop(
-                    char.inventory[-1],
-                    (char.xPosition + 1, char.yPosition, char.zPosition),
-                )
-        elif key == "a":
-            if char.inventory:
-                char.drop(
-                    char.inventory[-1],
-                    (char.xPosition - 1, char.yPosition, char.zPosition),
-                )
-        elif key == ".":
-            if char.inventory:
-                char.drop(
-                    char.inventory[-1], (char.xPosition, char.yPosition, char.zPosition)
-                )
-        del char.interactionState["advancedDrop"]
+        doAdvancedDrop(key,char,charState,main,header,footer,urwid,flags)
         return
 
     if "enumerateState" not in char.interactionState:
@@ -8465,6 +8467,8 @@ def gameLoop(loop, user_data=None):
                 print("yay, a fast tick!!")
                 print("tick time %s for %s"%(tickSpeed,origTick,))
             print("average tick length on %s ticks: %s"%(numTrackedTicks,(totalTickSpeed/numTrackedTicks),))
+            if numTrackedTicks == 1000:
+               123456789/0
 
 
         renderGameDisplay()

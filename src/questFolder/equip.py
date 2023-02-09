@@ -92,6 +92,7 @@ Swords can range from 10 to 25 damage per hit.
                 return "Js"
             if offset == (0,-1,0):
                 return "Jw"
+
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character):
@@ -143,7 +144,8 @@ Swords can range from 10 to 25 damage per hit.
                 if source:
                     break
             if not source:
-                character.runCommandString(".14.")
+                #character.runCommandString(".14.")
+                self.fail()
                 return
 
             description="go to weapon production "
@@ -181,8 +183,9 @@ Swords can range from 10 to 25 damage per hit.
             return
 
     def solver(self, character):
-        self.activate()
-        self.triggerCompletionCheck(character)
+        if self.triggerCompletionCheck(character):
+            return
+
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:
@@ -195,6 +198,5 @@ Swords can range from 10 to 25 damage per hit.
                 return
             
         return super().solver(character)
-
 
 src.quests.addType(Equip)

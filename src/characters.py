@@ -561,6 +561,18 @@ class Character(src.saveing.Saveable):
 
         return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 
+    def getTilePosition(self,offset=(0,0,0)):
+        """
+        returns the characters position
+
+        Returns:
+            the position
+        """
+        if self.container.isRoom:
+            return self.container.getTilePosition(offset=offset)
+        else:
+            return (self.xPosition//15+offset[0], self.yPosition//15+offset[1], self.zPosition//15+offset[2])
+
     def getSpacePosition(self,offset=(0,0,0)):
         """
         returns the characters position
@@ -603,6 +615,33 @@ class Character(src.saveing.Saveable):
 
         self.messages.append(str(message))
 
+    def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
+
+        # convert command to macro data structure
+        if nativeKey:
+            flags = []
+        else:
+            flags = ["norecord"]
+        if extraFlags:
+            flags.extend(extraFlags)
+
+        """
+        convertedCommand = []
+        for char in reversed(commandString):
+            if char == "\n":
+                char = "enter"
+
+            convertedCommand.append((char, flags))
+        """
+        """
+
+        self.flags = flags
+        convertedCommand = list(map(self.convertSingleCommand,reversed(commandString)))
+        self.flags = None
+        """
+        convertedCommand = list(map(lambda char: ("enter",flags) if char == "\n" else (char,flags), reversed(commandString)))
+        return convertedCommand
+
     def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None):
         """
         run a command using the macro automation
@@ -611,21 +650,7 @@ class Character(src.saveing.Saveable):
             commandString: the command
         """
 
-        # convert command to macro data structure
-        convertedCommand = []
-        for char in reversed(commandString):
-            if char == "\n":
-                char = "enter"
-
-            if nativeKey:
-                flags = []
-            else:
-                flags = ["norecord"]
-
-            if extraFlags:
-                flags.extend(extraFlags)
-
-            convertedCommand.append((char, flags))
+        convertedCommand = self.convertCommandString(commandString,nativeKey,extraFlags)
 
         oldCommand = []
         if not clear:
@@ -633,13 +658,9 @@ class Character(src.saveing.Saveable):
 
         # add command to the characters command queue
         if not addBack:
-            self.macroState["commandKeyQueue"] = (
-                oldCommand + convertedCommand
-            )
+            self.macroState["commandKeyQueue"] = oldCommand + convertedCommand
         else:
-            self.macroState["commandKeyQueue"] = (
-                convertedCommand + oldCommand
-            )
+            self.macroState["commandKeyQueue"] = convertedCommand + oldCommand
 
         """
         if len(self.macroState["commandKeyQueue"]) > 100:

@@ -865,7 +865,6 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         if done:
             charState["submenue"] = None
             char.specialRender = False
-            doAdvanceGame = False
         key = commandChars.ignore
 
     if key in ("|",):
@@ -2150,11 +2149,6 @@ select what you want to observe
                 # bad code: changing the key mid function
                 key = commandChars.ignore
 
-    # set the flag to advance the game
-    doAdvanceGame = True
-    if key in (commandChars.ignore,):
-        doAdvanceGame = False
-
     # invalidate input for unconscious char
     if char.unconcious:
         key = commandChars.wait
@@ -2201,7 +2195,6 @@ select what you want to observe
         # bad pattern: doesn't actually pause
         if key in (commandChars.pause,):
             charState["ignoreNextAutomated"] = True
-            doAdvanceGame = False
 
         """
         move the player into a direction
@@ -2761,7 +2754,6 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         if done:
             charState["submenue"] = None
             char.specialRender = False
-            doAdvanceGame = False
 
     if charState["replay"] or charState["doNumber"]:
         text = ""

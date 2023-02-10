@@ -152,6 +152,8 @@ Press d now to move the quest cursor to select the sub quest.
             return
 
         if character.getBigPosition() == (7,6,0):
+            for quest in self.subQuests:
+                quest.postHandler()
             self.postHandler()
             return
         return False

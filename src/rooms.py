@@ -373,9 +373,9 @@ class Room(src.saveing.Saveable):
                 neutralOffsets.append((0,+1))
                 neutralOffsets.append((0,-1))
 
-            localRandom.shuffle(goodOffsets)
-            localRandom.shuffle(neutralOffsets)
-            localRandom.shuffle(badOffsets)
+            #localRandom.shuffle(goodOffsets)
+            #localRandom.shuffle(neutralOffsets)
+            #localRandom.shuffle(badOffsets)
             offsets = badOffsets+neutralOffsets+goodOffsets
 
             while offsets:

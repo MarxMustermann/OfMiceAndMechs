@@ -85,9 +85,11 @@ This quest ends after you do this."""%(self.targetPosition,)
                 return
         else:
             if self.path:
-                print(self.path)
-                print(extraInfo)
-                print(convertedDirection)
+                if self.character == src.gamestate.gamestate.mainChar:
+                    print(self.path)
+                    print(extraInfo)
+                    print(convertedDirection)
+                    print(self)
             self.generatePath(self.character)
 
     def assignToCharacter(self, character):

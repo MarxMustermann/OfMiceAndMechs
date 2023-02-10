@@ -416,7 +416,7 @@ class Character(src.saveing.Saveable):
         return self.container.getEnemiesOnTile(self)
 
     def getBigPosition(self,offset=(0,0,0)):
-        if isinstance(self.container, src.rooms.Room):
+        if self.container.isRoom:
             charPos = (self.container.xPosition+offset[0],self.container.yPosition+offset[1],0+offset[2])
         else:
             charPos = (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
@@ -642,7 +642,7 @@ class Character(src.saveing.Saveable):
         convertedCommand = list(map(lambda char: ("enter",flags) if char == "\n" else (char,flags), reversed(commandString)))
         return convertedCommand
 
-    def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None):
+    def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None, preconverted=False):
         """
         run a command using the macro automation
 
@@ -650,7 +650,10 @@ class Character(src.saveing.Saveable):
             commandString: the command
         """
 
-        convertedCommand = self.convertCommandString(commandString,nativeKey,extraFlags)
+        if preconverted:
+            convertedCommand = commandString
+        else:
+            convertedCommand = self.convertCommandString(commandString,nativeKey,extraFlags)
 
         oldCommand = []
         if not clear:

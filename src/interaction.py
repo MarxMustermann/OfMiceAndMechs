@@ -835,127 +835,81 @@ def doStateChange(key,char,charState,main,header,footer,urwid,flags):
             char.addMessage("nothing to restore")
         del char.interactionState["stateChange"]
 
-def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
-    char.specialRender = False
+def doHandleMenu(key,char,charState,main,header,footer,urwid,flags):
+    # let the submenu handle the keystroke
+    lastSubmenu = charState["submenue"]
+    noRender = True
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        noRender = False
+    done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
-    if charState["recording"]:
-        result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
-        if not (result and result[0]):
-            return
-        key = result[1]
+    if not lastSubmenu == charState["submenue"]:
+        charState["submenue"].handleKey("~", noRender=noRender, character=char)
+        done = False
 
-    if (
-        charState["submenue"]
-        and charState["submenue"].stealAllKeys
-        and (key not in ("|", ">", "<") and not charState["submenue"].escape)
-    ):
+    # reset rendering flags
+    if done:
+        charState["submenue"] = None
+        char.specialRender = False
 
-        # let the submenu handle the keystroke
-        lastSubmenu = charState["submenue"]
-        noRender = True
+def doStackPop(key,char,charState,main,header,footer,urwid,flags):
+    if key in char.registers:
+        char.registers[key].pop()
+        if not len(char.registers[key]):
+            del char.registers[key]
+    char.doStackPop = False
+
+def doStackPush(key,char,charState,main,header,footer,urwid,flags):
+    if key not in char.registers:
+        char.registers[key] = []
+    char.registers[key].append(0)
+    char.doStackPush = False
+
+def doRangedAttack(key,char,charState,main,header,footer,urwid,flags):
+    char.doRangedAttack(direction=key)
+    del char.interactionState["fireDirection"]
+
+def doFunctionCall(key,char,charState,main,header,footer,urwid,flags):
+    if key not in (" ", "backspace", "enter"):
+        char.interactionState["functionCall"] += key
+
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            noRender = False
-        done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
-
-        if not lastSubmenu == charState["submenue"]:
-            charState["submenue"].handleKey("~", noRender=noRender, character=char)
-            done = False
-
-        # reset rendering flags
-        if done:
-            charState["submenue"] = None
-            char.specialRender = False
-        key = commandChars.ignore
-
-    if key in ("|",):
-        char.interactionState["stateChange"] = True
-        return
-
-    if "stateChange" in char.interactionState and char.interactionState["stateChange"]:
-        doStateChange()
-        return
-
-    if char.doStackPop:
-        if key in char.registers:
-            char.registers[key].pop()
-            if not len(char.registers[key]):
-                del char.registers[key]
-        char.doStackPop = False
-        return
-    if char.doStackPush:
-        if key not in char.registers:
-            char.registers[key] = []
-        char.registers[key].append(0)
-        char.doStackPush = False
-        return
-
-    if "fireDirection" in char.interactionState:
-        char.doRangedAttack(direction=key)
-        del char.interactionState["fireDirection"]
-        return
-
-    if "runaction" in char.interactionState:
-        handleActivitySelection(char)
-        return
-
-    if "advancedInteraction" in char.interactionState:
-        doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags)
-        return
-
-    if "advancedPickup" in char.interactionState:
-        doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags)
-        return
-
-    if "functionCall" in char.interactionState:
-        if key not in (" ", "backspace", "enter"):
-            char.interactionState["functionCall"] += key
-
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                header.set_text((urwid.AttrSpec("default", "default"), "call function"))
-                main.set_text(
-                    (
-                        urwid.AttrSpec("default", "default"),
-                        """
+            header.set_text((urwid.AttrSpec("default", "default"), "call function"))
+            main.set_text(
+                (
+                    urwid.AttrSpec("default", "default"),
+                    """
 
 call function %s
 """
-                        % (char.interactionState["functionCall"]),
-                    )
+                    % (char.interactionState["functionCall"]),
                 )
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-        else:
-            char.addMessage(char.interactionState["functionCall"])
-            if char.interactionState["functionCall"] == "clear":
-                char.registers = {}
-                #char.jobOrders = []
-            if char.interactionState["functionCall"] == "clear registers":
-                char.registers = {}
-            if char.interactionState["functionCall"] == "clearJobOrders":
-                char.jobOrders = []
-            if char.interactionState["functionCall"] == "huntkill":
-                char.huntkill()
-            del char.interactionState["functionCall"]
-        char.timeTaken -= 0.99
-        return
+            )
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+    else:
+        char.addMessage(char.interactionState["functionCall"])
+        if char.interactionState["functionCall"] == "clear":
+            char.registers = {}
+            #char.jobOrders = []
+        if char.interactionState["functionCall"] == "clear registers":
+            char.registers = {}
+        if char.interactionState["functionCall"] == "clearJobOrders":
+            char.jobOrders = []
+        if char.interactionState["functionCall"] == "huntkill":
+            char.huntkill()
+        del char.interactionState["functionCall"]
+    char.timeTaken -= 0.99
 
-    if "advancedDrop" in char.interactionState:
-        doAdvancedDrop(key,char,charState,main,header,footer,urwid,flags)
-        return
-
-    if "enumerateState" not in char.interactionState:
-        char.interactionState["enumerateState"] = []
-
-    if char.interactionState["enumerateState"]:
-
-        if char.interactionState["enumerateState"][-1]["type"] is None:
-            char.interactionState["enumerateState"][-1]["type"] = key
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                header.set_text((urwid.AttrSpec("default", "default"), "observe"))
-                main.set_text(
-                    (
-                        urwid.AttrSpec("default", "default"),
-                        """
+def doEnumerateState(key,char,charState,main,header,footer,urwid,flags):
+    if char.interactionState["enumerateState"][-1]["type"] is None:
+        char.interactionState["enumerateState"][-1]["type"] = key
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
+            main.set_text(
+                (
+                    urwid.AttrSpec("default", "default"),
+                    """
 
 get position for what thing
 
@@ -977,235 +931,66 @@ get position for what thing
 * R - room tile
 
 """,
-                    )
                 )
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-            char.timeTaken -= 0.99
-            return
+            )
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+        char.timeTaken -= 0.99
+        return
 
-        if char.interactionState["enumerateState"][-1]["type"] == "p":
-            char.addMessage("type:" + key)
+    if char.interactionState["enumerateState"][-1]["type"] == "p":
+        char.addMessage("type:" + key)
 
-            if key == "d":
-                char.interactionState["enumerateState"][-1]["target"] = ["Drill"]
-            elif key == "s":
-                char.interactionState["enumerateState"][-1]["target"] = ["Scrap"]
-            elif key == "f":
-                char.interactionState["enumerateState"][-1]["target"] = [
-                    "Corpse",
-                    "GooFlask",
-                    "Bloom",
-                    "SickBloom",
-                    "BioMass",
-                    "PressCake",
-                ]
-            elif key == "c":
-                char.interactionState["enumerateState"][-1]["target"] = ["character"]
-            elif key == "m":
-                char.interactionState["enumerateState"][-1]["target"] = ["MarkerBean"]
-            elif key == "C":
-                char.interactionState["enumerateState"][-1]["target"] = ["Coal"]
-            elif key == "k":
-                char.interactionState["enumerateState"][-1]["target"] = ["Command"]
-            elif key == "M":
-                char.interactionState["enumerateState"][-1]["target"] = ["Corpse"]
-            elif key == "n":
-                char.interactionState["enumerateState"][-1]["target"] = [
-                    "Machine",
-                    "ScrapCompactor",
-                ]
-            elif key == "e":
-                char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
-            elif key == "r":
-                char.interactionState["enumerateState"][-1]["target"] = ["roomEntry"]
-            elif key == "R":
-                char.interactionState["enumerateState"][-1]["target"] = ["roomTile"]
-            elif key == "x":
-                if "d" not in char.registers:
-                    char.registers["d"] = [0]
-                if "s" not in char.registers:
-                    char.registers["s"] = [0]
-                if "a" not in char.registers:
-                    char.registers["a"] = [0]
-                if "w" not in char.registers:
-                    char.registers["w"] = [0]
-                if char.xPosition:
-                    char.registers["d"][-1] = 7 - char.xPosition % 15
-                    char.registers["s"][-1] = 7 - char.yPosition % 15
-                char.registers["a"][-1] = -char.registers["d"][-1]
-                char.registers["w"][-1] = -char.registers["s"][-1]
-                char.addMessage(
-                    "found in direction %sa %ss %sd %sw"
-                    % (
-                        char.registers["a"][-1],
-                        char.registers["s"][-1],
-                        char.registers["d"][-1],
-                        char.registers["w"][-1],
-                    )
-                )
-                char.interactionState["enumerateState"].pop()
-                char.timeTaken -= 0.99
-                return
-            elif key == "j":
-                char.interactionState["enumerateState"][-1]["target"] = ["JobOrder"]
-            elif key == "s":
-                char.interactionState["enumerateState"][-1]["target"] = ["JobBoard"]
-            elif key == "t":
-                char.interactionState["enumerateState"][-1]["target"] = [
-                    "TransportInNode"
-                ]
-            elif key == "T":
-                char.interactionState["enumerateState"][-1]["target"] = [
-                    "TransportOutNode"
-                ]
-            else:
-                char.addMessage("not a valid target")
-                char.interactionState["enumerateState"].pop()
-                char.timeTaken -= 0.99
-                return
-
-            if "a" not in char.registers:
-                char.registers["a"] = [0]
-            char.registers["a"][-1] = 0
-            if "w" not in char.registers:
-                char.registers["w"] = [0]
-            char.registers["w"][-1] = 0
-            if "s" not in char.registers:
-                char.registers["s"] = [0]
-            char.registers["s"][-1] = 0
+        if key == "d":
+            char.interactionState["enumerateState"][-1]["target"] = ["Drill"]
+        elif key == "s":
+            char.interactionState["enumerateState"][-1]["target"] = ["Scrap"]
+        elif key == "f":
+            char.interactionState["enumerateState"][-1]["target"] = [
+                "Corpse",
+                "GooFlask",
+                "Bloom",
+                "SickBloom",
+                "BioMass",
+                "PressCake",
+            ]
+        elif key == "c":
+            char.interactionState["enumerateState"][-1]["target"] = ["character"]
+        elif key == "m":
+            char.interactionState["enumerateState"][-1]["target"] = ["MarkerBean"]
+        elif key == "C":
+            char.interactionState["enumerateState"][-1]["target"] = ["Coal"]
+        elif key == "k":
+            char.interactionState["enumerateState"][-1]["target"] = ["Command"]
+        elif key == "M":
+            char.interactionState["enumerateState"][-1]["target"] = ["Corpse"]
+        elif key == "n":
+            char.interactionState["enumerateState"][-1]["target"] = [
+                "Machine",
+                "ScrapCompactor",
+            ]
+        elif key == "e":
+            char.interactionState["enumerateState"][-1]["target"] = ["enemy"]
+        elif key == "r":
+            char.interactionState["enumerateState"][-1]["target"] = ["roomEntry"]
+        elif key == "R":
+            char.interactionState["enumerateState"][-1]["target"] = ["roomTile"]
+        elif key == "x":
             if "d" not in char.registers:
                 char.registers["d"] = [0]
-            char.registers["d"][-1] = 0
-
-            if not char.container:
-                char.addMessage("character is nowhere")
-                char.interactionState["enumerateState"].pop()
-                char.timeTaken -= 0.99
-                return
-
-            foundItems = []
-            foundItemQuery = False
-            for query in char.interactionState["enumerateState"][-1]["target"]:
-                if query not in ("character", "enemy", "roomEntry", "roomTile"):
-                    foundItemQuery = True
-                    break
-            if foundItemQuery:
-                listFound = []
-                if char.room:
-                    itemDict = char.container.itemByCoordinates
-                else:
-                    itemDict = char.container.itemsByCoordinate
-                for (pos, value) in itemDict.items():  # <= really really bad and horribly slow. iterate like 10000 items
-                    if (
-                        pos[0] - (char.xPosition - char.xPosition % 15) > 13
-                        or pos[0] - (char.xPosition - char.xPosition % 15) < 1
-                    ):
-                        continue
-                    if (
-                        pos[1] - (char.yPosition - char.yPosition % 15) > 13
-                        or pos[1] - (char.yPosition - char.yPosition % 15) < 1
-                    ):
-                        continue
-                    if value:
-                        listFound.append(value[-1])
-
-                for item in listFound:
-                    if (
-                        item.type not in char.interactionState["enumerateState"][-1]["target"]
-                    ):
-                        continue
-                    foundItems.append(item)
-
-            if "roomTile" in char.interactionState["enumerateState"][-1]["target"]:
-                if char.terrain:
-                    for room in char.terrain.rooms:
-                        foundItems.append(room)
-
-            if "character" in char.interactionState["enumerateState"][-1]["target"]:
-                for otherChar in char.container.characters:
-                    if otherChar == char:
-                        continue
-                    if not (
-                        otherChar.xPosition
-                        and otherChar.yPosition
-                        and char.xPosition
-                        and char.yPosition
-                    ):
-                        continue
-                    if (
-                        otherChar.xPosition - (char.xPosition - char.xPosition % 15)
-                        > 13
-                        or otherChar.xPosition - (char.xPosition - char.xPosition % 15)
-                        < 1
-                    ):
-                        continue
-                    if (
-                        otherChar.yPosition - (char.yPosition - char.yPosition % 15)
-                        > 13
-                        or otherChar.yPosition - (char.yPosition - char.yPosition % 15)
-                        < 1
-                    ):
-                        continue
-                    foundItems.append(otherChar)
-
-            if "enemy" in char.interactionState["enumerateState"][-1]["target"]:
-                for otherChar in char.container.characters:
-                    if otherChar == char:
-                        continue
-                    if not (
-                        otherChar.xPosition
-                        and otherChar.yPosition
-                        and char.xPosition
-                        and char.yPosition
-                    ):
-                        continue
-                    if otherChar.faction == char.faction:
-                        continue
-                    if (
-                        otherChar.xPosition - (char.xPosition - char.xPosition % 15)
-                        > 13
-                        or otherChar.xPosition - (char.xPosition - char.xPosition % 15)
-                        < 1
-                    ):
-                        continue
-                    if (
-                        otherChar.yPosition - (char.yPosition - char.yPosition % 15)
-                        > 13
-                        or otherChar.yPosition - (char.yPosition - char.yPosition % 15)
-                        < 1
-                    ):
-                        continue
-                    foundItems.append(otherChar)
-
-            found = None
-            if len(foundItems):
-                found = foundItems[src.gamestate.gamestate.tick % len(foundItems)]
-
-            if not found:
-                char.addMessage(
-                    "no "
-                    + ",".join(char.interactionState["enumerateState"][-1]["target"])
-                    + " found"
-                )
-                char.interactionState["enumerateState"].pop()
-                char.timeTaken -= 0.99
-                return
-
-            if isinstance(found, src.rooms.Room):
-                char.registers["d"][-1] = found.xPosition - char.xPosition // 15
-                char.registers["s"][-1] = found.yPosition - char.yPosition // 15
-                char.registers["a"][-1] = -char.registers["d"][-1]
-                char.registers["w"][-1] = -char.registers["s"][-1]
-            else:
-                char.registers["d"][-1] = found.xPosition - char.xPosition
-                char.registers["s"][-1] = found.yPosition - char.yPosition
-                char.registers["a"][-1] = -char.registers["d"][-1]
-                char.registers["w"][-1] = -char.registers["s"][-1]
-
+            if "s" not in char.registers:
+                char.registers["s"] = [0]
+            if "a" not in char.registers:
+                char.registers["a"] = [0]
+            if "w" not in char.registers:
+                char.registers["w"] = [0]
+            if char.xPosition:
+                char.registers["d"][-1] = 7 - char.xPosition % 15
+                char.registers["s"][-1] = 7 - char.yPosition % 15
+            char.registers["a"][-1] = -char.registers["d"][-1]
+            char.registers["w"][-1] = -char.registers["s"][-1]
             char.addMessage(
-                ",".join(char.interactionState["enumerateState"][-1]["target"])
-                + " found in direction %sa %ss %sd %sw"
+                "found in direction %sa %ss %sd %sw"
                 % (
                     char.registers["a"][-1],
                     char.registers["s"][-1],
@@ -1214,79 +999,303 @@ get position for what thing
                 )
             )
             char.interactionState["enumerateState"].pop()
+            char.timeTaken -= 0.99
+            return
+        elif key == "j":
+            char.interactionState["enumerateState"][-1]["target"] = ["JobOrder"]
+        elif key == "s":
+            char.interactionState["enumerateState"][-1]["target"] = ["JobBoard"]
+        elif key == "t":
+            char.interactionState["enumerateState"][-1]["target"] = [
+                "TransportInNode"
+            ]
+        elif key == "T":
+            char.interactionState["enumerateState"][-1]["target"] = [
+                "TransportOutNode"
+            ]
+        else:
+            char.addMessage("not a valid target")
+            char.interactionState["enumerateState"].pop()
+            char.timeTaken -= 0.99
             return
 
+        if "a" not in char.registers:
+            char.registers["a"] = [0]
+        char.registers["a"][-1] = 0
+        if "w" not in char.registers:
+            char.registers["w"] = [0]
+        char.registers["w"][-1] = 0
+        if "s" not in char.registers:
+            char.registers["s"] = [0]
+        char.registers["s"][-1] = 0
+        if "d" not in char.registers:
+            char.registers["d"] = [0]
+        char.registers["d"][-1] = 0
+
+        if not char.container:
+            char.addMessage("character is nowhere")
+            char.interactionState["enumerateState"].pop()
+            char.timeTaken -= 0.99
+            return
+
+        foundItems = []
+        foundItemQuery = False
+        for query in char.interactionState["enumerateState"][-1]["target"]:
+            if query not in ("character", "enemy", "roomEntry", "roomTile"):
+                foundItemQuery = True
+                break
+        if foundItemQuery:
+            listFound = []
+            if char.room:
+                itemDict = char.container.itemByCoordinates
+            else:
+                itemDict = char.container.itemsByCoordinate
+            for (pos, value) in itemDict.items():  # <= really really bad and horribly slow. iterate like 10000 items
+                if (
+                    pos[0] - (char.xPosition - char.xPosition % 15) > 13
+                    or pos[0] - (char.xPosition - char.xPosition % 15) < 1
+                ):
+                    continue
+                if (
+                    pos[1] - (char.yPosition - char.yPosition % 15) > 13
+                    or pos[1] - (char.yPosition - char.yPosition % 15) < 1
+                ):
+                    continue
+                if value:
+                    listFound.append(value[-1])
+
+            for item in listFound:
+                if (
+                    item.type not in char.interactionState["enumerateState"][-1]["target"]
+                ):
+                    continue
+                foundItems.append(item)
+
+        if "roomTile" in char.interactionState["enumerateState"][-1]["target"]:
+            if char.terrain:
+                for room in char.terrain.rooms:
+                    foundItems.append(room)
+
+        if "character" in char.interactionState["enumerateState"][-1]["target"]:
+            for otherChar in char.container.characters:
+                if otherChar == char:
+                    continue
+                if not (
+                    otherChar.xPosition
+                    and otherChar.yPosition
+                    and char.xPosition
+                    and char.yPosition
+                ):
+                    continue
+                if (
+                    otherChar.xPosition - (char.xPosition - char.xPosition % 15)
+                    > 13
+                    or otherChar.xPosition - (char.xPosition - char.xPosition % 15)
+                    < 1
+                ):
+                    continue
+                if (
+                    otherChar.yPosition - (char.yPosition - char.yPosition % 15)
+                    > 13
+                    or otherChar.yPosition - (char.yPosition - char.yPosition % 15)
+                    < 1
+                ):
+                    continue
+                foundItems.append(otherChar)
+
+        if "enemy" in char.interactionState["enumerateState"][-1]["target"]:
+            for otherChar in char.container.characters:
+                if otherChar == char:
+                    continue
+                if not (
+                    otherChar.xPosition
+                    and otherChar.yPosition
+                    and char.xPosition
+                    and char.yPosition
+                ):
+                    continue
+                if otherChar.faction == char.faction:
+                    continue
+                if (
+                    otherChar.xPosition - (char.xPosition - char.xPosition % 15)
+                    > 13
+                    or otherChar.xPosition - (char.xPosition - char.xPosition % 15)
+                    < 1
+                ):
+                    continue
+                if (
+                    otherChar.yPosition - (char.yPosition - char.yPosition % 15)
+                    > 13
+                    or otherChar.yPosition - (char.yPosition - char.yPosition % 15)
+                    < 1
+                ):
+                    continue
+                foundItems.append(otherChar)
+
+        found = None
+        if len(foundItems):
+            found = foundItems[src.gamestate.gamestate.tick % len(foundItems)]
+
+        if not found:
+            char.addMessage(
+                "no "
+                + ",".join(char.interactionState["enumerateState"][-1]["target"])
+                + " found"
+            )
+            char.interactionState["enumerateState"].pop()
+            char.timeTaken -= 0.99
+            return
+
+        if isinstance(found, src.rooms.Room):
+            char.registers["d"][-1] = found.xPosition - char.xPosition // 15
+            char.registers["s"][-1] = found.yPosition - char.yPosition // 15
+            char.registers["a"][-1] = -char.registers["d"][-1]
+            char.registers["w"][-1] = -char.registers["s"][-1]
+        else:
+            char.registers["d"][-1] = found.xPosition - char.xPosition
+            char.registers["s"][-1] = found.yPosition - char.yPosition
+            char.registers["a"][-1] = -char.registers["d"][-1]
+            char.registers["w"][-1] = -char.registers["s"][-1]
+
+        char.addMessage(
+            ",".join(char.interactionState["enumerateState"][-1]["target"])
+            + " found in direction %sa %ss %sd %sw"
+            % (
+                char.registers["a"][-1],
+                char.registers["s"][-1],
+                char.registers["d"][-1],
+                char.registers["w"][-1],
+            )
+        )
         char.interactionState["enumerateState"].pop()
-        char.timeTaken -= 0.99
         return
 
-    if key == "esc":
-        charState["replay"] = []
+    char.interactionState["enumerateState"].pop()
+    char.timeTaken -= 0.99
 
-    if "varActions" not in char.interactionState:
-        char.interactionState["varActions"] = []
-
-    if key == "$":
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            text = """
+def doRegisterAccess(key,char,charState,main,header,footer,urwid,flags):
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        text = """
 
 press key for register to modify or press = to load value from a register
 
 current registers:
 
 """
-            for itemKey, value in char.registers.items():
-                convertedValues = []
-                for item in reversed(value):
-                    convertedValues.append(str(item))
-                text += """
+        for itemKey, value in char.registers.items():
+            convertedValues = []
+            for item in reversed(value):
+                convertedValues.append(str(item))
+            text += """
 %s - %s""" % (
-                    itemKey,
-                    ",".join(convertedValues),
-                )
+                itemKey,
+                ",".join(convertedValues),
+            )
 
-            header.set_text((urwid.AttrSpec("default", "default"), "registers"))
-            main.set_text((urwid.AttrSpec("default", "default"), text))
-            footer.set_text((urwid.AttrSpec("default", "default"), ""))
-            char.specialRender = True
+        header.set_text((urwid.AttrSpec("default", "default"), "registers"))
+        main.set_text((urwid.AttrSpec("default", "default"), text))
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
 
-        char.interactionState["varActions"].append({"outOperator": None})
-        char.timeTaken -= 0.99
-        return
+    char.interactionState["varActions"].append({"outOperator": None})
+    char.timeTaken -= 0.99
 
-    if char.interactionState["varActions"]:
+def doVariableAction(key,char,charState,main,header,footer,urwid,flags):
 
-        lastVarAction = char.interactionState["varActions"][-1]
-        if lastVarAction["outOperator"] is None:
-            if key in ("esc", "enter"):
-                char.interactionState["varActions"].pop()
-                return
-            elif key == "=":
-                lastVarAction["outOperator"] = True
-                lastVarAction["register"] = None
-            else:
-                lastVarAction["outOperator"] = False
+    lastVarAction = char.interactionState["varActions"][-1]
+    if lastVarAction["outOperator"] is None:
+        if key in ("esc", "enter"):
+            char.interactionState["varActions"].pop()
+            return
+        elif key == "=":
+            lastVarAction["outOperator"] = True
+            lastVarAction["register"] = None
+        else:
+            lastVarAction["outOperator"] = False
+            lastVarAction["register"] = ""
+            lastVarAction["action"] = None
+            lastVarAction["number"] = ""
+
+    register = lastVarAction["register"]
+
+    if lastVarAction["outOperator"] == True:
+        if register is None or (
+            (register == "" or register[-1].isupper() or register.endswith(" "))
+            and (key.isupper() or key == " ")
+        ):
+            if register is None:
                 lastVarAction["register"] = ""
-                lastVarAction["action"] = None
-                lastVarAction["number"] = ""
+            else:
+                lastVarAction["register"] += key
+            register = lastVarAction["register"]
 
-        register = lastVarAction["register"]
-
-        if lastVarAction["outOperator"] == True:
-            if register is None or (
-                (register == "" or register[-1].isupper() or register.endswith(" "))
-                and (key.isupper() or key == " ")
-            ):
-                if register is None:
-                    lastVarAction["register"] = ""
-                else:
-                    lastVarAction["register"] += key
-                register = lastVarAction["register"]
-
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
 
 press key for register to load value from
+
+current registers (%s):
+
+""" % (
+                    register
+                )
+                for key, value in char.registers.items():
+                    if not key.startswith(register):
+                        continue
+                    convertedValues = []
+                    for item in reversed(value):
+                        convertedValues.append(str(item))
+                    text += """
+%s - %s""" % (
+                        key,
+                        ",".join(convertedValues),
+                    )
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "reading registers")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+            char.timeTaken -= 0.99
+            return
+
+        else:
+            if register:
+                key = register + key
+
+            def getValue():
+                if key not in char.registers:
+                    char.addMessage("no value in register using %s" % (key,))
+                    return 0
+
+                if isinstance(char.registers[key][-1], str):
+                    return char.registers[key][-1]
+
+                if char.registers[key][-1] < 0:
+                    # char.addMessage("negative value in register using %s"%(key,))
+                    return 0
+
+                # char.addMessage("found value %s for register using %s"%(char.registers[key][-1],key,))
+                return char.registers[key][-1]
+
+            value = getValue()
+            char.runCommandString(str(value))
+            char.timeTaken -= 0.99
+            return
+    else:
+        if register == "" or register[-1].isupper() or register[-1] == " ":
+            if key.isupper() or key == " ":
+                lastVarAction["register"] += key
+                register = lastVarAction["register"]
+
+                if (
+                    src.gamestate.gamestate.mainChar == char
+                    and "norecord" not in flags
+                ):
+                    text = """
+
+press key for register manipulate
 
 current registers (%s):
 
@@ -1306,7 +1315,7 @@ current registers (%s):
                         )
 
                     header.set_text(
-                        (urwid.AttrSpec("default", "default"), "reading registers")
+                        (urwid.AttrSpec("default", "default"), "registers")
                     )
                     main.set_text((urwid.AttrSpec("default", "default"), text))
                     footer.set_text((urwid.AttrSpec("default", "default"), ""))
@@ -1315,76 +1324,13 @@ current registers (%s):
                 return
 
             else:
-                if register:
-                    key = register + key
+                lastVarAction["register"] += key
 
-                def getValue():
-                    if key not in char.registers:
-                        char.addMessage("no value in register using %s" % (key,))
-                        return 0
-
-                    if isinstance(char.registers[key][-1], str):
-                        return char.registers[key][-1]
-
-                    if char.registers[key][-1] < 0:
-                        # char.addMessage("negative value in register using %s"%(key,))
-                        return 0
-
-                    # char.addMessage("found value %s for register using %s"%(char.registers[key][-1],key,))
-                    return char.registers[key][-1]
-
-                value = getValue()
-                char.runCommandString(str(value))
-                char.timeTaken -= 0.99
-                return
-        else:
-            if register == "" or register[-1].isupper() or register[-1] == " ":
-                if key.isupper() or key == " ":
-                    lastVarAction["register"] += key
-                    register = lastVarAction["register"]
-
-                    if (
-                        src.gamestate.gamestate.mainChar == char
-                        and "norecord" not in flags
-                    ):
-                        text = """
-
-press key for register manipulate
-
-current registers (%s):
-
-""" % (
-                            register
-                        )
-                        for key, value in char.registers.items():
-                            if not key.startswith(register):
-                                continue
-                            convertedValues = []
-                            for item in reversed(value):
-                                convertedValues.append(str(item))
-                            text += """
-%s - %s""" % (
-                                key,
-                                ",".join(convertedValues),
-                            )
-
-                        header.set_text(
-                            (urwid.AttrSpec("default", "default"), "registers")
-                        )
-                        main.set_text((urwid.AttrSpec("default", "default"), text))
-                        footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                        char.specialRender = True
-                    char.timeTaken -= 0.99
-                    return
-
-                else:
-                    lastVarAction["register"] += key
-
-                    if (
-                        src.gamestate.gamestate.mainChar == char
-                        and "norecord" not in flags
-                    ):
-                        text = """
+                if (
+                    src.gamestate.gamestate.mainChar == char
+                    and "norecord" not in flags
+                ):
+                    text = """
 
 press key for the action you want to do on the register
 
@@ -1396,29 +1342,6 @@ press key for the action you want to do on the register
 * % - apply modulo to register
 
 """
-                        header.set_text(
-                            (urwid.AttrSpec("default", "default"), "reading registers")
-                        )
-                        main.set_text((urwid.AttrSpec("default", "default"), text))
-                        footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                        char.specialRender = True
-                    char.timeTaken -= 0.99
-                    return
-            action = lastVarAction["action"]
-            if action is None:
-                lastVarAction["action"] = key
-
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
-
-input value for this operation ($%s%s)
-
-type number or load value from register
-
-""" % (
-                        register,
-                        action,
-                    )
                     header.set_text(
                         (urwid.AttrSpec("default", "default"), "reading registers")
                     )
@@ -1427,11 +1350,34 @@ type number or load value from register
                     char.specialRender = True
                 char.timeTaken -= 0.99
                 return
-            if key in "0123456789":
-                lastVarAction["number"] += key
+        action = lastVarAction["action"]
+        if action is None:
+            lastVarAction["action"] = key
 
-                if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                    text = """
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
+
+input value for this operation ($%s%s)
+
+type number or load value from register
+
+""" % (
+                    register,
+                    action,
+                )
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "reading registers")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+            char.timeTaken -= 0.99
+            return
+        if key in "0123456789":
+            lastVarAction["number"] += key
+
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
 
 input value for this operation ($%s%s%s)
 
@@ -1440,55 +1386,49 @@ type number
 press any other key to finish
 
 """ % (
-                        register,
-                        action,
-                        lastVarAction["number"],
-                    )
-                    header.set_text(
-                        (urwid.AttrSpec("default", "default"), "reading registers")
-                    )
-                    main.set_text((urwid.AttrSpec("default", "default"), text))
-                    footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                    char.specialRender = True
-                char.timeTaken -= 0.99
-                return
-
-            if action == "=":
-                if register not in char.registers:
-                    char.registers[register] = [0]
-                try:
-                    char.registers[register][-1] = int(lastVarAction["number"])
-                except:
-                    pass
-            if action == "+":
-                char.registers[register][-1] += int(lastVarAction["number"])
-            if action == "-":
-                char.registers[register][-1] -= int(lastVarAction["number"])
-            if action == "/":
-                char.registers[register][-1] //= int(lastVarAction["number"])
-            if action == "%":
-                char.registers[register][-1] %= int(lastVarAction["number"])
-            if action == "*":
-                char.registers[register][-1] *= int(lastVarAction["number"])
-
-            char.runCommandString(key, extraFlags=flags)
-            char.interactionState["varActions"].pop()
+                    register,
+                    action,
+                    lastVarAction["number"],
+                )
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "reading registers")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
             char.timeTaken -= 0.99
             return
 
-    if "ifCondition" not in char.interactionState:
-        char.interactionState["ifCondition"] = []
-    if "ifParam1" not in char.interactionState:
-        char.interactionState["ifParam1"] = []
-    if "ifParam2" not in char.interactionState:
-        char.interactionState["ifParam2"] = []
-    if key in ("%",):
-        char.interactionState["ifCondition"].append(None)
-        char.interactionState["ifParam1"].append([])
-        char.interactionState["ifParam2"].append([])
+        if action == "=":
+            if register not in char.registers:
+                char.registers[register] = [0]
+            try:
+                char.registers[register][-1] = int(lastVarAction["number"])
+            except:
+                pass
+        if action == "+":
+            char.registers[register][-1] += int(lastVarAction["number"])
+        if action == "-":
+            char.registers[register][-1] -= int(lastVarAction["number"])
+        if action == "/":
+            char.registers[register][-1] //= int(lastVarAction["number"])
+        if action == "%":
+            char.registers[register][-1] %= int(lastVarAction["number"])
+        if action == "*":
+            char.registers[register][-1] *= int(lastVarAction["number"])
 
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            text = """
+        char.runCommandString(key, extraFlags=flags)
+        char.interactionState["varActions"].pop()
+        char.timeTaken -= 0.99
+        return
+
+def doStartCondition(key,char,charState,main,header,footer,urwid,flags):
+    char.interactionState["ifCondition"].append(None)
+    char.interactionState["ifParam1"].append([])
+    char.interactionState["ifParam2"].append([])
+
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        text = """
 
 press key for the condition you want to check against.
 
@@ -1507,6 +1447,25 @@ press key for the condition you want to check against.
 
 """
 
+        header.set_text(
+            (urwid.AttrSpec("default", "default"), "conditional action")
+        )
+        main.set_text((urwid.AttrSpec("default", "default"), text))
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+
+def doCondition(key,char,charState,main,header,footer,urwid,flags):
+    if char.interactionState["ifCondition"][-1] is None:
+        char.interactionState["ifCondition"][-1] = key
+
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            text = """
+
+press key for the action to run in case the condition is true or
+press _ to run a macro in case the condition is true
+
+"""
+
             header.set_text(
                 (urwid.AttrSpec("default", "default"), "conditional action")
             )
@@ -1514,113 +1473,31 @@ press key for the condition you want to check against.
             footer.set_text((urwid.AttrSpec("default", "default"), ""))
             char.specialRender = True
 
-        return
-
-    if len(char.interactionState["ifCondition"]) and key not in (
-        "%",
-        "lagdetection",
-        "lagdetection_",
+    elif char.interactionState["ifParam1"][-1] in ([], [("_", ["norecord"])]) or (
+        (
+            char.interactionState["ifParam1"][-1][-1][0].isupper()
+            or char.interactionState["ifParam1"][-1][-1][0] == " "
+        )
+        and char.interactionState["ifParam1"][-1][0][0] == "_"
     ):
-        if char.interactionState["ifCondition"][-1] is None:
-            char.interactionState["ifCondition"][-1] = key
+        char.interactionState["ifParam1"][-1].append((key, ["norecord"]))
 
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
-
-press key for the action to run in case the condition is true or
-press _ to run a macro in case the condition is true
-
-"""
-
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "conditional action")
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            if (
+                (
+                    char.interactionState["ifParam1"][-1][-1][0].isupper()
+                    or char.interactionState["ifParam1"][-1][-1][0] == " "
                 )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-
-        elif char.interactionState["ifParam1"][-1] in ([], [("_", ["norecord"])]) or (
-            (
-                char.interactionState["ifParam1"][-1][-1][0].isupper()
-                or char.interactionState["ifParam1"][-1][-1][0] == " "
-            )
-            and char.interactionState["ifParam1"][-1][0][0] == "_"
-        ):
-            char.interactionState["ifParam1"][-1].append((key, ["norecord"]))
-
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                if (
-                    (
-                        char.interactionState["ifParam1"][-1][-1][0].isupper()
-                        or char.interactionState["ifParam1"][-1][-1][0] == " "
-                    )
-                    and char.interactionState["ifParam1"][-1][0][0] == "_"
-                ) or char.interactionState["ifParam1"][-1][-1][0] == "_":
-                    inputString = ""
-                    for item in char.interactionState["ifParam1"][-1]:
-                        inputString += item[0]
-                    inputString = inputString[1:]
-
-                    text = """
-
-type the macro that should be run in case the condition is true
-
-%s
-
-""" % (
-                        inputString
-                    )
-
-                    for key, value in charState["macros"].items():
-
-                        if not key.startswith(inputString):
-                            continue
-                        compressedMacro = ""
-                        for keystroke in value:
-                            if len(keystroke) == 1:
-                                compressedMacro += keystroke
-                            else:
-                                compressedMacro += "/" + keystroke + "/"
-
-                            text += """
-%s - %s""" % (
-                                key,
-                                compressedMacro,
-                            )
-
-                else:
-                    text = """
-
-press key for the action to run in case the condition is false
-press _ to run a macro in case the condition is false
-
-"""
-
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "conditional action")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-
-        elif char.interactionState["ifParam2"][-1] in ([], [("_", ["norecord"])]) or (
-            (
-                char.interactionState["ifParam2"][-1][-1][0].isupper()
-                or char.interactionState["ifParam2"][-1][-1][0] == " "
-            )
-            and char.interactionState["ifParam2"][-1][0][0] == "_"
-        ):
-            char.interactionState["ifParam2"][-1].append((key, ["norecord"]))
-
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                and char.interactionState["ifParam1"][-1][0][0] == "_"
+            ) or char.interactionState["ifParam1"][-1][-1][0] == "_":
                 inputString = ""
-                for item in char.interactionState["ifParam2"][-1]:
+                for item in char.interactionState["ifParam1"][-1]:
                     inputString += item[0]
                 inputString = inputString[1:]
 
                 text = """
 
-type the macro that should be run in case the condition is false
+type the macro that should be run in case the condition is true
 
 %s
 
@@ -1645,164 +1522,454 @@ type the macro that should be run in case the condition is false
                             compressedMacro,
                         )
 
-                header.set_text(
-                    (urwid.AttrSpec("default", "default"), "conditional action")
-                )
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
+            else:
+                text = """
 
-            if not (
-                char.interactionState["ifParam2"][-1] in ([], [("_", ["norecord"])])
-                or char.interactionState["ifParam2"][-1][-1][0].isupper()
-                or char.interactionState["ifParam2"][-1][-1][0] == " "
-            ):
-                conditionTrue = True
+press key for the action to run in case the condition is false
+press _ to run a macro in case the condition is false
 
-                if char.interactionState["ifCondition"][-1] == "i":
-                    if len(char.inventory) == 0:
-                        conditionTrue = True
+"""
+
+            header.set_text(
+                (urwid.AttrSpec("default", "default"), "conditional action")
+            )
+            main.set_text((urwid.AttrSpec("default", "default"), text))
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+
+    elif char.interactionState["ifParam2"][-1] in ([], [("_", ["norecord"])]) or (
+        (
+            char.interactionState["ifParam2"][-1][-1][0].isupper()
+            or char.interactionState["ifParam2"][-1][-1][0] == " "
+        )
+        and char.interactionState["ifParam2"][-1][0][0] == "_"
+    ):
+        char.interactionState["ifParam2"][-1].append((key, ["norecord"]))
+
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            inputString = ""
+            for item in char.interactionState["ifParam2"][-1]:
+                inputString += item[0]
+            inputString = inputString[1:]
+
+            text = """
+
+type the macro that should be run in case the condition is false
+
+%s
+
+""" % (
+                inputString
+            )
+
+            for key, value in charState["macros"].items():
+
+                if not key.startswith(inputString):
+                    continue
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
                     else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "b":
-                    if charState["itemMarkedLast"]:
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "I":
-                    if len(char.inventory) >= 10:
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == ">":
-                    if "c" in char.registers and char.registers["c"][-1] > 0:
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "<":
-                    if "c" in char.registers and char.registers["c"][-1] < 0:
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "=":
-                    if (
-                        "c" in char.registers
-                        and "v" in char.registers
-                        and char.registers["c"][-1] == char.registers["v"][-1]
-                    ):
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "f":
-                    pos = (char.xPosition, char.yPosition)
-                    if (
-                        char.container
-                        and pos in char.container.itemByCoordinates
-                        and len(char.container.itemByCoordinates[pos]) > 0
-                    ):
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "t":
-                    if char.satiation < 300:
-                        conditionTrue = True
-                    else:
-                        conditionTrue = False
-                if char.interactionState["ifCondition"][-1] == "e":
+                        compressedMacro += "/" + keystroke + "/"
+
+                    text += """
+%s - %s""" % (
+                        key,
+                        compressedMacro,
+                    )
+
+            header.set_text(
+                (urwid.AttrSpec("default", "default"), "conditional action")
+            )
+            main.set_text((urwid.AttrSpec("default", "default"), text))
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+
+        if not (
+            char.interactionState["ifParam2"][-1] in ([], [("_", ["norecord"])])
+            or char.interactionState["ifParam2"][-1][-1][0].isupper()
+            or char.interactionState["ifParam2"][-1][-1][0] == " "
+        ):
+            conditionTrue = True
+
+            if char.interactionState["ifCondition"][-1] == "i":
+                if len(char.inventory) == 0:
+                    conditionTrue = True
+                else:
                     conditionTrue = False
-                    for item in char.inventory:
-                        if isinstance(item, src.items.GooFlask) and item.uses > 1:
+            if char.interactionState["ifCondition"][-1] == "b":
+                if charState["itemMarkedLast"]:
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == "I":
+                if len(char.inventory) >= 10:
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == ">":
+                if "c" in char.registers and char.registers["c"][-1] > 0:
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == "<":
+                if "c" in char.registers and char.registers["c"][-1] < 0:
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == "=":
+                if (
+                    "c" in char.registers
+                    and "v" in char.registers
+                    and char.registers["c"][-1] == char.registers["v"][-1]
+                ):
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == "f":
+                pos = (char.xPosition, char.yPosition)
+                if (
+                    char.container
+                    and pos in char.container.itemByCoordinates
+                    and len(char.container.itemByCoordinates[pos]) > 0
+                ):
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == "t":
+                if char.satiation < 300:
+                    conditionTrue = True
+                else:
+                    conditionTrue = False
+            if char.interactionState["ifCondition"][-1] == "e":
+                conditionTrue = False
+                for item in char.inventory:
+                    if isinstance(item, src.items.GooFlask) and item.uses > 1:
+                        conditionTrue = True
+                        break
+            if char.interactionState["ifCondition"][-1] == "E":
+                conditionTrue = False
+                if char.container:
+                    for character in char.container.characters:
+                        if (
+                            (
+                                not (
+                                    character.xPosition // 15
+                                    == char.xPosition // 15
+                                    and character.yPosition // 15
+                                    == char.yPosition // 15
+                                )
+                            )
+                            or character.xPosition % 15 in [0, 14]
+                            or character.yPosition % 15 in [0, 14]
+                        ):
+                            continue
+                        if (
+                            abs(character.xPosition - char.xPosition) < 20
+                            and abs(character.yPosition - char.yPosition) < 20
+                            and not character.faction == char.faction
+                        ):
                             conditionTrue = True
                             break
-                if char.interactionState["ifCondition"][-1] == "E":
-                    conditionTrue = False
-                    if char.container:
-                        for character in char.container.characters:
-                            if (
-                                (
-                                    not (
-                                        character.xPosition // 15
-                                        == char.xPosition // 15
-                                        and character.yPosition // 15
-                                        == char.yPosition // 15
-                                    )
+            """
+            if char.interactionState["ifCondition"][-1] == "c":
+                conditionTrue = False
+                if char.container:
+                    for (item, value) in char.container.itemByCoordinates.items():
+                        if (
+                            (
+                                not (
+                                    item[0] // 15 == char.xPosition // 15
+                                    and item[1] // 15 == char.yPosition // 15
                                 )
-                                or character.xPosition % 15 in [0, 14]
-                                or character.yPosition % 15 in [0, 14]
-                            ):
-                                continue
-                            if (
-                                abs(character.xPosition - char.xPosition) < 20
-                                and abs(character.yPosition - char.yPosition) < 20
-                                and not character.faction == char.faction
-                            ):
-                                conditionTrue = True
-                                break
-                """
-                if char.interactionState["ifCondition"][-1] == "c":
-                    conditionTrue = False
-                    if char.container:
-                        for (item, value) in char.container.itemByCoordinates.items():
-                            if (
-                                (
-                                    not (
-                                        item[0] // 15 == char.xPosition // 15
-                                        and item[1] // 15 == char.yPosition // 15
-                                    )
-                                )
-                                or item[0] % 15 in [0, 14]
-                                or item[1] % 15 in [0, 14]
-                            ):
-                                continue
-                            if not value:
-                                continue
+                            )
+                            or item[0] % 15 in [0, 14]
+                            or item[1] % 15 in [0, 14]
+                        ):
+                            continue
+                        if not value:
+                            continue
 
-                            if value[-1].type == "Corpse":
-                                conditionTrue = True
-                                break
-                if char.interactionState["ifCondition"][-1] == "F":
-                    conditionTrue = False
-                    if char.container:
-                        for (item, value) in char.container.itemByCoordinates.items():
-                            if not (
-                                item[0] // 15 == char.xPosition // 15
-                                and item[1] // 15 == char.yPosition // 15
-                            ):
-                                continue
-                            if not value:
-                                continue
+                        if value[-1].type == "Corpse":
+                            conditionTrue = True
+                            break
+            if char.interactionState["ifCondition"][-1] == "F":
+                conditionTrue = False
+                if char.container:
+                    for (item, value) in char.container.itemByCoordinates.items():
+                        if not (
+                            item[0] // 15 == char.xPosition // 15
+                            and item[1] // 15 == char.yPosition // 15
+                        ):
+                            continue
+                        if not value:
+                            continue
 
-                            if value[-1].type in [
-                                "Corpse",
-                                "GooFlask",
-                                "Bloom",
-                                "SickBloom",
-                                "BioMass",
-                                "PressCake",
-                            ]:
-                                conditionTrue = True
-                                break
-                """
-                if conditionTrue:
-                    char.runCommandString(char.interactionState["ifParam1"][-1])
-                else:
-                    char.runCommandString(char.interactionState["ifParam2"][-1])
+                        if value[-1].type in [
+                            "Corpse",
+                            "GooFlask",
+                            "Bloom",
+                            "SickBloom",
+                            "BioMass",
+                            "PressCake",
+                        ]:
+                            conditionTrue = True
+                            break
+            """
+            if conditionTrue:
+                char.runCommandString(char.interactionState["ifParam1"][-1])
+            else:
+                char.runCommandString(char.interactionState["ifParam2"][-1])
 
-                char.interactionState["ifCondition"].pop()
-                char.interactionState["ifParam1"].pop()
-                char.interactionState["ifParam2"].pop()
+            char.interactionState["ifCondition"].pop()
+            char.interactionState["ifParam1"].pop()
+            char.interactionState["ifParam2"].pop()
+
+def doBuildNumber(key,char,charState,main,header,footer,urwid,flags):
+    if charState["number"] is None:
+        charState["number"] = ""
+    charState["number"] += key
+    key = commandChars.ignore
+    char.timeTaken -= 0.99
+
+def doStartLooping(key,char,charState,main,header,footer,urwid,flags):
+    charState["loop"].append(2)
+
+def doLoop(key,char,charState,main,header,footer,urwid,flags):
+    if not charState["replay"]:
+        char.runCommandString("§"+key)
+        charState["loop"].pop()
+    else:
+        char.runCommandString("§_"+key)
+        charState["loop"].pop()
+
+def doRepeat(key,char,charState,main,header,footer,urwid,flags):
+    num = int(charState["number"])
+    charState["number"] = None
+
+    charState["doNumber"] = True
+
+    convertedKeystroke = [(key, ["norecord"])]*num
+    char.runCommandString(convertedKeystroke,preconverted=True)
+
+    charState["doNumber"] = False
+    char.timeTaken -= 0.99
+
+def startStopRecording(key,char,charState,main,header,footer,urwid,flags):
+    if not charState["recording"]:
+        char.addMessage("press key to record to")
+        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
+            text = """
+
+press key to record to.
+
+current macros:
+
+"""
+            for key, value in charState["macros"].items():
+                compressedMacro = ""
+                for keystroke in value:
+                    if len(keystroke) == 1:
+                        compressedMacro += keystroke
+                    else:
+                        compressedMacro += "/" + keystroke + "/"
+
+                text += """
+%s - %s""" % (
+                    key,
+                    compressedMacro,
+                )
+
+            header.set_text((urwid.AttrSpec("default", "default"), "record macro"))
+            main.set_text((urwid.AttrSpec("default", "default"), text))
+            footer.set_text((urwid.AttrSpec("default", "default"), ""))
+            char.specialRender = True
+
+        charState["recording"] = True
         return
+    else:
+        charState["recording"] = False
+        if charState["recordingTo"]:
+            if charState["recordingTo"] in charState["macros"]:
+                if charState["macros"][charState["recordingTo"]]:
+                    char.addMessage(
+                        "recorded: %s to %s"
+                        % (
+                            "".join(charState["macros"][charState["recordingTo"]]),
+                            charState["recordingTo"],
+                        )
+                    )
+                else:
+                    del charState["macros"][charState["recordingTo"]]
+                    char.addMessage(
+                        "deleted: %s because of empty recording"
+                        % (charState["recordingTo"])
+                    )
+        charState["recordingTo"] = None
+
+def doStartStackPop(key,char,charState,main,header,footer,urwid,flags):
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        text = """
+
+type key for the register to pop.
+
+current registers
+
+"""
+        for key, value in char.registers.items():
+            convertedValues = []
+            for item in reversed(value):
+                convertedValues.append(str(item))
+            text += """
+%s - %s""" % (
+                key,
+                ",".join(convertedValues),
+            )
+
+        header.set_text((urwid.AttrSpec("default", "default"), "popping registers"))
+        main.set_text((urwid.AttrSpec("default", "default"), text))
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+
+    char.doStackPop = True
+
+def doStartStackPush(key,char,charState,main,header,footer,urwid,flags):
+    if src.gamestate.gamestate.mainChar == char and "norecord" in flags:
+        text = """
+
+type key for the register to push.
+
+current registers
+
+"""
+        for key, value in char.registers.items():
+            convertedValues = []
+            for item in reversed(value):
+                convertedValues.append(str(item))
+            text += """
+%s - %s""" % (
+                key,
+                ",".join(convertedValues),
+            )
+
+        header.set_text((urwid.AttrSpec("default", "default"), "pushing registers"))
+        main.set_text((urwid.AttrSpec("default", "default"), text))
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+
+    char.doStackPush = True
+    return
+
+def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
+    char.specialRender = False
+
+    if charState["recording"]:
+        result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
+        if not (result and result[0]):
+            return
+        key = result[1]
+
+    if (
+        charState["submenue"]
+        and charState["submenue"].stealAllKeys
+        and (key not in ("|", ">", "<") and not charState["submenue"].escape)
+    ):
+        doHandleMenu(key,char,charState,main,header,footer,urwid,flags)
+        key = commandChars.ignore
+
+    """
+    if key in ("|",):
+        char.interactionState["stateChange"] = True
+        return
+
+    if "stateChange" in char.interactionState and char.interactionState["stateChange"]:
+        doStateChange(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if char.doStackPop:
+        doStackPop(key,char,charState,main,header,footer,urwid,flags)
+        return
+    if char.doStackPush:
+        doStackPush(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if "fireDirection" in char.interactionState:
+        doRangedAttack(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if "runaction" in char.interactionState:
+        handleActivitySelection(char)
+        return
+    """
+
+    if "advancedInteraction" in char.interactionState:
+        doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if "advancedPickup" in char.interactionState:
+        doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    """
+    if "functionCall" in char.interactionState:
+        doFunctionCall(key,char,charState,main,header,footer,urwid,flags)
+        return
+    """
+
+    if "advancedDrop" in char.interactionState:
+        doAdvancedDrop(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    """
+    if "enumerateState" not in char.interactionState:
+        char.interactionState["enumerateState"] = []
+
+    if char.interactionState["enumerateState"]:
+        doEnumerateState(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if key == "esc":
+        charState["replay"] = []
+
+    if "varActions" not in char.interactionState:
+        char.interactionState["varActions"] = []
+
+    if key == "$":
+        doRegisterAccess(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if char.interactionState["varActions"]:
+        doVariableAction(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if "ifCondition" not in char.interactionState:
+        char.interactionState["ifCondition"] = []
+    if "ifParam1" not in char.interactionState:
+        char.interactionState["ifParam1"] = []
+    if "ifParam2" not in char.interactionState:
+        char.interactionState["ifParam2"] = []
+    if key in ("%",):
+        doStartCondition(key,char,charState,main,header,footer,urwid,flags)
+        return
+
+    if len(char.interactionState["ifCondition"]) and key not in (
+        "%",
+        "lagdetection",
+        "lagdetection_",
+    ):
+        doCondition(key,char,charState,main,header,footer,urwid,flags)
+        return
+    """
 
     if key in "0123456789":
-        if charState["number"] is None:
-            charState["number"] = ""
-        charState["number"] += key
-        key = commandChars.ignore
-        char.timeTaken -= 0.99
+        doBuildNumber(key,char,charState,main,header,footer,urwid,flags)
         return
 
+    """
     if key in ("%",):
-        charState["loop"].append(2)
+        doStartLooping(key,char,charState,main,header,footer,urwid,flags)
         return
 
     if charState["loop"] and key not in (
@@ -1812,65 +1979,13 @@ type the macro that should be run in case the condition is false
         "_",
         "~",
     ):
-        if not charState["replay"]:
-            char.runCommandString("§"+key)
-            charState["loop"].pop()
-        else:
-            char.runCommandString("§_"+key)
-            charState["loop"].pop()
+        doLoop(key,char,charState,main,header,footer,urwid,flags)
+        return
+    """
 
     if key in ("-",) and not char.interactionState["varActions"]:
-        if not charState["recording"]:
-            char.addMessage("press key to record to")
-            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                header.set_text((urwid.AttrSpec("default", "default"), "observe"))
-                text = """
-
-press key to record to.
-
-current macros:
-
-"""
-                for key, value in charState["macros"].items():
-                    compressedMacro = ""
-                    for keystroke in value:
-                        if len(keystroke) == 1:
-                            compressedMacro += keystroke
-                        else:
-                            compressedMacro += "/" + keystroke + "/"
-
-                    text += """
-%s - %s""" % (
-                        key,
-                        compressedMacro,
-                    )
-
-                header.set_text((urwid.AttrSpec("default", "default"), "record macro"))
-                main.set_text((urwid.AttrSpec("default", "default"), text))
-                footer.set_text((urwid.AttrSpec("default", "default"), ""))
-                char.specialRender = True
-
-            charState["recording"] = True
-            return
-        else:
-            charState["recording"] = False
-            if charState["recordingTo"]:
-                if charState["recordingTo"] in charState["macros"]:
-                    if charState["macros"][charState["recordingTo"]]:
-                        char.addMessage(
-                            "recorded: %s to %s"
-                            % (
-                                "".join(charState["macros"][charState["recordingTo"]]),
-                                charState["recordingTo"],
-                            )
-                        )
-                    else:
-                        del charState["macros"][charState["recordingTo"]]
-                        char.addMessage(
-                            "deleted: %s because of empty recording"
-                            % (charState["recordingTo"])
-                        )
-            charState["recordingTo"] = None
+        startStopRecording(key,char,charState,main,header,footer,urwid,flags)
+        return
 
     if charState["replay"] and key not in (
         "lagdetection",
@@ -1889,20 +2004,7 @@ current macros:
         "lagdetection",
         "lagdetection_",
     ):
-        num = int(charState["number"])
-        charState["number"] = None
-
-        charState["doNumber"] = True
-
-        counter = 0
-        commands = ""
-        while counter < num:
-            commands += key
-            counter += 1
-        char.runCommandString(commands)
-
-        charState["doNumber"] = False
-        char.timeTaken -= 0.99
+        doRepeat(key,char,charState,main,header,footer,urwid,flags)
         return
 
     # save and quit
@@ -1912,58 +2014,14 @@ current macros:
         else:
             raise SystemExit()
 
+    """
     if key in ("<",):
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            text = """
-
-type key for the register to pop.
-
-current registers
-
-"""
-            for key, value in char.registers.items():
-                convertedValues = []
-                for item in reversed(value):
-                    convertedValues.append(str(item))
-                text += """
-%s - %s""" % (
-                    key,
-                    ",".join(convertedValues),
-                )
-
-            header.set_text((urwid.AttrSpec("default", "default"), "popping registers"))
-            main.set_text((urwid.AttrSpec("default", "default"), text))
-            footer.set_text((urwid.AttrSpec("default", "default"), ""))
-            char.specialRender = True
-
-        char.doStackPop = True
+        doStartStackPop()
         return
     if key in (">",):
-        if src.gamestate.gamestate.mainChar == char and "norecord" in flags:
-            text = """
-
-type key for the register to push.
-
-current registers
-
-"""
-            for key, value in char.registers.items():
-                convertedValues = []
-                for item in reversed(value):
-                    convertedValues.append(str(item))
-                text += """
-%s - %s""" % (
-                    key,
-                    ",".join(convertedValues),
-                )
-
-            header.set_text((urwid.AttrSpec("default", "default"), "pushing registers"))
-            main.set_text((urwid.AttrSpec("default", "default"), text))
-            footer.set_text((urwid.AttrSpec("default", "default"), ""))
-            char.specialRender = True
-
-        char.doStackPush = True
+        doStartStackPush()
         return
+    """
     return (1,key)
 
 def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
@@ -8473,6 +8531,10 @@ def gameLoop(loop, user_data=None):
 
     loop.set_alarm_in(0.001, gameLoop)
 
+def clearMessages(char):
+    while len(char.messages) > 100:
+        char.messages = char.messages[-100:]
+
 def advanceChar(char):
     if char.stasis:
         return
@@ -8494,20 +8556,14 @@ def advanceChar(char):
         hasAutosolveQuest = True
 
     # do random action
-    if not (len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest):
+    if not (state["commandKeyQueue"] or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest):
         #char.die(reason="idle")
         #char.startIdling()
         char.runCommandString("100.")
 
-    """
-    while len(state["commandKeyQueue"]) > 1000:
-        state["commandKeyQueue"].pop()
-    """
+    clearMessages(char)
 
-    while len(char.messages) > 100:
-        char.messages = char.messages[-100:]
-
-    if len(state["commandKeyQueue"]) or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest:
+    if state["commandKeyQueue"] or src.gamestate.gamestate.timedAutoAdvance or hasAutosolveQuest:
         if state["commandKeyQueue"]:
             key = state["commandKeyQueue"][-1]
             while (
@@ -8515,7 +8571,7 @@ def advanceChar(char):
                 or isinstance(key[0], tuple)
                 or key[0] in ("lagdetection", "lagdetection_")
             ):
-                if len(state["commandKeyQueue"]):
+                if state["commandKeyQueue"]:
                     key = state["commandKeyQueue"].pop()
                 else:
                     key = ("~", [])

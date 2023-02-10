@@ -92,10 +92,7 @@ Try luring enemies into landmines or detonating some bombs."""
         if self.triggerCompletionCheck(character):
             return
 
-        try:
-            self.huntdownCooldown -= 1
-        except:
-            self.huntdownCooldown = 0
+        self.huntdownCooldown -= 1
         if self.huntdownCooldown < 0:
             enemies = character.getNearbyEnemies()
             if enemies:

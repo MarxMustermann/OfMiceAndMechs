@@ -81,11 +81,11 @@ class Terrain(src.saveing.Saveable):
         self.minimapOverride = {(7,7,0):"CC"}
         self.animations = []
 
-        self.microBiomeMap = {}
+        self.moistureMap = {}
         moisture = self.biomeInfo["moisture"]
         for x in range(1,14):
             for y in range(1,14):
-                self.microBiomeMap[(x,y,0)] = {"moisture":moisture}
+                self.moistureMap[(x,y,0)] = moisture
 
         # set id
         import uuid
@@ -183,11 +183,11 @@ class Terrain(src.saveing.Saveable):
             room.advance()
 
     def advanceBiomes(self):
-        if src.gamestate.gamestate.tick//(15*15):
+        if src.gamestate.gamestate.tick%(15*15) == 0:
             moisture = self.biomeInfo["moisture"]
             for x in range(1,14):
                 for y in range(1,14):
-                    self.microBiomeMap[(x,y,0)]["moisture"] = moisture
+                    self.moistureMap[(x,y,0)] = moisture
 
     def handleEvents(self):
         while (
@@ -578,38 +578,7 @@ class Terrain(src.saveing.Saveable):
             bigY = (char.yPosition - 1) // 15
 
         # gather the rooms the player might step into
-        roomCandidates = []
-        for coordinate in [
-            (bigX, bigY),
-            (bigX, bigY + 1),
-            (bigX + 1, bigY + 1),
-            (bigX + 1, bigY),
-            (bigX + 1, bigY - 1),
-            (bigX, bigY - 1),
-            (bigX - 1, bigY - 1),
-            (bigX - 1, bigY),
-            (bigX - 1, bigY + 1),
-            (bigX - 2, bigY),
-            (bigX - 2, bigY - 1),
-            (bigX - 2, bigY - 2),
-            (bigX - 1, bigY - 2),
-            (bigX, bigY - 2),
-            (bigX + 1, bigY - 2),
-            (bigX + 2, bigY - 2),
-            (bigX + 2, bigY - 1),
-            (bigX + 2, bigY),
-            (bigX + 2, bigY - 1),
-            (bigX + 2, bigY - 2),
-            (bigX + 1, bigY - 2),
-            (bigX, bigY - 2),
-            (bigX - 1, bigY - 2),
-            (bigX - 2, bigY - 2),
-            (bigX - 1, bigY - 2),
-        ]:
-            if coordinate in char.terrain.roomByCoordinates:
-                for room in char.terrain.roomByCoordinates[coordinate]:
-                    if room not in roomCandidates:
-                        roomCandidates.append(room)
+        roomCandidates = char.terrain.roomByCoordinates.get((bigX, bigY),[])
 
         # check if character has entered a room
         hadRoomInteraction = False
@@ -736,7 +705,7 @@ class Terrain(src.saveing.Saveable):
             if foundItem:
                 foundItem = foundItems[0]
 
-            for other in self.characters:
+            for other in self.charactersByTile.get((bigX, bigY, 0),[]):
                 if other == char:
                     continue
 
@@ -942,9 +911,9 @@ class Terrain(src.saveing.Saveable):
                 neutralOffsets.append((0,+1))
                 neutralOffsets.append((0,-1))
 
-            localRandom.shuffle(goodOffsets)
-            localRandom.shuffle(neutralOffsets)
-            localRandom.shuffle(badOffsets)
+            #localRandom.shuffle(goodOffsets)
+            #localRandom.shuffle(neutralOffsets)
+            #localRandom.shuffle(badOffsets)
             offsets = badOffsets+neutralOffsets+goodOffsets
 
             while offsets:
@@ -1057,9 +1026,9 @@ class Terrain(src.saveing.Saveable):
                 neutralOffsets.append((0,+1))
                 neutralOffsets.append((0,-1))
 
-            localRandom.shuffle(goodOffsets)
-            localRandom.shuffle(neutralOffsets)
-            localRandom.shuffle(badOffsets)
+            #localRandom.shuffle(goodOffsets)
+            #localRandom.shuffle(neutralOffsets)
+            #localRandom.shuffle(badOffsets)
             offsets = badOffsets+neutralOffsets+goodOffsets
 
             while offsets:

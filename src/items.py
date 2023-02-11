@@ -10,7 +10,6 @@ import src.interaction
 # load basic libs
 import json
 import random
-import uuid
 import time
 
 # load basic internal libs

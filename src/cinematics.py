@@ -43,11 +43,6 @@ class BasicCinematic(src.saveing.Saveable):
         )
         self.callbacksToStore.append("endTrigger")
 
-        # generate unique id
-        import uuid
-
-        self.id = uuid.uuid4().hex
-
     def advance(self):
         """
         do nothing

@@ -92,11 +92,17 @@ This quest ends after you do this."""%(self.targetPosition,)
                     print(self)
             self.generatePath(self.character)
 
+    def handleChangedTile(self, extraInfo=None):
+        self.fail()
+
     def assignToCharacter(self, character):
         if self.character:
             return
 
         self.startWatching(character,self.handleMoved, "moved")
+        self.startWatching(character,self.handleChangedTile, "changedTile")
+        self.startWatching(character,self.handleChangedTile, "entered terrain")
+        self.startWatching(character,self.handleChangedTile, "entered room")
 
         super().assignToCharacter(character)
 

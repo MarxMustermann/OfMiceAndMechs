@@ -1,6 +1,9 @@
 
 # import basic libs
 import json
+import tcod
+import numpy as np
+import copy
 
 # import basic internal libs
 import src.items
@@ -91,16 +94,13 @@ class Room(src.saveing.Saveable):
         self.listeners = {"default": []}
         self.seed = seed
         self.displayChar = (src.interaction.urwid.AttrSpec("#343", "black"), "RR")
+        self.pathCache = {}
 
         self.sizeX = 0
         self.sizeY = 0
 
 
         # set id
-        import uuid
-
-        self.id = uuid.uuid4().hex
-
         self.itemByCoordinates = {}
 
         # set meta information for saving
@@ -324,6 +324,64 @@ class Room(src.saveing.Saveable):
         return (command,path)
 
     def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+
+        path = copy.copy(self.pathCache.get((startPos,targetPos)))
+        if path:
+            return path
+
+        roomMap = []
+        for x in range(0,13):
+            roomMap.append([])
+            for y in range(0,13):
+                roomMap[x].append(50)
+
+        for walkingSpacePos in self.walkingSpace:
+            roomMap[walkingSpacePos[0]][walkingSpacePos[1]] = 10
+
+        for storageSlot in self.storageSlots:
+            roomMap[storageSlot[0][0]][storageSlot[0][1]] = 50
+
+        for y in range(0,13):
+            for x in range(0,13):
+                if self.getItemByPosition((x,y,0)):
+                    roomMap[x][y] = 100
+
+        for y in range(0,13):
+            for x in range(0,13):
+                if not self.getPositionWalkable((x,y,0),character=character):
+                   roomMap[x][y] = 0
+
+        roomMap[6][0] = 1
+        roomMap[6][12] = 1
+        roomMap[0][6] = 1
+        roomMap[12][6] = 1
+
+        if ignoreEndBlocked:
+            roomMap[targetPos[0]][targetPos[1]] = 1
+
+        cost = np.array(roomMap, dtype=np.int8)
+        pathfinder = tcod.path.AStar(cost,diagonal = 0)
+        #path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+        
+        moves = []
+        lastStep = startPos
+        for step in path:
+            moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
+            lastStep = step
+
+        if character == src.gamestate.gamestate.mainChar:
+            print(startPos)
+            print(targetPos)
+            print(cost)
+            print(path)
+            print(moves)
+
+        self.pathCache[(startPos,targetPos)] = copy.copy(moves)
+
+        return moves
+
+    def getPathTile_old(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
         if not avoidItems:
             avoidItems = []
         if not localRandom:

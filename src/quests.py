@@ -6,7 +6,6 @@ quests and quest related code
 # import basic libs
 import json
 import random
-import uuid
 import time
 
 # import basic internal libs

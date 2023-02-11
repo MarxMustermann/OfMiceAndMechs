@@ -16,6 +16,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.paranoid = paranoid
         self.showCoordinates = showCoordinates
 
+    def sanatiyCheckPath(self):
+        1/0
+
     def handleChangedTile(self):
         if self.completed:
             1/0
@@ -102,6 +105,23 @@ operate the machine on %s
             return True
         return False
 
+    def isPathSane(self,character):
+        if not self.path:
+            return False
+
+        bigPos = list(character.getBigPosition())
+        for step in self.path:
+            bigPos[0] += step[0]
+            bigPos[1] += step[1]
+
+        if tuple(bigPos) == self.targetPosition:
+            return True
+        
+        print("!!!!!!!!!!!!!!!!!!!")
+        print(bigPos)
+        print(self.targetPosition)
+        return False
+
     def generateSubquests(self,character=None):
         if character == None:
             return
@@ -121,6 +141,12 @@ operate the machine on %s
                     if otherCharacter.faction == character.faction:
                         continue
                     self.addQuest(src.quests.questMap["RunCommand"](command="gg"))
+                    return
+
+            if not self.isPathSane(character):
+                self.generatePath(character)
+                if not self.path:
+                    self.fail()
                     return
 
             if self.path[0] == (0,1):
@@ -156,6 +182,12 @@ operate the machine on %s
                 return
             if character.xPosition%15 == 0 and character.yPosition%15 == 7:
                 return
+
+            if not self.isPathSane(character):
+                self.generatePath(character)
+                if not self.path:
+                    self.fail()
+                    return
 
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:

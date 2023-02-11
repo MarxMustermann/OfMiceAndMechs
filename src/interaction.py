@@ -2024,210 +2024,169 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
     """
     return (1,key)
 
-def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
-    # do automated movement for the main character
-    if key in ("u",):
-        char.setInterrupt = True
-        return
+def doSetInterrupt(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    char.setInterrupt = True
 
-    if key in ("ESC","lESC",):
-        if char.rememberedMenu:
-            menu = char.rememberedMenu.pop()
-            menu.sidebared = False
-            char.macroState["submenue"] = menu
-            char.macroState["submenue"].handleKey("~", noRender=False, character=char)
-            char.specialRender = True
-        return
-    if key in ("rESC",):
-        if char.rememberedMenu2:
-            menu = char.rememberedMenu2.pop()
-            menu.sidebared = False
-            char.macroState["submenue"] = menu
-            char.macroState["submenue"].handleKey("~", noRender=False, character=char)
-            char.specialRender = True
-        return
-    if key in ("esc",):
-        options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
-                   ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
-                   ("changeFaction", "changeFaction"),
-                   ("change personality settings", "change personality settings")]
-        submenu = SelectionMenu("What do you want to do?", options)
-        char.macroState["submenue"] = submenu
+def doDockLeft(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    if char.rememberedMenu:
+        menu = char.rememberedMenu.pop()
+        menu.sidebared = False
+        char.macroState["submenue"] = menu
+        char.macroState["submenue"].handleKey("~", noRender=False, character=char)
+        char.specialRender = True
 
-        def trigger():
-            selection = submenu.getSelection()
-            if selection == "change personality settings":
+def doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    if char.rememberedMenu2:
+        menu = char.rememberedMenu2.pop()
+        menu.sidebared = False
+        char.macroState["submenue"] = menu
+        char.macroState["submenue"].handleKey("~", noRender=False, character=char)
+        char.specialRender = True
 
-                def getValue():
-                    settingName = char.macroState["submenue"].selection
+def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
+               ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
+               ("changeFaction", "changeFaction"),
+               ("change personality settings", "change personality settings")]
+    submenu = SelectionMenu("What do you want to do?", options)
+    char.macroState["submenue"] = submenu
 
-                    def setValue():
-                        value = char.macroState["submenue"].text
-                        if settingName in (
-                            "autoCounterAttack",
-                            "autoFlee",
-                            "abortMacrosOnAttack",
-                            "attacksEnemiesOnContact",
-                        ):
-                            if value == "True":
-                                value = True
-                            else:
-                                value = False
+    def trigger():
+        selection = submenu.getSelection()
+        if selection == "change personality settings":
+
+            def getValue():
+                settingName = char.macroState["submenue"].selection
+
+                def setValue():
+                    value = char.macroState["submenue"].text
+                    if settingName in (
+                        "autoCounterAttack",
+                        "autoFlee",
+                        "abortMacrosOnAttack",
+                        "attacksEnemiesOnContact",
+                    ):
+                        if value == "True":
+                            value = True
                         else:
-                            value = int(value)
-                        char.personality[settingName] = value
+                            value = False
+                    else:
+                        value = int(value)
+                    char.personality[settingName] = value
 
-                    if settingName is None:
-                        return
-                    submenu3 = InputMenu("input value")
-                    char.macroState["submenue"] = submenu3
-                    char.macroState["submenue"].followUp = setValue
+                if settingName is None:
                     return
-
-                options = []
-                for (key, value) in char.personality.items():
-                    options.append((key, "%s: %s" % (key, value)))
-                submenu2 = SelectionMenu("select personality setting", options)
-                char.macroState["submenue"] = submenu2
-                char.macroState["submenue"].followUp = getValue
+                submenu3 = InputMenu("input value")
+                char.macroState["submenue"] = submenu3
+                char.macroState["submenue"].followUp = setValue
                 return
-            if selection == "save":
-                tmp = char.macroState["submenue"]
-                char.macroState["submenue"] = None
-                src.gamestate.gamestate.save()
-                char.macroState["submenue"] = tmp
-            elif selection == "quit":
-                char.macroState["submenue"] = None
-                char.specialRender = False
-                src.gamestate.gamestate.save()
-                if hasattr(urwid,"ExitMainLoop"):
-                    raise urwid.ExitMainLoop()
-                else:
-                    showMainMenu()
-                return
-            elif selection == "actions":
-                pass
-            elif selection == "macros":
-                pass
-            elif selection == "changeFaction":
-                if char.faction == "player":
-                    char.faction = "monster"
-                else:
-                    char.faction = "player"
-                pass
-            elif selection == "help":
-                charState["submenue"] = HelpMenu()
-            elif selection == "keybinding":
-                pass
 
-        char.macroState["submenue"].followUp = trigger
-        key = "."
+            options = []
+            for (key, value) in char.personality.items():
+                options.append((key, "%s: %s" % (key, value)))
+            submenu2 = SelectionMenu("select personality setting", options)
+            char.macroState["submenue"] = submenu2
+            char.macroState["submenue"].followUp = getValue
+            return
+        if selection == "save":
+            tmp = char.macroState["submenue"]
+            char.macroState["submenue"] = None
+            src.gamestate.gamestate.save()
+            char.macroState["submenue"] = tmp
+        elif selection == "quit":
+            char.macroState["submenue"] = None
+            char.specialRender = False
+            src.gamestate.gamestate.save()
+            if hasattr(urwid,"ExitMainLoop"):
+                raise urwid.ExitMainLoop()
+            else:
+                showMainMenu()
+            return
+        elif selection == "actions":
+            pass
+        elif selection == "macros":
+            pass
+        elif selection == "changeFaction":
+            if char.faction == "player":
+                char.faction = "monster"
+            else:
+                char.faction = "player"
+            pass
+        elif selection == "help":
+            charState["submenue"] = HelpMenu()
+        elif selection == "keybinding":
+            pass
 
-    if key in ("y",):
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
-            main.set_text(
-                (
-                    urwid.AttrSpec("default", "default"),
-                    """
+    char.macroState["submenue"].followUp = trigger
+
+def doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        header.set_text((urwid.AttrSpec("default", "default"), "observe"))
+        main.set_text(
+            (
+                urwid.AttrSpec("default", "default"),
+                """
 
 select what you want to do
 
 * c - clear macros
 
 """,
-                )
             )
-            footer.set_text((urwid.AttrSpec("default", "default"), ""))
-            char.specialRender = True
-        char.interactionState["functionCall"] = ""
-        char.timeTaken -= 0.99
-        return
-    if key in ("o",) and 1==0:
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            header.set_text((urwid.AttrSpec("default", "default"), "observe"))
-            main.set_text(
-                (
-                    urwid.AttrSpec("default", "default"),
-                    """
+        )
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+    char.interactionState["functionCall"] = ""
+    char.timeTaken -= 0.99
+
+def doStartObserve(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+        header.set_text((urwid.AttrSpec("default", "default"), "observe"))
+        main.set_text(
+            (
+                urwid.AttrSpec("default", "default"),
+                """
 
 select what you want to observe
 
 * p - get position of something
 
 """,
-                )
             )
-            footer.set_text((urwid.AttrSpec("default", "default"), ""))
-            char.specialRender = True
-        char.interactionState["enumerateState"].append({"type": None})
-        char.timeTaken -= 0.99
+        )
+        footer.set_text((urwid.AttrSpec("default", "default"), ""))
+        char.specialRender = True
+    char.interactionState["enumerateState"].append({"type": None})
+    char.timeTaken -= 0.99
+
+def doResetQuit(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    saveFile = open("gamestate/gamestate.json", "w")
+    saveFile.write("reset")
+    saveFile.close()
+    raise urwid.ExitMainLoop()
+
+def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
+    # do automated movement for the main character
+    if key in ("u",):
+        doSetInterrupt(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         return
 
-    # handle cinematics
-    if src.gamestate.gamestate.mainChar == char and len(cinematics.cinematicQueue):
-        if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-            char.specialRender = True
+    if key in ("ESC","lESC",):
+        doDockLeft(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
+        return
+    if key in ("rESC",):
+        doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
+        return
+    if key in ("esc",):
+        doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
+        key = "."
 
-        # get current cinematic
-        cinematic = cinematics.cinematicQueue[0]
-        char.timeTaken -= 0.99
-
-        # allow to quit even within a cutscene
-        if key in (commandChars.quit_normal, commandChars.quit_instant):
-            src.gamestate.gamestate.save()
-            # bad code: directly calls urwid
-            raise urwid.ExitMainLoop()
-
-        # skip the cinematic if requested
-        elif (
-            key
-            in (
-                commandChars.pause,
-                commandChars.advance,
-                commandChars.autoAdvance,
-                commandChars.redraw,
-                "enter",
-            )
-            and cinematic.skipable
-        ):
-            cinematic.abort()
-            cinematics.cinematicQueue = cinematics.cinematicQueue[1:]
-            if loop:
-                loop.set_alarm_in(0.0, callShow_or_exit, commandChars.ignore)
-            else:
-                callShow_or_exit(None, commandChars.ignore)
-            return
-
-        # advance the cutscene
-        else:
-            if not cinematic.advance():
-                return
-            if not cinematic.background:
-                # bad code: changing the key mid function
-                key = commandChars.ignore
-
-    # invalidate input for unconscious char
-    if char.unconcious:
-        key = commandChars.wait
-
-    # show a few rounds after death and exit
-    if char.dead:
-        if not ticksSinceDeath:
-            ticksSinceDeath = src.gamestate.gamestate.tick
-        key = commandChars.wait
-        if src.gamestate.gamestate.tick == ticksSinceDeath + 5:
-            char.clearCommandString()
-            char.macroState["submenue"] = TextMenu(
-                "You died. press ctrl-c and reload to start from last save"
-            )
-            # destroy the gamestate
-            # bad pattern: should not always destroy gamestate
-            # saveFile = open("gamestate/gamestate.json","w")
-            # saveFile.write("you lost")
-            # saveFile.close()
-            # raise urwid.ExitMainLoop()
-            pass
+    if key in ("y",):
+        doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
+        return
+    if key in ("o",) and 1==0:
+        doStartObserve(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
+        return
 
     # call callback if key was overwritten
     if "stealKey" in charState and key in charState["stealKey"]:
@@ -2244,21 +2203,11 @@ select what you want to observe
 
         # destroy save and quit
         if key in (commandChars.quit_delete,):
-            saveFile = open("gamestate/gamestate.json", "w")
-            saveFile.write("reset")
-            saveFile.close()
-            raise urwid.ExitMainLoop()
-
-        # kill one of the autoadvance keystrokes
-        # bad pattern: doesn't actually pause
-        if key in (commandChars.pause,):
-            charState["ignoreNextAutomated"] = True
+            doResetQuit(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
 
         """
         move the player into a direction
-        bad code: huge inline function + player vs. npc movement should use same code
         """
-
         # move the player
         if key in (commandChars.move_north, "up"):
             charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
@@ -8517,9 +8466,6 @@ def gameLoop(loop, user_data=None):
                 print("yay, a fast tick!!")
                 print("tick time %s for %s"%(tickSpeed,origTick,))
             print("average tick length on %s ticks: %s"%(numTrackedTicks,(totalTickSpeed/numTrackedTicks),))
-            if numTrackedTicks == 1000:
-               123456789/0
-
 
         renderGameDisplay()
 
@@ -8548,6 +8494,9 @@ def advanceChar(char):
         return
 
     state = char.macroState
+
+    while char.quests and char.quests[0].completed:
+        char.quests.remove(char.quests[0])
 
     hasAutosolveQuest = False
     for quest in char.getActiveQuests():

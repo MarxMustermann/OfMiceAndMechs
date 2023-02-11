@@ -64,6 +64,8 @@ class Character(src.saveing.Saveable):
         self.rememberedMenu = []
         self.rememberedMenu2 = []
 
+        self.pathCache = {}
+
         self.skills = []
 
         self.movementSpeed = 1
@@ -184,14 +186,6 @@ class Character(src.saveing.Saveable):
         self.lastJobOrder = ""
         self.huntkilling = False
         self.guarding = 0
-
-        # generate the id for this object
-        if characterId:
-            self.id = characterId
-        else:
-            import uuid
-
-            self.id = uuid.uuid4().hex
 
         # mark attributes for saving
         self.attributesToStore.extend(

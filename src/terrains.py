@@ -6,6 +6,8 @@ terrains and terrain related code belongs here
 import json
 import array
 import random
+import tcod
+import numpy as np
 
 # import basic internal libs
 import src.items
@@ -58,7 +60,7 @@ class Terrain(src.saveing.Saveable):
         self.noPlacementTiles = []
         self.scrapFields = []
         self.ignoreAttributes = []
-
+        self.pathCache = {}
 
         super().__init__()
 
@@ -86,11 +88,6 @@ class Terrain(src.saveing.Saveable):
         for x in range(1,14):
             for y in range(1,14):
                 self.moistureMap[(x,y,0)] = moisture
-
-        # set id
-        import uuid
-
-        self.id = uuid.uuid4().hex
 
         # container for categories of rooms for easy access
         # bad code: should be abstracted
@@ -458,9 +455,10 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
 
-                oldBigPos = char.getBigPosition((1,0,0))
+            if char.xPosition % 15 == 0:
+                oldBigPos = char.getBigPosition()
                 self.charactersByTile[oldBigPos].remove(char)
-                bigPos = char.getBigPosition()
+                bigPos = char.getBigPosition((-1,0,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
@@ -489,9 +487,10 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
 
-                oldBigPos = char.getBigPosition((-1,0,0))
+            if char.xPosition % 15 == 14:
+                oldBigPos = char.getBigPosition()
                 self.charactersByTile[oldBigPos].remove(char)
-                bigPos = char.getBigPosition()
+                bigPos = char.getBigPosition(offset=(1,0,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
@@ -519,11 +518,13 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
 
-                oldBigPos = char.getBigPosition((0,1,0))
+            if char.yPosition % 15 == 0:
+                oldBigPos = char.getBigPosition()
                 self.charactersByTile[oldBigPos].remove(char)
-                bigPos = char.getBigPosition()
+                bigPos = char.getBigPosition(offset=(0,-1,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
+
                 self.charactersByTile[bigPos].append(char)
         elif direction == "south":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
@@ -549,9 +550,10 @@ class Terrain(src.saveing.Saveable):
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
 
-                oldBigPos = char.getBigPosition((0,-1,0))
+            if char.yPosition % 15 == 14:
+                oldBigPos = char.getBigPosition()
                 self.charactersByTile[oldBigPos].remove(char)
-                bigPos = char.getBigPosition()
+                bigPos = char.getBigPosition(offset=(0,1,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
@@ -977,6 +979,54 @@ class Terrain(src.saveing.Saveable):
 
 
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+        path = self.pathCache.get((tilePos,startPos,targetPos))
+        if path:
+            return path
+
+        tileMap = []
+        for x in range(0,15):
+            tileMap.append([])
+            for y in range(0,15):
+                if x in (0,14,) or y in (0,14):
+                    tileMap[x].append(0)
+                else:
+                    tileMap[x].append(50)
+        tileMap[0][7] = 1
+        tileMap[7][0] = 1
+        tileMap[14][7] = 1
+        tileMap[7][14] = 1
+
+        for y in range(0,13):
+            for x in range(0,13):
+                if self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0)):
+                    tileMap[x][y] = 100
+
+        for y in range(0,13):
+            for x in range(0,13):
+                 if not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
+                    tileMap[x][y] = 0
+
+        cost = np.array(tileMap, dtype=np.int8)
+        tcod.path.AStar(cost,diagonal = 0)
+        pathfinder = tcod.path.AStar(cost,diagonal = 0)
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+
+        moves = []
+        lastStep = startPos
+        for step in path:
+            moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
+            lastStep = step
+
+        self.pathCache[(tilePos,startPos,targetPos)] = moves
+
+        return moves
+
+    def getPathTile_old(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+
+        path = self.pathCache.get((tilePos,startPos,targetPos))
+        if path:
+            return path
+
         if not avoidItems:
             avoidItems = []
         if not localRandom:
@@ -1068,6 +1118,8 @@ class Terrain(src.saveing.Saveable):
 
             if nextPos == targetPos:
                 break
+        
+        self.pathCache[(tilePos,startPos,targetPos)] = paths.get(targetPos)
 
         return paths.get(targetPos)
 

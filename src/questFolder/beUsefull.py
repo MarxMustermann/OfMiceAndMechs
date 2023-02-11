@@ -220,6 +220,283 @@ Press r to generate subquest and recive detailed instructions
 
         super().solver(character)
 
+    def checkTriggerTrapSetting(self,character,room):
+        if hasattr(room,"electricalCharges"):
+            if room.electricalCharges < room.maxElectricalCharges:
+
+                quest = src.quests.questMap["ReloadTraproom"](targetPosition=room.getPosition())
+                self.addQuest(quest)
+                quest.activate()
+                self.idleCounter = 0
+                return True
+
+    def checkTriggerMachineOperation(self,character,room):
+        items = room.itemsOnFloor[:]
+        random.shuffle(items)
+        for item in items:
+            if not item.bolted:
+                continue
+            if not item.type in ("Machine","ScrapCompactor",):
+                continue
+            if not item.readyToUse():
+                continue
+            quest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition())
+            self.addQuest(quest)
+            quest.activate()
+            self.idleCounter = 0
+            return True
+
+    def checkTriggerResourceGathering(self,character,room):
+        emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
+        if emptyInputSlots:
+            for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
+                if not inputSlot[1] == "Scrap":
+                    continue
+
+                if not room.sources:
+                    continue
+
+                source = None
+                for potentialSource in random.sample(list(room.sources),len(room.sources)):
+                    if potentialSource[1] == "rawScrap":
+                        source = potentialSource
+                        break
+
+                if source == None:
+                    continue
+
+                if self.triggerClearInventory(character,room):
+                    return True
+
+                self.addQuest(src.quests.questMap["RestockRoom"](toRestock="Scrap"))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
+                self.addQuest(src.quests.questMap["GatherScrap"](targetPosition=source[0]))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+                self.idleCounter = 0
+                return True
+
+    def checkTriggerScratchChecking(self,character,room):
+        for item in random.sample(list(room.itemsOnFloor),len(room.itemsOnFloor)):
+            if not item.bolted:
+                continue
+            if item.type == "ScratchPlate":
+                if item.hasScratch():
+                    continue
+                self.addQuest(src.quests.questMap["RunCommand"](command="jsj"))
+                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
+                self.idleCounter = 0
+                return
+
+    def checkTriggerCleaning(self,character,room):
+        # clean up room
+        if not room.floorPlan:
+            for position in random.sample(list(room.walkingSpace),len(room.walkingSpace)):
+                items = room.getItemByPosition(position)
+
+                if not items:
+                    continue
+                if items[0].bolted:
+                    continue
+
+                if character.getFreeInventorySpace() <= 0:
+                    quest = src.quests.questMap["ClearInventory"]()
+                    self.addQuest(quest)
+                    return True
+
+                quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.idleCounter = 0
+                return True
+
+    def checkTriggerHauling(self,character,room):
+        if hasattr(room,"inputSlots"):
+            checkedTypes = set()
+
+            emptyInputSlots = room.getEmptyInputslots()
+            if emptyInputSlots:
+
+                for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
+                    if inputSlot[1] == None:
+                        continue
+                    if inputSlot[1] in checkedTypes:
+                        continue
+                    checkedTypes.add(inputSlot[1])
+
+                    hasItem = False
+                    if character.inventory and character.inventory[-1].type == inputSlot[1]:
+                        hasItem = True
+
+                    if not hasItem:
+                        if not room.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                            continue
+
+                    self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1]))
+
+                    if not hasItem:
+                        if self.triggerClearInventory(character,room):
+                            return True
+
+                    self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+                    self.idleCounter = 0
+                    return True
+
+    def checkTriggerResourceFetching(self,character,room):
+        if hasattr(room,"inputSlots"):
+            emptyInputSlots = room.getEmptyInputslots()
+            if emptyInputSlots:
+                checkedTypes = set()
+
+                for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
+                    if inputSlot[1] == None:
+                        continue
+                    if inputSlot[1] in checkedTypes:
+                        continue
+                    checkedTypes.add(inputSlot[1])
+
+                    hasItem = False
+                    if character.inventory and character.inventory[-1].type == inputSlot[1]:
+                        hasItem = True
+                    
+                    if not hasItem:
+                        source = None
+                        for candidateSource in room.sources:
+                            if not candidateSource[1] == inputSlot[1]:
+                                continue
+
+                            sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                            if not sourceRoom:
+                                continue
+
+                            sourceRoom = sourceRoom[0]
+                            if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                                continue
+
+                            source = candidateSource
+                            break
+
+                        if not source:
+                            character.addMessage("no filled output slots")
+                            continue
+
+                    self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1]))
+                    self.idleCounter = 0
+
+                    if not hasItem:
+                        if self.triggerClearInventory(character,room):
+                            return True
+
+                        roomPos = (room.xPosition,room.yPosition,0)
+                        if not source[0] == roomPos:
+                            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                        self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+                        if not source[0] == roomPos:
+                            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+                    return True
+
+                character.addMessage("no valid input slot found")
+            character.addMessage("no empty input slot found")
+        character.addMessage("no input slots")
+
+    def checkTriggerPainting(self,character,room):
+        # set up machines
+        if room.floorPlan:
+            self.addQuest(src.quests.questMap["DrawFloorPlan"]())
+            self.idleCounter = 0
+            return True
+
+    def checkTriggerMachinePlacing(self,character,room):
+        if (not room.floorPlan) and room.buildSites:
+            checkedMaterial = set()
+            #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
+            for buildSite in room.buildSites:
+                if "reservedTill" in buildSite[2] and buildSite[2]["reservedTill"] > room.timeIndex:
+                    continue
+                if buildSite[1] in checkedMaterial:
+                    continue
+                checkedMaterial.add(buildSite[1])
+
+                neededItem = buildSite[1]
+                if buildSite[1] == "Command":
+                    neededItem = "Sheet"
+                hasItem = False
+                source = None
+                if character.inventory and character.inventory[-1].type == neededItem:
+                    hasItem = True
+
+                if not hasItem:
+                    for candidateSource in room.sources:
+                        if not candidateSource[1] == neededItem:
+                            continue
+
+                        sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                        if not sourceRoom:
+                            continue
+
+                        sourceRoom = sourceRoom[0]
+                        if not sourceRoom.getNonEmptyOutputslots(itemType=neededItem):
+                            continue
+
+                        source = candidateSource
+                        break
+
+                    if not source:
+                        character.addMessage("no filled output slots")
+                        continue
+
+                if hasItem:
+                    if buildSite[1] == "Command":
+                        if "command" in buildSite[2]:
+                            self.addQuest(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
+                        else:
+                            self.addQuest(src.quests.questMap["RunCommand"](command="jjssj.\n"))
+                    self.addQuest(src.quests.questMap["RunCommand"](command="l"))
+                    self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
+                    buildSite[2]["reservedTill"] = room.timeIndex+100
+                elif source:
+                    if not character.getFreeInventorySpace() > 0:
+                        quest = src.quests.questMap["ClearInventory"]()
+                        self.addQuest(quest)
+                        quest.assignToCharacter(character)
+                        quest.activate()
+                        return True
+
+                    roomPos = (room.xPosition,room.yPosition)
+
+                    if not source[0] == roomPos:
+                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                    self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
+                    if not source[0] == roomPos:
+                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+                self.idleCounter = 0
+                return True
+
+    def triggerClearInventory(self,character,room):
+        if len(character.inventory) > 9:
+            self.addQuest(src.quests.questMap["ClearInventory"]())
+            return True
+        # clear inventory local
+        if len(character.inventory) > 1:
+            emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+            if emptyInputSlots:
+                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True))
+                return True
+
+        # go to garbage stockpile and unload
+        if len(character.inventory) > 6:
+            if not "HOMEx" in character.registers:
+                return True
+            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
+                return True
+            quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            return True
+        return False
+
     def generateSubquests(self,character):
 
         for quest in self.subQuests:
@@ -344,31 +621,6 @@ Press r to generate subquest and recive detailed instructions
             self.idleCounter = 0
             return
 
-        def triggerClearIneventory():
-            if len(character.inventory) > 9:
-                self.addQuest(src.quests.questMap["ClearInventory"]())
-                return True
-            # clear inventory local
-            if len(character.inventory) > 1:
-                emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
-                if emptyInputSlots:
-                    self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True))
-                    return True
-
-            # go to garbage stockpile and unload
-            if len(character.inventory) > 6:
-                if not "HOMEx" in character.registers:
-                    return True
-                homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
-                if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                    return True
-                quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return True
-            return False
-
         if self.targetPosition:
             if not (self.targetPosition[0] == room.xPosition and self.targetPosition[1] == room.yPosition):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
@@ -377,258 +629,41 @@ Press r to generate subquest and recive detailed instructions
                 quest.activate()
                 return
 
-        if "trap setting" in character.duties:
-            if hasattr(room,"electricalCharges"):
-                if room.electricalCharges < room.maxElectricalCharges:
-
-                    quest = src.quests.questMap["ReloadTraproom"](targetPosition=room.getPosition())
-                    self.addQuest(quest)
-                    quest.activate()
-                    self.idleCounter = 0
+        for duty in character.duties:
+            if duty == "trap setting":
+                if self.checkTriggerTrapSetting(character,room):
                     return
 
-        if "machine operation" in character.duties:
-            items = room.itemsOnFloor[:]
-            random.shuffle(items)
-            for item in items:
-                if not item.bolted:
-                    continue
-                if not item.type in ("Machine","ScrapCompactor",):
-                    continue
-                if not item.readyToUse():
-                    continue
-                quest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition())
-                self.addQuest(quest)
-                quest.activate()
-                self.idleCounter = 0
-                return
-
-        if "resource gathering" in character.duties:
-            emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
-            if emptyInputSlots:
-                for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                    if not inputSlot[1] == "Scrap":
-                        continue
-
-                    if not room.sources:
-                        continue
-
-                    source = None
-                    for potentialSource in random.sample(list(room.sources),len(room.sources)):
-                        if potentialSource[1] == "rawScrap":
-                            source = potentialSource
-                            break
-
-                    if source == None:
-                        continue
-
-                    if triggerClearIneventory():
-                        return
-
-                    self.addQuest(src.quests.questMap["RestockRoom"](toRestock="Scrap"))
-                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
-                    self.addQuest(src.quests.questMap["GatherScrap"](targetPosition=source[0]))
-                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
-                    self.idleCounter = 0
+            if duty == "machine operation":
+                if self.checkTriggerMachineOperation(character,room):
                     return
 
-        if "scratch checking" in character.duties:
-            for item in random.sample(list(room.itemsOnFloor),len(room.itemsOnFloor)):
-                if not item.bolted:
-                    continue
-                if item.type == "ScratchPlate":
-                    if item.hasScratch():
-                        continue
-                    self.addQuest(src.quests.questMap["RunCommand"](command="jsj"))
-                    self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
-                    self.idleCounter = 0
+            if duty == "resource gathering":
+                if self.checkTriggerResourceGathering(character,room):
                     return
 
-        if "cleaning" in character.duties:
-            # clean up room
-            if not room.floorPlan:
-                for position in random.sample(list(room.walkingSpace),len(room.walkingSpace)):
-                    items = room.getItemByPosition(position)
-
-                    if not items:
-                        continue
-                    if items[0].bolted:
-                        continue
-
-                    if character.getFreeInventorySpace() <= 0:
-                        quest = src.quests.questMap["ClearInventory"]()
-                        self.addQuest(quest)
-                        return
-
-                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    self.idleCounter = 0
+            if duty == "scratch checking":
+                if self.checkTriggerScratchChecking(character,room):
                     return
 
-        if "hauling" in character.duties:
-            if hasattr(room,"inputSlots"):
-                checkedTypes = set()
+            if duty == "cleaning":
+                if self.checkTriggerCleaning(character,room):
+                    return
 
-                emptyInputSlots = room.getEmptyInputslots()
-                if emptyInputSlots:
+            if duty == "hauling":
+                if self.checkTriggerHauling(character,room):
+                    return
 
-                    for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                        if inputSlot[1] == None:
-                            continue
-                        if inputSlot[1] in checkedTypes:
-                            continue
-                        checkedTypes.add(inputSlot[1])
+            if duty == "resource fetching":
+                if self.checkTriggerResourceFetching(character,room):
+                    return
 
-                        hasItem = False
-                        if character.inventory and character.inventory[-1].type == inputSlot[1]:
-                            hasItem = True
+            if duty == "painting":
+                if self.checkTriggerPainting(character,room):
+                    return
 
-                        if not hasItem:
-                            if not room.getNonEmptyOutputslots(itemType=inputSlot[1]):
-                                continue
-
-                        self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1]))
-
-                        if not hasItem:
-                            if triggerClearIneventory():
-                                return
-
-                        self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
-                        self.idleCounter = 0
-                        return
-
-        if "resource fetching" in character.duties:
-            if hasattr(room,"inputSlots"):
-                emptyInputSlots = room.getEmptyInputslots()
-                if emptyInputSlots:
-                    checkedTypes = set()
-
-                    for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                        if inputSlot[1] == None:
-                            continue
-                        if inputSlot[1] in checkedTypes:
-                            continue
-                        checkedTypes.add(inputSlot[1])
-
-                        hasItem = False
-                        if character.inventory and character.inventory[-1].type == inputSlot[1]:
-                            hasItem = True
-                        
-                        if not hasItem:
-                            source = None
-                            for candidateSource in room.sources:
-                                if not candidateSource[1] == inputSlot[1]:
-                                    continue
-
-                                sourceRoom = room.container.getRoomByPosition(candidateSource[0])
-                                if not sourceRoom:
-                                    continue
-
-                                sourceRoom = sourceRoom[0]
-                                if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1]):
-                                    continue
-
-                                source = candidateSource
-                                break
-
-                            if not source:
-                                character.addMessage("no filled output slots")
-                                continue
-
-                        self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1]))
-                        self.idleCounter = 0
-
-                        if not hasItem:
-                            if triggerClearIneventory():
-                                return
-
-                            roomPos = (room.xPosition,room.yPosition,0)
-                            if not source[0] == roomPos:
-                                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
-                            self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
-                            if not source[0] == roomPos:
-                                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
-                        return
-
-                    character.addMessage("no valid input slot found")
-                character.addMessage("no empty input slot found")
-            character.addMessage("no input slots")
-
-        # officer work
-        if "painting" in character.duties:
-            # set up machines
-            if room.floorPlan:
-                self.addQuest(src.quests.questMap["DrawFloorPlan"]())
-                self.idleCounter = 0
-                return
-
-        if not room.floorPlan and "machine placing" in character.duties:
-
-            if room.buildSites:
-                checkedMaterial = set()
-                #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
-                for buildSite in room.buildSites:
-                    if "reservedTill" in buildSite[2] and buildSite[2]["reservedTill"] > room.timeIndex:
-                        continue
-                    if buildSite[1] in checkedMaterial:
-                        continue
-                    checkedMaterial.add(buildSite[1])
-
-                    neededItem = buildSite[1]
-                    if buildSite[1] == "Command":
-                        neededItem = "Sheet"
-                    hasItem = False
-                    source = None
-                    if character.inventory and character.inventory[-1].type == neededItem:
-                        hasItem = True
-
-                    if not hasItem:
-                        for candidateSource in room.sources:
-                            if not candidateSource[1] == neededItem:
-                                continue
-
-                            sourceRoom = room.container.getRoomByPosition(candidateSource[0])
-                            if not sourceRoom:
-                                continue
-
-                            sourceRoom = sourceRoom[0]
-                            if not sourceRoom.getNonEmptyOutputslots(itemType=neededItem):
-                                continue
-
-                            source = candidateSource
-                            break
-
-                        if not source:
-                            character.addMessage("no filled output slots")
-                            continue
-
-                    if hasItem:
-                        if buildSite[1] == "Command":
-                            if "command" in buildSite[2]:
-                                self.addQuest(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
-                            else:
-                                self.addQuest(src.quests.questMap["RunCommand"](command="jjssj.\n"))
-                        self.addQuest(src.quests.questMap["RunCommand"](command="l"))
-                        self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
-                        buildSite[2]["reservedTill"] = room.timeIndex+100
-                    elif source:
-                        if not character.getFreeInventorySpace() > 0:
-                            quest = src.quests.questMap["ClearInventory"]()
-                            self.addQuest(quest)
-                            quest.assignToCharacter(character)
-                            quest.activate()
-                            return
-
-                        roomPos = (room.xPosition,room.yPosition)
-
-                        if not source[0] == roomPos:
-                            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
-                        self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
-                        if not source[0] == roomPos:
-                            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
-                    self.idleCounter = 0
+            if duty == "machine placing":
+                if self.checkTriggerMachinePlacing(character,room):
                     return
 
         if not self.targetPosition:

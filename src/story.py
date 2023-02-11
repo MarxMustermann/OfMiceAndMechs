@@ -5055,6 +5055,7 @@ When you rise in rank you will be able to build a way out of here."""
             return
 
         monsterStartRoom = random.choice(spawnerRooms)
+        """
         while counter < remainingEnemyCounter:
             enemy = src.characters.Monster(6,6)
             enemy.faction = "invader"
@@ -5062,13 +5063,14 @@ When you rise in rank you will be able to build a way out of here."""
             enemy.specialDisplay = "<c"
             monsterStartRoom.addCharacter(enemy, 6, 6)
 
-            quest = src.quests.DestroyRooms()
+            quest = src.quests.questMap["DestroyRooms"]()
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()
             enemy.quests.append(quest)
 
             counter += 1
+        """
 
         #numMonsters = 1
         #if self.numRounds > 8:

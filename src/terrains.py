@@ -981,7 +981,17 @@ class Terrain(src.saveing.Saveable):
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
         path = self.pathCache.get((tilePos,startPos,targetPos))
         if path:
-            return path
+            pos = list(startPos)
+            for step in path:
+                pos[0] += step[0]
+                pos[1] += step[1]
+
+                if not self.getPositionWalkable((pos[0]+15*tilePos[0],pos[1]+15*tilePos[1]),character=character):
+                    path = []
+                    del self.pathCache[(tilePos,startPos,targetPos)]
+                    break
+            if path:
+                return path[:]
 
         tileMap = []
         for x in range(0,15):
@@ -1017,7 +1027,7 @@ class Terrain(src.saveing.Saveable):
             moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
             lastStep = step
 
-        self.pathCache[(tilePos,startPos,targetPos)] = moves
+        self.pathCache[(tilePos,startPos,targetPos)] = moves[:]
 
         return moves
 

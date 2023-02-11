@@ -325,9 +325,19 @@ class Room(src.saveing.Saveable):
 
     def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
 
-        path = copy.copy(self.pathCache.get((startPos,targetPos)))
+        path = self.pathCache.get((startPos,targetPos))
         if path:
-            return path
+            pos = list(startPos)
+            for step in path:
+                pos[0] += step[0]
+                pos[1] += step[1]
+
+                if not self.getPositionWalkable(tuple(pos),character=character):
+                    path = []
+                    del self.pathCache[(startPos,targetPos)]
+                    break
+            if path:
+                return path[:]
 
         roomMap = []
         for x in range(0,13):
@@ -377,7 +387,7 @@ class Room(src.saveing.Saveable):
             print(path)
             print(moves)
 
-        self.pathCache[(startPos,targetPos)] = copy.copy(moves)
+        self.pathCache[(startPos,targetPos)] = moves[:]
 
         return moves
 

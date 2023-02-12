@@ -233,7 +233,34 @@ class Terrain(src.saveing.Saveable):
     def getRoomByPosition(self, position):
         return self.roomByCoordinates.get((position[0],position[1]),[])
 
+    def shiftPosition(self,position):
+        smallX = position[0] % 15
+        smallY = position[1] % 15
+        if smallX == 0:
+            if smallY < 7:
+                position = (position[0] + 1, position[1] + 1, position[2])
+            elif smallY > 7:
+                position = (position[0] + 1, position[1] - 1, position[2])
+        if smallX == 14:
+            if smallY < 7:
+                position = (position[0] - 1, position[1] + 1, position[2])
+            elif smallY > 7:
+                position = (position[0] - 1, position[1] - 1, position[2])
+        if smallY == 0:
+            if smallX < 7:
+                position = (position[0] + 1, position[1] + 1, position[2])
+            elif smallX > 7:
+                position = (position[0] - 1, position[1] + 1, position[2])
+        if smallY == 14:
+            if smallX < 7:
+                position = (position[0] + 1, position[1] - 1, position[2])
+            elif smallX > 7:
+                position = (position[0] - 1, position[1] - 1, position[2])
+        return position
+
     def getItemByPosition(self, position):
+        position = self.shiftPosition(position)
+
         """
         get items on a specific position
 
@@ -242,28 +269,6 @@ class Terrain(src.saveing.Saveable):
         Returns:
             the list of items on that position
         """
-
-        if position[0] % 15 == 0:
-            if position[1] % 15 < 7:
-                position = (position[0] + 1, position[1] + 1, position[2])
-            elif position[1] % 15 > 7:
-                position = (position[0] + 1, position[1] - 1, position[2])
-        if position[0] % 15 == 14:
-            if position[1] % 15 < 7:
-                position = (position[0] - 1, position[1] + 1, position[2])
-            elif position[1] % 15 > 7:
-                position = (position[0] - 1, position[1] - 1, position[2])
-        if position[1] % 15 == 0:
-            if position[0] % 15 < 7:
-                position = (position[0] + 1, position[1] + 1, position[2])
-            elif position[0] % 15 > 7:
-                position = (position[0] - 1, position[1] + 1, position[2])
-        if position[1] % 15 == 14:
-            if position[0] % 15 < 7:
-                position = (position[0] + 1, position[1] - 1, position[2])
-            elif position[0] % 15 > 7:
-                position = (position[0] - 1, position[1] - 1, position[2])
-
         return self.itemsByCoordinate.get(position,[])
 
     # bad code: story specific code

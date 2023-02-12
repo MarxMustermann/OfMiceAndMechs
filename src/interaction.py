@@ -1899,10 +1899,10 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         doRangedAttack(key,char,charState,main,header,footer,urwid,flags)
         return
 
+    """
     if "runaction" in char.interactionState:
         handleActivitySelection(char)
         return
-    """
 
     if "advancedInteraction" in char.interactionState:
         doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags)
@@ -8283,7 +8283,7 @@ press enter"""
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)
                 printUrwidToTcod(miniMapChars,(4,2))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(82,28))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+src.gamestate.gamestate.mainChar.xPosition,22+src.gamestate.gamestate.mainChar.yPosition))
             tcodContext.present(tcodConsole)
             time.sleep(0.1)
         else:

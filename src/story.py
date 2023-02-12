@@ -4909,7 +4909,7 @@ Find the commander of this base to find out what is happening."""
             return
 
         storyText = """
-There is no commander. That explains the inactivity-
+There is no commander. That explains the inactivity.
 
 This is a bit of a bad thing.
 You are safe and you wont starve.

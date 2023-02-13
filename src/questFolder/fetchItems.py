@@ -108,9 +108,7 @@ Return to %s after to complete this quest."""%(tile,)
             if self.getSource():
                 return
 
-            character.addMessage("failed fetching items")
-            self.fail()
-            self.postHandler()
+            self.fail(reason="no source for item %s"%(self.toCollect,))
         return
 
     def getSource(self):
@@ -172,7 +170,7 @@ Return to %s after to complete this quest."""%(tile,)
                     break
 
             if not foundNeighbour:
-                return "..24.."
+                return "+"
 
             if not dryRun:
                 quest = src.quests.questMap["GoToPosition"](ignoreEnd=True)
@@ -181,7 +179,7 @@ Return to %s after to complete this quest."""%(tile,)
                 quest.activate()
                 self.addQuest(quest)
 
-                return "."
+                return 
             return str(foundNeighbour)
 
         if charPos == (7,0,0):

@@ -63,6 +63,7 @@ Activate the basic trainer in the command centre to start training a skill"""
             quest.activate()
             quest.assignToCharacter(character)
             self.addQuest(quest)
+            quest.generatePath(character)
             return
         quest = src.quests.questMap["GoHome"](description="go to command centre")
         self.addQuest(quest)

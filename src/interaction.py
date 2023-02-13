@@ -2118,6 +2118,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             pass
 
     char.macroState["submenue"].followUp = trigger
+    char.runCommandString(".",nativeKey=True)
 
 def doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -2179,14 +2180,15 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         return
     if key in ("esc",):
         doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
-        key = "."
-
+        return
     if key in ("y",):
         doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         return
-    if key in ("o",) and 1==0:
+    """
+    if key in ("o",):
         doStartObserve(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         return
+    """
 
     # call callback if key was overwritten
     if "stealKey" in charState and key in charState["stealKey"]:
@@ -2213,22 +2215,22 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-                return
+            return
         if key in (commandChars.move_south, "down"):
             charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-                return
+            return
         if key in (commandChars.move_east, "right"):
             charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-                return
+            return
         if key in (commandChars.move_west, "left"):
             charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-                return
+            return
 
         # move the player
         if key in (
@@ -5923,6 +5925,7 @@ lastAutosave = 0
 
 lastcheck = time.time()
 def getTcodEvents():
+    src.gamestate.gamestate.waitedForInputThisTurn = True
     global lastcheck
 
     events = tcod.event.get()

@@ -84,12 +84,6 @@ This quest ends after you do this."""%(self.targetPosition,)
                 self.triggerCompletionCheck(extraInfo[0])
                 return
         else:
-            if self.path:
-                if self.character == src.gamestate.gamestate.mainChar:
-                    print(self.path)
-                    print(extraInfo)
-                    print(convertedDirection)
-                    print(self)
             self.generatePath(self.character)
 
     def handleChangedTile(self, extraInfo=None):

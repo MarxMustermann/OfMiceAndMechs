@@ -145,7 +145,7 @@ Swords can range from 10 to 25 damage per hit.
                     break
             if not source:
                 #character.runCommandString(".14.")
-                self.fail()
+                self.fail(reason="no source for equipment")
                 return
 
             description="go to weapon production "

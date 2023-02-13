@@ -117,9 +117,6 @@ operate the machine on %s
         if tuple(bigPos) == self.targetPosition:
             return True
         
-        print("!!!!!!!!!!!!!!!!!!!")
-        print(bigPos)
-        print(self.targetPosition)
         return False
 
     def generateSubquests(self,character=None):

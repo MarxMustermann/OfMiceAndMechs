@@ -146,6 +146,7 @@ Press d now to move the quest cursor to select the sub quest.
         self.addQuest(quest)
         quest.assignToCharacter(character)
         quest.activate()
+        quest.generatePath(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:

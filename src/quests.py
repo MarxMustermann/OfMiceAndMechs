@@ -273,7 +273,9 @@ class Quest(src.saveing.Saveable):
     handle a failure to resolve te quest
     """
 
-    def fail(self):
+    def fail(self,reason=None):
+        if reason and self.character:
+            self.character.addMessage("failed quest because of %s"%(reason,))
         if self.failTrigger:
             self.failTrigger()
         if self.reputationReward:

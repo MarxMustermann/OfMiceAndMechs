@@ -371,7 +371,6 @@ class Room(src.saveing.Saveable):
 
         cost = np.array(roomMap, dtype=np.int8)
         pathfinder = tcod.path.AStar(cost,diagonal = 0)
-        #path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
         
         moves = []
@@ -379,13 +378,6 @@ class Room(src.saveing.Saveable):
         for step in path:
             moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
             lastStep = step
-
-        if character == src.gamestate.gamestate.mainChar:
-            print(startPos)
-            print(targetPos)
-            print(cost)
-            print(path)
-            print(moves)
 
         self.pathCache[(startPos,targetPos)] = moves[:]
 

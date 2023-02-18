@@ -280,8 +280,7 @@ Eliminate them to break up the second siege ring.
                         minDistance = distance
                         pos = candidate
 
-                quest = src.quests.questMap["SecureTile"](endWhenCleared=True, description="clear hive guards from tile ", reputationReward=150, rewardText="clearing hive guards")
-                quest.setParameters({"targetPosition":pos})
+                quest = src.quests.questMap["SecureTile"](endWhenCleared=True, description="clear hive guards from tile ", reputationReward=150, rewardText="clearing hive guards",toSecure=pos)
                 quest.assignToCharacter(character)
                 quest.activate()
                 if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):

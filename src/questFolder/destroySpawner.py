@@ -7,6 +7,7 @@ class DestroySpawner(src.quests.MetaQuestSequence):
         super().__init__()
         self.metaDescription = description+" %s"%(targetPosition,)
         self.targetPosition = targetPosition
+        self.spawnedPrepared = False
 
     def generateTextDescription(self):
         text = """
@@ -60,9 +61,16 @@ You may want to plan an escape route."""%(self.targetPosition,)
         return
 
     def solver(self,character):
+
         if self.triggerCompletionCheck(character):
             return
         if not self.subQuests:
+            if not self.spawnedPrepared:
+                quest = src.quests.questMap["PrepareAttack"](targetPosition=self.targetPosition())
+                self.addQuest(quest)
+                self.spawnedPrepared = True
+                return
+
             if not character.getBigPosition() == self.targetPosition:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 self.addQuest(quest)

@@ -62,8 +62,6 @@ The Hives are shown on the minimap as: """,(src.interaction.urwid.AttrSpec("#484
             spawner = random.choice(self.getSpawners(character))
             quest = src.quests.questMap["DestroySpawner"](targetPosition=spawner.getPosition())
             self.addQuest(quest)
-            quest = src.quests.questMap["PrepareAttack"](targetPosition=spawner.getPosition())
-            self.addQuest(quest)
         super().solver(character)
 
 src.quests.addType(DestroySpawners)

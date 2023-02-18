@@ -4891,6 +4891,8 @@ Enter the base that way."""
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
+            containerQuest.generatePath(mainChar)
+            containerQuest.generateSubquests(mainChar)
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
@@ -4949,6 +4951,7 @@ When you rise in rank you will be able to build a way out of here."""
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)
             containerQuest.activate()
+            containerQuest.generatePath(mainChar)
             containerQuest.generateSubquests(mainChar)
             containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
             return

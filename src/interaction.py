@@ -2262,8 +2262,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
             char.quests.insert(0,quest)
 
-        # murder the next available character
-        # bad pattern: player should be able to select whom to kill if there are multiple targets
+        """
         if key in ("M",):
             if char.combatMode is None:
                 char.combatMode = "agressive"
@@ -2272,6 +2271,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             else:
                 char.combatMode = None
             char.addMessage("switched combatMode to: %s" % (char.combatMode,))
+        """
         if key in (commandChars.attack,):
             # bad code: should be part of a position object
             adjascentFields = [
@@ -7124,11 +7124,19 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 
 
         if submenu == "difficulty":
-            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+21))
-            printUrwidToTcod("| e: easy      |",(offsetX+3+16,offsetY+22))
-            printUrwidToTcod("| m: medium    |",(offsetX+3+16,offsetY+23))
-            printUrwidToTcod("| d: difficult |",(offsetX+3+16,offsetY+24))
-            printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+25))
+            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+21))
+            printUrwidToTcod("| e: easy                                                           |",(offsetX+3+16,offsetY+22))
+            printUrwidToTcod("| easy is easy. Recommended to start with.                          |",(offsetX+3+16,offsetY+23))
+            printUrwidToTcod("| This mode should teach you how the game works.                    |",(offsetX+3+16,offsetY+24))
+            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+25))
+            printUrwidToTcod("| m: medium                                                         |",(offsetX+3+16,offsetY+26))
+            printUrwidToTcod("| medium is pretty hard. Recommended after winning an easy run.     |",(offsetX+3+16,offsetY+27))
+            printUrwidToTcod("| Balanced to be challenging after mastering one game mechanic      |",(offsetX+3+16,offsetY+28))
+            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+29))
+            printUrwidToTcod("| d: difficult                                                      |",(offsetX+3+16,offsetY+30))
+            printUrwidToTcod("| difficult is really hard. not recomended                          |",(offsetX+3+16,offsetY+31))
+            printUrwidToTcod("| Should be a challenging with full meta knowledge                  |",(offsetX+3+16,offsetY+32))
+            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+33))
 
         if submenu == "delete":
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+21))
@@ -8276,17 +8284,21 @@ press enter"""
                 room.hidden = False
                 printUrwidToTcod(fixRoomRender(room.render()),(70,22))
             if subStep == 3:
-                printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(70,22))
+                offset = src.gamestate.gamestate.mainChar.getPosition() 
+                printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(70+offset[0]*2,22+offset[1]))
             if subStep == 4:
+                offset = src.gamestate.gamestate.mainChar.getPosition() 
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition() 
-                terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1),15*(roomPos[0]-1)),size=(44,44))
+                terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
                 printUrwidToTcod(terrainRender,(38,6))
 
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)
                 printUrwidToTcod(miniMapChars,(4,2))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+src.gamestate.gamestate.mainChar.xPosition,22+src.gamestate.gamestate.mainChar.yPosition))
+
+            offset = src.gamestate.gamestate.mainChar.getPosition() 
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+6,22+6))
             tcodContext.present(tcodConsole)
             time.sleep(0.1)
         else:

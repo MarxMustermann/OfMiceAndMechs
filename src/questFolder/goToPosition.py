@@ -83,6 +83,11 @@ This quest ends after you do this."""%(self.targetPosition,)
             if self.ignoreEndBlocked and len(self.path) == 1:
                 self.triggerCompletionCheck(extraInfo[0])
                 return
+
+            if not self.isPathSane(extraInfo[0]):
+                self.generatePath(extraInfo[0])
+                if not self.path:
+                    self.fail()
         else:
             self.generatePath(self.character)
 
@@ -167,6 +172,12 @@ This quest ends after you do this."""%(self.targetPosition,)
             self.generatePath(character)
             return
 
+        if not self.isPathSane(character):
+            self.generatePath(character)
+            if not self.path:
+                self.fail()
+                return
+
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:
@@ -183,5 +194,22 @@ This quest ends after you do this."""%(self.targetPosition,)
         parameters = super().getRequiredParameters()
         parameters.append({"name":"targetPosition","type":"coordinate"})
         return parameters
+
+    def isPathSane(self,character):
+        if not self.path:
+            return False
+
+        pos = list(character.getSpacePosition())
+        for step in self.path:
+            pos[0] += step[0]
+            pos[1] += step[1]
+
+        if tuple(pos) == self.targetPosition:
+            return True
+        
+        print(pos)
+        print(self.targetPosition)
+        return False
+
 
 src.quests.addType(GoToPosition)

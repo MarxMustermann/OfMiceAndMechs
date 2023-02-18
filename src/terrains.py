@@ -359,7 +359,10 @@ class Terrain(src.saveing.Saveable):
         """
 
         oldBigPos = character.getBigPosition()
-        self.charactersByTile[oldBigPos].remove(character)
+        try:
+            self.charactersByTile[oldBigPos].remove(character)
+        except:
+            pass
 
         if character in self.characters:
             self.characters.remove(character)
@@ -982,6 +985,21 @@ class Terrain(src.saveing.Saveable):
                 command += movementMap[offset]
         return (command,path)
 
+    def isPathSane(self,character):
+        if not self.path:
+            return False
+
+        pos = list(character.getPosition())
+        for step in self.path:
+            pos[0] += step[0]
+            pos[1] += step[1]
+
+            if tuple(pos) == self.targetPosition:
+                return True
+
+        print(pos)
+        print(self.targetPosition)
+        return False
 
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
         path = self.pathCache.get((tilePos,startPos,targetPos))
@@ -991,7 +1009,7 @@ class Terrain(src.saveing.Saveable):
                 pos[0] += step[0]
                 pos[1] += step[1]
 
-                if not self.getPositionWalkable((pos[0]+15*tilePos[0],pos[1]+15*tilePos[1]),character=character):
+                if not self.getPositionWalkable((pos[0]+15*tilePos[0],pos[1]+15*tilePos[1],0),character=character):
                     path = []
                     del self.pathCache[(tilePos,startPos,targetPos)]
                     break
@@ -1005,26 +1023,37 @@ class Terrain(src.saveing.Saveable):
                 if x in (0,14,) or y in (0,14):
                     tileMap[x].append(0)
                 else:
-                    tileMap[x].append(50)
+                    tileMap[x].append(5)
         tileMap[0][7] = 1
         tileMap[7][0] = 1
         tileMap[14][7] = 1
         tileMap[7][14] = 1
 
-        for y in range(0,13):
-            for x in range(0,13):
-                if self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0)):
-                    tileMap[x][y] = 100
+        for y in range(1,14):
+            for x in range(1,14):
+                items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
+                if items:
+                    tileMap[x][y] = 20
 
-        for y in range(0,13):
-            for x in range(0,13):
+        for y in range(1,14):
+            for x in range(1,14):
                  if not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
                     tileMap[x][y] = 0
+
+        for y in range(1,14):
+            for x in range(1,14):
+                items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
+                if items:
+                    if items[0].type == "Bush":
+                        tileMap[x][y] = 127
 
         cost = np.array(tileMap, dtype=np.int8)
         tcod.path.AStar(cost,diagonal = 0)
         pathfinder = tcod.path.AStar(cost,diagonal = 0)
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+
+        if character == src.gamestate.gamestate.mainChar:
+            print(cost)
 
         moves = []
         lastStep = startPos
@@ -1357,10 +1386,19 @@ class Terrain(src.saveing.Saveable):
         if not pos:
             pos = character.getBigPosition()
 
+        if pos == (0,0,0):
+            return []
+
         out = []
         otherChars = self.charactersByTile.get(pos,[])
         for otherChar in otherChars:
+            if character == otherChar:
+               continue
             if character.faction == otherChar.faction:
+               continue
+            if otherChar.dead:
+               continue
+            if not pos == otherChar.getBigPosition():
                continue
             out.append(otherChar)
 

@@ -119,139 +119,113 @@ operate the machine on %s
         
         return False
 
-    def generateSubquests(self,character=None):
+    def getNextStep(self,character=None):
         if character == None:
-            return
+            return (None,None)
+
+        if character.macroState.get("submenue"):
+            return (None,["esc"])
 
         if not self.path:
             self.generatePath(character)
 
-            if not self.path:
-                return
+        if not self.path:
+            return (None,None)
 
         if self.subQuests:
-            return
+            return (None,None)
 
         if isinstance(character.container,src.rooms.Room):
             if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
-                    self.addQuest(src.quests.questMap["RunCommand"](command="gg"))
-                    return
+                    print("go fight within room")
+                    return (None,"gg")
 
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
                     self.fail()
-                    return
+                    return (None,None)
 
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(6,12,0)))
-                return
+                    return (None,"ss")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0))
+                quest.assignToCharacter(character)
+                quest.generatePath(character)
+                return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.getPosition() == (6,0,0):
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(6,0,0)))
-                return
+                    return (None,"ww")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0))
+                quest.assignToCharacter(character)
+                quest.generatePath(character)
+                return ([quest],None)
             if self.path[0] == (1,0):
                 if character.getPosition() == (12,6,0):
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(12,6,0)))
-                return
+                    return (None,"dd")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0))
+                quest.assignToCharacter(character)
+                quest.generatePath(character)
+                return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.getPosition() == (0,6,0):
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(0,6,0)))
-                return
+                    return (None,"aa")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0))
+                quest.assignToCharacter(character)
+                quest.generatePath(character)
+                return ([quest],None)
         else:
             if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
                 if character.container.getEnemiesOnTile(character):
-                    self.addQuest(src.quests.questMap["RunCommand"](command="gg"))
-                    return
+                    return (None,"gg")
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
-                return
+                return (None,"w")
             if character.xPosition%15 == 7 and character.yPosition%15 == 0:
-                return
+                return (None,"s")
             if character.xPosition%15 == 14 and character.yPosition%15 == 7:
-                return
+                return (None,"a")
             if character.xPosition%15 == 0 and character.yPosition%15 == 7:
-                return
+                return (None,"d")
 
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
                     self.fail()
-                    return
+                    return (None,None)
 
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,13,0)))
-                return
+                    return (None,"s")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0))
+                quest.generatePath(character)
+                return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,1,0)))
-                return
+                    return (None,"w")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0))
+                quest.generatePath(character)
+                return ([quest],None)
             if self.path[0] == (1,0):
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(13,7,0)))
-                return
+                    return (None,"d")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
+                quest.generatePath(character)
+                return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
-                    return
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(1,7,0)))
-                return
-            
+                    return (None,"a")
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
+                quest.generatePath(character)
+                return ([quest],None)
+    
+    def generateSubquests(self, character=None):
+        return self.getNextStep(character)[0]
 
     def getSolvingCommandString(self, character, dryRun=True):
-        if character.macroState.get("submenue"):
-            return ["esc"]
-
-        if not self.path:
-            return
-
-        if isinstance(character.container,src.rooms.Room):
-            if self.path[0] == (0,1):
-                if character.getPosition() == (6,12,0):
-                    return "ss"
-            if self.path[0] == (0,-1):
-                if character.getPosition() == (6,0,0):
-                    return "ww"
-            if self.path[0] == (1,0):
-                if character.getPosition() == (12,6,0):
-                    return "dd"
-            if self.path[0] == (-1,0):
-                if character.getPosition() == (0,6,0):
-                    return "aa"
-        else:
-            if character.xPosition%15 == 7 and character.yPosition%15 == 14:
-                return "w"
-            if character.xPosition%15 == 7 and character.yPosition%15 == 0:
-                return "s"
-            if character.xPosition%15 == 14 and character.yPosition%15 == 7:
-                return "a"
-            if character.xPosition%15 == 0 and character.yPosition%15 == 7:
-                return "d"
-
-            if self.path[0] == (0,1):
-                if character.xPosition%15 == 7 and character.yPosition%15 == 13:
-                    return "s"
-            if self.path[0] == (0,-1):
-                if character.xPosition%15 == 7 and character.yPosition%15 == 1:
-                    return "w"
-            if self.path[0] == (1,0):
-                if character.xPosition%15 == 13 and character.yPosition%15 == 7:
-                    return "d"
-            if self.path[0] == (-1,0):
-                if character.xPosition%15 == 1 and character.yPosition%15 == 7:
-                    return "a"
-
-        return super().getSolvingCommandString(character,dryRun=dryRun)
+        return self.getNextStep(character)[1]
 
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition)
@@ -260,14 +234,14 @@ operate the machine on %s
         if not self.path:
             self.generatePath(character)
 
-        if not self.subQuests:
-            self.generateSubquests(character)
-            if self.subQuests:
-                return
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
 
-        command = self.getSolvingCommandString(character,dryRun=False)
-        if command:
-            character.runCommandString(command)
+        if nextCommand:
+            character.runCommandString(nextCommand)
             return
         super().solver(character)
 

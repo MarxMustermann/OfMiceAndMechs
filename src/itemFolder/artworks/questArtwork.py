@@ -86,8 +86,7 @@ Eliminate them to start breaking up the innermost siege ring.
 
             enemies = self.getEnemiesWithTag("lurker")
             if enemies:
-                quest = src.quests.questMap["SecureTile"](endWhenCleared=True, description="clear lurkers on tile ", reputationReward=50, rewardText="clearing lurkers")
-                quest.setParameters({"targetPosition":random.choice(enemies).getBigPosition()})
+                quest = src.quests.questMap["SecureTile"](endWhenCleared=True, description="clear lurkers on tile ", reputationReward=50, rewardText="clearing lurkers",toSecure=random.choice(enemies).getBigPosition())
                 quest.assignToCharacter(character)
                 quest.activate()
                 if character.quests and isinstance(character.quests[0],src.quests.questMap["BeUsefull"]):

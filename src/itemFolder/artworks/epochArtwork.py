@@ -32,7 +32,7 @@ class EpochArtwork(src.items.Item):
         self.firstUse = True
         self.epochLength = epochLength
         self.lastEpochSurvivedReward = 0
-        self.lastNumSpawners = 4
+        self.lastNumSpawners = 0
         self.shadowCharges = 1000
 
         self.charges = 0
@@ -424,6 +424,30 @@ Kill all remaining enemies to end the siege.
             character.macroState["submenue"] = submenue
 
             quest = src.quests.questMap["ClearTerrain"]()
+            quest.active = True
+            quest.assignToCharacter(character)
+
+            epochQuest.addQuest(quest)
+            return
+
+        foundToChargeRoom = False
+        for room in terrain.getRoomsByType(src.rooms.TrapRoom):
+            if room.electricalCharges < room.maxElectricalCharges:
+                foundToChargeRoom = True
+
+        if foundToChargeRoom:
+            text += """
+Recharge the trap rooms.
+
+The bases defence should be fully charged
+
+"""
+
+            character.addMessage(text)
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+
+            quest = src.quests.questMap["ReloadTraps"]()
             quest.active = True
             quest.assignToCharacter(character)
 

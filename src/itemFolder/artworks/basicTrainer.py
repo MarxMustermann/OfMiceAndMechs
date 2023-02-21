@@ -43,6 +43,10 @@ select the skill you want to train:
             if not candidate in candidates:
                 candidates.append(candidate)
 
+        if character.registers.get("failedTraining"):
+            candidates = allCandidates
+            del character.registers["failedTraining"]
+
         for candidate in candidates[:]:
             if candidate in character.skills:
                 candidates.remove(candidate)
@@ -83,6 +87,7 @@ select the skill you want to train:
         if character.registers["numTrainingFailed"] > 3:
             del character.registers["numTrainingFailed"]
             del character.registers["trainingFor"]
+            character.registers["failedTraining"] = 1
             character.addMessage("you failed the training too often - reseting")
             return
         character.registers["trainingFor"] = trainingType

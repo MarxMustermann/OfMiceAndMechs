@@ -92,7 +92,8 @@ class ScrapCompactor(src.items.Item):
         targetFull = False
         itemList = self.container.getItemByPosition(targetPos)
 
-        if len(itemList) > 15:
+        #if len(itemList) > 15:
+        if len(itemList) > 0:
             targetFull = True
         for item in itemList:
             if item.walkable == False:

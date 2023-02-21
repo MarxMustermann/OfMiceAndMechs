@@ -4,7 +4,7 @@ import random
 class BeUsefull(src.quests.MetaQuestSequence):
     type = "BeUsefull"
 
-    def __init__(self, description="be useful", creator=None, targetPosition=None):
+    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -15,6 +15,7 @@ class BeUsefull(src.quests.MetaQuestSequence):
             self.setParameters({"targetPosition":targetPosition})
 
         self.shortCode = " "
+        self.strict = strict
 
     def generateTextDescription(self):
         out = """
@@ -131,9 +132,6 @@ Press r to generate subquest and recive detailed instructions
             self.character.awardReputation(10, reason="charging a trap room")
 
     def handleDroppedItem(self,extraInfo):
-        if not self.character == src.gamestate.gamestate.mainChar:
-            return
-
         if isinstance(self.character.container,src.terrains.Terrain):
             self.character.revokeReputation(2, reason="discarding an item")
             return
@@ -166,6 +164,13 @@ Press r to generate subquest and recive detailed instructions
                     else:
                         self.character.revokeReputation(50, reason="putting a wrong item into an output stockpile")
 
+    def handleOperatedMachine(self,extraInfo):
+        if "machine operation" in self.character.duties:
+            if extraInfo["machine"].type == "ScrapCompactor":
+                self.character.awardReputation(5, reason="operating a scrap compactor")
+            else:
+                self.character.awardReputation(10, reason="operating a machine")
+
     def pickedUpItem(self,extraInfo):
         if not self.character == src.gamestate.gamestate.mainChar:
             return
@@ -193,6 +198,7 @@ Press r to generate subquest and recive detailed instructions
         self.startWatching(character,self.handleChargedTrapRoom, "charged traproom")
         self.startWatching(character,self.handleDroppedItem, "dropped")
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
+        self.startWatching(character,self.handleOperatedMachine, "operated machine")
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
@@ -509,21 +515,21 @@ Press r to generate subquest and recive detailed instructions
         if not character.container:
             return
 
-        if character.rank == 6 and character.reputation >= 300:
+        if not character.superior and character.rank == 6 and character.reputation >= 300:
             quest = src.quests.questMap["GetPromotion"](5)
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
             return
 
-        if character.rank == 5 and character.reputation >= 500:
+        if not character.superior and character.rank == 5 and character.reputation >= 500:
             quest = src.quests.questMap["GetPromotion"](4)
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
             return
 
-        if character.rank == 4 and character.reputation >= 750:
+        if not character.superior and character.rank == 4 and character.reputation >= 750:
             quest = src.quests.questMap["GetPromotion"](3)
             self.addQuest(quest)
             quest.activate()
@@ -574,7 +580,7 @@ Press r to generate subquest and recive detailed instructions
             self.addQuest(src.quests.questMap["ManageBase"]())
             return
 
-        if self.idleCounter > 15 or (character.rank == 6 and len(character.duties) < 1) or (character.rank == 5 and len(character.duties) < 2) or (character.rank == 4 and len(character.duties) < 3) or (character.rank == 3 and len(character.duties) < 4):
+        if not self.strict and (self.idleCounter > 15 or (character.rank == 6 and len(character.duties) < 1) or (character.rank == 5 and len(character.duties) < 2) or (character.rank == 4 and len(character.duties) < 3) or (character.rank == 3 and len(character.duties) < 4)):
             quest = src.quests.questMap["ChangeJob"]()
             self.addQuest(quest)
             quest.activate()

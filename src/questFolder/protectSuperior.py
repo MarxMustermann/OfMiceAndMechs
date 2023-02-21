@@ -15,6 +15,9 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
         return False
 
     def checkDoRecalc(self,character):
+        if character.superior.dead:
+            self.fail()
+            return
         if not self.lastSuperiorPos == self.getSuperiorsTileCoordinate(character):
             self.clearSubQuests()
 

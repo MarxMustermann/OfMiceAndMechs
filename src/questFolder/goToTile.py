@@ -140,7 +140,6 @@ operate the machine on %s
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
-                    print("go fight within room")
                     return (None,"gg")
 
             if not self.isPathSane(character):

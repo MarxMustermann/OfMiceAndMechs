@@ -124,16 +124,21 @@ This quest ends after you do this."""%(self.targetPosition,)
         if not self.targetPosition:
             return ".12.."
 
+        if self.ignoreEndBlocked and len(self.path) == 1:
+            return
+
         command  = ""
+        movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
+        pos = list(character.getPosition())
         for step in self.path:
-            if step == (1,0):
-                command += "d"
-            if step == (-1,0):
-                command += "a"
-            if step == (0,1):
-                command += "s"
-            if step == (0,-1):
-                command += "w"
+            pos[0] += step[0]
+            pos[1] += step[1]
+            
+            items = character.container.getItemByPosition(tuple(pos))
+            if items and items[0].type == "Bush":
+                command += "J"+movementMap[step]
+
+            command += movementMap[step]
         return command
 
     def triggerCompletionCheck(self, character=None):
@@ -207,8 +212,6 @@ This quest ends after you do this."""%(self.targetPosition,)
         if tuple(pos) == self.targetPosition:
             return True
         
-        print(pos)
-        print(self.targetPosition)
         return False
 
 

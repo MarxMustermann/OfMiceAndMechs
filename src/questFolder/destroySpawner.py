@@ -66,7 +66,7 @@ You may want to plan an escape route."""%(self.targetPosition,)
             return
         if not self.subQuests:
             if not self.spawnedPrepared:
-                quest = src.quests.questMap["PrepareAttack"](targetPosition=self.targetPosition())
+                quest = src.quests.questMap["PrepareAttack"](targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 self.spawnedPrepared = True
                 return

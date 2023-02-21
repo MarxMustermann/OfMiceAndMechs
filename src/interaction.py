@@ -2521,7 +2521,7 @@ press key for advanced drop
                 char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["++",item.render()]})
 
         # open chat partner selection
-        if key in (commandChars.hail,) and 1 == 0:
+        if key in (commandChars.hail,):
             charState["submenue"] = ChatPartnerselection()
 
         if key in ("r",):
@@ -3234,6 +3234,181 @@ class SelectionMenu(SubMenu):
             return True
         else:
             return False
+
+class setNPCDutiesMenu(SubMenu):
+    def __init__(self,npc=None):
+        self.npc = npc
+        self.type = "setNPCDutiesMenu"
+
+    def handleKey(self, key, noRender=False, character = None):
+        if self.subMenu:
+            subMenuDone = self.subMenu.handleKey(key, noRender=noRender, character=character)
+            if not subMenuDone:
+                return False
+            key = "~"
+
+        # exit the submenu
+        if key == "esc":
+            return True
+
+        # set primary duty
+        # set secondary duty
+        # set tertiary duty
+
+class IdleChatNPCMenu(SubMenu):
+    def __init__(self,npc=None):
+        self.npc = npc
+        self.type = "IdleChatNPCMenu"
+        self.subMenu = None
+        self.infoType = None
+        super().__init__()
+
+    def handleKey(self, key, noRender=False, character = None):
+        if self.subMenu:
+            subMenuDone = self.subMenu.handleKey(key, noRender=noRender, character=character)
+            if not subMenuDone:
+                return False
+            key = "~"
+
+        # exit the submenu
+        if key == "esc":
+            return True
+
+        if not self.infoType:
+            if not self.subMenu:
+                options = []
+                options.append(("charInfo","Tell me about yourself."))
+                options.append(("showQuests","What are you doing?"))
+                self.subMenu = SelectionMenu("my frustration is: \n\n", options)
+                self.handleKey("~", noRender=noRender, character=character)
+                return False
+            self.instructionType = self.subMenu.selection
+            self.subMenu = None
+
+        if self.instructionType == "charInfo":
+            submenue = src.interaction.CharacterInfoMenu(char=self.npc)
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender,character=character)
+            self.subMenu = None
+            return True
+        if self.instructionType == "showQuests":
+            submenue = src.interaction.QuestMenu(char=self.npc)
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender,character=character)
+            self.subMenu = None
+            return True
+        return True
+
+class InstructNPCMenu(SubMenu):
+    def __init__(self,npc=None):
+        self.npc = npc
+        self.type = "InstructNPCMenu"
+        self.subMenu = None
+        self.instructionType = None
+        self.dutyType = None
+        self.commandType = None
+        super().__init__()
+
+    def handleKey(self, key, noRender=False, character = None):
+        if self.subMenu:
+            subMenuDone = self.subMenu.handleKey(key, noRender=noRender, character=character)
+            if not subMenuDone:
+                return False
+            key = "~"
+
+        # exit the submenu
+        if key == "esc":
+            return True
+
+        if not self.instructionType:
+            if not self.subMenu:
+                options = []
+                options.append(("command selection","select from a list of commands"))
+                options.append(("createQuest","create and issue quest"))
+                self.subMenu = SelectionMenu("how do you want to give the instruction?", options)
+                self.handleKey("~", noRender=noRender, character=character)
+                return False
+            self.instructionType = self.subMenu.selection
+            self.subMenu = None
+
+        if self.instructionType == "createQuest":
+            submenue = src.interaction.AdvancedQuestMenu()
+            submenue.activeChar = character
+            submenue.character = self.npc
+            submenue.state = "questSelection"
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender)
+        if self.instructionType == "command selection":
+            if not self.commandType:
+                if not self.subMenu:
+                    options = []
+                    options.append(("stop","stop what you are doing"))
+                    options.append(("continue","continue working"))
+                    options.append(("cancel","stop what you are doing"))
+                    options.append(("wait","wait until further command"))
+                    options.append(("goToMyPosition","go to my position"))
+                    options.append(("beUseful","be useful"))
+                    options.append(("beUsefulHere","be useful here"))
+                    options.append(("doDutyHere","do duty here"))
+                    self.subMenu = SelectionMenu("what command do you want to give?", options)
+                    self.handleKey("~", noRender=noRender, character=character)
+                    return False
+                self.commandType = self.subMenu.selection
+                self.subMenu = None
+
+            if self.commandType== "stop":
+                self.npc.runCommandString("",clear=True) 
+                self.npc.macroState["loop"] = []
+                self.npc.macroState["replay"].clear()
+                if "ifCondition" in self.npc.interactionState:
+                    self.npc.interactionState["ifCondition"].clear()
+                    self.npc.interactionState["ifParam1"].clear()
+                    self.npc.interactionState["ifParam2"].clear()
+                for quest in self.npc.quests[:]:
+                    quest.fail()
+                return True
+            if self.commandType== "continue":
+                self.npc.runCommandString("*",clear=True) 
+                return True
+            if self.commandType == "beUseful":
+                quest = src.quests.questMap["BeUsefull"]()
+                quest.autoSolve = True
+                self.subMenu = None
+                self.npc.assignQuest(quest,active=True)
+                return True
+            if self.commandType == "beUsefulHere":
+                quest = src.quests.questMap["BeUsefull"](targetPosition=character.getBigPosition())
+                quest.autoSolve = True
+                self.subMenu = None
+                self.npc.assignQuest(quest,active=True)
+                return True
+            if self.commandType == "goToMyPosition":
+                quest = src.quests.questMap["GoToPosition"](targetPosition=character.getSpacePosition())
+                quest.autoSolve = True
+                self.subMenu = None
+                self.npc.assignQuest(quest,active=True)
+                return True
+            if self.commandType == "doDutyHere":
+                if not self.dutyType:
+                    if not self.subMenu:
+                        options = []
+                        options.append(("resource gathering","resource gathering"))
+                        options.append(("machine operation","machine operation"))
+                        options.append(("trap setting","trap setting"))
+                        self.subMenu = SelectionMenu("What duty should be done?", options)
+                        self.handleKey("~", noRender=noRender, character=character)
+                        return False
+                    self.dutyType = self.subMenu.selection
+                    self.subMenu = None
+
+                if self.dutyType:
+                    self.npc.duties = [self.dutyType]
+                    quest = src.quests.questMap["BeUsefull"](targetPosition=character.getBigPosition(),strict=True)
+                    quest.autoSolve = True
+                    self.subMenu = None
+                    self.npc.assignQuest(quest,active=True)
+                    return True
+        return True
 
 # bad code: since there is no need to wait for some return this submenue should not wrap around the Chat menu
 # bad code: sub menues should be implemented in the base class
@@ -8270,22 +8445,23 @@ press enter"""
             printUrwidToTcod(text,(2,19))
             if subStep == 1:
                 wall = src.items.itemMap["Wall"]()
-                baseCoordinate = (70,22)
+                totalOffsetX = 56+26-offset[0]*2
+                totalOffsetY = 15+13-offset[1]
                 for i in range(0,13):
                     if i == 6:
                         continue
-                    printUrwidToTcod(wall.render(),(70+2*i,22))
-                    printUrwidToTcod(wall.render(),(70,22+i))
-                    printUrwidToTcod(wall.render(),(70+2*i,22+12))
-                    printUrwidToTcod(wall.render(),(70+12*2,22+i))
+                    printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))
+                    printUrwidToTcod(wall.render(),(totalOffsetX,totalOffsetY+i))
+                    printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY+12))
+                    printUrwidToTcod(wall.render(),(totalOffsetX+12*2,totalOffsetY+i))
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
                 room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
                 room.hidden = False
-                printUrwidToTcod(fixRoomRender(room.render()),(70,22))
+                printUrwidToTcod(fixRoomRender(room.render()),(56+26-offset[0]*2,15+13-offset[1]))
             if subStep == 3:
                 offset = src.gamestate.gamestate.mainChar.getPosition() 
-                printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(70+offset[0]*2,22+offset[1]))
+                printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(56+26-offset[0]*2,15+13-offset[1]))
             if subStep == 4:
                 offset = src.gamestate.gamestate.mainChar.getPosition() 
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition() 

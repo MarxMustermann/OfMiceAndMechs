@@ -141,24 +141,16 @@ Return to %s after to complete this quest."""%(tile,)
                         break
 
             if foundDirectPickup:
-                inventorySpace = 10-len(character.inventory)
-                if self.amount:
-                    numItems = 0
-                    for item in reversed(character.inventory):
-                        if not item.type == self.toCollect:
-                            break
-                        numItems += 1
-                    inventorySpace = min(inventorySpace,self.amount-numItems)
                 if foundDirectPickup[1] == (-1,0):
-                    return "Ka"*inventorySpace
+                    return "Ka"
                 if foundDirectPickup[1] == (1,0):
-                    return "Kd"*inventorySpace
+                    return "Kd"
                 if foundDirectPickup[1] == (0,-1):
-                    return "Kw"*inventorySpace
+                    return "Kw"
                 if foundDirectPickup[1] == (0,1):
-                    return "Ks"*inventorySpace
+                    return "Ks"
                 if foundDirectPickup[1] == (0,0):
-                    return "l"*inventorySpace
+                    return "k"
 
             foundNeighbour = None
             for slot in outputSlots:

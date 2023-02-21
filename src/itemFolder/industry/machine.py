@@ -406,7 +406,7 @@ Currently the machine has no charges
                             (self.xPosition + 1, self.yPosition, self.zPosition)
                         )
                     )
-                    > 15
+                    > 0
                 ):
                     targetFull = True
                 for item in self.container.getItemByPosition(

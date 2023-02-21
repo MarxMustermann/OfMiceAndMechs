@@ -4026,6 +4026,40 @@ class MainGame(BasicPhase):
 
     def createProductiondBase(self,pos):
         mainChar = src.characters.Character()
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
         thisFactionId = self.factionCounter
         mainChar.faction = "city #%s"%(thisFactionId,)
         mainChar.registers["HOMEx"] = 7
@@ -4126,6 +4160,40 @@ class MainGame(BasicPhase):
         raidBaseInfo = {"type":"raidBase"}
         
         mainChar = src.characters.Character()
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
         thisFactionId = self.factionCounter
         mainChar.faction = "city #%s"%(thisFactionId,)
         mainChar.registers["HOMEx"] = 7
@@ -4463,6 +4531,7 @@ class MainGame(BasicPhase):
         orderArtwork.assignQuest({"character":mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
         
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        epochArtwork.lastNumSpawners = 0
         siegedBaseInfo["epochArtwork"] = epochArtwork
         mainRoom.addItem(epochArtwork,(6,6,0))
 

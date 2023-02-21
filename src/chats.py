@@ -1897,7 +1897,7 @@ class ChatMenu(Chat):
 
     # bad code: showing the messages should be handled in __init__ or a setup method
     # bad code: the dialog should be generated within the characters
-    def handleKey(self, key, noRender=False):
+    def handleKey(self, key, noRender=False,character=None):
         """
         show the dialog options and wrap around the corresponding submenus 
 
@@ -1958,18 +1958,6 @@ class ChatMenu(Chat):
         # display greetings
         if self.state is None:
             self.state = "mainOptions"
-            self.persistentText += (
-                self.partner.name
-                + ': "Everything in Order, '
-                + src.gamestate.gamestate.mainChar.name
-                + '?"\n'
-            )
-            self.persistentText += (
-                src.gamestate.gamestate.mainChar.name
-                + ': "All sorted, '
-                + self.partner.name
-                + '!"\n'
-            )
 
         # show selection of sub chats
         if self.state == "mainOptions":
@@ -1988,6 +1976,13 @@ class ChatMenu(Chat):
                     ("moveSouth", "move south"),
                     ("moveEast", "move east"),
                 ]
+
+                options = []
+                if self.partner in character.subordinates:
+                    options.append(("giveInstruction", "give instruction"))
+                    options.append(("talkWork", "talk about work"))
+                options.append(("chat", "chat idely"))
+
                 """
                 for option in self.partner.getChatOptions(src.gamestate.gamestate.mainChar):
                     if not isinstance(option,dict):
@@ -2001,10 +1996,10 @@ class ChatMenu(Chat):
                 if not self.partner.silent:
                     options.append(("showQuests","what are you dooing?"))
                 """
-                options.append(("exit", "let us proceed, " + self.partner.name))
+                #options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                self.setOptions("answer:", options)
+                self.setOptions("You are about to start a conversation with %s.\n\nWhat kind of conversation do you want to start?\n"%(self.partner.name,), options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():
@@ -2022,6 +2017,27 @@ class ChatMenu(Chat):
                             self.subMenu.setUp(self.selection["params"])
 
                     self.subMenu.handleKey(key, noRender=noRender)
+                elif self.selection == "giveInstruction":
+                    submenue = src.interaction.InstructNPCMenu(npc=self.partner)
+                    character.macroState["submenue"] = submenue
+                    submenue.handleKey("~", noRender=noRender,character=character)
+                    return True
+                elif self.selection == "talkWork":
+                    submenue = src.interaction.TextMenu(
+                        text="Work is as hard as the day is long"
+                    )
+                    character.macroState["submenue"] = submenue
+                    submenue.handleKey(key, noRender=noRender)
+                    return True
+                elif self.selection == "chat":
+                    submenue = src.interaction.IdleChatNPCMenu(npc=self.partner)
+                    character.macroState["submenue"] = submenue
+                    submenue.handleKey("~", noRender=noRender,character=character)
+                    return True
+                    submenue = src.interaction.CharacterInfoMenu(char=self.partner)
+                    character.macroState["submenue"] = submenue
+                    submenue.handleKey("~", noRender=noRender)
+                    return True
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner
                     submenue = src.interaction.QuestMenu(char=self.partner)
@@ -2125,6 +2141,7 @@ class ChatMenu(Chat):
                     self.state = "done"
                 self.selection = None
                 self.lockOptions = True
+                return True
             else:
                 return False
 

@@ -4,6 +4,7 @@ terrains and terrain related code belongs here
 
 # import basic libs
 import json
+import copy
 import array
 import random
 import tcod
@@ -122,6 +123,8 @@ class Terrain(src.saveing.Saveable):
         self.yPosition = None
         self.zPosition = None
 
+        self.lastRender = None
+
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
 
@@ -132,6 +135,14 @@ class Terrain(src.saveing.Saveable):
         result = []
         for room in self.rooms:
             if not room.tag == tag:
+                continue
+            result.append(room)
+        return result
+
+    def getRoomsByType(self,roomType):
+        result = []
+        for room in self.rooms:
+            if not isinstance(room,roomType):
                 continue
             result.append(room)
         return result
@@ -199,6 +210,7 @@ class Terrain(src.saveing.Saveable):
 
     def advance(self):
         self.animations = []
+        self.lastRender = None
 
         self.advanceCharacters()
         self.advanceRoom()
@@ -497,7 +509,10 @@ class Terrain(src.saveing.Saveable):
 
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
-                self.charactersByTile[oldBigPos].remove(char)
+                try:
+                    self.charactersByTile[oldBigPos].remove(char)
+                except:
+                    pass
                 bigPos = char.getBigPosition(offset=(1,0,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
@@ -981,7 +996,15 @@ class Terrain(src.saveing.Saveable):
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
         if path:
+            pos = list(character.getPosition())
             for offset in path:
+                pos[0] += offset[0]
+                pos[1] += offset[1]
+
+                items = self.getItemByPosition(tuple(pos))
+                if items and items[0].type == "Bush":
+                    command += "J"+movementMap[offset]
+
                 command += movementMap[offset]
         return (command,path)
 
@@ -997,8 +1020,6 @@ class Terrain(src.saveing.Saveable):
             if tuple(pos) == self.targetPosition:
                 return True
 
-        print(pos)
-        print(self.targetPosition)
         return False
 
     def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
@@ -1051,9 +1072,6 @@ class Terrain(src.saveing.Saveable):
         tcod.path.AStar(cost,diagonal = 0)
         pathfinder = tcod.path.AStar(cost,diagonal = 0)
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
-
-        if character == src.gamestate.gamestate.mainChar:
-            print(cost)
 
         moves = []
         lastStep = startPos
@@ -1412,206 +1430,210 @@ class Terrain(src.saveing.Saveable):
             the rendered terrain
         """
 
-        # hide/show map
-        global mapHidden
-        if src.gamestate.gamestate.mainChar.room is None:
-            mapHidden = False
-        else:
-            if src.gamestate.gamestate.mainChar.room.open:
+        if not self.lastRender:
+            # hide/show map
+            global mapHidden
+            if src.gamestate.gamestate.mainChar.room is None:
                 mapHidden = False
             else:
-                mapHidden = True
-        # mapHidden = False
-        self.hidden = mapHidden
+                if src.gamestate.gamestate.mainChar.room.open:
+                    mapHidden = False
+                else:
+                    mapHidden = True
+            # mapHidden = False
+            self.hidden = mapHidden
 
-        # paint floor
-        chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
-        for x in range(0, 225):
-            if (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
-                continue
+            # paint floor
+            chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
+            for x in range(0, 225):
+                if (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
+                    continue
 
-            for y in range(0, 16):
-                if not ((y < coordinateOffset[0] or y > coordinateOffset[0]+size[0])):
-                    chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
-                if not ((y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0])):
-                    chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
-
-        for y in range(0, 225):
-            if (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
-                continue
-
-            for x in range(0, 16):
-                if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
-                    try:
+                for y in range(0, 16):
+                    if not ((y < coordinateOffset[0] or y > coordinateOffset[0]+size[0])):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
-                    except:
-                        raise Exception("%s %s"%(coordinateOffset[0],coordinateOffset[1]))
-                if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
-                    chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
+                    if not ((y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0])):
+                        chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
 
-        # show/hide rooms
-        for room in self.rooms:
-            if src.gamestate.gamestate.mainChar.room == room:
-                room.hidden = False
-            else:
-                if not mapHidden and room.open and room.hidden:
+            for y in range(0, 225):
+                if (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
+                    continue
+
+                for x in range(0, 16):
+                    if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
+                        try:
+                            chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                        except:
+                            raise Exception("%s %s"%(coordinateOffset[0],coordinateOffset[1]))
+                    if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
+                        chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
+
+            # show/hide rooms
+            for room in self.rooms:
+                if src.gamestate.gamestate.mainChar.room == room:
                     room.hidden = False
                 else:
-                    room.hidden = True
+                    if not mapHidden and room.open and room.hidden:
+                        room.hidden = False
+                    else:
+                        room.hidden = True
 
-        for bigX in range(0, 14):
-            if bigX*15 < coordinateOffset[1]-15 or bigX*15 > coordinateOffset[1]+size[1]+15:
-                continue
-
-            for bigY in range(0, 14):
-                if bigY*15 < coordinateOffset[0]-15 or bigY*15 > coordinateOffset[0]+size[0]+15:
+            for bigX in range(0, 14):
+                if bigX*15 < coordinateOffset[1]-15 or bigX*15 > coordinateOffset[1]+size[1]+15:
                     continue
 
-                for x in range(0, 15):
-                    for y in range(0, 15):
-
-                        if x == 7 or y == 7:
-                            continue
-
-                        if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
-                                bigY*15 < coordinateOffset[0] or bigY*15 > coordinateOffset[0]+size[0]):
-                            chars[bigY * 15 + 0 - coordinateOffset[0]][
-                                bigX * 15 + x - coordinateOffset[1]
-                            ] = src.canvas.displayChars.forceField
-
-                        if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
-                                bigY*15+14 < coordinateOffset[0] or bigY*15+14 > coordinateOffset[0]+size[0]):
-                            chars[bigY * 15 + 14 - coordinateOffset[0]][
-                                bigX * 15 + x - coordinateOffset[1]
-                            ] = src.canvas.displayChars.forceField
-
-                        if not (bigX*15 < coordinateOffset[1] or bigX*15 > coordinateOffset[1]+size[1] or
-                                bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
-                            chars[bigY * 15 + y - coordinateOffset[0]][
-                                bigX * 15 + 0 - coordinateOffset[1]
-                            ] = src.canvas.displayChars.forceField
-
-                        if not (bigX*15+14 < coordinateOffset[1] or bigX*15+14 > coordinateOffset[1]+size[1] or
-                                bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
-                            chars[bigY * 15 + y - coordinateOffset[0]][
-                                bigX * 15 + 14 - coordinateOffset[1]
-                            ] = src.canvas.displayChars.forceField
-
-        # calculate room visibility
-        if not mapHidden:
-            # get players position in tiles (15*15 segments)
-            pos = None
-            if src.gamestate.gamestate.mainChar.room is None:
-                pos = (
-                    src.gamestate.gamestate.mainChar.xPosition // 15,
-                    src.gamestate.gamestate.mainChar.yPosition // 15,
-                )
-            else:
-                pos = (
-                    src.gamestate.gamestate.mainChar.room.xPosition,
-                    src.gamestate.gamestate.mainChar.yPosition,
-                )
-
-            # get rooms near the player
-            roomCandidates = self.getNearbyRooms(pos)
-
-            # show rooms near the player
-            for room in roomCandidates:
-                if room.open:
-                    room.hidden = False
-
-        # draw items on map
-        if not mapHidden:
-            for entry in self.itemsByCoordinate.values():
-                if not entry:
-                    continue
-                item = entry[0]
-                if not item.xPosition or not item.yPosition:
-                    continue
-
-                if (item.xPosition < coordinateOffset[1] or item.xPosition > coordinateOffset[1]+size[1] or
-                    item.yPosition < coordinateOffset[0] or item.yPosition > coordinateOffset[0]+size[0]):
-                   continue
-
-                if not (item.yPosition and item.xPosition):
-                    continue
-                if not (item.zPosition == src.gamestate.gamestate.mainChar.zPosition):
-                    continue
-
-                try:
-                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.render()
-                except:
-                    pass
-
-        # render each room
-        for room in self.rooms:
-
-            # skip hidden rooms
-            # if mapHidden and room.hidden:
-            #    continue
-            if src.gamestate.gamestate.mainChar not in room.characters:
-                room.hidden = True
-            room.hidden = False
-
-            # get the render for the room
-            renderedRoom = room.render()
-
-            # pace rendered room on rendered terrain
-            xOffset = room.xPosition * 15 + room.offsetX
-            yOffset = room.yPosition * 15 + room.offsetY
-            lineCounter = 0
-            for line in renderedRoom:
-                rowCounter = 0
-                for char in line:
-                    if (rowCounter + xOffset < coordinateOffset[1] or rowCounter + xOffset > coordinateOffset[1]+size[1] or
-                            lineCounter + yOffset < coordinateOffset[0] or lineCounter + yOffset > coordinateOffset[0]+size[0]):
-                        rowCounter += 1
+                for bigY in range(0, 14):
+                    if bigY*15 < coordinateOffset[0]-15 or bigY*15 > coordinateOffset[0]+size[0]+15:
                         continue
-                    chars[lineCounter + yOffset - coordinateOffset[0]][rowCounter + xOffset-coordinateOffset[1]] = char
-                    rowCounter += 1
-                lineCounter += 1
 
-        # add overlays
-        if not mapHidden:
-            # src.overlays.QuestMarkerOverlay().apply(chars,src.gamestate.gamestate.mainChar,src.canvas.displayChars)
-            src.overlays.NPCsOverlay().apply(chars, self,size=size,coordinateOffset=coordinateOffset)
-            src.overlays.MainCharOverlay().apply(
-                chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
-            )
+                    for x in range(0, 15):
+                        for y in range(0, 15):
 
-        for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
-            for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
-                pos = marker[0]
-                pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
-                try:
-                    display = chars[pos[1]][pos[0]]
-                except:
-                    continue
+                            if x == 7 or y == 7:
+                                continue
 
-                actionMeta = None
-                if isinstance(display,src.interaction.ActionMeta):
-                    actionMeta = display
-                    display = display.content
+                            if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
+                                    bigY*15 < coordinateOffset[0] or bigY*15 > coordinateOffset[0]+size[0]):
+                                chars[bigY * 15 + 0 - coordinateOffset[0]][
+                                    bigX * 15 + x - coordinateOffset[1]
+                                ] = src.canvas.displayChars.forceField
 
-                if isinstance(display,int):
-                    display = src.canvas.displayChars.indexedMapping[display]
-                if isinstance(display,str):
-                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+                            if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
+                                    bigY*15+14 < coordinateOffset[0] or bigY*15+14 > coordinateOffset[0]+size[0]):
+                                chars[bigY * 15 + 14 - coordinateOffset[0]][
+                                    bigX * 15 + x - coordinateOffset[1]
+                                ] = src.canvas.displayChars.forceField
 
-                if isinstance(display[0],tuple):
-                    continue
+                            if not (bigX*15 < coordinateOffset[1] or bigX*15 > coordinateOffset[1]+size[1] or
+                                    bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
+                                chars[bigY * 15 + y - coordinateOffset[0]][
+                                    bigX * 15 + 0 - coordinateOffset[1]
+                                ] = src.canvas.displayChars.forceField
 
-                if hasattr(display[0],"fg"):
-                    display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                            if not (bigX*15+14 < coordinateOffset[1] or bigX*15+14 > coordinateOffset[1]+size[1] or
+                                    bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
+                                chars[bigY * 15 + y - coordinateOffset[0]][
+                                    bigX * 15 + 14 - coordinateOffset[1]
+                                ] = src.canvas.displayChars.forceField
+
+            # calculate room visibility
+            if not mapHidden:
+                # get players position in tiles (15*15 segments)
+                pos = None
+                if src.gamestate.gamestate.mainChar.room is None:
+                    pos = (
+                        src.gamestate.gamestate.mainChar.xPosition // 15,
+                        src.gamestate.gamestate.mainChar.yPosition // 15,
+                    )
                 else:
-                    display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                    pos = (
+                        src.gamestate.gamestate.mainChar.room.xPosition,
+                        src.gamestate.gamestate.mainChar.yPosition,
+                    )
 
-                if actionMeta:
-                    actionMeta.content = display
-                    display = actionMeta
+                # get rooms near the player
+                roomCandidates = self.getNearbyRooms(pos)
 
-                chars[pos[1]][pos[0]] = display
-            pass
+                # show rooms near the player
+                for room in roomCandidates:
+                    if room.open:
+                        room.hidden = False
+
+            # draw items on map
+            if not mapHidden:
+                for entry in self.itemsByCoordinate.values():
+                    if not entry:
+                        continue
+                    item = entry[0]
+                    if not item.xPosition or not item.yPosition:
+                        continue
+
+                    if (item.xPosition < coordinateOffset[1] or item.xPosition > coordinateOffset[1]+size[1] or
+                        item.yPosition < coordinateOffset[0] or item.yPosition > coordinateOffset[0]+size[0]):
+                       continue
+
+                    if not (item.yPosition and item.xPosition):
+                        continue
+                    if not (item.zPosition == src.gamestate.gamestate.mainChar.zPosition):
+                        continue
+
+                    try:
+                        chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.render()
+                    except:
+                        pass
+
+            # render each room
+            for room in self.rooms:
+
+                # skip hidden rooms
+                # if mapHidden and room.hidden:
+                #    continue
+                if src.gamestate.gamestate.mainChar not in room.characters:
+                    room.hidden = True
+                room.hidden = False
+
+                # get the render for the room
+                renderedRoom = room.render()
+
+                # pace rendered room on rendered terrain
+                xOffset = room.xPosition * 15 + room.offsetX
+                yOffset = room.yPosition * 15 + room.offsetY
+                lineCounter = 0
+                for line in renderedRoom:
+                    rowCounter = 0
+                    for char in line:
+                        if (rowCounter + xOffset < coordinateOffset[1] or rowCounter + xOffset > coordinateOffset[1]+size[1] or
+                                lineCounter + yOffset < coordinateOffset[0] or lineCounter + yOffset > coordinateOffset[0]+size[0]):
+                            rowCounter += 1
+                            continue
+                        chars[lineCounter + yOffset - coordinateOffset[0]][rowCounter + xOffset-coordinateOffset[1]] = char
+                        rowCounter += 1
+                    lineCounter += 1
+
+            # add overlays
+            if not mapHidden:
+                # src.overlays.QuestMarkerOverlay().apply(chars,src.gamestate.gamestate.mainChar,src.canvas.displayChars)
+                src.overlays.NPCsOverlay().apply(chars, self,size=size,coordinateOffset=coordinateOffset)
+                src.overlays.MainCharOverlay().apply(
+                    chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
+                )
+
+            for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+                for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
+                    pos = marker[0]
+                    pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+                    try:
+                        display = chars[pos[1]][pos[0]]
+                    except:
+                        continue
+
+                    actionMeta = None
+                    if isinstance(display,src.interaction.ActionMeta):
+                        actionMeta = display
+                        display = display.content
+
+                    if isinstance(display,int):
+                        display = src.canvas.displayChars.indexedMapping[display]
+                    if isinstance(display,str):
+                        display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                    if isinstance(display[0],tuple):
+                        continue
+
+                    if hasattr(display[0],"fg"):
+                        display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                    else:
+                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                    if actionMeta:
+                        actionMeta.content = display
+                        display = actionMeta
+
+                    chars[pos[1]][pos[0]] = display
+                pass
+            self.lastRender = copy.deepcopy(chars)
+        else:
+            chars = copy.deepcopy(self.lastRender)
 
         usedAnimationSlots = set()
         for animation in self.animations[:]:
@@ -1790,6 +1812,14 @@ class Terrain(src.saveing.Saveable):
 
                 chars[pos[1]][pos[0]] = display
             pass
+
+        for subordinate in src.gamestate.gamestate.mainChar.subordinates:
+            if not subordinate.getTerrain() == self:
+                continue
+            displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@s")
+            pos = subordinate.getBigPosition()
+            chars[pos[1]][pos[0]] = displayChar
+
 
         displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
         if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):

@@ -397,7 +397,26 @@ Prepare your base to brace the impact before you destroy the spawner.
             epochQuest.addQuest(quest)
             return
 
-        terrain = self.getTerrain()
+        print(len(terrain.rooms))
+        if len(terrain.rooms) < 6:
+            text += """
+Extend the base
+
+Extand the base to have at least 6 rooms
+
+"""
+
+            character.addMessage(text)
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+
+            quest = src.quests.questMap["ExtendBase"]()
+            quest.active = True
+            quest.assignToCharacter(character)
+
+            epochQuest.addQuest(quest)
+            return
+
 
         foundEnemy = None
         for otherChar in terrain.characters:
@@ -432,7 +451,7 @@ Kill all remaining enemies to end the siege.
 
         foundToChargeRoom = False
         for room in terrain.getRoomsByType(src.rooms.TrapRoom):
-            if room.electricalCharges < room.maxElectricalCharges:
+            if room.electricalCharges < room.maxElectricalCharges-30:
                 foundToChargeRoom = True
 
         if foundToChargeRoom:

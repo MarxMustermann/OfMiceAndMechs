@@ -41,27 +41,27 @@ The room has to be a rectangle.
 
         wallLeft = False
         for offset in range(1, 15):
-            pos = (self.xPosition - offset, self.yPosition)
+            pos = (self.xPosition - offset, self.yPosition,0)
             for item in self.container.getItemByPosition(pos):
-                if isinstance(item, Wall) or isinstance(item, Door):
+                if item.type in ("Wall","Door"):
                     wallLeft = item
                     break
             if wallLeft:
                 break
         wallRight = False
         for offset in range(1, 15):
-            pos = (self.xPosition + offset, self.yPosition)
+            pos = (self.xPosition + offset, self.yPosition,0)
             for item in self.container.getItemByPosition(pos):
-                if isinstance(item, Wall) or isinstance(item, Door):
+                if item.type in ("Wall","Door"):
                     wallRight = item
                     break
             if wallRight:
                 break
         wallTop = False
         for offset in range(1, 15):
-            pos = (self.xPosition, self.yPosition - offset)
+            pos = (self.xPosition, self.yPosition - offset,0)
             for item in self.container.getItemByPosition(pos):
-                if isinstance(item, Wall) or isinstance(item, Door):
+                if item.type in ("Wall","Door"):
                     wallTop = item
                     break
 
@@ -69,9 +69,9 @@ The room has to be a rectangle.
                 break
         wallBottom = False
         for offset in range(1, 15):
-            pos = (self.xPosition, self.yPosition + offset)
+            pos = (self.xPosition, self.yPosition + offset,0)
             for item in self.container.getItemByPosition(pos):
-                if isinstance(item, Wall) or isinstance(item, Door):
+                if item.type in ("Wall","Door"):
                     wallBottom = item
                     break
             if wallBottom:
@@ -96,83 +96,64 @@ The room has to be a rectangle.
         wallMissing = False
         items = []
         specialItems = []
+        doorPos = []
         for x in range(-roomLeft, roomRight + 1):
-            pos = (self.xPosition + x, self.yPosition - roomTop)
+            pos = (self.xPosition + x, self.yPosition - roomTop,0)
             wallFound = None
-            if pos in self.container.itemByCoordinates:
-                for item in self.container.itemByCoordinates[pos]:
-                    if (
-                        isinstance(item, Wall)
-                        or isinstance(item, Door)
-                        or isinstance(item, Chute)
-                    ):
-                        wallFound = item
-                        if item not in items:
-                            items.append(item)
-                        if isinstance(item, Door) or isinstance(item, Chute):
-                            if item not in specialItems:
-                                specialItems.append(item)
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if item.type in ("Wall","Door"):
+                    wallFound = item
+                    if item not in items:
+                        items.append(item)
+                    if item.type in ("Door",):
+                        if item not in specialItems:
+                            specialItems.append(item)
+                    break
             if not wallFound:
                 wallMissing = True
                 break
         for y in range(-roomTop, roomBottom + 1):
-            pos = (self.xPosition - roomLeft, self.yPosition + y)
+            pos = (self.xPosition - roomLeft, self.yPosition + y,0)
             wallFound = None
-            if pos in self.container.itemByCoordinates:
-                for item in self.container.itemByCoordinates[pos]:
-                    if (
-                        isinstance(item, Wall)
-                        or isinstance(item, Door)
-                        or isinstance(item, Chute)
-                    ):
-                        wallFound = item
-                        if item not in items:
-                            items.append(item)
-                        if isinstance(item, Door) or isinstance(item, Chute):
-                            if item not in specialItems:
-                                specialItems.append(item)
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if item.type in ("Wall","Door"):
+                    wallFound = item
+                    if item not in items:
+                        items.append(item)
+                    if item.type in ("Door",):
+                        if item not in specialItems:
+                            specialItems.append(item)
+                    break
             if not wallFound:
                 wallMissing = True
                 break
         for y in range(-roomTop, roomBottom + 1):
-            pos = (self.xPosition + roomRight, self.yPosition + y)
+            pos = (self.xPosition + roomRight, self.yPosition + y,0)
             wallFound = None
-            if pos in self.container.itemByCoordinates:
-                for item in self.container.itemByCoordinates[pos]:
-                    if (
-                        isinstance(item, Wall)
-                        or isinstance(item, Door)
-                        or isinstance(item, Chute)
-                    ):
-                        wallFound = item
-                        if item not in items:
-                            items.append(item)
-                        if isinstance(item, Door) or isinstance(item, Chute):
-                            if item not in specialItems:
-                                specialItems.append(item)
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if item.type in ("Wall","Door"):
+                    wallFound = item
+                    if item not in items:
+                        items.append(item)
+                    if item.type in ("Door",):
+                        if item not in specialItems:
+                            specialItems.append(item)
+                    break
             if not wallFound:
                 wallMissing = True
                 break
         for x in range(-roomLeft, roomRight + 1):
-            pos = (self.xPosition + x, self.yPosition + roomBottom)
+            pos = (self.xPosition + x, self.yPosition + roomBottom,0)
             wallFound = None
-            if pos in self.container.itemByCoordinates:
-                for item in self.container.itemByCoordinates[pos]:
-                    if (
-                        isinstance(item, Wall)
-                        or isinstance(item, Door)
-                        or isinstance(item, Chute)
-                    ):
-                        wallFound = item
-                        if item not in items:
-                            items.append(item)
-                        if isinstance(item, Door) or isinstance(item, Chute):
-                            if item not in specialItems:
-                                specialItems.append(item)
-                        break
+            for item in self.container.getItemByPosition(pos):
+                if item.type in ("Wall","Door"):
+                    wallFound = item
+                    if item not in items:
+                        items.append(item)
+                    if item.type in ("Door",):
+                        if item not in specialItems:
+                            specialItems.append(item)
+                    break
             if not wallFound:
                 wallMissing = True
                 break
@@ -199,7 +180,7 @@ The room has to be a rectangle.
                 return
 
         oldTerrain = self.container
-        for item in items:
+        for item in specialItems:
             if item == self:
                 continue
 
@@ -208,13 +189,16 @@ The room has to be a rectangle.
             item.container.removeItem(item)
             item.xPosition = roomLeft + oldX - self.xPosition
             item.yPosition = roomTop + oldY - self.yPosition
+            doorPos.append((roomLeft + oldX - self.xPosition,roomTop + oldY - self.yPosition))
+
         room = src.rooms.EmptyRoom(
             self.xPosition // 15,
             self.yPosition // 15,
             self.xPosition % 15 - roomLeft,
             self.yPosition % 15 - roomTop,
         )
-        room.reconfigure(roomLeft + roomRight + 1, roomTop + roomBottom + 1, items)
+        room.reconfigure(roomLeft + roomRight + 1, roomTop + roomBottom + 1, items,doorPos=doorPos)
+        room.timeIndex = src.gamestate.gamestate.tick
 
         xOffset = character.xPosition - self.xPosition
         yOffset = character.yPosition - self.yPosition
@@ -229,6 +213,5 @@ The room has to be a rectangle.
 
         self.xPosition = roomLeft
         self.yPosition = roomTop
-        room.addItems([self])
 
 src.items.addType(RoomBuilder)

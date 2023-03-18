@@ -27,6 +27,8 @@ A painter. it can be used to draw markers on the floor
         self.paintType = "Scrap"
         self.paintExtraInfo = {}
 
+        self.offset = (0,0,0)
+
         self.character = None
         self.submenue = None
     
@@ -57,7 +59,7 @@ A painter. it can be used to draw markers on the floor
 
     def configure(self, character):
        self.submenue = src.interaction.OneKeystrokeMenu(
-               "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info"
+               "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info\nd: set direction"
                                        )
        character.macroState["submenue"] = self.submenue
        character.macroState["submenue"].followUp = self.configure2
@@ -67,6 +69,15 @@ A painter. it can be used to draw markers on the floor
         if self.submenue.keyPressed == "c":
             self.paintExtraInfo = {}
             return
+
+        if self.submenue.keyPressed == "d":
+           self.submenue = src.interaction.InputMenu(
+               "type in the direction to set\n\n"+
+               "(w,a,s,d)"
+               )
+           self.character.macroState["submenue"] = self.submenue
+           self.character.macroState["submenue"].followUp = self.setDirection
+           return
 
         if self.submenue.keyPressed == "m":
            self.submenue = src.interaction.InputMenu(
@@ -120,6 +131,20 @@ A painter. it can be used to draw markers on the floor
             value = json.loads(value)
         self.paintExtraInfo[extraInfo["name"]] = value
 
+    def setDirection(self):
+        mode = self.submenue.text
+        offset = (0,0,0)
+        if mode == "w":
+            offset = (0,-1,0)
+        if mode == "s":
+            offset = (0,1,0)
+        if mode == "a":
+            offset = (-1,0,0)
+        if mode == "d":
+            offset = (1,0,0)
+        self.offset = offset
+        self.character.addMessage("you set the offset to %s"%(self.offset,))
+
     def setMode(self):
         mode = self.submenue.text
         if mode == "i":
@@ -138,7 +163,7 @@ A painter. it can be used to draw markers on the floor
         self.character.addMessage("you set the mode to %s"%(self.paintMode,))
 
     def setType(self):
-        if self.paintType == "None":
+        if self.submenue.text in ("","None"):
             self.paintType = None
         else:
             self.paintType = self.submenue.text
@@ -155,30 +180,30 @@ A painter. it can be used to draw markers on the floor
         super().apply(character)
         if isinstance(character.container,src.rooms.Room):
             if self.paintMode == "inputSlot":
-                character.container.addInputSlot(character.getPosition(),self.paintType,self.paintExtraInfo)
+                character.container.addInputSlot(character.getPosition(offset=self.offset),self.paintType,self.paintExtraInfo)
             if self.paintMode == "outputSlot":
-                character.container.addOutputSlot(character.getPosition(),self.paintType,self.paintExtraInfo)
+                character.container.addOutputSlot(character.getPosition(offset=self.offset),self.paintType,self.paintExtraInfo)
             if self.paintMode == "storageSlot":
-                character.container.addStorageSlot(character.getPosition(),self.paintType,self.paintExtraInfo)
+                character.container.addStorageSlot(character.getPosition(offset=self.offset),self.paintType,self.paintExtraInfo)
             if self.paintMode == "walkingSpace":
-                character.container.walkingSpace.add(character.getPosition())
+                character.container.walkingSpace.add(character.getPosition(offset=self.offset))
             if self.paintMode == "buildSite":
-                character.container.addBuildSite(character.getPosition(),self.paintType, self.paintExtraInfo)
+                character.container.addBuildSite(character.getPosition(offset=self.offset),self.paintType, self.paintExtraInfo)
             if self.paintMode == "delete":
-                if character.getPosition() in character.container.walkingSpace:
-                    character.container.walkingSpace.remove(character.getPosition())
+                if character.getPosition(offset=self.offset) in character.container.walkingSpace:
+                    character.container.walkingSpace.remove(character.getPosition(offset=self.offset))
                 for inputSlot in character.container.inputSlots[:]:
-                    if inputSlot[0] == character.getPosition():
+                    if inputSlot[0] == character.getPosition(offset=self.offset):
                         character.container.inputSlots.remove(inputSlot)
                 for outputSlot in character.container.outputSlots[:]:
-                    if outputSlot[0] == character.getPosition():
+                    if outputSlot[0] == character.getPosition(offset=self.offset):
                         character.container.outputSlots.remove(outputSlot)
-                for storageSlot in character.container.outputSlots[:]:
-                    if storageSlot[0] == character.getPosition():
+                for storageSlot in character.container.storageSlots[:]:
+                    if storageSlot[0] == character.getPosition(offset=self.offset):
                         character.container.storageSlots.remove(storageSlot)
 
         character.addMessage("you paint a marking on the floor")
-        character.addMessage(str(self.paintExtraInfo))
+        character.addMessage((self.paintMode,self.paintType,str(self.paintExtraInfo)))
 
     def getLongInfo(self):
         """
@@ -194,8 +219,9 @@ A painter. it can be used to draw markers on the floor
 mode: %s
 type: %s
 extraInfo: %s
+offset: %s
 """ % (
-            self.paintMode,self.paintType,self.paintExtraInfo,
+            self.paintMode,self.paintType,self.paintExtraInfo,self.offset
         )
 
         return text

@@ -31,6 +31,18 @@ operate the machine on %s
 """%(self.targetPosition,)
 
     def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        if not character.container.isRoom:
+            self.fail()
+            return True
+
+        items = character.container.getItemByPosition(self.targetPosition)
+        if not items or not items[0].type in ("Machine","ScrapCompactor",):
+            self.fail()
+            return True
+
         return False
 
     def generateSubquests(self,character=None):
@@ -57,6 +69,7 @@ operate the machine on %s
         super().getSolvingCommandString(character,dryRun=dryRun)
 
     def solver(self, character):
+        self.triggerCompletionCheck(character)
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:

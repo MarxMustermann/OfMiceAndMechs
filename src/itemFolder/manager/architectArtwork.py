@@ -1307,10 +1307,7 @@ class ArchitectArtwork(src.items.Item):
             yPos = random.randint(minY, maxY)
             pos = (xPos,yPos,0)
 
-            if ((xPos == 7 and yPos == 1) or 
-                (xPos == 7 and yPos == 13) or
-                (xPos == 1 and yPos == 7) or
-                (xPos == 13 and yPos == 7)):
+            if (leavePath and (xPos%15 == 7 or yPos%15 == 7)):
                 continue
 
             if not random.randint(1, 15) == 10:

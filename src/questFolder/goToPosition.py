@@ -36,6 +36,9 @@ So it is enough to go next to the target position to end this quest.
 go to position %s in the same room you are in.
 
 This quest ends after you do this."""%(self.targetPosition,) 
+        text += """
+
+%s"""%(self.ignoreEndBlocked,)
         return text
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -163,6 +166,8 @@ This quest ends after you do this."""%(self.targetPosition,)
             self.path = character.container.getPathCommandTile(character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
         else:
             self.path = character.container.getPathCommandTile(character.getTilePosition(),character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
+        if not self.path:
+            self.fail()
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -173,6 +178,8 @@ This quest ends after you do this."""%(self.targetPosition,)
         return super().setParameters(parameters)
 
     def solver(self, character):
+        self.triggerCompletionCheck(character)
+
         if not self.path:
             self.generatePath(character)
             return

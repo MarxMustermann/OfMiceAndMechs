@@ -83,6 +83,7 @@ class Terrain(src.saveing.Saveable):
         self.characterByFieldMap = {}
         self.minimapOverride = {(7,7,0):"CC"}
         self.animations = []
+        self.pathfinderCache = {}
 
         self.moistureMap = {}
         moisture = self.biomeInfo["moisture"]
@@ -991,7 +992,8 @@ class Terrain(src.saveing.Saveable):
         return paths.get(targetPos)
 
     def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
-        path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character)
+        path = self.getPathTile_test(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character)
+        #path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character)
 
         command = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -1022,7 +1024,8 @@ class Terrain(src.saveing.Saveable):
 
         return False
 
-    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+    def getPathTile_test(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+        """
         path = self.pathCache.get((tilePos,startPos,targetPos))
         if path:
             pos = list(startPos)
@@ -1036,6 +1039,75 @@ class Terrain(src.saveing.Saveable):
                     break
             if path:
                 return path[:]
+        """
+
+        pathfinder = self.pathfinderCache.get(tilePos)
+        if not pathfinder:
+            tileMap = []
+            for x in range(0,15):
+                tileMap.append([])
+                for y in range(0,15):
+                    if x in (0,14,) or y in (0,14):
+                        tileMap[x].append(0)
+                    else:
+                        tileMap[x].append(5)
+            tileMap[0][7] = 1
+            tileMap[7][0] = 1
+            tileMap[14][7] = 1
+            tileMap[7][14] = 1
+
+            for y in range(1,14):
+                for x in range(1,14):
+                    items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
+                    if items:
+                        tileMap[x][y] = 20
+
+            for y in range(1,14):
+                for x in range(1,14):
+                     if not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
+                        tileMap[x][y] = 0
+
+            for y in range(1,14):
+                for x in range(1,14):
+                    items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
+                    if items:
+                        if items[0].type == "Bush":
+                            tileMap[x][y] = 127
+
+            cost = np.array(tileMap, dtype=np.int8)
+            tcod.path.AStar(cost,diagonal = 0)
+            pathfinder = tcod.path.AStar(cost,diagonal = 0)
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+        self.pathfinderCache[tilePos] = pathfinder
+
+        moves = []
+        lastStep = startPos
+        for step in path:
+            moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
+            lastStep = step
+
+        """
+        self.pathCache[(tilePos,startPos,targetPos)] = moves[:]
+        """
+
+        return moves
+
+    def getPathTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+        """
+        path = self.pathCache.get((tilePos,startPos,targetPos))
+        if path:
+            pos = list(startPos)
+            for step in path:
+                pos[0] += step[0]
+                pos[1] += step[1]
+
+                if not self.getPositionWalkable((pos[0]+15*tilePos[0],pos[1]+15*tilePos[1],0),character=character):
+                    path = []
+                    del self.pathCache[(tilePos,startPos,targetPos)]
+                    break
+            if path:
+                return path[:]
+        """
 
         tileMap = []
         for x in range(0,15):
@@ -1079,7 +1151,9 @@ class Terrain(src.saveing.Saveable):
             moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
             lastStep = step
 
+        """
         self.pathCache[(tilePos,startPos,targetPos)] = moves[:]
+        """
 
         return moves
 
@@ -1237,6 +1311,11 @@ class Terrain(src.saveing.Saveable):
 
         pos = (item.xPosition, item.yPosition, item.zPosition)
 
+        if item.xPosition:
+            bigPos = (item.xPosition//15,item.yPosition//15,item.zPosition//15)
+            if bigPos in self.pathfinderCache:
+                del self.pathfinderCache[bigPos]
+
         try:
             itemList = self.getItemByPosition(pos)
             itemList.remove(item)
@@ -1321,6 +1400,9 @@ class Terrain(src.saveing.Saveable):
             item.yPosition = position[1]
             item.zPosition = position[2]
 
+            bigPos = (position[0]//15,position[1]//15,position[2]//15)
+            if bigPos in self.pathfinderCache:
+                del self.pathfinderCache[bigPos]
             if position in self.itemsByCoordinate:
                 self.itemsByCoordinate[position].insert(0, item)
             else:

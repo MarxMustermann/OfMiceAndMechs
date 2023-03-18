@@ -3929,19 +3929,23 @@ class MainGame(BasicPhase):
         self.difficulty = difficulty
         self.productionBaseInfos = []
         positions = [(7,6,0),(7,8,0),(6,7,0),(8,7,0),(7,7,0),(8,8,0)]
-        positions = [(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0)]
-        self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
-        self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
+        positions = [(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0),(12,12,0)]
+        #self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
+        #self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
 
         self.siegedBaseInfos = []
-        self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
-        self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
+        #self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
+        #self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
 
         self.raidBaseInfos = []
-        self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
-        self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
+        #self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
+        #self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
+
+        self.colonyBaseInfos = []
+        self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
 
         print(self.specialItemMap)
+        print(self.colonyBaseInfos)
 
         if self.preselection == "Siege":
             self.activeStory = random.choice(self.siegedBaseInfos)
@@ -3950,7 +3954,8 @@ class MainGame(BasicPhase):
         elif self.preselection == "Raid":
             self.activeStory = random.choice(self.raidBaseInfos)
         else:
-            self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos)
+            #self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos)
+            self.activeStory = self.colonyBaseInfos[0]
 
         for story in self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos:
             story["epochArtwork"].setSpecialItemMap(self.specialItemMap)
@@ -3990,8 +3995,10 @@ class MainGame(BasicPhase):
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
         elif self.activeStory["type"] == "raidBase":
             self.activeStory["mainChar"].messages.insert(0,("""until you notice eneryone looking at you expectingly."""))
-        else:
+        elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
+        else:
+            pass
 
     def kickoffProduction(self):
         self.activeStory["playerActivatedEpochArtwork"] = False
@@ -4023,6 +4030,214 @@ class MainGame(BasicPhase):
             npc = personnelArtwork.spawnIndependentClone(mainChar)
         """
         pass
+
+    def createColonyBase(self,pos):
+        mainChar = src.characters.Character()
+        mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        thisFactionId = self.factionCounter
+        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+        mainChar.registers["HOMETx"] = pos[0]
+        mainChar.registers["HOMETy"] = pos[1]
+        self.factionCounter += 1
+        colonyBaseInfo = {"type":"colonyBase"}
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        colonyBaseInfo["terrain"] = currentTerrain
+        colonyBaseInfo["mainChar"] = mainChar
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+        positions = [(8,5),(3,2),(5,4)]
+        for pos in positions:
+            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        mainRoom.storageRooms = []
+        mainRoom.sources.append([(8,5),"rawScrap"])
+
+        mainRoom.addCharacter(
+            mainChar, 6, 6
+        )
+
+        """
+        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        colonyBaseInfo["epochArtwork"] = epochArtwork
+        epochArtwork.leader = mainChar
+        """
+        mainChar.rank = 3
+        """
+        quest = src.quests.questMap["EpochQuest"]()
+        mainChar.assignQuest(quest,active=True)
+        mainRoom.addItem(epochArtwork,(6,6,0))
+
+        #cityBuilder = src.items.itemMap["CityBuilder2"]()
+        #cityBuilder.architect = architect
+        #mainRoom.addItem(cityBuilder,(7,1,0))
+        #cityBuilder.registerRoom(mainRoom)
+
+        """
+        bluePrintingArtwork = src.items.itemMap["BluePrinter"]()
+        mainRoom.addItem(bluePrintingArtwork,(8,8,0))
+
+        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+        mainRoom.addItem(scrapCompactor,(8,3,0))
+
+        machinemachine = src.items.itemMap["MachineMachine"]()
+        machinemachine.charges = 100
+        mainRoom.addItem(machinemachine,(10,3,0))
+
+        #machine = src.items.itemMap["Machine"]()
+        #machine.setToProduce("Sheet")
+        #mainRoom.addItem(machine,(4,9,0))
+
+        """
+        item = src.items.itemMap["BasicTrainer"]()
+        mainRoom.addItem(item,(1,1,0))
+        item = src.items.itemMap["PersonnelArtwork"]()
+        mainRoom.addItem(item,(2,1,0))
+        item = src.items.itemMap["Assimilator"]()
+        mainRoom.addItem(item,(1,3,0))
+
+        scrapCompactor = src.items.itemMap["ProductionArtwork"]()
+        mainRoom.addItem(scrapCompactor,(4,1,0))
+        """
+
+        for x in range(7,11):
+            mainRoom.addStorageSlot((x,11),None)
+        for x in range(1,6):
+            mainRoom.addStorageSlot((x,11),None)
+
+        tree = src.items.itemMap["Tree"]()
+        currentTerrain.addItem(tree,(6*15+7,6*15+7,0))
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Rod")
+        item.bolted = False
+        mainRoom.addItem(item,(9,8,0))
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Mount")
+        item.bolted = False
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Sheet")
+        item.bolted = False
+        mainRoom.addItem(item,(10,2,0))
+        item = src.items.itemMap["Painter"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,11,0))
+        item = src.items.itemMap["Painter"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,11,0))
+        item = src.items.itemMap["Painter"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,11,0))
+        item = src.items.itemMap["Painter"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,11,0))
+        item = src.items.itemMap["Painter"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,11,0))
+        item = src.items.itemMap["Bolt"]()
+        item.bolted = False
+        mainRoom.addItem(item,(10,11,0))
+        item = src.items.itemMap["Stripe"]()
+        item.bolted = False
+        mainRoom.addItem(item,(9,11,0))
+        item = src.items.itemMap["Mount"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,11,0))
+
+        item = src.items.itemMap["MoldSpore"]()
+        item.bolted = False
+        mainRoom.addItem(item,(1,11,0))
+        item = src.items.itemMap["MoldSpore"]()
+        item.bolted = False
+        mainRoom.addItem(item,(1,11,0))
+        item = src.items.itemMap["MoldSpore"]()
+        item.bolted = False
+        mainRoom.addItem(item,(1,11,0))
+        item = src.items.itemMap["MoldSpore"]()
+        item.bolted = False
+        mainRoom.addItem(item,(1,11,0))
+
+        for x in range(1,6):
+            for y in range(1,6):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                mainRoom.addItem(item,(x,y,0))
+
+        for x in range(1,6):
+            for y in range(7,10):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                mainRoom.addItem(item,(x,y,0))
+
+        #for i in range(0,10):
+        #    sheet = src.items.itemMap["Sheet"]()
+        #    mainRoom.addItem(sheet,(8,7,0))
+
+        note = src.items.itemMap["Note"]()
+        note.text = """
+Puller => room builder
+Bolt + MetalBars => puller
+Bolt => Bolt
+Stripe + MetalBars => pusher
+Stripe => Stripe
+MetalBars => Wall
+Scrap = ScrapCompactor
+Frame + MetalBars => Case
+Rod + MetalBars => Frame
+Connector => Door
+Mount + MetalBars => Connector
+Mount => Mount
+"""
+        mainRoom.addItem(note,(9,9,0))
+
+        return colonyBaseInfo
 
     def createProductiondBase(self,pos):
         mainChar = src.characters.Character()
@@ -4910,6 +5125,8 @@ class MainGame(BasicPhase):
         elif self.activeStory["type"] == "productionBase":
             self.openedQuestsProduction()
             return
+        elif self.activeStory["type"] == "colonyBase":
+            return
         1/0
 
     def openedQuestsRaid(self):
@@ -5072,6 +5289,9 @@ When you rise in rank you will be able to build a way out of here."""
         for siegedBaseInfo in self.siegedBaseInfos:
             self.advanceSiegedBase(siegedBaseInfo)
 
+        for colonyBaseInfo in self.colonyBaseInfos:
+            self.advanceColonyBase(colonyBaseInfo)
+
         self.numRounds += 1
         
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
@@ -5079,6 +5299,58 @@ When you rise in rank you will be able to build a way out of here."""
 
         terrain = src.gamestate.gamestate.terrainMap[7][7]
         terrain.addEvent(event)
+
+    def advanceColonyBase(self,state):
+        terrain = state["terrain"]
+        room = random.choice(terrain.rooms)
+        print(room)
+
+        npc = src.characters.Character()
+        npc.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        npc.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        npc.faction = src.gamestate.gamestate.mainChar.faction
+        room.addCharacter(npc,6,6)
+
+        npc.duties = []
+        duty = random.choice(("resource gathering","machine operation","trap setting","hauling","resource fetching","cleaning","machine placing"))
+        npc.duties.append(duty)
+        quest = src.quests.questMap["BeUsefull"](strict=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(npc)
+        quest.activate()
+        npc.assignQuest(quest,active=True)
 
     def advanceSiegedBase(self,state):
         terrain = state["terrain"]

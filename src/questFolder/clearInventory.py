@@ -87,6 +87,7 @@ To see your items open the your inventory by pressing i."""
             room = character.getRoom()
             if len(character.inventory) and room:
                 emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+                print(emptyInputSlots)
                 if emptyInputSlots:
                     quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
                     self.addQuest(quest)

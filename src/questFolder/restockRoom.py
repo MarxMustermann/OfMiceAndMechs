@@ -46,11 +46,19 @@ Place the items in the correct input stockpile."""
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             for slot in inputSlots:
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
+                    if len(slot[0]) < 3:
+                        slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                     if not neighbour in room.walkingSpace:
                         continue
                     foundNeighbour = (neighbour,direction)
                     break
+                if not foundNeighbour:
+                    for direction in ((-1,0),(1,0),(0,-1),(0,1)):
+                        neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
+                        if not room.getPositionWalkable(neighbour):
+                            continue
+                        foundNeighbour = (neighbour,direction)
             if not foundNeighbour:
                 character.addMessage("no neighbour")
                 self.postHandler()
@@ -94,7 +102,7 @@ Place the items in the correct input stockpile."""
             for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
                 neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
                 for inputSlot in inputSlots:
-                    if neighbour == inputSlot[0]:
+                    if neighbour[0] == inputSlot[0][0] and neighbour[1] == inputSlot[0][1]:
                         foundDirectDrop = (neighbour,direction,inputSlot)
                         break
 
@@ -134,14 +142,31 @@ Place the items in the correct input stockpile."""
 
             foundNeighbour = None
             for slot in inputSlots:
+                if len(slot[0]) < 3:
+                    slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
                     if not neighbour in room.walkingSpace:
+                        continue
+                    if not room.getPositionWalkable(neighbour):
                         continue
                     foundNeighbour = (neighbour,direction)
                     break
                 if foundNeighbour:
                     break
+
+            if not foundNeighbour:
+                for slot in inputSlots:
+                    if len(slot[0]) < 3:
+                        slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
+                    for direction in ((-1,0),(1,0),(0,-1),(0,1)):
+                        neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
+                        foundNeighbour = (neighbour,direction)
+                        if not room.getPositionWalkable(neighbour):
+                            continue
+                        break
+                    if foundNeighbour:
+                        break
 
             if not foundNeighbour:
                 return "..24.."
@@ -154,7 +179,7 @@ Place the items in the correct input stockpile."""
                 self.addQuest(quest)
 
                 return "."
-            return str(foundNeighbour)
+            return "................."
 
         charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
         if charPos == (7,0,0):

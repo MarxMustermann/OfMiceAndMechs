@@ -121,11 +121,15 @@ Scrapfields are shown on the minimap as white ss"""]
                     source = potentialSource
                     break
 
-            if source == None:
+            if source == None and not character.getTerrain().scrapFields:
                 self.fail()
                 return
+            elif source == None:
+                targetPos = random.choice(character.getTerrain().scrapFields)
+            else:
+                targetPos = (source[0][0],source[0][1],0)
 
-            quest = src.quests.questMap["GoToTile"](targetPosition=(source[0][0],source[0][1],0),description="go to scrap field")
+            quest = src.quests.questMap["GoToTile"](targetPosition=targetPos,description="go to scrap field")
             self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)

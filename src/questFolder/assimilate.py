@@ -3,9 +3,10 @@ import src
 class Assimilate(src.quests.MetaQuestSequence):
     type = "Assimilate"
 
-    def __init__(self, description="integrate into the base"):
+    def __init__(self, description="integrate into the base",preferedDuty=None):
         super().__init__()
         self.metaDescription = description
+        self.preferedDuty = preferedDuty
 
     def triggerCompletionCheck(self,character=None):
         return False
@@ -76,6 +77,23 @@ The assimilator is in the command centre.
             submenue = character.macroState.get("submenue")
             if submenue:
                 if isinstance(submenue,src.interaction.SelectionMenu):
+                    if self.preferedDuty:
+                        foundDuty = False
+                        counter = 0
+                        print(submenue.options)
+                        print(self.preferedDuty)
+                        for option in submenue.options.items():
+                            counter += 1
+                            if option[1].startswith(self.preferedDuty):
+                                foundDuty = True
+                                break
+
+                        if foundDuty:
+                            offset = counter-submenue.selectionIndex
+                            if offset > 0:
+                                return "s"*offset
+                            if offset < 0:
+                                return "w"*(-offset)
                     return ["enter"]
                 return ["esc"]
 

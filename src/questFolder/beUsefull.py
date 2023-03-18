@@ -57,6 +57,7 @@ Reputation is rewarded for picking up items from walkways.\n\n"""
                 out += "%s\n\n"%(duty,)
 
         if not self.character.rank == 3:
+            reputationForPromotion = "???"
             if self.character.rank == 6:
                 reputationForPromotion = 300
             if self.character.rank == 5:
@@ -240,8 +241,8 @@ Press r to generate subquest and recive detailed instructions
         items = room.itemsOnFloor[:]
         random.shuffle(items)
         for item in items:
-            if not item.bolted:
-                continue
+            #if not item.bolted:
+            #    continue
             if not item.type in ("Machine","ScrapCompactor",):
                 continue
             if not item.readyToUse():
@@ -255,29 +256,32 @@ Press r to generate subquest and recive detailed instructions
     def checkTriggerResourceGathering(self,character,room):
         emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
         if emptyInputSlots:
-            for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
+            for inputSlot in emptyInputSlots:
                 if not inputSlot[1] == "Scrap":
                     continue
 
-                if not room.sources:
-                    continue
-
                 source = None
-                for potentialSource in random.sample(list(room.sources),len(room.sources)):
-                    if potentialSource[1] == "rawScrap":
-                        source = potentialSource
-                        break
+                if room.sources:
+                    for potentialSource in random.sample(list(room.sources),len(room.sources)):
+                        if potentialSource[1] == "rawScrap":
+                            source = potentialSource
+                            break
 
-                if source == None:
+                if source == None and not character.getTerrain().scrapFields:
                     continue
 
                 if self.triggerClearInventory(character,room):
                     return True
 
+                if source:
+                    pos = source[0]
+                else:
+                    pos = random.choice(character.getTerrain().scrapFields)
+
                 self.addQuest(src.quests.questMap["RestockRoom"](toRestock="Scrap"))
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
-                self.addQuest(src.quests.questMap["GatherScrap"](targetPosition=source[0]))
-                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+                self.addQuest(src.quests.questMap["GatherScrap"](targetPosition=pos))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
                 self.idleCounter = 0
                 return True
 
@@ -315,6 +319,12 @@ Press r to generate subquest and recive detailed instructions
                 quest.activate()
                 self.idleCounter = 0
                 return True
+
+            if len(character.inventory):
+                if room.getEmptyInputslots(itemType=character.inventory[-1].type,allowAny=True):
+                    quest = src.quests.questMap["ClearInventory"]()
+                    self.addQuest(quest)
+                    return True
 
     def checkTriggerHauling(self,character,room):
         if hasattr(room,"inputSlots"):
@@ -383,6 +393,14 @@ Press r to generate subquest and recive detailed instructions
                             break
 
                         if not source:
+                            for room in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
+                                if not room.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                                    continue
+
+                                source = (room.getPosition(),inputSlot[1])
+                                break
+
+                        if not source:
                             character.addMessage("no filled output slots")
                             continue
 
@@ -448,6 +466,14 @@ Press r to generate subquest and recive detailed instructions
                         break
 
                     if not source:
+                        for room in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
+                            if not room.getNonEmptyOutputslots(itemType=neededItem):
+                                continue
+
+                            source = (room.getPosition(),neededItem)
+                            break
+
+                    if not source:
                         character.addMessage("no filled output slots")
                         continue
 
@@ -472,6 +498,8 @@ Press r to generate subquest and recive detailed instructions
 
                     if not source[0] == roomPos:
                         self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                    if character == src.gamestate.gamestate.mainChar:
+                        print("new fetch")
                     self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
                     if not source[0] == roomPos:
                         self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))

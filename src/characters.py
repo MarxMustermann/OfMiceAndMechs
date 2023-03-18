@@ -409,12 +409,30 @@ class Character(src.saveing.Saveable):
     def getNearbyEnemies(self):
         return self.container.getEnemiesOnTile(self)
 
-    def getBigPosition(self,offset=(0,0,0)):
+    def getBigPosition_test1(self,offset=None):
         if self.container.isRoom:
-            charPos = (self.container.xPosition+offset[0],self.container.yPosition+offset[1],0+offset[2])
+            if offset:
+                return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
+            else:
+                return (self.container.xPosition,self.container.yPosition,0)
         else:
-            charPos = (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
-        return charPos
+            if offset:
+                return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
+            else:
+                return (self.xPosition//15,self.yPosition//15,0)
+
+    def getBigPosition_test2(self,offset=(0,0,0)):
+        if self.container.isRoom:
+            return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
+        else:
+            return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
+    def getBigPosition(self,offset=None):
+        if offset:
+            self.getBigPosition_test1(offset)
+            return self.getBigPosition_test2(offset)
+        else:
+            self.getBigPosition_test1()
+            return self.getBigPosition_test2()
 
     def getTerrainPosition(self,offset=(0,0,0)):
         terrain = self.getTerrain()
@@ -636,6 +654,39 @@ class Character(src.saveing.Saveable):
         convertedCommand = list(map(lambda char: ("enter",flags) if char == "\n" else (char,flags), reversed(commandString)))
         return convertedCommand
 
+    def convertCommandString2(self,commandString,nativeKey=False, extraFlags=None):
+
+        # convert command to macro data structure
+        if extraFlags:
+            if nativeKey:
+                flags = []
+            else:
+                flags = ["norecord"]
+                flags.extend(extraFlags)
+            flags = tuple(flags)
+        else:
+            if nativeKey:
+                flags = ()
+            else:
+                flags = ("norecord")
+
+        """
+        convertedCommand = []
+        for char in reversed(commandString):
+            if char == "\n":
+                char = "enter"
+
+            convertedCommand.append((char, flags))
+        """
+        """
+
+        self.flags = flags
+        convertedCommand = list(map(self.convertSingleCommand,reversed(commandString)))
+        self.flags = None
+        """
+        convertedCommand = [(item,flags) for item in reversed(commandString)]
+        return convertedCommand
+
     def runCommandString(self, commandString, clear=False, addBack=False, nativeKey=False, extraFlags=None, preconverted=False):
         """
         run a command using the macro automation
@@ -647,11 +698,12 @@ class Character(src.saveing.Saveable):
         if preconverted:
             convertedCommand = commandString
         else:
-            convertedCommand = self.convertCommandString(commandString,nativeKey,extraFlags)
+            convertedCommand = self.convertCommandString2(commandString,nativeKey,extraFlags)
 
-        oldCommand = []
         if not clear:
             oldCommand = self.macroState["commandKeyQueue"]
+        else:
+            oldCommand = []
 
         # add command to the characters command queue
         if not addBack:
@@ -1791,7 +1843,7 @@ class Character(src.saveing.Saveable):
                     found = True
                     text += "is output slot for %s (%s)\n"%(outputSlot[1],outputSlot[2],)
             for storageSlot in room.storageSlots:
-                if pos == storageSlot[0]:
+                if pos[0] == storageSlot[0][0] and pos[1] == storageSlot[0][1]:
                     found = True
                     text += "is storage slot for %s (%s)\n"%(storageSlot[1],storageSlot[2],)
             for buildSite in room.buildSites:

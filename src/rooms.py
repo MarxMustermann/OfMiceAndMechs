@@ -99,65 +99,9 @@ class Room(src.saveing.Saveable):
         self.sizeX = 0
         self.sizeY = 0
 
-
-        # set id
         self.itemByCoordinates = {}
 
-        # set meta information for saving
-        self.attributesToStore.extend(
-            [
-                "yPosition",
-                "xPosition",
-                "offsetX",
-                "offsetY",
-                "objType",
-                "sizeX",
-                "sizeY",
-                "walkingAccess",
-                "open",
-                "engineStrength",
-                "steamGeneration",
-                "isContainment",
-                "timeIndex",
-                "floorPlan",
-                "name",
-                "seed",
-                "health",
-                "hidden",
-            ]
-        )
-
-        self.objectsToStore.extend(
-                [
-                    "container"
-                ]
-        )
-
-        self.ignoreAttributes = []
-        self.ignoreAttributes.extend([
-            "events",
-            "itemsOnFloor",
-            "characters",
-            "walkingSpace",
-            "inputSlots",
-            "outputSlots",
-            "storageSlots",
-            "buildSites",
-            "sources",
-            "objType",
-            "walkingAccess",
-            "terrain",
-            "floorDisplay",
-            "displayChar",
-            "itemByCoordinates",
-            "listeners",
-            ])
-
-        self.objectListsToStore.extend([
-            "doors",
-            "boilers",
-            "furnaces",
-            ])
+        self.cachedPathfinder = None
 
     def getItemsByType(self,itemType, needsBolted = False):
         result = []
@@ -278,7 +222,10 @@ class Room(src.saveing.Saveable):
             if (itemType and not storageSlot[1] == itemType) and (not allowAny or  not storageSlot[1] == None):
                 continue
             
-            items = self.getItemByPosition(storageSlot[0])
+            pos = storageSlot[0]
+            if len(pos) < 3:
+                pos = (pos[0],pos[1],0)
+            items = self.getItemByPosition(pos)
             if not items:
                 result.append(storageSlot)
                 continue
@@ -311,7 +258,9 @@ class Room(src.saveing.Saveable):
 
     def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None,character=None):
         if path == None:
-            path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
+            #path = self.getPathTile_test(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
+            #path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
+            path = self.getPathTile_test2(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
 
         command = ""
         if isinstance(self,src.rooms.TrapRoom) and not (character.faction == self.faction):
@@ -323,21 +272,7 @@ class Room(src.saveing.Saveable):
                 command += movementMap[offset]
         return (command,path)
 
-    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
-
-        path = self.pathCache.get((startPos,targetPos))
-        if path:
-            pos = list(startPos)
-            for step in path:
-                pos[0] += step[0]
-                pos[1] += step[1]
-
-                if not self.getPositionWalkable(tuple(pos),character=character):
-                    path = []
-                    del self.pathCache[(startPos,targetPos)]
-                    break
-            if path:
-                return path[:]
+    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
 
         roomMap = []
         for x in range(0,13):
@@ -368,18 +303,127 @@ class Room(src.saveing.Saveable):
 
         if ignoreEndBlocked:
             roomMap[targetPos[0]][targetPos[1]] = 1
+        return roomMap
 
+    def convertRoomMap(self,roomMap):
         cost = np.array(roomMap, dtype=np.int8)
-        pathfinder = tcod.path.AStar(cost,diagonal = 0)
-        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
-        
+        return cost
+
+    def convertPath(self,path,startPos):
         moves = []
         lastStep = startPos
         for step in path:
             moves.append((step[0]-lastStep[0],step[1]-lastStep[1]))
             lastStep = step
+        return moves
 
+    def edgeCostCallback(self, startX, startY, endX, endY):
+        endPos = (endX,endY,0)
+        if self.pathfindingIgnoreEndBlocked:
+            if endPos == self.pathfindingTargetPos:
+                return 1
+
+        if (endPos in [(0,6,0),(6,0,0),(12,6,0),(6,12,0)]):
+            return 1
+
+        if not self.getPositionWalkable((endX,endY,0),character=self.pathfindingCharacter):
+            return 0
+
+        if self.getItemByPosition((endX,endY,0)):
+            return 100
+
+        for storageSlot in self.storageSlots:
+            if storageSlot[0] == endPos:
+                return 50
+
+        if endPos in self.walkingSpace:
+            return 10
+
+        return 50
+
+        sefl.cachedPathfinder = None
+
+    def getPathTile_test(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+        test = tcod.path.EdgeCostCallback(self.edgeCostCallback,(14,14))
+        self.pathfindingCharacter = character
+        self.pathfindingIgnoreEndBlocked = character
+        self.pathfindingTargetPos = targetPos
+        pathfinder = tcod.path.AStar(test,diagonal = 0)
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+        moves = self.convertPath(path,startPos)
+        self.pathfindingCharacter = None
+        self.pathfindingIgnoreEndBlocked = None
+        self.pathfindingTargetPos = None
+        return moves
+        
+    def getPathTile_test2(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+
+        """
+        path = self.pathCache.get((startPos,targetPos))
+        if path:
+            pos = list(startPos)
+            for step in path:
+                pos[0] += step[0]
+                pos[1] += step[1]
+
+                if not self.getPositionWalkable(tuple(pos),character=character):
+                    path = []
+                    del self.pathCache[(startPos,targetPos)]
+                    break
+            if path:
+                return path[:]
+        """
+
+        if not self.cachedPathfinder or ignoreEndBlocked:
+            roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character)
+            cost = self.convertRoomMap(roomMap)
+        
+            pathfinder = tcod.path.AStar(cost,diagonal = 0)
+        else:
+            pathfinder = self.cachedPathfinder
+
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+        
+        if not ignoreEndBlocked:
+            self.cachedPathfinder = pathfinder
+        
+        moves = self.convertPath(path,startPos)
+
+        """
         self.pathCache[(startPos,targetPos)] = moves[:]
+        """
+
+        return moves
+
+    def getPathTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+
+        """
+        path = self.pathCache.get((startPos,targetPos))
+        if path:
+            pos = list(startPos)
+            for step in path:
+                pos[0] += step[0]
+                pos[1] += step[1]
+
+                if not self.getPositionWalkable(tuple(pos),character=character):
+                    path = []
+                    del self.pathCache[(startPos,targetPos)]
+                    break
+            if path:
+                return path[:]
+        """
+
+        roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character)
+        cost = self.convertRoomMap(roomMap)
+        
+        pathfinder = tcod.path.AStar(cost,diagonal = 0)
+        path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
+        
+        moves = self.convertPath(path,startPos)
+
+        """
+        self.pathCache[(startPos,targetPos)] = moves[:]
+        """
 
         return moves
 
@@ -1452,6 +1496,7 @@ class Room(src.saveing.Saveable):
         Parameters:
             items: a list containing a tuples of a item and its position
         """
+        self.cachedPathfinder = None
 
         # add the items to the item list
         for itemPair in items:
@@ -1480,6 +1525,8 @@ class Room(src.saveing.Saveable):
             else:
                 self.itemByCoordinates[pos] = [item]
 
+            print(item)
+
             for buildSite in self.buildSites:
                 if pos == buildSite[0] and item.type == buildSite[1]:
                     self.buildSites.remove(buildSite)
@@ -1502,6 +1549,7 @@ class Room(src.saveing.Saveable):
         Parameters:
             item: the item to remove
         """
+        self.cachedPathfinder = None
 
         # remove items from easy access map
         itemList = self.getItemByPosition(item.getPosition())

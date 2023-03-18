@@ -37,7 +37,7 @@ select the skill you want to train:
         candidates = self.getMatchingCandidates(character)
         random.shuffle(candidates)
 
-        allCandidates = ["fighting","gathering","trap maintence","cleaning","machine operation"]
+        allCandidates = ["fighting","gathering","trap maintence","cleaning","machine operation","hauling"]
         random.shuffle(allCandidates)
         for candidate in allCandidates:
             if not candidate in candidates:
@@ -70,7 +70,7 @@ select the skill you want to train:
         if character.baseDamage > 8:
             out.extend(["fighting"])
         if character.movementSpeed < 1:
-            out.extend(["gathering","trap maintence","cleaning","machine operation"])
+            out.extend(["gathering","trap maintence","cleaning","machine operation","hauling"])
         return out
 
     def startTraining(self,extraParams):
@@ -109,6 +109,9 @@ select the skill you want to train:
         elif trainingType == "machine operation":
             self.giveSkillMachineOperation(params)
 
+        elif trainingType == "hauling":
+            self.giveSkillHauling(params)
+
     def giveSkillCleaning(self,extraParams):
         character = extraParams["character"]
         text = """
@@ -134,6 +137,22 @@ This happens rarely but can interrupt a base.
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("cleaning")
+
+    def giveSkillHauling(self,extraParams):
+        character = extraParams["character"]
+        text = """
+
+Find rooms with input and output stockpiles for the same item type.
+Carry items from the output stockpile to the input stockpile.
+
+Examine the stockpiles to see their type.
+
+"""
+        character.addMessage("----------------"+text+"-----------------")
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+        character.learnSkill("hauling")
 
     def giveSkillMachineOperation(self,extraParams):
         character = extraParams["character"]

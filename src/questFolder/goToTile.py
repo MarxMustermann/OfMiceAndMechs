@@ -119,11 +119,11 @@ operate the machine on %s
         
         return False
 
-    def getNextStep(self,character=None):
+    def getNextStep(self,character=None,ignoreCommands=False):
         if character == None:
             return (None,None)
 
-        if character.macroState.get("submenue"):
+        if not ignoreCommands and character.macroState.get("submenue"):
             return (None,["esc"])
 
         if not self.path:
@@ -221,7 +221,11 @@ operate the machine on %s
                 return ([quest],None)
     
     def generateSubquests(self, character=None):
-        return self.getNextStep(character)[0]
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
 
     def getSolvingCommandString(self, character, dryRun=True):
         return self.getNextStep(character)[1]

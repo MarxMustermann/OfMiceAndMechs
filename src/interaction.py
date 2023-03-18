@@ -1373,7 +1373,7 @@ type number or load value from register
                 char.specialRender = True
             char.timeTaken -= 0.99
             return
-        if key in "0123456789":
+        if char.key in "0123456789":
             lastVarAction["number"] += key
 
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -1963,7 +1963,7 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         return
     """
 
-    if key in "0123456789":
+    if not charState["submenue"] and key in "0123456789":
         doBuildNumber(key,char,charState,main,header,footer,urwid,flags)
         return
 
@@ -2357,18 +2357,13 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
         # examine an item
         if key in (commandChars.examine,):
-            if "ExamineQuest" not in char.solvers and not char.godMode:
-                char.addMessage(
-                    "you do not have the nessecary solver yet (examine)"
-                )
-            else:
-                # examine the marked item
-                if charState["itemMarkedLast"]:
-                    char.examinePosition(charState["itemMarkedLast"].getPosition())
+            # examine the marked item
+            if charState["itemMarkedLast"]:
+                char.examinePosition(charState["itemMarkedLast"].getPosition())
 
-                # examine an item on floor
-                else:
-                    char.examinePosition(char.getPosition())
+            # examine an item on floor
+            else:
+                char.examinePosition(char.getPosition())
 
         # drop first item from inventory
         # bad pattern: the user has to have the choice for what item to drop
@@ -3279,6 +3274,7 @@ class IdleChatNPCMenu(SubMenu):
                 options = []
                 options.append(("charInfo","Tell me about yourself."))
                 options.append(("showQuests","What are you doing?"))
+                options.append(("showInventory","What is in your inventory?"))
                 self.subMenu = SelectionMenu("my frustration is: \n\n", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
@@ -3293,6 +3289,12 @@ class IdleChatNPCMenu(SubMenu):
             return True
         if self.instructionType == "showQuests":
             submenue = src.interaction.QuestMenu(char=self.npc)
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender,character=character)
+            self.subMenu = None
+            return True
+        if self.instructionType == "showInventory":
+            submenue = src.interaction.InventoryMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
@@ -3344,11 +3346,12 @@ class InstructNPCMenu(SubMenu):
                     options = []
                     options.append(("stop","stop what you are doing"))
                     options.append(("continue","continue working"))
-                    options.append(("cancel","stop what you are doing"))
                     options.append(("wait","wait until further command"))
+                    options.append(("dropAll","drop all your items"))
                     options.append(("goToMyPosition","go to my position"))
                     options.append(("beUseful","be useful"))
                     options.append(("beUsefulHere","be useful here"))
+                    options.append(("doDuty","do duty"))
                     options.append(("doDutyHere","do duty here"))
                     self.subMenu = SelectionMenu("what command do you want to give?", options)
                     self.handleKey("~", noRender=noRender, character=character)
@@ -3376,6 +3379,9 @@ class InstructNPCMenu(SubMenu):
                 self.subMenu = None
                 self.npc.assignQuest(quest,active=True)
                 return True
+            if self.commandType == "dropAll":
+                self.npc.runCommandString("10l")
+                return True
             if self.commandType == "beUsefulHere":
                 quest = src.quests.questMap["BeUsefull"](targetPosition=character.getBigPosition())
                 quest.autoSolve = True
@@ -3387,14 +3393,24 @@ class InstructNPCMenu(SubMenu):
                 quest.autoSolve = True
                 self.subMenu = None
                 self.npc.assignQuest(quest,active=True)
+
+                if not character.container == self.npc.container:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=character.getBigPosition())
+                    quest.autoSolve = True
+                    self.subMenu = None
+                    self.npc.assignQuest(quest,active=True)
                 return True
-            if self.commandType == "doDutyHere":
+            if self.commandType in ("doDutyHere","doDuty"):
                 if not self.dutyType:
                     if not self.subMenu:
                         options = []
                         options.append(("resource gathering","resource gathering"))
                         options.append(("machine operation","machine operation"))
                         options.append(("trap setting","trap setting"))
+                        options.append(("hauling","hauling"))
+                        options.append(("resource fetching","resource fetching"))
+                        options.append(("cleaning","cleaning"))
+                        options.append(("machine placing","machine placing"))
                         self.subMenu = SelectionMenu("What duty should be done?", options)
                         self.handleKey("~", noRender=noRender, character=character)
                         return False
@@ -3403,7 +3419,10 @@ class InstructNPCMenu(SubMenu):
 
                 if self.dutyType:
                     self.npc.duties = [self.dutyType]
-                    quest = src.quests.questMap["BeUsefull"](targetPosition=character.getBigPosition(),strict=True)
+                    pos = None
+                    if self.commandType == "doDutyHere":
+                        pos = character.getBigPosition()
+                    quest = src.quests.questMap["BeUsefull"](targetPosition=pos,strict=True)
                     quest.autoSolve = True
                     self.subMenu = None
                     self.npc.assignQuest(quest,active=True)
@@ -3491,6 +3510,8 @@ class ChatPartnerselection(SubMenu):
                 for char in src.gamestate.gamestate.mainChar.room.characters:
                     if char == src.gamestate.gamestate.mainChar:
                         continue
+                    if char in src.gamestate.gamestate.mainChar.subordinates:
+                        continue
                     if not char.faction == src.gamestate.gamestate.mainChar.faction:
                         continue
                     if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
@@ -3501,6 +3522,8 @@ class ChatPartnerselection(SubMenu):
                 for char in src.gamestate.gamestate.mainChar.terrain.characters:
                     # bad pattern: should only list nearby characters
                     if char == src.gamestate.gamestate.mainChar:
+                        continue
+                    if char in src.gamestate.gamestate.mainChar.subordinates:
                         continue
                     if not char.faction == src.gamestate.gamestate.mainChar.faction:
                         continue
@@ -3543,6 +3566,9 @@ class ChatPartnerselection(SubMenu):
                             continue
                         options.append((char, char.name))
                 """
+
+            for char in src.gamestate.gamestate.mainChar.subordinates:
+                options.insert(0,(char, char.name))
 
             self.setOptions("talk with whom?", options)
 
@@ -3790,7 +3816,7 @@ class InventoryMenu(SubMenu):
         self.footerText = "press j to activate, press l to drop, press esc to exit"
 
     def render(self,char=None):
-        return renderInventory(sidebared=self.sidebared)
+        return renderInventory(character=char,sidebared=self.sidebared)
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -3916,7 +3942,7 @@ class InventoryMenu(SubMenu):
             # bad code: uses global function
             self.persistentText = (
                 urwid.AttrSpec("default", "default"),
-                self.render(),
+                self.render(self.char),
             )
 
             # show the render
@@ -3950,6 +3976,7 @@ class InputMenu(SubMenu):
         self.position = 0
         self.targetParamName = targetParamName
         self.stealAllKeys = True
+        self.done = False
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -3965,6 +3992,7 @@ class InputMenu(SubMenu):
         if key == "enter" and not self.escape:
             if self.followUp:
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:self.text})
+            self.done = True
             return True
 
         if self.ignoreFirst and self.firstHit:
@@ -4126,7 +4154,6 @@ class CharacterInfoMenu(SubMenu):
         text += "position: %s\n" % (char.getSpacePosition(),)
         text += "big position: %s\n" % (char.getBigPosition(),)
         text += "terrain position: %s\n" % (char.getTerrainPosition(),)
-        print(char.registers)
 
         return text
 
@@ -4829,7 +4856,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
 
 #bad code: global function
 #bad code: should be abstracted
-def renderInventory(sidebared=False):
+def renderInventory(character=None,sidebared=False):
     """
     render the inventory of the player into a string
 
@@ -4837,7 +4864,11 @@ def renderInventory(sidebared=False):
         the rendered string
     """
 
-    char = src.gamestate.gamestate.mainChar
+    if character == None:
+        char = src.gamestate.gamestate.mainChar
+    else:
+        char = character
+
     txt = []
     if len(char.inventory):
         counter = 0
@@ -5497,6 +5528,7 @@ class RoomMenu(SubMenu):
     def __init__(self, room):
         super().__init__()
         self.room = room
+        self.submenu = None
         self.firstKey = True
 
     def handleKey(self, key, noRender=False, character = None):
@@ -5579,12 +5611,40 @@ class RoomSourceMenu(SubMenu):
 
         super().__init__()
         self.room = room
+        self.submenu = None
 
     def handleKey(self, key, noRender=False, character = None):
+        if self.submenu and self.submenu.done:
+            sourceType = self.submenu.text.split(":")[0].strip()
+            rawCoordinate = self.submenu.text.split(":")[1].strip(" ()")
+            coordinate = []
+            for num in rawCoordinate.split(","):
+                coordinate.append(int(num))
+            while len(coordinate) > 2:
+                coordinate.pop()
+            coordinate = tuple(coordinate)
+            source = (coordinate,sourceType)
+            character.container.sources.append(source)
+
+            self.submenu = None
+
+
+        if self.submenu:
+            self.submenu.handleKey(key, noRender, character)
+            if self.submenu.done:
+                self.handleKey("~",noRender,character)
+            return False
+
         self.persistentText = "sources to fetch resources from:\n\n"
         for source in self.room.sources:
             self.persistentText += "%s: %s\n"%(source[1],source[0],)
+        self.persistentText += "\n\npresss c to add source"
         main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+
+        if key == "c":
+            self.submenu = InputMenu("input source.\nCurrent tile is %s.\nFormat to input source is \nresourceType: tilecoordinate"%(character.container.getTilePosition(),))
+            self.submenu.handleKey("~", noRender, character)
+            return False
         
         # exit the submenu
         if key in ("esc",):
@@ -6696,6 +6756,7 @@ def renderGameDisplay(renderChar=None):
                     if uiElement["type"] == "indicators":
                         autoIndicator = ActionMeta(content="*",payload="*")
                         if char.macroState["commandKeyQueue"] or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
+                            """
                             def test():
                                 char.clearCommandString()
                                 char.macroState["loop"] = []
@@ -6711,6 +6772,8 @@ def renderGameDisplay(renderChar=None):
                                 char.runCommandString("~")
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
+                            """
+                            pass
                         indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
@@ -7193,6 +7256,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                     loadingControl["needsStart"] = True
 
+            """
             def loader():
                 doLoad()
                 loadingControl["done"] = True
@@ -7208,6 +7272,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     redrawer()
                 )
             asyncio.run(asyncTask())
+            """
+            doLoad()
 
             if loadingControl["needsStart"] == True:
                 src.gamestate.gamestate.currentPhase.start(seed=None,difficulty=difficulty)
@@ -8554,15 +8620,6 @@ def gameLoop(loop, user_data=None):
     lastRender = time.time()
 
     while not loop or firstRun:
-        src.gamestate.gamestate.savedThisTurn = False
-        src.gamestate.gamestate.waitedForInputThisTurn = False
-
-        profiler = cProfile.Profile()
-        profiler.enable()
-
-        startTime = time.time()
-        origTick = src.gamestate.gamestate.tick
-
         if lastAutosave == 0:
             lastAutosave = src.gamestate.gamestate.tick
         if src.gamestate.gamestate.tick - lastAutosave > 1000:
@@ -8606,8 +8663,18 @@ def gameLoop(loop, user_data=None):
 
         if tcod:
             getTcodEvents()
-            #getNetworkedEvents()
+        #    #getNetworkedEvents()
 
+        src.gamestate.gamestate.savedThisTurn = False
+        src.gamestate.gamestate.waitedForInputThisTurn = False
+
+        """
+        profiler = cProfile.Profile()
+        profiler.enable()
+        """
+
+        startTime = time.time()
+        origTick = src.gamestate.gamestate.tick
 
         hasAutosolveQuest = False
         for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
@@ -8640,7 +8707,8 @@ def gameLoop(loop, user_data=None):
                 advanceChar(char)
                 pass
 
-        if src.gamestate.gamestate.tick > origTick and not src.gamestate.gamestate.savedThisTurn and not src.gamestate.gamestate.waitedForInputThisTurn:
+        """
+        if src.gamestate.gamestate.tick > origTick and not src.gamestate.gamestate.savedThisTurn and not src.gamestate.gamestate.waitedForInputThisTurn and not origTick == 0:
             endTime = time.time()
             tickSpeed = endTime-startTime
             totalTickSpeed += tickSpeed
@@ -8657,12 +8725,15 @@ def gameLoop(loop, user_data=None):
                 print("yay, a fast tick!!")
                 print("tick time %s for %s"%(tickSpeed,origTick,))
             print("average tick length on %s ticks: %s"%(numTrackedTicks,(totalTickSpeed/numTrackedTicks),))
+        """
 
         renderGameDisplay()
 
+        """
         endTime = time.time()
         if endTime-startTime < 0.009999:
             time.sleep(0.01-(endTime-startTime))
+        """
     else:
         continousOperation = 0
 
@@ -8745,7 +8816,6 @@ def advanceChar(char):
                                 continue
                             hasAutosolveQuest = True
 
-                        src.gamestate.gamestate.waitedForInputThisTurn = True
                         getTcodEvents()
                         #getNetworkedEvents()
 
@@ -8758,6 +8828,10 @@ def advanceChar(char):
                                 char.timeTaken += 1
                                 char.runCommandString("~",nativeKey=True)
                                 #renderGameDisplay()
+
+                        renderGameDisplay()
+                        if char.getTerrain():
+                            char.getTerrain().lastRender = None
 
                         if src.gamestate.gamestate.timedAutoAdvance:
                             if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:

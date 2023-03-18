@@ -3,9 +3,10 @@ import src
 class TrainSkill(src.quests.MetaQuestSequence):
     type = "TrainSkill"
 
-    def __init__(self, description="train skill"):
+    def __init__(self, description="train skill",skillToTrain=None):
         super().__init__()
         self.metaDescription = description
+        self.skillToTrain = skillToTrain
 
     def generateTextDescription(self):
         if not self.character.skills:
@@ -76,6 +77,17 @@ Activate the basic trainer in the command centre to start training a skill"""
             submenue = character.macroState.get("submenue")
             if submenue:
                 if isinstance(submenue,src.interaction.SelectionMenu):
+                    if self.skillToTrain:
+                        counter = 0
+                        for option in submenue.options.items():
+                            counter += 1
+                            if option[1] == self.skillToTrain:
+                                break
+                        offset = counter-submenue.selectionIndex
+                        if offset > 0:
+                            return "s"*offset
+                        if offset < 0:
+                            return "w"*(-offset)
                     return ["enter"]
                 return ["esc"]
             room = character.container

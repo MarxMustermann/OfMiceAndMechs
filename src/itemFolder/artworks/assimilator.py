@@ -49,6 +49,10 @@ Use it by activating it."""
             duty = "machine operation"
             dutytext = duty+": operate machines"
             out.append((duty,dutytext))
+        if "hauling" in character.skills:
+            duty = "hauling"
+            dutytext = duty+": move items within rooms"
+            out.append((duty,dutytext))
 
         if exclude:
             for option in out[:]:
@@ -551,6 +555,9 @@ Train a skill and return to integrate into the bases systems
             if "machine operation" in character.skills:
                 duty = "machine operation"
                 dutytext = "machine operation"
+            if "hauling" in character.skills:
+                duty = "hauling"
+                dutytext = "carry items within rooms"
             text = """
 You hereby have a rank of 6.
 You can request promotions here.

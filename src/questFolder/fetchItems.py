@@ -8,7 +8,7 @@ class FetchItems(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
-        self.amount = None
+        self.amount = amount
         self.toCollect = None
         self.returnToTile = True
         self.tileToReturnTo = None
@@ -39,9 +39,9 @@ Fetch an inventory full of %ss.
             if self.amount == 1:
                 extraS = ""
             text = """
-Fetch %s %s"""+extraS+""".
+Fetch %s %s.
 
-"""%(self.toCollect,)
+"""%(self.toCollect,extraS,)
 
         if self.returnToTile:
             tile = self.tileToReturnTo
@@ -81,6 +81,10 @@ Return to %s after to complete this quest."""%(tile,)
         if not character:
             return
 
+        if character == src.gamestate.gamestate.mainChar:
+            print("wtf")
+            print(self.amount)
+        
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
@@ -90,7 +94,11 @@ Return to %s after to complete this quest."""%(tile,)
 
             if numItems >= self.amount:
                 self.collectedItems = True
+                self.postHandler()
                 return
+
+            if character == src.gamestate.gamestate.mainChar:
+                print("triggeraCompletionCheck triggered amount fail")
 
         if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
             self.collectedItems = True
@@ -184,13 +192,21 @@ Return to %s after to complete this quest."""%(tile,)
             return "a"
 
     def solver(self, character):
-        self.activate()
-        self.assignToCharacter(character)
+        #self.activate()
+        #self.assignToCharacter(character)
+
+        if character == src.gamestate.gamestate.mainChar:
+            print("solver")
 
         if self.subQuests:
             return super().solver(character)
 
-        self.triggerCompletionCheck(character)
+        if character == src.gamestate.gamestate.mainChar:
+            print("solver2")
+
+        if self.triggerCompletionCheck(character):
+            return
+
         if character.getFreeInventorySpace() <= 0:
             quest = src.quests.questMap["ClearInventory"]()
             quest.activate()
@@ -212,7 +228,17 @@ Return to %s after to complete this quest."""%(tile,)
         if not self.collectedItems and isinstance(character.container,src.rooms.Room):
             room = character.container
             outputSlots = room.getNonEmptyOutputslots(itemType=self.toCollect)
-            if not outputSlots:
+            if outputSlots:
+                nextToTarget = False
+                for outputSlot in outputSlots:
+                    if character.getDistance(outputSlot[0]) < 2:
+                        nextToTarget = True
+
+                if not nextToTarget:
+                    outputSlot = random.choice(outputSlots)
+                    self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True))
+                    return
+            else:
                 source = self.getSource()
                 if source:
                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=source[0]))

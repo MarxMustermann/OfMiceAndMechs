@@ -223,10 +223,6 @@ class Quest(src.saveing.Saveable):
             if info is None:
                 listenFunction()
             else:
-                try:
-                    listenFunction(info)
-                except:
-                    2/0
                 listenFunction(info)
 
     """
@@ -274,6 +270,7 @@ class Quest(src.saveing.Saveable):
     """
 
     def fail(self,reason=None):
+        self.changed("failed",{"reason":reason})
         if reason and self.character:
             self.character.addMessage("failed quest because of %s"%(reason,))
         if self.failTrigger:

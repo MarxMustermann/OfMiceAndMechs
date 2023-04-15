@@ -4,7 +4,7 @@ import random
 class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
 
-    def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True,lifetime=None):
+    def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -13,6 +13,7 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.returnToTile = True
         self.tileToReturnTo = None
         self.collectedItems = False
+        self.takeAnyUnbolted = takeAnyUnbolted
 
         if toCollect:
             self.setParameters({"toCollect":toCollect})
@@ -97,9 +98,6 @@ Return to %s after to complete this quest."""%(tile,)
                 self.postHandler()
                 return
 
-            if character == src.gamestate.gamestate.mainChar:
-                print("triggeraCompletionCheck triggered amount fail")
-
         if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
             self.collectedItems = True
 
@@ -128,6 +126,11 @@ Return to %s after to complete this quest."""%(tile,)
             if room.getNonEmptyOutputslots(itemType=self.toCollect):
                 return (room.getPosition(),)
 
+        for room in self.character.getTerrain().rooms:
+            for item in room.itemsOnFloor:
+                if item.bolted == False and item.type == self.toCollect:
+                    return (room.getPosition(),)
+
     def getSolvingCommandString(self,character,dryRun=True):
 
         charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
@@ -146,6 +149,17 @@ Return to %s after to complete this quest."""%(tile,)
                 for outputSlot in outputSlots:
                     if neighbour == outputSlot[0]:
                         foundDirectPickup = (neighbour,direction)
+                        break
+
+            if self.takeAnyUnbolted:
+                for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
+                    neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)
+                    items = room.getItemByPosition(neighbour)
+                    for item in items:
+                        if item.bolted == False and item.type == self.toCollect:
+                            foundDirectPickup = (neighbour,direction)
+                            break
+                    if foundDirectPickup:
                         break
 
             if foundDirectPickup:
@@ -195,14 +209,8 @@ Return to %s after to complete this quest."""%(tile,)
         #self.activate()
         #self.assignToCharacter(character)
 
-        if character == src.gamestate.gamestate.mainChar:
-            print("solver")
-
         if self.subQuests:
             return super().solver(character)
-
-        if character == src.gamestate.gamestate.mainChar:
-            print("solver2")
 
         if self.triggerCompletionCheck(character):
             return
@@ -238,6 +246,23 @@ Return to %s after to complete this quest."""%(tile,)
                     outputSlot = random.choice(outputSlots)
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True))
                     return
+
+            elif self.takeAnyUnbolted:
+                nextToTarget = False
+                candidates = []
+                for item in room.itemsOnFloor:
+                    if item.bolted == False and item.type == self.toCollect:
+                        candidates.append(item)
+
+                if candidates:
+                    for item in candidates:
+                        if character.getDistance(item.getPosition()) < 2:
+                            nextToTarget = True
+                    
+                    if not nextToTarget:
+                        item = random.choice(candidates)
+                        self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True))
+                        return
             else:
                 source = self.getSource()
                 if source:

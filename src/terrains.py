@@ -60,6 +60,7 @@ class Terrain(src.saveing.Saveable):
 
         self.noPlacementTiles = []
         self.scrapFields = []
+        self.forests = []
         self.ignoreAttributes = []
         self.pathCache = {}
 
@@ -73,6 +74,7 @@ class Terrain(src.saveing.Saveable):
         self.roomByMap = {}
         self.floordisplay = src.canvas.displayChars.floor
         self.itemsByCoordinate = {}
+        self.itemsByBigCoordinate = {}
         self.roomByCoordinates = {}
         self.listeners = {"default": []}
         self.initialSeed = seed
@@ -245,6 +247,9 @@ class Terrain(src.saveing.Saveable):
 
     def getRoomByPosition(self, position):
         return self.roomByCoordinates.get((position[0],position[1]),[])
+
+    def getNearbyItems(self, character):
+        return self.itemsByBigCoordinate.get(character.getBigPosition(),[])[:]
 
     def shiftPosition(self,position):
         smallX = position[0] % 15
@@ -1042,7 +1047,7 @@ class Terrain(src.saveing.Saveable):
         """
 
         pathfinder = self.pathfinderCache.get(tilePos)
-        if not pathfinder:
+        if not pathfinder or ignoreEndBlocked:
             tileMap = []
             for x in range(0,15):
                 tileMap.append([])
@@ -1073,12 +1078,16 @@ class Terrain(src.saveing.Saveable):
                     if items:
                         if items[0].type == "Bush":
                             tileMap[x][y] = 127
+            if ignoreEndBlocked:
+                tileMap[targetPos[0]][targetPos[1]] = 1
 
             cost = np.array(tileMap, dtype=np.int8)
             tcod.path.AStar(cost,diagonal = 0)
             pathfinder = tcod.path.AStar(cost,diagonal = 0)
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
-        self.pathfinderCache[tilePos] = pathfinder
+
+        if not ignoreEndBlocked:
+            self.pathfinderCache[tilePos] = pathfinder
 
         moves = []
         lastStep = startPos
@@ -1316,6 +1325,8 @@ class Terrain(src.saveing.Saveable):
             if bigPos in self.pathfinderCache:
                 del self.pathfinderCache[bigPos]
 
+            self.itemsByBigCoordinate[bigPos].remove(item)
+
         try:
             itemList = self.getItemByPosition(pos)
             itemList.remove(item)
@@ -1403,6 +1414,12 @@ class Terrain(src.saveing.Saveable):
             bigPos = (position[0]//15,position[1]//15,position[2]//15)
             if bigPos in self.pathfinderCache:
                 del self.pathfinderCache[bigPos]
+
+            if bigPos in self.itemsByBigCoordinate:
+                self.itemsByBigCoordinate[bigPos].append(item)
+            else:
+                self.itemsByBigCoordinate[bigPos] = [item]
+            
             if position in self.itemsByCoordinate:
                 self.itemsByCoordinate[position].insert(0, item)
             else:
@@ -1713,7 +1730,7 @@ class Terrain(src.saveing.Saveable):
 
                     chars[pos[1]][pos[0]] = display
                 pass
-            self.lastRender = copy.deepcopy(chars)
+            #self.lastRender = copy.deepcopy(chars)
         else:
             chars = copy.deepcopy(self.lastRender)
 
@@ -1814,6 +1831,7 @@ class Terrain(src.saveing.Saveable):
                 if duration < 1:
                     self.animations.remove(animation)
             elif animationType in ("showchar",):
+                print("showchar")
                 display = extraInfo["char"]
 
                 try:

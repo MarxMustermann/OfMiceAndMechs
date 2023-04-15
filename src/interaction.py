@@ -405,6 +405,7 @@ def handleCollision(char,charState):
     if charState["itemMarkedLast"] and char.personality["avoidItems"]:
         char.runCommandString(random.choice(("a","w","s","d",)))
         return
+    char.changed("itemCollision")
     char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
 
             
@@ -579,7 +580,7 @@ def stitchCommands3(charState,commands):
 def handleRecordingChar(key,char,charState,main,header,footer,urwid,flags):
     if (
         key not in ("lagdetection", "lagdetection_", "-")
-        or char.interactionState["varActions"]
+        or char.interactionState.get("varActions")
     ):
         if (
             charState["recordingTo"] is None
@@ -737,6 +738,15 @@ def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
 
 def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
     if len(char.inventory) >= 10:
+        if key == "w":
+            char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+        if key == "s":
+            char.container.addAnimation(char.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+        if key == "d":
+            char.container.addAnimation(char.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+        if key == "a":
+            char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+        char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
         char.addMessage("you cannot carry more items")
     elif not char.container:
         pass
@@ -748,6 +758,12 @@ def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
             if items:
                 item = items[0]
                 item.pickUp(char)
+                char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",1,{"chars":["--",item.render()]})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+            else:
+                char.addMessage("no item to pick up")
+                char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == "s":
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition + 1, char.zPosition)
@@ -755,6 +771,12 @@ def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
             if items:
                 item = items[0]
                 item.pickUp(char)
+                char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",1,{"chars":["--",item.render()]})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+            else:
+                char.addMessage("no item to pick up")
+                char.container.addAnimation(char.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == "d":
             items = char.container.getItemByPosition(
                 (char.xPosition + 1, char.yPosition, char.zPosition)
@@ -762,6 +784,12 @@ def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
             if items:
                 item = items[0]
                 item.pickUp(char)
+                char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+            else:
+                char.addMessage("no item to pick up")
+                char.container.addAnimation(char.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == "a":
             items = char.container.getItemByPosition(
                 (char.xPosition - 1, char.yPosition, char.zPosition)
@@ -769,6 +797,12 @@ def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
             if items:
                 item = items[0]
                 item.pickUp(char)
+                char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+            else:
+                char.addMessage("no item to pick up")
+                char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == ".":
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition, char.zPosition)
@@ -776,39 +810,29 @@ def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
             if items:
                 item = items[0]
                 item.pickUp(char)
+            else:
+                char.addMessage("no item to pick up")
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
     del char.interactionState["advancedPickup"]
 
 def doAdvancedDrop(key,char,charState,main,header,footer,urwid,flags):
     if key == "w":
-        if char.inventory:
-            char.drop(
-                char.inventory[-1],
-                (char.xPosition, char.yPosition - 1, char.zPosition),
-            )
+        pos = (char.xPosition, char.yPosition - 1, char.zPosition)
     elif key == "s":
-        if char.inventory:
-            char.drop(
-                char.inventory[-1],
-                (char.xPosition, char.yPosition + 1, char.zPosition),
-            )
+        pos = (char.xPosition, char.yPosition + 1, char.zPosition)
     elif key == "d":
-        if char.inventory:
-            char.drop(
-                char.inventory[-1],
-                (char.xPosition + 1, char.yPosition, char.zPosition),
-            )
+        pos = (char.xPosition + 1, char.yPosition + 0, char.zPosition)
     elif key == "a":
-        if char.inventory:
-            char.drop(
-                char.inventory[-1],
-                (char.xPosition - 1, char.yPosition, char.zPosition),
-            )
-    elif key == ".":
-        if char.inventory:
-            char.drop(
-                char.inventory[-1], (char.xPosition, char.yPosition, char.zPosition)
-            )
+        pos = (char.xPosition - 1, char.yPosition + 0, char.zPosition)
+    else:
+        pos = (char.xPosition, char.yPosition, char.zPosition)
+
+    char.drop(
+        None,
+        pos
+    )
     del char.interactionState["advancedDrop"]
+    return
 
 def doStateChange(key,char,charState,main,header,footer,urwid,flags):
     if key in (">",):
@@ -1983,7 +2007,7 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         return
     """
 
-    if key in ("-",) and not char.interactionState["varActions"]:
+    if key in ("-",) and not char.interactionState.get("varActions"):
         startStopRecording(key,char,charState,main,header,footer,urwid,flags)
         return
 
@@ -2272,7 +2296,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 char.combatMode = None
             char.addMessage("switched combatMode to: %s" % (char.combatMode,))
         """
-        if key in (commandChars.attack,):
+        if key in (commandChars.attack,"M"):
             # bad code: should be part of a position object
             adjascentFields = [
                 (char.xPosition, char.yPosition),
@@ -2285,7 +2309,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if enemy == char:
                     continue
                 if (
-                    not char.combatMode == "agressive"
+                    not key == "M"
                     and enemy.faction == char.faction
                 ):
                     continue
@@ -2374,7 +2398,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if len(char.inventory):
                     item = char.inventory[-1]
                     char.drop(item)
-                    char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["--",item.render()]})
+                    char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["++",item.render()]})
+                else:
+                    char.addMessage("no item to drop")
+                    char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
 
         # drink from the first available item in inventory
         # bad pattern: the user has to have the choice from what item to drink from
@@ -2493,6 +2520,7 @@ press key for advanced drop
         # bad code: picking up should happen in character
         if key in (commandChars.pickUp,):
             if len(char.inventory) >= 10:
+                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 char.addMessage("you cannot carry more items")
             else:
                 item = charState["itemMarkedLast"]
@@ -2509,11 +2537,12 @@ press key for advanced drop
 
                 if not item:
                     char.addMessage("no item to pick up found")
+                    char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
                     return
 
                 item.pickUp(char)
 
-                char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["++",item.render()]})
+                char.container.addAnimation(char.getPosition(),"charsequence",1,{"chars":["--",item.render()]})
 
         # open chat partner selection
         if key in (commandChars.hail,):
@@ -3275,7 +3304,8 @@ class IdleChatNPCMenu(SubMenu):
                 options.append(("charInfo","Tell me about yourself."))
                 options.append(("showQuests","What are you doing?"))
                 options.append(("showInventory","What is in your inventory?"))
-                self.subMenu = SelectionMenu("my frustration is: \n\n", options)
+                options.append(("showFeelings","How are you feeling?"))
+                self.subMenu = SelectionMenu("", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
             self.instructionType = self.subMenu.selection
@@ -3294,6 +3324,12 @@ class IdleChatNPCMenu(SubMenu):
             self.subMenu = None
             return True
         if self.instructionType == "showInventory":
+            submenue = src.interaction.InventoryMenu(char=self.npc)
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender,character=character)
+            self.subMenu = None
+            return True
+        if self.instructionType == "showFeelings":
             submenue = src.interaction.InventoryMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
@@ -4141,6 +4177,10 @@ class CharacterInfoMenu(SubMenu):
         if hasattr(char,"superior"):
             text += "superior:   %s\n" % char.superior
         text += "reputation: %s\n" % char.reputation
+        flaskInfo = "-"
+        if char.flask:
+            flaskInfo = str(char.flask.uses)+" flask charges"
+        text += "satiation:  %s (%s)\n" % (char.satiation,flaskInfo,)
 
         text += "\n"
         for jobOrder in char.jobOrders:
@@ -4430,6 +4470,8 @@ class AdvancedQuestMenu(SubMenu):
                     options.append(("ProtectSuperior", "ProtectSuperior"))
                     options.append(("Equip", "Equip"))
                     options.append(("Assimilate", "Assimilate"))
+                    options.append(("Eat", "Eat"))
+                    options.append(("FillFlask", "FillFlask"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)
 
                 # let the superclass handle the actual selection
@@ -4906,7 +4948,7 @@ def renderInventory(character=None,sidebared=False):
                     )
         txt.extend("\n")
     else:
-        txt = "empty Inventory"
+        txt = "empty Inventory\n\n"
     return txt
 
 # bad code: uses global function to render
@@ -6598,14 +6640,18 @@ def renderGameDisplay(renderChar=None):
     else:
         healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
 
+    flaskInfo = "-"
+    if char.flask:
+        flaskInfo = str(char.flask.uses)
+
     if char.satiation == 0:
-        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved")
+        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved (%s/%s)"%(char.satiation,flaskInfo,))
     elif char.satiation < 200:
-        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving")
-    elif char.satiation < 400:
-        satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry")
+        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving (%s/%s)"%(char.satiation,flaskInfo,))
+    elif char.satiation < 300:
+        satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry (%s/%s)"%(char.satiation,flaskInfo,))
     else:
-        satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated")
+        satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated (%s/%s)"%(char.satiation,flaskInfo,))
 
     text = [
         "health: " , healthDisplay ,
@@ -7516,6 +7562,27 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         else:
                             submenu = "difficulty"
 
+def showInterruptText(text):
+    tcod.event.get()
+
+    while 1:
+        tcodConsole.clear()
+        printUrwidToTcod(text,(0,0))
+        tcodContext.present(tcodConsole)
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
+                    return
+
+
 def showIntro():
     def fixRoomRender(render):
         for row in render:
@@ -7587,6 +7654,9 @@ You """+"."*stageState["substep"]+"""
                 room.offsetX = 1
                 room.offsetY = 1
                 terrain.addRoom(room)
+                terrain.hidden = False
+
+            terrain.lastRender = None
 
             if stageState["substep"] == 6:
                 terrain.hidden = False
@@ -7648,6 +7718,8 @@ You """+"."*stageState["substep"]+"""
 
         if stage == 2:
             text = """Strange mechanations fill the world with ancient logic"""
+
+            terrain.lastRender = None
 
             if stageState == None:
                 stageState = {"lastChange":time.time(), "items":[],"terrainItems":[],"outputslots":[],"walkingSpaces":[],"inputslots":[],"fastSpawn":set(),"subStep":0,"didRemove":False}
@@ -7991,6 +8063,8 @@ You """+"."*stageState["substep"]+"""
             text1 = """Strange machinations fill the world with ancient logic"""
             text2 = """and you work on tasks with unknown purposes."""
 
+            terrain.lastRender = None
+
             if stageState == None:
                 stageState = {"lastChange":time.time()}
 
@@ -8009,6 +8083,8 @@ You """+"."*stageState["substep"]+"""
         if stage == 4:
             text1 = """Strange machinations fill the world with ancient logic"""
             text2 = """and you work on tasks with unknown purposes."""
+
+            terrain.lastRender = None
 
             if stageState == None:
                 stageState = {"lastChange":time.time(),"substep":0,"endless":False}
@@ -8083,6 +8159,8 @@ You """+"."*stageState["substep"]+"""
         if stage == 5:
             text1 = """Strange machinations fill the world with ancient logic"""
             text2 = """and you work on tasks with unknown purposes."""
+
+            terrain.lastRender = None
 
             if stageState == None:
                 stageState = {"lastChange":time.time(),"substep":0}

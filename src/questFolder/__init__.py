@@ -51,3 +51,10 @@ import src.questFolder.drawFloorPlan
 import src.questFolder.obtainSpecialItem
 import src.questFolder.goToTerrain
 import src.questFolder.extendBase
+import src.questFolder.gatherVatMaggots
+import src.questFolder.eat
+import src.questFolder.fillFlask
+import src.questFolder.buildRoom
+import src.questFolder.produceItem
+import src.questFolder.setUpMachine
+import src.questFolder.researchBlueprint

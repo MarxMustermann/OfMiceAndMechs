@@ -39,7 +39,7 @@ operate the machine on %s
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
-        if not items or not items[0].type in ("Machine","ScrapCompactor",):
+        if not items or not items[0].type in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
             self.fail()
             return True
 

@@ -39,6 +39,25 @@ Filling a flask will use up a charge from your goo dispenser.
 
         self.description = self.baseName + " (%s charges)" % (self.charges)
 
+    def render(self):
+        if self.readyToUse():
+            baseDisplay = "%="
+            if self.charges > 5:
+                baseDisplay = "§="
+            if self.charges > 20:
+                baseDisplay = "$="
+            if self.charges == self.maxCharges:
+                baseDisplay = "&="
+            return (src.interaction.urwid.AttrSpec("#fff", "black"),baseDisplay)
+        return self.display
+
+
+    def readyToUse(self):
+        if not self.charges > 0:
+            return False
+
+        return True
+
     def setDescription(self):
         """
         set own description
@@ -55,21 +74,38 @@ Filling a flask will use up a charge from your goo dispenser.
 
         if not self.charges:
             character.addMessage("the dispenser has no charges")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             return
 
         filled = False
         fillAmount = 100 + ((self.level - 1) * 10)
+
+        if character.flask and character.flask.uses < fillAmount:
+            character.flask.uses = fillAmount
+            self.runCommand("filled",character)
+            self.charges -= 1
+            self.description = self.baseName + " (%s charges)" % (self.charges)
+            character.addMessage("you fill your goo flask")
+            self.container.addAnimation(self.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":["&=","$=","§="]})
+            character.container.addAnimation(character.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":["o "," o","oo"]})
+            return
+
         for item in character.inventory:
             if isinstance(item, src.items.itemMap["GooFlask"]) and not item.uses >= fillAmount:
                 item.uses = fillAmount
                 filled = True
                 self.charges -= 1
                 self.description = self.baseName + " (%s charges)" % (self.charges)
+                character.addMessage("you fill the goo flask")
                 break
         if filled:
             self.runCommand("filled",character)
-            character.addMessage("you fill the goo flask")
-        self.activated = True
+            character.addMessage("you fill goo flasks in your inventory")
+            return
+
+        character.addMessage("you have no flask to be filled")
+        self.container.addAnimation(self.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
 
     def addCharge(self):
         """

@@ -102,7 +102,7 @@ Press r to generate subquest and recive detailed instructions
                 amount += extraInfo["deadChar"].maxHealth//3
                 self.character.awardReputation(amount,reason="an enemy dying nearby")
         else:
-            amount = 2*self.character.rank
+            amount = 30
             if extraInfo["deadChar"].rank == 3:
                 amount = 500
             if extraInfo["deadChar"].rank == 4:
@@ -243,7 +243,7 @@ Press r to generate subquest and recive detailed instructions
         for item in items:
             #if not item.bolted:
             #    continue
-            if not item.type in ("Machine","ScrapCompactor",):
+            if not item.type in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
                 continue
             if not item.readyToUse():
                 continue
@@ -281,6 +281,38 @@ Press r to generate subquest and recive detailed instructions
                 self.addQuest(src.quests.questMap["RestockRoom"](toRestock="Scrap"))
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
                 self.addQuest(src.quests.questMap["GatherScrap"](targetPosition=pos))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
+                self.idleCounter = 0
+                return True
+
+    def checkTriggerMaggotGathering(self,character,room):
+        emptyInputSlots = room.getEmptyInputslots(itemType="VatMaggot")
+        if emptyInputSlots:
+            for inputSlot in emptyInputSlots:
+                if not inputSlot[1] == "VatMaggot":
+                    continue
+
+                source = None
+                if room.sources:
+                    for potentialSource in random.sample(list(room.sources),len(room.sources)):
+                        if potentialSource[1] == "rawVatMaggots":
+                            source = potentialSource
+                            break
+
+                if source == None and not character.getTerrain().forests:
+                    continue
+
+                if self.triggerClearInventory(character,room):
+                    return True
+
+                if source:
+                    pos = source[0]
+                else:
+                    pos = random.choice(character.getTerrain().forests)
+
+                self.addQuest(src.quests.questMap["RestockRoom"](toRestock="VatMaggot"))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
+                self.addQuest(src.quests.questMap["GatherVatMaggots"](targetPosition=pos))
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
                 self.idleCounter = 0
                 return True
@@ -330,7 +362,7 @@ Press r to generate subquest and recive detailed instructions
         if hasattr(room,"inputSlots"):
             checkedTypes = set()
 
-            emptyInputSlots = room.getEmptyInputslots()
+            emptyInputSlots = room.getEmptyInputslots(allowStorage=False)
             if emptyInputSlots:
 
                 for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
@@ -393,11 +425,14 @@ Press r to generate subquest and recive detailed instructions
                             break
 
                         if not source:
-                            for room in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
-                                if not room.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                            for otherRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
+                                if otherRoom == character.container:
                                     continue
 
-                                source = (room.getPosition(),inputSlot[1])
+                                if not otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1]):
+                                    continue
+
+                                source = (otherRoom.getPosition(),inputSlot[1])
                                 break
 
                         if not source:
@@ -474,7 +509,7 @@ Press r to generate subquest and recive detailed instructions
                             break
 
                     if not source:
-                        character.addMessage("no filled output slots")
+                        character.addMessage("no machine placing - no filled output slots")
                         continue
 
                 if hasItem:
@@ -505,6 +540,11 @@ Press r to generate subquest and recive detailed instructions
                         self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
                 self.idleCounter = 0
                 return True
+
+    def checkTriggerEat(self,character,room):
+        if character.satiation < 200:
+            self.addQuest(src.quests.questMap["Eat"]())
+            return True
 
     def triggerClearInventory(self,character,room):
         if len(character.inventory) > 9:
@@ -663,6 +703,9 @@ Press r to generate subquest and recive detailed instructions
                 quest.activate()
                 return
 
+        if self.checkTriggerEat(character,room):
+            return
+
         for duty in character.duties:
             if duty == "trap setting":
                 if self.checkTriggerTrapSetting(character,room):
@@ -674,6 +717,10 @@ Press r to generate subquest and recive detailed instructions
 
             if duty == "resource gathering":
                 if self.checkTriggerResourceGathering(character,room):
+                    return
+
+            if duty == "maggot gathering":
+                if self.checkTriggerMaggotGathering(character,room):
                     return
 
             if duty == "scratch checking":

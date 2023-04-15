@@ -4,14 +4,14 @@ import random
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEnd=False,ignoreEndBlocked=False):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.baseDescription = description
         self.targetPosition = None
         self.hasListener = False
-        self.ignoreEndBlocked = False
+        self.ignoreEndBlocked = ignoreEndBlocked
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
         if ignoreEndBlocked:
@@ -97,6 +97,9 @@ This quest ends after you do this."""%(self.targetPosition,)
     def handleChangedTile(self, extraInfo=None):
         self.fail()
 
+    def handleCollision(self, extraInfo=None):
+        self.fail()
+
     def assignToCharacter(self, character):
         if self.character:
             return
@@ -105,6 +108,7 @@ This quest ends after you do this."""%(self.targetPosition,)
         self.startWatching(character,self.handleChangedTile, "changedTile")
         self.startWatching(character,self.handleChangedTile, "entered terrain")
         self.startWatching(character,self.handleChangedTile, "entered room")
+        self.startWatching(character,self.handleCollision, "itemCollision")
 
         super().assignToCharacter(character)
 
@@ -167,6 +171,7 @@ This quest ends after you do this."""%(self.targetPosition,)
         else:
             self.path = character.container.getPathCommandTile(character.getTilePosition(),character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
         if not self.path:
+            character.addMessage("moving failed - no path found.")
             self.fail()
 
     def setParameters(self,parameters):
@@ -187,6 +192,7 @@ This quest ends after you do this."""%(self.targetPosition,)
         if not self.isPathSane(character):
             self.generatePath(character)
             if not self.path:
+                character.addMessage("moving failed - no path found")
                 self.fail()
                 return
 

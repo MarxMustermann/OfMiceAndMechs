@@ -56,6 +56,7 @@ A painter. it can be used to draw markers on the floor
             return "xb"
         if self.paintMode == "delete":
             return "xd"
+        return "x?"
 
     def configure(self, character):
        self.submenue = src.interaction.OneKeystrokeMenu(
@@ -201,6 +202,9 @@ A painter. it can be used to draw markers on the floor
                 for storageSlot in character.container.storageSlots[:]:
                     if storageSlot[0] == character.getPosition(offset=self.offset):
                         character.container.storageSlots.remove(storageSlot)
+                for buildSite in character.container.buildSites[:]:
+                    if buildSite[0] == character.getPosition(offset=self.offset):
+                        character.container.buildSites.remove(buildSite)
 
         character.addMessage("you paint a marking on the floor")
         character.addMessage((self.paintMode,self.paintType,str(self.paintExtraInfo)))

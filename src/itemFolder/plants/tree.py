@@ -33,7 +33,7 @@ class Tree(src.items.Item):
         regenerate maggots to account for passed time
         """
 
-        self.numMaggots += (src.gamestate.gamestate.tick - self.lastUse) // 100
+        self.numMaggots += (src.gamestate.gamestate.tick - self.lastUse) // 10
         self.numMaggots = min(self.numMaggots, self.maxMaggot)
 
     def apply(self, character):
@@ -65,10 +65,13 @@ class Tree(src.items.Item):
                 targetFull = True
 
         if targetFull:
-            character.addMessage("the target area is full, the machine does not work")
+            character.addMessage("the target area is full, you harvest no moaggots")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
             return
 
         if not self.numMaggots:
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             character.addMessage("The tree has no maggots left")
             return
 
@@ -77,6 +80,9 @@ class Tree(src.items.Item):
         new = src.items.itemMap["VatMaggot"]()
         new.bolted = False
         self.container.addItem(new,(self.xPosition+1,self.yPosition,self.zPosition))
+
+        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"~-"})
+        self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":"~-"})
 
     def getLongInfo(self):
         """

@@ -160,6 +160,13 @@ class Item(src.saveing.Saveable):
         except:
             return None,None,None
 
+    def getSmallPosition(self,offset=(0,0,0)):
+        try:
+            pos = self.getPosition()
+            return (pos[0]%15,pos[1]%15,pos[2]%15)
+        except:
+            return None,None,None
+
     def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information={}):
         """
         delegate a task to another item using a room manager

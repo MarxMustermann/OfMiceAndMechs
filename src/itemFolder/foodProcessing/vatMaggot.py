@@ -36,16 +36,16 @@ Activate it to eat it. Effect may vary.
 
         # remove resources
         character.addMessage("you consume the vat maggot")
-        character.addSatiation(10,reason="eating a vat maggot")
-        character.removeFrustration(25,reason="eating a vat maggot")
+        character.addSatiation(100,reason="eating a vat maggot")
+        if character.maxHealth > 10:
+            character.maxHealth -= 1
+            character.addMessage("you loose 1 max HP for eating a vat maggot")
+            if character.health > character.maxHealth:
+                character.health = character.maxHealth
         if self.xPosition and self.yPosition:
             self.container.removeItem(self)
         else:
             if self in character.inventory:
                 character.inventory.remove(self)
-        if src.gamestate.gamestate.tick % 5 == 0:
-            character.addMessage("you wretch from eating a vat magot")
-            character.removeSatiation(25,reason="wretching")
-            character.addFrustration(75,reason="wretching")
 
 src.items.addType(VatMaggot)

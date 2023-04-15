@@ -22,6 +22,42 @@ Place 10 bio mass to the left/west of the bio press.
 Activate the bio press to produce press cake.
 """
 
+    def render(self):
+        if self.readyToUse():
+            return "%H"
+        else:
+            return self.display
+
+    def readyToUse(self):
+        if not self.xPosition:
+            return False
+
+        # fetch input scrap
+        items = []
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+            if item.type == "BioMass":
+                items.append(item)
+
+        # refuse to produce without resources
+        if len(items) < 10:
+            return False
+
+        # check if target area is full
+        targetFull = False
+        itemList = self.container.getItemByPosition(
+            (self.xPosition + 1, self.yPosition, self.zPosition)
+        )
+        if len(itemList) > 15:
+            targetFull = True
+        for item in itemList:
+            if item.walkable == False:
+                targetFull = True
+
+        if targetFull:
+            return False
+
+        return True
+
     # needs abstraction: takes x input and produces y output
     def apply(self, character):
         """
@@ -30,6 +66,8 @@ Activate the bio press to produce press cake.
         Parameters:
             character: the character using the item
         """
+
+        character.changed("operated machine",{"character":character,"machine":self})
 
         # fetch input bio mass
         items = []
@@ -42,6 +80,8 @@ Activate the bio press to produce press cake.
         # refuse to produce without resources
         if len(items) < 10:
             character.addMessage("not enough bio mass")
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             return
 
         # check if target area is full
@@ -69,11 +109,19 @@ Activate the bio press to produce press cake.
             counter += 1
             self.container.removeItem(item)
 
+        character.addMessage(
+            "you produce a press cake"
+        )
+
         # spawn the new item
         new = src.items.itemMap["PressCake"]()
         self.container.addItem(
             new, (self.xPosition + 1, self.yPosition, self.zPosition)
         )
+
+        self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
+        self.container.addAnimation(self.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":["§H","%H","$H"]})
+        self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"++")})
 
 
 src.items.addType(BioPress)

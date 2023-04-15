@@ -78,10 +78,14 @@ Activate a filled corpse animator to spawn a ghul
         if corpse:
             character.inventory.remove(corpse)
             self.filled = True
+            self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"--"})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"OO")})
         else:
             character.addMessage(
                 "you need to have a corpse to refill the corpse animator"
             )
+            self.container.addAnimation(character.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
 
     def eject(self, character=None, originalActor=None):
         """
@@ -143,6 +147,9 @@ Activate a filled corpse animator to spawn a ghul
         # character.runCommandString("j")
         character.macroState["macros"]["j"] = "Jf"
         self.runCommand("born", character=character)
+
+        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"OO")})
+        self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"@ ")})
 
         return character
 

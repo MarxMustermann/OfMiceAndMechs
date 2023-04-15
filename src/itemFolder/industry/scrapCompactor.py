@@ -198,6 +198,7 @@ class ScrapCompactor(src.items.Item):
             new, (self.xPosition + 1, self.yPosition, self.zPosition)
         )
         self.container.addAnimation(new.getPosition(),"showchar",2,{"char":"++"})
+        character.changed("producedItem", {"item":new})
 
         #HACK: sound effect
         if src.gamestate.gamestate.mainChar in self.container.characters:

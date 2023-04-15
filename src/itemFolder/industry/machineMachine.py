@@ -112,6 +112,47 @@ Select the thing to produce and confirm.
         elif selection == "produce":
             self.productionSwitch()
 
+    def readyToUse(self):
+        if self.endProducts == {}:
+            return False
+
+        if (
+            src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown
+            and not self.charges
+        ):
+            return False
+
+        # gather a metal bar
+        resourcesNeeded = ["MetalBars"]
+
+        resourcesFound = []
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition,0)):
+            if item.type in resourcesNeeded:
+                resourcesFound.append(item)
+                resourcesNeeded.remove(item.type)
+
+        # refuse production without resources
+        if resourcesNeeded:
+            return False
+
+        targetFull = False
+        if (self.xPosition + 1, self.yPosition,0) in self.container.itemByCoordinates:
+            if (
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition,0)])
+                > 0
+            ):
+                targetFull = True
+
+        if targetFull:
+            return False
+        return True
+
+    def render(self):
+        if self.readyToUse():
+            return "M\\"
+        else:
+            return self.display
+
     def addBlueprint(self, blueprint=None):
         """
         try to load a blueprint into the machine
@@ -128,6 +169,8 @@ Select the thing to produce and confirm.
                         break
 
             if not blueprintFound:
+                self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+                self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 self.character.addMessage("no blueprint found above/north")
                 return
         else:
@@ -143,6 +186,8 @@ Select the thing to produce and confirm.
             self.character.addMessage(
                 "blueprint for " + blueprintFound.endProduct + " inserted"
             )
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"bb")})
+            self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
             self.container.removeItem(blueprintFound)
 
     def productionSwitch(self):
@@ -217,18 +262,23 @@ Select the thing to produce and confirm.
                 targetFull = True
 
         if targetFull:
+            self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             self.character.addMessage(
                 "the target area is full, the machine does not produce anything"
             )
             return
-        else:
-            self.character.addMessage("not full")
 
         if self.charges:
             self.charges -= 1
         else:
             self.coolDownTimer = src.gamestate.gamestate.tick
 
+        self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"M|")})
+        self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"M\\")})
+        self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"M|")})
+        self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
+        self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"++")})
         self.character.addMessage(
             "you produce a machine that produces %s" % (itemType,)
         )

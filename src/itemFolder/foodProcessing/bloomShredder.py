@@ -36,6 +36,8 @@ Activate the bloom shredder to produce biomass.
 
         # refuse to produce without resources
         if len(items) < 1:
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             character.addMessage("not enough blooms")
             return
 
@@ -56,6 +58,8 @@ Activate the bloom shredder to produce biomass.
             character.addMessage(
                 "the target area is full, the machine does not produce anything"
             )
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
             return
 
         # remove resources
@@ -64,5 +68,9 @@ Activate the bloom shredder to produce biomass.
         # spawn the new item
         new = src.items.itemMap["BioMass"]()
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
+
+        self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
+        self.container.addAnimation(self.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":["§>","%>","$>"]})
+        self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"++")})
 
 src.items.addType(BloomShredder)

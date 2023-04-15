@@ -26,10 +26,14 @@ The items from the blueprint reciepe need to be added to the west or south.
         self.submenue = None
         self.text = None
 
+        self.setReciepes()
+
+    def setReciepes(self):
         self.reciepes = [
             [["MemoryCell", "Connector", "FloorPlate"], "UniformStockpileManager"],
             [["MemoryCell", "Connector", "Command"], "ProductionManager"],
             [["MemoryCell", "Bloom", "SickBloom"], "AutoFarmer"],
+            [["Corpse","Bolt","Rod"], "CorpseAnimator"],
             [["MemoryCell", "Tank"], "MemoryBank"],
             [["MemoryCell", "Puller"], "MemoryDump"],
             [["MemoryCell", "Heater"], "SimpleRunner"],
@@ -60,11 +64,13 @@ The items from the blueprint reciepe need to be added to the west or south.
             [["Stripe", "MetalBars"], "pusher"],
             [["Bolt", "MetalBars"], "puller"],
             [["Rod", "MetalBars"], "Frame"],
+            [["Rod", "Bolt"], "Sword"],
+            [["Sheet", "Bolt"], "Armor"],
             [["Bloom", "MetalBars"], "SporeExtractor"],
             [["Sheet", "Rod", "Bolt"], "FloorPlate"],
             [["Coal", "SickBloom"], "FireCrystals"],
+            [["Corpse","Stripe"], "CorpseShredder"],
             [["Command"], "AutoScribe"],
-            [["Corpse"], "CorpseShredder"],
             [["Tank"], "GooFlask"],
             [["Heater"], "Boiler"],
             [["Connector"], "Door"],
@@ -97,6 +103,8 @@ The items from the blueprint reciepe need to be added to the west or south.
             character: the character trying to use the item
         """
 
+        self.setReciepes()
+
         sheet = None
         for item in self.container.getItemByPosition((self.xPosition, self.yPosition - 1,self.zPosition)):
             if item.type == "Sheet":
@@ -104,6 +112,8 @@ The items from the blueprint reciepe need to be added to the west or south.
                 break
 
         if not sheet:
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             character.addMessage("no sheet - place sheet to the top/north")
             return
 
@@ -113,6 +123,8 @@ The items from the blueprint reciepe need to be added to the west or south.
         inputThings.extend(self.container.getItemByPosition((self.xPosition, self.yPosition + 1, self.zPosition)))
 
         if not inputThings:
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
             character.addMessage("no items - place items to the left/west")
             return
 
@@ -158,9 +170,20 @@ The items from the blueprint reciepe need to be added to the west or south.
                 character.addMessage(
                     "the target area is full, the machine does not produce anything"
                 )
+                self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+                self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
                 return
 
             self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
+
+            self.container.addAnimation(self.getPosition(),"charsequence",2,{"chars":[
+                (src.interaction.urwid.AttrSpec("#aaa", "black"),"s["),
+                (src.interaction.urwid.AttrSpec("#aaa", "black"),"s#"),
+                (src.interaction.urwid.AttrSpec("#aaa", "black"),"s]"),
+               ]})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":"--"})
+            self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":"--"})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":"++"})
 
             for itemType in reciepeFound[0]:
                 self.container.removeItem(abstractedInputThings[itemType]["item"])
@@ -168,6 +191,8 @@ The items from the blueprint reciepe need to be added to the west or south.
             character.addMessage("you create a blueprint for " + reciepe[1])
             character.addMessage("items used: " + ", ".join(reciepeFound[0]))
         else:
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             character.addMessage("unable to produce blueprint from given items")
             return
 

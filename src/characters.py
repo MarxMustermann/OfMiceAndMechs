@@ -73,6 +73,8 @@ class Character(src.saveing.Saveable):
 
         self.duties = []
 
+        self.foodPerRound = 0
+
         super().__init__()
 
         if name is None and seed:
@@ -172,6 +174,7 @@ class Character(src.saveing.Saveable):
 
         self.weapon = None
         self.armor = None
+        self.flask = None
         self.combatMode = None
 
         self.interactionState = {}
@@ -1559,6 +1562,9 @@ class Character(src.saveing.Saveable):
                 if self.armor:
                     container.addItem(self.armor, pos)
                     self.armor = None
+                if self.flask:
+                    container.addItem(self.flask, pos)
+                    self.flask = None
 
                 corpse = src.items.itemMap["Corpse"]()
                 container.addItem(corpse, pos)
@@ -1769,7 +1775,7 @@ class Character(src.saveing.Saveable):
                 self.path = self.path[1:]
         return False
 
-    def drop(self, item, position=None):
+    def drop(self, item=None, position=None):
         """
         make the character drop an item
 
@@ -1777,6 +1783,16 @@ class Character(src.saveing.Saveable):
             item: the item to drop
             position: the position to drop the item on
         """
+
+        if not self.inventory:
+            self.addMessage("no item to drop")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+            if position:
+                self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            return
+
+        if not item:
+            item = self.inventory[-1]
 
         foundScrap = None
 
@@ -1787,6 +1803,16 @@ class Character(src.saveing.Saveable):
 
         if item.walkable == False and len(itemList):
             self.addMessage("you need a clear space to drop big items")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            if position:
+                self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
+            return
+
+        if len(itemList) > 25:
+            self.addMessage("you can not put more items there")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            if position:
+                self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         foundBig = False
@@ -1802,12 +1828,16 @@ class Character(src.saveing.Saveable):
 
         if foundBig:
             self.addMessage("there is no space to drop the item")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+            if position:
+                self.container.addAnimation(position,"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"[]")})
             return
 
         self.addMessage("you drop a %s" % item.type)
 
         # remove item from inventory
         self.inventory.remove(item)
+        self.container.addAnimation(self.getPosition(),"charsequence",1,{"chars":["--",item.render()]})
 
         if src.gamestate.gamestate.mainChar in self.container.characters:
             src.interaction.playSound("itemDropped","actions")
@@ -1820,6 +1850,7 @@ class Character(src.saveing.Saveable):
         else:
             # add item to floor
             self.container.addItem(item, position, actor=self)
+            self.container.addAnimation(position,"charsequence",1,{"chars":[item.render(),"++"]})
 
         self.changed("dropped",(self,item))
 
@@ -1971,7 +2002,7 @@ class Character(src.saveing.Saveable):
             self.events.remove(event)
 
         # handle satiation
-        #self.satiation -= 1
+        self.satiation -= self.foodPerRound
         if self.satiation < 100:
             if self.satiation < 10:
                 self.frustration += 10
@@ -1984,14 +2015,20 @@ class Character(src.saveing.Saveable):
             )
             return
 
-        if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
+        #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
+        if self.satiation < 300:
             self.changed("thirst")
 
+            if self.flask and self.flask.uses > 0:
+                self.flask.apply(self)
+
+        if self.satiation < 30:
             for item in self.inventory:
                 if isinstance(item, src.items.itemMap["GooFlask"]):
                     if item.uses > 0:
                         item.apply(self)
                         break
+
                 if (
                     isinstance(item, src.items.itemMap["Bloom"])
                     or isinstance(item, src.items.itemMap["BioMass"])
@@ -2010,7 +2047,7 @@ class Character(src.saveing.Saveable):
 
         if (
             self == src.gamestate.gamestate.mainChar
-            and self.satiation < 30
+            and self.satiation < 300
             and self.satiation > -1
         ):
             self.addMessage(
@@ -2244,7 +2281,7 @@ class Character(src.saveing.Saveable):
 
         self.frustration += amount
 
-    def removeFrustration(self, amount):
+    def removeFrustration(self, amount, reason=None):
         """
         decrease the characters frustration
 

@@ -4073,11 +4073,15 @@ class MainGame(BasicPhase):
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
         mainChar.registers["HOMETy"] = pos[1]
+        mainChar.foodPerRound = 1
         self.factionCounter += 1
         colonyBaseInfo = {"type":"colonyBase"}
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         colonyBaseInfo["terrain"] = currentTerrain
         colonyBaseInfo["mainChar"] = mainChar
+
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 10
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4085,7 +4089,7 @@ class MainGame(BasicPhase):
         currentTerrain.addItem(item,(1,1,0))
         positions = [(8,5),(3,2),(5,4)]
         for pos in positions:
-            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+            architect.doAddScrapfield(pos[0], pos[1], 300,leavePath=True)
 
         mainRoom = architect.doAddRoom(
                 {
@@ -4097,6 +4101,25 @@ class MainGame(BasicPhase):
                 },
                 None,
            )
+        if random.random() > 0.5:
+            scrapRoom = architect.doAddRoom(
+                    {
+                           "coordinate": (7,6),
+                           "roomType": "EmptyRoom",
+                           "doors": "0,6 6,0 12,6 6,12",
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None,
+               )
+
+            for i in range(1,50):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                if scrapRoom.getItemByPosition(pos):
+                    continue
+                scrap = src.items.itemMap["Scrap"](amount=random.randint(1,25))
+                scrapRoom.addItem(scrap,pos)
+
         mainRoom.storageRooms = []
         mainRoom.sources.append([(8,5),"rawScrap"])
 
@@ -4125,12 +4148,35 @@ class MainGame(BasicPhase):
         mainRoom.addItem(bluePrintingArtwork,(8,8,0))
 
         scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-        mainRoom.addItem(scrapCompactor,(8,3,0))
+        mainRoom.addItem(scrapCompactor,(8,4,0))
 
         machinemachine = src.items.itemMap["MachineMachine"]()
         machinemachine.charges = 100
-        mainRoom.addItem(machinemachine,(10,3,0))
+        mainRoom.addItem(machinemachine,(10,4,0))
 
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(7,1,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(7,2,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,2,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,1,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(9,1,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(10,1,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,1,0))
+
+        #machine = src.items.itemMap["Machine"]()
         #machine = src.items.itemMap["Machine"]()
         #machine.setToProduce("Sheet")
         #mainRoom.addItem(machine,(4,9,0))
@@ -4147,13 +4193,15 @@ class MainGame(BasicPhase):
         mainRoom.addItem(scrapCompactor,(4,1,0))
         """
 
-        for x in range(7,11):
-            mainRoom.addStorageSlot((x,11),None)
+        for x in range(7,12):
+            mainRoom.addStorageSlot((x,11,0),None)
         for x in range(1,6):
-            mainRoom.addStorageSlot((x,11),None)
+            mainRoom.addStorageSlot((x,11,0),None)
 
         tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
         currentTerrain.addItem(tree,(6*15+7,6*15+7,0))
+        currentTerrain.forests.append((6,6))
 
         item = src.items.itemMap["BluePrint"]()
         item.setToProduce("Rod")
@@ -4165,7 +4213,7 @@ class MainGame(BasicPhase):
         item = src.items.itemMap["BluePrint"]()
         item.setToProduce("Sheet")
         item.bolted = False
-        mainRoom.addItem(item,(10,2,0))
+        mainRoom.addItem(item,(10,3,0))
         item = src.items.itemMap["Painter"]()
         item.bolted = False
         mainRoom.addItem(item,(11,11,0))
@@ -4190,6 +4238,9 @@ class MainGame(BasicPhase):
         item = src.items.itemMap["Mount"]()
         item.bolted = False
         mainRoom.addItem(item,(8,11,0))
+        item = src.items.itemMap["Radiator"]()
+        item.bolted = False
+        mainRoom.addItem(item,(7,11,0))
 
         item = src.items.itemMap["MoldSpore"]()
         item.bolted = False
@@ -4222,18 +4273,28 @@ class MainGame(BasicPhase):
 
         note = src.items.itemMap["Note"]()
         note.text = """
+blueprint reciepes:
+
+Scrap = ScrapCompactor
+MetalBars => Wall
+Frame + MetalBars => Case
+Rod + MetalBars => Frame
+Rod => Rod
+-
+Connector => Door
+Mount + MetalBars => Connector
+Mount => Mount
+-
 Puller => room builder
 Bolt + MetalBars => puller
 Bolt => Bolt
 Stripe + MetalBars => pusher
 Stripe => Stripe
-MetalBars => Wall
-Scrap = ScrapCompactor
-Frame + MetalBars => Case
-Rod + MetalBars => Frame
-Connector => Door
-Mount + MetalBars => Connector
-Mount => Mount
+-
+VatMaggot => MaggotFermenter
+BioMass => 
+-
+Corpse + Rod + Bolt => CorpseAnimator
 """
         mainRoom.addItem(note,(9,9,0))
 
@@ -5126,8 +5187,19 @@ Mount => Mount
             self.openedQuestsProduction()
             return
         elif self.activeStory["type"] == "colonyBase":
+            self.openedQuestsColonyBase()
             return
         1/0
+
+    def openedQuestsColonyBase(self):
+        mainChar = self.activeStory["mainChar"]
+        containerQuest = src.quests.questMap["ExtendBase"]()
+        mainChar.quests.append(containerQuest)
+        containerQuest.assignToCharacter(mainChar)
+        containerQuest.activate()
+        containerQuest.generateSubquests(mainChar)
+        containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
+        return
 
     def openedQuestsRaid(self):
         mainChar = self.activeStory["mainChar"]
@@ -5303,7 +5375,6 @@ When you rise in rank you will be able to build a way out of here."""
     def advanceColonyBase(self,state):
         terrain = state["terrain"]
         room = random.choice(terrain.rooms)
-        print(room)
 
         npc = src.characters.Character()
         npc.questsDone = [
@@ -5341,16 +5412,52 @@ When you rise in rank you will be able to build a way out of here."""
         ]
 
         npc.faction = src.gamestate.gamestate.mainChar.faction
+        #npc.rank = 6
         room.addCharacter(npc,6,6)
+        npc.flask = src.items.itemMap["GooFlask"]()
+        npc.flask.uses = 10
 
         npc.duties = []
-        duty = random.choice(("resource gathering","machine operation","trap setting","hauling","resource fetching","cleaning","machine placing"))
+        duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","resource gathering","machine operation","hauling","resource fetching","cleaning","machine placing","maggot gathering"))
+        #duty = random.choice(("maggot gathering",))
         npc.duties.append(duty)
+        npc.registers["HOMEx"] = 7
+        npc.registers["HOMEy"] = 7
+        npc.registers["HOMETx"] = terrain.xPosition
+        npc.registers["HOMETy"] = terrain.yPosition
         quest = src.quests.questMap["BeUsefull"](strict=True)
         quest.autoSolve = True
         quest.assignToCharacter(npc)
         quest.activate()
         npc.assignQuest(quest,active=True)
+        npc.foodPerRound = 1
+
+        '''
+        numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
+        while numNewRooms > 0:
+            itemType = random.choice([("personelArtwork","DutyArtwork","OrderArtwork")])
+            item = itemMap
+            item = src.items.
+            text = """
+You have build a new room. you are rewarded with an extra item:
+
+The item will appear in your inventory.
+
+press enter to continue"""%(npc.name,duty,terrain)
+            src.interaction.showInterruptText(text)
+        '''
+
+        if not src.gamestate.gamestate.tick < 100:
+            text = """
+An epoch has passed and a new outcast has found a way into your base:
+
+%s 
+---------
+duty: %s
+food: ~10 000 moves
+
+press enter to continue"""%(npc.name,duty,)
+            src.interaction.showInterruptText(text)
 
     def advanceSiegedBase(self,state):
         terrain = state["terrain"]

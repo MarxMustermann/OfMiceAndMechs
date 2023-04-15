@@ -34,6 +34,8 @@ you can eat it to gain 10 satiation.
             character.addMessage("this needs to be placed outside to be used")
             return
 
+        self.container.addAnimation(self.getPosition(),"showchar",2,{"char":self.render()})
+        self.container.addAnimation(character.getPosition(),"showchar",2,{"char":"xx"})
         character.satiation += 10
         if character.satiation > 1000:
             character.satiation = 1000

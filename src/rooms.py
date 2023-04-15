@@ -189,7 +189,7 @@ class Room(src.saveing.Saveable):
 
         return result
 
-    def getEmptyInputslots(self,itemType=None,allowAny=False):
+    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True):
         result = []
         for inputSlot in self.inputSlots:
             if (itemType and not inputSlot[1] == itemType) and (not allowAny or  not inputSlot[1] == None):
@@ -218,35 +218,36 @@ class Room(src.saveing.Saveable):
             if len(items) < maxAmount:
                 result.append(inputSlot)
 
-        for storageSlot in self.storageSlots:
-            if (itemType and not storageSlot[1] == itemType) and (not allowAny or  not storageSlot[1] == None):
-                continue
-            
-            pos = storageSlot[0]
-            if len(pos) < 3:
-                pos = (pos[0],pos[1],0)
-            items = self.getItemByPosition(pos)
-            if not items:
-                result.append(storageSlot)
-                continue
-
-            if (itemType and not items[-1].type == itemType):
-                continue
-
-            if items[-1].type == "Scrap":
-                if items[-1].amount < 15:
+        if allowStorage:
+            for storageSlot in self.storageSlots:
+                if (itemType and not storageSlot[1] == itemType) and (not allowAny or  not storageSlot[1] == None):
+                    continue
+                
+                pos = storageSlot[0]
+                if len(pos) < 3:
+                    pos = (pos[0],pos[1],0)
+                items = self.getItemByPosition(pos)
+                if not items:
                     result.append(storageSlot)
-                continue
+                    continue
 
-            if not items[-1].walkable:
-                continue
+                if (itemType and not items[-1].type == itemType):
+                    continue
 
-            maxAmount = storageSlot[2].get("maxAmount")
-            if not maxAmount:
-                maxAmount = 20
+                if items[-1].type == "Scrap":
+                    if items[-1].amount < 15:
+                        result.append(storageSlot)
+                    continue
 
-            if len(items) < maxAmount:
-                result.append(storageSlot)
+                if not items[-1].walkable:
+                    continue
+
+                maxAmount = storageSlot[2].get("maxAmount")
+                if not maxAmount:
+                    maxAmount = 20
+
+                if len(items) < maxAmount:
+                    result.append(storageSlot)
 
         return result
 

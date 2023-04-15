@@ -202,7 +202,8 @@ There is %s in this pile
                 character.inventory.remove(item)
                 character.changed("dropped",(character,self))
 
-        self.container.addAnimation(self.getPosition(),"scrapChange",1,{})
+        if self.container:
+            self.container.addAnimation(self.getPosition(),"scrapChange",1,{})
 
         self.setWalkable()
 

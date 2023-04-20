@@ -4101,7 +4101,7 @@ class MainGame(BasicPhase):
                 },
                 None,
            )
-        if random.random() > 0.5:
+        if random.random() > 1.5:
             scrapRoom = architect.doAddRoom(
                     {
                            "coordinate": (7,6),
@@ -4255,6 +4255,7 @@ class MainGame(BasicPhase):
         item.bolted = False
         mainRoom.addItem(item,(1,11,0))
 
+        """ UNDO: removed walls
         for x in range(1,6):
             for y in range(1,6):
                 item = src.items.itemMap["Wall"]()
@@ -4266,6 +4267,7 @@ class MainGame(BasicPhase):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 mainRoom.addItem(item,(x,y,0))
+        """
 
         #for i in range(0,10):
         #    sheet = src.items.itemMap["Sheet"]()

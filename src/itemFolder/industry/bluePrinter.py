@@ -190,6 +190,7 @@ The items from the blueprint reciepe need to be added to the west or south.
             self.container.removeItem(sheet)
             character.addMessage("you create a blueprint for " + reciepe[1])
             character.addMessage("items used: " + ", ".join(reciepeFound[0]))
+            character.changed("producedBlueprint", {"itemType":reciepe[1]})
         else:
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})

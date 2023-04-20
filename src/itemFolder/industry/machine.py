@@ -169,8 +169,6 @@ Activate the machine to produce.
         else:
             self.coolDownTimer = src.gamestate.gamestate.tick
 
-        character.addMessage("you produce a %s" % (self.toProduce,))
-
         # remove resources
         for item in resourcesFound:
             self.container.addAnimation(item.getPosition(),"showchar",2,{"char":"--"})
@@ -186,6 +184,11 @@ Activate the machine to produce.
         # spawn new item
         new = src.items.itemMap[self.toProduce]()
         new.bolted = False
+        character.addMessage("you produce a %s" % (self.toProduce,))
+        character.changed("producedItem", {"item":new})
+        character.addMessage("---------")
+        character.addMessage(character.listeners.get("producedItem","NONE"))
+        print(character.listeners.get("producedItem","NONE"))
 
         if hasattr(new, "coolDown"):
             new.coolDown = round(

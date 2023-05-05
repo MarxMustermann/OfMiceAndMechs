@@ -81,7 +81,16 @@ To see your items open the your inventory by pressing i."""
                 if character.xPosition%15 == 0:
                     character.runCommandString("d")
                     return
+                
+                if "HOMEx" in character.registers:
+                    quest = src.quests.questMap["GoHome"]()
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    return True
 
+                character.runCommandString("l")
+                return True
 
             # clear inventory local
             room = character.getRoom()
@@ -116,6 +125,7 @@ To see your items open the your inventory by pressing i."""
                 quest.activate()
                 return True
 
+            8/0
             return False
 
         super().solver(character)

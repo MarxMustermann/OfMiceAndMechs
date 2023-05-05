@@ -86,7 +86,7 @@ class GoToTile(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return """
-operate the machine on %s
+go to tile %s
 """%(self.targetPosition,)
 
     def triggerCompletionCheck(self, character=None):
@@ -151,28 +151,28 @@ operate the machine on %s
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
                     return (None,"ss")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.getPosition() == (6,0,0):
                     return (None,"ww")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
                 if character.getPosition() == (12,6,0):
                     return (None,"dd")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.getPosition() == (0,6,0):
                     return (None,"aa")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
@@ -198,25 +198,25 @@ operate the machine on %s
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
                     return (None,"s")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0),description="go to tile edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
                     return (None,"w")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0),description="go to tile edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
                     return (None,"d")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0),description="go to tile edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
                     return (None,"a")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge")
                 quest.generatePath(character)
                 return ([quest],None)
     

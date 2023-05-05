@@ -35,10 +35,7 @@ So it is enough to go next to the target position to end this quest.
         text = """
 go to position %s in the same room you are in.
 
-This quest ends after you do this."""%(self.targetPosition,) 
-        text += """
-
-%s"""%(self.ignoreEndBlocked,)
+This quest ends after you do this.%s"""%(self.targetPosition,extraText,) 
         return text
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -171,6 +168,8 @@ This quest ends after you do this."""%(self.targetPosition,)
         else:
             self.path = character.container.getPathCommandTile(character.getTilePosition(),character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
         if not self.path:
+            #if character.room.isRoom:
+            #    character.room.cachedPathfinder = None
             character.addMessage("moving failed - no path found.")
             self.fail()
 

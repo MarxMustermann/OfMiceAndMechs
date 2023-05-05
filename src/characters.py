@@ -2017,10 +2017,11 @@ class Character(src.saveing.Saveable):
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
         if self.satiation < 300:
-            self.changed("thirst")
-
             if self.flask and self.flask.uses > 0:
                 self.flask.apply(self)
+
+        if self.satiation == 299:
+            self.changed("thirst")
 
         if self.satiation < 30:
             for item in self.inventory:

@@ -4,7 +4,7 @@ import random
 class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
 
-    def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False):
+    def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -14,6 +14,7 @@ class FetchItems(src.quests.MetaQuestSequence):
         self.tileToReturnTo = None
         self.collectedItems = False
         self.takeAnyUnbolted = takeAnyUnbolted
+        self.tryHard = tryHard
 
         if toCollect:
             self.setParameters({"toCollect":toCollect})
@@ -33,23 +34,29 @@ class FetchItems(src.quests.MetaQuestSequence):
         if not self.amount:
             text = """
 Fetch an inventory full of %ss.
-
 """%(self.toCollect,)
         else:
             extraS = "s"
             if self.amount == 1:
                 extraS = ""
             text = """
-Fetch %s %s.
-
-"""%(self.toCollect,extraS,)
+Fetch %s %s%s.
+"""%(self.amount,self.toCollect,extraS,)
 
         if self.returnToTile:
             tile = self.tileToReturnTo
             if not tile:
                 tile = "this tile"
             text += """
-Return to %s after to complete this quest."""%(tile,)
+Return to %s after to complete this quest.
+"""%(tile,)
+
+        if self.tryHard:
+            text += """
+Try as hard as you can to achieve this.
+If you don't find a source, produce new items.
+"""
+
         return text
 
     def pickedUpItem(self,extraInfo):
@@ -82,10 +89,6 @@ Return to %s after to complete this quest."""%(tile,)
         if not character:
             return
 
-        if character == src.gamestate.gamestate.mainChar:
-            print("wtf")
-            print(self.amount)
-        
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
@@ -95,8 +98,6 @@ Return to %s after to complete this quest."""%(tile,)
 
             if numItems >= self.amount:
                 self.collectedItems = True
-                self.postHandler()
-                return
 
         if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
             self.collectedItems = True
@@ -113,9 +114,10 @@ Return to %s after to complete this quest."""%(tile,)
 
             if self.getSource():
                 return
-
-            self.fail(reason="no source for item %s"%(self.toCollect,))
         return
+
+    def unhandledSubQuestFail(self,extraParam):
+        self.fail(extraParam["reason"])
 
     def getSource(self):
         if not isinstance(self.character.container,src.rooms.Room):
@@ -187,7 +189,7 @@ Return to %s after to complete this quest."""%(tile,)
                 return "+"
 
             if not dryRun:
-                quest = src.quests.questMap["GoToPosition"](ignoreEnd=True)
+                quest = src.quests.questMap["GoToPosition"](ignoreEnd=True,description="go to "+self.toCollect)
                 quest.assignToCharacter(character)
                 quest.setParameters({"targetPosition":foundNeighbour[0]})
                 quest.activate()
@@ -222,6 +224,20 @@ Return to %s after to complete this quest."""%(tile,)
             self.addQuest(quest)
             return
 
+        if self.amount:
+            numItemsCollected = 0
+            for item in reversed(character.inventory):
+                if not item.type == self.toCollect:
+                    break
+                numItemsCollected += 1
+
+            if character.getFreeInventorySpace() < self.amount-numItemsCollected:
+                quest = src.quests.questMap["ClearInventory"]()
+                quest.activate()
+                quest.assignToCharacter(character)
+                self.addQuest(quest)
+                return
+
         if self.collectedItems and self.tileToReturnTo:
             charPos = None
             if isinstance(character.container,src.rooms.Room):
@@ -233,9 +249,13 @@ Return to %s after to complete this quest."""%(tile,)
                 self.tileToReturnTo = None
                 return
 
-        if not self.collectedItems and isinstance(character.container,src.rooms.Room):
+        if not self.collectedItems:
+            if not isinstance(character.container,src.rooms.Room):
+                self.addQuest(src.quests.questMap["GoHome"]())
+                return
             room = character.container
             outputSlots = room.getNonEmptyOutputslots(itemType=self.toCollect)
+            foundItem = False
             if outputSlots:
                 nextToTarget = False
                 for outputSlot in outputSlots:
@@ -244,8 +264,9 @@ Return to %s after to complete this quest."""%(tile,)
 
                 if not nextToTarget:
                     outputSlot = random.choice(outputSlots)
-                    self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True))
+                    self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect))
                     return
+                foundItem = True
 
             elif self.takeAnyUnbolted:
                 nextToTarget = False
@@ -261,8 +282,9 @@ Return to %s after to complete this quest."""%(tile,)
                     
                     if not nextToTarget:
                         item = random.choice(candidates)
-                        self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True))
+                        self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect))
                         return
+                    foundItem = True
             else:
                 source = self.getSource()
                 if source:
@@ -270,9 +292,16 @@ Return to %s after to complete this quest."""%(tile,)
                     if self.returnToTile:
                         self.tileToReturnTo = (room.xPosition,room.yPosition,0)
                     return
-                else:
-                    character.runCommandString("11.")
+
+            if not foundItem:
+                if self.tryHard:
+                    quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard)
+                    self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                    self.addQuest(quest)
                     return
+
+                self.fail(reason="no source for item %s"%(self.toCollect,))
+                return
 
         commandString = self.getSolvingCommandString(character,dryRun=False)
         self.reroll()

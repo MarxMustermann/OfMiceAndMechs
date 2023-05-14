@@ -186,9 +186,6 @@ Activate the machine to produce.
         new.bolted = False
         character.addMessage("you produce a %s" % (self.toProduce,))
         character.changed("producedItem", {"item":new})
-        character.addMessage("---------")
-        character.addMessage(character.listeners.get("producedItem","NONE"))
-        print(character.listeners.get("producedItem","NONE"))
 
         if hasattr(new, "coolDown"):
             new.coolDown = round(
@@ -263,7 +260,7 @@ Currently the machine has no charges
         return text
 
     # abstraction: use super class function
-    def configure(self, character):
+    def configure_disabled(self, character):
         """
         handle a character trying to do a configuration action
         by offering a selection of possible actions
@@ -272,9 +269,8 @@ Currently the machine has no charges
             character: the character trying to use the machine
         """
 
-        options = [("addCommand", "add command")]
         self.submenue = src.interaction.OneKeystrokeMenu(
-            "what do you want to do?\n\nc: add command\nj: run job order"
+                "what do you want to do?\n\nc: add command\nj: run job order\nb: bolt/unbolt"
         )
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.apply2
@@ -302,6 +298,13 @@ Currently the machine has no charges
                 for (commandName, command) in task["commands"].items():
                     self.commands[commandName] = command
 
+        elif self.submenue.keyPressed == "b":
+            if self.bolted:
+                self.bolted = False
+                self.character.addMessage("You bolt down the machine to the floor")
+            else:
+                self.bolted = True
+                self.character.addMessage("You unbolt the machine")
         elif self.submenue.keyPressed == "c":
             options = []
             options.append(("success", "set success command"))

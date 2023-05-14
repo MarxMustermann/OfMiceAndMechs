@@ -47,7 +47,6 @@ Activate the maggot fermenter to add a charge to the goo dispenser.
             character.addMessage("not enough press cakes")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-            character.addMessage("not enough maggots")
             return
 
         # refill goo dispenser

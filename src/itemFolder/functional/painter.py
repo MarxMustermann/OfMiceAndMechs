@@ -37,6 +37,29 @@ A painter. it can be used to draw markers on the floor
         self.objectsToStore.append("character")
         self.objectsToStore.append("submenue")
 
+    def getUsageInformation(self):
+        return """
+Place the Painter on the floor and activate it to draw.
+
+You can control what types of markers are drawn by configuring it.
+
+It can be configured to draw
+* inputStockpiles
+* outputStockpiles
+* storageStockpiles
+* walkingSpaces
+or to remove markings.
+
+For stockpiles the item type that the stockpile applies to can be set.
+For example a storageStockpile with the type Scrap will store Scrap.
+
+More complex parameters can be set as extra parameters.
+
+You also can set the direction for the Painter.
+This will paint the marker next to the Painter.
+This should be used in cases where you can not place the Painter on the position the marker should be drawn.
+"""
+
     def render(self):
         """
         render the marker as animation if active

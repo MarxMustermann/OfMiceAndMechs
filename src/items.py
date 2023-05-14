@@ -394,6 +394,9 @@ class Item(src.saveing.Saveable):
 
         character.changed("itemPickedUp",(character,self,oldPos))
 
+    def getUsageInformation(self):
+        return self.usageInfo
+
     def getLongInfo(self):
         """
         returns a long text description to show to the player
@@ -406,7 +409,7 @@ class Item(src.saveing.Saveable):
         if self.description:
             text += "description: \n" + self.description + "\n\n"
         if self.usageInfo:
-            text += "usage: \n%s\n" % (self.usageInfo,)
+            text += "usage: \n%s\n" % (self.getUsageInformation(),)
         if self.commands:
             text += "commands: \n"
             for (

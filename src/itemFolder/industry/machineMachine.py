@@ -176,7 +176,7 @@ Select the thing to produce and confirm.
         else:
             blueprintFound = blueprint
 
-        self.endProducts[blueprintFound.endProduct] = blueprintFound.endProduct
+        self.endProducts[blueprintFound.endProduct] = blueprintFound
         if blueprintFound.endProduct not in self.blueprintLevels:
             self.blueprintLevels[blueprintFound.endProduct] = 0
         if self.blueprintLevels[blueprintFound.endProduct] < blueprintFound.level:

@@ -7,7 +7,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = description
+        self.metaDescription = "%s %s"%(description,targetPosition,)
         if len(targetPosition) < 3:
             targetPosition = (targetPosition[0],targetPosition[1],0)
         self.targetPosition = targetPosition

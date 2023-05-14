@@ -58,3 +58,7 @@ import src.questFolder.buildRoom
 import src.questFolder.produceItem
 import src.questFolder.setUpMachine
 import src.questFolder.researchBlueprint
+import src.questFolder.placeItem
+import src.questFolder.setUpProductionLine
+import src.questFolder.drawStockpile
+import src.questFolder.cleanSpace

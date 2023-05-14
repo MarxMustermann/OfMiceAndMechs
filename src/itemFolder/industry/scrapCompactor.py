@@ -205,6 +205,29 @@ class ScrapCompactor(src.items.Item):
             src.interaction.playSound("scrapcompactorUsed","machines")
         self.runCommand("success", character)
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the ScrapCompactor")
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the ScrapCompactor")
+
     def getLongInfo(self):
         """
         returns a longer than normal description text
@@ -269,7 +292,7 @@ thie is a level %s item
         )
         return text
 
-    def configure(self, character):
+    def configure_disabled(self, character):
         """
         handle a character trying to configure the machine
         by offering a selection of possible actions
@@ -286,12 +309,7 @@ thie is a level %s item
         character.macroState["submenue"].followUp = self.apply2
         self.character = character
 
-    def apply2(self):
-        """
-        handle a character having selected a configuration action
-        by running the action
-        """
-
+    def apply2_disabled(self):
         if self.submenue.selection == "runCommand":
             options = []
             for itemType in self.commands:

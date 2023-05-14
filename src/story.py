@@ -3995,6 +3995,8 @@ class MainGame(BasicPhase):
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
         elif self.activeStory["type"] == "raidBase":
             self.activeStory["mainChar"].messages.insert(0,("""until you notice eneryone looking at you expectingly."""))
+        elif self.activeStory["type"] == "colonyBase":
+            self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
         else:
@@ -4147,13 +4149,24 @@ class MainGame(BasicPhase):
         """
         bluePrintingArtwork = src.items.itemMap["BluePrinter"]()
         mainRoom.addItem(bluePrintingArtwork,(8,8,0))
+        item = src.items.itemMap["Machine"]()
+        item.toProduce = "Sheet"
+        mainRoom.addItem(item,(7,7,0))
 
         scrapCompactor = src.items.itemMap["ScrapCompactor"]()
         mainRoom.addItem(scrapCompactor,(8,4,0))
+        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+        scrapCompactor.bolted = False
+        mainRoom.addItem(scrapCompactor,(2,11,0))
 
         machinemachine = src.items.itemMap["MachineMachine"]()
         machinemachine.charges = 100
         mainRoom.addItem(machinemachine,(10,4,0))
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("ScrapCompactor")
+        machinemachine.endProducts["ScrapCompactor"] = item
+        machinemachine.blueprintLevels["ScrapCompactor"] = 1
 
         item = src.items.itemMap["RoomBuilder"]()
         item.bolted = False
@@ -4263,10 +4276,27 @@ class MainGame(BasicPhase):
                 mainRoom.addItem(item,(x,y,0))
 
         for x in range(1,6):
-            for y in range(7,10):
+            for y in range(7,11):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 mainRoom.addItem(item,(x,y,0))
+
+        # scatter items around
+        for i in range(0,25):
+            item = src.items.itemMap["Case"]()
+            item.bolted = False
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,25):
+            item = src.items.itemMap["Frame"]()
+            item.bolted = False
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,25):
+            item = src.items.itemMap["Rod"]()
+            item.bolted = False
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
 
         #for i in range(0,10):
         #    sheet = src.items.itemMap["Sheet"]()
@@ -4301,7 +4331,7 @@ Corpse + Rod + Bolt => CorpseAnimator
 
         return colonyBaseInfo
 
-    def createProductiondBase(self,pos):
+    def createProductionBase(self,pos):
         mainChar = src.characters.Character()
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [
@@ -5427,6 +5457,7 @@ When you rise in rank you will be able to build a way out of here."""
         npc.registers["HOMETx"] = terrain.xPosition
         npc.registers["HOMETy"] = terrain.yPosition
         quest = src.quests.questMap["BeUsefull"](strict=True)
+        #quest = src.quests.questMap["ExtendBase"]()
         quest.autoSolve = True
         quest.assignToCharacter(npc)
         quest.activate()

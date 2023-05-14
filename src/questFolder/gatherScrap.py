@@ -82,33 +82,35 @@ Scrapfields are shown on the minimap as white ss"""]
                 character.runCommandString("k"*min(10-len(character.inventory),items[-1].amount))
                 return
 
-        # check for direct scrap
         foundScrap = None
-        toCheckFrom = [character.getPosition()]
-        pathMap = {toCheckFrom[0]:[]}
-        directions = [(-1,0),(1,0),(0,1),(0,-1)]
-        while len(toCheckFrom):
-            random.shuffle(directions)
-            pos = toCheckFrom.pop()
-            for direction in directions:
-                foundScrap = None
+        room = character.container
+        if not isinstance(room,src.rooms.Room):
+            # check for direct scrap
+            toCheckFrom = [character.getPosition()]
+            pathMap = {toCheckFrom[0]:[]}
+            directions = [(-1,0),(1,0),(0,1),(0,-1)]
+            while len(toCheckFrom):
+                random.shuffle(directions)
+                pos = toCheckFrom.pop()
+                for direction in directions:
+                    foundScrap = None
 
-                oldPos = pos
-                newPos = (pos[0]+direction[0],pos[1]+direction[1],pos[2])
-                if newPos[0]%15 < 1 or newPos[0]%15 > 13 or newPos[1]%15 < 1 or newPos[1]%15 > 13:
-                    continue
+                    oldPos = pos
+                    newPos = (pos[0]+direction[0],pos[1]+direction[1],pos[2])
+                    if newPos[0]%15 < 1 or newPos[0]%15 > 13 or newPos[1]%15 < 1 or newPos[1]%15 > 13:
+                        continue
 
-                items = character.container.getItemByPosition(newPos)
-                if items:
-                    if items[0].type == "Scrap":
-                        foundScrap = (oldPos,newPos,direction)
-                        break
+                    items = character.container.getItemByPosition(newPos)
+                    if items:
+                        if items[0].type == "Scrap":
+                            foundScrap = (oldPos,newPos,direction)
+                            break
 
-                if character.container.getPositionWalkable(newPos) and not newPos in pathMap:
-                    toCheckFrom.append(newPos)
-                    pathMap[newPos] = pathMap[oldPos]+[direction]
-            if foundScrap:
-                break
+                    if character.container.getPositionWalkable(newPos) and not newPos in pathMap:
+                        toCheckFrom.append(newPos)
+                        pathMap[newPos] = pathMap[oldPos]+[direction]
+                if foundScrap:
+                    break
 
         if not foundScrap:
             room = character.container

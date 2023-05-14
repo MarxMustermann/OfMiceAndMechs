@@ -49,14 +49,12 @@ This quest ends after you do this.%s"""%(self.targetPosition,extraText,)
         self.getSolvingCommandString(character)
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if self.path:
-            if isinstance(character.container,src.rooms.Room):
-                pos = (character.xPosition,character.yPosition)
-            else:
-                pos = (character.xPosition%15,character.yPosition%15)
             pos = character.getPosition()
             for step in self.path:
                 pos = (pos[0]+step[0],pos[1]+step[1])
                 result.append((pos,"path"))
+
+        result.append(((self.targetPosition[0]+character.getBigPosition()[0]*15,self.targetPosition[1]%15+character.getBigPosition()[1]*15),"target"))
         return result
 
     def handleMoved(self, extraInfo):

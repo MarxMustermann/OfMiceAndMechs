@@ -3735,6 +3735,7 @@ class QuestMenu(SubMenu):
                 self.questCursor[0] = 0
                 self.char.runCommandString(["esc"])
         if key == "K":
+            quest = None
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
@@ -3742,14 +3743,20 @@ class QuestMenu(SubMenu):
             quest.autoSolve = True
             self.char.runCommandString(["esc"])
         if key == "r":
+            quest = None
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
+                baseList = quest.subQuests
             quest.generateSubquests(self.char)
+            print(quest)
+            if not (self.questCursor == [0]):
+                print(self.questCursor)
         if key == "R":
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
+                baseList = quest.subQuests
             quest.clearSubQuests()
             quest.generateSubquests(self.char)
         if key == "x":
@@ -4885,7 +4892,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
             else:
                 newCursor = None
             txt.extend(
-                quest.render(cursor=newCursor)
+                quest.render(cursor=newCursor,sidebared=sidebared)
                     )
             txt.extend("\n\n")
             counter += 1
@@ -8541,8 +8548,8 @@ and for a moment you hear terrible silence.
 
 But it slowly comes back
 and you hear that familiar voice again."""
-            if subStep > l:
-                text += """
+            #if subStep > l:
+            text += """
 
 
 suggested action:

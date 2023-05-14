@@ -282,7 +282,7 @@ class Quest(src.saveing.Saveable):
     def handleTimeOut(self):
         self.fail()
 
-    def render(self,depth=0,cursor=None):
+    def render(self,depth=0,cursor=None,sidebared=False):
         description = self.description
         if self.active:
             description = "> "+description
@@ -592,8 +592,11 @@ class MetaQuestSequence(Quest):
         # save state and register
         self.type = "MetaQuestSequence"
 
-    def render(self,depth=0,cursor=None):
+    def render(self,depth=0,cursor=None,sidebared=False):
         description = [self.description]
+        
+        #if not depth == 0 and sidebared:
+        #    description = ["..."]
 
         if cursor == None:
             color = "#fff"
@@ -619,7 +622,12 @@ class MetaQuestSequence(Quest):
             else:
                 newCursor = None
 
-            description.append(["\n"]+["     "*(depth+1)]+quest.render(depth=depth+1,cursor=newCursor))
+            numIndents = depth + 1
+            if sidebared:
+                numIndents = 1
+                if not quest.subQuests:
+                    numIndents = 2
+            description.append(["\n"]+["     "*numIndents]+quest.render(depth=depth+1,cursor=newCursor,sidebared=sidebared))
             counter += 1
         return description
 
@@ -842,9 +850,19 @@ class MetaQuestSequence(Quest):
     def triggerCompletionCheck2(self,extraInfo):
         self.stopWatching(extraInfo[0],self.triggerCompletionCheck2,"completed")
         self.triggerCompletionCheck()
+        print(extraInfo)
 
         if extraInfo[0] in self.subQuests:
             self.subQuests.remove(extraInfo[0])
+
+        if self.subQuests:
+            subQuest = self.subQuests[0]
+            if not subQuest.active:
+                subQuest.activate()
+                return
+            if not (subQuest.character == self.character):
+                subQuest.assignToCharacter(self.character)
+                return
 
     def triggerCompletionCheck(self,character=None):
 
@@ -935,13 +953,13 @@ class MetaQuestSequence(Quest):
 
     def solver(self, character):
         # remove completed quests
-        if self.subQuests and self.subQuests[0].completed:
+        while self.subQuests and self.subQuests[0].completed:
             self.subQuests.remove(self.subQuests[0])
 
         if self.triggerCompletionCheck(character):
             return
 
-        if len(self.subQuests):
+        if self.subQuests:
             subQuest = self.subQuests[0]
             if not subQuest.active:
                 subQuest.activate()

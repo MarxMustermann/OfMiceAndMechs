@@ -1526,8 +1526,6 @@ class Room(src.saveing.Saveable):
             else:
                 self.itemByCoordinates[pos] = [item]
 
-            print(item)
-
             for buildSite in self.buildSites:
                 if pos == buildSite[0] and item.type == buildSite[1]:
                     self.buildSites.remove(buildSite)

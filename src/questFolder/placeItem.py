@@ -35,6 +35,7 @@ If you don't find the items to place, produce them.
             return
 
         self.startWatching(character, self.droppedItem, "dropped")
+        self.startWatching(character, self.producedItem, "producedItem")
         super().assignToCharacter(character)
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -50,8 +51,16 @@ If you don't find the items to place, produce them.
         return result
 
 
+    def producedItem(self,extraInfo):
+        print(extraInfo)
+        item = extraInfo["item"]
+        self.checkPlacedItem(item)
+
     def droppedItem(self,extraInfo):
         item = extraInfo[1]
+        self.checkPlacedItem(item)
+
+    def checkPlacedItem(self,item):
         if item.type == self.itemType:
             if item.container.isRoom:
                 if item.container.getPosition() == self.targetPositionBig and item.getPosition() == self.targetPosition:
@@ -61,6 +70,8 @@ If you don't find the items to place, produce them.
                     self.postHandler()
 
     def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
         (nextQuests,nextCommand) = self.getNextStep(character)
         if nextQuests:
             for quest in nextQuests:
@@ -94,10 +105,6 @@ If you don't find the items to place, produce them.
                     break
 
             if not itemFound:
-                if not character.getBigPosition() == (7,7,0):
-                    quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to base, workaround")
-                    return ([quest],None)
-
                 quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard)
                 return ([quest],None)
 
@@ -113,123 +120,25 @@ If you don't find the items to place, produce them.
                 return (None,"lcb")
             else:
                 return (None,"l")
-            14/0
-            if self.itemType == "MetalBars":
-                foundRoom = None
-                foundItem = None
-                for room in character.getTerrain().rooms:
-                    for item in room.itemsOnFloor:
-                        if item.type == "ScrapCompactor":
-                            foundRoom = room
-                            foundItem = item
-                            break
-                    if foundRoom:
-                        break
-
-                if not foundRoom:
-                    self.fail("missing machine ScrapCompactor")
-                    return
-
-                if not character.getPositionBig() == room.getPosition():
-                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
-                    return ([quest], None)
-
-                items = foundItem.container.getItemByPosition(foundItem.getPosition(offset=(-1,0,0)))
-                if not items or not items[-1].type == "Scrap":
-                    if not character.inventory or not character.inventory[-1].type == "Scrap":
-                        scrapField = random.choice(character.getTerrain().scrapFields)
-
-                        quest1 = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
-                        quest2 = src.quests.questMap["GatherScrap"](targetPosition=scrapField)
-                        quest3 = src.quests.questMap["GoToTile"](targetPosition=scrapField)
-                        return ([quest1,quest2,quest3], None)
-
-                    if character.getDistance(item.getPosition(offset=(-1,0,0))) > 1:
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(offset=(-1,0,0)),ignoreEndBlocked=True)
-                        return ([quest], None)
-
-                    offsets = {(0,0,0):"l",(1,0,0):"Ld",(-1,0,0):"La",(0,1,0):"Ls",(0,-1,0):"Lw"}
-                    for (offset,command) in offsets.items():
-                        if character.getPosition(offset=offset) == foundItem.getPosition(offset=(-1,0,0)):
-                            return (None, command)
-
-                if character.getDistance(foundItem.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=foundItem.getPosition(),ignoreEndBlocked=True)
-                    return ([quest], None)
-
-                offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
-                for (offset,command) in offsets.items():
-                    if character.getPosition(offset=offset) == foundItem.getPosition():
-                        return (None, command)
-                1/0
-
-            foundMachine = None
-            for room in character.getTerrain().rooms:
-                for item in room.itemsOnFloor:
-                    if item.type == "Machine" and item.toProduce == self.itemType:
-                        foundMachine = item
-                        break
-                if foundMachine:
-                    break
-
-            if foundMachine:
-                neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
-                inputOffsets = [(-1,0,0),(0,1,0),(0,-1,0)]
-                counter = 0
-                for neededItem in neededItems:
-                    inputOffset = inputOffsets[counter]
-                    items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=inputOffset))
-                    if not items or not items[-1].type == neededItem:
-                        if not character.inventory or not character.inventory[-1].type == neededItem:
-                            if self.tryHard:
-                                quest1 = src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1,takeAnyUnbolted=True,tryHard=True)
-                                self.startWatching(quest1,self.unhandledSubQuestFail,"failed")
-                                quest2 = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())
-                                quest3 = src.quests.questMap["GoToPosition"](targetPosition=foundMachine.getPosition(offset=inputOffset))
-                                return ([quest1,quest2,quest3],None)
-                            self.fail("missing resource %s"%(neededItem,))
-                            return (None,None)
-
-                        if not character.container == foundMachine.container:
-                            quest = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())
-                            return ([quest], None)
-
-
-                        if character.getDistance(foundMachine.getPosition(offset=inputOffset)) > 1:
-                            quest = src.quests.questMap["GoToPosition"](targetPosition=foundMachine.getPosition(offset=inputOffset))
-                            return ([quest], None)
-
-                        offsets = {(0,0,0):"l",(1,0,0):"Ld",(-1,0,0):"La",(0,1,0):"Ls",(0,-1,0):"Lw"}
-                        for (offset,command) in offsets.items():
-                            if character.getPosition(offset=offset) == foundMachine.getPosition(inputOffset):
-                                return (None, command)
-                        1/0
-                    counter += 1
-
-                if not character.container == foundMachine.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())
-                    return ([quest], None)
-
-                if character.getDistance(foundMachine.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=foundMachine.getPosition(),ignoreEndBlocked=True)
-                    return ([quest], None)
-
-                offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
-                for (offset,command) in offsets.items():
-                    if character.getPosition(offset=offset) == foundMachine.getPosition():
-                        return (None, command)
-                1/0
-
-            if self.tryHard:
-                quest = src.quests.questMap["SetUpMachine"](itemType=self.itemType,tryHard=self.tryHard)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                return ([quest], None)
-
-            self.fail("no machine for "+self.itemType)
-            return (None,None)
         return (None,None)
     
     def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+
+        rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
+        if not rooms:
+            items = character.getTerrain().getItemByPosition((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15,0))
+        else:
+            items = rooms[0].getItemByPosition(self.targetPosition)
+
+        if not items:
+            return False
+
+        if items[-1].type == self.itemType:
+            self.postHandler()
+            return True
         return False
+
 
 src.quests.addType(PlaceItem)

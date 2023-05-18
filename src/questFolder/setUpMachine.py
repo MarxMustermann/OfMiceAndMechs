@@ -149,47 +149,8 @@ If you don't find a %s blueprint, research it.
 
                 items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(-1,0,0)))
                 if not items or not items[-1].type == "MetalBars":
-                    if (not character.inventory) or (not character.inventory[-1].type == "MetalBars"):
-                        foundRoom = None
-                        for room in character.getTerrain().rooms:
-                            for item in room.itemsOnFloor:
-                                if item.bolted == False and item.type == "MetalBars":
-                                    foundRoom = room
-                                    break
-                            if foundRoom:
-                                break
-
-                        if not foundRoom:
-                            if self.tryHard:
-                                quest1 = src.quests.questMap["FetchItems"](toCollect="MetalBars",amount=1,takeAnyUnbolted=True,tryHard=True)
-                                self.startWatching(quest1,self.unhandledSubQuestFail,"failed")
-                                quest2 = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
-                                return ([quest2,quest1],None)
-
-                            self.fail("missing resource MetalBars")
-                            return (None,None)
-
-                        if not character.getBigPosition() == room.getPosition():
-                            quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
-                            return ([quest],None)
-
-                        quest = src.quests.questMap["FetchItems"](toCollect="MetalBars",takeAnyUnbolted=True)
-                        return ([quest],None)
-
-                    if not character.container == machineMachine.container:
-                        quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition())
-                        return ([quest],None)
-
-                    if character.getDistance(machineMachine.getPosition(offset=(-1,0,0))) > 1:
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(offset=(-1,0,0)),ignoreEndBlocked=True)
-                        return ([quest],None)
-                    directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
-                    directionFound = None
-                    for direction in directions:
-                        if character.getPosition(offset=direction[0]) == machineMachine.getPosition(offset=(-1,0,0)):
-                            return (None,"L"+direction[1])
-
-                    1/0
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=machineMachine.getPosition(offset=(-1,0,0)),targetPositionBig=machineMachine.container.getPosition(),itemType="MetalBars",tryHard=self.tryHard)
+                    return ([quest], None)
 
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None

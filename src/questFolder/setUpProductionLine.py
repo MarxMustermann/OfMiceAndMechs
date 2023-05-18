@@ -64,16 +64,62 @@ Try as hard as you can to achieve this.
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
-            quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(9,10,0),itemType="Wall",tryHard=True)
-            quest2 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(7,10,0),itemType="Case",tryHard=True)
-            quest3 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(5,10,0),itemType="Frame",tryHard=True)
-            quest4 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(4,9,0),itemType="Rod",tryHard=True)
-            quest5 = src.quests.questMap["PlaceItem"](targetPositionBig=self.targetPositionBig,targetPosition=(3,10,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
-            quest6 = src.quests.questMap["PlaceItem"](targetPositionBig=self.targetPositionBig,targetPosition=(8,9,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
-            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(2,10,0))
-            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(7,9,0))
-            return ([quest2,quest3,quest4,quest1,quest5,quest6],None)
+            if self.itemType == "Door":
+                foundWallOutput = False
+                for room in character.getTerrain().rooms:
+                    for outputSlot in room.outputSlots:
+                        if outputSlot[1] == "Door":
+                            foundWallOutput = True
 
+                if foundWallOutput:
+                    self.postHandler()
+                    return (None,None)
+
+                quest0 = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
+                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(4,8,0),itemType="Door",tryHard=True)
+                quest2 = src.quests.questMap["PlaceItem"](targetPositionBig=self.targetPositionBig,targetPosition=(3,7,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
+                quest3 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(2,7,0))
+                quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Case",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(3,8,0))
+                quest5 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Door",stockpileType="o",targetPositionBig=self.targetPositionBig,targetPosition=(5,8,0))
+                return ([quest5,quest4,quest3,quest2,quest1,quest0],None)
+            if self.itemType == "Wall":
+                foundWallOutput = False
+                for room in character.getTerrain().rooms:
+                    for outputSlot in room.outputSlots:
+                        if outputSlot[1] == "Wall":
+                            foundWallOutput = True
+
+                if foundWallOutput:
+                    self.postHandler()
+                    return (None,None)
+
+                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(9,8,0),itemType="Wall",tryHard=True)
+                quest2 = src.quests.questMap["PlaceItem"](targetPositionBig=self.targetPositionBig,targetPosition=(8,7,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
+                quest3 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(7,7,0))
+                quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Case",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(8,8,0))
+                quest5 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Wall",stockpileType="o",targetPositionBig=self.targetPositionBig,targetPosition=(10,8,0))
+                return ([quest5,quest4,quest3,quest2,quest1],None)
+            if self.itemType == "Case":
+                foundCaseOutput = False
+                for room in character.getTerrain().rooms:
+                    for outputSlot in room.outputSlots:
+                        if outputSlot[1] == "Case":
+                            foundCaseOutput = True
+
+                if foundCaseOutput:
+                    self.postHandler()
+                    return (None,None)
+
+                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(9,10,0),itemType="Case",tryHard=True)
+                quest2 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(7,10,0),itemType="Frame",tryHard=True)
+                quest3 = src.quests.questMap["SetUpMachine"](targetPositionBig=self.targetPositionBig,targetPosition=(5,10,0),itemType="Rod",tryHard=True)
+                quest4 = src.quests.questMap["PlaceItem"](targetPositionBig=self.targetPositionBig,targetPosition=(3,10,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
+                quest5 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=self.targetPositionBig,targetPosition=(2,10,0))
+                quest6 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Case",stockpileType="o",targetPositionBig=self.targetPositionBig,targetPosition=(10,10,0))
+                return ([quest6,quest5,quest4,quest1,quest2,quest3],None)
+        return (None,None)
+
+    """
             if character.inventory and character.inventory[-1].type == "Machine":
                 if not self.targetPosition:
                     validTargetPosition = False
@@ -264,6 +310,7 @@ Try as hard as you can to achieve this.
             self.fail(reason="no blueprint for "+self.itemType)
             return (None,None)
         return (None,None)
+    """
     
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])

@@ -19,10 +19,38 @@ class DrawStockpile(src.quests.MetaQuestSequence):
             return
 
     def generateTextDescription(self):
+        mappedNames = {"i":"input stockpile","o":"output stockpile"}
         text = """
 draw a %s stockpile for %s on position %s on tile %s.
 
-"""%(self.stockpileType,self.itemType,self.targetPosition,self.targetPositionBig,)
+"""%(mappedNames[self.stockpileType],self.itemType,self.targetPosition,self.targetPositionBig,)
+
+        if self.stockpileType == "i":
+            text += """
+Input stockpiles should be filled by clones. Not every clone will fill stockpiles.
+The items to fill up the stockpiles can comes from any source.
+Usually items are taken from a corresponding output or storage slot or gathered outside.
+
+Other processes can be set up to take from an input stockpile.
+For example a machine can take from an input stockpile.
+That way clones should fill up the stockpile and supply the machine with resources.
+"""
+        elif self.stockpileType == "o":
+            text += """
+Clones can take items from output stockpiles.
+Often the item taken from output stockpiles are carried to input or storage stockpiles.
+Sometimes the clones use the items directly.
+
+Output stockpiles need to be filled up by some other process.
+For example a machine can produce onto a output stockpile.
+That way clones can access the output of a machine.
+"""
+        else:
+            text += """
+Stockpiles indicate to clones where items should be stored.
+Storage stockpiles are used to store items.
+
+"""
 
         text += """
 Stockpiles are drawn using a Painter (xi).
@@ -70,12 +98,16 @@ Try as hard as you can to achieve this.
                 return (None,None)
             room = rooms[0]
 
-            for inputSlot in room.inputSlots:
-                print("inputSlot")
-                print(inputSlot)
-                if inputSlot[0] == self.targetPosition:
-                    self.postHandler()
-                    return (None,None)
+            if self.stockpileType == "i":
+                for inputSlot in room.inputSlots:
+                    if inputSlot[0] == self.targetPosition:
+                        self.postHandler()
+                        return (None,None)
+            if self.stockpileType == "o":
+                for outputSlot in room.outputSlots:
+                    if outputSlot[0] == self.targetPosition:
+                        self.postHandler()
+                        return (None,None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             foundOffset = None
@@ -86,9 +118,18 @@ Try as hard as you can to achieve this.
 
                 foundOffset = (offset,items[-1])
             if foundOffset:
-                if character.getDistance(self.targetPosition) > 0:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition)
+                item = foundOffset[1]
+                if character.getDistance(item.getPosition()) > 0:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition())
                     return ([quest],None)
+
+                if self.stockpileType == "i" and not item.paintMode == "inputSlot":
+                    return (None,["c","m","i","enter"])
+                if self.stockpileType == "o" and not item.paintMode == "outputSlot":
+                    return (None,["c","m","o","enter"])
+                if not (self.itemType == item.paintType):
+                    return (None,["c","t"] + list(self.itemType) + ["enter"])
+                    
                 return (None,"jk")
 
             if not self.painterPos:
@@ -97,59 +138,17 @@ Try as hard as you can to achieve this.
                     return ([quest],None)
                 painter = character.inventory[-1]
 
-            if character.getDistance(self.targetPosition) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
+            if not character.getBigPosition() == self.targetPositionBig:
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
                 return ([quest],None)
 
-                pass
+            if character.getDistance(self.targetPosition) > 0:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition)
+                return ([quest],None)
 
             return (None,"l")
 
         return (None,None)
-
-        self.activate()
-        self.assignToCharacter(character)
-        if self.subQuests:
-            return super().solver(character)
-
-        if not character.inventory or not character.inventory[-1].type == "Painter":
-            character.addMessage("no painter")
-            self.addQuest(src.quests.questMap["FetchItems"](toCollect="Painter",amount=1))
-            return
-        painter = character.inventory[-1]
-
-        if not isinstance(character.container,src.rooms.Room):
-            if character.xPosition%15 == 0:
-                character.runCommandString("d")
-            if character.xPosition%15 == 14:
-                character.runCommandString("a")
-            if character.yPosition%15 == 0:
-                character.runCommandString("s")
-            if character.yPosition%15 == 14:
-                character.runCommandString("w")
-            return
-
-
-        if not character.container.floorPlan:
-            self.fail()
-            return
-
-        if character.container.floorPlan.get("walkingSpace"):
-            if not painter.paintMode == "walkingSpace":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmwalkingSpace\nk"))
-                return
-
-            walkingSpace = character.container.floorPlan["walkingSpace"].pop()
-
-            if walkingSpace[0] == 0 or walkingSpace[0] == 12 or walkingSpace[1] == 0 or walkingSpace[1] == 12:
-                return
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=walkingSpace))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
 
         if character.container.floorPlan.get("inputSlots"):
             if not painter.paintMode == "inputSlot":

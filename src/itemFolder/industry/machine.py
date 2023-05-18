@@ -185,7 +185,6 @@ Activate the machine to produce.
         new = src.items.itemMap[self.toProduce]()
         new.bolted = False
         character.addMessage("you produce a %s" % (self.toProduce,))
-        character.changed("producedItem", {"item":new})
 
         if hasattr(new, "coolDown"):
             new.coolDown = round(
@@ -196,6 +195,7 @@ Activate the machine to produce.
 
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
         self.container.addAnimation(new.getPosition(),"showchar",2,{"char":"++"})
+        character.changed("producedItem", {"item":new})
 
         if hasattr(new, "level"):
             new.level = self.level

@@ -625,7 +625,7 @@ class MetaQuestSequence(Quest):
             numIndents = depth + 1
             if sidebared:
                 numIndents = 1
-                if not quest.subQuests:
+                if not quest.subQuests and quest.active:
                     numIndents = 2
             description.append(["\n"]+["     "*numIndents]+quest.render(depth=depth+1,cursor=newCursor,sidebared=sidebared))
             counter += 1

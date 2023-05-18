@@ -2740,6 +2740,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         if not charState["ignoreNextAutomated"]:
             char.runCommandString(commandChars.autoAdvance)
             char.runCommandString(commandChars.advance)
+            char.timeTaken -= 1
             return
         else:
             charState["ignoreNextAutomated"] = False
@@ -2753,7 +2754,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
                 char.runCommandString("~")
         else:
             pass
-        char.timeTaken += 0.3
+        char.timeTaken -= 0.9
 
 
     # handle a keystroke while on map or in cinematic
@@ -3646,6 +3647,11 @@ class DebugMenu(SubMenu):
         Returns:
             returns True when done
         """
+        print("characters on terrain")
+        print(character.getTerrain().characters)
+        print(src.gamestate.gamestate.mainChar)
+        self.persistentText = ["debug"]
+
         # exit submenu
         if key == "esc":
             return True
@@ -8300,7 +8306,7 @@ You see """,".",".",".",""" nothing
 You remember how tendrils of pain grew from from your implant.     
 They played your thoughts and burried them.                           
 They dug up your memories and ripped them apart.     
-You know that something is broken within your implant.     
+You know that something is wrong within your implant.     
 
 The pain ate your mind and           
 starts to burn your flesh.                                                
@@ -8540,16 +8546,21 @@ grows and grows and grows and grows
                                                                                        
 """
             printUrwidToTcod(text,(36,13))
-            text = """
-until something breaks.
+            text = ""
+            text += """
+until something breaks."""
+            if subStep > 15:
+                text += """
 
 Your implant stops emitting pain
-and for a moment you hear terrible silence.
+and for a moment you hear terrible silence."""
+            if subStep > 35:
+                text += """
 
 But it slowly comes back
 and you hear that familiar voice again."""
-            #if subStep > l:
-            text += """
+            if subStep > 50:
+                text += """
 
 
 suggested action:

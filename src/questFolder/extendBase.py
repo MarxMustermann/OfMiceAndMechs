@@ -13,11 +13,14 @@ class ExtendBase(src.quests.MetaQuestSequence):
         out = ""
         if len(self.character.getTerrain().rooms) == 1:
             out += """
+Set up a base.
+
 Your base is currently only the city core.
 This is the room you started in.
-
 To set up the base you need to build more rooms.
-There should be some walls (XX), Doors ([]) and a few RoomBuilders (RB).
+
+Use a RoomBuilder (RB) to build a room.
+The needed walls (XX) and Doors ([]) should be in the city core.
 Start setting up the base using these materials.
 
 Add the first room, to have space for some industry.
@@ -62,11 +65,11 @@ Build %s more rooms to achive that.
 
         if not self.subQuests:
             out += """
-This quest has no subquests. Press r to generate subquests for this quest.
-The subquests will guide you, but you don't have to follow them as long as the is getting extended."""
+This quest has no subquests. Press r to generate subquests for this quest."""
         else:
             out += """
 Follow this quests sub quests. They will guide you and try to explain how to build a base.
+You do not have to follow the subquests as long as the base is getting set up.
 Press d to move the cursor and show the subquests description.
 Press a to move back to the main quest.
 """
@@ -101,6 +104,16 @@ Press a to move back to the main quest.
                 return (None,None)
             room = rooms[0]
 
+            npcs = []
+            npcs.extend(character.getTerrain().characters)
+            for checkRoom in character.getTerrain().rooms:
+                npcs.extend(checkRoom.characters)
+            for npc in npcs:
+                if npc == character:
+                    continue
+                quest = src.quests.questMap["ReduceFoodConsumption"]()
+                return ([quest],None)
+
             foundInput1 = False
             foundInput2 = False
             for inputSlot in room.inputSlots:
@@ -127,23 +140,45 @@ Press a to move back to the main quest.
                 quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,7,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
                 return ([quest],None)
 
-            items = room.getItemByPosition((7,4,0))
-            if not items or not items[-1].type == "Scrap":
-                quest1 = src.quests.questMap["GatherScrap"]()
-                quest2 = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
-                quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap")
-                return ([quest3,quest2,quest1],None)
+            for room in character.getTerrain().rooms:
+                for inputSlot in room.inputSlots:
+                    if inputSlot[1] == "Scrap":
+                        items = room.getItemByPosition(inputSlot[0])
+                        if not items or not items[-1].type == "Scrap":
+                            quest1 = src.quests.questMap["GatherScrap"]()
+                            quest2 = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                            quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap")
+                            return ([quest3,quest2,quest1],None)
             
-            items = room.getItemByPosition((4,7,0))
-            if not items or not items[-1].type == "Scrap":
-                quest1 = src.quests.questMap["GatherScrap"]()
-                quest2 = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
-                quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap")
-                return ([quest3,quest2,quest1],None)
+            foundCaseOutput = False
+            for room in character.getTerrain().rooms:
+                for outputSlot in room.outputSlots:
+                    if outputSlot[1] == "Case":
+                        foundCaseOutput = True
 
-            quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Wall",targetPositionBig=(6,7,0))
-            self.startWatching(quest,self.roomBuildingFailed,"failed")
-            return ([quest],None)
+            if not foundCaseOutput:
+                quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Case",targetPositionBig=(6,7,0))
+                return ([quest],None)
+
+            foundWallOutput = False
+            for room in character.getTerrain().rooms:
+                for outputSlot in room.outputSlots:
+                    if outputSlot[1] == "Wall":
+                        foundWallOutput = True
+
+            if not foundWallOutput:
+                quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Wall",targetPositionBig=(6,7,0))
+                return ([quest],None)
+
+            foundDoorOutput = False
+            for room in character.getTerrain().rooms:
+                for outputSlot in room.outputSlots:
+                    if outputSlot[1] == "Door":
+                        foundDoorOutput = True
+
+            if not foundDoorOutput:
+                quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Door",targetPositionBig=(6,7,0))
+                return ([quest],None)
 
             if not character.getTerrain().getRoomByPosition((7,8,0)):
                 quest = src.quests.questMap["BuildRoom"](targetPosition=(7,8,0),tryHard=True)
@@ -187,18 +222,5 @@ Press a to move back to the main quest.
             for quest in nextQuests:
                 self.addQuest(quest)
             return
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand)
-            return
-        super().solver(character)
-
 
 src.quests.addType(ExtendBase)

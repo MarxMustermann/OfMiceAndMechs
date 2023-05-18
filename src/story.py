@@ -3996,6 +3996,15 @@ class MainGame(BasicPhase):
         elif self.activeStory["type"] == "raidBase":
             self.activeStory["mainChar"].messages.insert(0,("""until you notice eneryone looking at you expectingly."""))
         elif self.activeStory["type"] == "colonyBase":
+            if len(self.activeStory["mainChar"].messages) == 0:
+                text = """
+You.
+You see walls made out of solid steel
+and feel the touch of the cold hard floor.
+The room is filled with various items.
+You recognise your hostile suroundings and
+try to remember how you got here ..."""
+                self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
@@ -4252,6 +4261,18 @@ class MainGame(BasicPhase):
         item = src.items.itemMap["Mount"]()
         item.bolted = False
         mainRoom.addItem(item,(8,11,0))
+        item = src.items.itemMap["Mount"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,11,0))
+        item = src.items.itemMap["Mount"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,11,0))
+        item = src.items.itemMap["Mount"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,11,0))
+        item = src.items.itemMap["Mount"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,11,0))
         item = src.items.itemMap["Radiator"]()
         item.bolted = False
         mainRoom.addItem(item,(7,11,0))
@@ -4277,6 +4298,8 @@ class MainGame(BasicPhase):
 
         for x in range(1,6):
             for y in range(7,11):
+                if x == 5 and y == 10:
+                    continue
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 mainRoom.addItem(item,(x,y,0))
@@ -5228,7 +5251,6 @@ Corpse + Rod + Bolt => CorpseAnimator
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()
-        containerQuest.generateSubquests(mainChar)
         containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
         return
 

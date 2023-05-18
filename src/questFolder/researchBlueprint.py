@@ -40,30 +40,21 @@ If you miss resources, produce them.
                     "Frame"           :["Rod","MetalBars"],
                     "Rod"             :["Rod"],
                     "ScrapCompactor"  :["Scrap"],
+                    "Wall"            :["MetalBars"],
+                    "Door"            :["Connector"],
+                    "Connector"       :["Mount","MetalBars"],
+                    "Mount"           :["Mount"],
                   }
-        return itemMap.get(self.itemType,["MetalBars"])
+        if not self.itemType in itemMap:
+            8/0
+        return itemMap.get(self.itemType)
 
     def solver(self, character):
         if not self.subQuests:
             room = character.getTerrain().getRoomByPosition((7,7,0))[0]
             items = room.getItemByPosition((8,7,0))
             if not items or not items[-1].type == "Sheet":
-                if not character.inventory or not character.inventory[-1].type == "Sheet":
-                    if self.tryHard:
-                        quest = src.quests.questMap["FetchItems"](toCollect="Sheet",tryHard=self.tryHard,takeAnyUnbolted=True,amount=1)
-                        self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                        self.addQuest(quest)
-                        return ([quest], None)
-
-                    self.fail(reason="missing Sheet to print on")
-                    return
-                if not character.getBigPosition() == (7,7,0):
-                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(7,7,0)))
-                    return
-                if not character.getPosition() == (8,7,0):
-                    self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(8,7,0)))
-                    return
-                character.runCommandString("l")
+                self.addQuest(src.quests.questMap["PlaceItem"](targetPosition=(8,7,0),targetPositionBig=room.getPosition(),itemType="Sheet",tryHard=self.tryHard))
                 return
 
             neededResources = self.getNeededResources()
@@ -72,22 +63,7 @@ If you miss resources, produce them.
             for neededResource in neededResources:
                 items = room.getItemByPosition((7,8,0))
                 if (not len(items) > counter) or (not items[-1-counter].type == neededResource):
-                    if not character.inventory or not character.inventory[-1].type == neededResource:
-                        if self.tryHard:
-                            quest = src.quests.questMap["FetchItems"](toCollect=neededResource,tryHard=self.tryHard,takeAnyUnbolted=True,amount=1)
-                            self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                            self.addQuest(quest)
-                            return ([quest], None)
-
-                        self.fail(reason="missing ressource %s"%(neededResource,))
-                        return
-                    if not character.getBigPosition() == (7,7,0):
-                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(7,7,0)))
-                        return
-                    if not character.getPosition() == (7,8,0):
-                        self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,8,0)))
-                        return
-                    character.runCommandString("l")
+                    self.addQuest(src.quests.questMap["PlaceItem"](targetPosition=(7,8,0),targetPositionBig=room.getPosition(),itemType=neededResource,tryHard=self.tryHard))
                     return
                 counter += 1
 

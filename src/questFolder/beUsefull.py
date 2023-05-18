@@ -753,6 +753,7 @@ Press r to generate subquest and recive detailed instructions
             for direction in directions:
                 newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
                 if room.container.getRoomByPosition(newPos):
+                    character.runCommandString("30.")
                     quest = src.quests.questMap["GoToTile"](targetPosition=newPos,description="look for job on tile ")
                     self.idleCounter += 1
                     self.addQuest(quest)

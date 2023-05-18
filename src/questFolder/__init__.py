@@ -62,3 +62,4 @@ import src.questFolder.placeItem
 import src.questFolder.setUpProductionLine
 import src.questFolder.drawStockpile
 import src.questFolder.cleanSpace
+import src.questFolder.reduceFoodConsumption

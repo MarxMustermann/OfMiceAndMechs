@@ -44,6 +44,10 @@ Place the items in the correct input stockpile."""
 
             foundNeighbour = None
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+            if not inputSlots:
+                self.postHandler()
+                return
+
             for slot in inputSlots:
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     if len(slot[0]) < 3:
@@ -59,6 +63,7 @@ Place the items in the correct input stockpile."""
                         if not room.getPositionWalkable(neighbour):
                             continue
                         foundNeighbour = (neighbour,direction)
+
             if not foundNeighbour:
                 character.addMessage("no neighbour")
                 self.postHandler()

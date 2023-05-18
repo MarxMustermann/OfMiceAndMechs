@@ -144,38 +144,25 @@ If you don't find a %s machine needed, build it.
                 inputOffsets = [(-1,0,0),(0,1,0),(0,-1,0)]
                 counter = 0
                 for neededItem in neededItems:
-                    inputOffset = inputOffsets[counter]
-                    items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=inputOffset))
-                    if not items or not items[-1].type == neededItem:
-                        if not character.inventory or not character.inventory[-1].type == neededItem:
-                            if self.tryHard:
-                                quest1 = src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1,takeAnyUnbolted=True,tryHard=True)
-                                self.startWatching(quest1,self.unhandledSubQuestFail,"failed")
-                                quest2 = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())
-                                quest3 = src.quests.questMap["GoToPosition"](targetPosition=foundMachine.getPosition(offset=inputOffset))
-                                return ([quest3,quest2,quest1],None)
-                            self.fail("missing resource %s"%(neededItem,))
-                            return (None,None)
+                    foundItem = False
+                    for inputOffset in inputOffsets:
+                        items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=inputOffset))
+                        if not items or not items[-1].type == neededItem:
+                            continue
+                        foundItem = True
+                        break
 
-                        if not character.container == foundMachine.container:
-                            quest = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())
-                            return ([quest], None)
+                    if not foundItem:
+                        inputOffset = inputOffsets[counter]
+                        quest = src.quests.questMap["PlaceItem"](targetPosition=foundMachine.getPosition(offset=inputOffset),targetPositionBig=foundMachine.container.getPosition(),itemType=neededItem,tryHard=self.tryHard)
+                        return ([quest], None)
 
-                        items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=(1,0,0)))
-                        if items:
-                            quest = src.quests.questMap["CleanSpace"](targetPosition=foundMachine.getPosition(offset=(1,0,0)),targetPositionBig=room.getPosition())
-                            return ([quest], None)
-
-                        if character.getDistance(foundMachine.getPosition(offset=inputOffset)) > 1:
-                            quest = src.quests.questMap["GoToPosition"](targetPosition=foundMachine.getPosition(offset=inputOffset))
-                            return ([quest], None)
-
-                        offsets = {(0,0,0):"l",(1,0,0):"Ld",(-1,0,0):"La",(0,1,0):"Ls",(0,-1,0):"Lw"}
-                        for (offset,command) in offsets.items():
-                            if character.getPosition(offset=offset) == foundMachine.getPosition(inputOffset):
-                                return (None, command)
-                        1/0
                     counter += 1
+
+                items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=(1,0,0)))
+                if items:
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=foundMachine.getPosition(offset=(1,0,0)),targetPositionBig=room.getPosition())
+                    return ([quest], None)
 
                 if not character.container == foundMachine.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())

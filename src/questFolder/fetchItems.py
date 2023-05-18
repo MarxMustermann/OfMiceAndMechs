@@ -43,6 +43,15 @@ Fetch an inventory full of %ss.
 Fetch %s %s%s.
 """%(self.amount,self.toCollect,extraS,)
 
+        if self.takeAnyUnbolted:
+            text += """
+Take any fitting unbolted item.
+"""
+        else:
+            text += """
+Only take items from stockpiles.
+"""
+
         if self.returnToTile:
             tile = self.tileToReturnTo
             if not tile:
@@ -271,9 +280,10 @@ If you don't find a source, produce new items.
             elif self.takeAnyUnbolted:
                 nextToTarget = False
                 candidates = []
-                for item in room.itemsOnFloor:
-                    if item.bolted == False and item.type == self.toCollect:
-                        candidates.append(item)
+                for room in character.getTerrain().rooms:
+                    for item in room.itemsOnFloor:
+                        if item.bolted == False and item.type == self.toCollect:
+                            candidates.append(item)
 
                 if candidates:
                     for item in candidates:
@@ -283,6 +293,8 @@ If you don't find a source, produce new items.
                     if not nextToTarget:
                         item = random.choice(candidates)
                         self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect))
+                        if not character.container == item.container:
+                            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source"))
                         return
                     foundItem = True
             else:
@@ -310,5 +322,11 @@ If you don't find a source, produce new items.
             return False
         else:
             return True
+
+    """
+    def getSolvingCommandString(self, character, dryRun=True):
+        print(self.getNextStep(character))
+        return self.getNextStep(character)[1]
+    """
 
 src.quests.addType(FetchItems)

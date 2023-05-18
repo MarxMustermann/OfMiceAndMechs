@@ -51,7 +51,7 @@ Remove all items from the space %s on tile %s.
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
                 return ([quest], None)
 
-            offsets = {(0,0,0):"k",(1,0,0):"Ld",(-1,0,0):"La",(0,1,0):"Ls",(0,-1,0):"Lw"}
+            offsets = {(0,0,0):"k",(1,0,0):"Kd",(-1,0,0):"Ka",(0,1,0):"Ks",(0,-1,0):"Kw"}
             for (offset,command) in offsets.items():
                 if character.getPosition(offset=offset) == self.targetPosition:
                     return (None, command)

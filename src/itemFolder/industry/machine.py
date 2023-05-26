@@ -488,4 +488,27 @@ Currently the machine has no charges
         else:
             return self.display
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the Machine")
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the Machine")
+
 src.items.addType(Machine)

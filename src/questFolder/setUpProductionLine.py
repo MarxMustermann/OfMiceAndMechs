@@ -52,15 +52,18 @@ Try as hard as you can to achieve this.
             return
         super().solver(character)
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        return self.getNextStep(character)[1]
-
     def generateSubquests(self, character=None):
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
             return
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:

@@ -29,6 +29,9 @@ reduce the food consumption on the base.
         super().solver(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
     def generateSubquests(self, character=None):
@@ -56,9 +59,6 @@ reduce the food consumption on the base.
                 if npc == character:
                     continue
 
-                if npc.dead:
-                    input("dead npcs")
-                    continue
                 if not character.container == npc.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition())
                     return ([quest],None)
@@ -67,7 +67,7 @@ reduce the food consumption on the base.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition())
                     return ([quest],None)
 
-                return (None,"M")
+                return (None,("M","attack an ally"))
 
             self.postHandler()
             return (None,None)

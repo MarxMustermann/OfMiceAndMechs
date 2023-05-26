@@ -10,69 +10,74 @@ class ExtendBase(src.quests.MetaQuestSequence):
         self.metaDescription = description
 
     def generateTextDescription(self):
-        out = ""
+        out = []
         if len(self.character.getTerrain().rooms) == 1:
-            out += """
-Set up a base.
+            roomBuilder = src.items.itemMap["RoomBuilder"]()
+            wall = src.items.itemMap["Wall"]()
+            door = src.items.itemMap["Door"]()
+            out.extend(["""
+You remember that your task was to set up a base.
+You know you are equiped for it, but you remember nothing more.
+Follow that order and set up a base.
 
 Your base is currently only the city core.
 This is the room you started in.
 To set up the base you need to build more rooms.
 
-Use a RoomBuilder (RB) to build a room.
-The needed walls (XX) and Doors ([]) should be in the city core.
+Use a RoomBuilder (""",roomBuilder.render(),""") to build a room.
+The needed walls (""",wall.render(),""") and Doors (""",door.render(),""") should be in the city core.
 Start setting up the base using these materials.
 
 Add the first room, to have space for some industry.
 This has the nice side effect of freeing up space in the city core.
-"""
+"""])
         elif len(self.character.getTerrain().rooms) == 2:
-            out += """
+            out.append("""
 Your base has one additional room now.
 This should give you some room to work with.
 Set up a production line for walls and some basic infrastructure.
 
 Use this to build another room.
-"""
+""")
         elif len(self.character.getTerrain().rooms) == 3:
-            out += """
+            out.append("""
 Your base has 2 additional rooms now.
 That is actually quite a lot of space.
 Try to fill that space.
 
-"""
+""")
         elif len(self.character.getTerrain().rooms) == 4:
-            out += """
+            out.append("""
 Your base has 3 additional rooms now. great.
 Did you set food production already?
 
-"""
+""")
         elif len(self.character.getTerrain().rooms) == 5:
-            out += """
+            out.append("""
 Almost done! Keep going
 
-"""
+""")
         else:
-            out += """
+            out.append("""
 Extend the base further.
 
-"""
+""")
 
-        out +=  """
+        out.append("""
 Build 6 rooms to complete this quest.
 Build %s more rooms to achive that.
-"""%(6-len(self.character.getTerrain().rooms),)
+"""%(6-len(self.character.getTerrain().rooms),))
 
         if not self.subQuests:
-            out += """
-This quest has no subquests. Press r to generate subquests for this quest."""
+            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
+This quest has no subquests. Press r to generate subquests for this quest."""))
         else:
-            out += """
+            out.append("""
+This quests has subquests.
 Follow this quests sub quests. They will guide you and try to explain how to build a base.
 You do not have to follow the subquests as long as the base is getting set up.
 Press d to move the cursor and show the subquests description.
-Press a to move back to the main quest.
-"""
+""")
         return out
 
     def roomBuildingFailed(self,extraParam):
@@ -87,14 +92,24 @@ Press a to move back to the main quest.
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return nextStep[1]
+
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
+            if not ignoreCommands:
+                submenue = character.macroState.get("submenue")
+                if submenue:
+                    return (None,(["esc"],"exit the menu"))
             if not character.getTerrain().getRoomByPosition((6,7,0)):
-                quest = src.quests.questMap["BuildRoom"](targetPosition=(6,7,0),tryHard=True)
+                quest = src.quests.questMap["BuildRoom"](targetPosition=(6,7,0),tryHard=True,reason="extend the base")
                 self.startWatching(quest,self.roomBuildingFailed,"failed")
                 return ([quest],None)
 
@@ -113,6 +128,25 @@ Press a to move back to the main quest.
                     continue
                 quest = src.quests.questMap["ReduceFoodConsumption"]()
                 return ([quest],None)
+
+
+            for checkRoom in character.getTerrain().rooms:
+                for item in checkRoom.itemsOnFloor:
+                    if not item.type in ("Corpse","GooFlask"):
+                        continue
+
+                    inStorage = False
+                    for storageSlot in checkRoom.storageSlots:
+                        if not storageSlot[0] == item.getPosition():
+                            continue
+                        inStorage = True
+
+                    if inStorage:
+                        continue
+                            
+                    quest1 = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition())
+                    quest2 = src.quests.questMap["ClearInventory"]()
+                    return ([quest2,quest1], None)
 
             foundInput1 = False
             foundInput2 = False

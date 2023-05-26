@@ -67,11 +67,11 @@ Place the items in the correct input stockpile."""
             if not foundNeighbour:
                 character.addMessage("no neighbour")
                 self.postHandler()
-                return
+                return True
 
         if not self.getNumDrops(character):
             self.postHandler()
-            return
+            return True
         return
 
     def getNumDrops(self,character):
@@ -87,17 +87,16 @@ Place the items in the correct input stockpile."""
         parameters.append({"name":"targetPosition","type":"coordinate"})
         return parameters
 
-    def getSolvingCommandString(self,character,dryRun=True):
+    def getNextStep(self,character=None,ignoreCommands=False):
         if self.subQuests:
-            return super().getSolvingCommandString(character,dryRun=dryRun)
-
-        self.triggerCompletionCheck(character)
+            return (None,None)
 
         if isinstance(character.container,src.rooms.Room):
             room = character.container
 
             if not hasattr(room,"inputSlots"):
-                return "..23.."
+                self.fail(reason="no input slot attribute")
+                return (None,None)
 
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             random.shuffle(inputSlots)
@@ -124,26 +123,26 @@ Place the items in the correct input stockpile."""
                     numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
 
                     if foundDirectDrop[1] == (-1,0):
-                        return "La"*numToDrop
+                        return (None,("La"*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (1,0):
-                        return "Ld"*numToDrop
+                        return (None,("Ld"*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (0,-1):
-                        return "Lw"*numToDrop
+                        return (None,("Lw"*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (0,1):
-                        return "Ls"*numToDrop
+                        return (None,("Ls"*numToDrop,"store an item"))
                     if foundDirectDrop[1] == (0,0):
-                        return "l"*numToDrop
+                        return (None,("l"*numToDrop,"store an item"))
                 else:
                     if foundDirectDrop[1] == (-1,0):
-                        return "Ja"*10
+                        return (None,("Ja"*10,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (1,0):
-                        return "Jd"*10
+                        return (None,("Jd"*10,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,-1):
-                        return "Jw"*10
+                        return (None,("Jw"*10,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,1):
-                        return "Js"*10
+                        return (None,("Js"*10,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,0):
-                        return "l"*self.getNumDrops(character)
+                        return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
 
             foundNeighbour = None
             for slot in inputSlots:
@@ -174,40 +173,42 @@ Place the items in the correct input stockpile."""
                         break
 
             if not foundNeighbour:
-                return "..24.."
+                self.fail(reason="neighbour not found")
+                return (None,None)
 
-            if not dryRun:
-                quest = src.quests.questMap["GoToPosition"]()
-                quest.assignToCharacter(character)
-                quest.setParameters({"targetPosition":foundNeighbour[0]})
-                quest.activate()
-                self.addQuest(quest)
-
-                return "."
-            return "................."
+            quest = src.quests.questMap["GoToPosition"]()
+            quest.setParameters({"targetPosition":foundNeighbour[0]})
+            return ([quest],None)
 
         charPos = (character.xPosition%15,character.yPosition%15,character.zPosition%15)
         if charPos == (7,0,0):
-            return "s"
+            return (None,("s","enter tile"))
         if charPos == (7,14,0):
-            return "w"
+            return (None,("w","enter tile"))
         if charPos == (0,7,0):
-            return "d"
+            return (None,("d","enter tile"))
         if charPos == (14,7,0):
-            return "a"
+            return (None,("a","enter tile"))
 
     def solver(self, character):
-        self.activate()
-        self.assignToCharacter(character)
-        if self.subQuests:
-            return super().solver(character)
+        if self.triggerCompletionCheck(character):
+            return
 
-        commandString = self.getSolvingCommandString(character,dryRun=False)
-        self.reroll()
-        if commandString:
-            character.runCommandString(commandString)
-            return False
-        else:
-            return True
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
+            return
+        super().solver(character)
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
 
 src.quests.addType(RestockRoom)

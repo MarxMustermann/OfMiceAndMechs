@@ -656,35 +656,30 @@ def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].apply(char)
-            char.runCommandString("~",nativeKey=True)
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.runCommandString("~",nativeKey=True)
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.runCommandString("~",nativeKey=True)
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.runCommandString("~",nativeKey=True)
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.runCommandString("~",nativeKey=True)
     elif key == "j":
         character = char
         if not character.jobOrders:
@@ -4862,17 +4857,23 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
     # render the quests
     if len(char.quests):
         if sidebared:
-            solvingCommangString = char.quests[0].getSolvingCommandString(char)
-            if isinstance(solvingCommangString,list):
-                solvingCommangString = "".join(solvingCommangString)
-            if solvingCommangString:
-                solvingCommangString = solvingCommangString.replace("\n","\\n")
+            try:
+                result = char.quests[0].getSolvingCommandString(char)
+                solvingCommangString = None
+                if result:
+                    (solvingCommangString,reason) = result
+                    if isinstance(solvingCommangString,list):
+                        solvingCommangString = "".join(solvingCommangString)
+                    if solvingCommangString:
+                        solvingCommangString = solvingCommangString.replace("\n","\\n")
 
-            if solvingCommangString:
-                nextstep = "suggested action: \npress %s \n\n"%(solvingCommangString,)
-            else:
-                nextstep = "suggested action: \npress + \n\n"
-            txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
+                if solvingCommangString:
+                    nextstep = "suggested action: \npress %s \nto %s\n\n"%(solvingCommangString,reason,)
+                else:
+                    nextstep = "suggested action: \npress + \nto generate subquests\n\n"
+                txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
+            except:
+                pass
 
         if not sidebared:
             baseList = char.quests
@@ -8550,16 +8551,20 @@ grows and grows and grows and grows
             text += """
 until something breaks."""
             if subStep > 15:
-                text += """
+                baseText = """
 
 Your implant stops emitting pain
 and for a moment you hear terrible silence."""
-            if subStep > 35:
-                text += """
+                #text += " ".join(baseText.split(" ")[:(subStep-15)])
+                text += "".join(list(baseText)[:(subStep*3-15*3)])
+            if subStep > 55:
+                baseText = """
 
 But it slowly comes back
 and you hear that familiar voice again."""
-            if subStep > 50:
+                #text += " ".join(baseText.split(" ")[:(subStep-35)])
+                text += "".join(list(baseText)[:(subStep*3-55*3)])
+            if subStep > 100:
                 text += """
 
 
@@ -8594,15 +8599,23 @@ try to remember how you got here ..."""
             if subStep == 0:
                 text = """
 suggested action:
-press enter to open your eyes"""
+press enter
+to open your eyes"""
             elif subStep == 1:
                 text = """
 suggested action:
-press enter to look around"""
+press enter
+to feel around"""
+            elif subStep == 2:
+                text = """
+suggested action:
+press enter
+to look around"""
             else:
                 text = """
 suggested action:
-press enter"""
+press enter
+to remember"""
             
             printUrwidToTcod(text,(2,19))
             if subStep == 1:

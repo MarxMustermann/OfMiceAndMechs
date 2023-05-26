@@ -27,7 +27,7 @@ Remove all items from the space %s on tile %s.
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 
@@ -36,26 +36,47 @@ Remove all items from the space %s on tile %s.
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
-            rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
-            room = rooms[0]
-            items = room.getItemByPosition(self.targetPosition)
-            if not items:
-                self.postHandler()
-                return (None,None)
+            terrain = character.getTerrain()
+            rooms = terrain.getRoomByPosition(self.targetPositionBig)
+            if rooms:
+                room = rooms[0]
+                items = room.getItemByPosition(self.targetPosition)
+                if not items or items[0].bolted:
+                    self.postHandler()
+                    return (None,None)
+            else:
+                items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                if not items or items[0].bolted:
+                    self.postHandler()
+                    return (None,None)
 
             if not character.getBigPosition() == self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                 return ([quest], None)
 
-            if character.getDistance(self.targetPosition) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
-                return ([quest], None)
+            if character.container.isRoom:
+                if character.getDistance(self.targetPosition) > 1:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
+                    return ([quest], None)
+            else:
+                if character.getDistance((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0)) > 1:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
+                    return ([quest], None)
 
             offsets = {(0,0,0):"k",(1,0,0):"Kd",(-1,0,0):"Ka",(0,1,0):"Ks",(0,-1,0):"Kw"}
             for (offset,command) in offsets.items():
-                if character.getPosition(offset=offset) == self.targetPosition:
-                    return (None, command)
+                if character.container.isRoom:
+                    if character.getPosition(offset=offset) == self.targetPosition:
+                        return (None, (command,"to pick up item"))
+                else:
+                    if character.getPosition(offset=offset) == (self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0):
+                        return (None, (command,"to pick up item"))
         return (None,None)
     
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
 
 src.quests.addType(CleanSpace)

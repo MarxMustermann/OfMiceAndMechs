@@ -15,7 +15,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         if not self.subQuests:
             command = self.getSolvingCommandString(character)
             if command:
-                character.runCommandString(command)
+                character.runCommandString(command[0])
                 return
             
         super().solver(character)
@@ -35,8 +35,8 @@ class ReachOutStory(src.quests.MetaQuestSequence):
 
     def getSolvingCommandString(self,character,dryRun=True):
         if character.macroState.get("submenue"):
-            return ["esc"]
+            return (["esc"],"close submenu")
         else:
-            return "q"
+            return ("q","reach implant")
 
 src.quests.addType(ReachOutStory)

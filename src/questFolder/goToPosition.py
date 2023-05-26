@@ -4,7 +4,7 @@ import random
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
-    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False):
+    def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -16,6 +16,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
             self.setParameters({"targetPosition":targetPosition})
         if ignoreEndBlocked:
             self.setParameters({"ignoreEndBlocked":ignoreEndBlocked})
+        self.reason = reason
 
         self.tuplesToStore.append("targetPosition")
         
@@ -24,6 +25,9 @@ class GoToPosition(src.quests.MetaQuestSequence):
         self.path = []
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         extraText = ""
         if self.ignoreEndBlocked:
             extraText = """
@@ -31,11 +35,16 @@ class GoToPosition(src.quests.MetaQuestSequence):
 The position you should go might be blocked.
 So it is enough to go next to the target position to end this quest.
 """
+        
+        if self.character.container.isRoom:
+            containerString = "room"
+        else:
+            containerString = "tile"
 
         text = """
-go to position %s in the same room you are in.
+Go to position %s in the same %s you are in%s.
 
-This quest ends after you do this.%s"""%(self.targetPosition,extraText,) 
+This quest ends after you do this.%s"""%(self.targetPosition,containerString,reason,extraText,) 
         return text
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -110,21 +119,21 @@ This quest ends after you do this.%s"""%(self.targetPosition,extraText,)
     def getSolvingCommandString(self, character, dryRun=True):
 
         if character.macroState.get("submenue"):
-            return ["esc"]
+            return (["esc"],"exit submenu")
 
         if not self.path:
             return
 
         if character.xPosition%15 == 0:
-            return "d"
+            return ("d","enter tile")
         if character.xPosition%15 == 14:
-            return "a"
+            return ("a","enter tile")
         if character.yPosition%15 == 0:
-            return "s"
+            return ("s","enter tile")
         if character.yPosition%15 == 14:
-            return "w"
+            return ("w","enter tile")
         if not self.targetPosition:
-            return ".12.."
+            return (".12..","wait")
 
         if self.ignoreEndBlocked and len(self.path) == 1:
             return
@@ -141,7 +150,7 @@ This quest ends after you do this.%s"""%(self.targetPosition,extraText,)
                 command += "J"+movementMap[step]
 
             command += movementMap[step]
-        return command
+        return (command,"go to target position")
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -200,7 +209,7 @@ This quest ends after you do this.%s"""%(self.targetPosition,extraText,)
 
         command = self.getSolvingCommandString(character,dryRun=False)
         if command:
-            character.runCommandString(command)
+            character.runCommandString(command[0])
             return
 
         super().solver(character)

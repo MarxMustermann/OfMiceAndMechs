@@ -1831,7 +1831,6 @@ class Terrain(src.saveing.Saveable):
                 if duration < 1:
                     self.animations.remove(animation)
             elif animationType in ("showchar",):
-                print("showchar")
                 display = extraInfo["char"]
 
                 try:

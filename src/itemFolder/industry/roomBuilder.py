@@ -209,6 +209,42 @@ The room has to be a rectangle.
         character.yPosition = roomTop + yOffset
         room.addCharacter(character, roomLeft + xOffset, roomTop + yOffset)
 
+        basePos = character.getBigPosition()
+        self.container.addAnimation((basePos[0]*15+7,basePos[1]*15+7,0),"showchar",21,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"##")})
+
+        ring1 = [(1,0,0),(1,1,0),(1,-1,0),(0,-1,0),(-1,-1,0),(-1,0,0),(-1,1,0),(0,1,0)]
+        for pos in ring1:
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",3,{"char":(src.interaction.urwid.AttrSpec("#343", "black"),";;")})
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",18,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})
+
+        ring2 = [(2,0,0),(2,1,0),(2,2,0),(1,2,0),(0,2,0),(-1,2,0),(-2,2,0),(-2,1,0),(-2,0,0),(-2,-1,0),(-2,-2,0),(-1,-2,0),(0,-2,0),(1,-2,0),(2,-2,0),(2,-1,0)]
+        for pos in ring2:
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",6,{"char":(src.interaction.urwid.AttrSpec("#343", "black"),";;")})
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",15,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})
+
+        ring3 = [(3,0,0),(3,1,0),(3,2,0),(3,3,0),(2,3,0),(1,3,0),(0,3,0),(-1,3,0),(-2,3,0),(-3,3,0),(-3,2,0),(-3,1,0),(-3,0,0),(-3,-1,0),(-3,-2,0),(-3,-3,0),(-2,-3,0),(-1,-3,0),(0,-3,0),(1,-3,0),(2,-3,0),(3,-3,0),(3,-2,0),(3,-1,0)]
+        for pos in ring3:
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",9,{"char":(src.interaction.urwid.AttrSpec("#343", "black"),";;")})
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",12,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})
+
+        ring4 = [(4,0,0),(4,1,0),(4,2,0),(4,3,0),(4,4,0),(3,4,0),(2,4,0),(1,4,0),(0,4,0),(-1,4,0),(-2,4,0),(-3,4,0),(-4,4,0),(-4,3,0),(-4,2,0),(-4,1,0),(-4,0,0),(-4,-1,0),(-4,-2,0),(-4,-3,0),(-4,-4,0),(-3,-4,0),(-2,-4,0),(-1,-4,0),(0,-4,0),(1,-4,0),(2,-4,0),(3,-4,0),(4,-4,0),(4,-3,0),(4,-2,0),(4,-1,0)]
+        for pos in ring4:
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",12,{"char":(src.interaction.urwid.AttrSpec("#343", "black"),";;")})
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",9,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})
+        
+        ring5 = [(5,0,0),(5,1,0),(5,2,0),(5,3,0),(5,4,0),(5,5,0),(4,5,0),(3,5,0),(2,5,0),(1,5,0),(0,5,0),(-1,5,0),(-2,5,0),(-3,5,0),(-4,5,0),(-5,5,0),(-5,4,0),(-5,3,0),(-5,2,0),(-5,1,0),(-5,0,0),(-5,-1,0),(-5,-2,0),(-5,-3,0),(-5,-4,0),(-5,-5,0),(-4,-5,0),(-3,-5,0),(-2,-5,0),(-1,-5,0),(0,-5,0),(1,-5,0),(2,-5,0),(3,-5,0),(4,-5,0),(5,-5,0),(5,-4,0),(5,-3,0),(5,-2,0),(5,-1,0)]
+        for pos in ring5:
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",15,{"char":(src.interaction.urwid.AttrSpec("#343", "black"),";;")})
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",6,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})
+
+        ring6 = [(6,0,0),(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0),(6,6,0),(5,6,0),(4,6,0),(3,6,0),(2,6,0),(1,6,0),(0,6,0),(-1,6,0),(-2,6,0),(-3,6,0),(-4,6,0),(-5,6,0),(-6,6,0),(-6,5,0),(-6,4,0),(-6,3,0),(-6,2,0),(-6,1,0),(-6,0,0),(-6,-1,0),(-6,-2,0),(-6,-3,0),(-6,-4,0),(-6,-5,0),(-6,-6,0),(-5,-6,0),(-4,-6,0),(-3,-6,0),(-2,-6,0),(-1,-6,0),(0,-6,0),(1,-6,0),(2,-6,0),(3,-6,0),(4,-6,0),(5,-6,0),(6,-6,0),(6,-5,0),(6,-4,0),(6,-3,0),(6,-2,0),(6,-1,0)]
+        for pos in ring6:
+            self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",18,{"char":(src.interaction.urwid.AttrSpec("#343", "black"),";;")})
+            if pos[0] == 0 or pos[1] == 0:
+                self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",10,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"[]")})
+            else:
+                self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",10,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"XX")})
+
         self.container.removeItem(self)
 
         self.xPosition = roomLeft

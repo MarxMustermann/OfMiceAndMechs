@@ -3,47 +3,52 @@ import src
 class BuildRoom(src.quests.MetaQuestSequence):
     type = "BuildRoom"
 
-    def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False):
+    def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.shortCode = "M"
         self.targetPosition = targetPosition
         self.tryHard = tryHard
+        self.reason = reason
 
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
 
     def generateTextDescription(self):
-        out = """
-Build a room on the tile %s.
+        roombuilder = src.items.itemMap["RoomBuilder"]()
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
+        out = ["""
+Build a room on the tile %s%s."""%(self.targetPosition,reason,),"""
 
-Rooms are build using the RoomBuilder (RB).
+Rooms are build using the RoomBuilder (""",roombuilder.render(),""").
 The RoomBuilder needs to be placed in the middle of a tile.
 Walls and doors have to be placed in a room shaped pattern around that.
 When all of that is done, the Roombuilder can be activated to build a room.
-"""%(self.targetPosition,)
+"""]
 
         if self.tryHard:
-            out += """
+            out.append("""
 Try as hard as you can to achieve this.
 If something is missing, produce it.
 If something disturbs you, destroy it.
-"""
+""")
 
         if not self.subQuests:
-            out += """
-This quest has no subquests. Press r to generate subquests for this quest.
-The subquests will guide you, but you don't have to follow them as long as the is getting extended."""
+            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
+This quest has no subquests. Press r to generate subquests for this quest."""))
         else:
-            out += """
-Follow this quests sub quests. They will guide you and try to explain how to build a base.
+            out.append("""
+Follow this quests sub quests. They will guide you and try to explain how to build a base.""")
+            out.append("""
 Press d to move the cursor and show the subquests description.
-"""
+""")
 
-        out += """
+        out.append("""
 Press a to move back to the main quest.
-"""
+""")
         return out
 
     def solver(self, character):
@@ -54,11 +59,14 @@ Press a to move back to the main quest.
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
     def generateSubquests(self, character=None):
@@ -70,9 +78,14 @@ Press a to move back to the main quest.
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
+            if not ignoreCommands:
+                submenue = character.macroState.get("submenue")
+                if submenue:
+                    return (None,(["esc"],"exit submenu"))
+
             items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
             if not items or not items[-1].type == "RoomBuilder":
-                quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder")
+                quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room")
                 return ([quest],None)
             
             wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]
@@ -87,7 +100,7 @@ Press a to move back to the main quest.
             missingWallPositions = []
             for wallPos in wallPositions:
                 items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+wallPos[0],15*self.targetPosition[1]+wallPos[1],0))
-                if items:
+                if items and items[-1].type == "Wall":
                     continue
                 missingWallPositions.append(wallPos)
 
@@ -96,70 +109,58 @@ Press a to move back to the main quest.
                     amount = None
                     if len(missingWallPositions) < 10:
                         amount = len(missingWallPositions)
-                    quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=True,tryHard=self.tryHard,amount=amount)
+                    quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=True,tryHard=self.tryHard,amount=amount,reason="have walls for the rooms outline")
                     return ([quest],None)
 
                 quests = []
-
                 counter = 0
                 for missingWallPos in missingWallPositions:
                     if not (len(character.inventory) > counter and character.inventory[-1-counter].type == "Wall"):
                         break
-                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingWallPos,targetPositionBig=self.targetPosition,itemType="Wall",tryHard=self.tryHard)
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingWallPos,targetPositionBig=self.targetPosition,itemType="Wall",tryHard=self.tryHard,reason="build the outline of the room")
                     quests.append(quest)
                     counter += 1
                 return (list(reversed(quests)),None)
             
             doorPositions = [(7,1,0),(1,7,0),(7,13,0),(13,7,0)]
-            missingDoorPos = False
+            missingDoorPositions = []
             for doorPos in doorPositions:
                 items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+doorPos[0],15*self.targetPosition[1]+doorPos[1],0))
                 if items:
                     continue
-                missingDoorPos = doorPos
-                break 
+                missingDoorPositions.append(doorPos)
 
-            if missingDoorPos:
-                if not character.inventory or not character.inventory[-1].type == "Door":
-                    foundRoom = None
-                    for room in character.getTerrain().rooms:
-                        for item in room.itemsOnFloor:
-                            if item.bolted == False and item.type == "Door":
-                                foundRoom = room
-                                break
-                        if foundRoom:
-                            break
+            if missingDoorPositions:
+                numDoors = 0
+                for item in character.inventory:
+                    if item.type == "Door":
+                        numDoors += 1
 
-                    if not foundRoom:
-                        self.fail("no doors found")
-                        return (None,None)
-
-                    if not character.getBigPosition() == room.getPosition():
-                        quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
-                        return ([quest],None)
-
-                    quest = src.quests.questMap["FetchItems"](toCollect="Door",takeAnyUnbolted=True,amount=4)
+                if not numDoors:
+                    amount = len(missingDoorPositions)
+                    quest = src.quests.questMap["FetchItems"](toCollect="Door",takeAnyUnbolted=True,tryHard=self.tryHard,amount=amount,reason="have doors to place")
                     return ([quest],None)
 
-                if not character.getBigPosition() == self.targetPosition:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                    return ([quest],None)
-
-                if not character.getSpacePosition() == missingDoorPos:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=missingDoorPos)
-                    return ([quest],None)
-
-                return (None,"l")
+                quests = []
+                counter = 0
+                for missingDoorPos in missingDoorPositions:
+                    if not numDoors:
+                        break
+                    numDoors -= 1
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingDoorPos,targetPositionBig=self.targetPosition,itemType="Door",tryHard=self.tryHard,reason="add doors to the room")
+                    quests.append(quest)
+                    counter += 1
+                return (list(reversed(quests)),None)
             
             roomBuilderPos = (7,7,0)
             if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=roomBuilderPos,ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=roomBuilderPos,ignoreEndBlocked=True,reason="get next to the RoomBuilder")
                 return ([quest], None)
 
             offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
             for (offset,command) in offsets.items():
                 if character.getPosition(offset=offset) == (15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0):
-                    return (None, command)
+                    return (None, (command,"activate the RoomBuilder"))
             1/0
         return (None,None)
     

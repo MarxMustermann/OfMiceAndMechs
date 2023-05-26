@@ -50,12 +50,31 @@ If you miss resources, produce them.
         return itemMap.get(self.itemType)
 
     def solver(self, character):
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
+            return
+        super().solver(character)
+
+    def generateSubquests(self, character=None):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
+    def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
             room = character.getTerrain().getRoomByPosition((7,7,0))[0]
             items = room.getItemByPosition((8,7,0))
             if not items or not items[-1].type == "Sheet":
-                self.addQuest(src.quests.questMap["PlaceItem"](targetPosition=(8,7,0),targetPositionBig=room.getPosition(),itemType="Sheet",tryHard=self.tryHard))
-                return
+                quest = src.quests.questMap["PlaceItem"](targetPosition=(8,7,0),targetPositionBig=room.getPosition(),itemType="Sheet",tryHard=self.tryHard)
+                return ([quest],None)
 
             neededResources = self.getNeededResources()
 
@@ -63,30 +82,34 @@ If you miss resources, produce them.
             for neededResource in neededResources:
                 items = room.getItemByPosition((7,8,0))
                 if (not len(items) > counter) or (not items[-1-counter].type == neededResource):
-                    self.addQuest(src.quests.questMap["PlaceItem"](targetPosition=(7,8,0),targetPositionBig=room.getPosition(),itemType=neededResource,tryHard=self.tryHard))
-                    return
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=(7,8,0),targetPositionBig=room.getPosition(),itemType=neededResource,tryHard=self.tryHard)
+                    return ([quest],None)
                 counter += 1
 
-
             if not character.getBigPosition() == (7,7,0):
-                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(7,7,0)))
-                return
+                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
+                return ([quest],None)
             if character.getDistance((8,8,0)) > 1:
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(8,8,0),ignoreEndBlocked=True))
-                return
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(8,8,0),ignoreEndBlocked=True)
+                return ([quest],None)
 
             directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
             directionFound = None
             for direction in directions:
                 if character.getPosition(offset=direction[0]) == (8,8,0):
-                    character.runCommandString("J"+direction[1])
-                    return (None,"J"+direction[1])
+                    return (None,("J"+direction[1],"research blueprint"))
             1/0 
 
-        return super().solver(character)
+        return (None,None)
     
     def triggerCompletionCheck(self,character=None):
         return False
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
 
     def producedBlueprint(self,extraInfo):
         print(extraInfo)

@@ -4,7 +4,7 @@ import random
 class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = "%s %s"%(description,targetPosition,)
@@ -15,6 +15,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.lastPos = None
         self.paranoid = paranoid
         self.showCoordinates = showCoordinates
+        self.reason = reason
 
     def sanatiyCheckPath(self):
         1/0
@@ -85,9 +86,36 @@ class GoToTile(src.quests.MetaQuestSequence):
         return super().assignToCharacter(character)
 
     def generateTextDescription(self):
-        return """
-go to tile %s
-"""%(self.targetPosition,)
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
+
+        text = """
+Go to tile %s%s.
+"""%(self.targetPosition,reason,)
+
+        if self.character.getBigPosition() == self.targetPosition:
+            text += """
+
+You are on the target tile.
+"""
+        else:
+            direction = ""
+            diffXBig = self.targetPosition[0] - self.character.getBigPosition()[0]
+            if diffXBig < 0:
+                direction = "and %s tiles to the west"%(-diffXBig,)
+            if diffXBig > 0:
+                direction = "and %s tiles to the east"%(diffXBig,)
+            diffYBig = self.targetPosition[1] - self.character.getBigPosition()[1]
+            if diffYBig < 0:
+                direction = "and %s tiles to the north"%(-diffYBig,)
+            if diffYBig > 0:
+                direction = "and %s tiles to the south"%(diffXBig,)
+            text += """
+
+The target tile is %s
+"""%(direction[4:],)
+        return text
 
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
@@ -124,7 +152,7 @@ go to tile %s
             return (None,None)
 
         if not ignoreCommands and character.macroState.get("submenue"):
-            return (None,["esc"])
+            return (None,(["esc"],"exit submenu"))
 
         if not self.path:
             self.generatePath(character)
@@ -140,7 +168,7 @@ go to tile %s
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
-                    return (None,"gg")
+                    return (None,("gg","guard the room"))
 
             if not self.isPathSane(character):
                 self.generatePath(character)
@@ -150,44 +178,44 @@ go to tile %s
 
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
-                    return (None,"ss")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit")
+                    return (None,("ss","exit the room"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,12,0),description="go to room exit",reason="reach the rooms exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.getPosition() == (6,0,0):
-                    return (None,"ww")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit")
+                    return (None,("ww","exit the room"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),description="go to room exit",reason="reach the rooms exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
                 if character.getPosition() == (12,6,0):
-                    return (None,"dd")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit")
+                    return (None,("dd","exit the room"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(12,6,0),description="go to room exit",reason="reach the rooms exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.getPosition() == (0,6,0):
-                    return (None,"aa")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit")
+                    return (None,("aa","exit the room"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(0,6,0),description="go to room exit",reason="reach the rooms exit")
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
         else:
             if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
                 if character.container.getEnemiesOnTile(character):
-                    return (None,"gg")
+                    return (None,("gg","guard the tile"))
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
-                return (None,"w")
+                return (None,("w","enter the tile"))
             if character.xPosition%15 == 7 and character.yPosition%15 == 0:
-                return (None,"s")
+                return (None,("s","enter the tile"))
             if character.xPosition%15 == 14 and character.yPosition%15 == 7:
-                return (None,"a")
+                return (None,("a","enter the tile"))
             if character.xPosition%15 == 0 and character.yPosition%15 == 7:
-                return (None,"d")
+                return (None,("d","enter the tile"))
 
             if not self.isPathSane(character):
                 self.generatePath(character)
@@ -197,26 +225,26 @@ go to tile %s
 
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
-                    return (None,"s")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0),description="go to tile edge")
+                    return (None,("s","exit the tile"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (0,-1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 1:
-                    return (None,"w")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0),description="go to tile edge")
+                    return (None,("w","exit the tile"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (1,0):
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
-                    return (None,"d")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0),description="go to tile edge")
+                    return (None,("d","exit the tile"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
             if self.path[0] == (-1,0):
                 if character.xPosition%15 == 1 and character.yPosition%15 == 7:
-                    return (None,"a")
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge")
+                    return (None,("a","exit the tile"))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
     
@@ -228,6 +256,9 @@ go to tile %s
             return
 
     def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
     def generatePath(self,character):
@@ -244,7 +275,7 @@ go to tile %s
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 

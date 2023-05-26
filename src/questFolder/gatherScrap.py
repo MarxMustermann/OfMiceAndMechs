@@ -64,23 +64,41 @@ Scrapfields are shown on the minimap as white ss"""]
 
         self.postHandler()
 
-    def solver(self, character):
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
 
-        self.triggerCompletionCheck(character)
+    def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
+
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
+            return
+        super().solver(character)
+
+    def getNextStep(self,character=None,ignoreCommands=False):
 
         if self.subQuests:
-            return super().solver(character)
+            return (None,None)
 
         if character.getFreeInventorySpace() < 1:
             if not character.inventory[-1].type == "Scrap":
-                self.addQuest(src.quests.questMap["ClearInventory"]())
-                return
+                quest = src.quests.questMap["ClearInventory"]()
+                return ([quest],None)
 
         items = character.container.getItemByPosition(character.getPosition())
         if items:
             if items[-1].type == "Scrap":
-                character.runCommandString("k"*min(10-len(character.inventory),items[-1].amount))
-                return
+                return (None,("k"*min(10-len(character.inventory),items[-1].amount),"pick up scrap"))
 
         foundScrap = None
         room = character.container
@@ -90,7 +108,7 @@ Scrapfields are shown on the minimap as white ss"""]
             pathMap = {toCheckFrom[0]:[]}
             directions = [(-1,0),(1,0),(0,1),(0,-1)]
             while len(toCheckFrom):
-                random.shuffle(directions)
+                #random.shuffle(directions)
                 pos = toCheckFrom.pop()
                 for direction in directions:
                     foundScrap = None
@@ -115,7 +133,7 @@ Scrapfields are shown on the minimap as white ss"""]
         if not foundScrap:
             room = character.container
             if not isinstance(room,src.rooms.Room):
-                return
+                return (None,None)
 
             source = None
             for potentialSource in random.sample(list(room.sources),len(room.sources)):
@@ -124,18 +142,15 @@ Scrapfields are shown on the minimap as white ss"""]
                     break
 
             if source == None and not character.getTerrain().scrapFields:
-                self.fail()
-                return
+                self.fail(reason="no scrap source found")
+                return (None,None)
             elif source == None:
                 targetPos = random.choice(character.getTerrain().scrapFields)
             else:
                 targetPos = (source[0][0],source[0][1],0)
 
             quest = src.quests.questMap["GoToTile"](targetPosition=targetPos,description="go to scrap field")
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
+            return ([quest],None)
 
         command = ""
 
@@ -161,6 +176,6 @@ Scrapfields are shown on the minimap as white ss"""]
             pickUpCommand = "k"
 
         command += pickUpCommand*min(10-len(character.inventory),character.container.getItemByPosition(foundScrap[1])[0].amount)
-        character.runCommandString(command)
+        return (None,(command,"pick up scrap"))
 
 src.quests.addType(GatherScrap)

@@ -4,19 +4,23 @@ import random
 class ProduceItem(src.quests.MetaQuestSequence):
     type = "ProduceItem"
 
-    def __init__(self, description="produce item", creator=None, command=None, lifetime=None, targetPosition=None, itemType=None,tryHard=False):
+    def __init__(self, description="produce item", creator=None, command=None, lifetime=None, targetPosition=None, itemType=None,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description+" "+itemType
         self.targetPosition = targetPosition
         self.itemType = itemType
         self.tryHard = tryHard
+        self.reason = reason
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         text = """
-produce %s.
+produce %s%s.
 
-"""%(self.itemType,)
+"""%(self.itemType,reason,)
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
         text += """
@@ -57,11 +61,14 @@ If you don't find a %s machine needed, build it.
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
     def generateSubquests(self, character=None):
@@ -113,7 +120,7 @@ If you don't find a %s machine needed, build it.
                     offsets = {(0,0,0):"l",(1,0,0):"Ld",(-1,0,0):"La",(0,1,0):"Ls",(0,-1,0):"Lw"}
                     for (offset,command) in offsets.items():
                         if character.getPosition(offset=offset) == foundItem.getPosition(offset=(-1,0,0)):
-                            return (None, command)
+                            return (None, (command,"place scrap to compact"))
 
                 items = foundItem.container.getItemByPosition(foundItem.getPosition(offset=(1,0,0)))
                 if items:
@@ -127,7 +134,7 @@ If you don't find a %s machine needed, build it.
                 offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
                 for (offset,command) in offsets.items():
                     if character.getPosition(offset=offset) == foundItem.getPosition():
-                        return (None, command)
+                        return (None, (command,"use the ScrapCompactor"))
                 1/0
 
             foundMachine = None
@@ -175,7 +182,7 @@ If you don't find a %s machine needed, build it.
                 offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
                 for (offset,command) in offsets.items():
                     if character.getPosition(offset=offset) == foundMachine.getPosition():
-                        return (None, command)
+                        return (None, (command,"use the machine"))
                 1/0
 
             if self.tryHard:

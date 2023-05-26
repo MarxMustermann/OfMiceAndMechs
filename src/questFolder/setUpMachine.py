@@ -46,11 +46,14 @@ If you don't find a %s blueprint, research it.
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
     def generateSubquests(self, character=None):
@@ -104,8 +107,7 @@ If you don't find a %s blueprint, research it.
                 directionFound = None
                 for direction in directions:
                     if character.getPosition(offset=direction[0]) == self.targetPosition:
-                        return (None,"L"+direction[1])
-
+                        return (None,("L"+direction[1]+"cb","place the machine"))
 
             machineMachine = None
             bluePrint = None
@@ -136,7 +138,7 @@ If you don't find a %s blueprint, research it.
                         for endProduct in machineMachine.endProducts:
                             if endProduct == self.itemType:
                                 counter += 1
-                        return (None,"K"+direction[1]+direction[1]+"cb")
+                        return (None,("K"+direction[1],"pick up the machine"))
 
 
             if self.itemType in machineMachine.endProducts:
@@ -161,7 +163,7 @@ If you don't find a %s blueprint, research it.
                             if endProduct == self.itemType:
                                 break
                             counter += 1
-                        return (None,"J"+direction[1]+"sj"+(counter*"s")+"j")
+                        return (None,("J"+direction[1]+"sj"+(counter*"s")+"j","produce the machine"))
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(0,-1,0)))
             placedBlueprintFound = False
@@ -181,7 +183,7 @@ If you don't find a %s blueprint, research it.
                 directionFound = None
                 for direction in directions:
                     if character.getPosition(offset=direction[0]) == machineMachine.getPosition():
-                        return (None,"J"+direction[1]+"j")
+                        return (None,("J"+direction[1]+"j","load the blueprint"))
 
             if character.inventory and character.inventory[-1].type == "BluePrint" and character.inventory[-1].endProduct == self.itemType:
                 if not character.container == machineMachine.container:
@@ -194,7 +196,7 @@ If you don't find a %s blueprint, research it.
                 directionFound = None
                 for direction in directions:
                     if character.getPosition(offset=direction[0]) == machineMachine.getPosition(offset=(0,-1,0)):
-                        return (None,"L"+direction[1])
+                        return (None,("L"+direction[1],"place blueprint"))
                 15/0
 
             if bluePrint:
@@ -204,7 +206,7 @@ If you don't find a %s blueprint, research it.
                 if not character.getPosition() == bluePrint.getPosition():
                     quest = src.quests.questMap["GoToPosition"](targetPosition=bluePrint.getPosition())
                     return ([quest],None)
-                return (None,"k")
+                return (None,("k","pick up blueprint"))
 
             if self.tryHard:
                 quest = src.quests.questMap["ResearchBluePrint"](itemType=self.itemType,tryHard=self.tryHard)

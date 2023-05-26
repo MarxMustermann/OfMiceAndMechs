@@ -3,7 +3,7 @@ import src
 class GoHome(src.quests.MetaQuestSequence):
     type = "GoHome"
 
-    def __init__(self, description="go home", creator=None, paranoid=False):
+    def __init__(self, description="go home", creator=None, paranoid=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -13,6 +13,7 @@ class GoHome(src.quests.MetaQuestSequence):
         self.addedSubQuests = False
         self.paranoid = paranoid
         self.cityLocation = None
+        self.reason = reason
 
         self.attributesToStore.extend([
             "hasListener","addedSubQuests","paranoid"])
@@ -20,8 +21,12 @@ class GoHome(src.quests.MetaQuestSequence):
         self.tuplesToStore.append("cityLocation")
 
     def generateTextDescription(self):
-        return """
-Go home.
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
+
+        text = """
+Go home%s.
 
 You consider the command center of the base your home.
 That command centre holds the assimilator and
@@ -36,7 +41,8 @@ Quests like this can be pretty boring.
 Press c now to use auto move to complete this quest.
 Be careful with auto move, while danger is nearby. 
 Press crtl-d to stop your character from moving.
-"""
+"""%(reason,)
+        return text
 
     def triggerCompletionCheck(self, character=None):
         if not character:
@@ -82,7 +88,7 @@ Press crtl-d to stop your character from moving.
             quest.activate()
             return
         elif not character.getBigPosition() == self.cityLocation:
-            quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation)
+            quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation,reason="go to the command center")
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()

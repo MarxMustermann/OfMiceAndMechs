@@ -72,11 +72,14 @@ Try as hard as you can to achieve this.
             return
 
         if nextCommand:
-            character.runCommandString(nextCommand)
+            character.runCommandString(nextCommand[0])
             return
         super().solver(character)
 
     def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
     def generateSubquests(self, character=None):
@@ -87,10 +90,6 @@ Try as hard as you can to achieve this.
             return
 
     def getNextStep(self,character=None,ignoreCommands=False):
-        try:
-            self.painterPos
-        except:
-            self.painterPos = None
         if not self.subQuests:
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
@@ -124,13 +123,13 @@ Try as hard as you can to achieve this.
                     return ([quest],None)
 
                 if self.stockpileType == "i" and not item.paintMode == "inputSlot":
-                    return (None,["c","m","i","enter"])
+                    return (None,(["c","m","i","enter"],"to configure the painter to input stockpile"))
                 if self.stockpileType == "o" and not item.paintMode == "outputSlot":
-                    return (None,["c","m","o","enter"])
+                    return (None,(["c","m","o","enter"],"to configure the painter to output stockpile"))
                 if not (self.itemType == item.paintType):
-                    return (None,["c","t"] + list(self.itemType) + ["enter"])
+                    return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
                     
-                return (None,"jk")
+                return (None,("jk","draw to stockpile"))
 
             if not self.painterPos:
                 if not character.inventory or not character.inventory[-1].type == "Painter":
@@ -146,114 +145,8 @@ Try as hard as you can to achieve this.
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition)
                 return ([quest],None)
 
-            return (None,"l")
+            return (None,("l","drop the Painter"))
 
         return (None,None)
-
-        if character.container.floorPlan.get("inputSlots"):
-            if not painter.paintMode == "inputSlot":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcminputSlot\nk"))
-                return
-
-            inputSlot = character.container.floorPlan["inputSlots"][-1]
-
-            if not painter.paintType == inputSlot[1]:
-                self.addQuest(src.quest.questMap["RunCommand"](command="lct%s\nk"%(inputSlot[1],)))
-                return
-
-            character.container.floorPlan["inputSlots"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=inputSlot[0]))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("outputSlots"):
-            if not painter.paintMode == "outputSlot":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmoutputSlot\nk"))
-                return
-
-            outputSlot = character.container.floorPlan["outputSlots"][-1]
-
-            if not painter.paintType == outputSlot[1]:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lct%s\nk"%(outputSlot[1],)))
-                return
-
-            character.container.floorPlan["outputSlots"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0]))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("storageSlots"):
-            if not painter.paintMode == "storageSlot":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmstorageSlot\nk"))
-                return
-
-            storageSlot = character.container.floorPlan["storageSlots"][-1]
-
-            if not painter.paintType == storageSlot[1]:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lct%s\nk"%(storageSlot[1],)))
-                return
-            
-            character.container.floorPlan["storageSlots"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=storageSlot[0]))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("buildSites"):
-
-            buildingSite = character.container.floorPlan["buildSites"][-1]
-
-            character.container.floorPlan["buildSites"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildingSite[0]))
-
-            for (key,value) in buildingSite[2].items():
-                valueType = ""
-                if key == "command":
-                    value = "".join(value)
-
-                if key == "commands":
-                    value = json.dumps(value)
-                    valueType = "json"
-
-                if key == "settings":
-                    value = json.dumps(value)
-                    valueType = "json"
-
-
-                if isinstance(value,int):
-                    valueType = "int"
-
-                self.addQuest(src.quests.questMap["RunCommand"](command="lce%s\n%s\n%s\nk"%(key,valueType,value)))
-
-            if not painter.paintMode == "buildSite":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmbuildSite\nk"))
-
-            if not painter.paintType == buildingSite[1]:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lct%s\nk"%(buildingSite[1],)))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        character.container.floorPlan = None
-        self.postHandler()
-        return
 
 src.quests.addType(DrawStockpile)

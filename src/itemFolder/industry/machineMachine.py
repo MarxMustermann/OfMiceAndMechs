@@ -62,6 +62,7 @@ Select the thing to produce and confirm.
         character.macroState["submenue"] = self.submenue
         character.macroState["submenue"].followUp = self.basicSwitch
         self.character = character
+        self.character.runCommandString("~",nativeKey=True)
 
     # abstraction: should use superclass functionality
     def configure(self, character):

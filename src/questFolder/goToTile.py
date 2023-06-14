@@ -164,7 +164,8 @@ The target tile is %s
             return (None,None)
 
         if isinstance(character.container,src.rooms.Room):
-            if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
+            # TODO: reenable random
+            if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
@@ -205,7 +206,8 @@ The target tile is %s
                 quest.generatePath(character)
                 return ([quest],None)
         else:
-            if not self.paranoid and random.random() < 0.5 and "fighting" in self.character.skills:
+            # TODO: reenable random
+            if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
                 if character.container.getEnemiesOnTile(character):
                     return (None,("gg","guard the tile"))
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
@@ -259,7 +261,7 @@ The target tile is %s
         nextStep = self.getNextStep(character)
         if nextStep == (None,None):
             return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
+        return nextStep[1]
 
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition)

@@ -3,7 +3,7 @@ import src
 class DrawStockpile(src.quests.MetaQuestSequence):
     type = "DrawStockpile"
 
-    def __init__(self, description="draw stockpile", creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False):
+    def __init__(self, description="draw stockpile", creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -13,17 +13,21 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         self.stockpileType = stockpileType
         self.tryHard = tryHard
         self.painterPos = None
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         mappedNames = {"i":"input stockpile","o":"output stockpile"}
         text = """
-draw a %s stockpile for %s on position %s on tile %s.
+draw a %s stockpile for %s on position %s on tile %s%s.
 
-"""%(mappedNames[self.stockpileType],self.itemType,self.targetPosition,self.targetPositionBig,)
+"""%(mappedNames[self.stockpileType],self.itemType,self.targetPosition,self.targetPositionBig,reason)
 
         if self.stockpileType == "i":
             text += """
@@ -119,7 +123,7 @@ Try as hard as you can to achieve this.
             if foundOffset:
                 item = foundOffset[1]
                 if character.getDistance(item.getPosition()) > 0:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition())
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
                     return ([quest],None)
 
                 if self.stockpileType == "i" and not item.paintMode == "inputSlot":
@@ -133,16 +137,16 @@ Try as hard as you can to achieve this.
 
             if not self.painterPos:
                 if not character.inventory or not character.inventory[-1].type == "Painter":
-                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
+                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                     return ([quest],None)
                 painter = character.inventory[-1]
 
             if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
                 return ([quest],None)
 
             if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
                 return ([quest],None)
 
             return (None,("l","drop the Painter"))

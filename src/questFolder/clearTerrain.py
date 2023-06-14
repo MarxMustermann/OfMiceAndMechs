@@ -10,11 +10,12 @@ class ClearTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
 
     def generateTextDescription(self):
-        text = """
+        text = ["""
 Clear the whole terrain from enemies.
 
 Just clear the whole terrain tile for tile.
-"""
+"""]
+        return text
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -40,24 +41,37 @@ Just clear the whole terrain tile for tile.
         super().triggerCompletionCheck()
         return False
 
-    def solver(self, character):
-        if len(self.subQuests):
-            return super().solver(character)
-        else:
-            self.triggerCompletionCheck(character)
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return nextStep[1]
 
+    def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return 
+
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
+            return
+        super().solver(character)
+
+    def getNextStep(self,character=None,ignoreCommands=False):
+        if not self.subQuests:
             if character.yPosition%15 == 14:
-                character.runCommandString("w")
-                return
+                return (None,("w","enter tile"))
             if character.yPosition%15 == 0:
-                character.runCommandString("s")
-                return
+                return (None,("s","enter tile"))
             if character.xPosition%15 == 14:
-                character.runCommandString("a")
-                return
+                return (None,("a","enter tile"))
             if character.xPosition%15 == 0:
-                character.runCommandString("d")
-                return
+                return (None,("d","enter tile"))
 
             if isinstance(character.container,src.rooms.Room):
                 terrain = character.container.container
@@ -74,16 +88,14 @@ Just clear the whole terrain tile for tile.
                         if otherChar.faction == character.faction:
                             continue
                         quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
-                        quest.assignToCharacter(character)
-                        quest.activate()
-                        self.addQuest(quest)
-                        return
+                        return ([quest],None)
                 if step == "clearOutside":
                     for room in terrain.rooms:
                         for otherChar in room.characters:
                             if otherChar.faction == character.faction:
                                 continue
-                            self.addQuest(src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True))
-                            return
+                            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
+                            return ([quest],None)
+        return (None,None)
 
 src.quests.addType(ClearTerrain)

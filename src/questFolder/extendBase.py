@@ -81,7 +81,6 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def roomBuildingFailed(self,extraParam):
-        print(extraParam)
         3/0
 
     def solver(self, character):
@@ -102,12 +101,25 @@ Press d to move the cursor and show the subquests description.
             return super().getSolvingCommandString(character)
         return nextStep[1]
 
+    def generateSubquests(self, character=None):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
             if not ignoreCommands:
                 submenue = character.macroState.get("submenue")
                 if submenue:
                     return (None,(["esc"],"exit the menu"))
+
+            if not character.weapon:
+                quest = src.quests.questMap["Equip"](weaponOnly=True)
+                self.startWatching(quest,self.roomBuildingFailed,"failed")
+                return ([quest],None)
+
             if not character.getTerrain().getRoomByPosition((6,7,0)):
                 quest = src.quests.questMap["BuildRoom"](targetPosition=(6,7,0),tryHard=True,reason="extend the base")
                 self.startWatching(quest,self.roomBuildingFailed,"failed")
@@ -126,9 +138,8 @@ Press d to move the cursor and show the subquests description.
             for npc in npcs:
                 if npc == character:
                     continue
-                quest = src.quests.questMap["ReduceFoodConsumption"]()
+                quest = src.quests.questMap["ReduceFoodConsumption"](reason="prevent starvation")
                 return ([quest],None)
-
 
             for checkRoom in character.getTerrain().rooms:
                 for item in checkRoom.itemsOnFloor:
@@ -144,9 +155,13 @@ Press d to move the cursor and show the subquests description.
                     if inStorage:
                         continue
                             
-                    quest1 = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition())
-                    quest2 = src.quests.questMap["ClearInventory"]()
+                    quest1 = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),reason="pick up valuables")
+                    quest2 = src.quests.questMap["ClearInventory"](reason="store the valuables")
                     return ([quest2,quest1], None)
+
+            if character.flask and character.flask.uses < 15:
+                quest = src.quests.questMap["FillFlask"]()
+                return ([quest],None)
 
             foundInput1 = False
             foundInput2 = False
@@ -157,21 +172,21 @@ Press d to move the cursor and show the subquests description.
                     foundInput2 = True
 
             if not foundInput1:
-                quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(7,4,0))
+                quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(7,4,0),reason="set up scrap supply infrastructure for the machine production")
                 return ([quest],None)
 
             items = room.getItemByPosition((8,4,0))
             if not items or not items[-1].type == "ScrapCompactor":
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(8,4,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(8,4,0),itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="set up metal bar production for the machine production")
                 return ([quest],None)
 
             if not foundInput2:
-                quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(4,7,0))
+                quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(4,7,0),reason="set up scrap supply infrastructure for the research spot")
                 return ([quest],None)
 
             items = room.getItemByPosition((5,7,0))
             if not items or not items[-1].type == "ScrapCompactor":
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,7,0),itemType="ScrapCompactor",tryHard=True,boltDown=True)
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,7,0),itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="set up metal bar production for the research spot")
                 return ([quest],None)
 
             for room in character.getTerrain().rooms:
@@ -179,9 +194,9 @@ Press d to move the cursor and show the subquests description.
                     if inputSlot[1] == "Scrap":
                         items = room.getItemByPosition(inputSlot[0])
                         if not items or not items[-1].type == "Scrap":
-                            quest1 = src.quests.questMap["GatherScrap"]()
-                            quest2 = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
-                            quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap")
+                            quest1 = src.quests.questMap["GatherScrap"](reason="have Scrap to supply the city with")
+                            quest2 = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get back to tile in need of Scrap")
+                            quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="ensure scrap supply")
                             return ([quest3,quest2,quest1],None)
             
             foundCaseOutput = False
@@ -250,11 +265,4 @@ Press d to move the cursor and show the subquests description.
     def triggerCompletionCheck(self,character=None):
         return False
     
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
 src.quests.addType(ExtendBase)

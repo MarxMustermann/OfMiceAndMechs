@@ -212,7 +212,6 @@ class Terrain(src.saveing.Saveable):
             self.events.remove(event)
 
     def advance(self):
-        self.animations = []
         self.lastRender = None
 
         self.advanceCharacters()
@@ -424,6 +423,7 @@ class Terrain(src.saveing.Saveable):
                     return room.itemByCoordinates[localisedEntry][0]
 
             char.changed("moved", (char, direction))
+            char.timeTaken += char.movementSpeed
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -488,7 +488,6 @@ class Terrain(src.saveing.Saveable):
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
-
         elif direction == "east":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
                 return
@@ -872,6 +871,7 @@ class Terrain(src.saveing.Saveable):
                         src.gamestate.gamestate.terrain = newTerrain
 
                 char.changed("moved", (char, direction))
+                char.timeTaken += char.movementSpeed
                 for item in stepOnActiveItems:
                     item.doStepOnAction(char)
 
@@ -1833,10 +1833,11 @@ class Terrain(src.saveing.Saveable):
             elif animationType in ("showchar",):
                 display = extraInfo["char"]
 
-                try:
-                    chars[pos[1]][pos[0]] = display
-                except:
-                    continue
+                if display:
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        continue
                 animation[2] -= 1
 
                 if duration < 1:

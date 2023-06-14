@@ -4,10 +4,11 @@ import random
 class GatherScrap(src.quests.MetaQuestSequence):
     type = "GatherScrap"
 
-    def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None):
+    def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.reason = reason
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
@@ -18,8 +19,11 @@ class GatherScrap(src.quests.MetaQuestSequence):
         scrap1 = src.items.itemMap["Scrap"](amount=1)
         scrap2 = src.items.itemMap["Scrap"](amount=6)
         scrap3 = src.items.itemMap["Scrap"](amount=20)
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         return ["""
-Fill your inventory with scrap.
+Fill your inventory with scrap""",reason,""".
 Scrap can be found in scrapfields and
 looks like this: """,scrap1.render()," or ",scrap2.render()," or ",scrap3.render(),"""
 

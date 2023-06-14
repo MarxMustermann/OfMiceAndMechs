@@ -54,7 +54,7 @@ class FillFlask(src.quests.MetaQuestSequence):
                 continue
 
             shouldUse = False
-            if items[0].type in ["GooDispenser"]:
+            if items[0].type in ["GooDispenser","GooFlask"]:
                 shouldUse = True
 
             if not shouldUse:
@@ -91,6 +91,9 @@ class FillFlask(src.quests.MetaQuestSequence):
                 if items[0].type in ["GooDispenser"] and items[0].charges:
                     shouldUse = True
 
+                if items[0].type in ["GooFlask"] and items[0].uses:
+                    shouldUse = True
+
                 if not shouldUse:
                     continue
 
@@ -104,11 +107,20 @@ class FillFlask(src.quests.MetaQuestSequence):
                     self.addQuest(quest)
                     self.startWatching(quest,self.subQuestCompleted,"completed")
                     return
+                if item.type == "GooFlask" and item.uses:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo flask",ignoreEndBlocked=True)
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    self.addQuest(quest)
+                    self.startWatching(quest,self.subQuestCompleted,"completed")
+                    return
 
         room = None
         for roomCandidate in character.getTerrain().rooms:
             for item in roomCandidate.itemsOnFloor:
                 if item.type == "GooDispenser" and item.charges:
+                    room = roomCandidate
+                if item.type == "GooFlask" and item.uses:
                     room = roomCandidate
 
         if room:

@@ -56,6 +56,7 @@ class Character(src.saveing.Saveable):
         self.rank = None
         self.isStaff = False
         self.stepsOnMines = False
+        self.implantLoad = 0
 
         self.showThinking = False
         self.showGotCommand = False
@@ -102,7 +103,7 @@ class Character(src.saveing.Saveable):
 
             mainNameCore = random.choice([
                 "Berg","Stahl","Hammer","Kraut","Barren","Eichen","Sieben","Eisen","Bären","Hunde","Ketten","Felsen",
-                "Feuer","Glut",
+                "Feuer","Glut","Stein",
             ])
 
             postfix = random.choice([
@@ -847,6 +848,8 @@ class Character(src.saveing.Saveable):
         """
         if self.dead:
             return
+
+        self.timeTaken += self.movementSpeed
 
         if self.numAttackedWithoutResponse > 2:
             self.numAttackedWithoutResponse = int(self.numAttackedWithoutResponse/2)
@@ -1954,6 +1957,8 @@ class Character(src.saveing.Saveable):
         if self.stasis or self.dead or self.disabled:
             return
 
+        self.implantLoad = 0
+
         if advanceMacros:
             src.interaction.advanceChar(self,[])
 
@@ -2114,9 +2119,6 @@ class Character(src.saveing.Saveable):
 
         if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
             src.interaction.playSound("step","steps")
-
-        if tag == "moved":
-            self.timeTaken += self.movementSpeed-1
 
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
             if isinstance(info[1],src.rooms.WorkshopRoom):
@@ -3033,6 +3035,98 @@ class Ghul(Character):
     def hurt(self, damage, reason=None, actor=None):
         super().hurt(max(1,damage//2),reason=reason,actor=actor)
 
+class Maggot(Character):
+
+    def __init__(
+        self,
+        display="o=",
+        xPosition=0,
+        yPosition=0,
+        quests=[],
+        automated=True,
+        name="Maggot",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: what the monster should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+        self.solvers.append("NaiveActivateQuest")
+        self.solvers.append("NaiveMurderQuest")
+        self.maxHealth = random.randint(5,15)
+        self.health = self.maxHealth
+
+        self.satiation = 10
+
+        self.charType = "Maggot"
+
+    def advance(self,advanceMacros=False):
+        if self.timeTaken > 1:
+            return
+        if not src.gamestate.gamestate.tick%2 == 0:
+            return
+
+        self.satiation -= 1
+        if self.satiation < 0:
+            self.die(reason="starved")
+            return
+
+        terrain = self.getTerrain()
+        characters = terrain.charactersByTile.get(self.getBigPosition(),[])
+        directions = []
+        for character in characters:
+            if not character == self:
+                if character.xPosition < self.xPosition:
+                    directions.append("a")
+                    directions.append("a")
+                    directions.append("a")
+                elif character.xPosition > self.xPosition:
+                    directions.append("d")
+                    directions.append("d")
+                    directions.append("d")
+                elif character.yPosition > self.yPosition:
+                    directions.append("s")
+                    directions.append("s")
+                    directions.append("s")
+                elif character.yPosition < self.yPosition:
+                    directions.append("w")
+                    directions.append("w")
+                    directions.append("w")
+
+        if not directions:
+            directions = ["w","a","s","d"]
+
+        direction = random.choice(directions)
+        self.runCommandString(direction+"jm")
+
+    def die(self, reason=None, addCorpse=True):
+
+        if self.xPosition and self.container:
+            new = src.items.itemMap["VatMaggot"]()
+            self.container.addItem(new,self.getPosition())
+
+        super().die(reason=reason, addCorpse=False)
+
 characterMap = {
     "Character": Character,
     "Monster": Monster,
@@ -3042,6 +3136,7 @@ characterMap = {
     "Spider": Spider,
     "CollectorSpider": CollectorSpider,
     "Ghul": Ghul,
+    "Maggot": Maggot,
 }
 
 

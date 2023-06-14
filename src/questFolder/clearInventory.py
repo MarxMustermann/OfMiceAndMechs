@@ -124,10 +124,11 @@ To see your items open the your inventory by pressing i."""%(reason,)
                     return ([quest],None)
 
                 for checkRoom in character.getTerrain().rooms:
-                    emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+                    emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                     if emptyInputSlots:
-                        quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
-                        return ([quest],None)
+                        quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
+                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
+                        return ([quest2,quest1],None)
 
                 if not "HOMEx" in character.registers:
                     self.fail(reason="no home")

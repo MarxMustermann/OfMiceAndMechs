@@ -4,13 +4,14 @@ import random
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False):
         super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
         self.reputationReward = reputationReward
         self.rewardText = rewardText
         self.huntdownCooldown = 0
+        self.strict = strict
 
     def generateTextDescription(self):
         text  = """
@@ -75,39 +76,48 @@ Try luring enemies into landmines or detonating some bombs."""
         return False
 
     def getSolvingCommandString(self, character, dryRun=True):
-        if character.getBigPosition() == self.targetPosition:
-            enemies = character.getNearbyEnemies()
-            if enemies:
-                return "gg"
-            else:
-                return "10."
-        return super().getSolvingCommandString(character,dryRun=dryRun)
+        if not self.subQuests:
+            if character.getBigPosition() == self.targetPosition:
+                enemies = character.getNearbyEnemies()
+                if enemies:
+                    return "gg"
+                else:
+                    return "10."
+            return super().getSolvingCommandString(character,dryRun=dryRun)
 
-    def solver(self,character):
-        if self.completed:
-            return
-        if not self.active:
-            return
+    def solver(self, character):
+        if character == src.gamestate.gamestate.mainChar:
+            print("solver secure tile")
 
         if self.triggerCompletionCheck(character):
             return
 
-        self.huntdownCooldown -= 1
-        if self.huntdownCooldown < 0:
-            enemies = character.getNearbyEnemies()
-            if enemies:
-                self.huntdownCooldown = 100
-                if random.random() < 0.3:
-                    quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
-                    quest.autoSolve = True
-                    character.assignQuest(quest,active=True)
-                    return
-
-        command = self.getSolvingCommandString(character)
-        if command:
-            character.runCommandString(command)
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
             return
 
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
+            return
         super().solver(character)
+
+    def getNextStep(self,character=None,ignoreCommands=False):
+        if not self.subQuests:
+            if character == src.gamestate.gamestate.mainChar:
+                print("get next step secure tile")
+
+            if not self.strict:
+                self.huntdownCooldown -= 1
+                if self.huntdownCooldown < 0:
+                    enemies = character.getNearbyEnemies()
+                    if enemies:
+                        self.huntdownCooldown = 100
+                        if random.random() < 1.3:
+                            quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                            return ([quest],None)
+
+        return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 
 src.quests.addType(SecureTile)

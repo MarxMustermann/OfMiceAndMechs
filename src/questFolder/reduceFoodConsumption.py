@@ -4,16 +4,20 @@ import random
 class ReduceFoodConsumption(src.quests.MetaQuestSequence):
     type = "ReduceFoodConsumption"
 
-    def __init__(self, description="reduce food consumption"):
+    def __init__(self, description="reduce food consumption",reason=None):
         questList = []
         super().__init__(questList)
         self.metaDescription = description
+        self.reason = reason
 
     def generateTextDescription(self):
-        text = """
-reduce the food consumption on the base.
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
+        text = ["""
+reduce the food consumption on the base%s.
 
-"""
+"""%(reason,)]
         return text
 
     def solver(self, character):
@@ -60,14 +64,16 @@ reduce the food consumption on the base.
                     continue
 
                 if not character.container == npc.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition())
+                    if character.getBigPosition() == npc.getBigPosition():
+                        return (None,(".","wait"))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition(),reason="to get near %s"%(npc.name,))
                     return ([quest],None)
 
                 if character.getDistance(npc.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition())
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition(),reason="to get in reach of %s"%(npc.name,))
                     return ([quest],None)
 
-                return (None,("M","attack an ally"))
+                return (None,("M","attack %s"%(npc.name,)))
 
             self.postHandler()
             return (None,None)

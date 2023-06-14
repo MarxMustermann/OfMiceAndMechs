@@ -13,3 +13,4 @@ import src.itemFolder.plants.mold
 import src.itemFolder.plants.poisonBloom
 import src.itemFolder.plants.sprout2
 import src.itemFolder.plants.swarmIntegrator
+import src.itemFolder.plants.cocoon

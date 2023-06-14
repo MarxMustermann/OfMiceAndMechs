@@ -46,11 +46,7 @@ If you don't find a %s machine needed, build it.
         super().assignToCharacter(character)
 
     def producedItem(self,extraInfo):
-        print("!!!!! produced something !!!!!!!")
-        print(extraInfo)
-        print(self.itemType)
         if extraInfo["item"].type == self.itemType:
-            print("should have completed")
             self.postHandler()
 
     def solver(self, character):
@@ -105,6 +101,9 @@ If you don't find a %s machine needed, build it.
 
                 items = foundItem.container.getItemByPosition(foundItem.getPosition(offset=(-1,0,0)))
                 if not items or not items[-1].type == "Scrap":
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=foundItem.getPosition(offset=(-1,0,0)),targetPositionBig=foundItem.container.getPosition(),itemType="Scrap",tryHard=self.tryHard)
+                    return ([quest], None)
+                """
                     if not character.inventory or not character.inventory[-1].type == "Scrap":
                         scrapField = random.choice(character.getTerrain().scrapFields)
 
@@ -121,6 +120,7 @@ If you don't find a %s machine needed, build it.
                     for (offset,command) in offsets.items():
                         if character.getPosition(offset=offset) == foundItem.getPosition(offset=(-1,0,0)):
                             return (None, (command,"place scrap to compact"))
+                """
 
                 items = foundItem.container.getItemByPosition(foundItem.getPosition(offset=(1,0,0)))
                 if items:

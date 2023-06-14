@@ -87,7 +87,6 @@ If you don't find the items to place, produce them.
 
 
     def producedItem(self,extraInfo):
-        print(extraInfo)
         item = extraInfo["item"]
         self.checkPlacedItem(item)
 
@@ -136,6 +135,11 @@ If you don't find the items to place, produce them.
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
+            if not ignoreCommands:
+                submenue = character.macroState.get("submenue")
+                if submenue:
+                    return (None,(["esc"],"exit the menu"))
+
             itemFound = None
             itemIndex = 0
             for item in reversed(character.inventory):
@@ -148,6 +152,12 @@ If you don't find the items to place, produce them.
                 quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard,reason="have an item to place")
                 return ([quest],None)
 
+            if not itemFound.walkable:
+                items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                if items:
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
+                    return ([quest],None)
+
             if not character.getBigPosition() == self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
                 return ([quest],None)
@@ -155,12 +165,6 @@ If you don't find the items to place, produce them.
             if not character.getSpacePosition() == self.targetPosition:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,))
                 return ([quest],None)
-
-            if not itemFound.walkable:
-                items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                if items:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
-                    return ([quest],None)
 
             if itemIndex > 1:
                 dropCommand = "il"+itemIndex*"w"+"j"

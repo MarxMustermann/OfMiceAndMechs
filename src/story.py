@@ -3931,30 +3931,30 @@ class MainGame(BasicPhase):
         positions = [(7,6,0),(7,8,0),(6,7,0),(8,7,0),(7,7,0),(8,8,0)]
         positions = [(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0),(12,12,0)]
         #self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
-        #self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
 
         self.siegedBaseInfos = []
-        #self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
         #self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
 
         self.raidBaseInfos = []
         #self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
-        #self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
 
         self.colonyBaseInfos = []
-        self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
+        #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
 
         print(self.specialItemMap)
         print(self.colonyBaseInfos)
 
         if self.preselection == "Siege":
+            self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
             self.activeStory = random.choice(self.siegedBaseInfos)
         elif self.preselection == "Production":
+            self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
             self.activeStory = random.choice(self.productionBaseInfos)
         elif self.preselection == "Raid":
+            self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
             self.activeStory = random.choice(self.raidBaseInfos)
         else:
-            #self.activeStory = random.choice(self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos)
+            self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
             self.activeStory = self.colonyBaseInfos[0]
 
         for story in self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos:
@@ -3962,6 +3962,7 @@ class MainGame(BasicPhase):
 
         mainChar = self.activeStory["mainChar"]
         src.gamestate.gamestate.mainChar = mainChar
+        mainChar.addListener(self.mainCharacterDeath,"died")
 
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
@@ -3989,6 +3990,34 @@ class MainGame(BasicPhase):
 
         src.interaction.showRunIntro()
         self.kickoff()
+
+    def mainCharacterDeath(self,extraParam):
+        print(extraParam)
+        print(self.activeStory)
+        if self.activeStory["type"] == "colonyBase":
+            if len(self.activeStory["terrain"].rooms) == 1:
+                roomText = """    you failed to even build the first room"""
+            else:
+                roomText = """    you manged to build %s rooms."""%(len(self.activeStory["terrain"].rooms)-1,)
+            text = """
+    You died.
+
+    you were playing the scenario: %s
+
+%s
+
+    - press enter to continue -
+"""%(self.activeStory["type"],roomText,)
+        else:
+            text = """
+    You died.
+
+    you were playing the scenario: %s
+
+    - press enter to continue -
+"""%(self.activeStory["type"],)
+        src.interaction.showInterruptText(text)
+        raise SystemExit()
 
     def kickoff(self):
         if self.activeStory["type"] == "siegedBase":
@@ -4090,6 +4119,9 @@ try to remember how you got here ..."""
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         colonyBaseInfo["terrain"] = currentTerrain
         colonyBaseInfo["mainChar"] = mainChar
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 10
@@ -4231,9 +4263,6 @@ try to remember how you got here ..."""
         item.bolted = False
         mainRoom.addItem(item,(9,8,0))
         item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Mount")
-        item.bolted = False
-        item = src.items.itemMap["BluePrint"]()
         item.setToProduce("Sheet")
         item.bolted = False
         mainRoom.addItem(item,(10,3,0))
@@ -4273,6 +4302,12 @@ try to remember how you got here ..."""
         item = src.items.itemMap["Mount"]()
         item.bolted = False
         mainRoom.addItem(item,(8,11,0))
+        item = src.items.itemMap["Rod"]()
+        item.bolted = False
+        mainRoom.addItem(item,(5,11,0))
+        item = src.items.itemMap["Rod"]()
+        item.bolted = False
+        mainRoom.addItem(item,(5,11,0))
         item = src.items.itemMap["Radiator"]()
         item.bolted = False
         mainRoom.addItem(item,(7,11,0))
@@ -4320,6 +4355,47 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*14),random.randint(15,15*14),0)
             currentTerrain.addItem(item,pos)
+        for i in range(0,50):
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,10):
+            item = src.items.itemMap["Door"]()
+            item.bolted = False
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
+        """
+        for i in range(0,75):
+            item = src.items.itemMap["Cocoon"]()
+            item.bolted = False
+            item.charges = random.choice([0,1,2])
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
+        """
+        for i in range(0,10):
+            item = src.items.itemMap["Corpse"]()
+            item.bolted = False
+            item.charges = random.choice([0,1,2])
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            currentTerrain.addItem(item,pos)
+
+            enemy = src.characters.Monster(4,4)
+            enemy.godMode = True
+            enemy.health = 30
+            enemy.baseDamage = 15
+            enemy.movementSpeed = 1.5
+            enemy.specialDisplay = "cs"
+            enemy.faction = "invader"
+            enemy.tag = "lurker"
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(pos[0]//15,pos[1]//15,pos[2]//15))
+            quest.autoSolve = True
+            quest.activate()
+            quest.assignToCharacter(enemy)
+            enemy.quests.append(quest)
+            currentTerrain.addCharacter(enemy,pos[0],pos[1])
+
 
         #for i in range(0,10):
         #    sheet = src.items.itemMap["Sheet"]()
@@ -4349,6 +4425,7 @@ VatMaggot => MaggotFermenter
 BioMass => 
 -
 Corpse + Rod + Bolt => CorpseAnimator
+Mount + Rod => Sword
 """
         mainRoom.addItem(note,(9,9,0))
 
@@ -5478,6 +5555,11 @@ When you rise in rank you will be able to build a way out of here."""
         npc.registers["HOMEy"] = 7
         npc.registers["HOMETx"] = terrain.xPosition
         npc.registers["HOMETy"] = terrain.yPosition
+
+        npc.personality["autoFlee"] = False
+        npc.personality["abortMacrosOnAttack"] = False
+        npc.personality["autoCounterAttack"] = False
+
         quest = src.quests.questMap["BeUsefull"](strict=True)
         #quest = src.quests.questMap["ExtendBase"]()
         quest.autoSolve = True
@@ -5512,6 +5594,14 @@ food: ~10 000 moves
 
 press enter to continue"""%(npc.name,duty,)
             src.interaction.showInterruptText(text)
+
+        """
+        for i in range(0,25):
+            item = src.items.itemMap["Cocoon"]()
+            item.bolted = False
+            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            terrain.addItem(item,pos)
+        """
 
     def advanceSiegedBase(self,state):
         terrain = state["terrain"]
@@ -7474,7 +7564,7 @@ class Testing_1(BasicPhase):
             "ExamineQuest",
             "FireFurnaceMeta",
             "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
+            "WaitQuest",
             "NaiveDropQuest",
             "DropQuestMeta",
         ]

@@ -79,7 +79,6 @@ class Eat(src.quests.MetaQuestSequence):
         pos = character.getBigPosition()
         pos = (pos[0],pos[1])
         if pos in character.getTerrain().forests:
-            print(character.getSpacePosition())
             if character.getSpacePosition() == (8,7,0):
                 character.runCommandString("Jaj")
                 return
@@ -142,7 +141,6 @@ class Eat(src.quests.MetaQuestSequence):
                 if character.getTerrain().forests:
                     forest = random.choice(character.getTerrain().forests)
                     #forest = (forest[0],forest[1],0)
-                    print(forest)
                     description = "go to forest"
                     quest = src.quests.questMap["GoToTile"](targetPosition=forest,description=description)
                     quest.assignToCharacter(character)

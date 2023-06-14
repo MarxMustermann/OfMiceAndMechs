@@ -4,7 +4,7 @@ import random
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
-    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None):
+    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -12,11 +12,15 @@ class CleanSpace(src.quests.MetaQuestSequence):
 
         self.targetPosition = targetPosition 
         self.targetPositionBig = targetPositionBig
+        self.reason = reason
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         text = """
-Remove all items from the space %s on tile %s.
-"""%(self.targetPosition,self.targetPositionBig)
+Remove all items from the space %s on tile %s%s.
+"""%(self.targetPosition,self.targetPositionBig,reason,)
         return text
 
     def solver(self, character):
@@ -51,16 +55,16 @@ Remove all items from the space %s on tile %s.
                     return (None,None)
 
             if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get near the target tile")
                 return ([quest], None)
 
             if character.container.isRoom:
                 if character.getDistance(self.targetPosition) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
                     return ([quest], None)
             else:
                 if character.getDistance((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0)) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
                     return ([quest], None)
 
             offsets = {(0,0,0):"k",(1,0,0):"Kd",(-1,0,0):"Ka",(0,1,0):"Ks",(0,-1,0):"Kw"}

@@ -80,8 +80,6 @@ The assimilator is in the command centre.
                     if self.preferedDuty:
                         foundDuty = False
                         counter = 0
-                        print(submenue.options)
-                        print(self.preferedDuty)
                         for option in submenue.options.items():
                             counter += 1
                             if option[1].startswith(self.preferedDuty):

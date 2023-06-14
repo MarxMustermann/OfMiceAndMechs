@@ -142,10 +142,11 @@ If you don't find a source, produce new items.
             if room.getNonEmptyOutputslots(itemType=self.toCollect):
                 return (room.getPosition(),)
 
-        for room in self.character.getTerrain().rooms:
-            for item in room.itemsOnFloor:
-                if item.bolted == False and item.type == self.toCollect:
-                    return (room.getPosition(),)
+        if self.takeAnyUnbolted:
+            for room in self.character.getTerrain().rooms:
+                for item in room.itemsOnFloor:
+                    if item.bolted == False and item.type == self.toCollect:
+                        return (room.getPosition(),)
 
     def solver(self, character):
         (nextQuests,nextCommand) = self.getNextStep(character)
@@ -185,7 +186,7 @@ If you don't find a source, produce new items.
             else:
                 charPos = (character.xPosition//15,character.yPosition//15,0)
             if not charPos == self.tileToReturnTo:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.tileToReturnTo,reason="reach a source for %s"%(self.toCollect,))
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.tileToReturnTo,reason="return where you came from")
                 self.tileToReturnTo = None
                 return ([quest],None)
 
@@ -239,17 +240,18 @@ If you don't find a source, produce new items.
                                 if character.getPosition(offset=offset) == item.getPosition():
                                     foundDirection = offset
 
-                    if foundDirection:
-                        if foundDirection == (0,0,0):
-                            return (None,("K.","pick up item"))
-                        if foundDirection == (1,0,0):
-                            return (None,("Kd","pick up item"))
-                        if foundDirection == (-1,0,0):
-                            return (None,("Ka","pick up item"))
-                        if foundDirection == (0,1,0):
-                            return (None,("Ks","pick up item"))
-                        if foundDirection == (0,-1,0):
-                            return (None,("Kw","pick up item"))
+                    if item.container == character.container:
+                        if foundDirection:
+                            if foundDirection == (0,0,0):
+                                return (None,("K.","pick up item"))
+                            if foundDirection == (1,0,0):
+                                return (None,("Kd","pick up item"))
+                            if foundDirection == (-1,0,0):
+                                return (None,("Ka","pick up item"))
+                            if foundDirection == (0,1,0):
+                                return (None,("Ks","pick up item"))
+                            if foundDirection == (0,-1,0):
+                                return (None,("Kw","pick up item"))
 
                     item = random.choice(candidates)
                     quests = []
@@ -267,9 +269,13 @@ If you don't find a source, produce new items.
 
             if not foundItem:
                 if self.tryHard:
-                    quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard,reason="have items to fetch")
-                    self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                    return ([quest],None)
+                    if self.toCollect == "Scrap":
+                        quest = src.quests.questMap["GatherScrap"](reason="have items to fetch")
+                        return ([quest],None)
+                    else:
+                        quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard,reason="have items to fetch")
+                        self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                        return ([quest],None)
 
                 self.fail(reason="no source for item %s"%(self.toCollect,))
                 return (None,None)

@@ -189,7 +189,8 @@ This quest ends after you do this.%s"""%(self.targetPosition,containerString,rea
         return super().setParameters(parameters)
 
     def solver(self, character):
-        self.triggerCompletionCheck(character)
+        if self.triggerCompletionCheck(character):
+            return
 
         if not self.path:
             self.generatePath(character)

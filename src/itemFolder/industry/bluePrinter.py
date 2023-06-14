@@ -61,6 +61,7 @@ The items from the blueprint reciepe need to be added to the west or south.
             [["Sheet", "MetalBars"], "Tank"],
             [["Radiator", "MetalBars"], "Heater"],
             [["Mount", "MetalBars"], "Connector"],
+            [["Mount", "Rod"], "Sword"],
             [["Stripe", "MetalBars"], "pusher"],
             [["Bolt", "MetalBars"], "puller"],
             [["Rod", "MetalBars"], "Frame"],

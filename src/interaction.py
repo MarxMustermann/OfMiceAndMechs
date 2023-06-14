@@ -39,8 +39,42 @@ fixedTicks = False
 speed = None
 libtcodpy = None
 
-# bad code: should be contained in gamestate
 def advanceGame():
+    """
+    advance the game
+    """
+    global multi_chars
+
+    multi_chars = set()
+    for row in src.gamestate.gamestate.terrainMap:
+        for specificTerrain in row:
+            for character in specificTerrain.characters:
+                multi_chars.add(character)
+            for room in specificTerrain.rooms:
+                for character in room.characters:
+                    multi_chars.add(character)
+            specificTerrain.advance()
+
+    for item in src.gamestate.gamestate.extraRoots:
+        for character in specificTerrain.characters:
+            multi_chars.add(character)
+
+    src.gamestate.gamestate.multi_chars = multi_chars
+    src.gamestate.gamestate.tick += 1
+
+    for character in multi_chars:
+        character.timeTaken -= 1
+
+    for character in multi_chars:
+        advanceChar(character)
+
+    if src.gamestate.gamestate.mainChar.dead:
+        showDeathScreen()
+
+    #if src.gamestate.gamestate.tick%100 == 15:
+    #    src.gamestate.gamestate.save()
+
+def advanceGame_disabled():
     """
     advance the game
     """
@@ -548,7 +582,6 @@ def handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
             char.runCommandString(command)
 
             charState["doNumber"] = False
-            char.timeTaken -= 0.99
 
 def stitchCommands(charState):
     """
@@ -656,30 +689,35 @@ def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].apply(char)
+            char.timeTaken += char.movementSpeed
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
         )
         if items:
             items[0].apply(char)
+            char.timeTaken += char.movementSpeed
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
+            char.timeTaken += char.movementSpeed
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
+            char.timeTaken += char.movementSpeed
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
+            char.timeTaken += char.movementSpeed
     elif key == "j":
         character = char
         if not character.jobOrders:
@@ -918,7 +956,6 @@ call function %s
         if char.interactionState["functionCall"] == "huntkill":
             char.huntkill()
         del char.interactionState["functionCall"]
-    char.timeTaken -= 0.99
 
 def doEnumerateState(key,char,charState,main,header,footer,urwid,flags):
     if char.interactionState["enumerateState"][-1]["type"] is None:
@@ -954,7 +991,6 @@ get position for what thing
             )
             footer.set_text((urwid.AttrSpec("default", "default"), ""))
             char.specialRender = True
-        char.timeTaken -= 0.99
         return
 
     if char.interactionState["enumerateState"][-1]["type"] == "p":
@@ -1018,7 +1054,6 @@ get position for what thing
                 )
             )
             char.interactionState["enumerateState"].pop()
-            char.timeTaken -= 0.99
             return
         elif key == "j":
             char.interactionState["enumerateState"][-1]["target"] = ["JobOrder"]
@@ -1035,7 +1070,6 @@ get position for what thing
         else:
             char.addMessage("not a valid target")
             char.interactionState["enumerateState"].pop()
-            char.timeTaken -= 0.99
             return
 
         if "a" not in char.registers:
@@ -1054,7 +1088,6 @@ get position for what thing
         if not char.container:
             char.addMessage("character is nowhere")
             char.interactionState["enumerateState"].pop()
-            char.timeTaken -= 0.99
             return
 
         foundItems = []
@@ -1162,7 +1195,6 @@ get position for what thing
                 + " found"
             )
             char.interactionState["enumerateState"].pop()
-            char.timeTaken -= 0.99
             return
 
         if isinstance(found, src.rooms.Room):
@@ -1190,7 +1222,6 @@ get position for what thing
         return
 
     char.interactionState["enumerateState"].pop()
-    char.timeTaken -= 0.99
 
 def doRegisterAccess(key,char,charState,main,header,footer,urwid,flags):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -1217,7 +1248,6 @@ current registers:
         char.specialRender = True
 
     char.interactionState["varActions"].append({"outOperator": None})
-    char.timeTaken -= 0.99
 
 def doVariableAction(key,char,charState,main,header,footer,urwid,flags):
 
@@ -1276,7 +1306,6 @@ current registers (%s):
                 main.set_text((urwid.AttrSpec("default", "default"), text))
                 footer.set_text((urwid.AttrSpec("default", "default"), ""))
                 char.specialRender = True
-            char.timeTaken -= 0.99
             return
 
         else:
@@ -1300,7 +1329,6 @@ current registers (%s):
 
             value = getValue()
             char.runCommandString(str(value))
-            char.timeTaken -= 0.99
             return
     else:
         if register == "" or register[-1].isupper() or register[-1] == " ":
@@ -1339,7 +1367,6 @@ current registers (%s):
                     main.set_text((urwid.AttrSpec("default", "default"), text))
                     footer.set_text((urwid.AttrSpec("default", "default"), ""))
                     char.specialRender = True
-                char.timeTaken -= 0.99
                 return
 
             else:
@@ -1367,7 +1394,6 @@ press key for the action you want to do on the register
                     main.set_text((urwid.AttrSpec("default", "default"), text))
                     footer.set_text((urwid.AttrSpec("default", "default"), ""))
                     char.specialRender = True
-                char.timeTaken -= 0.99
                 return
         action = lastVarAction["action"]
         if action is None:
@@ -1390,7 +1416,6 @@ type number or load value from register
                 main.set_text((urwid.AttrSpec("default", "default"), text))
                 footer.set_text((urwid.AttrSpec("default", "default"), ""))
                 char.specialRender = True
-            char.timeTaken -= 0.99
             return
         if char.key in "0123456789":
             lastVarAction["number"] += key
@@ -1415,7 +1440,6 @@ press any other key to finish
                 main.set_text((urwid.AttrSpec("default", "default"), text))
                 footer.set_text((urwid.AttrSpec("default", "default"), ""))
                 char.specialRender = True
-            char.timeTaken -= 0.99
             return
 
         if action == "=":
@@ -1438,7 +1462,6 @@ press any other key to finish
 
         char.runCommandString(key, extraFlags=flags)
         char.interactionState["varActions"].pop()
-        char.timeTaken -= 0.99
         return
 
 def doStartCondition(key,char,charState,main,header,footer,urwid,flags):
@@ -1750,7 +1773,6 @@ def doBuildNumber(key,char,charState,main,header,footer,urwid,flags):
         charState["number"] = ""
     charState["number"] += key
     key = commandChars.ignore
-    char.timeTaken -= 0.99
 
 def doStartLooping(key,char,charState,main,header,footer,urwid,flags):
     charState["loop"].append(2)
@@ -1773,7 +1795,6 @@ def doRepeat(key,char,charState,main,header,footer,urwid,flags):
     char.runCommandString(convertedKeystroke,preconverted=True)
 
     charState["doNumber"] = False
-    char.timeTaken -= 0.99
 
 def startStopRecording(key,char,charState,main,header,footer,urwid,flags):
     if not charState["recording"]:
@@ -2116,11 +2137,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             char.macroState["submenue"] = None
             char.specialRender = False
             src.gamestate.gamestate.save()
-            if hasattr(urwid,"ExitMainLoop"):
-                raise urwid.ExitMainLoop()
-            else:
-                showMainMenu()
-            return
+            raise SystemExit() #HACK: workaround for bug that causes memory leak
         elif selection == "actions":
             pass
         elif selection == "macros":
@@ -2157,7 +2174,6 @@ select what you want to do
         footer.set_text((urwid.AttrSpec("default", "default"), ""))
         char.specialRender = True
     char.interactionState["functionCall"] = ""
-    char.timeTaken -= 0.99
 
 def doStartObserve(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -2177,7 +2193,6 @@ select what you want to observe
         footer.set_text((urwid.AttrSpec("default", "default"), ""))
         char.specialRender = True
     char.interactionState["enumerateState"].append({"type": None})
-    char.timeTaken -= 0.99
 
 def doResetQuit(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
     saveFile = open("gamestate/gamestate.json", "w")
@@ -2230,6 +2245,9 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         move the player into a direction
         """
         # move the player
+        if key in (commandChars.wait, "up"):
+            char.timeTaken = 1
+            return
         if key in (commandChars.move_north, "up"):
             charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
@@ -2354,6 +2372,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     return
 
                 charState["itemMarkedLast"].apply(char)
+                char.timeTaken += char.movementSpeed
 
             # activate an item on floor
             else:
@@ -2373,6 +2392,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
                     if entry:
                         entry[0].apply(char)
+                        char.timeTaken += char.movementSpeed
 
         # examine an item
         if key in (commandChars.examine,):
@@ -2625,11 +2645,14 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
                        always True in practice
         char: the character the input belongs to
     """
+    char.implantLoad += 1
+
+    if char.implantLoad > 100:
+        char.timeTaken += 1
+        char.implantLoad = 0
 
     if char.dead:
         return
-
-    char.timeTaken += 1
 
     if charState is None:
         charState = src.gamestate.gamestate.mainChar.macroState
@@ -2735,7 +2758,6 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         if not charState["ignoreNextAutomated"]:
             char.runCommandString(commandChars.autoAdvance)
             char.runCommandString(commandChars.advance)
-            char.timeTaken -= 1
             return
         else:
             charState["ignoreNextAutomated"] = False
@@ -2749,8 +2771,6 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
                 char.runCommandString("~")
         else:
             pass
-        char.timeTaken -= 0.9
-
 
     # handle a keystroke while on map or in cinematic
     if not charState["submenue"]:
@@ -2761,7 +2781,6 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
     # render submenus
     if charState["submenue"]:
-        char.timeTaken -= 0.99
 
         # set flag to not render the game
         if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -3642,9 +3661,6 @@ class DebugMenu(SubMenu):
         Returns:
             returns True when done
         """
-        print("characters on terrain")
-        print(character.getTerrain().characters)
-        print(src.gamestate.gamestate.mainChar)
         self.persistentText = ["debug"]
 
         # exit submenu
@@ -3750,9 +3766,6 @@ class QuestMenu(SubMenu):
                 quest = baseList[index]
                 baseList = quest.subQuests
             quest.generateSubquests(self.char)
-            print(quest)
-            if not (self.questCursor == [0]):
-                print(self.questCursor)
         if key == "R":
             baseList = self.char.quests
             for index in self.questCursor:
@@ -3896,6 +3909,7 @@ class InventoryMenu(SubMenu):
                     self.char.inventory[self.subMenu.getSelection()].apply(
                         self.char
                     )
+                    self.char.timeTaken += self.char.movementSpeed
                     self.activate = False
                     self.subMenu = None
                     return True
@@ -4179,6 +4193,7 @@ class CharacterInfoMenu(SubMenu):
         text += "faction:    %s\n" % char.faction
         text += "health:     %s" % char.health + "\n"
         text += "max health: %s" % char.maxHealth + "\n"
+        text += "time taken: %s" % char.timeTaken + "\n"
 
         if hasattr(char,"rank"):
             text += "rank:       %s\n" % char.rank
@@ -7576,6 +7591,27 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         else:
                             submenu = "difficulty"
 
+def showDeathScreen():
+    text = "\n\n\n       you died.\n\n\n\n   - press enter to quit -"
+    tcod.event.get()
+
+    while 1:
+        tcodConsole.clear()
+        printUrwidToTcod(text,(0,0))
+        tcodContext.present(tcodConsole)
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
+                    raise SystemExit()
+
 def showInterruptText(text):
     tcod.event.get()
 
@@ -7595,7 +7631,6 @@ def showInterruptText(text):
                 key = event.sym
                 if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
                     return
-
 
 def showIntro():
     def fixRoomRender(render):
@@ -8684,7 +8719,12 @@ to remember"""
                                     break
                             stage += 1
                             subStep = 0
-def gameLoop(loop, user_data=None):
+def gameLoop(loop=None, user_data=None):
+    while 1:
+        advanceGame()
+        #renderGameDisplay()
+
+def gameLoop_disabled(loop, user_data=None):
     """
     run the game for one tick
 
@@ -8770,9 +8810,10 @@ def gameLoop(loop, user_data=None):
                     key = "enter"
                 keyboardListener(key)
 
-        if tcod:
-            getTcodEvents()
-        #    #getNetworkedEvents()
+        if not src.gamestate.gamestate.mainChar.timeTaken > 1:
+            if tcod:
+                getTcodEvents()
+            #    #getNetworkedEvents()
 
         src.gamestate.gamestate.savedThisTurn = False
         src.gamestate.gamestate.waitedForInputThisTurn = False
@@ -8806,6 +8847,20 @@ def gameLoop(loop, user_data=None):
                 lastAdvance = time.time()
                 advanceGame()
                 multi_chars = src.gamestate.gamestate.multi_chars
+
+            for char in multi_chars:
+                if char.dead:
+                    continue
+                if not char.container:
+                    continue
+                # 5/0
+                advanceChar(char)
+                pass
+
+        if src.gamestate.gamestate.mainChar.timeTaken > 1:
+            lastAdvance = time.time()
+            advanceGame()
+            multi_chars = src.gamestate.gamestate.multi_chars
 
             for char in multi_chars:
                 if char.dead:
@@ -8853,6 +8908,64 @@ def clearMessages(char):
         char.messages = char.messages[-100:]
 
 def advanceChar(char):
+    state = char.macroState
+
+    rerender = True
+    lastRender = None
+    while char.timeTaken < 1:
+        if (char == src.gamestate.gamestate.mainChar) and rerender:
+            if char.getTerrain():
+                #char.getTerrain().animations = []
+                #for room in char.getTerrain().rooms:
+                #    room.animations = []
+                renderGameDisplay()
+                lastRender = time.time()
+                rerender = False
+        if (char == src.gamestate.gamestate.mainChar):
+            if char.dead:
+                return
+            getTcodEvents()
+            if (time.time()-lastRender) > 0.1:
+                renderGameDisplay()
+                lastRender = time.time()
+
+        hasAutosolveQuest = False
+        for quest in char.getActiveQuests():
+            if not quest.autoSolve:
+                continue
+            hasAutosolveQuest = True
+
+        if char.huntkilling:
+            processInput(
+                (char.doHuntKill(),["norecord"]),
+                 charState=state, noAdvanceGame=True, char=char)
+            rerender = True
+        elif char.hasOwnAction > 0:
+            for commandChar in char.getOwnAction():
+                processInput(
+                    (commandChar,["norecord"]),
+                     charState=state, noAdvanceGame=True, char=char)
+            rerender = True
+        elif state["commandKeyQueue"]:
+            if (char == src.gamestate.gamestate.mainChar):
+                char.getTerrain().animations = []
+                for room in char.getTerrain().rooms:
+                    room.animations = []
+            key = state["commandKeyQueue"].pop()
+            processInput(
+                key, charState=state, noAdvanceGame=True, char=char
+            )
+            rerender = True
+        elif hasAutosolveQuest:
+            rerender = True
+            char.runCommandString("+")
+        else:
+            if (char == src.gamestate.gamestate.mainChar):
+                getTcodEvents()
+            else:
+                char.timeTaken = 1
+
+def advanceChar_disabled(char):
     if char.stasis:
         return
     if char.disabled:
@@ -8897,6 +9010,7 @@ def advanceChar(char):
                     key = ("~", [])
 
         while (state["commandKeyQueue"] or char.huntkilling or char.hasOwnAction or (char == src.gamestate.gamestate.mainChar and not char.dead) or hasAutosolveQuest) and char.timeTaken < 1:
+
             if char.huntkilling:
                 processInput(
                         (char.doHuntKill(),["norecord"]),
@@ -8915,45 +9029,46 @@ def advanceChar(char):
                 char.runCommandString("+")
             else:
                 if tcod:
-                    renderGameDisplay()
                     startTime = time.time()
 
                     while (not state["commandKeyQueue"]) and char.timeTaken < 1:
+                        renderGameDisplay()
                         hasAutosolveQuest = False
                         for quest in char.getActiveQuests():
                             if not quest.autoSolve:
                                 continue
                             hasAutosolveQuest = True
 
-                        getTcodEvents()
+                        if (char == src.gamestate.gamestate.mainChar):
+                            getTcodEvents()
+
+                            renderGameDisplay()
+                            if char.getTerrain():
+                                char.getTerrain().lastRender = None
+
+                        else:
+                            char.timeTaken = 1
                         #getNetworkedEvents()
 
-                        if shadowCharacter:
-                            while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
-                                renderGameDisplay()
-                                shadowCharacter.macroState["commandKeyQueue"].pop()
+                        #if shadowCharacter:
+                        #    while shadowCharacter.macroState["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"][-1][0] == "~":
+                        #        renderGameDisplay()
+                        #        shadowCharacter.macroState["commandKeyQueue"].pop()
 
-                            if not state["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"]:
-                                char.timeTaken += 1
-                                char.runCommandString("~",nativeKey=True)
-                                #renderGameDisplay()
+                        #    #if not state["commandKeyQueue"] and shadowCharacter.macroState["commandKeyQueue"]:
+                        #    #    char.timeTaken += 1
+                        #    #    char.runCommandString("~",nativeKey=True)
+                        #    #    #renderGameDisplay()
 
-                        renderGameDisplay()
-                        if char.getTerrain():
-                            char.getTerrain().lastRender = None
-
-                        if src.gamestate.gamestate.timedAutoAdvance:
-                            if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:
-                                char.timeTaken += 1
+                        #if src.gamestate.gamestate.timedAutoAdvance:
+                        #    if time.time() > startTime + src.gamestate.gamestate.timedAutoAdvance:
+                        #        char.timeTaken += 1
 
             hasAutosolveQuest = False
             for quest in char.getActiveQuests():
                 if not quest.autoSolve:
                     continue
                 hasAutosolveQuest = True
-
-
-        char.timeTaken -= 1
 
 loop = None
 

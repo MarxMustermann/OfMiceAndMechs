@@ -4,12 +4,13 @@ import random
 class RestockRoom(src.quests.MetaQuestSequence):
     type = "RestockRoom"
 
-    def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None,allowAny=False):
+    def __init__(self, description="restock room", creator=None, targetPosition=None,toRestock=None,allowAny=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.toRestock = None
         self.allowAny = allowAny
+        self.reason = reason
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
@@ -22,9 +23,12 @@ class RestockRoom(src.quests.MetaQuestSequence):
         self.shortCode = "r"
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         return """
-Restock the room with items from your inventory.
-Place the items in the correct input stockpile."""
+Restock the room with items from your inventory%s.
+Place the items in the correct input stockpile."""%(reason,)
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -176,7 +180,7 @@ Place the items in the correct input stockpile."""
                 self.fail(reason="neighbour not found")
                 return (None,None)
 
-            quest = src.quests.questMap["GoToPosition"]()
+            quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile")
             quest.setParameters({"targetPosition":foundNeighbour[0]})
             return ([quest],None)
 

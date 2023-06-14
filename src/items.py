@@ -326,6 +326,7 @@ class Item(src.saveing.Saveable):
 
         # gather actions
         actions = self.gatherApplyActions(character)
+        character.timeTaken += 1
 
         # run actions
         if actions:
@@ -393,6 +394,12 @@ class Item(src.saveing.Saveable):
             character.addMessage("no pickup action found")
 
         character.changed("itemPickedUp",(character,self,oldPos))
+
+    def getBigPosition(self,offset=(0,0,0)):
+        if self.container.isRoom:
+            return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
+        else:
+            return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
 
     def getUsageInformation(self):
         return self.usageInfo

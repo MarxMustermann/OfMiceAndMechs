@@ -1720,6 +1720,7 @@ class Room(src.saveing.Saveable):
                 other.collidedWith(character)
                 return
 
+            character.timeTaken += character.movementSpeed
             return self.moveCharacter(character, tuple(newPosition))
 
         # move onto terrain
@@ -1760,6 +1761,7 @@ class Room(src.saveing.Saveable):
 
         if character in self.characters:
             self.removeCharacter(character)
+        character.timeTaken += character.movementSpeed
         self.terrain.addCharacter(character, newXPos, newYPos)
         return
 
@@ -1843,7 +1845,6 @@ class Room(src.saveing.Saveable):
 
         # change own state
         self.timeIndex += 1
-        self.animations = []
 
         # advance each character
         for character in self.characters:

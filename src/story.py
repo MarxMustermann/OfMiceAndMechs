@@ -4130,10 +4130,15 @@ try to remember how you got here ..."""
         architect = item
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
-        positions = [(8,5),(3,2),(5,4)]
-        positions = [(8,5)]
+        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(4,7),(5,6),(6,5),(7,4)]
+        positions = [random.choice(positions)]
         for pos in positions:
-            architect.doAddScrapfield(pos[0], pos[1], 300,leavePath=True)
+            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
 
         mainRoom = architect.doAddRoom(
                 {
@@ -4165,22 +4170,21 @@ try to remember how you got here ..."""
                 scrapRoom.addItem(scrap,pos)
 
         mainRoom.storageRooms = []
-        mainRoom.sources.append([(8,5),"rawScrap"])
 
         mainRoom.addCharacter(
             mainChar, 6, 6
         )
 
-        """
-        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
+        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
         colonyBaseInfo["epochArtwork"] = epochArtwork
         epochArtwork.leader = mainChar
-        """
+        epochArtwork.changeCharges(10)
+        epochArtwork.epochSurvivedRewardAmount = 2
         mainChar.rank = 3
+        mainRoom.addItem(epochArtwork,(3,3,0))
         """
         quest = src.quests.questMap["EpochQuest"]()
         mainChar.assignQuest(quest,active=True)
-        mainRoom.addItem(epochArtwork,(6,6,0))
 
         #cityBuilder = src.items.itemMap["CityBuilder2"]()
         #cityBuilder.architect = architect
@@ -4189,10 +4193,10 @@ try to remember how you got here ..."""
 
         """
         bluePrintingArtwork = src.items.itemMap["BluePrinter"]()
-        mainRoom.addItem(bluePrintingArtwork,(8,8,0))
+        mainRoom.addItem(bluePrintingArtwork,(9,8,0))
         item = src.items.itemMap["Machine"]()
         item.toProduce = "Sheet"
-        mainRoom.addItem(item,(7,7,0))
+        mainRoom.addItem(item,(8,7,0))
 
         scrapCompactor = src.items.itemMap["ScrapCompactor"]()
         mainRoom.addItem(scrapCompactor,(8,4,0))
@@ -4209,15 +4213,48 @@ try to remember how you got here ..."""
         machinemachine.endProducts["ScrapCompactor"] = item
         machinemachine.blueprintLevels["ScrapCompactor"] = 1
 
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(7,1,0))
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Rod")
+        machinemachine.endProducts["Rod"] = item
+        machinemachine.blueprintLevels["Rod"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Sheet")
+        machinemachine.endProducts["Sheet"] = item
+        machinemachine.blueprintLevels["Sheet"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Radiator")
+        machinemachine.endProducts["Radiator"] = item
+        machinemachine.blueprintLevels["Radiator"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Stripe")
+        machinemachine.endProducts["Stripe"] = item
+        machinemachine.blueprintLevels["Stripe"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Bolt")
+        machinemachine.endProducts["Bolt"] = item
+        machinemachine.blueprintLevels["Bolt"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Mount")
+        machinemachine.endProducts["Mount"] = item
+        machinemachine.blueprintLevels["Mount"] = 1
+
         item = src.items.itemMap["RoomBuilder"]()
         item.bolted = False
         mainRoom.addItem(item,(7,2,0))
         item = src.items.itemMap["RoomBuilder"]()
         item.bolted = False
         mainRoom.addItem(item,(8,2,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(9,2,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(7,1,0))
         item = src.items.itemMap["Door"]()
         item.bolted = False
         mainRoom.addItem(item,(8,1,0))
@@ -4227,9 +4264,6 @@ try to remember how you got here ..."""
         item = src.items.itemMap["Door"]()
         item.bolted = False
         mainRoom.addItem(item,(10,1,0))
-        item = src.items.itemMap["Door"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,1,0))
 
         #machine = src.items.itemMap["Machine"]()
         #machine = src.items.itemMap["Machine"]()
@@ -4253,19 +4287,21 @@ try to remember how you got here ..."""
         for x in range(1,6):
             mainRoom.addStorageSlot((x,11,0),None)
 
+        mainRoom.addPathCross()
+        mainRoom.walkingSpace.add((4,3,0))
+        mainRoom.walkingSpace.add((5,3,0))
+        mainRoom.walkingSpace.add((7,3,0))
+        mainRoom.walkingSpace.add((8,3,0))
+        mainRoom.walkingSpace.add((9,3,0))
+        mainRoom.walkingSpace.add((10,5,0))
+        mainRoom.walkingSpace.add((11,5,0))
+
+        pos = random.choice([(6,6),(8,6),(8,8),(6,8)])
         tree = src.items.itemMap["Tree"]()
         tree.numMaggots = tree.maxMaggot
-        currentTerrain.addItem(tree,(6*15+7,6*15+7,0))
-        currentTerrain.forests.append((6,6))
+        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
+        currentTerrain.forests.append(pos)
 
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Rod")
-        item.bolted = False
-        mainRoom.addItem(item,(9,8,0))
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Sheet")
-        item.bolted = False
-        mainRoom.addItem(item,(10,3,0))
         item = src.items.itemMap["Painter"]()
         item.bolted = False
         mainRoom.addItem(item,(11,11,0))
@@ -4312,6 +4348,10 @@ try to remember how you got here ..."""
         item.bolted = False
         mainRoom.addItem(item,(7,11,0))
 
+        item = src.items.itemMap["CollectionBeacon"]()
+        item.bolted = False
+        mainRoom.addItem(item,(4,11,0))
+
         item = src.items.itemMap["MoldSpore"]()
         item.bolted = False
         mainRoom.addItem(item,(1,11,0))
@@ -4325,45 +4365,60 @@ try to remember how you got here ..."""
         item.bolted = False
         mainRoom.addItem(item,(1,11,0))
 
+        """
         for x in range(1,6):
             for y in range(1,6):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                mainRoom.addItem(item,(x,y,0))
-
-        for x in range(1,6):
-            for y in range(7,11):
-                if x == 5 and y == 10:
+                if x >= 3 and y == 3:
                     continue
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 mainRoom.addItem(item,(x,y,0))
+        item = src.items.itemMap["Wall"]()
+        item.bolted = False
+        mainRoom.addItem(item,(7,3,0))
+        item = src.items.itemMap["Wall"]()
+        item.bolted = False
+        mainRoom.addItem(item,(8,3,0))
+
+        for x in range(1,6):
+            for y in range(7,11):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                mainRoom.addItem(item,(x,y,0))
+        """
 
         # scatter items around
         for i in range(0,25):
             item = src.items.itemMap["Case"]()
             item.bolted = False
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
         for i in range(0,25):
             item = src.items.itemMap["Frame"]()
             item.bolted = False
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
         for i in range(0,25):
             item = src.items.itemMap["Rod"]()
             item.bolted = False
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
         for i in range(0,50):
             item = src.items.itemMap["Wall"]()
             item.bolted = False
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
+        for i in range(0,5):
+            bigPos = (random.randint(1,13),random.randint(1,13),0)
+            for i in range(0,20):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,pos)
         for i in range(0,10):
             item = src.items.itemMap["Door"]()
             item.bolted = False
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
         """
         for i in range(0,75):
@@ -4374,10 +4429,15 @@ try to remember how you got here ..."""
             currentTerrain.addItem(item,pos)
         """
         for i in range(0,10):
+
+            bigPos = (random.randint(1,13),random.randint(1,13),0)
+            if bigPos == (7,7,0):
+                continue
+
             item = src.items.itemMap["Corpse"]()
             item.bolted = False
             item.charges = random.choice([0,1,2])
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
+            pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+13),random.randint(bigPos[1]*15+1,bigPos[1]*15+13),0)
             currentTerrain.addItem(item,pos)
 
             enemy = src.characters.Monster(4,4)
@@ -4395,7 +4455,6 @@ try to remember how you got here ..."""
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
             currentTerrain.addCharacter(enemy,pos[0],pos[1])
-
 
         #for i in range(0,10):
         #    sheet = src.items.itemMap["Sheet"]()
@@ -4427,7 +4486,19 @@ BioMass =>
 Corpse + Rod + Bolt => CorpseAnimator
 Mount + Rod => Sword
 """
-        mainRoom.addItem(note,(9,9,0))
+        mainRoom.addItem(note,(10,9,0))
+
+        for x in range(1,12):
+            for y in range(1,12):
+                if mainRoom.getItemByPosition((x,y,0)):
+                    continue
+
+                if (x,y,0) in mainRoom.walkingSpace:
+                    continue
+
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                mainRoom.addItem(item,(x,y,0))
 
         return colonyBaseInfo
 
@@ -5324,7 +5395,8 @@ Mount + Rod => Sword
 
     def openedQuestsColonyBase(self):
         mainChar = self.activeStory["mainChar"]
-        containerQuest = src.quests.questMap["ExtendBase"]()
+        #containerQuest = src.quests.questMap["ExtendBase"]()
+        containerQuest = src.quests.questMap["EpochQuest"]()
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()
@@ -5506,82 +5578,83 @@ When you rise in rank you will be able to build a way out of here."""
         terrain = state["terrain"]
         room = random.choice(terrain.rooms)
 
-        npc = src.characters.Character()
-        npc.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-        ]
+        if not src.gamestate.gamestate.tick < 100:
+            npc = src.characters.Character()
+            npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
 
-        npc.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
+            npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
 
-        npc.faction = src.gamestate.gamestate.mainChar.faction
-        #npc.rank = 6
-        room.addCharacter(npc,6,6)
-        npc.flask = src.items.itemMap["GooFlask"]()
-        npc.flask.uses = 10
+            npc.faction = src.gamestate.gamestate.mainChar.faction
+            #npc.rank = 6
+            room.addCharacter(npc,6,6)
+            npc.flask = src.items.itemMap["GooFlask"]()
+            npc.flask.uses = 10
 
-        npc.duties = []
-        duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","resource gathering","machine operation","hauling","resource fetching","cleaning","machine placing","maggot gathering"))
-        #duty = random.choice(("maggot gathering",))
-        npc.duties.append(duty)
-        npc.registers["HOMEx"] = 7
-        npc.registers["HOMEy"] = 7
-        npc.registers["HOMETx"] = terrain.xPosition
-        npc.registers["HOMETy"] = terrain.yPosition
+            npc.duties = []
+            duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","cleaning","machine placing","room building","scavenging"))
+            #duty = random.choice(("maggot gathering",))
+            npc.duties.append(duty)
+            npc.registers["HOMEx"] = 7
+            npc.registers["HOMEy"] = 7
+            npc.registers["HOMETx"] = terrain.xPosition
+            npc.registers["HOMETy"] = terrain.yPosition
 
-        npc.personality["autoFlee"] = False
-        npc.personality["abortMacrosOnAttack"] = False
-        npc.personality["autoCounterAttack"] = False
+            npc.personality["autoFlee"] = False
+            npc.personality["abortMacrosOnAttack"] = False
+            npc.personality["autoCounterAttack"] = False
 
-        quest = src.quests.questMap["BeUsefull"](strict=True)
-        #quest = src.quests.questMap["ExtendBase"]()
-        quest.autoSolve = True
-        quest.assignToCharacter(npc)
-        quest.activate()
-        npc.assignQuest(quest,active=True)
-        npc.foodPerRound = 1
+            quest = src.quests.questMap["BeUsefull"](strict=True)
+            #quest = src.quests.questMap["ExtendBase"]()
+            quest.autoSolve = True
+            quest.assignToCharacter(npc)
+            quest.activate()
+            npc.assignQuest(quest,active=True)
+            npc.foodPerRound = 1
 
-        '''
-        numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
-        while numNewRooms > 0:
-            itemType = random.choice([("personelArtwork","DutyArtwork","OrderArtwork")])
-            item = itemMap
-            item = src.items.
-            text = """
-You have build a new room. you are rewarded with an extra item:
+            '''
+            numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
+            while numNewRooms > 0:
+                itemType = random.choice([("personelArtwork","DutyArtwork","OrderArtwork")])
+                item = itemMap
+                item = src.items.
+                text = """
+    You have build a new room. you are rewarded with an extra item:
 
-The item will appear in your inventory.
+    The item will appear in your inventory.
 
-press enter to continue"""%(npc.name,duty,terrain)
-            src.interaction.showInterruptText(text)
-        '''
+    press enter to continue"""%(npc.name,duty,terrain)
+                src.interaction.showInterruptText(text)
+            '''
 
         if not src.gamestate.gamestate.tick < 100:
             text = """

@@ -138,6 +138,8 @@ Press d to move the cursor and show the subquests description.
             for npc in npcs:
                 if npc == character:
                     continue
+                if not npc.faction == character.faction:
+                    continue
                 quest = src.quests.questMap["ReduceFoodConsumption"](reason="prevent starvation")
                 return ([quest],None)
 
@@ -159,34 +161,25 @@ Press d to move the cursor and show the subquests description.
                     quest2 = src.quests.questMap["ClearInventory"](reason="store the valuables")
                     return ([quest2,quest1], None)
 
-            if character.flask and character.flask.uses < 15:
+            if character.flask and character.flask.uses < 8:
                 quest = src.quests.questMap["FillFlask"]()
                 return ([quest],None)
 
             foundInput1 = False
-            foundInput2 = False
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == (7,4,0):
                     foundInput1 = True
-                if inputSlot[0] == (4,7,0):
-                    foundInput2 = True
 
             if not foundInput1:
+                if room.getItemByPosition((7,4,0)):
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=(7,4,0),targetPositionBig=(7,7,0),reason="remove blocking item")
+                    return ([quest],None)
                 quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(7,4,0),reason="set up scrap supply infrastructure for the machine production")
                 return ([quest],None)
 
             items = room.getItemByPosition((8,4,0))
             if not items or not items[-1].type == "ScrapCompactor":
                 quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(8,4,0),itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="set up metal bar production for the machine production")
-                return ([quest],None)
-
-            if not foundInput2:
-                quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(4,7,0),reason="set up scrap supply infrastructure for the research spot")
-                return ([quest],None)
-
-            items = room.getItemByPosition((5,7,0))
-            if not items or not items[-1].type == "ScrapCompactor":
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,7,0),itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="set up metal bar production for the research spot")
                 return ([quest],None)
 
             for room in character.getTerrain().rooms:

@@ -135,15 +135,12 @@ Scrapfields are shown on the minimap as white ss"""]
                     break
 
         if not foundScrap:
-            room = character.container
-            if not isinstance(room,src.rooms.Room):
-                return (None,None)
-
             source = None
-            for potentialSource in random.sample(list(room.sources),len(room.sources)):
-                if potentialSource[1] == "rawScrap":
-                    source = potentialSource
-                    break
+            if isinstance(room,src.rooms.Room):
+                for potentialSource in random.sample(list(room.sources),len(room.sources)):
+                    if potentialSource[1] == "rawScrap":
+                        source = potentialSource
+                        break
 
             if source == None and not character.getTerrain().scrapFields:
                 self.fail(reason="no scrap source found")

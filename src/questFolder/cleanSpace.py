@@ -42,6 +42,9 @@ Remove all items from the space %s on tile %s%s.
         if not self.subQuests:
             terrain = character.getTerrain()
             rooms = terrain.getRoomByPosition(self.targetPositionBig)
+            if not character.getFreeInventorySpace():
+                quest = src.quests.questMap["ClearInventory"]()
+                return ([quest],None)
             if rooms:
                 room = rooms[0]
                 items = room.getItemByPosition(self.targetPosition)

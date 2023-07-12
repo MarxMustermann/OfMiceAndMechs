@@ -25,8 +25,19 @@ Use the epoch artwork to fetch a task and complete it.
     def getSolvingCommandString(self,character,dryRun=True):
         pos = character.getBigPosition()
         if pos == (7,7,0):
-            if character.getPosition() == (6,7,0):
-                return list("Jw.")+["enter"]*2
+            epochArtwork = character.container.getItemsByType("EpochArtwork")[0]
+            command = None
+            if character.getPosition(offset=(1,0,0)) == epochArtwork.getPosition():
+                command = "d"
+            if character.getPosition(offset=(-1,0,0)) == epochArtwork.getPosition():
+                command = "a"
+            if character.getPosition(offset=(0,1,0)) == epochArtwork.getPosition():
+                command = "s"
+            if character.getPosition(offset=(0,-1,0)) == epochArtwork.getPosition():
+                command = "w"
+
+            if command:
+                return list("J"+command)+["enter"]*2
         return super().getSolvingCommandString(character)
 
     def generateSubquests(self,character): 
@@ -42,8 +53,9 @@ Use the epoch artwork to fetch a task and complete it.
         pos = character.getBigPosition()
 
         if pos == (7,7,0):
-            if not character.getPosition() == (6,7,0):
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,7,0), description="go to epoch artwork")
+            epochArtwork = character.container.getItemsByType("EpochArtwork")[0]
+            if character.getDistance(epochArtwork.getPosition()) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
                 quest.activate()
                 self.addQuest(quest)
                 return

@@ -74,6 +74,8 @@ class Scrap(src.items.Item):
         else:
             self.walkable = False
 
+        if self.container and self.container.isRoom:
+            self.container.cachedPathfinder = None
     def render(self):
         """
         render the scrap depending on amount

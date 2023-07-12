@@ -272,7 +272,7 @@ class Quest(src.saveing.Saveable):
     def fail(self,reason=None):
         self.changed("failed",{"reason":reason})
         if reason and self.character:
-            self.character.addMessage("failed quest because of %s"%(reason,))
+            self.character.addMessage("failed quest %s because of %s"%(self.description,reason,))
         if self.failTrigger:
             self.failTrigger()
         if self.reputationReward:
@@ -850,7 +850,6 @@ class MetaQuestSequence(Quest):
     def triggerCompletionCheck2(self,extraInfo):
         self.stopWatching(extraInfo[0],self.triggerCompletionCheck2,"completed")
         self.triggerCompletionCheck()
-        print(extraInfo)
 
         if extraInfo[0] in self.subQuests:
             self.subQuests.remove(extraInfo[0])

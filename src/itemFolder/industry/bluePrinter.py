@@ -46,7 +46,6 @@ The items from the blueprint reciepe need to be added to the west or south.
             [["Stripe", "Connector"], "RoomControls"],
             [["GooFlask", "Tank"], "GrowthTank"],
             [["Radiator", "Heater"], "StasisTank"],
-            [["Mount", "Tank"], "MarkerBean"],
             [["Bolt", "Tank"], "PositioningDevice"],
             [["Bolt", "puller"], "Watch"],
             [["Bolt", "Heater"], "BackTracker"],
@@ -62,10 +61,13 @@ The items from the blueprint reciepe need to be added to the west or south.
             [["Radiator", "MetalBars"], "Heater"],
             [["Mount", "MetalBars"], "Connector"],
             [["Mount", "Rod"], "Sword"],
+            [["Mount", "Tank"], "MarkerBean"],
+            [["Mount", "Bolt"], "Painter"],
             [["Stripe", "MetalBars"], "pusher"],
             [["Bolt", "MetalBars"], "puller"],
             [["Rod", "MetalBars"], "Frame"],
             [["Rod", "Bolt"], "Sword"],
+            [["Rod", "Tank"], "DutyBell"],
             [["Sheet", "Bolt"], "Armor"],
             [["Bloom", "MetalBars"], "SporeExtractor"],
             [["Sheet", "Rod", "Bolt"], "FloorPlate"],
@@ -94,6 +96,8 @@ The items from the blueprint reciepe need to be added to the west or south.
             [["VatMaggot"], "MaggotFermenter"],
             [["BioMass"], "BioPress"],
             [["PressCake"], "GooProducer"],
+            [["RoomBuilder"], "CityPlaner"],
+            [["MarkerBean"], "CollectionBeacon"],
         ]
 
     def apply(self, character):

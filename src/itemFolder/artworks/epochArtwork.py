@@ -10,13 +10,14 @@ class EpochArtwork(src.items.Item):
 
     type = "EpochArtwork"
 
-    def __init__(self, epochLength, name="EpochArtwork", noId=False):
+    def __init__(self, epochLength, name="EpochArtwork", noId=False, rewardSet=None):
         """
         set up the initial state
         """
 
         super().__init__(display="EA", name=name)
 
+        self.epochSurvivedRewardAmount = 30
         self.applyOptions.extend(
                         [
                                                                 ("getEpochChallenge", "get epoch challenge"),
@@ -34,6 +35,7 @@ class EpochArtwork(src.items.Item):
         self.lastEpochSurvivedReward = 0
         self.lastNumSpawners = 0
         self.shadowCharges = 1000
+        self.rewardSet = rewardSet
 
         self.charges = 0
         self.leader = None
@@ -46,6 +48,8 @@ This artwork manages the flow of the epochs.
 It generates missions and hands out rewards."""
         self.usageInfo = """
 Use it by activating it. You will recieve further instructions."""
+
+        self.lastRoomReward = 1
 
     def setSpecialItemMap(self,specialItemMap):
         self.specialItemMap = specialItemMap
@@ -64,8 +68,9 @@ Use it by activating it. You will recieve further instructions."""
 
     def getEpochRewards(self,character):
 
-            options = []
-            options.append(("None","(0) None"))
+        options = []
+        options.append(("None","(0) None"))
+        if not self.rewardSet:
             options.append(("autoSpend","(?) auto spend rewards"))
             options.append(("HealingOnce","(1) healing (once)"))
             amount = character.maxHealth-character.health
@@ -88,9 +93,22 @@ Use it by activating it. You will recieve further instructions."""
             options.append(("respawn scrapfield","(30) respawn scrap field"))
             options.append(("spawn lightning rods","(10) spawn 25 ligthning rods"))
             options.append(("spawn new clone","(15) spawn new clone"))
-            submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType")
-            character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"dispenseEpochRewards","params":{"character":character}}
+        else:
+            options.append(("spawn gatherer","(10) spawn gatherer"))
+            options.append(("spawn operator","(10) spawn operator"))
+            options.append(("spawn fetcher","(10) spawn fetcher"))
+            options.append(("spawn hauler","(10) spawn hauler"))
+            options.append(("spawn painter","(10) spawn painter"))
+            options.append(("spawn machine placer","(10) spawn machine placer"))
+            options.append(("spawn room builder","(10) spawn room builder"))
+            options.append(("spawn maggot gatherer","(10) spawn maggot gatherer"))
+            options.append(("spawn scavenger","(10) spawn scavenger"))
+            options.append(("spawn food item","(5) spawn food item"))
+            options.append(("spawn scrap","(20) spawn scrap"))
+            options.append(("spawn personnel tracker","(5) spawn personnel tracker"))
+        submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType")
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"dispenseEpochRewards","params":{"character":character}}
 
     def getEpochRewardsProxy(self,extraInfo):
         self.getEpochRewards(extraInfo["character"])
@@ -252,11 +270,188 @@ Use it by activating it. You will recieve further instructions."""
         elif extraInfo["rewardType"] == "spawn new clone":
             text = "spawning new clone"
             self.spawnNewClone(character)
+        elif extraInfo["rewardType"] == "spawn gatherer":
+            text = "spawning gatherer"
+            self.spawnBurnedInNPC(character,"resource gathering")
+        elif extraInfo["rewardType"] == "spawn operator":
+            text = "spawning operator"
+            self.spawnBurnedInNPC(character,"machine operation")
+        elif extraInfo["rewardType"] == "spawn fetcher":
+            text = "spawning fetcher"
+            self.spawnBurnedInNPC(character,"resource fetching")
+        elif extraInfo["rewardType"] == "spawn hauler":
+            text = "spawning hauler"
+            self.spawnBurnedInNPC(character,"hauling")
+        elif extraInfo["rewardType"] == "spawn painter":
+            text = "spawning painter"
+            self.spawnBurnedInNPC(character,"painting")
+        elif extraInfo["rewardType"] == "spawn machine placer":
+            text = "spawning machine placer"
+            self.spawnBurnedInNPC(character,"machine placing")
+        elif extraInfo["rewardType"] == "spawn room builder":
+            text = "spawning room builder"
+            self.spawnBurnedInNPC(character,"room building")
+        elif extraInfo["rewardType"] == "spawn maggot gatherer":
+            text = "spawning maggot gatherer"
+            self.spawnBurnedInNPC(character,"maggot gathering")
+        elif extraInfo["rewardType"] == "spawn scavenger":
+            text = "spawning scavenger"
+            self.spawnBurnedInNPC(character,"scavenging")
+        elif extraInfo["rewardType"] == "spawn scavenger":
+            text = "spawning scavenger"
+            self.spawnBurnedInNPC(character,"scavenging")
+        elif extraInfo["rewardType"] == "spawn food item":
+            text = "spawning food"
+            self.spawnResource(character,"food")
+        elif extraInfo["rewardType"] == "spawn scrap":
+            text = "spawning scrap"
+            self.spawnScrap(character)
+        elif extraInfo["rewardType"] == "spawn personnel tracker":
+            text = "spawning personnel tracker"
+            self.spawnArtwork(character,"PersonnelTracker",5)
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"getEpochRewardsProxy","params":{"character":character}}
         return
+    
+    def spawnArtwork(self, character,itemType, cost):
+        text = ""
+        if not self.charges >= cost:
+            text = "not enough glass tears"
+        else:
+            self.changeCharges(-cost)
+
+            item = src.items.itemMap[itemType]()
+            character.inventory.append(item)
+
+    def spawnScrap(self, character):
+        text = ""
+        if not self.charges >= 20:
+            text = "not enough glass tears"
+        else:
+            self.changeCharges(-20)
+
+            text = "spawning scrap field"
+            terrain = self.getTerrain()
+            items = []
+            for scrapField in terrain.scrapFields:
+                for i in range(0,30):
+                    pos = (scrapField[0]*15+random.randint(1,13),scrapField[1]*15+random.randint(1,13),0)
+                    scrap = src.items.itemMap["Scrap"](amount=random.randint(15,20))
+                    terrain.addItem(scrap,pos)
+
+            text = "spawing food into your inventory"
+
+        if character:
+            character.addMessage(text)
+
+    def spawnResource(self, character, resourceType):
+        text = ""
+        if not self.charges >= 5:
+            text = "not enough glass tears"
+        else:
+            self.changeCharges(-5)
+
+            text = "spawning food"
+            flask = src.items.itemMap["GooFlask"]()
+            flask.uses = 10
+            character.inventory.append(flask)
+
+            text = "spawing food into your inventory"
+
+        if character:
+            character.addMessage(text)
+
+    def spawnBurnedInNPC(self, character, duty):
+        text = ""
+        if not self.charges >= 10:
+            text = "not enough glass tears"
+        else:
+            self.changeCharges(-10)
+
+            npc = src.characters.Character()
+            npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+            npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+            room = self.container
+            terrain = self.container.container
+
+            npc.faction = character.faction
+            #npc.rank = 6
+            room.addCharacter(npc,self.xPosition,self.yPosition)
+            npc.flask = src.items.itemMap["GooFlask"]()
+            npc.flask.uses = 10
+
+            npc.duties = []
+            #duty = random.choice(("hauling","resource fetching","maggot gathering","resource gathering","machine operation","hauling","resource fetching","cleaning","machine placing","maggot gathering"))
+            #duty = random.choice(("maggot gathering",))
+            npc.duties.append(duty)
+            npc.registers["HOMEx"] = 7
+            npc.registers["HOMEy"] = 7
+            npc.registers["HOMETx"] = terrain.xPosition
+            npc.registers["HOMETy"] = terrain.yPosition
+
+            npc.personality["autoFlee"] = False
+            npc.personality["abortMacrosOnAttack"] = False
+            npc.personality["autoCounterAttack"] = False
+
+            quest = src.quests.questMap["BeUsefull"](strict=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(npc)
+            quest.activate()
+            npc.assignQuest(quest,active=True)
+            npc.foodPerRound = 1
+
+            '''
+            numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
+            while numNewRooms > 0:
+                itemType = random.choice([("personelArtwork","DutyArtwork","OrderArtwork")])
+                item = itemMap
+                item = src.items.
+                text = """
+You have build a new room. you are rewarded with an extra item:
+
+The item will appear in your inventory.
+
+press enter to continue"""%(npc.name,duty,terrain)
+                src.interaction.showInterruptText(text)
+            '''
+            text = "spawning burned in NPC"
+
+        if character:
+            character.addMessage(text)
 
     def rechargeTrapRooms(self, character):
         text = ""
@@ -400,9 +595,9 @@ Prepare your base to brace the impact before you destroy the spawner.
         print(len(terrain.rooms))
         if len(terrain.rooms) < 6:
             text += """
-Extend the base
+set up base
 
-Extand the base to have at least 6 rooms
+Extend the base to have at least 6 rooms
 
 """
 
@@ -645,14 +840,26 @@ You will recieve your duties and instructions later.
 
     def recalculateGlasstears(self,character = None):
         amount = 0
+        printedMessage = False
+
+        newRooms = len(self.container.container.rooms)-self.lastRoomReward
+        if newRooms:
+            stepAmount = 10*newRooms
+            amount += stepAmount
+            self.lastRoomReward = len(self.container.container.rooms)
+
+            if character:
+                character.addMessage("you got %s glass tears for building %s rooms"%(stepAmount,newRooms,))
+                printedMessage = True
 
         epochsSurvived = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)
         self.lastEpochSurvivedReward = src.gamestate.gamestate.tick//self.epochLength
-        stepAmount = epochsSurvived*30
+        stepAmount = epochsSurvived*self.epochSurvivedRewardAmount
         amount += stepAmount
 
         if character and epochsSurvived:
             character.addMessage("you got %s glass tears for surviving %s epochs"%(stepAmount,epochsSurvived,))
+            printedMessage = True
 
         numSpawners = 0
         terrain = self.getTerrain()
@@ -672,9 +879,13 @@ You will recieve your duties and instructions later.
 
         if character and numSpawnersDestroyed:
             character.addMessage("you got %s glass tears for destroying %s hives"%(stepAmount,numSpawnersDestroyed,))
+            printedMessage = True
 
         if character:
             character.changed(tag="got epoch evaluation")
+
+        if not printedMessage:
+            character.addMessage("you got no glass tears because you did nothing of note")
 
         self.changeCharges(amount)
 

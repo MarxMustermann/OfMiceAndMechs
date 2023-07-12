@@ -39,6 +39,9 @@ If you don't find a %s blueprint, research it.
         return text
 
     def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
+
         (nextQuests,nextCommand) = self.getNextStep(character)
         if nextQuests:
             for quest in nextQuests:
@@ -65,7 +68,7 @@ If you don't find a %s blueprint, research it.
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
-            if character.inventory and character.inventory[-1].type == "Machine":
+            if character.inventory and character.inventory[-1].type == "Machine" and character.inventory[-1].toProduce == self.itemType:
                 if not self.targetPosition:
                     validTargetPosition = False
                     counter = 0
@@ -85,7 +88,6 @@ If you don't find a %s blueprint, research it.
                         if room.getItemByPosition((self.targetPosition[0],self.targetPosition[1]-1,0)):
                             continue
 
-
                         validTargetPosition = True
                         break
 
@@ -103,6 +105,11 @@ If you don't find a %s blueprint, research it.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
                     return ([quest],None)
                 
+                items = character.container.getItemByPosition(self.targetPosition)
+                if items:
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=character.getBigPosition())
+                    return ([quest],None)
+
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:

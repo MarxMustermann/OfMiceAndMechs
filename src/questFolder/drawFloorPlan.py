@@ -8,160 +8,126 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.shortCode = "d"
+        self.targetPosition = targetPosition
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
 
+    def getNextStep(self,character=None,ignoreCommands=False):
+        if not self.subQuests:
+
+            if not isinstance(character.container,src.rooms.Room):
+                command = None
+                if character.xPosition%15 == 0:
+                    command = "d"
+                if character.xPosition%15 == 14:
+                    command = "a"
+                if character.yPosition%15 == 0:
+                    command = "s"
+                if character.yPosition%15 == 14:
+                    command = "w"
+                return (None,(command,"draw to stockpile"))
+
+            if not character.container.floorPlan:
+                self.fail()
+                return (None,None)
+
+            if not (character.getBigPosition() == self.targetPosition):
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+                return ([quest],None)
+
+            if "walkingSpace" in character.container.floorPlan:
+                walkingSpaces = character.container.floorPlan.get("walkingSpace")
+                if walkingSpaces:
+                    if walkingSpaces[-1] in character.container.walkingSpace:
+                        walkingSpaces.pop()
+
+                if walkingSpaces:
+                    quest = src.quests.questMap["DrawWalkingSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=walkingSpaces[-1])
+                    return ([quest],None)
+
+                if not walkingSpaces == None:
+                    del character.container.floorPlan["walkingSpace"]
+
+            if "inputSlots" in character.container.floorPlan:
+                inputSlots = character.container.floorPlan.get("inputSlots")
+                if inputSlots:
+                    for existingInputslot in character.container.inputSlots:
+                        if existingInputslot[0] == inputSlots[-1][0]:
+                            inputSlots.pop()
+                            break
+
+                    if inputSlots:
+                        inputSlot = inputSlots[-1]
+                        quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
+                        return ([quest],None)
+
+                if not inputSlots == None:
+                    del character.container.floorPlan["inputSlots"]
+
+            if "outputSlots" in character.container.floorPlan:
+                outputSlots = character.container.floorPlan.get("outputSlots")
+                if outputSlots:
+                    for existingOutputSlot in character.container.outputSlots:
+                        if existingOutputSlot[0] == outputSlots[-1][0]:
+                            outputSlots.pop()
+                            break
+
+                    if outputSlots:
+                        outputSlot = outputSlots[-1]
+                        quest = src.quests.questMap["DrawStockpile"](itemType=outputSlot[1],stockpileType="o",targetPositionBig=self.targetPosition,targetPosition=outputSlot[0])
+                        return ([quest],None)
+
+                if not outputSlots == None:
+                    del character.container.floorPlan["outputSlots"]
+
+            if "buildSites" in character.container.floorPlan:
+                buildSites = character.container.floorPlan.get("buildSites")
+
+                if buildSites:
+                    for existingBuildSite in character.container.buildSites:
+                        if existingBuildSite[0] == buildSites[-1][0]:
+                            buildSites.pop()
+                            break
+
+                    if buildSites:
+                        buildSite = buildSites[-1]
+                        quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
+                        return ([quest],None)
+
+                if not buildSites == None:
+                    del character.container.floorPlan["buildSites"]
+
+            self.postHandler()
+            return (None,None)
+        return (None,None)
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
+
+    def generateSubquests(self, character=None):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
+
     def solver(self, character):
-        self.activate()
-        self.assignToCharacter(character)
-        if self.subQuests:
-            return super().solver(character)
-
-        if not character.inventory or not character.inventory[-1].type == "Painter":
-            character.addMessage("no painter")
-            self.addQuest(src.quests.questMap["FetchItems"](toCollect="Painter",amount=1))
+        if self.triggerCompletionCheck(character):
             return
-        painter = character.inventory[-1]
-
-        if not isinstance(character.container,src.rooms.Room):
-            if character.xPosition%15 == 0:
-                character.runCommandString("d")
-            if character.xPosition%15 == 14:
-                character.runCommandString("a")
-            if character.yPosition%15 == 0:
-                character.runCommandString("s")
-            if character.yPosition%15 == 14:
-                character.runCommandString("w")
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
             return
 
-
-        if not character.container.floorPlan:
-            self.fail()
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
             return
-
-        if character.container.floorPlan.get("walkingSpace"):
-            if not painter.paintMode == "walkingSpace":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmwalkingSpace\nk"))
-                return
-
-            walkingSpace = character.container.floorPlan["walkingSpace"].pop()
-
-            if walkingSpace[0] == 0 or walkingSpace[0] == 12 or walkingSpace[1] == 0 or walkingSpace[1] == 12:
-                return
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=walkingSpace))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("inputSlots"):
-            if not painter.paintMode == "inputSlot":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcminputSlot\nk"))
-                return
-
-            inputSlot = character.container.floorPlan["inputSlots"][-1]
-
-            if not painter.paintType == inputSlot[1]:
-                self.addQuest(src.quest.questMap["RunCommand"](command="lct%s\nk"%(inputSlot[1],)))
-                return
-
-            character.container.floorPlan["inputSlots"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=inputSlot[0]))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("outputSlots"):
-            if not painter.paintMode == "outputSlot":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmoutputSlot\nk"))
-                return
-
-            outputSlot = character.container.floorPlan["outputSlots"][-1]
-
-            if not painter.paintType == outputSlot[1]:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lct%s\nk"%(outputSlot[1],)))
-                return
-
-            character.container.floorPlan["outputSlots"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0]))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("storageSlots"):
-            if not painter.paintMode == "storageSlot":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmstorageSlot\nk"))
-                return
-
-            storageSlot = character.container.floorPlan["storageSlots"][-1]
-
-            if not painter.paintType == storageSlot[1]:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lct%s\nk"%(storageSlot[1],)))
-                return
-            
-            character.container.floorPlan["storageSlots"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=storageSlot[0]))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        if character.container.floorPlan.get("buildSites"):
-
-            buildingSite = character.container.floorPlan["buildSites"][-1]
-
-            character.container.floorPlan["buildSites"].pop()
-
-            self.addQuest(src.quests.questMap["RunCommand"](command="ljk"))
-            self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildingSite[0]))
-
-            for (key,value) in buildingSite[2].items():
-                valueType = ""
-                if key == "command":
-                    value = "".join(value)
-
-                if key == "commands":
-                    value = json.dumps(value)
-                    valueType = "json"
-
-                if key == "settings":
-                    value = json.dumps(value)
-                    valueType = "json"
-
-
-                if isinstance(value,int):
-                    valueType = "int"
-
-                self.addQuest(src.quests.questMap["RunCommand"](command="lce%s\n%s\n%s\nk"%(key,valueType,value)))
-
-            if not painter.paintMode == "buildSite":
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcmbuildSite\nk"))
-
-            if not painter.paintType == buildingSite[1]:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lct%s\nk"%(buildingSite[1],)))
-
-            if painter.paintExtraInfo:
-                self.addQuest(src.quests.questMap["RunCommand"](command="lcck"))
-
-            return
-
-        character.container.floorPlan = None
-        self.postHandler()
-        return
+        super().solver(character)
 
 src.quests.addType(DrawFloorPlan)

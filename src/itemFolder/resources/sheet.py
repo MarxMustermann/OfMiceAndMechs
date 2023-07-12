@@ -85,6 +85,7 @@ This is a level %s item
         options.append(("createNote", "create a note"))
         options.append(("createMap", "create a map"))
         options.append(("createJobOrder", "create a job order"))
+        options.append(("createFloorPlan", "create a floor plan"))
         self.submenue = src.interaction.SelectionMenu(
             "What do you want do do?", options
         )
@@ -105,6 +106,8 @@ This is a level %s item
             self.createMapItem()
         elif self.submenue.selection == "createJobOrder":
             self.createJobOrder()
+        elif self.submenue.selection == "createFloorPlan":
+            self.createFloorPlan()
 
     def createNote(self):
         """
@@ -167,6 +170,28 @@ This is a level %s item
         else:
             self.character.inventory.remove(self)
             self.character.inventory.append(jobOrder)
+
+    def createFloorPlan(self):
+        """
+        create a floor plan
+        """
+
+        if not self.container:
+            return
+
+        floorPlan = src.items.itemMap["FloorPlan"]()
+
+        if self.xPosition:
+            container = self.container
+            pos = self.getPosition()
+            self.container.removeItem(self)
+            container.addItem(floorPlan,pos)
+        else:
+            self.character.inventory.remove(self)
+            self.character.inventory.append(floorPlan)
+
+        floorPlan.readFloorPlanFromRoom()
+        self.character.addMessage("you create a floor plan from the room you are in")
 
     def createCommand(self):
         """

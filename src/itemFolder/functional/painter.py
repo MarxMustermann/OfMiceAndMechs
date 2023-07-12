@@ -1,4 +1,5 @@
 import src
+import copy
 import json
 
 class Painter(src.items.Item):
@@ -126,7 +127,7 @@ This should be used in cases where you can not place the Painter on the position
                targetParamName="name",
                                        )
            self.character.macroState["submenue"] = self.submenue
-           self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo1","params":{"character":self.character}}
+           self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":{"character":self.character}}
            return
 
     def addExtraInfo1(self,extraInfo):
@@ -148,6 +149,7 @@ This should be used in cases where you can not place the Painter on the position
         return
 
     def addExtraInfo3(self,extraInfo):
+        extraInfo["type"] = None
         value = extraInfo["value"]
         if extraInfo["type"] in ("int","integer"):
             value = int(value)
@@ -228,6 +230,9 @@ This should be used in cases where you can not place the Painter on the position
                 for buildSite in character.container.buildSites[:]:
                     if buildSite[0] == character.getPosition(offset=self.offset):
                         character.container.buildSites.remove(buildSite)
+
+        self.paintExtraInfo = copy.copy(self.paintExtraInfo)
+        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})
 
         character.addMessage("you paint a marking on the floor")
         character.addMessage((self.paintMode,self.paintType,str(self.paintExtraInfo)))

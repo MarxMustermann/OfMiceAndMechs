@@ -770,6 +770,7 @@ def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
     del char.interactionState["advancedInteraction"]
 
 def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
+    char.timeTaken += char.movementSpeed
     if len(char.inventory) >= 10:
         if key == "w":
             char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
@@ -849,6 +850,7 @@ def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
     del char.interactionState["advancedPickup"]
 
 def doAdvancedDrop(key,char,charState,main,header,footer,urwid,flags):
+    char.timeTaken += char.movementSpeed
     if key == "w":
         pos = (char.xPosition, char.yPosition - 1, char.zPosition)
     elif key == "s":
@@ -2407,6 +2409,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # drop first item from inventory
         # bad pattern: the user has to have the choice for what item to drop
         if key in (commandChars.drop,):
+            char.timeTaken += char.movementSpeed
             if "NaiveDropQuest" not in char.solvers and not char.godMode:
                 char.addMessage("you do not have the nessecary solver yet (drop)")
             else:
@@ -2534,6 +2537,7 @@ press key for advanced drop
         # pick up items
         # bad code: picking up should happen in character
         if key in (commandChars.pickUp,):
+            char.timeTaken += char.movementSpeed
             if len(char.inventory) >= 10:
                 char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 char.addMessage("you cannot carry more items")
@@ -3940,6 +3944,7 @@ class InventoryMenu(SubMenu):
                             )
                         self.char.addMessage(text)
                         self.char.drop(self.char.inventory[self.subMenu.getSelection()])
+                        self.char.timeTaken += self.char.movementSpeed
                     self.drop = False
                     self.subMenu = None
                     return True
@@ -4486,6 +4491,7 @@ class AdvancedQuestMenu(SubMenu):
 
                         options.append((value.type, key))
                     """
+                    options.append(("GoHome", "GoHome"))
                     options.append(("SecureTile", "SecureTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
@@ -5019,6 +5025,7 @@ class ViewNPCsMenu(SubMenu):
         super().__init__()
         self.index = 0
         self.personnelArtwork = personnelArtwork
+        self.lastSelectedCharacter = None
 
     def handleKey(self, key, noRender=False, character = None):
 
@@ -5026,46 +5033,141 @@ class ViewNPCsMenu(SubMenu):
         if key in ("esc"," ",):
             return True
 
-        self.persistentText = "press w/a and s/d to scroll\n\n"
+        self.persistentText = ["press w/a and s/d to scroll\n\n"]
+        self.persistentText = ["press . to pass a turn\n\n"]
+        self.persistentText = ["press t to take over clone\n\n"]
 
         characters = self.personnelArtwork.getPersonnelList()
 
         if not characters:
-            main.set_text((urwid.AttrSpec("default", "default"), "no city leader found"))
+            main.set_text((urwid.AttrSpec("default", "default"), "no personnel found"))
             return
+
+        if key in (".",):
+            character.timeTaken += 1
 
         if key in ("w","a",):
             if self.index > 0:
                 self.index -= 1
+            else:
+                self.index = len(characters)-1
+            self.lastSelectedCharacter = None
 
         if key in ("s","d"):
             if self.index < len(characters)-1:
                 self.index += 1
+            else:
+                self.index = 0
+            self.lastSelectedCharacter = None
 
-        self.persistentText += "%s of %s\n\n"%(self.index+1,len(characters),)
+        self.persistentText.append("%s of %s\n\n"%(self.index+1,len(characters),))
+
+        if self.lastSelectedCharacter:
+            counter = 0
+            for char in characters:
+                if char == self.lastSelectedCharacter:
+                    self.index = counter
+                    break
+                counter += 1
 
         selectedCharacter = characters[self.index]
-        self.persistentText += "\ninternal id: %s"%(selectedCharacter)
-        self.persistentText += "\nname: %s"%(selectedCharacter.name)
-        self.persistentText += "\nrank: %s"%(selectedCharacter.rank)
+        self.lastSelectedCharacter = selectedCharacter
+
+        if key in ("t",):
+            src.gamestate.gamestate.mainChar = selectedCharacter
+
+        self.persistentText.append("\nname: %s (marked by %s)"%(selectedCharacter.name,"XX"))
+        part1 = "position: %s "%(selectedCharacter.getPosition(),)
+        part2 = "big position: %s "%(selectedCharacter.getBigPosition(),)
+        self.persistentText.append("\n%s%s"%(part1,part2,))
+
+        self.persistentText.append(" "*40+"\n")
+        self.persistentText.append("\n")
+        if selectedCharacter.container.isRoom:
+            pos = selectedCharacter.getBigPosition()
+            smallPos = selectedCharacter.getPosition()
+            rawRender = selectedCharacter.container.render()
+            terrain = selectedCharacter.getTerrain()
+            miniMapRender = terrain.renderTiles()
+
+            y = 0
+            self.persistentText.append("\n")
+            while y < 15:
+                if y == 0 or y == 14:
+                    self.persistentText.append("  "*15)
+                else:
+                    x = 0
+                    self.persistentText.append("  ")
+                    for entry in rawRender[y-1]:
+                        if (x,y-1,0) == smallPos:
+                            self.persistentText.append("XX")
+                        else:
+                            self.persistentText.append(entry)
+                        x += 1
+                    self.persistentText.append("  ")
+                self.persistentText.append("  |  ")
+                x = 0
+                for entry in miniMapRender[y]:
+                    if (x,y,0) == pos:
+                        self.persistentText.append("XX")
+                    else:
+                        self.persistentText.append(entry)
+
+                    x += 1
+                self.persistentText.append("\n")
+                y += 1
+            self.persistentText.append("\n")
+        else:
+            pos = selectedCharacter.getBigPosition()
+            fullPos = selectedCharacter.getPosition()
+            rawRender = selectedCharacter.container.render(coordinateOffset=(15*pos[1],15*pos[0]),size=(14,14))
+            terrain = selectedCharacter.getTerrain()
+            miniMapRender = terrain.renderTiles()
+
+            y = 0
+            for line in rawRender:
+                x = 0
+                for entry in line:
+                    if (x+pos[0]*15,y+pos[1]*15,0) == fullPos:
+                        self.persistentText.append("XX")
+                    else:
+                        self.persistentText.append(entry)
+                    x += 1
+                self.persistentText.append("  |  ")
+                x = 0
+                for entry in miniMapRender[y]:
+                    if (x,y,0) == pos:
+                        self.persistentText.append("XX")
+                    else:
+                        self.persistentText.append(entry)
+
+                    x += 1
+                self.persistentText.append("\n")
+                y += 1
+        self.persistentText.append("\nrank: %s"%(selectedCharacter.rank))
+        self.persistentText.append("\ninventory: ")
+        for item in selectedCharacter.inventory:
+            self.persistentText.append(item.render())
+            self.persistentText.append(" ")
+        self.persistentText.append("(%s)"%(len(selectedCharacter.inventory),))
+
         if selectedCharacter.weapon:
-            self.persistentText += "\nweapon: %s"%(selectedCharacter.weapon.baseDamage)
+            self.persistentText.append("\nweapon: %s"%(selectedCharacter.weapon.baseDamage))
         else:
-            self.persistentText += "\nweapon: None"
+            self.persistentText.append("\nweapon: None")
         if selectedCharacter.armor:
-            self.persistentText += "\narmor: %s"%(selectedCharacter.armor.armorValue)
+            self.persistentText.append("\narmor: %s"%(selectedCharacter.armor.armorValue))
         else:
-            self.persistentText += "\narmor: None"
-        self.persistentText += "\nstaff: %s"%(selectedCharacter.isStaff)
-        self.persistentText += "\nduties: %s"%(", ".join(selectedCharacter.duties),)
+            self.persistentText.append("\narmor: None")
+        self.persistentText.append("\nstaff: %s"%(selectedCharacter.isStaff))
+        self.persistentText.append("\nduties: %s"%(", ".join(selectedCharacter.duties),))
         quest = selectedCharacter.getActiveQuest()
         if quest:
-            self.persistentText += "\nactive quest: %s"%(quest.description,)
+            self.persistentText.append("\nactive quest: %s"%(quest.description,))
         else:
-            self.persistentText += "\nactive quest: None"
+            self.persistentText.append("\nactive quest: None")
 
-        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        main.set_text(self.persistentText)
 
 class StaffAsMatrixMenu(SubMenu):
     type = "StaffAsMatrixMenu"
@@ -5561,6 +5663,7 @@ class ChangeViewsMenu(SubMenu):
         if viewColour == "activity":
             color = "#0f0"
         self.persistentText.append((urwid.AttrSpec(color, "default"),"press a/A to show NPC activity marking\n"))
+
         color = "#fff"
         if viewChar == "rank":
             color = "#f00"
@@ -5635,7 +5738,19 @@ class RoomMenu(SubMenu):
                         pass
                 self.persistentText.append("%s%s - %s\n"%(staffNpc.name,deadText,questText,))
         else:
-                self.persistentText.append("There is no staff assigned assign staff by using the staff artwork (SA)")
+                self.persistentText.append("There is no staff assigned.\nassign staff by using the staff artwork (SA)")
+
+        if self.room.floorPlan:
+            self.persistentText.append("\n\nThis room has a floor plan.")
+            print(self.room.floorPlan["buildSites"])
+
+        try:
+            self.room.requiredDuties
+        except:
+            self.room.requiredDuties = []
+
+        if self.room.requiredDuties:
+            self.persistentText.append("\n\nThis room has required duties.\n%s"%self.room.requiredDuties)
 
         self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources\n- o: issue room orders")
 
@@ -6661,34 +6776,6 @@ def renderGameDisplay(renderChar=None):
     else:
         thisTerrain = lastTerrain
 
-    stepSize = char.maxHealth/15
-    healthRate = int(char.health/stepSize)
-
-    if char.health == 0:
-        healthDisplay = "---------------"
-    else:
-        healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
-
-    flaskInfo = "-"
-    if char.flask:
-        flaskInfo = str(char.flask.uses)
-
-    if char.satiation == 0:
-        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved (%s/%s)"%(char.satiation,flaskInfo,))
-    elif char.satiation < 200:
-        satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving (%s/%s)"%(char.satiation,flaskInfo,))
-    elif char.satiation < 300:
-        satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry (%s/%s)"%(char.satiation,flaskInfo,))
-    else:
-        satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated (%s/%s)"%(char.satiation,flaskInfo,))
-
-    text = [
-        "health: " , healthDisplay ,
-        "    satiation: " , satiationDisplay
-    ]
-
-    footer.set_text(text)
-
     def stringifyUrwid(inData):
         outData = ""
         for item in inData:
@@ -6747,12 +6834,12 @@ def renderGameDisplay(renderChar=None):
                 warning = True
             else:
                 warning = False
-            header.set_text(
-                (
-                    urwid.AttrSpec("default", "default"),
-                    renderHeader(char),
-                )
-            )
+            #header.set_text(
+            #    (
+            #        urwid.AttrSpec("default", "default"),
+            #        renderHeader(char),
+            #    )
+            #)
             if useTiles:
                 canvas = render(char)
                 canvas.setPygameDisplay(pydisplay, pygame, tileSize)
@@ -6824,10 +6911,48 @@ def renderGameDisplay(renderChar=None):
                     if uiElement["type"] == "healthInfo":
                         if src.gamestate.gamestate.dragState:
                             continue
+                        if not footer:
+                            continue
+                        healthtext = "testt"
+
+                        stepSize = char.maxHealth/15
+                        healthRate = int(char.health/stepSize)
+
+                        if char.health == 0:
+                            healthDisplay = "---------------"
+                        else:
+                            healthDisplay = [(urwid.AttrSpec("#f00", "default"),"x"*healthRate),(urwid.AttrSpec("#444", "default"),"."*(15-healthRate))]
+
+                        flaskInfo = "-"
+                        if char.flask:
+                            flaskInfo = str(char.flask.uses)
+
+                        if char.satiation == 0:
+                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved (%s/%s)"%(char.satiation,flaskInfo,))
+                        elif char.satiation < 200:
+                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving (%s/%s)"%(char.satiation,flaskInfo,))
+                        elif char.satiation < 300:
+                            satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry (%s/%s)"%(char.satiation,flaskInfo,))
+                        else:
+                            satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated (%s/%s)"%(char.satiation,flaskInfo,))
+
+                        text = [
+                            "health: " , healthDisplay ,
+                            "    satiation: " , satiationDisplay
+                        ]
+
+                        x = max(uiElement["offset"][0]+uiElement["width"]//2-len(stringifyUrwid(text))//2,0)
+                        y = uiElement["offset"][1]
+
+                        printUrwidToTcod(text,(x,y),size=(uiElement["width"],1))
+                        printUrwidToDummy(pseudoDisplay,text,(x,y),size=(uiElement["width"],1))
+
+                        """
                         offset = (uiElement["offset"][0]+44-len(stringifyUrwid(footer.get_text()))//2,uiElement["offset"][1])
                         width = uiElement["width"]
                         printUrwidToTcod(footer.get_text(),offset,size=(width,100))
                         printUrwidToDummy(pseudoDisplay,footer.get_text(),offset,size=(width,100))
+                        """
                     if uiElement["type"] == "indicators":
                         autoIndicator = ActionMeta(content="*",payload="*")
                         if char.macroState["commandKeyQueue"] or (char.getActiveQuest() and char.getActiveQuest().autoSolve):
@@ -6938,8 +7063,8 @@ def renderGameDisplay(renderChar=None):
                 pseudoDisplay[counter-1][offsetLeft+width+2] = ">"
                 src.gamestate.gamestate.clickMap[(offsetLeft+width+2,counter-1)] = ["rESC"]
 
-                tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
-                pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
+                #tcodConsole.print(x=offsetLeft+width+5, y=counter-1, string=stringifyUrwid(header.get_text()),fg=(255,255,255),bg=(0,0,0))
+                #pseudoDisplay[counter-1][offsetLeft+width+5] = stringifyUrwid(header.get_text())
                 tcodConsole.print(x=offsetLeft-2, y=counter, string="--+-"+"-"*width+"-+--",fg=(255,255,255),bg=(0,0,0))
                 pseudoDisplay[counter][offsetLeft-2] = "--+-"+"-"*width+"-+--"
                 extraX = 0
@@ -7645,26 +7770,34 @@ def showIntro():
     stage = 0
     stageState = None
     room = None
+    skip = False
     while 1:
-        tcodConsole.clear()
+        if not skip:
+            tcodConsole.clear()
 
         if stage == 0:
             if stageState == None:
                 stageState = {"substep":1,"lastChange":time.time()}
-            text = """
+
+            if not skip:
+                text = """
 You """+"."*stageState["substep"]+"""
 
 
 """
-            printUrwidToTcod(text,(60,24))
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(63,27))
-            tcodContext.present(tcodConsole)
-            if time.time()-stageState["lastChange"] > 1:
+                printUrwidToTcod(text,(60,24))
+                printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(63,27))
+                tcodContext.present(tcodConsole)
+
+            if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1
                 stageState["lastChange"] = time.time()
                 if stageState["substep"] == 4:
                     stageState = None
-            time.sleep(0.01)
+                    skip = False
+
+            if not skip:
+                time.sleep(0.01)
 
         if stage == 1:
             if stageState == None:
@@ -7686,11 +7819,12 @@ You """+"."*stageState["substep"]+"""
                     for i in range(1,10):
                         stageState["MoldToAdd"].append(((tile[0]*15+random.randint(1,13),tile[1]*15+random.randint(1,13),0),))
 
-            text = ["""You are born into a world of metal"""]
-            if stageState["substep"] > 4:
-                text.append(""", rust""")
-            if stageState["substep"] > 6:
-                text.append(""" and mold.""")
+            if not skip:
+                text = ["""You are born into a world of metal"""]
+                if stageState["substep"] > 4:
+                    text.append(""", rust""")
+                if stageState["substep"] > 6:
+                    text.append(""" and mold.""")
 
             if not room:
                 terrain = src.terrains.Nothingness()
@@ -7710,7 +7844,7 @@ You """+"."*stageState["substep"]+"""
             if stageState["substep"] == 6:
                 terrain.hidden = False
 
-                if time.time()-stageState["lastChange"] > 0.001 and stageState["scrapToAdd"]:
+                if (time.time()-stageState["lastChange"] > 0.001 or skip) and stageState["scrapToAdd"]:
                     stageState["lastChange"] = time.time()
 
                     for i in range(0,6):
@@ -7729,41 +7863,47 @@ You """+"."*stageState["substep"]+"""
                     item.startSpawn()
 
             if stageState["substep"] == 8:
-                if time.time()-stageState["lastChange"] > 0.1 and src.gamestate.gamestate.tick < 10000:
+                if (time.time()-stageState["lastChange"] > 0.1 or skip) and src.gamestate.gamestate.tick < 10000:
                     stageState["lastChange"] = time.time()
 
                     for i in range(1,400):
                         terrain.advance()
                         src.gamestate.gamestate.tick += 1
 
-            roomRender = room.render()
-            roomRender = fixRoomRender(roomRender)
-            roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-            mapStep = min(stageState["animationStep"],16)
-            terrainRender = terrain.render(coordinateOffset=(15*7+1-mapStep,15*7+1-mapStep),size=(12+2*mapStep,12+2*mapStep))
-            terrainRender = fixRoomRender(terrainRender)
-            terrainRender[6+mapStep][6+mapStep] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-            if stageState["substep"] < 4:
-                printUrwidToTcod(roomRender,(51,21))
-            else:
-                printUrwidToTcod(terrainRender,(51-2*mapStep,21-mapStep))
-            if stageState["substep"] < 5:
-                printUrwidToTcod(text,(47-min(9,stageState["animationStep"]//2),19-min(stageState["animationStep"],17)))
-            else:
-                printUrwidToTcod(text,(38,2))
-            tcodContext.present(tcodConsole)
+            if not skip:
+                roomRender = room.render()
+                roomRender = fixRoomRender(roomRender)
+                roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                mapStep = min(stageState["animationStep"],16)
+                terrainRender = terrain.render(coordinateOffset=(15*7+1-mapStep,15*7+1-mapStep),size=(12+2*mapStep,12+2*mapStep))
+                terrainRender = fixRoomRender(terrainRender)
+                terrainRender[6+mapStep][6+mapStep] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                if stageState["substep"] < 4:
+                    printUrwidToTcod(roomRender,(51,21))
+                else:
+                    printUrwidToTcod(terrainRender,(51-2*mapStep,21-mapStep))
+                if stageState["substep"] < 5:
+                    printUrwidToTcod(text,(47-min(9,stageState["animationStep"]//2),19-min(stageState["animationStep"],17)))
+                else:
+                    printUrwidToTcod(text,(38,2))
+                tcodContext.present(tcodConsole)
 
-            if stageState["substep"] == 4 and time.time()-stageState["lastChange"] > 0.2 and stageState["animationStep"] < 17:
+            if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:
                 stageState["animationStep"] += 1
                 stageState["lastChange"] = time.time()
 
-            if time.time()-stageState["lastChange"] > 1:
+            if (time.time()-stageState["lastChange"] > 1 or 
+                     (skip and stageState["substep"] == 6 and not stageState["scrapToAdd"]) or
+                     (skip and stageState["substep"] == 8 and not src.gamestate.gamestate.tick < 10000) or
+                     (skip and not stageState["substep"] in [6,8])):
                 stageState["substep"] += 1
                 stageState["lastChange"] = time.time()
                 if stageState["substep"] == 11:
                     stageState = None
+                    skip = False
 
-            time.sleep(0.01)
+            if not skip:
+                time.sleep(0.01)
 
         if stage == 2:
             text = """Strange mechanations fill the world with ancient logic"""
@@ -7817,14 +7957,14 @@ You """+"."*stageState["substep"]+"""
                 command5.command =  "kdldj"
 
                 command6 = src.items.itemMap["Command"]()
-                command6.command =  "5a4w15ajjj13sjjj13djjj13djjj13w13a.2s6a"+10*"Lw"+10*"Ls"+"5d2s5d"+50*"Js"+"j"
+                command6.command =  "5a4w14ajjj13sjjj13djjj13djjj13w13a.2s6a"+10*"Lw"+10*"Ls"+"5d2s5d"+50*"Js"+"j"
                 command6.bolted = True
 
                 command7 = src.items.itemMap["Command"]()
                 command7.command =  "kdldj"
 
                 command8 = src.items.itemMap["Command"]()
-                command8.command =  "5a3w15dj13wj13aj13aj13s13d.4w2dj2a4s"+".3s5das"+50*"Js"+"wdj"
+                command8.command =  "5a3w14dj13wj13aj13aj13s13d.4w2dj2a4s"+".3s5das"+50*"Js"+"wdj"
                 command8.bolted = True
 
                 command9 = src.items.itemMap["Command"]()
@@ -8022,17 +8162,18 @@ You """+"."*stageState["substep"]+"""
                 stageState["inputslots"].append(("Corpse",(11,11,0)))
                 stageState["inputslots"].append(("Scrap",(1,9,0)))
                 stageState["inputslots"].append(("Scrap",(1,9,0)))
-            roomRender = room.render()
-            roomRender = fixRoomRender(roomRender)
-            roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
 
-            terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
-            terrainRender = fixRoomRender(terrainRender)
-            terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-            printUrwidToTcod(text,(38,2))
-            printUrwidToTcod(terrainRender,(19,5))
-            tcodContext.present(tcodConsole)
+            if not skip:
+                roomRender = room.render()
+                roomRender = fixRoomRender(roomRender)
+                roomRender[6][6] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
 
+                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+                terrainRender = fixRoomRender(terrainRender)
+                terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                printUrwidToTcod(text,(38,2))
+                printUrwidToTcod(terrainRender,(19,5))
+                tcodContext.present(tcodConsole)
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -8054,7 +8195,7 @@ You """+"."*stageState["substep"]+"""
                         room.addInputSlot(pos,itemType)
                 stageState["inputslots"] = []
             elif stageState["items"] and stageState["subStep"] > 2:
-                if time.time()-stageState["lastChange"] > 0.1:
+                if time.time()-stageState["lastChange"] > 0.1 or skip:
                     stageState["lastChange"] = time.time()
                     numItems = 2
                     i = 0
@@ -8092,7 +8233,7 @@ You """+"."*stageState["substep"]+"""
                 stageState["didRemove"] = True
 
             elif stageState["terrainItems"] and stageState["subStep"] > 2:
-                if time.time()-stageState["lastChange"] > 0.01:
+                if time.time()-stageState["lastChange"] > 0.01 or skip:
                     stageState["lastChange"] = time.time()
                     for i in range(0,4):
                         if not stageState["terrainItems"]:
@@ -8100,13 +8241,15 @@ You """+"."*stageState["substep"]+"""
                         item = stageState["terrainItems"].pop()
                         terrain.addItem(item[0],item[1])
             else:
-                if time.time()-stageState["lastChange"] > 1:
+                if time.time()-stageState["lastChange"] > 1 or skip:
                     stageState["lastChange"] = time.time()
                     stageState["subStep"] += 1
                     if stageState["subStep"] == 4:
                         stageState = None
+                        skip = False
 
-            time.sleep(0.01)
+            if not skip:
+                time.sleep(0.01)
 
         if stage == 3:
             text1 = """Strange machinations fill the world with ancient logic"""
@@ -8117,17 +8260,19 @@ You """+"."*stageState["substep"]+"""
             if stageState == None:
                 stageState = {"lastChange":time.time()}
 
-            terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
-            terrainRender = fixRoomRender(terrainRender)
-            terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-            printUrwidToTcod(text1,(38,2))
-            printUrwidToTcod(text2,(42,3))
-            printUrwidToTcod(terrainRender,(19,5))
+            if not skip:
+                terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
+                terrainRender = fixRoomRender(terrainRender)
+                terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
+                printUrwidToTcod(text1,(38,2))
+                printUrwidToTcod(text2,(42,3))
+                printUrwidToTcod(terrainRender,(19,5))
             
-            tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole)
 
-            if time.time()-stageState["lastChange"] > 2:
+            if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None
+                skip = False
 
         if stage == 4:
             text1 = """Strange machinations fill the world with ancient logic"""
@@ -8200,10 +8345,16 @@ You """+"."*stageState["substep"]+"""
 
                     removeList = []
                     for character in room.characters+terrain.characters:
-                        advanceChar(character)
+                        character.timeTaken -= 1
+                        advanceChar(character,render=False)
 
                 if src.gamestate.gamestate.tick > 10470 and not stageState["endless"]:
                     stageState = None
+                    skip = False
+
+            if skip:
+                stageState = None
+                skip = False
 
         if stage == 5:
             text1 = """Strange machinations fill the world with ancient logic"""
@@ -8214,21 +8365,23 @@ You """+"."*stageState["substep"]+"""
             if stageState == None:
                 stageState = {"lastChange":time.time(),"substep":0}
 
-            offset = min(stageState["substep"],16)
-            if not stageState["substep"] > 16:
-                terrainRender = terrain.render(coordinateOffset=(15*6+offset,15*6+offset),size=(44-2*offset,44-2*offset))
-                terrainRender = fixRoomRender(terrainRender)
-                printUrwidToTcod(terrainRender,(19+2*offset,5+offset))
-            printUrwidToTcod(text1,(38,2+offset))
-            printUrwidToTcod(text2,(42,3+offset))
-            tcodContext.present(tcodConsole)
+            if not skip:
+                offset = min(stageState["substep"],16)
+                if not stageState["substep"] > 16:
+                    terrainRender = terrain.render(coordinateOffset=(15*6+offset,15*6+offset),size=(44-2*offset,44-2*offset))
+                    terrainRender = fixRoomRender(terrainRender)
+                    printUrwidToTcod(terrainRender,(19+2*offset,5+offset))
+                printUrwidToTcod(text1,(38,2+offset))
+                printUrwidToTcod(text2,(42,3+offset))
+                tcodContext.present(tcodConsole)
 
             if time.time()-stageState["lastChange"] > 0.3:
                 stageState["lastChange"] = time.time()
                 stageState["substep"] += 1
 
-            if stageState["substep"] > 30:
+            if stageState["substep"] > 30 or skip:
                 stageState = None
+                skip = False
 
         if stage == 6:
             if stageState == None:
@@ -8263,7 +8416,14 @@ FOLLOW YOUR ORDERS
                 stageState["lastChange"] = time.time()
                 if stageState["substep"] > 5:
                     stageState = None
-            time.sleep(0.01)
+                    skip = False
+
+            if not skip:
+                time.sleep(0.01)
+
+            if skip:
+                stageState = None
+                skip = False
 
         if stage > 6:
             break
@@ -8277,6 +8437,8 @@ FOLLOW YOUR ORDERS
                     raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
+                if key == tcod.event.KeySym.RETURN:
+                    skip = True
                 if key == tcod.event.KeySym.SPACE:
                     if stage == 4:
                         if not stageState["endless"]:
@@ -8446,15 +8608,15 @@ grows and grows and grows and grows
                 color = "#111"
                 color2 = "#222"
                 color3 = "#332"
-            else:
+            elif subStep < l*4:
                 color = "#222"
-                color2 = "#222"
-                color3 = "#332"
+                color2 = "#333"
+                color3 = "#442"
+            else:
+                color = "#333"
+                color2 = "#333"
+                color3 = "#442"
             """
-            elif subStep < l*5:
-                color = "#332"
-                color2 = "#442"
-                color3 = "#552"
             else:
                 color = "#442"
                 color2 = "#442"
@@ -8848,6 +9010,7 @@ def gameLoop_disabled(loop, user_data=None):
                 advanceGame()
                 multi_chars = src.gamestate.gamestate.multi_chars
 
+            """
             for char in multi_chars:
                 if char.dead:
                     continue
@@ -8856,6 +9019,7 @@ def gameLoop_disabled(loop, user_data=None):
                 # 5/0
                 advanceChar(char)
                 pass
+            """
 
         if src.gamestate.gamestate.mainChar.timeTaken > 1:
             lastAdvance = time.time()
@@ -8907,7 +9071,7 @@ def clearMessages(char):
     while len(char.messages) > 100:
         char.messages = char.messages[-100:]
 
-def advanceChar(char):
+def advanceChar(char,render=True):
     state = char.macroState
 
     rerender = True
@@ -8918,14 +9082,15 @@ def advanceChar(char):
                 #char.getTerrain().animations = []
                 #for room in char.getTerrain().rooms:
                 #    room.animations = []
-                renderGameDisplay()
+                if render:
+                    renderGameDisplay()
                 lastRender = time.time()
                 rerender = False
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
             getTcodEvents()
-            if (time.time()-lastRender) > 0.1:
+            if (time.time()-lastRender) > 0.1 and render:
                 renderGameDisplay()
                 lastRender = time.time()
 

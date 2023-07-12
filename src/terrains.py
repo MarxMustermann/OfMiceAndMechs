@@ -61,6 +61,7 @@ class Terrain(src.saveing.Saveable):
         self.noPlacementTiles = []
         self.scrapFields = []
         self.forests = []
+        self.collectionSpots = []
         self.ignoreAttributes = []
         self.pathCache = {}
 
@@ -1884,6 +1885,12 @@ class Terrain(src.saveing.Saveable):
 
         for scrapField in self.scrapFields:
             chars[scrapField[1]][scrapField[0]] = "ss"
+
+        for forest in self.forests:
+            chars[forest[1]][forest[0]] = "ff"
+
+        for collectionSpot in self.collectionSpots:
+            chars[collectionSpot[1]][collectionSpot[0]] = "cs"
 
         for (k,v) in self.minimapOverride.items():
             chars[k[1]][k[0]] = v

@@ -225,10 +225,17 @@ If you don't find a source, produce new items.
 
             elif self.takeAnyUnbolted:
                 candidates = []
-                for room in character.getTerrain().rooms:
-                    for item in room.itemsOnFloor:
+
+                if character.container.isRoom:
+                    for item in character.container.itemsOnFloor:
                         if item.bolted == False and item.type == self.toCollect:
                             candidates.append(item)
+
+                if not candidates:
+                    for room in character.getTerrain().rooms:
+                        for item in room.itemsOnFloor:
+                            if item.bolted == False and item.type == self.toCollect:
+                                candidates.append(item)
 
                 if candidates:
                     foundItem = True
@@ -238,20 +245,20 @@ If you don't find a source, produce new items.
                         if character.getDistance(item.getPosition()) < 2:
                             for offset in offsets:
                                 if character.getPosition(offset=offset) == item.getPosition():
-                                    foundDirection = offset
+                                    if item.container == character.container:
+                                        foundDirection = offset
 
-                    if item.container == character.container:
-                        if foundDirection:
-                            if foundDirection == (0,0,0):
-                                return (None,("K.","pick up item"))
-                            if foundDirection == (1,0,0):
-                                return (None,("Kd","pick up item"))
-                            if foundDirection == (-1,0,0):
-                                return (None,("Ka","pick up item"))
-                            if foundDirection == (0,1,0):
-                                return (None,("Ks","pick up item"))
-                            if foundDirection == (0,-1,0):
-                                return (None,("Kw","pick up item"))
+                    if foundDirection:
+                        if foundDirection == (0,0,0):
+                            return (None,("K.","pick up item"))
+                        if foundDirection == (1,0,0):
+                            return (None,("Kd","pick up item"))
+                        if foundDirection == (-1,0,0):
+                            return (None,("Ka","pick up item"))
+                        if foundDirection == (0,1,0):
+                            return (None,("Ks","pick up item"))
+                        if foundDirection == (0,-1,0):
+                            return (None,("Kw","pick up item"))
 
                     item = random.choice(candidates)
                     quests = []

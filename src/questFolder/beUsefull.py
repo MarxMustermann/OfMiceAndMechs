@@ -218,11 +218,13 @@ Press r to generate subquest and recive detailed instructions
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:
+                character.timeTaken += 1
                 return
 
             command = self.getSolvingCommandString(character)
             if command:
                 character.runCommandString(command)
+                character.timeTaken += 1
                 return
 
         super().solver(character)
@@ -406,7 +408,7 @@ Press r to generate subquest and recive detailed instructions
                     hasItem = False
                     if character.inventory and character.inventory[-1].type == inputSlot[1]:
                         hasItem = True
-                    
+
                     if not hasItem:
                         source = None
                         for candidateSource in room.sources:
@@ -439,19 +441,42 @@ Press r to generate subquest and recive detailed instructions
                             character.addMessage("no filled output slots")
                             continue
 
-                    self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1]))
-                    self.idleCounter = 0
-
                     if not hasItem:
                         if self.triggerClearInventory(character,room):
                             return True
 
+                    self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched"))
+                    self.idleCounter = 0
+
+                    if not hasItem:
+                        amountToFetch = None
+                        if src.gamestate.gamestate.mainChar == character:
+                            walkable = False
+                            if inputSlot[1] in src.items.itemMap:
+                                walkable = src.items.itemMap[inputSlot[1]]().walkable
+                            amountNeeded = 0
+                            for checkInputSlot in emptyInputSlots:
+                                if checkInputSlot[1] == inputSlot[1]:
+                                    if walkable:
+                                        amountNeeded += 20-len(room.getItemByPosition(inputSlot[0]))
+                                    else:
+                                        amountNeeded += 1
+
+                            if amountNeeded < character.maxInventorySpace:
+                                amountToFetch = amountNeeded
+
                         roomPos = (room.xPosition,room.yPosition,0)
                         if not source[0] == roomPos:
                             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
-                        self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
+
+                        self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch))
                         if not source[0] == roomPos:
                             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+
+                        if character.inventory and (not amountToFetch or amountToFetch > character.getFreeInventorySpace()):
+                            self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
+
+
                     return True
 
                 character.addMessage("no valid input slot found")
@@ -461,12 +486,42 @@ Press r to generate subquest and recive detailed instructions
     def checkTriggerPainting(self,character,room):
         # set up machines
         if room.floorPlan:
-            self.addQuest(src.quests.questMap["DrawFloorPlan"]())
+            self.addQuest(src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition()))
             self.idleCounter = 0
             return True
 
+    def checkTriggerRoomBuilding(self,character,room):
+        #src.gamestate.gamestate.mainChar = character
+        terrain = character.getTerrain()
+        for x in range(1,13):
+            for y in range(1,13):
+                items = terrain.getItemByPosition((x*15+7,y*15+7,0))
+                if items:
+                    if items[0].type == "RoomBuilder":
+                        self.addQuest(src.quests.questMap["BuildRoom"](targetPosition=(x,y,0)))
+                        self.idleCounter = 0
+                        return True
+
+        rooms = terrain.getRoomByPosition((7,7,0))
+        if rooms:
+            room = rooms[0]
+            cityPlaner = room.getItemByType("CityPlaner")
+            if cityPlaner:
+                while cityPlaner.plannedRooms:
+                    if terrain.getRoomByPosition(cityPlaner.plannedRooms[-1]):
+                        cityPlaner.plannedRooms.pop()
+                        continue
+
+                    self.addQuest(src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[-1]))
+                    self.idleCounter = 0
+                    return True
+                
     def checkTriggerMachinePlacing(self,character,room):
         if (not room.floorPlan) and room.buildSites:
+            for buildSite in room.buildSites:
+                if buildSite[1] == "Machine":
+                    self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
+                    return True
             checkedMaterial = set()
             #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
             for buildSite in room.buildSites:
@@ -533,13 +588,25 @@ Press r to generate subquest and recive detailed instructions
 
                     if not source[0] == roomPos:
                         self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
-                    if character == src.gamestate.gamestate.mainChar:
-                        print("new fetch")
                     self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
                     if not source[0] == roomPos:
                         self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
                 self.idleCounter = 0
                 return True
+
+    def checkTriggerFillFlask(self,character,room):
+        if character.flask and character.flask.uses < 3:
+            self.addQuest(src.quests.questMap["FillFlask"]())
+            return True
+
+    def checkTriggerScavenging(self,character,room):
+        terrain = character.getTerrain()
+        while terrain.collectionSpots:
+            if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
+                terrain.collectionSpots.pop()
+                continue
+            self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1])))
+            return True
 
     def checkTriggerEat(self,character,room):
         if character.satiation < 200:
@@ -554,7 +621,7 @@ Press r to generate subquest and recive detailed instructions
         if len(character.inventory) > 1:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
             if emptyInputSlots:
-                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True))
+                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True,reason="clear your inventory"))
                 return True
 
         # go to garbage stockpile and unload
@@ -563,8 +630,15 @@ Press r to generate subquest and recive detailed instructions
                 return True
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
             if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                return True
+                return False
+
             quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            return True
+        if len(character.inventory) > 9:
+            quest = src.quests.questMap["ClearInventory"]()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
@@ -703,8 +777,41 @@ Press r to generate subquest and recive detailed instructions
                 quest.activate()
                 return
 
+        if self.checkTriggerFillFlask(character,room):
+            return
+
         if self.checkTriggerEat(character,room):
             return
+
+        terrain = character.getTerrain()
+        for checkRoom in terrain.rooms:
+            try:
+                checkRoom.requiredDuties
+            except:
+                checkRoom.requiredDuties = []
+
+            if not checkRoom.requiredDuties:
+                continue
+
+            for duty in checkRoom.requiredDuties:
+                if not duty in character.duties:
+                    continue
+
+                """
+                if duty == "machine operation":
+                    quest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition())
+                    self.addQuest(quest)
+                    quest.activate()
+                    self.idleCounter = 0
+                    print(room.requiredDuties)
+                """
+
+                checkRoom.requiredDuties.remove(duty)
+
+                quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
+                self.addQuest(quest)
+                quest.activate()
+                return
 
         for duty in character.duties:
             if duty == "trap setting":
@@ -747,18 +854,26 @@ Press r to generate subquest and recive detailed instructions
                 if self.checkTriggerMachinePlacing(character,room):
                     return
 
+            if duty == "room building":
+                if self.checkTriggerRoomBuilding(character,room):
+                    return
+
+            if duty == "scavenging":
+                if self.checkTriggerScavenging(character,room):
+                    return
+
         if not self.targetPosition:
             directions = [(-1,0),(1,0),(0,-1),(0,1)]
             random.shuffle(directions)
             for direction in directions:
                 newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
                 if room.container.getRoomByPosition(newPos):
-                    character.runCommandString("30.")
                     quest = src.quests.questMap["GoToTile"](targetPosition=newPos,description="look for job on tile ")
                     self.idleCounter += 1
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     quest.activate()
+                    character.runCommandString("%s."%(self.idleCounter,))
                     return
 
         self.idleCounter += 5

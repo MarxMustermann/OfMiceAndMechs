@@ -1898,7 +1898,7 @@ class Character(src.saveing.Saveable):
                 for item in items:
                     text += "* %s\n"%(item.name,)
                 text += "\nOn the top is:\n\n"
-            mainItem = items[-1]
+            mainItem = items[0]
         else:
             text += "there are no items"
 

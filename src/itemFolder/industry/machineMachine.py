@@ -21,6 +21,7 @@ class MachineMachine(src.items.Item):
 
         self.endProducts = {}
         self.blueprintLevels = {}
+        self.lastProduced = None
 
         super().__init__(display=src.canvas.displayChars.machineMachine)
         self.name = "machine machine"
@@ -56,6 +57,8 @@ Select the thing to produce and confirm.
         options = []
         options.append(("blueprint", "load blueprint"))
         options.append(("produce", "produce machine"))
+        if self.lastProduced:
+            options.append(("repeat", "repeat last production"))
         self.submenue = src.interaction.SelectionMenu(
             "select the item to produce", options
         )
@@ -112,6 +115,8 @@ Select the thing to produce and confirm.
             self.addBlueprint()
         elif selection == "produce":
             self.productionSwitch()
+        elif selection == "repeat":
+            self.repeatProduction()
 
     def readyToUse(self):
         if self.endProducts == {}:
@@ -191,6 +196,9 @@ Select the thing to produce and confirm.
             self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
             self.container.removeItem(blueprintFound)
 
+    def repeatProduction(self):
+        self.produce(self.lastProduced)
+
     def productionSwitch(self):
         """
         handle a character trying to produce a item
@@ -238,6 +246,8 @@ Select the thing to produce and confirm.
             ItemType: the typeof item that can be produced by the produced machine
         """
 
+        self.lastProduced = itemType
+        
         # gather a metal bar
         resourcesNeeded = ["MetalBars"]
 

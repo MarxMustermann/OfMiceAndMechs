@@ -86,6 +86,12 @@ Place the items in the correct input stockpile."""%(reason,)
             numDrops += 1
         return numDrops
 
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        super().assignToCharacter(character)
+
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()
         parameters.append({"name":"targetPosition","type":"coordinate"})
@@ -125,6 +131,8 @@ Place the items in the correct input stockpile."""%(reason,)
                     else:
                         spaceTaken = len(dropContent)
                     numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
+                    if not character.inventory[-1].walkable:
+                        numToDrop = 1
 
                     if foundDirectDrop[1] == (-1,0):
                         return (None,("La"*numToDrop,"store an item"))

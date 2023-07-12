@@ -1296,10 +1296,10 @@ class ArchitectArtwork(src.items.Item):
         terrain.scrapFields.append((x,y,0))
 
         counter = 0
-        minX = 15 * x
-        minY = 15 * y
-        maxX = minX + 13
-        maxY = minY + 13
+        minX = 15 * x + 1
+        minY = 15 * y + 1
+        maxX = minX + 12
+        maxY = minY + 12
         maxItems = amount
         items = []
         while counter < maxItems:

@@ -56,6 +56,7 @@ class Room(src.saveing.Saveable):
         self.outputSlots = []
         self.buildSites = []
         self.storageSlots = []
+        self.requiredDuties = []
         self.floorPlan = {}
         self.sources = []
         self.tag = None
@@ -169,7 +170,7 @@ class Room(src.saveing.Saveable):
             if not items:
                 continue
 
-            if itemType and not items[-1].type == itemType:
+            if itemType and not items[0].type == itemType:
                 continue
 
             result.append(outputSlot)
@@ -182,7 +183,7 @@ class Room(src.saveing.Saveable):
             if not items:
                 continue
 
-            if itemType and not items[-1].type == itemType:
+            if itemType and not items[0].type == itemType:
                 continue
 
             result.append(storageSlot)
@@ -200,7 +201,10 @@ class Room(src.saveing.Saveable):
                 result.append(inputSlot)
                 continue
 
-            if (itemType and not items[-1].type == itemType):
+            if (itemType and not items[0].type == itemType):
+                continue
+
+            if (inputSlot[1] and not items[0].type == inputSlot[1]):
                 continue
 
             if items[-1].type == "Scrap":
@@ -222,7 +226,7 @@ class Room(src.saveing.Saveable):
             for storageSlot in self.storageSlots:
                 if (itemType and not storageSlot[1] == itemType) and (not allowAny or  not storageSlot[1] == None):
                     continue
-                
+
                 pos = storageSlot[0]
                 if len(pos) < 3:
                     pos = (pos[0],pos[1],0)
@@ -231,15 +235,18 @@ class Room(src.saveing.Saveable):
                     result.append(storageSlot)
                     continue
 
-                if (itemType and not items[-1].type == itemType):
+                if (itemType and not items[0].type == itemType):
                     continue
 
-                if items[-1].type == "Scrap":
-                    if items[-1].amount < 15:
+                if (storageSlot[1] and not items[0].type == storageSlot[1]):
+                    continue
+
+                if items[0].type == "Scrap":
+                    if items[0].amount < 15:
                         result.append(storageSlot)
                     continue
 
-                if not items[-1].walkable:
+                if not items[0].walkable:
                     continue
 
                 maxAmount = storageSlot[2].get("maxAmount")
@@ -1039,7 +1046,10 @@ class Room(src.saveing.Saveable):
                                 if character.superior:
                                     char = "@s"
                                 else:
-                                    char = "@"+str(character.rank)
+                                    if character.rank:
+                                        char = "@"+str(character.rank)
+                                    else:
+                                        char = "@N"
                             else:
                                 char = "@x"
                         elif viewChar == "health":
@@ -1529,12 +1539,13 @@ class Room(src.saveing.Saveable):
             for buildSite in self.buildSites:
                 if pos == buildSite[0] and item.type == buildSite[1]:
                     self.buildSites.remove(buildSite)
-                    item.bolted = True
                     if buildSite[2].get("commands"):
                         src.gamestate.gamestate.mainChar.addMessage("set commands for:")
                         if not item.commands:
                             item.commands = {}
                         item.commands.update(buildSite[2].get("commands"))
+                    if buildSite[1] == "DutyBell":
+                        item.duty = buildSite[2]["duty"]
                     if buildSite[2].get("settings"):
                         if not item.commands:
                             item.settings = {}

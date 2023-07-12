@@ -58,6 +58,7 @@ Activate the machine to produce.
         toProduce = self.toProduce
         colorMap2_1 = {
             "Wall": "#f88",
+            "DutyBell": "#f88",
             "Stripe": "#f88",
             "Case": "#f88",
             "Frame": "#f88",
@@ -77,6 +78,7 @@ Activate the machine to produce.
         }
         colorMap2_2 = {
             "Wall": "#a88",
+            "DutyBell": "#a88",
             "Stripe": "#8a8",
             "Case": "#88a",
             "Frame": "#8aa",

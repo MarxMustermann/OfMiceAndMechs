@@ -83,11 +83,14 @@ Press a to move back to the main quest.
                 if submenue:
                     return (None,(["esc"],"exit submenu"))
 
-            items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
+            character.timeTaken += 1
+
+            terrain = character.getTerrain()
+            items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
             if not items or not items[-1].type == "RoomBuilder":
                 quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room")
                 return ([quest],None)
-            
+
             wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]
             wallPositions.extend([(2,1,0),(3,1,0),(4,1,0),(5,1,0),(6,1,0)])
             wallPositions.extend([(8,1,0),(9,1,0),(10,1,0),(11,1,0),(12,1,0)])
@@ -136,8 +139,8 @@ Press a to move back to the main quest.
                     if item.type == "Door":
                         numDoors += 1
 
-                if not numDoors:
-                    amount = len(missingDoorPositions)
+                amount = len(missingDoorPositions)
+                if numDoors < amount:
                     quest = src.quests.questMap["FetchItems"](toCollect="Door",takeAnyUnbolted=True,tryHard=self.tryHard,amount=amount,reason="have doors to place")
                     return ([quest],None)
 

@@ -15,3 +15,4 @@ import src.itemFolder.artworks.epochArtwork
 import src.itemFolder.artworks.assimilator
 import src.itemFolder.artworks.basicTrainer
 import src.itemFolder.artworks.siren
+import src.itemFolder.artworks.arenaArtwork

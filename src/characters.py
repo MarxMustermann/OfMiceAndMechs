@@ -50,6 +50,17 @@ class Character(src.saveing.Saveable):
             characterId: osolete, to be removed
             seed: rng seed
         """
+        self.addExhaustionOnHurt = False
+        self.removeExhaustionOnHeal = True
+        self.reduceExhaustionOnHeal = False
+        self.doubleDamageOnZeroExhaustion = False
+        self.bonusDamageOnLowerExhaustion = False
+        self.reduceDamageOnAttackerExhausted = False
+        self.increaseDamageOnTargetExhausted = False
+        self.addRandomExhaustionOnAttack = False
+        self.addRandomExhaustionOnHurt = False
+        self.flatExhaustionAttackCost = 0
+
         self.charType = "Character"
         self.disabled = False
         self.superior = None
@@ -70,6 +81,8 @@ class Character(src.saveing.Saveable):
         self.skills = []
 
         self.movementSpeed = 1
+        self.attackSpeed = 1
+        self.exhaustion = 0
         self.tag = None
 
         self.duties = []
@@ -758,6 +771,12 @@ class Character(src.saveing.Saveable):
             reason: the reason damage was dealt
         """
 
+        if self.addExhaustionOnHurt:
+            self.exhaustion += damage//10+1
+        if self.addRandomExhaustionOnHurt:
+            #self.exhaustion += int(damage//4)
+            self.exhaustion += int(random.random()*damage//2)
+
         if reason == "attacked":
             if self.aggro < 20:
                 self.aggro += 5
@@ -800,7 +819,7 @@ class Character(src.saveing.Saveable):
             if self.combatMode == "defensive":
                 staggerThreshold *= 2
             if damage > staggerThreshold:
-                self.addMessage("you stager")
+                #self.addMessage("you stager")
                 self.staggered += damage // staggerThreshold
 
             if reason:
@@ -839,7 +858,119 @@ class Character(src.saveing.Saveable):
         else:
             return False
 
-    def attack(self, target):
+    def selectSpecialAttack(self,target):
+
+        attacksOffered = ["h","j","k","l"]
+
+        attacksOffered.append(random.choice(["u","i","o","g","b"]))
+
+        text = ""
+        if "u" in attacksOffered:
+            text += """
+press u/U for ultraheavy attack
+-exhaution: +25 -damage multiplier: 3
+requires: exhaustion < 10
+"""
+        if "i" in attacksOffered:
+            text += """
+press i/I for initial strike
+-exhaustion: +1 -damage multiplier: 3
+requires: no exhaustion
+"""
+        if "o" in attacksOffered:
+            text += """
+press o/O for attack of opportunity
+-exhaustion: +1 -damage multiplier: 1.5
+"""
+        if "g" in attacksOffered:
+            text += """
+press g/G for gambling attack
+-exhaustion: +2 -damage multiplier: random(0,3)
+"""
+        if "b" in attacksOffered:
+            text += """
+press b/B for bestial attack
+-exhaustion: random(0,10) -damage multiplier: 2
+"""
+        if "n" in attacksOffered:
+            text += """
+press n/N for exhausting attack
+-exhaution: +4 -enemy ehaustion: +11 -damage multiplier: 0
+"""
+
+        text += "\n"
+
+        if "h" in attacksOffered:
+            text += """
+press h/H for heavy attack
+-exhaution: +3 -damage multiplier: 1.5
+"""
+        if "j" in attacksOffered:
+            text += """
+press j/J for quick attack
+-exhaution: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
+"""
+        if "k" in attacksOffered:
+            text += """
+press k/K for slow attack
+-exhaution: -1 -attack speed multiplier: 1.5
+"""
+        if "l" in attacksOffered:
+            text += """
+press l/L for light attack
+-exhaution: -5 -damage multiplier: 0.5
+"""
+
+
+        text += """
+
+press any other key to attack normaly"""
+        submenu = src.interaction.OneKeystrokeMenu(text)
+
+        self.macroState["submenue"] = submenu
+        self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target}}
+        self.runCommandString("~",nativeKey=True)
+
+    def doSpecialAttack(self,extraParam):
+        target = extraParam["target"]
+        if 1==0:
+            pass
+        elif extraParam["keyPressed"] in ("u","U",):
+            self.addMessage("you do a ultraheavy attack")
+            self.attack(target,ultraheavy=True)
+        elif extraParam["keyPressed"] in ("i","I",):
+            self.addMessage("you do a initial strike")
+            self.attack(target,initial=True)
+        elif extraParam["keyPressed"] in ("o","O",):
+            self.addMessage("you do an attack of opportunity")
+            self.attack(target,opportunity=True)
+        elif extraParam["keyPressed"] in ("g","G",):
+            self.addMessage("you do an gambling attack")
+            self.attack(target,gambling=True)
+        elif extraParam["keyPressed"] in ("b","B",):
+            self.addMessage("you do an bestial attack")
+            self.attack(target,bestial=True)
+        elif extraParam["keyPressed"] in ("n","N",):
+            self.addMessage("you do a harassing attack")
+            self.attack(target,harassing=True)
+
+        elif extraParam["keyPressed"] in ("h","H",):
+            self.addMessage("you do a heavy attack")
+            self.attack(target,heavy=True)
+        elif extraParam["keyPressed"] in ("j","J",):
+            self.addMessage("you do a quick attack")
+            self.attack(target,quick=True)
+        elif extraParam["keyPressed"] in ("k","K",):
+            self.addMessage("you do a slow attack")
+            self.attack(target,slow=True)
+        elif extraParam["keyPressed"] in ("l","L",):
+            self.addMessage("you do a light attack")
+            self.attack(target,light=True)
+        else:
+            self.addMessage("you do a normal attack")
+            self.attack(target)
+
+    def attack(self, target, heavy = False, quick = False, ultraheavy = False, initial=False, harassing=False, light=False, opportunity=False, gambling=False, bestial=False, slow=False):
         """
         make the character attack something
 
@@ -849,7 +980,24 @@ class Character(src.saveing.Saveable):
         if self.dead:
             return
 
-        self.timeTaken += self.movementSpeed
+        if initial:
+            if self.exhaustion > 0:
+                self.addMessage("you are too ehausted to do an inital attack")
+                initial = False
+
+        if ultraheavy:
+            if self.exhaustion >= 10:
+                self.addMessage("you are too ehausted to do an ultraheavy attack")
+                ultraheavy = False
+
+        speed = self.attackSpeed
+        if quick:
+            speed *= 0.5
+        if slow:
+            speed *= 1.5
+        else:
+            self.timeTaken += self.attackSpeed/2
+        self.timeTaken += speed
 
         if self.numAttackedWithoutResponse > 2:
             self.numAttackedWithoutResponse = int(self.numAttackedWithoutResponse/2)
@@ -858,10 +1006,54 @@ class Character(src.saveing.Saveable):
 
         baseDamage = self.baseDamage
 
+        if self.exhaustion > 10:
+            baseDamage = baseDamage//2
+
+        if heavy:
+            baseDamage = int(baseDamage*1.5)
+
+        if opportunity:
+            baseDamage = int(baseDamage*1.5)
+
+        if ultraheavy:
+            baseDamage = int(baseDamage*3)
+
+        if initial:
+            baseDamage = int(baseDamage*3)
+
+        if gambling:
+            baseDamage = int(baseDamage*random.random()*3)
+
+        if bestial:
+            baseDamage = int(baseDamage*2)
+
         if self.weapon:
-            baseDamage += self.weapon.baseDamage
+            baseDamage += self.weapon.baseDamage//2
         damage = baseDamage
 
+        if self.bonusDamageOnLowerExhaustion:
+            if self.exhaustion < target.exhaustion:
+                damage = damage + damage//2
+
+        if self.doubleDamageOnZeroExhaustion:
+            if self.exhaustion == 0:
+                damage = damage * 2
+
+        if self.reduceDamageOnAttackerExhausted:
+            if self.exhaustion//10:
+                damage = damage//(self.exhaustion//10+1)
+
+        if self.increaseDamageOnTargetExhausted:
+            if target.exhaustion//10:
+                damage = damage * (target.exhaustion//10+1)
+
+        if quick:
+            damage = damage//2
+        if light:
+            damage = damage//2
+        if harassing:
+            damage = 0
+
         try:
             self.container.addAnimation(target.getPosition(),"attack",damage,{})
         except:
@@ -871,17 +1063,47 @@ class Character(src.saveing.Saveable):
         except:
             pass
 
+        target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
             "you attack the enemy for %s damage, the enemy has %s/%s health left"
             % (damage, target.health, target.maxHealth)
         )
-        target.hurt(damage, reason="attacked", actor=self)
+
+        if self.addRandomExhaustionOnAttack:
+            self.exhaustion += random.randint(1,4)
+
+        self.exhaustion += self.flatExhaustionAttackCost
+
+        if heavy:
+            self.exhaustion += 3
+            #self.exhaustion += self.exhaustion*2
+        if opportunity:
+            self.exhaustion += 1
+        if quick:
+            self.exhaustion += 1
+        if slow:
+            self.exhaustion -= 1
+        if ultraheavy:
+            self.exhaustion += 25
+        if initial:
+            self.exhaustion += 1
+        if harassing:
+            self.exhaustion += 4
+            target.exhaustion += 11
+        if light:
+            self.exhaustion = max(0,self.exhaustion-5)
+        if gambling:
+            self.exhaustion += 2
+        if bestial:
+            self.exhaustion += random.randint(0,10)
 
         if self.personality.get("autoAttackOnCombatSuccess") and not self.submenue and not self.charState["submenue"]:
             self.runCommandString(
                 "m" * self.personality.get("autoAttackOnCombatSuccess")
             )
             self.addMessage("auto attack")
+
+        self.addMessage("exhaustion: you %s enemy %s"%(self.exhaustion,target.exhaustion,))
 
     def heal(self, amount, reason=None):
         """
@@ -891,6 +1113,11 @@ class Character(src.saveing.Saveable):
             amount: the amount of health healed
             reason: the reason why the character was healed
         """
+
+        if self.reduceExhaustionOnHeal:
+            self.exhaustion = max(0,self.exhaustion-(amount//10+1))
+        if self.removeExhaustionOnHeal:
+            self.exhaustion = 0
 
         if self.maxHealth - self.health < amount:
             amount = self.maxHealth - self.health

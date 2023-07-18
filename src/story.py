@@ -5812,6 +5812,175 @@ class MainGameRaid(MainGame):
     def __init__(self, seed=0):
         super().__init__(seed,"Raid")
 
+class MainGameArena(BasicPhase):
+    def __init__(self, seed=0):
+        super().__init__("Arena", seed=seed)
+
+    def start(self, seed=0, difficulty=None):
+        """
+        """
+        
+        mainChar = src.characters.Character()
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(mainChar,15*7+7,15*7+7)
+
+        src.gamestate.gamestate.mainChar = mainChar
+
+        combatMenu = src.interaction.CombatInfoMenu(mainChar)
+        combatMenu.sidebared = True
+        mainChar.rememberedMenu.append(combatMenu)
+        messagesMenu = src.interaction.MessagesMenu(mainChar)
+        mainChar.rememberedMenu2.append(messagesMenu)
+
+        for x in range(1,13):
+            for y in range(1,13):
+                if x == 7 and y == 7:
+                    continue
+
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 100
+                enemy.baseDamage = 10
+                enemy.maxHealth = 100
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+                for i in range(0,random.randint(0,3)):
+                    for k in range(0,2):
+                        scrap = src.items.itemMap["Scrap"](amount=20)
+                        currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+
+        """
+        item = src.items.itemMap["ArenaArtwork"]()
+        currentTerrain.addItem(item,(7*15+5,7*15+5,0))
+        """
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+
+        mainChar.baseDamage = 10
+
+        self.mainChar = mainChar
+        self.numCharacters = len(currentTerrain.characters)
+        self.startRound()
+
+        self.highScore = None
+
+        src.interaction.showInterruptText("""
+
+            Welcome to the Arena!
+
+  Show your mastery of combat skills by killing enemies.
+  The less health you loose the higher your score.
+
+  After killing an enemy your health will be restored and your score will be shown.
+
+           =    basic  combat    =
+
+  Do normal attacks against enemies by walking into them.
+  For example you need to press d to attack an enemy to your right.
+
+  Every attack hits and both you and the enemies do 10 damage and have 100 HP.
+  Basic combat is fully deterministic.
+
+  So whoever hits first, wins and hits 10 times.
+  The oponent dies and hits 9 times.
+
+           =   special attacks   =
+
+  You can do special attacks to get an advantage over basic combat
+  Press shift while attacking to do a special attack.
+  For example you need to press D to attack an enemy to your right.
+
+  You will presented with a choice of special attacks with different stats.
+  Most special attacks will increase your exhaustion.
+  If you have more than 10 exhaustion damage you only deal half damage.
+  You can reduce your exhaustion by 10 by skipping a turn by pressing .
+
+  Remember that all attack keys are movement keys, too.
+  So don't attack empty spaces or your character will move.
+
+           =    the challenge    =
+
+  My personal best is losing 40 HP to defeat an enemy.
+  See if you can beat that!
+
+""")
+
+    def startRound(self):
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+        event.setCallback({"container": self, "method": "startRound"})
+
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        
+        for i in range(0,self.numCharacters-len(terrain.characters)):
+            if self.mainChar.dead:
+                continue
+
+            newHighScore = False
+            if not self.highScore or self.mainChar.maxHealth-self.mainChar.health < self.highScore:
+                newHighScore = True
+                self.highScore = self.mainChar.maxHealth-self.mainChar.health
+
+            text = """
+you killed an enemy. You lost %s health doing this.
+"""%(self.mainChar.maxHealth-self.mainChar.health,)
+            if newHighScore:
+                text += """
+This is your new best.
+"""
+            else:
+                text += """
+you best is losing %s health.
+"""%(self.highScore,)
+
+            src.interaction.showInterruptText(text)
+            self.mainChar.heal(100,reason="killing an enemy")
+        self.numCharacters = len(terrain.characters)
+        terrain.addEvent(event)
+
 class Siege(BasicPhase):
     """
     the phase is intended to give the player access to the true gameworld without manipulations
@@ -8125,6 +8294,7 @@ def registerPhases():
     phasesByName["MainGameSieged"] = MainGameSieged
     phasesByName["MainGameProduction"] = MainGameProduction
     phasesByName["MainGameRaid"] = MainGameRaid
+    phasesByName["MainGameArena"] = MainGameArena
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream

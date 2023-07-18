@@ -2247,8 +2247,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         move the player into a direction
         """
         # move the player
-        if key in (commandChars.wait, "up"):
-            char.timeTaken = 1
+        if key in (commandChars.wait):
+            char.timeTaken += 1
+            char.exhaustion = max(0,char.exhaustion-10)
+            char.lastMoveSkipped = True
             return
         if key in (commandChars.move_north, "up"):
             charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
@@ -2278,6 +2280,12 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             "D",
             "A",
         ):
+            offset = {"W":(0,1,0),"S":(0,-1,0),"A":(1,0,0),"D":(-1,0,0)}[key]
+            charPos = char.getPosition()
+            for enemy in char.getNearbyEnemies():
+                if enemy.getPosition(offset=offset) == charPos:
+                    char.selectSpecialAttack(enemy)
+                    return
 
             if isinstance(char.container,src.rooms.Room):
                 charPos = char.container.getPosition()
@@ -2620,6 +2628,10 @@ press key for advanced drop
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):
         charState["submenue"] = CharacterInfoMenu(char=char)
+
+    # open the character information
+    if key in ("o",):
+        charState["submenue"] = CombatInfoMenu(char=char)
 
     # open the character information
     if key in ("t",):
@@ -4165,6 +4177,81 @@ class MessagesMenu(SubMenu):
 
 # bad code: should be abstracted
 # bad code: uses global function to render
+class CombatInfoMenu(SubMenu):
+    """
+    menu to show the players attributes
+    """
+
+    type = "CombatInfoMenu"
+
+    def __init__(self, char=None):
+        self.char = char
+        super().__init__()
+
+    def render(self,char):
+        if char.dead:
+            return ""
+
+        text = ""
+
+        text += "you: \n\n"
+        text += "name:        %s\n" % char.name
+        text += "health:      %s\n" % char.health
+        text += "exhaustion:  %s\n" % char.exhaustion
+        text += "timeTaken:   %f\n" % char.timeTaken
+
+        text += """
+
+nearby enemies:
+
+"""
+
+        enemies = char.getNearbyEnemies()
+        for enemy in enemies:
+            text += "-------------  \n"
+            text += "name:        %s\n" % enemy.name
+            text += "health:     %s\n" % enemy.health
+            text += "exhaustion:  %s\n" % enemy.exhaustion
+            timeTaken = enemy.timeTaken
+            if timeTaken > 1:
+                timeTaken -= 1
+            text += "timeTaken:   %f\n" % (timeTaken,)
+
+        return text
+
+    def handleKey(self, key, noRender=False, character = None):
+        """
+        show the attributes and ignore keystrokes
+
+        Parameters:
+            key: the key pressed
+            noRender: flag to skip rendering
+        Returns:
+            returns True when done
+        """
+
+        # exit the submenu
+        if key == "esc":
+            return True
+        if key in ("ESC","lESC",):
+            self.char.rememberedMenu.append(self)
+            return True
+        if key in ("rESC",):
+            self.char.rememberedMenu2.append(self)
+            return True
+
+        char = self.char
+
+        text = self.render(char)
+
+        # show info
+        header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
+        main.set_text((urwid.AttrSpec("default", "default"), [text]))
+        header.set_text((urwid.AttrSpec("default", "default"), ""))
+
+
+# bad code: should be abstracted
+# bad code: uses global function to render
 class CharacterInfoMenu(SubMenu):
     """
     menu to show the players attributes
@@ -4192,12 +4279,14 @@ class CharacterInfoMenu(SubMenu):
         text += "name:       %s\n" % char.name
         text += "\n"
         text += "\n"
+        text += "health:     %s" % char.health + "\n"
+        text += "max health: %s" % char.maxHealth + "\n"
+        text += "exhaustion: %s" % char.exhaustion + "\n"
+        text += "\n"
         text += "baseDamage: %s\n" % char.baseDamage
         text += "weapon:     %s\n" % weaponBaseDamage
         text += "armor:      %s\n" % armorValue
         text += "faction:    %s\n" % char.faction
-        text += "health:     %s" % char.health + "\n"
-        text += "max health: %s" % char.maxHealth + "\n"
         text += "time taken: %s" % char.timeTaken + "\n"
 
         if hasattr(char,"rank"):
@@ -4210,6 +4299,9 @@ class CharacterInfoMenu(SubMenu):
             flaskInfo = str(char.flask.uses)+" flask charges"
         text += "satiation:  %s (%s)\n" % (char.satiation,flaskInfo,)
 
+        text += "\n"
+        text += "movementSpeed:  %s\n" % (char.movementSpeed,)
+        text += "attackSpeed:    %s\n" % (char.attackSpeed,)
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)
@@ -7148,6 +7240,11 @@ def showMainMenu(args=None):
         "main game (raid/capture the flag)",
         "c",
         ),
+        (
+        "mainGameArena",
+        "main game (arena/hack and slay)",
+        "h",
+        ),
         #(
         #"Tutorials",
         #"tutorials",
@@ -7404,6 +7501,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     elif selectedScenario == "mainGameRaid":
                         terrain = "test"
                         phase = "MainGameRaid"
+                    elif selectedScenario == "mainGameArena":
+                        terrain = "test"
+                        phase = "MainGameArena"
                     elif selectedScenario == "Siege":
                         terrain = "test"
                         phase = "MainGame"
@@ -7632,6 +7732,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         submenu = None
                     if key == tcod.event.KeySym.m:
                         convertedKey = "m"
+                    if key == tcod.event.KeySym.h:
+                        convertedKey = "h"
                     if key == tcod.event.KeySym.t:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                             convertedKey = "T"

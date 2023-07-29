@@ -4,7 +4,7 @@ import random
 class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
 
-    def __init__(self, description="fetch items", creator=None, targetPosition=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
+    def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -149,7 +149,7 @@ If you don't find a source, produce new items.
                         return (room.getPosition(),)
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=True)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -160,12 +160,14 @@ If you don't find a source, produce new items.
             return
         super().solver(character)
 
-    def getNextStep(self, character):
+    def getNextStep(self, character,dryRun=True):
         if self.subQuests:
             return (None,None)
 
         if character.getFreeInventorySpace() <= 0:
             quest = src.quests.questMap["ClearInventory"](reason="be able to store items")
+            if not dryRun:
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
             return ([quest],None)
 
         if self.amount:
@@ -176,6 +178,8 @@ If you don't find a source, produce new items.
                 numItemsCollected += 1
 
             if character.getFreeInventorySpace() < self.amount-numItemsCollected:
+                if not dryRun:
+                    self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
                 return ([quest],None)
 
@@ -281,7 +285,6 @@ If you don't find a source, produce new items.
                         return ([quest],None)
                     else:
                         quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard,reason="have items to fetch")
-                        self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                         return ([quest],None)
 
                 self.fail(reason="no source for item %s"%(self.toCollect,))

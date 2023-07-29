@@ -66,3 +66,7 @@ import src.questFolder.reduceFoodConsumption
 import src.questFolder.drawWalkingSpace
 import src.questFolder.drawBuildSite
 import src.questFolder.scavengeTile
+import src.questFolder.scavenge
+import src.questFolder.getEpochEvaluation
+import src.questFolder.getEpochReward
+import src.questFolder.discardInventory

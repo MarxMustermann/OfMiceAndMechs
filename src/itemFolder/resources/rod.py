@@ -64,6 +64,7 @@ baseDamage:
             character.container.addItem(oldWeapon,character.getPosition())
 
         character.weapon = self
+        character.changed("equipedItem",(character,self))
         if self.container:
             self.container.removeItem(self)
         else:

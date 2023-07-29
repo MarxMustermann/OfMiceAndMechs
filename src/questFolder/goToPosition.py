@@ -45,6 +45,14 @@ So it is enough to go next to the target position to end this quest.
 Go to position %s in the same %s you are in%s.
 
 This quest ends after you do this.%s"""%(self.targetPosition,containerString,reason,extraText,) 
+
+        text += """
+
+
+This quest will not resolve further into subQuests. 
+Close this menu by pressing esc and follow the instructions on the left hand menu.
+To reopen this menu after closing it press q.
+"""
         return text
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
@@ -66,11 +74,33 @@ This quest ends after you do this.%s"""%(self.targetPosition,containerString,rea
         result.append(((self.targetPosition[0]+character.getBigPosition()[0]*15,self.targetPosition[1]%15+character.getBigPosition()[1]*15),"target"))
         return result
 
+    def recCheck(self,quest):
+        if quest == self:
+            return True
+
+        for subQuest in quest.subQuests:
+            if self.recCheck(subQuest):
+                return True
+
     def handleMoved(self, extraInfo):
         if not self.active:
             return
         if self.completed:
             return
+
+        if extraInfo[0] == src.gamestate.gamestate.mainChar:
+
+            questIsAnchored = False
+            for quest in extraInfo[0].quests:
+                if self.recCheck(quest):
+                    questIsAnchored = True
+
+            if not questIsAnchored:
+                print("dangling quest:")
+                print("handle moved")
+                print(self.description)
+                print(self)
+                input("")
 
         convertedDirection = None
         if extraInfo[1] == "west":
@@ -113,6 +143,8 @@ This quest ends after you do this.%s"""%(self.targetPosition,containerString,rea
         self.startWatching(character,self.handleChangedTile, "entered terrain")
         self.startWatching(character,self.handleChangedTile, "entered room")
         self.startWatching(character,self.handleCollision, "itemCollision")
+
+        self.generatePath(character)
 
         super().assignToCharacter(character)
 
@@ -177,7 +209,10 @@ This quest ends after you do this.%s"""%(self.targetPosition,containerString,rea
         if not self.path:
             #if character.room.isRoom:
             #    character.room.cachedPathfinder = None
-            character.addMessage("moving failed - no path found.")
+            character.addMessage("moving failed - no path found. (generate path)")
+            character.addMessage(str(self))
+            character.addMessage(str(self.targetPosition))
+            character.addMessage(str(self.description))
             self.fail()
 
     def setParameters(self,parameters):
@@ -199,7 +234,7 @@ This quest ends after you do this.%s"""%(self.targetPosition,containerString,rea
         if not self.isPathSane(character):
             self.generatePath(character)
             if not self.path:
-                character.addMessage("moving failed - no path found")
+                character.addMessage("moving failed - no path found (solver)")
                 self.fail()
                 return
 

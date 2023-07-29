@@ -40,7 +40,7 @@ The room has to be a rectangle.
             return
 
         wallLeft = False
-        for offset in range(1, 15):
+        for offset in range(6, 7):
             pos = (self.xPosition - offset, self.yPosition,0)
             for item in self.container.getItemByPosition(pos):
                 if item.type in ("Wall","Door"):
@@ -49,7 +49,7 @@ The room has to be a rectangle.
             if wallLeft:
                 break
         wallRight = False
-        for offset in range(1, 15):
+        for offset in range(6, 7):
             pos = (self.xPosition + offset, self.yPosition,0)
             for item in self.container.getItemByPosition(pos):
                 if item.type in ("Wall","Door"):
@@ -58,7 +58,7 @@ The room has to be a rectangle.
             if wallRight:
                 break
         wallTop = False
-        for offset in range(1, 15):
+        for offset in range(6, 7):
             pos = (self.xPosition, self.yPosition - offset,0)
             for item in self.container.getItemByPosition(pos):
                 if item.type in ("Wall","Door"):
@@ -68,7 +68,7 @@ The room has to be a rectangle.
             if wallTop:
                 break
         wallBottom = False
-        for offset in range(1, 15):
+        for offset in range(6, 7):
             pos = (self.xPosition, self.yPosition + offset,0)
             for item in self.container.getItemByPosition(pos):
                 if item.type in ("Wall","Door"):
@@ -256,5 +256,7 @@ The room has to be a rectangle.
 
         self.xPosition = roomLeft
         self.yPosition = roomTop
+
+        character.changed("built room",{"character":character,"room":room})
 
 src.items.addType(RoomBuilder)

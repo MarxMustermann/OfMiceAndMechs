@@ -1,9 +1,9 @@
 import src
 
-class DrawFloorPlan(src.quests.MetaQuestSequence):
-    type = "DrawFloorPlan"
+class MachinePlacing(src.quests.MetaQuestSequence):
+    type = "MachinePlacing"
 
-    def __init__(self, description="draw floor plan", creator=None, targetPosition=None):
+    def __init__(self, description="place machines", creator=None, targetPosition=None,toRestock=None,allowAny=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -27,11 +27,13 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
                     command = "s"
                 if character.yPosition%15 == 14:
                     command = "w"
-                return (None,(command,"draw to stockpile"))
+                if command:
+                    return (None,(command,"enter tile"))
 
+            1/0
             if not character.container.floorPlan:
                 self.fail()
-                return (None,None)
+                return
 
             if not (character.getBigPosition() == self.targetPosition):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)

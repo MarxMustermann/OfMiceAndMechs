@@ -23,6 +23,8 @@ class CityPlaner(src.items.Item):
                     "showMap": self.showMap,
                         }
         self.plannedRooms = []
+        self.specialPurposeRooms = []
+        self.generalPurposeRooms = []
         
     def addScrapCompactorFromMap(self,params,instaSpawn=False):
         """
@@ -298,6 +300,139 @@ class CityPlaner(src.items.Item):
             room.addRandomItems()
         return room
 
+    def setFloorplanFromMap(self,params):
+
+        character = params["character"]
+
+        if not "type" in params:
+            options = []
+            options.append(("basicMaterialsProduction","basic material production"))
+            options.append(("wallProduction1","wall production"))
+            options.append(("storage1","storage"))
+            options.append(("exit","exit menu"))
+            submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"setFloorplanFromMap","params":params}
+            return
+
+        terrain = self.getTerrain()
+        room = terrain.getRoomByPosition(params["coordinate"])[0]
+
+        floorPlanType = params["type"]
+
+        if floorPlanType == "exit":
+            return
+        
+        walkingSpaces = []
+        outputSlots = []
+        inputSlots = []
+        buildSites = []
+        storageSlots = []
+
+        if floorPlanType == "basicMaterialsProduction":
+            for y in range(1,12):
+                walkingSpaces.append((6,y,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,3,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,6,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,9,0))
+
+            basePositions = [(1,1,0),(1,4,0),(1,7,0),(1,10,0),(7,1,0),(7,4,0),(7,7,0),(7,10,0)]
+
+            for basePosition in basePositions:
+                outputSlots.append(((basePosition[0]+4,basePosition[1]+1,0),"Wall",{}))
+                inputSlots.append(((basePosition[0],basePosition[1]+1,0),"Scrap",{}))
+                buildSites.append(((basePosition[0]+1,basePosition[1]+1,0),"ScrapCompactor",{}))
+                inputSlots.append(((basePosition[0]+2,basePosition[1]+1,0),"MetalBars",{}))
+                inputSlots.append(((basePosition[0]+3,basePosition[1],0),"Case",{}))
+
+        if floorPlanType == "wallProduction1":
+            for y in range(1,12):
+                walkingSpaces.append((6,y,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,3,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,6,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,9,0))
+
+            basePositions = [(1,1,0),(1,4,0),(1,7,0),(1,10,0),(7,1,0),(7,4,0),(7,7,0),(7,10,0)]
+
+            for basePosition in basePositions:
+                outputSlots.append(((basePosition[0]+4,basePosition[1]+1,0),"Wall",{}))
+                inputSlots.append(((basePosition[0],basePosition[1]+1,0),"Scrap",{}))
+                buildSites.append(((basePosition[0]+1,basePosition[1]+1,0),"ScrapCompactor",{}))
+                inputSlots.append(((basePosition[0]+2,basePosition[1]+1,0),"MetalBars",{}))
+                inputSlots.append(((basePosition[0]+3,basePosition[1],0),"Case",{}))
+            
+
+        if floorPlanType == "storage1":
+            for y in range(1,12):
+                walkingSpaces.append((6,y,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                storageSlots.append(((x,1,0),None,{}))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,2,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                storageSlots.append(((x,3,0),None,{}))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,4,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                storageSlots.append(((x,5,0),None,{}))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,6,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                storageSlots.append(((x,7,0),None,{}))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,8,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                storageSlots.append(((x,9,0),None,{}))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                walkingSpaces.append((x,10,0))
+            for x in range(1,12):
+                if x == 6:
+                    continue
+                storageSlots.append(((x,11,0),None,{}))
+
+        floorPlan = {"walkingSpace":walkingSpaces,"outputSlots":outputSlots,"inputSlots":inputSlots,"buildSites":buildSites,"storageSlots":storageSlots}
+
+        room.floorPlan = floorPlan
+        self.showMap(params["character"], cursor = params["coordinate"])
+
     def scheduleRoomFromMap(self,params):
         print(params)
         """
@@ -335,16 +470,6 @@ class CityPlaner(src.items.Item):
                     char = "  "
                 mapContent[x].append(char)
 
-        
-        for room in terrain.rooms:
-            if not (len(room.itemsOnFloor) > 13+13+12+12 or room.floorPlan):
-                mapContent[room.yPosition][room.xPosition] = "EE"
-            else:
-                mapContent[room.yPosition][room.xPosition] = room.displayChar
-
-        for pos in self.plannedRooms:
-            mapContent[pos[1]][pos[0]] = "xx"
-
         functionMap = {}
 
         for x in range(1,14):
@@ -358,9 +483,36 @@ class CityPlaner(src.items.Item):
                     },
                     "description":"schedule building a room",
                 }
-
+        
         for room in terrain.rooms:
             del functionMap[(room.xPosition,room.yPosition)]
+
+        for room in terrain.rooms:
+            if not (len(room.itemsOnFloor) > 13+13+12+12 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                mapContent[room.yPosition][room.xPosition] = "EE"
+                functionMap[(room.xPosition,room.yPosition)] = {}
+                functionMap[(room.xPosition,room.yPosition)]["f"] = {
+                        "function": {
+                            "container":self,
+                            "method":"setFloorplanFromMap",
+                            "params":{"character":character},
+                        },
+                        "description":"to set floor plan",
+                    }
+            else:
+                mapContent[room.yPosition][room.xPosition] = room.displayChar
+
+        for pos in self.plannedRooms:
+            mapContent[pos[1]][pos[0]] = "xx"
+        for pos in self.specialPurposeRooms:
+            if (pos[0],pos[1]) in functionMap:
+                del functionMap[(pos[0],pos[1])]
+            mapContent[pos[1]][pos[0]] = "sp"
+        for pos in self.generalPurposeRooms:
+            if (pos[0],pos[1]) in functionMap:
+                del functionMap[(pos[0],pos[1])]
+            mapContent[pos[1]][pos[0]] = "gp"
+
         for pos in self.plannedRooms:
             del functionMap[(pos[0],pos[1])]
             functionMap[(pos[0],pos[1])] = {}

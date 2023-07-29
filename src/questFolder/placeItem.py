@@ -73,6 +73,11 @@ If you don't find the items to place, produce them.
         self.startWatching(character, self.producedItem, "producedItem")
         super().assignToCharacter(character)
 
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        return result
+
     def getQuestMarkersSmall(self,character,renderForTile=False):
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:
@@ -82,9 +87,12 @@ If you don't find the items to place, produce them.
                 return []
 
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
-        result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
+        if renderForTile:
+            result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
+        else:
+            if character.getBigPosition() == self.targetPositionBig:
+                result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
-
 
     def producedItem(self,extraInfo):
         item = extraInfo["item"]
@@ -110,6 +118,7 @@ If you don't find the items to place, produce them.
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
             return
 
         if nextCommand:
@@ -152,15 +161,18 @@ If you don't find the items to place, produce them.
                 quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard,reason="have an item to place")
                 return ([quest],None)
 
-            if not itemFound.walkable:
-                items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                if items:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
-                    return ([quest],None)
-
             if not character.getBigPosition() == self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
                 return ([quest],None)
+
+            if not itemFound.walkable:
+                if character.container.isRoom:
+                    items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
+                else:
+                    items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                if items:
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
+                    return ([quest],None)
 
             if not character.getSpacePosition() == self.targetPosition:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,))
@@ -194,6 +206,5 @@ If you don't find the items to place, produce them.
             self.postHandler()
             return True
         return False
-
 
 src.quests.addType(PlaceItem)

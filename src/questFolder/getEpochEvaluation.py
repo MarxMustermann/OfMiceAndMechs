@@ -1,9 +1,9 @@
 import src
 
-class DoEpochChallenge(src.quests.MetaQuestSequence):
-    type = "DoEpochChallenge"
+class GetEpochEvaluation(src.quests.MetaQuestSequence):
+    type = "GetEpochEvaluation"
 
-    def __init__(self, description="do epoch challenge", creator=None):
+    def __init__(self, description="get epoch evaluation", creator=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -11,22 +11,28 @@ class DoEpochChallenge(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         out = []
         text = """
-Complete a task for the epoch artwork.
+Get your epoch evaluation.
 
-Use the epoch artwork to fetch a task and complete it.
+You completed a part of the epoch challenge.
+You will get a reward for that.
+
+Claim the glass tears you have earned.
+You can spend them later to get an actual reward.
 
 """
         out.append(text)
-        if not self.subQuests:
-            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
-Press r to generate the subquests that will help you do that.
-"""))
-        else:
-            out.append((src.interaction.urwid.AttrSpec("#0a0", "black"),"""
-Press d to the show the description for the subQuest.
-"""))
-
         return out
+
+    def gotEpochEvaluation(self):
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+        
+        self.startWatching(character,self.gotEpochEvaluation, "got epoch evaluation")
+
+        return super().assignToCharacter(character)
 
     def getNextStep(self,character=None,ignoreCommands=False):
         
@@ -38,8 +44,18 @@ Press d to the show the description for the subQuest.
         if self.subQuests:
             return (None,None)
 
+        if not isinstance(character.container,src.rooms.Room):
+            if character.yPosition%15 == 14:
+                return (None,("w","enter tile"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter tile"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter tile"))
+            if character.xPosition%15 == 0:
+                return (None,("d","enter tile"))
+                    
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-            return (None,(["enter"],"to exit submenu"))
+            return (None,("ssj","to get your reward"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))
@@ -60,7 +76,6 @@ Press d to the show the description for the subQuest.
 
             if command:
                 return (None,("J"+command,"to activate the epoch artwork"))
-                return (None,(list("J"+command)+["enter"]*2,"get a challenge from the epoch artwork"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
             return ([quest],None)
@@ -72,7 +87,15 @@ Press d to the show the description for the subQuest.
     never complete
     """
     def triggerCompletionCheck(self,character=None):
-        return
+        if not character:
+            return False
+
+        room = character.getTerrain().getRoomByPosition((7,7,0))[0]
+        epochArtwork = room.getItemsByType("EpochArtwork")[0]
+        if not epochArtwork.recalculateGlasstears(character,dryRun=True):
+            self.postHandler()
+            return True
+        return False
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)
@@ -103,4 +126,4 @@ Press d to the show the description for the subQuest.
         super().solver(character)
 
 
-src.quests.addType(DoEpochChallenge)
+src.quests.addType(GetEpochEvaluation)

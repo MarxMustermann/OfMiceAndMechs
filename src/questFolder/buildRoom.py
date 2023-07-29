@@ -3,7 +3,7 @@ import src
 class BuildRoom(src.quests.MetaQuestSequence):
     type = "BuildRoom"
 
-    def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None):
+    def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None, takeAnyUnbolted=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -11,6 +11,19 @@ class BuildRoom(src.quests.MetaQuestSequence):
         self.targetPosition = targetPosition
         self.tryHard = tryHard
         self.reason = reason
+        self.takeAnyUnbolted = takeAnyUnbolted
+
+    def builtRoom(self,extraParam):
+        if self.targetPosition and not extraParam["room"].getPosition() == self.targetPosition:
+            return
+        self.postHandler()
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character, self.builtRoom, "built room")
+        super().assignToCharacter(character)
 
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
@@ -39,16 +52,7 @@ If something disturbs you, destroy it.
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
 This quest has no subquests. Press r to generate subquests for this quest."""))
-        else:
-            out.append("""
-Follow this quests sub quests. They will guide you and try to explain how to build a base.""")
-            out.append("""
-Press d to move the cursor and show the subquests description.
-""")
 
-        out.append("""
-Press a to move back to the main quest.
-""")
         return out
 
     def solver(self, character):
@@ -56,10 +60,12 @@ Press a to move back to the main quest.
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+            character.timeTaken += 1
             return
 
         if nextCommand:
             character.runCommandString(nextCommand[0])
+            character.timeTaken += 1
             return
         super().solver(character)
 
@@ -82,8 +88,6 @@ Press a to move back to the main quest.
                 submenue = character.macroState.get("submenue")
                 if submenue:
                     return (None,(["esc"],"exit submenu"))
-
-            character.timeTaken += 1
 
             terrain = character.getTerrain()
             items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
@@ -112,7 +116,7 @@ Press a to move back to the main quest.
                     amount = None
                     if len(missingWallPositions) < 10:
                         amount = len(missingWallPositions)
-                    quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=True,tryHard=self.tryHard,amount=amount,reason="have walls for the rooms outline")
+                    quest = src.quests.questMap["FetchItems"](toCollect="Wall",takeAnyUnbolted=self.takeAnyUnbolted,tryHard=self.tryHard,amount=amount,reason="have walls for the rooms outline")
                     return ([quest],None)
 
                 quests = []
@@ -141,7 +145,7 @@ Press a to move back to the main quest.
 
                 amount = len(missingDoorPositions)
                 if numDoors < amount:
-                    quest = src.quests.questMap["FetchItems"](toCollect="Door",takeAnyUnbolted=True,tryHard=self.tryHard,amount=amount,reason="have doors to place")
+                    quest = src.quests.questMap["FetchItems"](toCollect="Door",takeAnyUnbolted=self.takeAnyUnbolted,tryHard=self.tryHard,amount=amount,reason="have doors to place")
                     return ([quest],None)
 
                 quests = []

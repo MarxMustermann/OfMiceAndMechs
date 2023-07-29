@@ -3829,6 +3829,7 @@ class QuestMenu(SubMenu):
         self.persistentText.extend(
             [
                 "\n",
+                "* press esc to close this menu\n",
                 "* press wasd to select quest\n",
                 "* press j to make selected quest the active quest\n",
                 "* press x to delete selected quest\n",
@@ -5017,6 +5018,9 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
             txt.extend("\n\n")
             counter += 1
 
+
+        if sidebared:
+            txt.append("press q to see detailed descriptions\n\n")
     else:
         txt.append("No Quest")
 
@@ -7245,6 +7249,11 @@ def showMainMenu(args=None):
         "main game (arena/hack and slay)",
         "h",
         ),
+        (
+        "mainGameArena2",
+        "main game (arena2/hack and slay)",
+        "H",
+        ),
         #(
         #"Tutorials",
         #"tutorials",
@@ -7504,6 +7513,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     elif selectedScenario == "mainGameArena":
                         terrain = "test"
                         phase = "MainGameArena"
+                    elif selectedScenario == "mainGameArena2":
+                        terrain = "test"
+                        phase = "MainGameArena2"
                     elif selectedScenario == "Siege":
                         terrain = "test"
                         phase = "MainGame"
@@ -7733,7 +7745,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if key == tcod.event.KeySym.m:
                         convertedKey = "m"
                     if key == tcod.event.KeySym.h:
-                        convertedKey = "h"
+                        if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
+                            convertedKey = "H"
+                        else:
+                            convertedKey = "h"
                     if key == tcod.event.KeySym.t:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                             convertedKey = "T"

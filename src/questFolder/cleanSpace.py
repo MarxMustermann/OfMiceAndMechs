@@ -23,11 +23,15 @@ Remove all items from the space %s on tile %s%s.
 """%(self.targetPosition,self.targetPositionBig,reason,)
         return text
 
+    def unhandledSubQuestFail(self,extraParam):
+        self.fail(extraParam["reason"])
+
     def solver(self, character):
         (nextQuests,nextCommand) = self.getNextStep(character)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
             return
 
         if nextCommand:
@@ -85,5 +89,26 @@ Remove all items from the space %s on tile %s%s.
         if nextStep == (None,None):
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        return result
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if renderForTile:
+            result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
+        else:
+            if character.getBigPosition() == self.targetPositionBig:
+                result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        return result
 
 src.quests.addType(CleanSpace)

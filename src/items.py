@@ -283,6 +283,7 @@ class Item(src.saveing.Saveable):
             "container": self,
             "params": {"character": character},
         }
+        character.runCommandString("~",nativeKey=True)
 
     def handleApplyMenu(self, params):
         """

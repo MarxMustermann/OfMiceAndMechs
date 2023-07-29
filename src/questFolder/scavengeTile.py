@@ -4,11 +4,12 @@ import random
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPosition=None):
+    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
+        self.toCollect = toCollect
 
         self.targetPosition = targetPosition
 
@@ -50,7 +51,51 @@ class ScavengeTile(src.quests.MetaQuestSequence):
 
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()
+        leftOverItems = []
         items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])
-        return items
+        for item in items:
+            #if item.type == "Scrap":
+            #    continue
+            if self.toCollect and not item.type == self.toCollect:
+                continue
+            if item.bolted:
+                continue
+
+            leftOverItems.append(item)
+        return leftOverItems
+
+    def pickedUpItem(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.pickedUpItem, "itemPickedUp")
+        return super().assignToCharacter(character)
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        return result
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+
+        if renderForTile:
+            if character.getBigPosition() == self.targetPosition:
+                for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPosition,[]):
+                    if self.toCollect and not item.type == self.toCollect:
+                        continue
+                    result.append((item.getPosition(),"target"))
+
+        return result
 
 src.quests.addType(ScavengeTile)

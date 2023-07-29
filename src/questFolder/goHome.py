@@ -95,6 +95,8 @@ Press crtl-d to stop your character from moving.
             return
 
     def solver(self, character):
+        if self.completed:
+            7/0
         if self.generateSubquests(character):
             return False
 
@@ -120,5 +122,10 @@ Press crtl-d to stop your character from moving.
                 return "s"
             if charPos in ((14,7,0),(12,6,0)):
                 return "a"
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.cityLocation[0],self.cityLocation[1]),"target"))
+        return result
 
 src.quests.addType(GoHome)

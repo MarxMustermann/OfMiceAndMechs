@@ -47,13 +47,13 @@ Remove all items from the walkways."""%(self.targetPosition,)
     def triggerCompletionCheck(self,character=None):
 
         if not character:
-            return
+            return False
 
         if not self.getLeftoverItems(character):
             self.postHandler()
-            return
+            return True
 
-        return
+        return False
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -62,7 +62,8 @@ Remove all items from the walkways."""%(self.targetPosition,)
         return super().setParameters(parameters)
 
     def solver(self, character):
-        self.triggerCompletionCheck(character=character)
+        if self.triggerCompletionCheck(character=character):
+            return
 
         if not self.subQuests:
             if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:

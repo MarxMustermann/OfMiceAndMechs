@@ -12,6 +12,7 @@ class RestockRoom(src.quests.MetaQuestSequence):
         self.allowAny = allowAny
         self.reason = reason
 
+        self.targetPosition = None
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
         if toRestock:
@@ -86,9 +87,14 @@ Place the items in the correct input stockpile."""%(reason,)
             numDrops += 1
         return numDrops
 
+    def droppedItem(self, extraInfo):
+        self.triggerCompletionCheck(self.character)
+
     def assignToCharacter(self, character):
         if self.character:
             return
+
+        self.startWatching(character,self.droppedItem, "dropped")
 
         super().assignToCharacter(character)
 
@@ -100,6 +106,10 @@ Place the items in the correct input stockpile."""%(reason,)
     def getNextStep(self,character=None,ignoreCommands=False):
         if self.subQuests:
             return (None,None)
+
+        if self.targetPosition and not character.getBigPosition() == self.targetPosition:
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+            return ([quest],None)
 
         if isinstance(character.container,src.rooms.Room):
             room = character.container
@@ -120,7 +130,7 @@ Place the items in the correct input stockpile."""%(reason,)
                         foundDirectDrop = (neighbour,direction,inputSlot)
                         break
 
-            if foundDirectDrop:
+            if character.inventory and foundDirectDrop:
                 dropContent = room.getItemByPosition(foundDirectDrop[0])
                 if not dropContent or not dropContent[0].type == "Scrap":
                     maxSpace = foundDirectDrop[2][2].get("maxAmount")

@@ -274,11 +274,16 @@ The target tile is %s
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
             return
 
         if nextCommand:
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+
+    def unhandledSubQuestFail(self,extraParam):
+        self.fail(extraParam["reason"])
+
 
 src.quests.addType(GoToTile)

@@ -23,7 +23,7 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = ", to %s"%(self.reason,)
-        mappedNames = {"i":"input stockpile","o":"output stockpile"}
+        mappedNames = {"i":"input stockpile","o":"output stockpile","s":"storage stockpile"}
         text = """
 draw a %s stockpile for %s on position %s on tile %s%s.
 
@@ -111,6 +111,11 @@ Try as hard as you can to achieve this.
                     if outputSlot[0] == self.targetPosition:
                         self.postHandler()
                         return (None,None)
+            if self.stockpileType == "s":
+                for storageSlot in room.storageSlots:
+                    if storageSlot[0] == self.targetPosition:
+                        self.postHandler()
+                        return (None,None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             foundOffset = None
@@ -130,8 +135,13 @@ Try as hard as you can to achieve this.
                     return (None,(["c","m","i","enter"],"to configure the painter to input stockpile"))
                 if self.stockpileType == "o" and not item.paintMode == "outputSlot":
                     return (None,(["c","m","o","enter"],"to configure the painter to output stockpile"))
+                if self.stockpileType == "s" and not item.paintMode == "storageSlot":
+                    return (None,(["c","m","s","enter"],"to configure the painter to output stockpile"))
                 if not (self.itemType == item.paintType):
-                    return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
+                    if self.itemType:
+                        return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
+                    else:
+                        return (None,(["c","t"] + ["enter"],"to remove the item type for the stockpile"))
                     
                 return (None,("jk","draw to stockpile"))
 
@@ -152,5 +162,26 @@ Try as hard as you can to achieve this.
             return (None,("l","drop the Painter"))
 
         return (None,None)
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        return result
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if renderForTile:
+            result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
+        else:
+            if character.getBigPosition() == self.targetPositionBig:
+                result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        return result
 
 src.quests.addType(DrawStockpile)

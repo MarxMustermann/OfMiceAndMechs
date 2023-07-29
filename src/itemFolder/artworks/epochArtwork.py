@@ -65,6 +65,7 @@ Use it by activating it. You will recieve further instructions."""
 
     def getEpochEvaluation(self,character):
         self.recalculateGlasstears(character)
+        character.changed("got epoch evaluation",{"character":character})
 
     def getEpochRewards(self,character):
 
@@ -107,6 +108,7 @@ Use it by activating it. You will recieve further instructions."""
             options.append(("spawn scrap","(20) spawn scrap"))
             options.append(("spawn personnel tracker","(5) spawn personnel tracker"))
         submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType")
+        submenue.tag = "rewardSelection"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseEpochRewards","params":{"character":character}}
 
@@ -308,9 +310,11 @@ Use it by activating it. You will recieve further instructions."""
             self.spawnScrap(character)
         elif extraInfo["rewardType"] == "spawn personnel tracker":
             text = "spawning personnel tracker"
-            self.spawnArtwork(character,"PersonnelTracker",5)
+            self.spawnArtwork(character,"PersonnelTracker",0)
 
+        character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
         submenue = src.interaction.TextMenu(text)
+
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"getEpochRewardsProxy","params":{"character":character}}
         return
@@ -412,7 +416,7 @@ Use it by activating it. You will recieve further instructions."""
             #npc.rank = 6
             room.addCharacter(npc,self.xPosition,self.yPosition)
             npc.flask = src.items.itemMap["GooFlask"]()
-            npc.flask.uses = 10
+            npc.flask.uses = 100
 
             npc.duties = []
             #duty = random.choice(("hauling","resource fetching","maggot gathering","resource gathering","machine operation","hauling","resource fetching","cleaning","machine placing","maggot gathering"))
@@ -838,7 +842,7 @@ You will recieve your duties and instructions later.
         quest.activate()
         quest.generateSubquests(character)
 
-    def recalculateGlasstears(self,character = None):
+    def recalculateGlasstears(self,character = None, dryRun = False):
         amount = 0
         printedMessage = False
 
@@ -846,18 +850,20 @@ You will recieve your duties and instructions later.
         if newRooms:
             stepAmount = 10*newRooms
             amount += stepAmount
-            self.lastRoomReward = len(self.container.container.rooms)
+            if not dryRun:
+                self.lastRoomReward = len(self.container.container.rooms)
 
-            if character:
+            if character and not dryRun:
                 character.addMessage("you got %s glass tears for building %s rooms"%(stepAmount,newRooms,))
                 printedMessage = True
 
         epochsSurvived = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)
-        self.lastEpochSurvivedReward = src.gamestate.gamestate.tick//self.epochLength
+        if not dryRun:
+            self.lastEpochSurvivedReward = src.gamestate.gamestate.tick//self.epochLength
         stepAmount = epochsSurvived*self.epochSurvivedRewardAmount
         amount += stepAmount
 
-        if character and epochsSurvived:
+        if character and epochsSurvived and not dryRun:
             character.addMessage("you got %s glass tears for surviving %s epochs"%(stepAmount,epochsSurvived,))
             printedMessage = True
 
@@ -873,21 +879,25 @@ You will recieve your duties and instructions later.
                 break
 
         numSpawnersDestroyed = (self.lastNumSpawners-numSpawners)
-        self.lastNumSpawners = numSpawners
+        if not dryRun:
+            self.lastNumSpawners = numSpawners
         stepAmount = numSpawnersDestroyed*100
         amount += stepAmount
 
-        if character and numSpawnersDestroyed:
+        if character and numSpawnersDestroyed and not dryRun:
             character.addMessage("you got %s glass tears for destroying %s hives"%(stepAmount,numSpawnersDestroyed,))
             printedMessage = True
 
-        if character:
+        if character and not dryRun:
             character.changed(tag="got epoch evaluation")
 
-        if not printedMessage:
+        if not printedMessage and not dryRun:
             character.addMessage("you got no glass tears because you did nothing of note")
 
-        self.changeCharges(amount)
+        if not dryRun:
+            self.changeCharges(amount)
+
+        return amount
 
     def autoSpendRewards(self,character = None):
         self.recalculateGlasstears()

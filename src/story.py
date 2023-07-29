@@ -3948,7 +3948,7 @@ class MainGame(BasicPhase):
             self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
             self.activeStory = random.choice(self.siegedBaseInfos)
         elif self.preselection == "Production":
-            self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
+            self.productionBaseInfos.append(self.createProductionBase(positions.pop()))
             self.activeStory = random.choice(self.productionBaseInfos)
         elif self.preselection == "Raid":
             self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
@@ -3972,6 +3972,9 @@ class MainGame(BasicPhase):
         mainChar.rememberedMenu.append(questMenu)
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
+        inventoryMenu = src.interaction.InventoryMenu(mainChar)
+        inventoryMenu.sidebared = True
+        mainChar.rememberedMenu2.append(inventoryMenu)
 
         self.numRounds = 1
         self.startRound()
@@ -4114,6 +4117,8 @@ try to remember how you got here ..."""
         mainChar.registers["HOMETx"] = pos[0]
         mainChar.registers["HOMETy"] = pos[1]
         mainChar.foodPerRound = 1
+        mainChar.personality["viewChar"] = "name"
+        mainChar.personality["viewColour"] = "name"
         self.factionCounter += 1
         colonyBaseInfo = {"type":"colonyBase"}
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
@@ -4124,21 +4129,12 @@ try to remember how you got here ..."""
         mainChar.personality["autoCounterAttack"] = False
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
-        mainChar.flask.uses = 10
+        mainChar.flask.uses = 100
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
-        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(4,7),(5,6),(6,5),(7,4)]
-        positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
-
-        positions = [(7,6),(6,7),(7,8),(8,7),]
-        positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
 
         mainRoom = architect.doAddRoom(
                 {
@@ -4178,8 +4174,7 @@ try to remember how you got here ..."""
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
         colonyBaseInfo["epochArtwork"] = epochArtwork
         epochArtwork.leader = mainChar
-        epochArtwork.changeCharges(10)
-        epochArtwork.epochSurvivedRewardAmount = 2
+        epochArtwork.epochSurvivedRewardAmount = 0
         mainChar.rank = 3
         mainRoom.addItem(epochArtwork,(3,3,0))
         """
@@ -4201,6 +4196,9 @@ try to remember how you got here ..."""
         scrapCompactor = src.items.itemMap["ScrapCompactor"]()
         mainRoom.addItem(scrapCompactor,(8,4,0))
         scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+        mainRoom.addItem(scrapCompactor,(8,5,0))
+
+        scrapCompactor = src.items.itemMap["CityPlaner"]()
         scrapCompactor.bolted = False
         mainRoom.addItem(scrapCompactor,(2,11,0))
 
@@ -4209,14 +4207,49 @@ try to remember how you got here ..."""
         mainRoom.addItem(machinemachine,(10,4,0))
 
         item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Wall")
+        machinemachine.endProducts["Wall"] = item
+        machinemachine.blueprintLevels["Wall"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Door")
+        machinemachine.endProducts["Door"] = item
+        machinemachine.blueprintLevels["Door"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
         item.setToProduce("ScrapCompactor")
         machinemachine.endProducts["ScrapCompactor"] = item
         machinemachine.blueprintLevels["ScrapCompactor"] = 1
 
         item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Case")
+        machinemachine.endProducts["Case"] = item
+        machinemachine.blueprintLevels["Case"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("Frame")
+        machinemachine.endProducts["Frame"] = item
+        machinemachine.blueprintLevels["Frame"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
         item.setToProduce("Rod")
         machinemachine.endProducts["Rod"] = item
         machinemachine.blueprintLevels["Rod"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("RoomBuilder")
+        machinemachine.endProducts["RoomBuilder"] = item
+        machinemachine.blueprintLevels["RoomBuilder"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("pusher")
+        machinemachine.endProducts["pusher"] = item
+        machinemachine.blueprintLevels["pusher"] = 1
+
+        item = src.items.itemMap["BluePrint"]()
+        item.setToProduce("puller")
+        machinemachine.endProducts["puller"] = item
+        machinemachine.blueprintLevels["puller"] = 1
 
         item = src.items.itemMap["BluePrint"]()
         item.setToProduce("Sheet")
@@ -4246,12 +4279,19 @@ try to remember how you got here ..."""
         item = src.items.itemMap["RoomBuilder"]()
         item.bolted = False
         mainRoom.addItem(item,(7,2,0))
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
+        item = src.items.itemMap["Machine"]()
+        item.bolted = True
+        item.setToProduce("Wall")
         mainRoom.addItem(item,(8,2,0))
         item = src.items.itemMap["RoomBuilder"]()
         item.bolted = False
         mainRoom.addItem(item,(9,2,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(10,2,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,2,0))
         item = src.items.itemMap["Door"]()
         item.bolted = False
         mainRoom.addItem(item,(7,1,0))
@@ -4264,6 +4304,9 @@ try to remember how you got here ..."""
         item = src.items.itemMap["Door"]()
         item.bolted = False
         mainRoom.addItem(item,(10,1,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(11,1,0))
 
         #machine = src.items.itemMap["Machine"]()
         #machine = src.items.itemMap["Machine"]()
@@ -4287,6 +4330,48 @@ try to remember how you got here ..."""
         for x in range(1,6):
             mainRoom.addStorageSlot((x,11,0),None)
 
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,10,0))
+        for x in range(7,12):
+            mainRoom.walkingSpace.add((x,10,0))
+
+        mainRoom.walkingSpace.add((7,1,0))
+        mainRoom.addOutputSlot((9,2,0),"Wall")
+        mainRoom.addInputSlot((7,2,0),"MetalBars")
+        mainRoom.addInputSlot((8,1,0),"Case")
+        mainRoom.addInputSlot((7,4,0),"Scrap")
+        mainRoom.addInputSlot((7,5,0),"Scrap")
+        mainRoom.addInputSlot((9,4,0),"MetalBars")
+        mainRoom.addOutputSlot((9,5,0),"MetalBars")
+        mainRoom.addInputSlot((7,7,0),"MetalBars")
+        mainRoom.addInputSlot((9,7,0),"Sheet")
+
+        for x in range(1,6):
+            mainRoom.addStorageSlot((x,9,0),None)
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            mainRoom.addItem(item,(x,9,0))
+
+        for x in range(1,6):
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            mainRoom.addItem(item,(x,8,0))
+            
+        for x in range(1,6):
+            mainRoom.addStorageSlot((x,7,0),None)
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            mainRoom.addItem(item,(x,7,0))
+
+        for x in range(1,6):
+            mainRoom.addStorageSlot((x,5,0),None)
+            if x == 5:
+                item = src.items.itemMap["Wall"]()
+            else:
+                item = src.items.itemMap["Door"]()
+            item.bolted = False
+            mainRoom.addItem(item,(x,5,0))
+
         mainRoom.addPathCross()
         mainRoom.walkingSpace.add((4,3,0))
         mainRoom.walkingSpace.add((5,3,0))
@@ -4295,12 +4380,6 @@ try to remember how you got here ..."""
         mainRoom.walkingSpace.add((9,3,0))
         mainRoom.walkingSpace.add((10,5,0))
         mainRoom.walkingSpace.add((11,5,0))
-
-        pos = random.choice([(6,6),(8,6),(8,8),(6,8)])
-        tree = src.items.itemMap["Tree"]()
-        tree.numMaggots = tree.maxMaggot
-        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
-        currentTerrain.forests.append(pos)
 
         item = src.items.itemMap["Painter"]()
         item.bolted = False
@@ -4348,7 +4427,23 @@ try to remember how you got here ..."""
         item.bolted = False
         mainRoom.addItem(item,(7,11,0))
 
-        item = src.items.itemMap["CollectionBeacon"]()
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(3,11,0))
+
+        item = src.items.itemMap["Sheet"]()
+        item.bolted = False
+        mainRoom.addItem(item,(4,11,0))
+        item = src.items.itemMap["Sheet"]()
+        item.bolted = False
+        mainRoom.addItem(item,(4,11,0))
+        item = src.items.itemMap["Sheet"]()
+        item.bolted = False
+        mainRoom.addItem(item,(4,11,0))
+        item = src.items.itemMap["Sheet"]()
+        item.bolted = False
+        mainRoom.addItem(item,(4,11,0))
+        item = src.items.itemMap["Sheet"]()
         item.bolted = False
         mainRoom.addItem(item,(4,11,0))
 
@@ -4388,8 +4483,18 @@ try to remember how you got here ..."""
         """
 
         # scatter items around
-        for i in range(0,25):
+        for i in range(0,20):
+            item = src.items.itemMap["ScrapCompactor"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,75):
             item = src.items.itemMap["Case"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,200):
+            item = src.items.itemMap["MetalBars"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
@@ -4408,14 +4513,14 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,5):
+        for i in range(0,10):
             bigPos = (random.randint(1,13),random.randint(1,13),0)
             for i in range(0,20):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
                 currentTerrain.addItem(item,pos)
-        for i in range(0,10):
+        for i in range(0,40):
             item = src.items.itemMap["Door"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
@@ -4427,6 +4532,8 @@ try to remember how you got here ..."""
             item.charges = random.choice([0,1,2])
             pos = (random.randint(15,15*14),random.randint(15,15*14),0)
             currentTerrain.addItem(item,pos)
+        """
+
         """
         for i in range(0,10):
 
@@ -4455,6 +4562,7 @@ try to remember how you got here ..."""
             quest.assignToCharacter(enemy)
             enemy.quests.append(quest)
             currentTerrain.addCharacter(enemy,pos[0],pos[1])
+        """
 
         #for i in range(0,10):
         #    sheet = src.items.itemMap["Sheet"]()
@@ -4499,6 +4607,36 @@ Mount + Rod => Sword
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 mainRoom.addItem(item,(x,y,0))
+
+        for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
+            architect.doClearField(pos[0], pos[1])
+
+        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(4,7),(5,6),(6,5),(7,4)]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doClearField(pos[0], pos[1])
+            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doClearField(pos[0], pos[1])
+            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
+
+        pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
+        architect.doClearField(pos[0], pos[1])
+        tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
+        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
+        currentTerrain.forests.append(pos)
+
+        itemsToRemove = []
+        for x in range(1,14):
+            for y in range(1,14):
+                clearPositions = [(7,1,0),(7,2,0),(1,7,0),(2,7,0),(7,13,0),(7,12,0),(13,7,0),(12,7,0)]
+                for clearPosition in clearPositions:
+                    itemsToRemove.extend(currentTerrain.getItemByPosition((x*15+clearPosition[0],y*15+clearPosition[1],0)))
+        currentTerrain.removeItems(itemsToRemove)
 
         return colonyBaseInfo
 
@@ -5396,7 +5534,19 @@ Mount + Rod => Sword
     def openedQuestsColonyBase(self):
         mainChar = self.activeStory["mainChar"]
         #containerQuest = src.quests.questMap["ExtendBase"]()
-        containerQuest = src.quests.questMap["EpochQuest"]()
+        storyText = """
+You reach out to your implant and it answers:
+
+Your task is to set up a base.
+For this purpose you were given the colony core and its machines.
+The whole process can be somewhat complicated, but you have guidance in this task.
+
+Some instructions have been left in the EpochArtwork. It will give you tasks to complete.
+Additionally this quest system will help you with completing each task.
+You will get very detailed instructions, but you do not have to follow them closely.
+
+"""
+        containerQuest = src.quests.questMap["EpochQuest"](storyText=storyText)
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()
@@ -5579,6 +5729,7 @@ When you rise in rank you will be able to build a way out of here."""
         room = random.choice(terrain.rooms)
 
         if not src.gamestate.gamestate.tick < 100:
+            """
             npc = src.characters.Character()
             npc.questsDone = [
                 "NaiveMoveQuest",
@@ -5640,6 +5791,7 @@ When you rise in rank you will be able to build a way out of here."""
             quest.activate()
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
+            """
 
             '''
             numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
@@ -5656,6 +5808,7 @@ When you rise in rank you will be able to build a way out of here."""
                 src.interaction.showInterruptText(text)
             '''
 
+        '''
         if not src.gamestate.gamestate.tick < 100:
             text = """
 An epoch has passed and a new outcast has found a way into your base:
@@ -5667,6 +5820,7 @@ food: ~10 000 moves
 
 press enter to continue"""%(npc.name,duty,)
             src.interaction.showInterruptText(text)
+        '''
 
         """
         for i in range(0,25):
@@ -5811,6 +5965,177 @@ class MainGameProduction(MainGame):
 class MainGameRaid(MainGame):
     def __init__(self, seed=0):
         super().__init__(seed,"Raid")
+
+class MainGameArena2(BasicPhase):
+    def __init__(self, seed=0):
+        super().__init__("Arena2", seed=seed)
+
+        """
+        """
+
+        self.arenaStage = 0
+        
+    def start(self, seed=0, difficulty=None):
+        mainChar = src.characters.Character()
+        # add basic set of abilities in openworld phase
+        mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
+        currentTerrain.addCharacter(mainChar,15*7+7,15*7+7)
+
+        src.gamestate.gamestate.mainChar = mainChar
+
+        combatMenu = src.interaction.CombatInfoMenu(mainChar)
+        combatMenu.sidebared = True
+        mainChar.rememberedMenu.append(combatMenu)
+        messagesMenu = src.interaction.MessagesMenu(mainChar)
+        mainChar.rememberedMenu2.append(messagesMenu)
+
+        for x in range(1,13):
+            for y in range(1,13):
+                if x == 7 and y == 7:
+                    continue
+
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 100
+                enemy.baseDamage = 10
+                enemy.maxHealth = 100
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+                for i in range(0,random.randint(0,3)):
+                    for k in range(0,2):
+                        scrap = src.items.itemMap["Scrap"](amount=20)
+                        currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+
+        """
+        item = src.items.itemMap["ArenaArtwork"]()
+        currentTerrain.addItem(item,(7*15+5,7*15+5,0))
+        """
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+
+        mainChar.baseDamage = 10
+
+        self.mainChar = mainChar
+        self.numCharacters = len(currentTerrain.characters)
+        self.startRound()
+
+        self.highScore = None
+
+        src.interaction.showInterruptText("""
+
+            Welcome to the Arena!
+
+  Show your mastery of combat skills by killing enemies.
+  The less health you loose the higher your score.
+
+  After killing an enemy your health will be restored and your score will be shown.
+
+           =    basic  combat    =
+
+  Do normal attacks against enemies by walking into them.
+  For example you need to press d to attack an enemy to your right.
+
+  Every attack hits and both you and the enemies do 10 damage and have 100 HP.
+  Basic combat is fully deterministic.
+
+  So whoever hits first, wins and hits 10 times.
+  The oponent dies and hits 9 times.
+
+           =   special attacks   =
+
+  You can do special attacks to get an advantage over basic combat
+  Press shift while attacking to do a special attack.
+  For example you need to press D to attack an enemy to your right.
+
+  You will presented with a choice of special attacks with different stats.
+  Most special attacks will increase your exhaustion.
+  If you have more than 10 exhaustion damage you only deal half damage.
+  You can reduce your exhaustion by 10 by skipping a turn by pressing .
+
+  Remember that all attack keys are movement keys, too.
+  So don't attack empty spaces or your character will move.
+
+           =    the challenge    =
+
+  My personal best is losing 40 HP to defeat an enemy.
+  See if you can beat that!
+
+""")
+
+    def startRound(self):
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
+        event.setCallback({"container": self, "method": "startRound"})
+
+        terrain = src.gamestate.gamestate.terrainMap[7][7]
+        
+        for i in range(0,self.numCharacters-len(terrain.characters)):
+            if self.mainChar.dead:
+                continue
+
+            newHighScore = False
+            if not self.highScore or self.mainChar.maxHealth-self.mainChar.health < self.highScore:
+                newHighScore = True
+                self.highScore = self.mainChar.maxHealth-self.mainChar.health
+
+            text = """
+you killed an enemy. You lost %s health doing this.
+"""%(self.mainChar.maxHealth-self.mainChar.health,)
+            if newHighScore:
+                text += """
+This is your new best.
+"""
+            else:
+                text += """
+you best is losing %s health.
+"""%(self.highScore,)
+
+            src.interaction.showInterruptText(text)
+            self.mainChar.heal(100,reason="killing an enemy")
+        self.numCharacters = len(terrain.characters)
+        terrain.addEvent(event)
 
 class MainGameArena(BasicPhase):
     def __init__(self, seed=0):
@@ -8295,6 +8620,7 @@ def registerPhases():
     phasesByName["MainGameProduction"] = MainGameProduction
     phasesByName["MainGameRaid"] = MainGameRaid
     phasesByName["MainGameArena"] = MainGameArena
+    phasesByName["MainGameArena2"] = MainGameArena2
     phasesByName["Tutorial"] = Tutorial
     phasesByName["DesertSurvival"] = DesertSurvival
     phasesByName["FactoryDream"] = FactoryDream

@@ -270,7 +270,7 @@ class Quest(src.saveing.Saveable):
     """
 
     def fail(self,reason=None):
-        self.changed("failed",{"reason":reason})
+        self.changed("failed",{"reason":reason,"quest":self})
         if reason and self.character:
             self.character.addMessage("failed quest %s because of %s"%(self.description,reason,))
         if self.failTrigger:
@@ -592,6 +592,11 @@ class MetaQuestSequence(Quest):
         # save state and register
         self.type = "MetaQuestSequence"
 
+    def postHandler(self):
+        for quest in self.subQuests:
+            quest.postHandler()
+        super().postHandler()
+
     def render(self,depth=0,cursor=None,sidebared=False):
         description = [self.description]
         
@@ -623,11 +628,16 @@ class MetaQuestSequence(Quest):
                 newCursor = None
 
             numIndents = depth + 1
+            """
             if sidebared:
                 numIndents = 1
                 if not quest.subQuests and quest.active:
                     numIndents = 2
-            description.append(["\n"]+["     "*numIndents]+quest.render(depth=depth+1,cursor=newCursor,sidebared=sidebared))
+            """
+            numSpaces = 4
+            if sidebared:
+                numSpaces = 1
+            description.append(["\n"]+[" "*numSpaces*numIndents]+quest.render(depth=depth+1,cursor=newCursor,sidebared=sidebared))
             counter += 1
         return description
 

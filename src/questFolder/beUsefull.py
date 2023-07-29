@@ -600,6 +600,10 @@ Press r to generate subquest and recive detailed instructions
             return True
 
     def checkTriggerScavenging(self,character,room):
+        if not character.getFreeInventorySpace():
+            self.addQuest(src.quests.questMap["ClearInventory"]())
+            return True
+
         terrain = character.getTerrain()
         while terrain.collectionSpots:
             if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
@@ -607,6 +611,8 @@ Press r to generate subquest and recive detailed instructions
                 continue
             self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1])))
             return True
+        self.addQuest(src.quests.questMap["Scavenge"]())
+        return True
 
     def checkTriggerEat(self,character,room):
         if character.satiation < 200:

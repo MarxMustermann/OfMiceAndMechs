@@ -80,4 +80,20 @@ operate the machine on %s
             return
         super().solver(character)
 
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if renderForTile:
+            result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
+        else:
+            result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        return result
+
+
 src.quests.addType(OperateMachine)

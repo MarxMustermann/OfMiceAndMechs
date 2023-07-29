@@ -60,6 +60,7 @@ class Character(src.saveing.Saveable):
         self.addRandomExhaustionOnAttack = False
         self.addRandomExhaustionOnHurt = False
         self.flatExhaustionAttackCost = 0
+        self.disableCommandsOnPlus = True
 
         self.charType = "Character"
         self.disabled = False
@@ -865,18 +866,6 @@ class Character(src.saveing.Saveable):
         attacksOffered.append(random.choice(["u","i","o","g","b"]))
 
         text = ""
-        if "u" in attacksOffered:
-            text += """
-press u/U for ultraheavy attack
--exhaution: +25 -damage multiplier: 3
-requires: exhaustion < 10
-"""
-        if "i" in attacksOffered:
-            text += """
-press i/I for initial strike
--exhaustion: +1 -damage multiplier: 3
-requires: no exhaustion
-"""
         if "o" in attacksOffered:
             text += """
 press o/O for attack of opportunity
@@ -897,6 +886,16 @@ press b/B for bestial attack
 press n/N for exhausting attack
 -exhaution: +4 -enemy ehaustion: +11 -damage multiplier: 0
 """
+        if "i" in attacksOffered:
+            text += """
+press i/I for quick attack
+-exhaution: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
+"""
+        if "u" in attacksOffered:
+            text += """
+press u/U for slow attack
+-exhaution: -1 -attack speed multiplier: 1.5
+"""
 
         text += "\n"
 
@@ -907,13 +906,15 @@ press h/H for heavy attack
 """
         if "j" in attacksOffered:
             text += """
-press j/J for quick attack
--exhaution: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
+press j/J for ultraheavy attack
+-exhaution: +25 -damage multiplier: 3
+requires: exhaustion < 10
 """
         if "k" in attacksOffered:
             text += """
-press k/K for slow attack
--exhaution: -1 -attack speed multiplier: 1.5
+press k/K for initial strike
+-exhaustion: +1 -damage multiplier: 3
+requires: no exhaustion
 """
         if "l" in attacksOffered:
             text += """
@@ -935,12 +936,6 @@ press any other key to attack normaly"""
         target = extraParam["target"]
         if 1==0:
             pass
-        elif extraParam["keyPressed"] in ("u","U",):
-            self.addMessage("you do a ultraheavy attack")
-            self.attack(target,ultraheavy=True)
-        elif extraParam["keyPressed"] in ("i","I",):
-            self.addMessage("you do a initial strike")
-            self.attack(target,initial=True)
         elif extraParam["keyPressed"] in ("o","O",):
             self.addMessage("you do an attack of opportunity")
             self.attack(target,opportunity=True)
@@ -953,16 +948,22 @@ press any other key to attack normaly"""
         elif extraParam["keyPressed"] in ("n","N",):
             self.addMessage("you do a harassing attack")
             self.attack(target,harassing=True)
+        elif extraParam["keyPressed"] in ("i","I",):
+            self.addMessage("you do a quick attack")
+            self.attack(target,quick=True)
+        elif extraParam["keyPressed"] in ("u","U",):
+            self.addMessage("you do a slow attack")
+            self.attack(target,slow=True)
 
         elif extraParam["keyPressed"] in ("h","H",):
             self.addMessage("you do a heavy attack")
             self.attack(target,heavy=True)
         elif extraParam["keyPressed"] in ("j","J",):
-            self.addMessage("you do a quick attack")
-            self.attack(target,quick=True)
+            self.addMessage("you do a ultraheavy attack")
+            self.attack(target,ultraheavy=True)
         elif extraParam["keyPressed"] in ("k","K",):
-            self.addMessage("you do a slow attack")
-            self.attack(target,slow=True)
+            self.addMessage("you do a initial strike")
+            self.attack(target,initial=True)
         elif extraParam["keyPressed"] in ("l","L",):
             self.addMessage("you do a light attack")
             self.attack(target,light=True)

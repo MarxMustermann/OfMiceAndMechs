@@ -1698,7 +1698,9 @@ class Terrain(src.saveing.Saveable):
                     chars, src.gamestate.gamestate.mainChar,size=size,coordinateOffset=coordinateOffset
                 )
 
-            for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            quest = src.gamestate.gamestate.mainChar.getActiveQuest()
+            if quest:
                 for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                     pos = marker[0]
                     pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
@@ -1895,7 +1897,9 @@ class Terrain(src.saveing.Saveable):
         for (k,v) in self.minimapOverride.items():
             chars[k[1]][k[0]] = v
 
-        for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+        #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+        if 1==1:
+            quest = src.gamestate.gamestate.mainChar.getActiveQuest()
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
                 try:

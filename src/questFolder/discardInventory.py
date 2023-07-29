@@ -1,11 +1,12 @@
 import src
+import random
 
-class ClearInventory(src.quests.MetaQuestSequence):
-    type = "ClearInventory"
+class DiscardInventory(src.quests.MetaQuestSequence):
+    type = "DiscardInventory"
 
-    def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None):
+    def __init__(self, description="discard inventory", returnToTile=True, reason=None,tryHard=False):
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList)
         self.metaDescription = description
         self.returnToTile = False
         self.tryHard = tryHard
@@ -20,10 +21,9 @@ class ClearInventory(src.quests.MetaQuestSequence):
         if self.reason:
             reason += ", to %s"%(self.reason,)
         text = """
-Clear your inventory%s.
+Discard your inventory%s.
 
-The storage room is a good place to put your items.
-Put the items into the stockpiles to make then accessible to the base.
+Just drop the content of your inventory somewhere, preferably outside.
 
 To see your items open the your inventory by pressing i."""%(reason,)
         return text
@@ -72,7 +72,7 @@ To see your items open the your inventory by pressing i."""%(reason,)
         return self.getNextStep(character)[1]
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
+        (nextQuests,nextCommand) = self.getNextStep(character)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -83,61 +83,51 @@ To see your items open the your inventory by pressing i."""%(reason,)
             return
         super().solver(character)
 
-    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+    def getNextStep(self,character=None,ignoreCommands=False):
         if self.returnToTile and not self.tileToReturnTo:
             self.tileToReturnTo = character.getBigPosition()
 
         if not self.subQuests:
-            if not isinstance(character.container,src.rooms.Room):
-                if character.yPosition%15 == 14:
-                    return (None,("w","enter tile"))
-                if character.yPosition%15 == 0:
-                    return (None,("s","enter tile"))
-                if character.xPosition%15 == 14:
-                    return (None,("a","enter tile"))
-                if character.xPosition%15 == 0:
-                    return (None,("d","enter tile"))
-                
-                if "HOMEx" in character.registers:
-                    quest = src.quests.questMap["GoHome"]()
-                    return ([quest],None)
-
-                return (None,("l","drop item"))
-
-            # clear inventory local
-            room = character.getRoom()
-            if len(character.inventory) and room:
-                emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
-                if emptyInputSlots:
-                    quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
-                    return ([quest],None)
-
-            if not "HOMEx" in character.registers:
-                self.fail(reason="no home")
-                return (None,None)
-
             if character.inventory:
-                homeRoom = character.getHomeRoom()
+                if not isinstance(character.container,src.rooms.Room):
+                    if character.yPosition%15 == 14:
+                        return (None,("w","enter tile"))
+                    if character.yPosition%15 == 0:
+                        return (None,("s","enter tile"))
+                    if character.xPosition%15 == 14:
+                        return (None,("a","enter tile"))
+                    if character.xPosition%15 == 0:
+                        return (None,("d","enter tile"))
+                    
+                if isinstance(character.container,src.rooms.Room):
+                    terrain = character.getTerrain()
+                    candidates = []
+                    for rooms in terrain.rooms:
+                        pos = rooms.getPosition()
+                        candidates.append((pos[0]-1,pos[1],0))
+                        candidates.append((pos[0]+1,pos[1],0))
+                        candidates.append((pos[0],pos[1]-1,0))
+                        candidates.append((pos[0],pos[1]+1,0))
 
-                if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+                    for candidate in candidates[:]:
+                        if ( (candidate[0],candidate[1]) in terrain.scrapFields or
+                             (candidate in terrain.forests) or
+                             (terrain.getRoomByPosition(candidate)) or
+                             terrain.getItemByPosition((candidate[0]*15+7,candidate[1]*15+7,0)) ):
+                            candidates.remove(candidate)
+
+                    pos = random.choice(candidates)
+                    quest = src.quests.questMap["GoToTile"](targetPosition=pos)
                     return ([quest],None)
 
-                for checkRoom in character.getTerrain().rooms:
-                    emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
-                    if emptyInputSlots:
-                        quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
-                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
-                        return ([quest2,quest1],None)
-
-                if not "HOMEx" in character.registers:
-                    self.fail(reason="no home")
-                    return (None,None)
-
-                if not dryRun:
-                    character.timeTaken += 1
-                    self.fail(reason="no storage available")
-                return (None,None)
+                characterPos = character.getPosition()
+                if (  characterPos[0]%15 in (1,7,13) or
+                      characterPos[1]%15 in (1,7,13) or
+                      character.container.getItemByPosition(characterPos)):
+                    pos = (random.randint(2,12),random.randint(2,12))
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=pos)
+                    return ([quest],None)
+                return (None,("l","drop item"))
 
             if self.returnToTile and not character.getBigPosition() == self.returnToTile:
                 quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo)
@@ -152,4 +142,4 @@ To see your items open the your inventory by pressing i."""%(reason,)
             self.returnToTile = parameters["returnToTile"]
         return super().setParameters(parameters)
 
-src.quests.addType(ClearInventory)
+src.quests.addType(DiscardInventory)

@@ -470,6 +470,9 @@ Currently the machine has no charges
         if not self.container:
             return False
 
+        if not self.bolted:
+            return False
+
         if not self.checkCoolDownEnded():
             return False
 

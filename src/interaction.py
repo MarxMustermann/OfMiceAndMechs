@@ -3802,6 +3802,10 @@ class QuestMenu(SubMenu):
             baseList = self.char.quests
             for index in self.questCursor:
                 quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                except:
+                    baseList = None
             quest.clearSubQuests()
 
         # render the quests
@@ -4033,7 +4037,7 @@ class InputMenu(SubMenu):
 
     type = "InputMenu"
 
-    def __init__(self, query="", ignoreFirst=False, targetParamName="text"):
+    def __init__(self, query="", ignoreFirst=False, targetParamName="text",stealAllKeys=True):
         """
         initialise internal state
 
@@ -4051,7 +4055,7 @@ class InputMenu(SubMenu):
         self.escape = False
         self.position = 0
         self.targetParamName = targetParamName
-        self.stealAllKeys = True
+        self.stealAllKeys = stealAllKeys
         self.done = False
 
     def handleKey(self, key, noRender=False, character = None):
@@ -4088,6 +4092,10 @@ class InputMenu(SubMenu):
                 )
         elif key == "~":
             pass
+        elif key == "+":
+            return
+        elif key == "*":
+            return
         elif key == "left":
             self.position -= 1
         elif key == "right":
@@ -4990,16 +4998,19 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
                 pass
 
         if not sidebared:
-            baseList = char.quests
-            for index in questCursor:
-                quest = baseList[index]
-                try:
-                    baseList = quest.subQuests
-                except:
-                    baseList = None
-            txt.append(quest.generateTextDescription())
-            txt.append("\n")
-            txt.append("\n")
+            try: 
+                baseList = char.quests
+                for index in questCursor:
+                    quest = baseList[index]
+                    try:
+                        baseList = quest.subQuests
+                    except:
+                        baseList = None
+                txt.append(quest.generateTextDescription())
+                txt.append("\n")
+                txt.append("\n")
+            except:
+                pass
 
             solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
 
@@ -5805,7 +5816,7 @@ class RoomMenu(SubMenu):
         self.persistentText = "room menu \n\n"
 
         self.persistentText = [self.persistentText]
-        self.persistentText.append("%s - %s\n"%(self.room.objType,self.room.name,))
+        self.persistentText.append("%s - %s\n"%(self.room.objType,self.room.tag,))
         try:
             self.persistentText.append("chargeStrength: " + str(self.room.chargeStrength)+"\n")
         except:
@@ -5838,7 +5849,15 @@ class RoomMenu(SubMenu):
 
         if self.room.floorPlan:
             self.persistentText.append("\n\nThis room has a floor plan.")
-            print(self.room.floorPlan["buildSites"])
+            if "walkingSpaces" in self.room.floorPlan:
+                print("walkingSpaces")
+                print(self.room.floorPlan["walkingSpaces"])
+            if "buildSites" in self.room.floorPlan:
+                print("buildSites")
+                print(self.room.floorPlan["buildSites"])
+            if "storageSlots" in self.room.floorPlan:
+                print("storageSlots")
+                print(self.room.floorPlan["storageSlots"])
 
         try:
             self.room.requiredDuties

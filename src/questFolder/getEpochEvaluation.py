@@ -3,15 +3,19 @@ import src
 class GetEpochEvaluation(src.quests.MetaQuestSequence):
     type = "GetEpochEvaluation"
 
-    def __init__(self, description="get epoch evaluation", creator=None):
+    def __init__(self, description="get epoch evaluation", creator=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def generateTextDescription(self):
         out = []
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         text = """
-Get your epoch evaluation.
+Get your epoch evaluation%s.
 
 You completed a part of the epoch challenge.
 You will get a reward for that.
@@ -19,7 +23,7 @@ You will get a reward for that.
 Claim the glass tears you have earned.
 You can spend them later to get an actual reward.
 
-"""
+"""%(reason,)
         out.append(text)
         return out
 
@@ -55,7 +59,15 @@ You can spend them later to get an actual reward.
                 return (None,("d","enter tile"))
                     
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-            return (None,("ssj","to get your reward"))
+            submenue = character.macroState["submenue"]
+            counter = 3
+            command = ""
+            if submenue.selectionIndex > counter:
+                command += "w"*(submenue.selectionIndex-counter)
+            if submenue.selectionIndex < counter:
+                command += "s"*(counter-submenue.selectionIndex)
+            command += "j"
+            return (None,(command,"to collect the glass tears"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))
@@ -77,10 +89,10 @@ You can spend them later to get an actual reward.
             if command:
                 return (None,("J"+command,"to activate the epoch artwork"))
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True,reason="go to epoch artwork")
             return ([quest],None)
 
-        quest = src.quests.questMap["GoHome"](description="go to command centre")
+        quest = src.quests.questMap["GoHome"](description="go to command centre",reason="go to the command centre")
         return ([quest],None)
 
     """

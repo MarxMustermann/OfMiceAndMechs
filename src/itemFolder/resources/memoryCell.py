@@ -13,7 +13,6 @@ class MemoryCell(src.items.Item):
         """
         set up internal state
         """
-        super().__init__()
-        display = src.canvas.displayChars.memoryCell
+        super().__init__("mc")
 
 src.items.addType(MemoryCell)

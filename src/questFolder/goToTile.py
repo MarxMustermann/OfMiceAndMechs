@@ -21,6 +21,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         1/0
 
     def handleChangedTile(self):
+        if not self.active:
+            return
+
         if self.completed:
             1/0
 
@@ -52,6 +55,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         return
 
     def handleMoved(self,extraInfo):
+        if not self.active:
+            return
+
         if self.completed:
             1/0
 
@@ -110,7 +116,7 @@ You are on the target tile.
             if diffYBig < 0:
                 direction = "and %s tiles to the north"%(-diffYBig,)
             if diffYBig > 0:
-                direction = "and %s tiles to the south"%(diffXBig,)
+                direction = "and %s tiles to the south"%(diffYBig,)
             text += """
 
 The target tile is %s
@@ -283,6 +289,32 @@ The target tile is %s
         super().solver(character)
 
     def unhandledSubQuestFail(self,extraParam):
+        if extraParam["reason"] and "no path found" in extraParam["reason"]:
+            if self.path[0] == (0,1):
+                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(7,13,0))
+                self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                self.subQuests.remove(extraParam["quest"])
+                return
+            if self.path[0] == (0,-1):
+                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(7,1,0))
+                self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                self.subQuests.remove(extraParam["quest"])
+                return
+            if self.path[0] == (1,0):
+                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(13,7,0))
+                self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                self.subQuests.remove(extraParam["quest"])
+                return
+            if self.path[0] == (-1,0):
+                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(1,7,0))
+                self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                self.subQuests.remove(extraParam["quest"])
+                return
+
         self.fail(extraParam["reason"])
 
 

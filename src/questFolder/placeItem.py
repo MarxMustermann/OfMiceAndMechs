@@ -18,7 +18,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = ",\nto %s"%(self.reason,)
         text = """
 place item %s on position %s on tile %s%s."""%(self.itemType,self.targetPosition,self.targetPositionBig,reason,)
         if self.boltDown:
@@ -43,18 +43,18 @@ You are on the target tile.
             direction = ""
             diffXBig = self.targetPositionBig[0] - self.character.getBigPosition()[0]
             if diffXBig < 0:
-                direction = "and %s tiles to the west"%(-diffXBig,)
+                direction += " and %s tiles to the west"%(-diffXBig,)
             if diffXBig > 0:
-                direction = "and %s tiles to the east"%(diffXBig,)
+                direction += " and %s tiles to the east"%(diffXBig,)
             diffYBig = self.targetPositionBig[1] - self.character.getBigPosition()[1]
             if diffYBig < 0:
-                direction = "and %s tiles to the north"%(-diffYBig,)
+                direction += " and %s tiles to the north"%(-diffYBig,)
             if diffYBig > 0:
-                direction = "and %s tiles to the south"%(diffXBig,)
+                direction += " and %s tiles to the south"%(diffYBig,)
             text += """
 
 The target tile is %s
-"""%(direction[4:],)
+"""%(direction[5:],)
         
         if self.tryHard:
             text += """
@@ -62,8 +62,12 @@ The target tile is %s
 Try as hard as you can to achieve this.
 If you don't find the items to place, produce them.
 """
+        out = [text]
+        if not self.subQuests:
+            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
+This quest has no subquests. Press r to generate subquests for this quest."""))
 
-        return text
+        return out
 
     def assignToCharacter(self, character):
         if self.character:

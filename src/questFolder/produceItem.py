@@ -179,6 +179,9 @@ If you don't find a %s machine needed, build it.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=foundMachine.getPosition(),ignoreEndBlocked=True)
                     return ([quest], None)
 
+                if not foundMachine.checkCoolDownEnded():
+                    return (None,("10.","wait for the machine to be ready again"))
+
                 offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
                 for (offset,command) in offsets.items():
                     if character.getPosition(offset=offset) == foundMachine.getPosition():

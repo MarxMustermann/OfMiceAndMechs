@@ -98,9 +98,9 @@ Use it by activating it. You will recieve further instructions."""
             options.append(("spawn gatherer","(10) spawn gatherer"))
             options.append(("spawn operator","(10) spawn operator"))
             options.append(("spawn fetcher","(10) spawn fetcher"))
-            options.append(("spawn hauler","(10) spawn hauler"))
-            options.append(("spawn painter","(10) spawn painter"))
-            options.append(("spawn machine placer","(10) spawn machine placer"))
+            options.append(("spawn hauling NPC","(10) spawn hauler"))
+            options.append(("spawn painting NPC","(10) spawn painter"))
+            options.append(("spawn machine placing NPC","(10) spawn machine placer"))
             options.append(("spawn room builder","(10) spawn room builder"))
             options.append(("spawn maggot gatherer","(10) spawn maggot gatherer"))
             options.append(("spawn scavenger","(10) spawn scavenger"))
@@ -281,13 +281,13 @@ Use it by activating it. You will recieve further instructions."""
         elif extraInfo["rewardType"] == "spawn fetcher":
             text = "spawning fetcher"
             self.spawnBurnedInNPC(character,"resource fetching")
-        elif extraInfo["rewardType"] == "spawn hauler":
+        elif extraInfo["rewardType"] == "spawn hauling NPC":
             text = "spawning hauler"
             self.spawnBurnedInNPC(character,"hauling")
-        elif extraInfo["rewardType"] == "spawn painter":
+        elif extraInfo["rewardType"] == "spawn painting NPC":
             text = "spawning painter"
             self.spawnBurnedInNPC(character,"painting")
-        elif extraInfo["rewardType"] == "spawn machine placer":
+        elif extraInfo["rewardType"] == "spawn machine placing NPC":
             text = "spawning machine placer"
             self.spawnBurnedInNPC(character,"machine placing")
         elif extraInfo["rewardType"] == "spawn room builder":
@@ -601,7 +601,7 @@ Prepare your base to brace the impact before you destroy the spawner.
             text += """
 set up base
 
-Extend the base to have at least 6 rooms
+Extend the base by building new rooms and spawning clones.
 
 """
 

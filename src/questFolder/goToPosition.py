@@ -27,7 +27,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = ",\nto %s"%(self.reason,)
         extraText = ""
         if self.ignoreEndBlocked:
             extraText = """
@@ -100,7 +100,6 @@ To reopen this menu after closing it press q.
                 print("handle moved")
                 print(self.description)
                 print(self)
-                input("")
 
         convertedDirection = None
         if extraInfo[1] == "west":
@@ -124,14 +123,18 @@ To reopen this menu after closing it press q.
             if not self.isPathSane(extraInfo[0]):
                 self.generatePath(extraInfo[0])
                 if not self.path:
-                    self.fail()
+                    self.fail("no path found")
         else:
             self.generatePath(self.character)
 
     def handleChangedTile(self, extraInfo=None):
+        if not self.active:
+            return
         self.fail()
 
     def handleCollision(self, extraInfo=None):
+        if not self.active:
+            return
         self.fail()
 
     def assignToCharacter(self, character):
@@ -213,7 +216,7 @@ To reopen this menu after closing it press q.
             character.addMessage(str(self))
             character.addMessage(str(self.targetPosition))
             character.addMessage(str(self.description))
-            self.fail()
+            self.fail("no path found")
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -235,7 +238,7 @@ To reopen this menu after closing it press q.
             self.generatePath(character)
             if not self.path:
                 character.addMessage("moving failed - no path found (solver)")
-                self.fail()
+                self.fail("no path found")
                 return
 
         if not self.subQuests:

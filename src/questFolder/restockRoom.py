@@ -8,6 +8,8 @@ class RestockRoom(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        if targetPosition:
+            self.metaDescription += " %s"%(targetPosition,)
         self.toRestock = None
         self.allowAny = allowAny
         self.reason = reason
@@ -26,10 +28,13 @@ class RestockRoom(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = ",\nto %s"%(self.reason,)
         return """
 Restock the room with items from your inventory%s.
-Place the items in the correct input stockpile."""%(reason,)
+
+Place the items in the correct input or storage stockpile.
+
+%s"""%(reason,self.targetPosition,)
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -42,6 +47,9 @@ Place the items in the correct input stockpile."""%(reason,)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
+            return
+
+        if self.targetPosition and not character.getBigPosition() == self.targetPosition:
             return
 
         if isinstance(character.container,src.rooms.Room):
@@ -212,6 +220,9 @@ Place the items in the correct input stockpile."""%(reason,)
         if charPos == (14,7,0):
             return (None,("a","enter tile"))
 
+        self.fail()
+        return (None,None)
+
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
@@ -232,5 +243,11 @@ Place the items in the correct input stockpile."""%(reason,)
         if nextStep == (None,None):
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        if self.targetPosition:
+            result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        return result
 
 src.quests.addType(RestockRoom)

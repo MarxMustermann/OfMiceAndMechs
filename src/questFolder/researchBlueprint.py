@@ -3,7 +3,7 @@ import src
 class ResearchBluePrint(src.quests.MetaQuestSequence):
     type = "ResearchBluePrint"
 
-    def __init__(self, description="research blueprint", creator=None, command=None, lifetime=None, targetPosition=None, itemType=None, tryHard=False):
+    def __init__(self, description="research blueprint", creator=None, command=None, lifetime=None, targetPosition=None, itemType=None, tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description+" "+itemType
@@ -11,12 +11,16 @@ class ResearchBluePrint(src.quests.MetaQuestSequence):
         self.targetPosition = targetPosition
         self.itemType = itemType
         self.tryHard = tryHard
+        self.reason = reason
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ",\nto %s"%(self.reason,)
         text = """
-research a blueprint for %s.
+research a blueprint for %s%s.
 
-"""%(self.itemType,)
+"""%(self.itemType,reason,)
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
         text += """
@@ -44,8 +48,14 @@ If you miss resources, produce them.
                     "Door"            :["Connector"],
                     "Connector"       :["Mount","MetalBars"],
                     "Mount"           :["Mount"],
+                    "Sheet"           :["Sheet"],
+                    "GooFlask"        :["Tank"],
+                    "Heater"          :["Radiator","MetalBars"],
+                    "MemoryCell"      :["Connector","MetalBars"],
+                    "Tank"            :["Sheet","MetalBars"],
                   }
         if not self.itemType in itemMap:
+            print(self.itemType)
             8/0
         return itemMap.get(self.itemType)
 
@@ -71,32 +81,32 @@ If you miss resources, produce them.
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
             room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-            items = room.getItemByPosition((8,7,0))
+            items = room.getItemByPosition((9,7,0))
             if not items or not items[-1].type == "Sheet":
-                quest = src.quests.questMap["PlaceItem"](targetPosition=(8,7,0),targetPositionBig=room.getPosition(),itemType="Sheet",tryHard=self.tryHard)
+                quest = src.quests.questMap["PlaceItem"](targetPosition=(9,7,0),targetPositionBig=room.getPosition(),itemType="Sheet",tryHard=self.tryHard)
                 return ([quest],None)
 
             neededResources = self.getNeededResources()
 
             counter = 0
             for neededResource in neededResources:
-                items = room.getItemByPosition((7,8,0))
+                items = room.getItemByPosition((8,8,0))
                 if (not len(items) > counter) or (not items[-1-counter].type == neededResource):
-                    quest = src.quests.questMap["PlaceItem"](targetPosition=(7,8,0),targetPositionBig=room.getPosition(),itemType=neededResource,tryHard=self.tryHard)
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=(8,8,0),targetPositionBig=room.getPosition(),itemType=neededResource,tryHard=self.tryHard)
                     return ([quest],None)
                 counter += 1
 
             if not character.getBigPosition() == (7,7,0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
                 return ([quest],None)
-            if character.getDistance((8,8,0)) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=(8,8,0),ignoreEndBlocked=True)
+            if character.getDistance((9,8,0)) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(9,8,0),ignoreEndBlocked=True)
                 return ([quest],None)
 
             directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
             directionFound = None
             for direction in directions:
-                if character.getPosition(offset=direction[0]) == (8,8,0):
+                if character.getPosition(offset=direction[0]) == (9,8,0):
                     return (None,("J"+direction[1],"research blueprint"))
             1/0 
 

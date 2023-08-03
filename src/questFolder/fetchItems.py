@@ -71,7 +71,12 @@ Try as hard as you can to achieve this.
 If you don't find a source, produce new items.
 """
 
-        return text
+        out = [text]
+        if not self.subQuests:
+            out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
+This quest has no subquests. Press r to generate subquests for this quest."""))
+
+        return out
 
     def pickedUpItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0])
@@ -160,7 +165,7 @@ If you don't find a source, produce new items.
             return
         super().solver(character)
 
-    def getNextStep(self, character,dryRun=True):
+    def getNextStep(self, character,dryRun=True,ignoreCommands=False):
         if self.subQuests:
             return (None,None)
 
@@ -169,6 +174,18 @@ If you don't find a source, produce new items.
             if not dryRun:
                 self.startWatching(quest,self.unhandledSubQuestFail,"failed")
             return ([quest],None)
+
+        if not self.amount:
+            numItemsCollected = 0
+            for item in reversed(character.inventory):
+                if not item.type == self.toCollect:
+                    break
+                numItemsCollected += 1
+            if (numItemsCollected+character.getFreeInventorySpace()) < 5:
+                if not dryRun:
+                    self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
+                return ([quest],None)
 
         if self.amount:
             numItemsCollected = 0
@@ -198,6 +215,7 @@ If you don't find a source, produce new items.
             if not isinstance(character.container,src.rooms.Room):
                 quest = src.quests.questMap["GoHome"](reason="orient yourself")
                 return ([quest],None)
+
             room = character.container
             outputSlots = room.getNonEmptyOutputslots(itemType=self.toCollect)
             foundItem = False
@@ -290,6 +308,13 @@ If you don't find a source, produce new items.
                 self.fail(reason="no source for item %s"%(self.toCollect,))
                 return (None,None)
         return (None,None)
+
+    def generateSubquests(self, character=None):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

@@ -60,7 +60,7 @@ class Character(src.saveing.Saveable):
         self.addRandomExhaustionOnAttack = False
         self.addRandomExhaustionOnHurt = False
         self.flatExhaustionAttackCost = 0
-        self.disableCommandsOnPlus = True
+        self.disableCommandsOnPlus = False
 
         self.charType = "Character"
         self.disabled = False
@@ -1735,6 +1735,17 @@ press any other key to attack normaly"""
         """
         this wrapper converts a character centered call to a solver centered call
         """
+
+        if self.disableCommandsOnPlus:
+            print(self)
+            print(self.name)
+            if self.getActiveQuest().getSolvingCommandString(self):
+                return
+            try:
+                if quest.getNextStep()[1]:
+                    return
+            except:
+                pass
 
         if not solver and self.quests:
             self.quests[0].solver(self)

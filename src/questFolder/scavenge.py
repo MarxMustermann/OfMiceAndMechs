@@ -4,14 +4,33 @@ import random
 class Scavenge(src.quests.MetaQuestSequence):
     type = "Scavenge"
 
-    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None):
+    def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
+        self.reason = reason
         if toCollect:
             self.metaDescription += " for "+toCollect
         self.toCollect = toCollect
+
+    def generateTextDescription(self):
+        out = []
+
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
+        text = """
+Scvange the outside area"""
+        if self.toCollect:
+            text += " for %s"%(self.toCollect,)
+        text += """%s."""%(reason,)
+        text += """
+
+This quest will end when your inventory is full."""
+
+        out.append(text)
+        return out
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -53,7 +72,7 @@ class Scavenge(src.quests.MetaQuestSequence):
                 if terrain.getRoomByPosition(target):
                     continue
 
-                self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect))
+                self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory"))
                 return
 
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
@@ -92,7 +111,7 @@ class Scavenge(src.quests.MetaQuestSequence):
                         continue
 
                     self.lastMoveDirection = offset
-                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target))
+                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavanging spot"))
                     return
 
             for offset in offsets:
@@ -106,7 +125,7 @@ class Scavenge(src.quests.MetaQuestSequence):
                     continue
 
                 self.lastMoveDirection = offset
-                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
                 return
 
             for offset in offsets:
@@ -114,7 +133,7 @@ class Scavenge(src.quests.MetaQuestSequence):
                 if terrain.getRoomByPosition(target):
                     continue
                 self.lastMoveDirection = offset
-                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target))
+                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
                 return
 
         super().solver(character)
@@ -128,5 +147,40 @@ class Scavenge(src.quests.MetaQuestSequence):
 
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+
+        if renderForTile:
+            pos = character.getBigPosition()
+            for item in character.getTerrain().itemsByBigCoordinate.get(pos,[]):
+                if self.toCollect and not item.type == self.toCollect:
+                    continue
+                result.append((item.getPosition(),"target"))
+            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0]-1,pos[1],0),[]):
+                if self.toCollect and not item.type == self.toCollect:
+                    continue
+                result.append((item.getPosition(),"target"))
+            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0]+1,pos[1],0),[]):
+                if self.toCollect and not item.type == self.toCollect:
+                    continue
+                result.append((item.getPosition(),"target"))
+            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1]-1,0),[]):
+                if self.toCollect and not item.type == self.toCollect:
+                    continue
+                result.append((item.getPosition(),"target"))
+            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1]+1,0),[]):
+                if self.toCollect and not item.type == self.toCollect:
+                    continue
+                result.append((item.getPosition(),"target"))
+
+        return result
 
 src.quests.addType(Scavenge)

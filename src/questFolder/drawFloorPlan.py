@@ -3,12 +3,24 @@ import src
 class DrawFloorPlan(src.quests.MetaQuestSequence):
     type = "DrawFloorPlan"
 
-    def __init__(self, description="draw floor plan", creator=None, targetPosition=None):
+    def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.shortCode = "d"
         self.targetPosition = targetPosition
+        self.reason = reason
+
+    def generateTextDescription(self):
+        out = []
+        reason = ""
+        if self.reason:
+            reason = ",\nto %s"%(self.reason,)
+        text = """
+Draw a floor plan assigned to a room%s.
+
+"""%(reason,)
+        return out
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -82,6 +94,22 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
                 if not outputSlots == None:
                     del character.container.floorPlan["outputSlots"]
 
+            if "storageSlots" in character.container.floorPlan:
+                storageSlots = character.container.floorPlan.get("storageSlots")
+                if storageSlots:
+                    for existingStorageSlot in character.container.storageSlots:
+                        if existingStorageSlot[0] == storageSlots[-1][0]:
+                            storageSlots.pop()
+                            break
+
+                    if storageSlots:
+                        storageSlot = storageSlots[-1]
+                        quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot[0])
+                        return ([quest],None)
+
+                if not storageSlots == None:
+                    del character.container.floorPlan["storageSlots"]
+
             if "buildSites" in character.container.floorPlan:
                 buildSites = character.container.floorPlan.get("buildSites")
 
@@ -98,6 +126,9 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
 
                 if not buildSites == None:
                     del character.container.floorPlan["buildSites"]
+
+            if character.container.floorPlan:
+                character.container.floorPlan = None
 
             self.postHandler()
             return (None,None)

@@ -3,10 +3,9 @@ import src
 class DrawStockpile(src.quests.MetaQuestSequence):
     type = "DrawStockpile"
 
-    def __init__(self, description="draw stockpile", creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None):
+    def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.itemType = itemType
@@ -15,6 +14,21 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         self.painterPos = None
         self.reason = reason
 
+        if description:
+            self.metaDescription = "draw stockpile"
+        else:
+            stockpileTypeName = ""
+            if stockpileType == "i":
+                stockpileTypeName = "input"
+            if stockpileType == "o":
+                stockpileTypeName = "output"
+            if stockpileType == "s":
+                stockpileTypeName = "storage"
+            itemTypeName = ""
+            if itemType:
+                itemTypeName = " for %s"%(itemType,)
+            self.metaDescription = "draw %sstockpile%s"%(stockpileTypeName,itemTypeName,)
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
@@ -22,12 +36,15 @@ class DrawStockpile(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = ",\nto %s"%(self.reason,)
         mappedNames = {"i":"input stockpile","o":"output stockpile","s":"storage stockpile"}
+        itemTypePart = ""
+        if self.itemType:
+            itemTypePart = "for %s "%(self.itemType,)
         text = """
-draw a %s stockpile for %s on position %s on tile %s%s.
+Draw a %s %son position %s on tile %s%s.
 
-"""%(mappedNames[self.stockpileType],self.itemType,self.targetPosition,self.targetPositionBig,reason)
+"""%(mappedNames[self.stockpileType],itemTypePart,self.targetPosition,self.targetPositionBig,reason)
 
         if self.stockpileType == "i":
             text += """
@@ -48,6 +65,11 @@ Sometimes the clones use the items directly.
 Output stockpiles need to be filled up by some other process.
 For example a machine can produce onto a output stockpile.
 That way clones can access the output of a machine.
+"""
+        elif self.stockpileType == "s":
+            text += """
+Clones can store items in storage stockpiles.
+This means are taken out or added to storage stockpiles.
 """
         else:
             text += """
@@ -142,6 +164,8 @@ Try as hard as you can to achieve this.
                         return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
                     else:
                         return (None,(["c","t"] + ["enter"],"to remove the item type for the stockpile"))
+                if not (item.offset == (0,0,0)):
+                    return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
                     
                 return (None,("jk","draw to stockpile"))
 

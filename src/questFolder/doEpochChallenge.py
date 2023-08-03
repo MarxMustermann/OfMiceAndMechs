@@ -3,19 +3,23 @@ import src
 class DoEpochChallenge(src.quests.MetaQuestSequence):
     type = "DoEpochChallenge"
 
-    def __init__(self, description="do epoch challenge", creator=None):
+    def __init__(self, description="do epoch challenge", creator=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.reason = reason
 
     def generateTextDescription(self):
         out = []
+        reason = ""
+        if self.reason:
+            reason = ", to %s"%(self.reason,)
         text = """
-Complete a task for the epoch artwork.
+Complete a task for the epoch artwork%s.
 
 Use the epoch artwork to fetch a task and complete it.
 
-"""
+"""%(reason,)
         out.append(text)
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
@@ -39,7 +43,7 @@ Press d to the show the description for the subQuest.
             return (None,None)
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-            return (None,(["enter"],"to exit submenu"))
+            return (None,(["enter"],"to select option"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))
@@ -62,7 +66,7 @@ Press d to the show the description for the subQuest.
                 return (None,("J"+command,"to activate the epoch artwork"))
                 return (None,(list("J"+command)+["enter"]*2,"get a challenge from the epoch artwork"))
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True, reason="get in reach of the EpochArtwork")
             return ([quest],None)
 
         quest = src.quests.questMap["GoHome"](description="go to command centre")

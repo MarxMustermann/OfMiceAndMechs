@@ -111,13 +111,14 @@ To see your items open the your inventory by pressing i."""%(reason,)
 
                     for candidate in candidates[:]:
                         if ( (candidate[0],candidate[1]) in terrain.scrapFields or
+                             (candidate[0],candidate[1],0) in terrain.scrapFields or
                              (candidate in terrain.forests) or
                              (terrain.getRoomByPosition(candidate)) or
                              terrain.getItemByPosition((candidate[0]*15+7,candidate[1]*15+7,0)) ):
                             candidates.remove(candidate)
 
                     pos = random.choice(candidates)
-                    quest = src.quests.questMap["GoToTile"](targetPosition=pos)
+                    quest = src.quests.questMap["GoToTile"](targetPosition=pos,reason="go outside")
                     return ([quest],None)
 
                 characterPos = character.getPosition()
@@ -125,12 +126,12 @@ To see your items open the your inventory by pressing i."""%(reason,)
                       characterPos[1]%15 in (1,7,13) or
                       character.container.getItemByPosition(characterPos)):
                     pos = (random.randint(2,12),random.randint(2,12))
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=pos)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="go to a drop off poition")
                     return ([quest],None)
                 return (None,("l","drop item"))
 
             if self.returnToTile and not character.getBigPosition() == self.returnToTile:
-                quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo)
+                quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="return to the tile this quest started on")
                 return ([quest],None)
 
             8/0

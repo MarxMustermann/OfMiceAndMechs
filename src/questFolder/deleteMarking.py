@@ -1,44 +1,34 @@
 import src
 
-class DrawWalkingSpace(src.quests.MetaQuestSequence):
-    type = "DrawWalkingSpace"
+class DeleteMarking(src.quests.MetaQuestSequence):
+    type = "DeleteMarking"
 
-    def __init__(self, description="draw walking space", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
+    def __init__(self, description="delete marking", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.tryHard = tryHard
         self.painterPos = None
         self.reason = reason
 
+        self.metaDescription = description
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
 
-    def generateTextDescription(self):
-        reason = ""
-        if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-draw a walkingspace on position %s on tile %s%s.
+        terrain = character.getTerrain()
 
-"""%(self.targetPosition,self.targetPositionBig,reason)
-
-        text += """
-Walkingspaces are drawn using a Painter (xw).
-Examine the Painter for more details.
-"""
-
-        if self.tryHard:
-            text += """
-Try as hard as you can to achieve this.
-"""
-
-        return text
+        checkRoom = terrain.getRoomByPosition(self.targetPositionBig)[0]
+        if not checkRoom.getPaintedByPosition(self.targetPosition):
+            self.postHandler()
+            return True
 
     def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
+
         (nextQuests,nextCommand) = self.getNextStep(character)
         if nextQuests:
             for quest in nextQuests:
@@ -71,11 +61,6 @@ Try as hard as you can to achieve this.
                 return (None,None)
             room = rooms[0]
 
-            for pos in room.walkingSpace:
-                if pos == self.targetPosition:
-                    self.postHandler()
-                    return (None,None)
-
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             foundOffset = None
             for offset in offsets:
@@ -90,24 +75,44 @@ Try as hard as you can to achieve this.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
                     return ([quest],None)
 
-                if not item.paintMode == "walkingSpace":
-                    return (None,(["c","m","w","enter"],"to configure the painter to walking space"))
-                if not (item.offset == (0,0,0)):
-                    return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
-                return (None,("jk","draw the walkingspace"))
+                painterOffset = None
+                for checkOffset in offsets:
+                    if item.getPosition(offset=checkOffset) == self.targetPosition:
+                        painterOffset = checkOffset
+                    
+                if painterOffset == (0,0,0):
+                    if not (painterOffset == item.offset):
+                        return (None,(["c","d",".","enter"],"to configure painter direction"))
+                if painterOffset == (0,1,0):
+                    if not (painterOffset == item.offset):
+                        return (None,(["c","d","s","enter"],"to configure painter direction"))
+                if painterOffset == (0,-1,0):
+                    if not (painterOffset == item.offset):
+                        return (None,(["c","d","w","enter"],"to configure painter direction"))
+                if painterOffset == (1,0,0):
+                    if not (painterOffset == item.offset):
+                        return (None,(["c","d","d","enter"],"to configure painter direction"))
+                if painterOffset == (-1,0,0):
+                    if not (painterOffset == item.offset):
+                        return (None,(["c","d","a","enter"],"to configure painter direction"))
+
+                if not item.paintMode == "delete":
+                    return (None,(["c","m","d","enter"],"to configure the painter to input stockpile"))
+
+                return (None,("jk","delete marking"))
 
             if not self.painterPos:
                 if not character.inventory or not character.inventory[-1].type == "Painter":
-                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
+                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to delete marking")
                     return ([quest],None)
                 painter = character.inventory[-1]
 
             if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the marking to delte")
                 return ([quest],None)
 
-            if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
+            if character.getDistance(self.targetPosition) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the marking to delete",ignoreEndBlocked=True)
                 return ([quest],None)
 
             return (None,("l","drop the Painter"))
@@ -135,4 +140,4 @@ Try as hard as you can to achieve this.
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
 
-src.quests.addType(DrawWalkingSpace)
+src.quests.addType(DeleteMarking)

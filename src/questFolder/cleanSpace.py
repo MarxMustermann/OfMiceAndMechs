@@ -17,7 +17,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = ",\nto %s"%(self.reason,)
         text = """
 Remove all items from the space %s on tile %s%s.
 """%(self.targetPosition,self.targetPositionBig,reason,)
@@ -27,7 +27,7 @@ Remove all items from the space %s on tile %s%s.
         self.fail(extraParam["reason"])
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -40,25 +40,42 @@ Remove all items from the space %s on tile %s%s.
         super().solver(character)
 
     def triggerCompletionCheck(self,character=None):
+        if not character:
+            return False
+        terrain = character.getTerrain()
+        rooms = terrain.getRoomByPosition(self.targetPositionBig)
+        if rooms:
+            room = rooms[0]
+            items = room.getItemByPosition(self.targetPosition)
+            if not items:
+                self.postHandler()
+                return True
+        else:
+            items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+            if not items:
+                self.postHandler()
+                return True
         return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
             terrain = character.getTerrain()
             rooms = terrain.getRoomByPosition(self.targetPositionBig)
             if not character.getFreeInventorySpace():
-                quest = src.quests.questMap["ClearInventory"]()
+                quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
             if rooms:
                 room = rooms[0]
                 items = room.getItemByPosition(self.targetPosition)
-                if not items or items[0].bolted:
-                    self.postHandler()
+                if not items:
+                    if not dryRun:
+                        self.postHandler()
                     return (None,None)
             else:
                 items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                if not items or items[0].bolted:
-                    self.postHandler()
+                if not items:
+                    if not dryRun:
+                        self.postHandler()
                     return (None,None)
 
             if not character.getBigPosition() == self.targetPositionBig:
@@ -74,15 +91,27 @@ Remove all items from the space %s on tile %s%s.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
                     return ([quest], None)
 
-            offsets = {(0,0,0):"k",(1,0,0):"Kd",(-1,0,0):"Ka",(0,1,0):"Ks",(0,-1,0):"Kw"}
-            for (offset,command) in offsets.items():
+            offsets = {(0,0,0):".",(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w"}
+            for (offset,direction) in offsets.items():
                 if character.container.isRoom:
                     if character.getPosition(offset=offset) == self.targetPosition:
-                        return (None, (command,"to pick up item"))
+                        if items[0].bolted:
+                            return (None, (direction+"cb","to unbolt item"))
+                        return (None, ("K"+direction,"to pick up item"))
                 else:
                     if character.getPosition(offset=offset) == (self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0):
-                        return (None, (command,"to pick up item"))
+                        return (None, ("K"+direction,"to pick up item"))
         return (None,None)
+
+    def pickedUpItem(self,extraInfo):
+        self.triggerCompletionCheck(extraInfo[0])
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.pickedUpItem, "itemPickedUp")
+        return super().assignToCharacter(character)
     
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

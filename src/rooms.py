@@ -190,7 +190,7 @@ class Room(src.saveing.Saveable):
 
         return result
 
-    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True):
+    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False):
         result = []
         for inputSlot in self.inputSlots:
             if (itemType and not inputSlot[1] == itemType) and (not allowAny or  not inputSlot[1] == None):
@@ -199,6 +199,9 @@ class Room(src.saveing.Saveable):
             items = self.getItemByPosition(inputSlot[0])
             if not items:
                 result.append(inputSlot)
+                continue
+
+            if fullyEmpty:
                 continue
 
             if (itemType and not items[0].type == itemType):
@@ -1014,7 +1017,7 @@ class Room(src.saveing.Saveable):
 
             for entry in self.buildSites:
                 pos = entry[0]
-                display = (src.interaction.urwid.AttrSpec("#88f", "black"), ";;")
+                display = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
                 #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
@@ -2115,6 +2118,19 @@ XXX
 
         self.displayChar = (src.interaction.urwid.AttrSpec("#556", "black"), "ER")
         self.sources = []
+
+    def getPaintedByPosition(self,position):
+        if position in self.walkingSpace:
+            return True
+        for storageSlot in self.storageSlots:
+            if storageSlot[0] == position:
+                return True
+        for inputSlot in self.inputSlots:
+            if inputSlot[0] == position:
+                return True
+        for outputSlot in self.outputSlots:
+            if outputSlot[0] == position:
+                return True
 
     def spawnPlaned(self):
         if self.floorPlan:

@@ -28,7 +28,7 @@ class GoHome(src.quests.MetaQuestSequence):
         text = """
 Go home%s.
 
-You consider the command center of the base your home.
+You consider the command centre of the base your home.
 That command centre holds the assimilator and
 other important artworks like the quest artwork.
 

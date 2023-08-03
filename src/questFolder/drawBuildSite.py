@@ -110,6 +110,9 @@ Try as hard as you can to achieve this.
                     if (not key in item.paintExtraInfo) or (not value == item.paintExtraInfo[key]):
                         return (None,(["c","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
+                if not (item.offset == (0,0,0)):
+                    return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
+
                 return (None,("jk","draw to stockpile"))
 
             if not self.painterPos:
@@ -129,5 +132,26 @@ Try as hard as you can to achieve this.
             return (None,("l","drop the Painter"))
 
         return (None,None)
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        return result
+
+    def getQuestMarkersSmall(self,character,renderForTile=False):
+        if isinstance(character.container,src.rooms.Room):
+            if renderForTile:
+                return []
+        else:
+            if not renderForTile:
+                return []
+
+        result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
+        if renderForTile:
+            result.append(((self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15),"target"))
+        else:
+            if character.getBigPosition() == self.targetPositionBig:
+                result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
+        return result
 
 src.quests.addType(DrawBuildSite)

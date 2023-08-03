@@ -3,20 +3,75 @@ import src
 class GetEpochReward(src.quests.MetaQuestSequence):
     type = "GetEpochReward"
 
-    def __init__(self, description="get epoch reward", creator=None,rewardType=None):
+    def __init__(self, description="get epoch reward", creator=None,rewardType=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.rewardType = rewardType
+        self.reason = reason
 
     def generateTextDescription(self):
         out = []
+        reason = ""
+        if self.reason:
+            reason = ",\nto %s"%(self.reason,)
         text = """
+Claim a reward for completing the epoch challenge%s.
+
 You accumulated some glass tears.
+Spend themto claim the actual reward.
+"""%(reason,)
 
-Now claim the actual reward.
-
+        if self.rewardType == "room building":
+            text += """
+Spawn a room builder. A room building clone will build rooms.
+This will allow you to focus on getting more building materails.
 """
+        if self.rewardType == "scavenging":
+            text += """
+Spawn a scavenger. A scavenging clone will collect items from outside.
+This will allow you to focus on producing walls.
+"""
+        if self.rewardType == "machine operating":
+            text += """
+Spawn a machine operator. A machine operating clone will operate machines and produce items.
+This will allow you to focus on supplying materials for producing walls.
+"""
+
+        if self.rewardType == "resource fetching":
+            text += """
+Spawn a resource fetcher. A resource fetching clone will carry items from room to room.
+This will allow you to focus on other tasks.
+"""
+
+        if self.rewardType == "resource gathering":
+            text += """
+Spawn a resource gatherer. A resource gathering clone will collect scrap from scrap field.
+This will allow you to focus on other tasks.
+"""
+
+        if self.rewardType == "painting":
+            text += """
+Spawn a painter. A painting clone will draw stock piles and build sites.
+This will allow you to focus on other tasks.
+"""
+
+        if self.rewardType == "machine placing":
+            text += """
+Spawn a machine placer. A machine placing clone will produce and place machines.
+This will allow you to focus on other tasks.
+"""
+
+        if self.rewardType == "hauling":
+            text += """
+Spawn a hauker. A hauling clone will carry items withins rooms.
+This will allow you to focus on other tasks.
+"""
+
+        text += """
+(buying the wrong reward may break the tutorial, but is FUN)
+"""
+
         out.append(text)
         return out
 
@@ -44,6 +99,16 @@ Now claim the actual reward.
                     rewardIndex = 4
                 if self.rewardType == "resource gathering":
                     rewardIndex = 2
+                if self.rewardType == "painting":
+                    rewardIndex = 6
+
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == self.rewardType:
+                            break
+                        counter += 1
+                    rewardIndex = counter
 
                 offset = rewardIndex-submenue.selectionIndex
                 if offset > 0:
@@ -51,7 +116,15 @@ Now claim the actual reward.
                 else:
                     return (None,("w"*(-offset)+"j","to get your reward"))
             else:
-                return (None,("sj","to get your reward"))
+                submenue = character.macroState["submenue"]
+                counter = 2
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+                command += "j"
+                return (None,(command,"to get your reward"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))

@@ -52,6 +52,10 @@ If something disturbs you, destroy it.
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
 This quest has no subquests. Press r to generate subquests for this quest."""))
+        else:
+            out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
+Press d to move the cursor and show the subquests description.
+"""))
 
         return out
 

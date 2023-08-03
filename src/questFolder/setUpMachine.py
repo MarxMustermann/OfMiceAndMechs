@@ -4,7 +4,7 @@ import random
 class SetUpMachine(src.quests.MetaQuestSequence):
     type = "SetUpMachine"
 
-    def __init__(self, description="set up machine", creator=None, command=None, lifetime=None, itemType=None,tryHard=False,targetPosition=None,targetPositionBig=None):
+    def __init__(self, description="set up machine", creator=None, command=None, lifetime=None, itemType=None,tryHard=False,targetPosition=None,targetPositionBig=None,room=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description+" "+itemType
@@ -12,12 +12,18 @@ class SetUpMachine(src.quests.MetaQuestSequence):
         self.targetPositionBig = targetPositionBig
         self.itemType = itemType
         self.tryHard = tryHard
+        self.room = room
+        self.reason = reason
 
     def generateTextDescription(self):
-        text = """
-set up a machine to produce %s.
+        reason = ""
+        if self.reason:
+            reason = ",\nto %s"%(self.reason,)
 
-"""%(self.itemType,)
+        text = """
+set up a machine to produce %s%s.
+
+"""%(self.itemType,reason)
 
         text += """
 Set the machine up on position %s on tile %s
@@ -71,21 +77,27 @@ If you don't find a %s blueprint, research it.
             if character.inventory and character.inventory[-1].type == "Machine" and character.inventory[-1].toProduce == self.itemType:
                 if not self.targetPosition:
                     validTargetPosition = False
+                    terrain = character.getTerrain()
                     counter = 0
                     while not validTargetPosition and counter < 10:
                         counter += 1
-                        self.targetPosition = (random.randint(2,4),random.randint(2,9),0)
-                        room = random.choice(character.getTerrain().rooms)
+                        targetPosition = (random.randint(3,9),random.randint(3,9),0)
+                        cityPlanner = terrain.getRoomByPosition((7,7,0))[0].getItemByPosition((5,2,0))[0]
+                        if cityPlanner.generalPurposeRooms:
+                            roomPos = random.choice(cityPlanner.generalPurposeRooms)
+                            room = terrain.getRoomByPosition(roomPos)[0]
+                        else:
+                            room = random.choice(terrain.rooms)
 
-                        if room.getItemByPosition(self.targetPosition):
+                        if room.getItemByPosition(targetPosition):
                             continue
-                        if room.getItemByPosition((self.targetPosition[0]-1,self.targetPosition[1],0)):
+                        if room.getItemByPosition((targetPosition[0]-1,targetPosition[1],0)):
                             continue
-                        if room.getItemByPosition((self.targetPosition[0]+1,self.targetPosition[1],0)):
+                        if room.getItemByPosition((targetPosition[0]+1,targetPosition[1],0)):
                             continue
-                        if room.getItemByPosition((self.targetPosition[0],self.targetPosition[1]+1,0)):
+                        if room.getItemByPosition((targetPosition[0],targetPosition[1]+1,0)):
                             continue
-                        if room.getItemByPosition((self.targetPosition[0],self.targetPosition[1]-1,0)):
+                        if room.getItemByPosition((targetPosition[0],targetPosition[1]-1,0)):
                             continue
 
                         validTargetPosition = True
@@ -95,19 +107,20 @@ If you don't find a %s blueprint, research it.
                         self.fail("no spot to build machine")
                         return (None,None)
 
+                    self.targetPosition = targetPosition
                     self.targetPositionBig = room.getPosition()
 
                 if not character.getBigPosition() == self.targetPositionBig:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine should be placed")
                     return ([quest],None)
 
                 if character.getDistance(self.targetPosition) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="go to the placement spot")
                     return ([quest],None)
                 
                 items = character.container.getItemByPosition(self.targetPosition)
                 if items:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=character.getBigPosition())
+                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=character.getBigPosition(),reason="clear the placement spot")
                     return ([quest],None)
 
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
@@ -133,10 +146,18 @@ If you don't find a %s blueprint, research it.
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(1,0,0)))
             if items and items[-1].type == "Machine":
-                if character.getDistance(items[-1].getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=items[-1].getPosition(),ignoreEndBlocked=True)
+                if not character.getFreeInventorySpace():
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to pick up a machine to place")
                     return ([quest],None)
                 
+                if not character.getBigPosition() == (7,7,0):
+                    quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to the tile the Machine to pick up is on")
+                    return ([quest],None)
+
+                if character.getDistance(items[-1].getPosition()) > 1:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=items[-1].getPosition(),ignoreEndBlocked=True,reason="go to the Machine to pick up")
+                    return ([quest],None)
+
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:
@@ -150,27 +171,47 @@ If you don't find a %s blueprint, research it.
 
             if self.itemType in machineMachine.endProducts:
                 if not character.container == machineMachine.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition())
+                    quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition(),reason="go to the tile the MachineMachine is on")
                     return ([quest],None)
                 if character.getDistance(machineMachine.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(),ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(),ignoreEndBlocked=True,reason="go to the MachineMachine")
                     return ([quest],None)
 
                 items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(-1,0,0)))
                 if not items or not items[-1].type == "MetalBars":
-                    quest = src.quests.questMap["PlaceItem"](targetPosition=machineMachine.getPosition(offset=(-1,0,0)),targetPositionBig=machineMachine.container.getPosition(),itemType="MetalBars",tryHard=self.tryHard)
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=machineMachine.getPosition(offset=(-1,0,0)),targetPositionBig=machineMachine.container.getPosition(),itemType="MetalBars",tryHard=self.tryHard,reason="supply the MachineMachine with MetalBars")
                     return ([quest], None)
+
+                if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
+                    submenue = character.macroState["submenue"]
+                    if submenue.tag == "machineSelection":
+                        counter = 1
+                        for endProduct in machineMachine.endProducts:
+                            if endProduct == self.itemType:
+                                break
+                            counter += 1
+
+                        offset = counter-submenue.selectionIndex
+                        if offset > 0:
+                            return (None,("s"*offset+"j","to produce the machine"))
+                        else:
+                            return (None,("w"*(-offset)+"j","to produce the machine"))
+                    else:
+                        submenue = character.macroState["submenue"]
+                        counter = 2
+                        command = ""
+                        if submenue.selectionIndex > counter:
+                            command += "w"*(submenue.selectionIndex-counter)
+                        if submenue.selectionIndex < counter:
+                            command += "s"*(counter-submenue.selectionIndex)
+                        command += "j"
+                        return (None,(command,"to start producing a machine"))
 
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:
                     if character.getPosition(offset=direction[0]) == machineMachine.getPosition():
-                        counter = 0
-                        for endProduct in machineMachine.endProducts:
-                            if endProduct == self.itemType:
-                                break
-                            counter += 1
-                        return (None,("J"+direction[1]+"sj"+(counter*"s")+"j","produce the machine"))
+                        return (None,("J"+direction[1],"to activate the epoch artwork"))
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(0,-1,0)))
             placedBlueprintFound = False
@@ -181,10 +222,10 @@ If you don't find a %s blueprint, research it.
 
             if placedBlueprintFound:
                 if not character.container == machineMachine.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition())
+                    quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition(),reason="go to the tile the MachineMachine is on")
                     return ([quest],None)
                 if character.getDistance(machineMachine.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(),ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(),ignoreEndBlocked=True,reason="go to the MachineMachine")
                     return ([quest],None)
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
@@ -194,10 +235,10 @@ If you don't find a %s blueprint, research it.
 
             if character.inventory and character.inventory[-1].type == "BluePrint" and character.inventory[-1].endProduct == self.itemType:
                 if not character.container == machineMachine.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition())
+                    quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition(),reason="go to the tile the MachineMachine is on")
                     return ([quest],None)
                 if character.getDistance(machineMachine.getPosition(offset=(0,-1,0))) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(offset=(0,-1,0)),ignoreEndBlocked=True)
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=machineMachine.getPosition(offset=(0,-1,0)),ignoreEndBlocked=True,reason="go to the MachineMachine")
                     return ([quest],None)
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
@@ -208,15 +249,15 @@ If you don't find a %s blueprint, research it.
 
             if bluePrint:
                 if not character.container == bluePrint.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=bluePrint.container.getPosition())
+                    quest = src.quests.questMap["GoToTile"](targetPosition=bluePrint.container.getPosition(),reason="go to the tile the blueprint is on")
                     return ([quest],None)
                 if not character.getPosition() == bluePrint.getPosition():
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=bluePrint.getPosition())
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=bluePrint.getPosition(),reason="go to the BluePrint")
                     return ([quest],None)
                 return (None,("k","pick up blueprint"))
 
             if self.tryHard:
-                quest = src.quests.questMap["ResearchBluePrint"](itemType=self.itemType,tryHard=self.tryHard)
+                quest = src.quests.questMap["ResearchBluePrint"](itemType=self.itemType,tryHard=self.tryHard,reason="have a blueprint to load into the MachineMachine")
                 self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest], None)
             self.fail(reason="no blueprint for "+self.itemType)
@@ -229,6 +270,10 @@ If you don't find a %s blueprint, research it.
 
         if not self.targetPosition:
             return False
+
+        if not self.targetPositionBig:
+            return False
+
         rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
         if not rooms:
             self.fail("targetroom gone")
@@ -266,7 +311,8 @@ If you don't find a %s blueprint, research it.
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
-        result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        if self.targetPositionBig:
+            result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
 
 src.quests.addType(SetUpMachine)

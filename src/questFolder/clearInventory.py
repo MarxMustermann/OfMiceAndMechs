@@ -109,7 +109,7 @@ To see your items open the your inventory by pressing i."""%(reason,)
             if len(character.inventory) and room:
                 emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                 if emptyInputSlots:
-                    quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
+                    quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="remove items from your inventory")
                     return ([quest],None)
 
             if not "HOMEx" in character.registers:
@@ -120,14 +120,14 @@ To see your items open the your inventory by pressing i."""%(reason,)
                 homeRoom = character.getHomeRoom()
 
                 if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0),reason="go to a storage room")
                     return ([quest],None)
 
                 for checkRoom in character.getTerrain().rooms:
                     emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                     if emptyInputSlots:
-                        quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
-                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True)
+                        quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")
+                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="to remove items from your inventory")
                         return ([quest2,quest1],None)
 
                 if not "HOMEx" in character.registers:
@@ -140,10 +140,8 @@ To see your items open the your inventory by pressing i."""%(reason,)
                 return (None,None)
 
             if self.returnToTile and not character.getBigPosition() == self.returnToTile:
-                quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo)
+                quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")
                 return ([quest],None)
-
-            8/0
 
         return (None,None)
 

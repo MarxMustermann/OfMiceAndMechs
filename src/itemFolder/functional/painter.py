@@ -205,31 +205,64 @@ This should be used in cases where you can not place the Painter on the position
 
         super().apply(character)
         if isinstance(character.container,src.rooms.Room):
+            room = character.container
+            pos = character.getPosition(offset=self.offset)
             if self.paintMode == "inputSlot":
-                character.container.addInputSlot(character.getPosition(offset=self.offset),self.paintType,self.paintExtraInfo)
+                room.addInputSlot(pos,self.paintType,self.paintExtraInfo)
+                if room.floorPlan:
+                    for inputSlot in room.floorPlan.get("inputSlots")[:]:
+                        if inputSlot[0] == pos:
+                            room.floorPlan["inputSlots"].remove(inputSlot)
+                            break
+                if not "resource fetching" in room.requiredDuties:
+                    room.requiredDuties.append("resource fetching")
+                if self.paintType == "Scrap":
+                    room.requiredDuties.append("resource gathering")
             if self.paintMode == "outputSlot":
-                character.container.addOutputSlot(character.getPosition(offset=self.offset),self.paintType,self.paintExtraInfo)
+                room.addOutputSlot(pos,self.paintType,self.paintExtraInfo)
+                if room.floorPlan:
+                    for outputSlot in room.floorPlan.get("outputSlots")[:]:
+                        if outputSlot[0] == pos:
+                            room.floorPlan["outputSlots"].remove(outputSlot)
+                            break
             if self.paintMode == "storageSlot":
-                character.container.addStorageSlot(character.getPosition(offset=self.offset),self.paintType,self.paintExtraInfo)
+                room.addStorageSlot(pos,self.paintType,self.paintExtraInfo)
+                if room.floorPlan:
+                    for storageSlot in room.floorPlan.get("storageSlots")[:]:
+                        if storageSlot[0] == pos:
+                            room.floorPlan["storageSlots"].remove(storageSlot)
+                            break
             if self.paintMode == "walkingSpace":
-                character.container.walkingSpace.add(character.getPosition(offset=self.offset))
+                room.walkingSpace.add(character.getPosition(offset=self.offset))
+                if room.floorPlan:
+                    for walkingSpacePos in room.floorPlan.get("walkingSpace")[:]:
+                        if walkingSpacePos == pos:
+                            room.floorPlan["walkingSpace"].remove(walkingSpacePos)
+                            break
             if self.paintMode == "buildSite":
-                character.container.addBuildSite(character.getPosition(offset=self.offset),self.paintType, self.paintExtraInfo)
+                room.addBuildSite(character.getPosition(offset=self.offset),self.paintType, self.paintExtraInfo)
+                if room.floorPlan:
+                    for buildSite in room.floorPlan.get("buildSites")[:]:
+                        if buildSite[0] == pos:
+                            room.floorPlan["buildSites"].remove(buildSite)
+                            break
+                if not "machine placing" in room.requiredDuties:
+                    room.requiredDuties.append("machine placing")
             if self.paintMode == "delete":
-                if character.getPosition(offset=self.offset) in character.container.walkingSpace:
-                    character.container.walkingSpace.remove(character.getPosition(offset=self.offset))
-                for inputSlot in character.container.inputSlots[:]:
-                    if inputSlot[0] == character.getPosition(offset=self.offset):
-                        character.container.inputSlots.remove(inputSlot)
-                for outputSlot in character.container.outputSlots[:]:
-                    if outputSlot[0] == character.getPosition(offset=self.offset):
-                        character.container.outputSlots.remove(outputSlot)
-                for storageSlot in character.container.storageSlots[:]:
-                    if storageSlot[0] == character.getPosition(offset=self.offset):
-                        character.container.storageSlots.remove(storageSlot)
-                for buildSite in character.container.buildSites[:]:
-                    if buildSite[0] == character.getPosition(offset=self.offset):
-                        character.container.buildSites.remove(buildSite)
+                if pos in room.walkingSpace:
+                    room.walkingSpace.remove(pos)
+                for inputSlot in room.inputSlots[:]:
+                    if inputSlot[0] == pos:
+                        room.inputSlots.remove(inputSlot)
+                for outputSlot in room.outputSlots[:]:
+                    if outputSlot[0] == pos:
+                        room.outputSlots.remove(outputSlot)
+                for storageSlot in room.storageSlots[:]:
+                    if storageSlot[0] == pos:
+                        room.storageSlots.remove(storageSlot)
+                for buildSite in room.buildSites[:]:
+                    if buildSite[0] == pos:
+                        room.buildSites.remove(buildSite)
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})

@@ -11,7 +11,7 @@ class EpochQuest(src.quests.MetaQuestSequence):
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
-            quest = src.quests.questMap["DoEpochChallenge"]()
+            quest = src.quests.questMap["DoEpochChallenge"](reason="further the cause and gain glass tears")
             return ([quest],None)
         return (None,None)
 

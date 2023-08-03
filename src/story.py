@@ -4076,6 +4076,7 @@ try to remember how you got here ..."""
 
     def createColonyBase(self,pos):
         mainChar = src.characters.Character()
+        mainChar.disableCommandsOnPlus = True
         mainChar.questsDone = [
             "NaiveMoveQuest",
             "MoveQuestMeta",
@@ -4271,6 +4272,7 @@ try to remember how you got here ..."""
         machinemachine.endProducts["Bolt"] = item
         machinemachine.blueprintLevels["Bolt"] = 1
 
+        item = src.items.itemMap["BluePrint"]()
         item = src.items.itemMap["BluePrint"]()
         item.setToProduce("Mount")
         machinemachine.endProducts["Mount"] = item
@@ -5541,12 +5543,13 @@ Your task is to set up a base.
 For this purpose you were given the colony core and its machines.
 The whole process can be somewhat complicated, but you have guidance in this task.
 
-Some instructions have been left in the EpochArtwork. It will give you tasks to complete.
-Additionally this quest system will help you with completing each task.
+This quest system will help you by breaking up the task.
 You will get very detailed instructions, but you do not have to follow them closely.
+The EpochArtwork will reward you for progress.
 
 """
-        containerQuest = src.quests.questMap["EpochQuest"](storyText=storyText)
+        #containerQuest = src.quests.questMap["EpochQuest"](storyText=storyText)
+        containerQuest = src.quests.questMap["ExtendBase"]()
         mainChar.quests.append(containerQuest)
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()

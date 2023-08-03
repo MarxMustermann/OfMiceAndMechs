@@ -17,6 +17,8 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.shortCode = " "
         self.strict = strict
 
+        self.checkedRoomPositions = []
+
     def generateTextDescription(self):
         out = """
 Be useful.
@@ -82,6 +84,10 @@ Try to avoid losing reputation due to beeing careless.
 This quest currently has no sub quests.
 Press r to generate subquest and recive detailed instructions
 """
+
+        out += """
+%s
+"""%(self.checkedRoomPositions,)
 
 
         return out
@@ -273,6 +279,7 @@ Press r to generate subquest and recive detailed instructions
                     continue
 
                 if self.triggerClearInventory(character,room):
+                    self.idleCounter = 0
                     return True
 
                 if source:
@@ -305,6 +312,7 @@ Press r to generate subquest and recive detailed instructions
                     continue
 
                 if self.triggerClearInventory(character,room):
+                    self.idleCounter = 0
                     return True
 
                 if source:
@@ -345,6 +353,7 @@ Press r to generate subquest and recive detailed instructions
                 if character.getFreeInventorySpace() <= 0:
                     quest = src.quests.questMap["ClearInventory"]()
                     self.addQuest(quest)
+                    self.idleCounter = 0
                     return True
 
                 quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
@@ -358,6 +367,7 @@ Press r to generate subquest and recive detailed instructions
                 if room.getEmptyInputslots(itemType=character.inventory[-1].type,allowAny=True):
                     quest = src.quests.questMap["ClearInventory"]()
                     self.addQuest(quest)
+                    self.idleCounter = 0
                     return True
 
     def checkTriggerHauling(self,character,room):
@@ -386,6 +396,7 @@ Press r to generate subquest and recive detailed instructions
 
                     if not hasItem:
                         if self.triggerClearInventory(character,room):
+                            self.idleCounter = 0
                             return True
 
                     self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
@@ -443,6 +454,7 @@ Press r to generate subquest and recive detailed instructions
 
                     if not hasItem:
                         if self.triggerClearInventory(character,room):
+                            self.idleCounter = 0
                             return True
 
                     self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched"))
@@ -477,6 +489,7 @@ Press r to generate subquest and recive detailed instructions
                             self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
 
 
+                    self.idleCounter = 0
                     return True
 
                 character.addMessage("no valid input slot found")
@@ -521,6 +534,7 @@ Press r to generate subquest and recive detailed instructions
             for buildSite in room.buildSites:
                 if buildSite[1] == "Machine":
                     self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
+                    self.idleCounter = 0
                     return True
             checkedMaterial = set()
             #for buildSite in random.sample(room.buildSites,len(room.buildSites)):
@@ -556,11 +570,11 @@ Press r to generate subquest and recive detailed instructions
                         break
 
                     if not source:
-                        for room in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
-                            if not room.getNonEmptyOutputslots(itemType=neededItem):
+                        for checkRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
+                            if not checkRoom.getNonEmptyOutputslots(itemType=neededItem):
                                 continue
 
-                            source = (room.getPosition(),neededItem)
+                            source = (checkRoom.getPosition(),neededItem)
                             break
 
                     if not source:
@@ -573,7 +587,7 @@ Press r to generate subquest and recive detailed instructions
                             self.addQuest(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
                         else:
                             self.addQuest(src.quests.questMap["RunCommand"](command="jjssj.\n"))
-                    self.addQuest(src.quests.questMap["RunCommand"](command="l"))
+                    self.addQuest(src.quests.questMap["RunCommand"](command="lcb"))
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
                     buildSite[2]["reservedTill"] = room.timeIndex+100
                 elif source:
@@ -582,26 +596,27 @@ Press r to generate subquest and recive detailed instructions
                         self.addQuest(quest)
                         quest.assignToCharacter(character)
                         quest.activate()
+                        self.idleCounter = 0
                         return True
 
                     roomPos = (room.xPosition,room.yPosition)
 
                     if not source[0] == roomPos:
-                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
                     self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
-                    if not source[0] == roomPos:
-                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
                 self.idleCounter = 0
                 return True
 
     def checkTriggerFillFlask(self,character,room):
         if character.flask and character.flask.uses < 3:
             self.addQuest(src.quests.questMap["FillFlask"]())
+            self.idleCounter = 0
             return True
 
     def checkTriggerScavenging(self,character,room):
         if not character.getFreeInventorySpace():
             self.addQuest(src.quests.questMap["ClearInventory"]())
+            self.idleCounter = 0
             return True
 
         terrain = character.getTerrain()
@@ -610,29 +625,35 @@ Press r to generate subquest and recive detailed instructions
                 terrain.collectionSpots.pop()
                 continue
             self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1])))
+            self.idleCounter = 0
             return True
         self.addQuest(src.quests.questMap["Scavenge"]())
+        self.idleCounter = 0
         return True
 
     def checkTriggerEat(self,character,room):
         if character.satiation < 200:
             self.addQuest(src.quests.questMap["Eat"]())
+            self.idleCounter = 0
             return True
 
     def triggerClearInventory(self,character,room):
         if len(character.inventory) > 9:
             self.addQuest(src.quests.questMap["ClearInventory"]())
+            self.idleCounter = 0
             return True
         # clear inventory local
         if len(character.inventory) > 1:
             emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
             if emptyInputSlots:
                 self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True,reason="clear your inventory"))
+                self.idleCounter = 0
                 return True
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
             if not "HOMEx" in character.registers:
+                self.idleCounter = 0
                 return True
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
             if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
@@ -642,12 +663,14 @@ Press r to generate subquest and recive detailed instructions
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
+            self.idleCounter = 0
             return True
         if len(character.inventory) > 9:
             quest = src.quests.questMap["ClearInventory"]()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
+            self.idleCounter = 0
             return True
         return False
 
@@ -659,6 +682,16 @@ Press r to generate subquest and recive detailed instructions
                 break
 
         self.triggerCompletionCheck(character)
+
+        """
+        if not self.idleCounter:
+            self.checkedRoomPositions = []
+        """
+
+        try:
+            self.checkedRoomPositions
+        except:
+            self.checkedRoomPositions = []
 
         if not character.container:
             return
@@ -817,6 +850,7 @@ Press r to generate subquest and recive detailed instructions
                 quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
                 self.addQuest(quest)
                 quest.activate()
+                self.idleCounter = 0
                 return
 
         for duty in character.duties:
@@ -869,10 +903,14 @@ Press r to generate subquest and recive detailed instructions
                     return
 
         if not self.targetPosition:
+            self.checkedRoomPositions.append(character.getBigPosition())
+
             directions = [(-1,0),(1,0),(0,-1),(0,1)]
             random.shuffle(directions)
             for direction in directions:
-                newPos = (room.xPosition+direction[0],room.yPosition+direction[1])
+                newPos = (room.xPosition+direction[0],room.yPosition+direction[1],0)
+                if newPos in self.checkedRoomPositions:
+                    continue
                 if room.container.getRoomByPosition(newPos):
                     quest = src.quests.questMap["GoToTile"](targetPosition=newPos,description="look for job on tile ")
                     self.idleCounter += 1
@@ -881,6 +919,23 @@ Press r to generate subquest and recive detailed instructions
                     quest.activate()
                     character.runCommandString("%s."%(self.idleCounter,))
                     return
+
+            for room in terrain.rooms:
+                newPos = room.getPosition()
+                if newPos in self.checkedRoomPositions:
+                    continue
+                quest = src.quests.questMap["GoToTile"](targetPosition=newPos,description="look for job on tile ")
+                self.idleCounter += 3
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                character.runCommandString("%s."%(self.idleCounter,))
+                return
+
+            self.checkedRoomPositions = []
+            self.idleCounter += 10
+            character.runCommandString("20.")
+            return
 
         self.idleCounter += 5
         character.runCommandString("20.")

@@ -70,3 +70,8 @@ import src.questFolder.scavenge
 import src.questFolder.getEpochEvaluation
 import src.questFolder.getEpochReward
 import src.questFolder.discardInventory
+import src.questFolder.designateRoom
+import src.questFolder.scheduleRoomBuilding
+import src.questFolder.assignFloorPlan
+import src.questFolder.deleteMarking
+import src.questFolder.clearPathToPosition

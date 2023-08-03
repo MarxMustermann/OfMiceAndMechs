@@ -225,6 +225,7 @@ Select the thing to produce and confirm.
         self.submenue = src.interaction.SelectionMenu(
             "select the item to produce", options
         )
+        self.submenue.tag = "machineSelection"
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.produceSelection
 

@@ -304,9 +304,11 @@ Currently the machine has no charges
             if self.bolted:
                 self.bolted = False
                 self.character.addMessage("You bolt down the machine to the floor")
+                self.character.changed("boltedItem",{"character":self.character,"item":self})
             else:
                 self.bolted = True
                 self.character.addMessage("You unbolt the machine")
+                self.character.changed("unboltedItem",{"character":self.character,"item":self})
         elif self.submenue.keyPressed == "c":
             options = []
             options.append(("success", "set success command"))
@@ -511,9 +513,11 @@ Currently the machine has no charges
     def boltAction(self,character):
         self.bolted = True
         character.addMessage("you bolt down the Machine")
+        character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
         self.bolted = False
         character.addMessage("you unbolt the Machine")
+        character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(Machine)

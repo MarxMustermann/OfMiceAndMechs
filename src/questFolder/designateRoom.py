@@ -202,6 +202,11 @@ Use the CityPlaner to designate the room.
     def handleDesignatedRoom(self,extraParams):
         self.triggerCompletionCheck(extraParams["character"])
 
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.roomPosition[0],self.roomPosition[1]),"target"))
+        return result
+
     def assignToCharacter(self, character):
         if self.character:
             return

@@ -86,7 +86,7 @@ To reopen this menu after closing it press q.
         if not self.active:
             return
         if self.completed:
-            return
+            1/0
 
         if extraInfo[0] == src.gamestate.gamestate.mainChar:
 
@@ -95,11 +95,11 @@ To reopen this menu after closing it press q.
                 if self.recCheck(quest):
                     questIsAnchored = True
 
-            if not questIsAnchored:
-                print("dangling quest:")
-                print("handle moved")
-                print(self.description)
-                print(self)
+            #if not questIsAnchored:
+            #    print("dangling quest:")
+            #    print("handle moved")
+            #    print(self.description)
+            #    print(self)
 
         convertedDirection = None
         if extraInfo[1] == "west":
@@ -130,11 +130,15 @@ To reopen this menu after closing it press q.
     def handleChangedTile(self, extraInfo=None):
         if not self.active:
             return
+        if self.completed:
+            1/0
         self.fail()
 
     def handleCollision(self, extraInfo=None):
         if not self.active:
             return
+        if self.completed:
+            1/0
         self.fail()
 
     def assignToCharacter(self, character):
@@ -204,7 +208,7 @@ To reopen this menu after closing it press q.
                 return True
         return False
 
-    def generatePath(self,character):
+    def generatePath(self,character,dryRun=True):
         if character.container.isRoom:
             self.path = character.container.getPathCommandTile(character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
         else:
@@ -212,11 +216,9 @@ To reopen this menu after closing it press q.
         if not self.path:
             #if character.room.isRoom:
             #    character.room.cachedPathfinder = None
-            character.addMessage("moving failed - no path found. (generate path)")
-            character.addMessage(str(self))
-            character.addMessage(str(self.targetPosition))
-            character.addMessage(str(self.description))
-            self.fail("no path found")
+            if not dryRun:
+                character.addMessage("moving failed - no path found to %s"%(self.targetPosition,))
+                self.fail("no path found")
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
@@ -231,11 +233,11 @@ To reopen this menu after closing it press q.
             return
 
         if not self.path:
-            self.generatePath(character)
+            self.generatePath(character,dryRun=False)
             return
 
         if not self.isPathSane(character):
-            self.generatePath(character)
+            self.generatePath(character,dryRun=False)
             if not self.path:
                 character.addMessage("moving failed - no path found (solver)")
                 self.fail("no path found")

@@ -104,6 +104,12 @@ operate the machine on %s%s.
             return
         super().solver(character)
 
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        if self.targetPositionBig:
+            result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
+        return result
+
     def getQuestMarkersSmall(self,character,renderForTile=False):
         if isinstance(character.container,src.rooms.Room):
             if renderForTile:

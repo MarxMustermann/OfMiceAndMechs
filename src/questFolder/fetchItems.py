@@ -75,6 +75,10 @@ If you don't find a source, produce new items.
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
 This quest has no subquests. Press r to generate subquests for this quest."""))
+        else:
+            out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
+Press d to move the cursor and show the subquests description.
+"""))
 
         return out
 
@@ -154,7 +158,7 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
                         return (room.getPosition(),)
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=True)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -182,9 +186,9 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
                     break
                 numItemsCollected += 1
             if (numItemsCollected+character.getFreeInventorySpace()) < 5:
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
                 if not dryRun:
                     self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
                 return ([quest],None)
 
         if self.amount:
@@ -195,9 +199,9 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
                 numItemsCollected += 1
 
             if character.getFreeInventorySpace() < self.amount-numItemsCollected:
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
                 if not dryRun:
                     self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
                 return ([quest],None)
 
         if self.collectedItems and self.tileToReturnTo:

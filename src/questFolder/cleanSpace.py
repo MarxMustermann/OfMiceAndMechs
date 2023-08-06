@@ -64,6 +64,11 @@ Remove all items from the space %s on tile %s%s.
             if not character.getFreeInventorySpace():
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
+
+            if not character.getBigPosition() == self.targetPositionBig:
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
+                return ([quest], None)
+
             if rooms:
                 room = rooms[0]
                 items = room.getItemByPosition(self.targetPosition)
@@ -77,10 +82,6 @@ Remove all items from the space %s on tile %s%s.
                     if not dryRun:
                         self.postHandler()
                     return (None,None)
-
-            if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get near the target tile")
-                return ([quest], None)
 
             if character.container.isRoom:
                 if character.getDistance(self.targetPosition) > 1:

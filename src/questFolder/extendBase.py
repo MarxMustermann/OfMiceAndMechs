@@ -10,6 +10,7 @@ class ExtendBase(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.shownTutorialEnd = False
+        self.shownTutorialStep1 = False
 
     def generateTextDescription(self):
         out = []
@@ -100,6 +101,7 @@ Press d to move the cursor and show the subquests description.
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+                self.startWatching(quest,self.handleQuestFailure,"failed")
             if not self.subQuests[0].active:
                 self.subQuests[0].activate()
             return
@@ -122,40 +124,91 @@ Press d to move the cursor and show the subquests description.
                 self.addQuest(quest)
             return
 
-    def handQuestFailure(self,extraParam):
+    def handleQuestFailure(self,extraParam):
+        if not extraParam["quest"] in self.subQuests:
+            return
+
         self.subQuests.remove(extraParam["quest"])
+        if "no source" in extraParam["reason"] and "Painter" in extraParam["reason"]:
+            quest = src.quests.questMap["FetchItems"](tryHard=True,toCollect="Painter",amount=1)
+            self.startWatching(quest,self.handleQuestFailure,"failed")
+            self.addQuest(quest)
+            return
+            
         if extraParam["reason"] == "no storage available":
             terrain = self.character.getTerrain()
-            cityPlanner = terrain.getRoomByPosition((7,7,0))[0].getItemByPosition((5,2,0))
-            if not cityPlanner:
+            cityPlaner = terrain.getRoomByPosition((7,7,0))[0].getItemByPosition((5,2,0))
+            if not cityPlaner:
                 quest = src.quests.questMap["DiscardInventory"](reason="be able to act again")
+                self.startWatching(quest,self.handleQuestFailure,"failed")
                 self.addQuest(quest)
                 return
-            cityPlanner = cityPlanner[0]
-            if not cityPlanner.type == "CityPlaner":
+            cityPlaner = cityPlaner[0]
+            if not cityPlaner.type == "CityPlaner":
                 quest = src.quests.questMap["DiscardInventory"](reason="be able to act again")
+                self.startWatching(quest,self.handleQuestFailure,"failed")
                 self.addQuest(quest)
                 return
 
-            for generalPurposeRoom in cityPlanner.generalPurposeRooms:
-                for y in (1,3,5):
-                    for x in range(1,6):
+            for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+
+                terrain = self.character.getTerrain()
+                room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+                counter = 1
+                quests = []
+                for y in (1,3,5,7,9,11):
+                    for x in range(1,12):
+                        if x == 6:
+                            continue
+                        if counter > 15:
+                            continue
+
+                        if room.getItemByPosition((x,y,0)):
+                            continue
+
+                        if (x,y,0) in room.walkingSpace:
+                            continue
+
+                        blockedSpot = False
+                        for storageSlot in room.storageSlots:
+                            if storageSlot[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        for outputSlot in room.outputSlots:
+                            if outputSlot[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        for inpputSlot in room.inputSlots:
+                            if inputSlot[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        for buildSite in room.buildSites:
+                            if buildSites[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        if blockedSpot:
+                            continue
+
+                        counter += 1
                         quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
-                        self.addQuest(quest)
+                        if not dryRun:
+                            self.startWatching(quest,self.handleQuestFailure,"failed")
+                        quests.append(quest)
+
+                for quest in reversed(quests):
+                    self.addQuest(quest)
+
                 quest = src.quests.questMap["DiscardInventory"](reason="be able to pick up a painter")
+                self.startWatching(quest,self.handleQuestFailure,"failed")
                 self.addQuest(quest)
                 return
 
             quest = src.quests.questMap["DiscardInventory"](reason="be able to act again")
+            self.startWatching(quest,self.handleQuestFailure,"failed")
             self.addQuest(quest)
             return
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-
-        try:
-            self.shownTutorialEnd
-        except:
-            self.shownTutorialEnd = False
 
         if not self.subQuests:
             if not ignoreCommands:
@@ -163,702 +216,460 @@ Press d to move the cursor and show the subquests description.
                 if submenue:
                     return (None,(["esc"],"exit the menu"))
 
-            """
-            if not character.weapon:
-                quest = src.quests.questMap["Equip"](weaponOnly=True)
-                self.startWatching(quest,self.roomBuildingFailed,"failed")
-                return ([quest],None)
-            """
+            ######
+            ###
+            ##    analyse base
+            #
+            ######
+            terrain = character.getTerrain()
+            cityCore = terrain.getRoomByPosition((7,7,0))[0]
+            epochArtwork = cityCore.getItemsByType("EpochArtwork",needsBolted=True)[0]
+            cityPlaner = cityCore.getItemsByType("CityPlaner",needsBolted=True)
+            if cityPlaner:
+                cityPlaner = cityPlaner[0]
+            else:
+                cityPlaner = None
 
-            if len(character.getTerrain().rooms) < 2:
-                candidates = [(6,7,0),(7,6,0),(8,7,0),(7,8,0)]
-                random.shuffle(candidates)
-                for candidate in candidates:
-                    terrain = character.getTerrain()
-                    if (not terrain.getRoomByPosition(candidate)) and (not candidate in terrain.scrapFields) and (not candidate in terrain.forests):
-                        if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
-                            quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,tryHard=True,reason="start extending the base",takeAnyUnbolted=True)
-                            if not dryRun:
-                                self.startWatching(quest,self.roomBuildingFailed,"failed")
-                            return ([quest],None)
-                for candidate in candidates:
-                    terrain = character.getTerrain()
-                    if (not terrain.getRoomByPosition(candidate)) and (not candidate in terrain.scrapFields) and (not candidate in terrain.forests):
-                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,tryHard=True,reason="start extending the base",takeAnyUnbolted=True)
-                        if not dryRun:
-                            self.startWatching(quest,self.roomBuildingFailed,"failed")
-                        return ([quest],None)
-                self.fail()
-                return (None,None)
-
-            if len(character.getTerrain().rooms) < 3:
-
-                terrain = character.getTerrain()
-                room = terrain.getRoomByPosition((7,7,0))[0]
-                items = room.getItemByPosition((5,2,0))
-                if ( not room.getItemByPosition((5,2,0)) or 
-                     not room.getItemByPosition((5,2,0))[0].type == "CityPlaner" ):
-                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,2,0),itemType="CityPlaner",reason="be able to use it to manage room purposes")
-                    if not dryRun:
-                        self.startWatching(quest,self.handQuestFailure,"failed")
-                    return ([quest],None)
-
-                cityPlaner = room.getItemByPosition((5,2,0))[0]
-                if not cityPlaner.generalPurposeRooms:
-                    for room in terrain.rooms:
-                        if room.getPosition() == (7,0,0):
-                            continue
-                        if room.getPosition() in cityPlaner.specialPurposeRooms:
-                            continue
-                        if room.getPosition() in cityPlaner.generalPurposeRooms:
-                            continue
-                        if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
-                            continue
-
-                        quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforseen needs")
-                        return ([quest],None)
-
-                doorFound = False
-                for checkRoom in character.getTerrain().rooms:
-                    for item in checkRoom.itemsOnFloor+character.inventory:
-                        if item.bolted:
-                            continue
-                        if item.type == "Door":
-                            doorFound = True
-
-                terrain = character.getTerrain()
-                candidates = []
-                for room in terrain.rooms:
-                    roomPos = room.getPosition()
-                    candidates.append((roomPos[0]-1,roomPos[1],0))
-                    candidates.append((roomPos[0]+1,roomPos[1],0))
-                    candidates.append((roomPos[0],roomPos[1]-1,0))
-                    candidates.append((roomPos[0],roomPos[1]+1,0))
-
-                foundRoomBuilder = False
-                for candidate in candidates[:]:
-                    if terrain.getRoomByPosition(candidate):
-                        candidates.remove(candidate)
+            # gather npc duties
+            npcDuties = {}
+            for otherChar in terrain.characters:
+                for duty in otherChar.duties:
+                    if not duty in npcDuties:
+                        npcDuties[duty] = []
+                    npcDuties[duty].append(otherChar)
+            for checkRoom in character.getTerrain().rooms:
+                for otherChar in checkRoom.characters:
+                    if otherChar == character:
                         continue
-                    if candidate in terrain.scrapFields:
-                        candidates.remove(candidate)
+                    for duty in otherChar.duties:
+                        if not duty in npcDuties:
+                            npcDuties[duty] = []
+                        npcDuties[duty].append(otherChar)
+
+            # get tile neighbouring the base
+            baseNeighbours = []
+            offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+            for room in terrain.rooms:
+                pos = room.getPosition()
+                for offset in offsets:
+                    checkPos = (pos[0]+offset[0],pos[1]+offset[1],0)
+                    if terrain.getRoomByPosition(checkPos):
                         continue
-                    print(terrain.forests)
-                    if candidate in terrain.forests:
-                        candidates.remove(candidate)
+                    if checkPos in baseNeighbours:
                         continue
+                    baseNeighbours.append(checkPos)
+            random.shuffle(baseNeighbours)
 
-                    items = terrain.getItemByPosition((candidate[0]*15+7,candidate[1]*15+7,0))
-                    if items and items[0].type == "RoomBuilder":
-                        foundRoomBuilder = True
+            # get the possible build sited
+            possibleBuildSites = []
+            for candidate in baseNeighbours:
+                if (not candidate in terrain.scrapFields) and (not candidate in terrain.forests):
+                    possibleBuildSites.append(candidate)
 
-                random.shuffle(candidates)
+            # get assigned floor plans
+            assignedFloorPlans = []
+            for room in terrain.rooms:
+                if not room.tag:
+                    continue
+                assignedFloorPlans.append(room.tag)
 
-                if not foundRoomBuilder:
-                    reason = "start the process of building the second room"
-                    for candidate in candidates:
-                        if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
-                            quest = src.quests.questMap["PlaceItem"](targetPositionBig=candidate,targetPosition=(7,7,0),itemType="RoomBuilder",tryHard=True,reason=reason)
-                            return ([quest],None)
-                    candidate = candidates[0]
-                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=candidate,targetPosition=(7,7,0),itemType="RoomBuilder",tryHard=True,reason=reason)
-                    return ([quest],None)
-
-                room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-                itemsOnFloor = room.itemsOnFloor
-                random.shuffle(itemsOnFloor)
-                quests = []
+            # get placed machines
+            machineMap = {}
+            readyMachines = []
+            readyScrapCompactors = []
+            for room in terrain.rooms:
                 for item in room.itemsOnFloor:
-                    if item.bolted:
+                    if item.type == "Machine" and item.bolted:
+                        if item.readyToUse():
+                            readyMachines.append(item)
+                        if not item.toProduce in machineMap:
+                            machineMap[item.toProduce] = []
+                        machineMap[item.toProduce].append(item)
+
+                    if item.type == "ScrapCompactor" and item.bolted:
+                        if item.readyToUse():
+                            readyScrapCompactors.append(item)
+
+            # count empty storage slots
+            numFreeStorage = 0
+            for room in terrain.rooms:
+                for storageSlot in room.storageSlots:
+                    if not storageSlot[1] == None:
+                        continue
+                    items = room.getItemByPosition(storageSlot[0])
+                    if items:
+                        continue
+                    numFreeStorage += 1
+
+            # do storage inventory 
+            storedItems = {}
+            for room in terrain.rooms:
+                for storageSlot in room.storageSlots:
+                    items = room.getItemByPosition(storageSlot[0])
+                    if items:
+                        if storageSlot[1] == None or items[-1].type == storageSlot[1]:
+                            if not items[-1].type in storedItems:
+                                storedItems[items[-1].type] = 0
+                            storedItems[items[-1].type] += len(items)
                         continue
 
-                    if not item.type in ("Wall","Door","RoomBuilder",):
+            # do output stockpile inventory
+            for room in terrain.rooms:
+                for outputSlot in room.outputSlots:
+                    items = room.getItemByPosition(outputSlot[0])
+                    if items:
+                        if outputSlot[1] == None or items[-1].type == outputSlot[1]:
+                            if not outputSlot[1] in storedItems:
+                                storedItems[outputSlot[1]] = 0
+                            storedItems[outputSlot[1]] += len(items)
                         continue
 
-                    inStorage = False
-                    pos = item.getPosition()
+            # do inventory of scrap fields
+            numItemsScrapfield = 0
+            for scrapField in terrain.scrapFields:
+                numItemsScrapfield += len(terrain.itemsByBigCoordinate.get(scrapField,[]))
+
+            ######
+            ###
+            ##    get rewards
+            #
+            #####
+
+            if epochArtwork.recalculateGlasstears(character,dryRun=True):
+                quest = src.quests.questMap["GetEpochEvaluation"](reason="start getting the reward for building the first room")
+                return ([quest],None)
+
+            if numItemsScrapfield < 100 and epochArtwork.charges >= 20:
+                quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+                return ([quest],None)
+
+            if numItemsScrapfield >= 100:
+                for duty in ["room building","scavenging","machine operation","resource gathering","resource fetching","painting","machine placing","hauling"]:
+                    if not duty in npcDuties and epochArtwork.charges >= 10:
+                        quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
+                        return ([quest],None)
+
+                if epochArtwork.charges >= 10:
+                    duty = random.choice(["room building","scavenging","machine operation","resource gathering","resource fetching","painting","machine placing","hauling"])
+                    quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn random clone")
+                    return ([quest],None)
+
+            ######
+            ###
+            ##    extend base
+            #
+            #####
+
+            # set up city planer
+            if not cityPlaner:
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,2,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan the citys expansion")
+                return ([quest],None)
+
+            # ensure there is a general purpose room
+            if cityPlaner and not cityPlaner.generalPurposeRooms:
+                for room in terrain.rooms:
+                    if room.getPosition() == (7,0,0):
+                        continue
+                    if room.getPosition() in cityPlaner.specialPurposeRooms:
+                        continue
+                    if room.getPosition() in cityPlaner.generalPurposeRooms:
+                        continue
+                    if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                        continue
+
+                    quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforseen needs")
+                    return ([quest],None)
+
+            # add storage room if needed
+            if cityPlaner and cityPlaner.getAvailableRooms():
+                if numFreeStorage < 20:
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=cityPlaner.getAvailableRooms()[0].getPosition(),floorPlanType="storage",reason="increase storage")
+                    return ([quest],None)
+                    
+            # assign basic floor plans
+            if cityPlaner and cityPlaner.getAvailableRooms():
+                floorPlansToSet = ["storage","wallProduction","caseProduction","basicMaterialsProduction","scrapCompactor","scrapCompactorProduction","basicRoombuildingItemsProduction",]
+                for room in terrain.rooms:
+                    if room.tag in floorPlansToSet:
+                        floorPlansToSet.remove(room.tag)
+                if floorPlansToSet:
+                    for room in cityPlaner.getAvailableRooms():
+                        quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=floorPlansToSet[0],reason="start the process of making the room useful")
+                        return ([quest],None)
+
+            # assign random floor plans
+            if cityPlaner:
+                for room in cityPlaner.getAvailableRooms():
+                    floorPlansToSet = ["wallProduction","caseProduction","basicMaterialsProduction","scrapCompactor","scrapCompactorProduction","basicRoombuildingItemsProduction",]
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=random.choice(floorPlansToSet),reason="set a random floor plan")
+                    return ([quest],None)
+
+            # add emergency storage
+            if cityPlaner.generalPurposeRooms and numFreeStorage < 10:
+                for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+                    room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+                    counter = 1
+                    quests = []
+                    for y in (1,3,5,7,9,11):
+                        for x in range(1,12):
+                            if x == 6:
+                                continue
+                            if counter > 15:
+                                continue
+
+                            if room.getItemByPosition((x,y,0)):
+                                continue
+
+                            if (x,y,0) in room.walkingSpace:
+                                continue
+
+                            blockedSpot = False
+                            for storageSlot in room.storageSlots:
+                                if storageSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for outputSlot in room.outputSlots:
+                                if outputSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for inpputSlot in room.inputSlots:
+                                if inputSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for buildSite in room.buildSites:
+                                if buildSites[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            if blockedSpot:
+                                continue
+
+                            counter += 1
+                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
+                            quests.append(quest)
+
+                    if quests:
+                        return (list(reversed(quests)),None)
+
+            # remove emergency storage
+            if cityPlaner.generalPurposeRooms and numFreeStorage > 50:
+                numStorageToRemove = numFreeStorage-30
+
+                for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+                    room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+
+                    quests = []
+                    counter = 0
                     for storageSlot in room.storageSlots:
-                        if storageSlot[0] == pos:
-                            inStorage = True
+                        counter += 1
+                        if counter > numStorageToRemove:
+                            break
+                        if counter > 5:
+                            break
 
-                    if inStorage:
-                        continue
+                        quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="free up general purpose rooms")
+                        quests.append(quest)
+                        quest = src.quests.questMap["DeleteMarking"](targetPosition=storageSlot[0],targetPositionBig=room.getPosition(),reason="free up general purpose rooms")
+                        quests.append(quest)
 
-                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=(7,7,0),targetPosition=item.getPosition(),reason="unclutter the city core and put the items into storage")
-                    if not dryRun:
-                        self.startWatching(quest,self.handQuestFailure,"failed")
+                    if quests:
+                        return (quests,None)
+
+            """
+            # remove command centre storage
+            if cityPlaner.generalPurposeRooms and numFreeStorage > 30:
+                numStorageToRemove = numFreeStorage-30
+
+                room = terrain.getRoomByPosition((7,7,0))[0]
+
+                quests = []
+                counter = 0
+                for storageSlot in room.storageSlots:
+                    counter += 1
+                    if counter > numStorageToRemove:
+                        break
+                    if counter > 5:
+                        break
+
+                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="free up general purpose rooms")
+                    quests.append(quest)
+                    quest = src.quests.questMap["DeleteMarking"](targetPosition=storageSlot[0],targetPositionBig=room.getPosition(),reason="free up general purpose rooms")
                     quests.append(quest)
 
                 if quests:
                     return (quests,None)
+            """
 
-                if not character.getFreeInventorySpace():
-                    quest = src.quests.questMap["ClearInventory"](reason="fill the stockpiles and free your inventory")
-                    if not dryRun:
-                        self.startWatching(quest,self.handQuestFailure,"failed")
-                    return ([quest],None)
+            # clean up the command centre
+            itemsOnFloor = cityCore.itemsOnFloor
+            random.shuffle(itemsOnFloor)
+            quests = []
+            for item in itemsOnFloor:
+                if item.bolted:
+                    continue
 
-                room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-                epochArtwork = room.getItemsByType("EpochArtwork")[0]
-                if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                    quest = src.quests.questMap["GetEpochEvaluation"](reason="start getting the reward for building the first room")
-                    return ([quest],None)
+                if not item.type in ("Wall","Door","RoomBuilder",):
+                    continue
 
-                hasRoombuildingNPC = False
-                for otherChar in character.getTerrain().characters:
-                    if otherChar == character:
-                        continue
-                    if "room building" in otherChar.duties:
-                        hasRoombuildingNPC = True
-                for room in character.getTerrain().rooms:
-                    for otherChar in room.characters:
-                        if otherChar == character:
-                            continue
-                        if "room building" in otherChar.duties:
-                            hasRoombuildingNPC = True
+                inStorage = False
+                pos = item.getPosition()
+                for storageSlot in cityCore.storageSlots:
+                    if storageSlot[0] == pos:
+                        inStorage = True
+                for outputSlot in cityCore.outputSlots:
+                    if outputSlot[0] == pos and outputSlot[1] == item.type:
+                        inStorage = True
 
-                if not hasRoombuildingNPC and epochArtwork.charges >= 10:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="room building",reason="spawn the first clone to help you")
-                    return ([quest],None)
+                if inStorage:
+                    continue
 
-                if not doorFound:
-                    quest = src.quests.questMap["Scavenge"](toCollect="Door",reason="get more building materials")
-                    return ([quest],None)
-
-                quest = src.quests.questMap["Scavenge"](toCollect="Wall",reason="get more building materials")
-                return ([quest],None)
-
-            terrain = character.getTerrain()
-            room = terrain.getRoomByPosition((7,7,0))[0]
-            cityPlaner = room.getItemByPosition((5,2,0))[0]
-            if not cityPlaner.plannedRooms:
-                quests = []
-                targets = []
-                counter = 0
-                for checkRoom in terrain.rooms:
-                    roomPos = checkRoom.getPosition()
-                    for offset in ((1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):
-                        newPos = (roomPos[0]+offset[0],roomPos[1]+offset[1],0)
-                        if newPos in terrain.forests:
-                            continue
-                        if (newPos[0],newPos[1]) in terrain.scrapFields:
-                            continue
-                        if newPos in terrain.scrapFields:
-                            continue
-                        if terrain.getRoomByPosition(newPos):
-                            continue
-                        if newPos in cityPlaner.plannedRooms:
-                            continue
-                        if newPos in targets:
-                            continue
-                        counter += 1
-                        if counter > 3:
-                            continue
-                        targets.append(newPos)
-                        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=newPos,reason="extend the base and keep the room building clone occupied")
-                        quests.append(quest)
+                quest = src.quests.questMap["CleanSpace"](targetPositionBig=(7,7,0),targetPosition=item.getPosition(),reason="unclutter the city core and put the items into storage")
+                quests.append(quest)
+            if quests:
                 return (quests,None)
 
-            if len(character.getTerrain().rooms) < 4:
-
-                if not character.getFreeInventorySpace():
-                    quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="restock the base and have space in your inventory")
-                    if not dryRun:
-                        self.startWatching(quest,self.handQuestFailure,"failed")
-                    return ([quest],None)
-
-                terrain = character.getTerrain()
-                room = terrain.getRoomByPosition((7,7,0))[0]
-                epochArtwork = room.getItemsByType("EpochArtwork")[0]
-                if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                    quest = src.quests.questMap["GetEpochEvaluation"](reason="start recieving the reward for building the second room")
-                    return ([quest],None)
-
-                hasScavengingNPC = False
-                for otherChar in character.getTerrain().characters:
-                    if otherChar == character:
+            # remove items that on walkways (cleaning)
+            quests = []
+            for room in terrain.rooms:
+                for walkingSpacePos in room.walkingSpace:
+                    items = room.getItemByPosition(walkingSpacePos)
+                    if not items:
                         continue
-                    if "scavenging" in otherChar.duties:
-                        hasScavengingNPC = True
-                for checkRoom in character.getTerrain().rooms:
-                    for otherChar in checkRoom.characters:
-                        if otherChar == character:
-                            continue
-                        if "scavenging" in otherChar.duties:
-                            hasScavengingNPC = True
+                    if items[0].bolted:
+                        continue
+                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=walkingSpacePos,reason="keep walking spaces clear")
+                    quests.append(quest)
+            if quests:
+                return (quests,None)
+            
+            # remove items that are in wrong places (cleaning)
+            quests = []
+            for room in terrain.rooms:
+                for inputSlot in room.inputSlots:
+                    items = room.getItemByPosition(inputSlot[0])
+                    if not items:
+                        continue
+                    if items[0].bolted:
+                        continue
+                    if items[0].type == inputSlot[1]:
+                        continue
 
-                if not hasScavengingNPC and epochArtwork.charges >= 10:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="scavenging",reason="get a clone to scavenge for you")
-                    return ([quest],None)
+                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=inputSlot[0],reason="remove items that were in the wrong stockpile")
+                    quests.append(quest)
+            if quests:
+                return (quests,None)
+            
+            # remove items that are in wrong places (cleaning)
+            quests = []
+            for room in terrain.rooms:
+                for outputSlot in room.outputSlots:
+                    items = room.getItemByPosition(outputSlot[0])
+                    if not items:
+                        continue
+                    if items[0].bolted:
+                        continue
+                    if items[0].type == outputSlot[1]:
+                        continue
 
-                #set special purpose room
-                if not cityPlaner.specialPurposeRooms:
-                    for room in terrain.rooms:
-                        if room.getPosition() == (7,7,0):
-                            continue
-                        if room.getPosition() in cityPlaner.specialPurposeRooms:
-                            continue
-                        if room.getPosition() in cityPlaner.generalPurposeRooms:
-                            continue
-                        if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
-                            continue
+                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="remove items that were in the wrong stockpile")
+                    quests.append(quest)
+            if quests:
+                return (quests,None)
+            
+            # remove items that are in wrong places (cleaning)
+            quests = []
+            for room in terrain.rooms:
+                for storageSlot in room.storageSlots:
+                    if not storageSlot[1]:
+                        continue
+                    items = room.getItemByPosition(storageSlot[0])
+                    if not items:
+                        continue
+                    if items[0].bolted:
+                        continue
+                    if items[0].type == storageSlot[1]:
+                        continue
 
-                        quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="specialPurposeRoom",roomTag="temporaryStorage",reason="have a room to store items in")
+                    quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="remove items that were in the wrong stockpile")
+                    quests.append(quest)
+            if quests:
+                return (quests,None)
+
+            ######
+            ###
+            ##    emulate clone activity
+            #
+            #####
+
+            if not "room building" in npcDuties:
+                for candidate in possibleBuildSites:
+                    if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,tryHard=True,reason="start extending the base",takeAnyUnbolted=True)
                         return ([quest],None)
-
-                machine = room.getItemByPosition((8,2,0))[0]
-                if machine.readyToUse():
-                    if not character.getBigPosition() == (7,7,0):
-                        quest = src.quests.questMap["GoHome"](reason="get back to the city core")
-                        return ([quest],None)
-                    quest = src.quests.questMap["OperateMachine"](targetPosition=(8,2,0),reason="produce a Wall")
-                    return ([quest],None)
-                machine = room.getItemByPosition((8,4,0))[0]
-                if machine.readyToUse():
-                    if not character.getBigPosition() == (7,7,0):
-                        quest = src.quests.questMap["GoHome"](reason="get back to the city core")
-                        return ([quest],None)
-                    quest = src.quests.questMap["OperateMachine"](targetPosition=(8,4,0),reason="produce a MetalBars")
-                    return ([quest],None)
-                machine = room.getItemByPosition((8,5,0))[0]
-                if machine.readyToUse():
-                    if not character.getBigPosition() == (7,7,0):
-                        quest = src.quests.questMap["GoHome"](reason="get back to the city core")
-                        return ([quest],None)
-                    quest = src.quests.questMap["OperateMachine"](targetPosition=(8,5,0),reason="produce a MetalBars")
+                for candidate in possibleBuildSites:
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,tryHard=True,reason="start extending the base",takeAnyUnbolted=True)
                     return ([quest],None)
 
-                storageRoom = None
+            if not "machine placing" in npcDuties:
+
+                # set up machines
                 for room in terrain.rooms:
-                    if not room.tag == "temporaryStorage":
+                    if not room.buildSites:
                         continue
-                    storageRoom = room
-                if storageRoom:
-                    storageRoomPosition = storageRoom.getPosition()
-                    positions = []
-                    for y in (1,):
-                        quests = []
-                        for x in range(1,12):
-                            if x == 6:
-                                continue
-                            isPainted = False
-                            position = (x,y,0)
-                            for storageSlot in storageRoom.storageSlots:
-                                if position == storageSlot[0]:
-                                    isPainted = True
-                                    break
-                            if isPainted:
-                                continue
-                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=storageRoomPosition,targetPosition=position,reason="add a storage spot to the storage room")
-                            quests.append(quest)
-                        if quests:
-                            return (quests,None)
 
-                caseFound = False
-                doorFound = False
-                metalBarsFound = False
-                for checkRoom in character.getTerrain().rooms:
-                    for item in checkRoom.itemsOnFloor+character.inventory:
-                        if item.bolted:
-                            continue
-                        if item.type == "Case":
-                            caseFound = True
-                        if item.type == "Door":
-                            doorFound = True
-                        if item.type == "MetalBars":
-                            metalBarsFound = True
-
-                room = terrain.getRoomByPosition((7,7,0))[0]
-                if metalBarsFound and not room.getItemByPosition((7,2,0)):
-                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(7,2,0),itemType="MetalBars",reason="prepare producing a wall")
-                    return ([quest],None)
-
-                if caseFound and not room.getItemByPosition((8,1,0)):
-                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(8,1,0),itemType="Case",reason="prepare producing a wall")
-                    return ([quest],None)
-
-                if not caseFound:
-                    quest = src.quests.questMap["Scavenge"](toCollect="Case",reason="get more materials to produce walls with")
-                    return ([quest],None)
-                if not metalBarsFound:
-                    quest = src.quests.questMap["Scavenge"](toCollect="MetalBars",reason="get more materials to build walls with")
-                    return ([quest],None)
-                if not doorFound:
-                    quest = src.quests.questMap["Scavenge"](toCollect="Door",reason="get more building materials")
-                    return ([quest],None)
-
-            if len(terrain.rooms) < 7:
-                terrain = character.getTerrain()
-                room = terrain.getRoomByPosition((7,7,0))[0]
-                cityPlaner = room.getItemByPosition((5,2,0))[0]
-                storageRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryStorage":
-                        continue
-                    storageRoom = room
-                if storageRoom:
-                    positions = []
-                    for y in (1,3,5,7,9,11):
-                        quests = []
-                        for x in range(1,12):
-                            if x == 6:
-                                continue
-                            isPainted = False
-                            position = (x,y,0)
-                            for storageSlot in storageRoom.storageSlots:
-                                if position == storageSlot[0]:
-                                    isPainted = True
-                                    break
-                            if isPainted:
-                                continue
-                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=storageRoomPosition,targetPosition=position,reason="add a storage spot to the storage room")
-                            quests.append(quest)
-                        if quests:
-                            return (quests,None)
-
-            if len(character.getTerrain().rooms) < 4:
-                quest = src.quests.questMap["Scavenge"](toCollect="Wall",reason="get more building materials and pass some time")
-                quest.assignToCharacter(character)
-                return ([quest],None)
-
-            if len(character.getTerrain().rooms) < 5:
-                if not character.getFreeInventorySpace():
-                    quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="restock the base and have space in your inventory")
-                    if not dryRun:
-                        self.startWatching(quest,self.handQuestFailure,"failed")
-                    return ([quest],None)
-
-                room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-                epochArtwork = room.getItemsByType("EpochArtwork")[0]
-                if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                    quest = src.quests.questMap["GetEpochEvaluation"](reason="start recieving the reward for building the third room")
-                    return ([quest],None)
-
-                hasNPC = False
-                for otherChar in character.getTerrain().characters:
-                    if otherChar == character:
-                        continue
-                    if "machine operating" in otherChar.duties:
-                        hasNPC = True
-                for checkRoom in character.getTerrain().rooms:
-                    for otherChar in checkRoom.characters:
-                        if otherChar == character:
-                            continue
-                        if "machine operating" in otherChar.duties:
-                            hasNPC = True
-
-                if not hasNPC and epochArtwork.charges >= 10:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="machine operating",reason="get a clone to use machines for you")
-                    return ([quest],None)
-
-                terrain = character.getTerrain()
-                for checkRoom in terrain.rooms:
-                    for inputSlot in checkRoom.getEmptyInputslots():
-                        if not inputSlot[1]:
-                            continue
-
-                        for sourceRoom in terrain.rooms:
-                            for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
-                                amount = None
-                                if inputSlot[1] == "Case":
-                                    amount = 1
-                                quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
-                                quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
-                                return ([quest4,quest2],None)
-
-
-            #set special purpose room
-            if len(terrain.rooms) < 7:
-                if len(cityPlaner.specialPurposeRooms) < 2:
-                    for room in terrain.rooms:
-                        if room.getPosition() == (7,7,0):
-                            continue
-                        if room.getPosition() in cityPlaner.specialPurposeRooms:
-                            continue
-                        if room.getPosition() in cityPlaner.generalPurposeRooms:
-                            continue
-                        if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
-                            continue
-                        
-                        quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="specialPurposeRoom",roomTag="temporaryProduction1",reason="reserve a room to set up temporary production line")
-                        return ([quest],None)
-
-            if len(terrain.rooms) < 6:
-                terrain = character.getTerrain()
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction1":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    positions = [(3,3,0),(6,3,0),(3,6,0),(6,6,0),(9,9,0),(7,9,0),(5,9,0)]
-                    machineRoomPosition = checkRoom.getPosition()
-                    for pos in positions:
-                        if not checkRoom.getItemByPosition(pos):
-                            itemType = "Wall"
-                            if pos == (6,6,0):
-                                itemType = "Door"
-                            if pos == (9,6,0):
-                                itemType = "ScrapCompactor"
-                            if pos == (5,9,0):
-                                itemType = "Rod"
-                            if pos == (7,9,0):
-                                itemType = "Frame"
-                            if pos == (9,9,0):
-                                itemType = "Case"
-                            if itemType == "ScrapCompactor":
-                                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType=itemType,reason="set up temporary scrap compactor production")
-                                quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary scrap compactor production")
-                                quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=itemType,stockpileType="o",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]+1,pos[1],0),reason="set up temporary scrap compactor production")
-
-                                return ([quest4,quest2,quest1],None)
-                            elif itemType == "Rod":
-                                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType=itemType,reason="set up temporary rod production")
-                                quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary rod production")
-
-                                return ([quest2,quest1],None)
-                            elif itemType == "Frame":
-                                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType=itemType,reason="set up temporary frame production")
-                                quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Rod",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary frame production")
-
-                                return ([quest2,quest1],None)
-                            elif itemType == "Case":
-                                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType=itemType,reason="set up temporary case production")
-                                quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Frame",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary case production")
-                                quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=itemType,stockpileType="o",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]+1,pos[1],0),reason="set up temporary case production")
-
-                                return ([quest4,quest2,quest1],None)
-                            else:
-                                quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType=itemType,reason="set up temporary "+itemType+" production")
-                                quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary "+itemType+" production")
-                                quest3 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Case",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0],pos[1]-1,0),reason="set up temporary "+itemType+" production")
-                                quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=itemType,stockpileType="o",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]+1,pos[1],0),reason="set up temporary "+itemType+" production")
-
-                                return ([quest4,quest2,quest3,quest1],None)
-
-            if len(character.getTerrain().rooms) < 5:
-                quest = src.quests.questMap["Scavenge"](reason="get more materials and pass some time")
-                return ([quest],None)
-
-            if len(character.getTerrain().rooms) < 6:
-
-                room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-                epochArtwork = room.getItemsByType("EpochArtwork")[0]
-                if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                    quest = src.quests.questMap["GetEpochEvaluation"](reason="start getting the reward for building another room")
-                    return ([quest],None)
-
-                hasNPC = False
-                for otherChar in character.getTerrain().characters:
-                    if otherChar == character:
-                        continue
-                    if "resource fetching" in otherChar.duties:
-                        hasNPC = True
-                for checkRoom in character.getTerrain().rooms:
-                    for otherChar in checkRoom.characters:
-                        if otherChar == character:
-                            continue
-                        if "resource fetching" in otherChar.duties:
-                            hasNPC = True
-
-                if not hasNPC and epochArtwork.charges >= 10:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="resource fetching",reason="get another clone to help you out")
-                    return ([quest],None)
-
-                for room in terrain.rooms:
-                    for inputSlot in room.getEmptyInputslots():
-                        if not inputSlot[1]:
-                            continue
-                        if inputSlot[1] == "MetalBars":
-                            continue
-                        if inputSlot[1] == "Scrap":
-                            continue
-                        if not room.getNonEmptyOutputslots(inputSlot[1]):
-                            continue
-
-                        quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=1,reason="fetch materials from storage")
-                        quest3 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=room.getPosition(),reason="fill input stockpiles")
-                        return ([quest3,quest2],None)
-
-            if len(character.getTerrain().rooms) < 6:
-                for room in terrain.rooms:
-                    inputSlots = room.getEmptyInputslots(itemType="Scrap")
-                    for inputSlot in inputSlots:
-                        if room.getItemByPosition(inputSlot[0]):
-                            continue
-                        quest1 = src.quests.questMap["GatherScrap"](reason="have Scrap to supply the city with")
-                        quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="ensure scrap supply",targetPosition=room.getPosition())
-                        return ([quest3,quest1],None)
-
-            if len(terrain.rooms) < 7:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction1":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    machineRoomPosition = checkRoom.getPosition()
-                    pos = (9,3,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType="ScrapCompactor",reason="set up temporary scrap compactor production")
-                        quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary scrap compactor production")
-                        quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="ScrapCompactor",stockpileType="o",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]+1,pos[1],0),reason="set up temporary scrap compactor production")
-
-                        return ([quest4,quest2,quest1],None)
-
-            if len(terrain.rooms) < 7:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction1":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    machineRoomPosition = checkRoom.getPosition()
-                    pos = (3,9,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest1 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up temporary MetalBars production")
-                        quest2 = src.quests.questMap["PlaceItem"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="set up temporary MetalBars production")
-                        return ([quest1,quest2],None)
-
-            #set special purpose room
-            if len(terrain.rooms) < 7:
-                if len(cityPlaner.specialPurposeRooms) < 3:
-                    for room in terrain.rooms:
-                        if room.getPosition() == (7,7,0):
-                            continue
-                        if room.getPosition() in cityPlaner.specialPurposeRooms:
-                            continue
-                        if room.getPosition() in cityPlaner.generalPurposeRooms:
-                            continue
-                        if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
-                            continue
-                    
-                        quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="specialPurposeRoom",roomTag="temporaryProduction2",reason="set up second temporary production room")
-                        return ([quest],None)
-
-            if len(character.getTerrain().rooms) == 6:
-                room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-                epochArtwork = room.getItemsByType("EpochArtwork")[0]
-                if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                    quest = src.quests.questMap["GetEpochEvaluation"](reason="start getting the reward for building another room")
-                    return ([quest],None)
-
-                hasNPC = False
-                for otherChar in character.getTerrain().characters:
-                    if otherChar == character:
-                        continue
-                    if "resource gathering" in otherChar.duties:
-                        hasNPC = True
-                for checkRoom in character.getTerrain().rooms:
-                    for otherChar in checkRoom.characters:
-                        if otherChar == character:
-                            continue
-                        if "resource gathering" in otherChar.duties:
-                            hasNPC = True
-
-                if not hasNPC and epochArtwork.charges >= 10:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="resource gathering",reason="spawn another clone to help you out")
-                    return ([quest],None)
-
-            if len(terrain.rooms) < 7:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction2":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    positions = [(3,2,0),(3,3,0),(3,5,0),(3,6,0),(3,8,0),(3,9,0),]
-                    machineRoomPosition2 = checkRoom.getPosition()
-                    for pos in positions:
-                        if not checkRoom.getItemByPosition(pos):
-                            quest1 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=machineRoomPosition2,targetPosition=(pos[0]-1,pos[1],0),reason="increase temporary scrap compacting capacity")
-                            quest2 = src.quests.questMap["PlaceItem"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="increase temporary scrap compacting capacity")
-                            quest3 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="o",targetPositionBig=machineRoomPosition2,targetPosition=(pos[0]+1,pos[1],0),reason="increase temporary scrap compacting capacity")
-                            return ([quest1,quest3,quest2],None)
-
-            if len(terrain.rooms) < 7:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction2":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    positions = [(3,2,0),(3,3,0),(3,5,0),(3,6,0),]
-                    machineRoomPosition2 = checkRoom.getPosition()
-                    for pos in positions:
-                        pos = (pos[0]+2,pos[1],0)
-                        quests = []
-                        if not checkRoom.getItemByPosition(pos):
-                            quest = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="Rod",reason="set up case production line")
-                            quests.append(quest)
-                        pos = (pos[0]+2,pos[1],0)
-                        if not checkRoom.getItemByPosition(pos):
-                            quest = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="Frame",reason="set up case production line")
-                            quests.append(quest)
-                        pos = (pos[0]+2,pos[1],0)
-                        if not checkRoom.getItemByPosition(pos):
-                            quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="Case",reason="set up case production line")
-                            quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Case",stockpileType="o",targetPositionBig=machineRoomPosition2,targetPosition=(pos[0]+1,pos[1],0),reason="set up case production line")
-                            quests.append(quest1)
-                            quests.append(quest2)
-
-                        if quests:
-                            return (quests,None)
-
-            if len(terrain.rooms) < 7:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction1":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    machineRoomPosition = checkRoom.getPosition()
-                    pos = (9,6,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest1 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="RoomBuilder",stockpileType="o",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]+1,pos[1],0),reason="set up room builder machine")
-                        quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Case",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0]-1,pos[1],0),reason="set up room builder machine")
-                        quest3 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="pusher",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0],pos[1]-1,0),reason="set up room builder machine")
-                        quest4 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="puller",stockpileType="i",targetPositionBig=machineRoomPosition,targetPosition=(pos[0],pos[1]+1,0),reason="set up room builder machine")
-                        quest5 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition,targetPosition=pos,itemType="RoomBuilder",reason="set up room builder machine")
-
-                        return ([quest5,quest4,quest3,quest2,quest1],None)
-
-            if len(terrain.rooms) < 7:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction2":
-                        continue
-                    checkRoom = room
-                if checkRoom:
+                    buildSites = room.buildSites[:]
                     quests = []
-                    pos = (5,8,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest2 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="Stripe",reason="set up production room builder base materials")
-                        quests.append(quest2)
-                    pos = (7,8,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="pusher",reason="set up production room builder base materials")
-                        quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="pusher",stockpileType="o",targetPositionBig=machineRoomPosition2,targetPosition=(pos[0]+1,pos[1],0),reason="set up production room builder base materials")
-                        quests.append(quest1)
-                        quests.append(quest2)
+                    counter = 0
+                    counter2 = 0
+                    while counter < len(buildSites):
+                        buildSite = buildSites[counter]
+                        counter += 1
+                        if not buildSite[1] == "Machine":
+                            continue
+
+                        if counter2 > 4:
+                            break
+
+                        counter2 += 1
+                        quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],tryHard=True,reason="to help with setting up the rooms")
+                        quests.append(quest)
+                        for buildSite2 in buildSites[counter:]:
+                            if buildSite[2] == buildSite2[2]:
+                                quest = src.quests.questMap["SetUpMachine"](itemType=buildSite2[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],tryHard=True,reason="to help with setting up the rooms")
+                                quests.append(quest)
+                                buildSites.remove(buildSite2)
+                                counter2 += 1
                     if quests:
                         return (quests,None)
 
+                # set up items
+                for room in terrain.rooms:
+                    if not room.buildSites:
+                        continue
+
+                    buildSites = room.buildSites[:]
                     quests = []
-                    pos = (5,9,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest2 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="Bolt",reason="set up production room builder base materials")
-                        quests.append(quest2)
-                    pos = (7,9,0)
-                    if not checkRoom.getItemByPosition(pos):
-                        quest1 = src.quests.questMap["SetUpMachine"](targetPositionBig=machineRoomPosition2,targetPosition=pos,itemType="puller",reason="set up production room builder base materials")
-                        quest2 = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="puller",stockpileType="o",targetPositionBig=machineRoomPosition2,targetPosition=(pos[0]+1,pos[1],0),reason="set up production room builder base materials")
-                        quests.append(quest1)
-                        quests.append(quest2)
+                    counter = 0
+                    counter2 = 0
+                    while counter < len(buildSites):
+                        buildSite = buildSites[counter]
+                        counter += 1
+
+                        if counter2 > 4:
+                            break
+
+                        counter2 += 1
+                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite[0],itemType=buildSite[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                        quests.append(quest)
+                        for buildSite2 in buildSites[counter:]:
+                            if buildSite[1] == buildSite2[1]:
+                                quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],itemType=buildSite2[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                                quests.append(quest)
+                                buildSites.remove(buildSite2)
+                                counter2 += 1
                     if quests:
                         return (quests,None)
 
-            if len(terrain.rooms) < 7:
+            if not "painting" in npcDuties:
                 for room in terrain.rooms:
                     if not room.floorPlan:
                         continue
@@ -874,538 +685,177 @@ Press d to move the cursor and show the subquests description.
                     quest2 = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),reason="paint the markings for the new room")
                     return ([quest2,quest1],None)
 
+            if not "machine operation" in npcDuties:
+                # operate machines in general
+                quests = []
+                firstMachine = None
+                for item in readyMachines:
+                    if not firstMachine:
+                        firstMachine = item
 
-            #################
+                    if not item.container == firstMachine.container:
+                        continue
+
+                    quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
+                    quests.append(quest)
+                if quests:
+                    return (quests,None)
+
+                # operate scrap compactors in general
+                quests = []
+                firstMachine = None
+                for item in readyScrapCompactors:
+                    if not firstMachine:
+                        firstMachine = item
+
+                    if not item.container == firstMachine.container:
+                        continue
+
+                    quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
+                    quests.append(quest)
+                if quests:
+                    return (quests,None)
+
+            if not "hauling" in npcDuties:
+                for checkRoom in terrain.rooms:
+                    for inputSlot in checkRoom.getEmptyInputslots(fullyEmpty=True):
+                        if not inputSlot[1]:
+                            continue
+
+                        for outputSlot in checkRoom.getNonEmptyOutputslots(inputSlot[1]):
+                            amount = None
+                            if inputSlot[1] == "Case":
+                                amount = 1
+                            quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                            quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
+                            return ([quest4,quest2],None)
+
+                for checkRoom in terrain.rooms:
+                    for inputSlot in checkRoom.getEmptyInputslots():
+                        if not inputSlot[1]:
+                            continue
+
+                        for outputSlot in checkRoom.getNonEmptyOutputslots(inputSlot[1]):
+                            amount = None
+                            if inputSlot[1] == "Case":
+                                amount = 1
+                            quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                            quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
+                            return ([quest4,quest2],None)
+
+            if not "resource fetching" in npcDuties:
+                for checkRoom in terrain.rooms:
+                    for inputSlot in checkRoom.getEmptyInputslots(fullyEmpty=True):
+                        if not inputSlot[1]:
+                            continue
+
+                        for sourceRoom in terrain.rooms:
+                            if sourceRoom == checkRoom:
+                                continue
+
+                            for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                                amount = None
+                                if inputSlot[1] == "Case":
+                                    amount = 1
+                                quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                                quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
+                                return ([quest4,quest2],None)
+
+                for checkRoom in terrain.rooms:
+                    for inputSlot in checkRoom.getEmptyInputslots():
+                        if not inputSlot[1]:
+                            continue
+
+                        for sourceRoom in terrain.rooms:
+                            if sourceRoom == checkRoom:
+                                continue
+
+                            for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                                amount = None
+                                if inputSlot[1] == "Case":
+                                    amount = 1
+                                quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                                quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
+                                return ([quest4,quest2],None)
+
+            if not "resource gathering" in npcDuties:
+                for room in character.getTerrain().rooms:
+                    for inputSlot in room.inputSlots:
+                        if inputSlot[1] == "Scrap":
+                            items = room.getItemByPosition(inputSlot[0])
+                            if not items:
+                                quest1 = src.quests.questMap["GatherScrap"](reason="have Scrap to supply the city with")
+                                quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="ensure scrap supply",targetPosition=room.getPosition())
+                                return ([quest3,quest1],None)
+
+                for room in character.getTerrain().rooms:
+                    for inputSlot in room.inputSlots:
+                        if inputSlot[1] == "Scrap":
+                            items = room.getItemByPosition(inputSlot[0])
+                            if items and items[-1].type == "Scrap" and items[-1].amount < 15:
+                                quest1 = src.quests.questMap["GatherScrap"](reason="have Scrap to supply the city with")
+                                quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="ensure scrap supply",targetPosition=room.getPosition())
+                                return ([quest3,quest1],None)
+
+            if not "scavenging" in npcDuties:
+                if not character.getFreeInventorySpace():
+                    quest = src.quests.questMap["ClearInventory"]()
+                    return ([quest],None)
+
+                quest = src.quests.questMap["Scavenge"]()
+                return ([quest],None)
+
+            ######
             ###
-            ##  generic end phase
+            ##    speed up production
             #
-            #################
+            #####
 
-            # set floor plans
-            floorPlansToSet = ["wallProduction","basicMaterialsProduction","caseProduction","storage","scrapCompactor","scrapCompactorProduction","basicRoombuildingItemsProduction","storage",]
-            hasAllFloorPlans = False
-            for room in terrain.rooms:
-                if room.tag in floorPlansToSet:
-                    floorPlansToSet.remove(room.tag)
-            if floorPlansToSet:
-                for room in cityPlaner.getAvailableRooms():
-                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=floorPlansToSet[0],reason="start the process of making the room useful")
-                    return ([quest],None)
-            else:
-                hasAllFloorPlans = True
-
-            room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-            epochArtwork = room.getItemsByType("EpochArtwork")[0]
-            if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                quest = src.quests.questMap["GetEpochEvaluation"](reason="start getting the reward for building another room")
-                return ([quest],None)
-
-            
-            #spwan NPCs
-            foundMachinePlacer = False
-            hasAllNPCs = True
-            for duty in ["painting","machine placing","hauling"]:
-                hasNPC = False
-                for otherChar in character.getTerrain().characters:
-                    if otherChar == character:
-                        continue
-                    if duty in otherChar.duties:
-                        hasNPC = True
-                for checkRoom in character.getTerrain().rooms:
-                    for otherChar in checkRoom.characters:
-                        if otherChar == character:
-                            continue
-                        if duty in otherChar.duties:
-                            hasNPC = True
-
-                if not hasNPC:
-                    hasAllNPCs = False
-
-                if hasNPC and duty == "machine placing":
-                    foundMachinePlacer = True
-
-                if not hasNPC and epochArtwork.charges >= 10:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
-                    return ([quest],None)
-
-            if hasAllFloorPlans:
-                floorPlansToSet = ["wallProduction","basicMaterialsProduction","caseProduction","storage","scrapCompactor","scrapCompactorProduction","basicRoombuildingItemsProduction","storage",]
-
-                for room in cityPlaner.getAvailableRooms():
-                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=random.choice(floorPlansToSet),reason="increase the bases production")
-                    return ([quest],None)
-            if hasAllNPCs:
-                numItems = 0
-                for scrapField in terrain.scrapFields:
-                    numItems += len(terrain.itemsByBigCoordinate.get(scrapField,[]))
-                if numItems < 100 and epochArtwork.charges >= 20:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
-                    return ([quest],None)
-
-                if numItems >= 100:
-                    102/0
-
-            if hasAllFloorPlans and hasAllNPCs:
-                if not dryRun and not self.shownTutorialEnd:
-                    text = """
-
-You build a base! Great!
-This means you reached the end of the tutorial.
-And to be frank you reached the end of the availabe basebuilder content.
-
-There is more stuff prepared that can be added.
-But i need to get feedback and polish the basic basebuilding first.
-Otherwise the whole thing might end up unfun.
-
-So do your part and reach me.
-Even if it is just to tell me you reached this screen.
-It would make my day to see that.
-
-You can press enter to continue running the game.
-On that note, did you know that the tutorial base does not include food?
-
-For your convinience full auto mode is now enabled.
-Press * to start it, press ctrl-d to stop it.
-"""
-                    src.interaction.showInterruptText(text)
-                    self.shownTutorialEnd = True
-                    character.disableCommandsOnPlus = False
-
-            # remove special room designations
-            for room in terrain.rooms:
-                if not room.tag in ("temporaryProduction2","temporaryProduction1","temporaryStorage"):
+            # operate machines
+            quests = []
+            firstMachine = None
+            for item in readyMachines:
+                if not item.toProduce in ("Wall","Door","RoomBuilder",):
                     continue
-                if room.floorPlan:
+
+                if not firstMachine:
+                    firstMachine = item
+
+                if not item.container == firstMachine.container:
                     continue
-                if room.buildSites:
-                    continue
-                if len(room.walkingSpace) > 4:
-                    continue
-                if room.inputSlots:
-                    continue
-                if room.outputSlots:
-                    continue
-                if room.storageSlots:
-                    continue
-                if len(room.itemsOnFloor) > 13+13+11+11:
-                    continue
-                quest = src.quests.questMap["DesignateRoom"]("undesignate room",roomPosition=room.getPosition(),roomType="undesignate",reason="free up the room for different usage")
-                return ([quest],None)
 
-            # check for wall production
-            completedWallProductionRoom = False
-            for room in terrain.rooms:
-                if not room.tag == "wallProduction":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedWallProductionRoom = True
-                break
-
-            # clear tmp wall production
-            if completedWallProductionRoom:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction1":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    checkRoomPos = checkRoom.getPosition()
-                    positions = [(2,3,0),(3,2,0),(3,3,0),(4,3,0),
-                                 (5,3,0),(6,2,0),(6,3,0),(7,3,0),
-                                 (2,6,0),(3,5,0),(3,6,0),(4,6,0)]
-
-                    quests = []
-                    for position in positions:
-                        if not checkRoom.getPaintedByPosition(position):
-                            continue
-                        quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                        quests.append(quest)
-                    if quests:
-                        return (quests,None)
-
-                    quests = []
-                    for position in positions:
-                        if not checkRoom.getItemByPosition(position):
-                            continue
-                        quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                        quests.append(quest)
-                    if quests:
-                        return (quests,None)
-
-            # clear command centre wall production
-            if completedWallProductionRoom:
-                positions = [(7,1,0),(8,1,0),(8,1,0),(9,1,0),
-                             (7,2,0),(8,2,0),(8,2,0),(9,2,0),]
-                checkRoom = terrain.getRoomByPosition((7,7,0))[0]
-                checkRoomPos = checkRoom.getPosition()
-
-                quests = []
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-            # check for basic material production
-            completedBasicMaterialsProductionRoom = False
-            for room in terrain.rooms:
-                print(room.tag)
-                if not room.tag == "basicMaterialsProduction":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedBasicMaterialsProductionRoom = True
-                break
-
-            # clear tmp material production
-            if completedBasicMaterialsProductionRoom:
-                checkRoom = None
-                for room in terrain.rooms:
-                    if not room.tag == "temporaryProduction2":
-                        continue
-                    checkRoom = room
-                if checkRoom:
-                    checkRoomPos = checkRoom.getPosition()
-                    positions = []
-
-                    for y in range(7,12):
-                        for x in range(1,12):
-                            positions.append((x,y,0))
-
-                    quests = []
-                    for position in positions:
-                        if not checkRoom.getPaintedByPosition(position):
-                            continue
-                        quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                        quests.append(quest)
-                    if quests:
-                        return (quests,None)
-
-                    quests = []
-                    for position in positions:
-                        if not checkRoom.getItemByPosition(position):
-                            continue
-                        quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                        quests.append(quest)
-                    if quests:
-                        return (quests,None)
-
-            # check for case room
-            completedCaseProductionRoom = False
-            for room in terrain.rooms:
-                if not room.tag == "caseProduction":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedCaseProductionRoom = True
-                break
-
-            # remove temp case production
-            checkRoom = None
-            for room in terrain.rooms:
-                if not room.tag == "temporaryProduction2":
-                    continue
-                checkRoom = room
-            if completedCaseProductionRoom and checkRoom:
-                # remove temp case production
-                checkRoomPos = checkRoom.getPosition()
-                positions = []
-
-                for y in range(1,12):
-                    for x in range(1,12):
-                        positions.append((x,y,0))
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-            # remove temp case production
-            checkRoom = None
-            for room in terrain.rooms:
-                if not room.tag == "temporaryProduction1":
-                    continue
-                checkRoom = room
-            if completedCaseProductionRoom and checkRoom:
-                checkRoomPos = checkRoom.getPosition()
-                positions = []
-
-                for y in range(8,12):
-                    for x in range(1,12):
-                        positions.append((x,y,0))
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-            # check for storage room
-            completedStorageRoom = False
-            for room in terrain.rooms:
-                if not room.tag == "storage":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedStorageRoom = True
-                break
-
-            # remove temp storage
-            checkRoom = None
-            for room in terrain.rooms:
-                if not room.tag == "temporaryStorage":
-                    continue
-                checkRoom = room
-            if completedStorageRoom and checkRoom:
-                checkRoomPos = checkRoom.getPosition()
-                positions = []
-
-                for y in range(1,12):
-                    for x in range(1,12):
-                        positions.append((x,y,0))
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-            # check for scrap compactor production
-            completedScrapCompactorProductionRoom = False
-            for room in terrain.rooms:
-                if not room.tag == "scrapCompactorProduction":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedScrapCompactorProductionRoom = True
-                break
-
-            # remove temp scrap compactor production
-            checkRoom = None
-            for room in terrain.rooms:
-                if not room.tag == "temporaryProduction1":
-                    continue
-                checkRoom = room
-            if completedScrapCompactorProductionRoom and checkRoom:
-                checkRoomPos = checkRoom.getPosition()
-                positions = []
-
-                for y in (3,):
-                    for x in range(6,12):
-                        positions.append((x,y,0))
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-            # check for scrap compacting
-            completedScrapCompactorRoom = False
-            for room in terrain.rooms:
-                if not room.tag == "scrapCompactor":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedScrapCompactorRoom = True
-                break
-
-            # clear command centre scrap compacting
-            if completedScrapCompactorRoom:
-                positions = [(9,5,0),(8,5,0),(7,5,0),]
-                checkRoom = terrain.getRoomByPosition((7,7,0))[0]
-                checkRoomPos = checkRoom.getPosition()
-
-                quests = []
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-            # check for room building basics
-            completedBasicRoombuildingItemsProductionRoom = False
-            for room in terrain.rooms:
-                if not room.tag == "basicRoombuildingItemsProduction":
-                    continue
-                if room.floorPlan:
-                    continue
-                if room.buildSites:
-                    continue
-                completedBasicRoombuildingItemsProductionRoom = True
-                break
-
-            # remove temp scrap compactor production
-            checkRoom = None
-            for room in terrain.rooms:
-                if not room.tag == "temporaryProduction1":
-                    continue
-                checkRoom = room
-            if completedBasicRoombuildingItemsProductionRoom and checkRoom:
-                checkRoomPos = checkRoom.getPosition()
-                positions = []
-
-                for y in (5,6,7):
-                    for x in range(5,12):
-                        positions.append((x,y,0))
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getPaintedByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["DeleteMarking"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old markings")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
-
-                quests = []
-                counter = 0
-                for position in positions:
-                    if not checkRoom.getItemByPosition(position):
-                        continue
-                    counter += 1
-                    if counter > 5:
-                        break
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=position,targetPositionBig=checkRoom.getPosition(),reason="remove old machinery")
-                    quests.append(quest)
-                if quests:
-                    return (quests,None)
+                quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
+                quests.append(quest)
+            if quests:
+                return (quests,None)
 
             # set up machines
             for room in terrain.rooms:
                 if not room.buildSites:
                     continue
 
+                buildSites = room.buildSites[:]
                 quests = []
                 counter = 0
-                for buildSite in room.buildSites:
+                counter2 = 0
+                while counter < len(buildSites):
+                    buildSite = buildSites[counter]
+                    counter += 1
                     if not buildSite[1] == "Machine":
                         continue
-                    counter += 1
-                    if counter > 5:
+
+                    if counter2 > 4:
                         break
+
+                    counter2 += 1
                     quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],tryHard=True,reason="to help with setting up the rooms")
                     quests.append(quest)
+                    for buildSite2 in buildSites[counter:]:
+                        if buildSite[2] == buildSite2[2]:
+                            quest = src.quests.questMap["SetUpMachine"](itemType=buildSite2[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],tryHard=True,reason="to help with setting up the rooms")
+                            quests.append(quest)
+                            buildSites.remove(buildSite2)
+                            counter2 += 1
                 if quests:
                     return (quests,None)
 
@@ -1414,14 +864,26 @@ Press * to start it, press ctrl-d to stop it.
                 if not room.buildSites:
                     continue
 
+                buildSites = room.buildSites[:]
                 quests = []
                 counter = 0
-                for buildSite in room.buildSites:
+                counter2 = 0
+                while counter < len(buildSites):
+                    buildSite = buildSites[counter]
                     counter += 1
-                    if counter > 5:
+
+                    if counter2 > 4:
                         break
+
+                    counter2 += 1
                     quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite[0],itemType=buildSite[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
                     quests.append(quest)
+                    for buildSite2 in buildSites[counter:]:
+                        if buildSite[1] == buildSite2[1]:
+                            quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],itemType=buildSite2[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                            quests.append(quest)
+                            buildSites.remove(buildSite2)
+                            counter2 += 1
                 if quests:
                     return (quests,None)
 
@@ -1444,12 +906,25 @@ Press * to start it, press ctrl-d to stop it.
                 outputSlots = room.floorPlan["outputSlots"][:]
                 random.shuffle(outputSlots)
                 counter = 0
-                for outputSlot in outputSlots:
-                    counter += 1
-                    if counter > 5:
+                counter2 = 0
+                while counter < len(outputSlots):
+                    outputSlot = outputSlots[counter]
+                    if counter2 > 4:
                         break
+
+                    counter += 1
+                    counter2 += 1
+
                     quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot[1],stockpileType="o",targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="to help with drawing the markers in rooms")
                     quests.append(quest)
+
+                    for outputSlot2 in outputSlots[counter:]:
+                        if outputSlot[1] == outputSlot2[1]:
+                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot2[1],stockpileType="o",targetPositionBig=room.getPosition(),targetPosition=outputSlot2[0],reason="to help with drawing the markers in rooms")
+                            quests.append(quest)
+                            outputSlots.remove(outputSlot2)
+                            counter2 += 1
+
                 if quests:
                     return (quests,None)
 
@@ -1471,13 +946,27 @@ Press * to start it, press ctrl-d to stop it.
                 quests = []
                 buildSites = room.floorPlan["buildSites"][:]
                 random.shuffle(buildSites)
+
                 counter = 0
-                for buildSite in buildSites:
-                    counter += 1
-                    if counter > 5:
+                counter2 = 0
+                while counter < len(buildSites):
+                    if counter2 > 4:
                         break
+                    buildSite = buildSites[counter]
+
+                    counter += 1
+                    counter2 += 1
+
                     quest = src.quests.questMap["DrawBuildSite"](tryHard=True,itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],extraInfo=buildSite[2],reason="to help with drawing the markers in rooms")
                     quests.append(quest)
+
+                    for buildSite2 in buildSites[counter:]:
+                        if buildSite[1] == buildSite2[1] and buildSite[2] == buildSite2[2]:
+                            quest = src.quests.questMap["DrawBuildSite"](tryHard=True,itemType=buildSite2[1],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],extraInfo=buildSite2[2],reason="to help with drawing the markers in rooms")
+                            quests.append(quest)
+                            buildSites.remove(buildSite2)
+                            counter2 += 1
+
                 if quests:
                     return (quests,None)
 
@@ -1537,208 +1026,123 @@ Press * to start it, press ctrl-d to stop it.
                 if quests:
                     return (quests,None)
 
+            ######
+            ###
+            ##    desperately speed up production
+            #
+            #####
 
-            readyWallMachines = []
-            readyDoorMachines = []
-            readyMachines = []
-            readyScrapCompactors = []
-            caseRooms = []
-            for room in terrain.rooms:
-                for item in room.itemsOnFloor:
-                    if item.type == "Machine":
-                        if item.toProduce == "Wall" and item.readyToUse():
-                            readyWallMachines.append(item)
-                            continue
-                        if item.toProduce == "Door" and item.readyToUse():
-                            readyDoorMachines.append(item)
-                            continue
-                        if item.readyToUse():
-                            readyMachines.append(item)
-                            continue
-                    if item.type == "ScrapCompactor":
-                        if item.readyToUse():
-                            readyScrapCompactors.append(item)
-                            continue
-
-                if room.getEmptyInputslots("Case",fullyEmpty=True):
-                    caseRooms.append(room)
-
+            # operate machines
             quests = []
-            for item in readyDoorMachines:
-                quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="to help with producing basic buiding materials")
-                quests.append(quest)
-            if quests:
-                return (quests,None)
-
-            quests = []
-            for item in readyWallMachines:
-                quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="to help with producing basic buiding materials")
-                quests.append(quest)
-            if quests:
-                return (quests,None)
-
-            if caseRooms:
-                foundSources = False
-                for room in terrain.rooms:
-                    if not room.getNonEmptyOutputslots("Case"):
-                        continue
-                    foundSources = True
-                    break
-                
-                if foundSources:
-                    quests = []
-                    for room in caseRooms:
-                        quest = src.quests.questMap["RestockRoom"](targetPosition=room.getPosition(),toRestock="Case",reason="speed up wall production")
-                        quests.append(quest)
-                        break
-                    if not character.inventory or not character.inventory[-1].type == "Case":
-                        quest = src.quests.questMap["FetchItems"](toCollect="Case",reason="have cases to place")
-                        quests.append(quest)
-                    if len(character.inventory) > 4 and not character.inventory[-1].type == "Case":
-                        quest = src.quests.questMap["ClearInventory"](reason="have space for more items")
-                        quests.append(quest)
-                    if quests:
-                        return (quests,None)
-
-            quests = []
+            firstMachine = None
             for item in readyMachines:
+                if not item.toProduce in ("Case",):
+                    continue
+
+                if not firstMachine:
+                    firstMachine = item
+
+                if not item.container == firstMachine.container:
+                    continue
+
                 quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
                 quests.append(quest)
             if quests:
                 return (quests,None)
 
+            # fill fully empty inputs
+            for checkRoom in terrain.rooms:
+                for inputSlot in checkRoom.getEmptyInputslots(fullyEmpty=True):
+                    if not inputSlot[1]:
+                        continue
+
+                    for sourceRoom in terrain.rooms:
+                        for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                            amount = None
+                            if inputSlot[1] == "Case":
+                                amount = 1
+                            quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                            quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
+                            return ([quest4,quest2],None)
+
+            # clear inventory
+            if character.inventory:
+                quest = src.quests.questMap["ClearInventory"]()
+                return ([quest],None)
+
+            # directly produce missing items
+            if not "Wall" in storedItems:
+                quest = src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True)
+                return ([quest],None)
+            if not "Door" in storedItems:
+                quest = src.quests.questMap["ProduceItem"](itemType="Door",tryHard=True)
+                return ([quest],None)
+            if not "RoomBuilder" in storedItems:
+                quest = src.quests.questMap["ProduceItem"](itemType="RoomBuilder",tryHard=True)
+                return ([quest],None)
+
+            ######
+            ###
+            ##    really desperately speed up production
+            #
+            #####
+
+            # operate machines in general
             quests = []
+            firstMachine = None
+            for item in readyMachines:
+                if not firstMachine:
+                    firstMachine = item
+
+                if not item.container == firstMachine.container:
+                    continue
+
+                quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
+                quests.append(quest)
+            if quests:
+                return (quests,None)
+            
+            # operate scrap compactors in general
+            quests = []
+            firstMachine = None
             for item in readyScrapCompactors:
+                if not firstMachine:
+                    firstMachine = item
+
+                if not item.container == firstMachine.container:
+                    continue
+
                 quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
                 quests.append(quest)
             if quests:
                 return (quests,None)
 
-            return (None,("...","wait"))
-            1/0
-
-            character.timeTaken +=1
-            return (None,None)
-
-
-            rooms = character.getTerrain().getRoomByPosition((7,7,0))
-            if not rooms:
-                self.fail("command centre missing")
-                return (None,None)
-            room = rooms[0]
-
-            npcs = []
-            npcs.extend(character.getTerrain().characters)
-            for checkRoom in character.getTerrain().rooms:
-                npcs.extend(checkRoom.characters)
-            for npc in npcs:
-                if npc == character:
-                    continue
-                if not npc.faction == character.faction:
-                    continue
-                quest = src.quests.questMap["ReduceFoodConsumption"](reason="prevent starvation")
-                return ([quest],None)
-
-            for checkRoom in character.getTerrain().rooms:
-                for item in checkRoom.itemsOnFloor:
-                    if not item.type in ("Corpse","GooFlask"):
+            # fill partially empty inputs
+            for checkRoom in terrain.rooms:
+                for inputSlot in checkRoom.getEmptyInputslots():
+                    if not inputSlot[1]:
                         continue
 
-                    inStorage = False
-                    for storageSlot in checkRoom.storageSlots:
-                        if not storageSlot[0] == item.getPosition():
-                            continue
-                        inStorage = True
+                    for sourceRoom in terrain.rooms:
+                        for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                            amount = None
+                            if inputSlot[1] == "Case":
+                                amount = 1
+                            quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                            quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
+                            return ([quest4,quest2],None)
 
-                    if inStorage:
-                        continue
-                            
-                    quest1 = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),reason="pick up valuables")
-                    quest2 = src.quests.questMap["ClearInventory"](reason="store the valuables")
-                    return ([quest2,quest1], None)
-
-            if character.flask and character.flask.uses < 8:
-                quest = src.quests.questMap["FillFlask"]()
+            # produce wall yourself
+            if cityPlaner.generalPurposeRooms or "wallProduction" in assignedFloorPlans:
+                wallmachineWithoutCoolDown = None
+                for item in machineMap.get("Wall",[]):
+                    if item.checkCoolDownEnded():
+                        wallmachineWithoutCoolDown = item
+                
+                quest = src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True)
                 return ([quest],None)
 
-            foundInput1 = False
-            for inputSlot in room.inputSlots:
-                if inputSlot[0] == (7,4,0):
-                    foundInput1 = True
-
-            if not foundInput1:
-                if room.getItemByPosition((7,4,0)):
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=(7,4,0),targetPositionBig=(7,7,0),reason="remove blocking item")
-                    return ([quest],None)
-                quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(7,7,0),targetPosition=(7,4,0),reason="set up scrap supply infrastructure for the machine production")
-                return ([quest],None)
-
-            items = room.getItemByPosition((8,4,0))
-            if not items or not items[-1].type == "ScrapCompactor":
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(8,4,0),itemType="ScrapCompactor",tryHard=True,boltDown=True,reason="set up metal bar production for the machine production")
-                return ([quest],None)
-
-            for room in character.getTerrain().rooms:
-                for inputSlot in room.inputSlots:
-                    if inputSlot[1] == "Scrap":
-                        items = room.getItemByPosition(inputSlot[0])
-                        if not items or not items[-1].type == "Scrap":
-                            quest1 = src.quests.questMap["GatherScrap"](reason="have Scrap to supply the city with")
-                            quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="ensure scrap supply",targetPosition=room.getPosition())
-                            return ([quest3,quest1],None)
-            
-            foundCaseOutput = False
-            for room in character.getTerrain().rooms:
-                for outputSlot in room.outputSlots:
-                    if outputSlot[1] == "Case":
-                        foundCaseOutput = True
-
-            if not foundCaseOutput:
-                quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Case",targetPositionBig=(6,7,0))
-                return ([quest],None)
-
-            foundWallOutput = False
-            for room in character.getTerrain().rooms:
-                for outputSlot in room.outputSlots:
-                    if outputSlot[1] == "Wall":
-                        foundWallOutput = True
-
-            if not foundWallOutput:
-                quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Wall",targetPositionBig=(6,7,0))
-                return ([quest],None)
-
-            foundDoorOutput = False
-            for room in character.getTerrain().rooms:
-                for outputSlot in room.outputSlots:
-                    if outputSlot[1] == "Door":
-                        foundDoorOutput = True
-
-            if not foundDoorOutput:
-                quest = src.quests.questMap["SetUpProductionLine"](tryHard=True,itemType="Door",targetPositionBig=(6,7,0))
-                return ([quest],None)
-
-            if not character.getTerrain().getRoomByPosition((7,8,0)):
-                quest = src.quests.questMap["BuildRoom"](targetPosition=(7,8,0),tryHard=True)
-                if not dryRun:
-                    self.startWatching(quest,self.roomBuildingFailed,"failed")
-                return ([quest],None)
-            if not character.getTerrain().getRoomByPosition((8,7,0)):
-                quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),tryHard=True)
-                if not dryRun:
-                    self.startWatching(quest,self.roomBuildingFailed,"failed")
-                return ([quest],None)
-            if not character.getTerrain().getRoomByPosition((7,6,0)):
-                quest = src.quests.questMap["BuildRoom"](targetPosition=(7,6,0),tryHard=True)
-                if not dryRun:
-                    self.startWatching(quest,self.roomBuildingFailed,"failed")
-                return ([quest],None)
-            if not character.getTerrain().getRoomByPosition((8,8,0)):
-                quest = src.quests.questMap["BuildRoom"](targetPosition=(8,8,0),tryHard=True)
-                if not dryRun:
-                    self.startWatching(quest,self.roomBuildingFailed,"failed")
-                return ([quest],None)
-            90023/0
-            90023/0
+            1337/0
         
         return (None,None)
 

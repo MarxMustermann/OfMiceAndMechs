@@ -17,10 +17,13 @@ class AssignFloorPlan(src.quests.MetaQuestSequence):
         if self.reason:
             reason = ", to %s"%(self.reason,)
         text = """
-Assign a floor plan%s.
+Assign a floor plan to room %s%s.
+
+Set the floor plan: %s
 
 (setting the wrong floor plan may break the tutorial, but is FUN)
-"""%(reason,)
+"""%(self.roomPosition,reason,self.floorPlanType,)
+        out = [text]
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False):
@@ -99,7 +102,6 @@ Assign a floor plan%s.
         terrain = character.getTerrain()
         room = terrain.getRoomByPosition(self.roomPosition)[0]
 
-        print(room.floorPlan)
         if room.floorPlan:
             self.postHandler()
             return True
@@ -134,6 +136,11 @@ Assign a floor plan%s.
 
     def handleAssignFloorPlan(self,extraParams):
         self.triggerCompletionCheck(extraParams["character"])
+
+    def getQuestMarkersTile(self,character):
+        result = super().getQuestMarkersTile(character)
+        result.append(((self.roomPosition[0],self.roomPosition[1]),"target"))
+        return result
 
     def assignToCharacter(self, character):
         if self.character:

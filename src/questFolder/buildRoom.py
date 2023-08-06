@@ -36,10 +36,6 @@ class BuildRoom(src.quests.MetaQuestSequence):
         out = ["""
 Build a room on the tile %s%s."""%(self.targetPosition,reason,),"""
 
-Rooms are build using the RoomBuilder (""",roombuilder.render(),""").
-The RoomBuilder needs to be placed in the middle of a tile.
-Walls and doors have to be placed in a room shaped pattern around that.
-When all of that is done, the Roombuilder can be activated to build a room.
 """]
 
         if self.tryHard:

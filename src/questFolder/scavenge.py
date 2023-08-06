@@ -159,27 +159,27 @@ This quest will end when your inventory is full."""
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
 
         if renderForTile:
-            pos = character.getBigPosition()
-            for item in character.getTerrain().itemsByBigCoordinate.get(pos,[]):
-                if self.toCollect and not item.type == self.toCollect:
+            terrain = character.getTerrain()
+
+            for offset in ((0,0,0),(-1,0,0),(1,0,0),(0,-1,0),(0,1,0)):
+                pos = character.getBigPosition()
+                pos = (pos[0]+offset[0],pos[1]+offset[1],0)
+
+                centerItems = terrain.getItemByPosition((pos[0]*15+7,pos[1]*15+7,0))
+                if centerItems and centerItems[0].type == "RoomBuilder":
                     continue
-                result.append((item.getPosition(),"target"))
-            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0]-1,pos[1],0),[]):
-                if self.toCollect and not item.type == self.toCollect:
+
+                if pos in terrain.forests:
                     continue
-                result.append((item.getPosition(),"target"))
-            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0]+1,pos[1],0),[]):
-                if self.toCollect and not item.type == self.toCollect:
+                if pos in terrain.scrapFields or (pos[0],pos[1]) in terrain.scrapFields:
                     continue
-                result.append((item.getPosition(),"target"))
-            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1]-1,0),[]):
-                if self.toCollect and not item.type == self.toCollect:
+                if terrain.getRoomByPosition(pos):
                     continue
-                result.append((item.getPosition(),"target"))
-            for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1]+1,0),[]):
-                if self.toCollect and not item.type == self.toCollect:
-                    continue
-                result.append((item.getPosition(),"target"))
+
+                for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1],0),[]):
+                    if self.toCollect and not item.type == self.toCollect:
+                        continue
+                    result.append((item.getPosition(),"target"))
 
         return result
 

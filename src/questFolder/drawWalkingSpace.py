@@ -39,7 +39,7 @@ Try as hard as you can to achieve this.
         return text
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -63,17 +63,19 @@ Try as hard as you can to achieve this.
                 self.addQuest(quest)
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun=True):
         if not self.subQuests:
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
-                self.fail("target room missing")
+                if dryRun:
+                    self.fail("target room missing")
                 return (None,None)
             room = rooms[0]
 
             for pos in room.walkingSpace:
                 if pos == self.targetPosition:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return (None,None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))

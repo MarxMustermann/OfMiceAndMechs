@@ -495,20 +495,20 @@ class CityPlaner(src.items.Item):
             inputSlots.append( (( 3,8,0),"Case",{}))
             inputSlots.append( (( 4,7,0),"pusher",{}))
             buildSites.append( (( 3,7,0),"Machine",{"toProduce":"pusher"}))
-            inputSlots.append( (( 2,7,0),"MetalBars",{}))
+            inputSlots.append( (( 2,7,0),"Stripe",{}))
             inputSlots.append( (( 4,9,0),"puller",{}))
-            buildSites.append( (( 3,9,0),"Machine",{"toProduce":"pusher"}))
-            inputSlots.append( (( 2,9,0),"MetalBars",{}))
+            buildSites.append( (( 3,9,0),"Machine",{"toProduce":"puller"}))
+            inputSlots.append( (( 2,9,0),"Bolt",{}))
 
             outputSlots.append(((10,8,0),"RoomBuilder",{}))
             buildSites.append( (( 9,8,0),"Machine",{"toProduce":"RoomBuilder"}))
             inputSlots.append( (( 8,8,0),"Case",{}))
             inputSlots.append( (( 9,7,0),"pusher",{}))
             buildSites.append( (( 8,7,0),"Machine",{"toProduce":"pusher"}))
-            inputSlots.append( (( 7,7,0),"MetalBars",{}))
+            inputSlots.append( (( 7,7,0),"Stripe",{}))
             inputSlots.append( (( 9,9,0),"puller",{}))
-            buildSites.append( (( 8,9,0),"Machine",{"toProduce":"pusher"}))
-            inputSlots.append( (( 7,9,0),"MetalBars",{}))
+            buildSites.append( (( 8,9,0),"Machine",{"toProduce":"puller"}))
+            inputSlots.append( (( 7,9,0),"Bolt",{}))
 
         if floorPlanType == "productionRoom":
             for y in (1,4,7,11,):
@@ -640,6 +640,31 @@ class CityPlaner(src.items.Item):
         room.requiredDuties.append("painting")
         params["character"].changed("assigned floor plan",params)
         self.showMap(params["character"], cursor = params["coordinate"])
+
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the CityPlaner")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the CityPlaner")
+        character.changed("unboltedItem",{"character":character,"item":self})
 
     def setGeneralPurposeRoomFromMap(self,params):
         self.generalPurposeRooms.append((params["coordinate"][0],params["coordinate"][1],0))

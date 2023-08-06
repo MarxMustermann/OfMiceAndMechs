@@ -29,7 +29,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
         if self.triggerCompletionCheck(character):
             return
 
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -53,13 +53,18 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                 self.addQuest(quest)
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
-                self.fail("target room missing")
+                if not dryRun:
+                    self.fail("target room missing")
                 return (None,None)
             room = rooms[0]
+
+            if not character.getBigPosition() == self.targetPositionBig:
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
+                return ([quest], None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             foundOffset = None
@@ -102,10 +107,25 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                 return (None,("jk","delete marking"))
 
             if not self.painterPos:
-                if not character.inventory or not character.inventory[-1].type == "Painter":
+                painter = None
+                painterIndex = -1
+                if character.inventory:
+                    if character.inventory[-1].type == "Painter":
+                        painter = character.inventory[-1]
+
+                if not painter:
+                    counter = 0
+                    for item in character.inventory:
+                        if item.type == "Painter":
+                            painter = item
+                            break
+                        counter += 1
+                    if painter:
+                        painterIndex = counter
+
+                if not painter:
                     quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to delete marking")
                     return ([quest],None)
-                painter = character.inventory[-1]
 
             if not character.getBigPosition() == self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the marking to delte")
@@ -115,9 +135,28 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the marking to delete",ignoreEndBlocked=True)
                 return ([quest],None)
 
-            return (None,("l","drop the Painter"))
+            if painterIndex == -1:
+                return (None,("l","drop the Painter"))
+            else:
+                return (None,("il"+"s"*painterIndex+"j","drop the Painter"))
 
         return (None,None)
+
+    def handleDeletedMarking(self,extraInfo):
+        if not self.active:
+            return
+        if self.completed:
+            1/0
+
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+        
+        self.startWatching(character,self.handleDeletedMarking, "deleted marking")
+
+        return super().assignToCharacter(character)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

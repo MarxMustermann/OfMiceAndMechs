@@ -75,6 +75,7 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
 
         self.startWatching(character, self.droppedItem, "dropped")
         self.startWatching(character, self.producedItem, "producedItem")
+        self.startWatching(character, self.boltedItem, "boltedItem")
         super().assignToCharacter(character)
 
     def getQuestMarkersTile(self,character):
@@ -106,14 +107,20 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
         item = extraInfo[1]
         self.checkPlacedItem(item)
 
+    def boltedItem(self,extraInfo):
+        item = extraInfo["item"]
+        self.checkPlacedItem(item)
+
     def checkPlacedItem(self,item):
         if item.type == self.itemType:
             if item.container.isRoom:
                 if item.container.getPosition() == self.targetPositionBig and item.getPosition() == self.targetPosition:
-                    self.postHandler()
+                    if not self.boltDown or item.bolted:
+                        self.postHandler()
             else:
                 if item.getPosition() == (self.targetPosition[0]+self.targetPositionBig[0]*15,self.targetPosition[1]+self.targetPositionBig[1]*15,0):
-                    self.postHandler()
+                    if not self.boltDown or item.bolted:
+                        self.postHandler()
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):
@@ -154,43 +161,87 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
                     return (None,(["esc"],"exit the menu"))
 
             itemFound = None
-            itemIndex = 0
-            for item in reversed(character.inventory):
-                itemIndex += 1
-                if item.type == self.itemType:
-                    itemFound = item
-                    break
+            itemPlaced = None
+            if self.boltDown:
+                if self.targetPositionBig:
+                    terrain = character.getTerrain()
+                    rooms = terrain.getRoomByPosition(self.targetPositionBig)
+                    if rooms:
+                        container = rooms[0]
+                    else:
+                        container = terrain
+                else:
+                    container = character.container
 
-            if not itemFound:
-                quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard,reason="have an item to place")
-                return ([quest],None)
-
-            if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
-                return ([quest],None)
-
-            if not itemFound.walkable:
                 if character.container.isRoom:
                     items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
                 else:
                     items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                if items:
-                    quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
+
+                if items and items[-1].type == self.itemType:
+                    itemFound = items[-1]
+                    itemPlaced = items[-1]
+
+            if not itemPlaced:
+                itemFound = None
+                itemIndex = 0
+                for item in reversed(character.inventory):
+                    itemIndex += 1
+                    if item.type == self.itemType:
+                        itemFound = item
+                        break
+
+                if not itemFound:
+                    quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard,reason="have an item to place")
                     return ([quest],None)
 
-            if not character.getSpacePosition() == self.targetPosition:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,))
+                if not character.getBigPosition() == self.targetPositionBig:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
+                    return ([quest],None)
+
+                if not itemFound.walkable:
+                    if character.container.isRoom:
+                        items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
+                    else:
+                        items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                    if items and not items[-1].type == self.itemType:
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
+                        return ([quest],None)
+
+                if not character.getSpacePosition() == self.targetPosition:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,))
+                    return ([quest],None)
+
+                if not itemPlaced:
+                    if itemIndex > 1:
+                        dropCommand = "il"+itemIndex*"w"+"j"
+                    else:
+                        dropCommand = "l"
+
+                    return (None,(dropCommand,"drop the item"))
+
+            if self.targetPositionBig and not self.targetPositionBig == character.getBigPosition():
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
                 return ([quest],None)
 
-            if itemIndex > 1:
-                dropCommand = "il"+itemIndex*"w"+"j"
-            else:
-                dropCommand = "l"
+            if character.getDistance(itemPlaced.getPosition()) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,),ignoreEndBlocked=True)
+                return ([quest],None)
 
-            if self.boltDown:
-                return (None,(dropCommand+"cb","drop and bolt the item"))
-            else:
-                return (None,(dropCommand,"drop the item"))
+            pos = character.getPosition()
+            targetPosition = itemPlaced.getPosition()
+            if (pos[0],pos[1],pos[2]) == targetPosition:
+                return (None,("cb","bolt down item"))
+            if (pos[0]-1,pos[1],pos[2]) == targetPosition:
+                return (None,("acb","bolt down item"))
+            if (pos[0]+1,pos[1],pos[2]) == targetPosition:
+                return (None,("dcb","bolt down item"))
+            if (pos[0],pos[1]-1,pos[2]) == targetPosition:
+                return (None,("wcb","bolt sown item"))
+            if (pos[0],pos[1]+1,pos[2]) == targetPosition:
+                return (None,("scb","bolt down item"))
+                    
+            67/0
         return (None,None)
     
     def triggerCompletionCheck(self,character=None):
@@ -207,8 +258,9 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
             return False
 
         if items[-1].type == self.itemType:
-            self.postHandler()
-            return True
+            if not self.boltDown or items[-1].bolted:
+                self.postHandler()
+                return True
         return False
 
 src.quests.addType(PlaceItem)

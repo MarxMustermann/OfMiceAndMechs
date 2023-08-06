@@ -520,6 +520,14 @@ Press r to generate subquest and recive detailed instructions
             room = rooms[0]
             cityPlaner = room.getItemByType("CityPlaner")
             if cityPlaner:
+                for candidate in cityPlaner.plannedRooms:
+                    items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
+                    if items and items[-1].type == "RoomBuilder":
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                        self.addQuest(quest)
+                        self.idleCounter = 0
+                        return True
+
                 while cityPlaner.plannedRooms:
                     if terrain.getRoomByPosition(cityPlaner.plannedRooms[-1]):
                         cityPlaner.plannedRooms.pop()
@@ -528,7 +536,45 @@ Press r to generate subquest and recive detailed instructions
                     self.addQuest(src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[-1]))
                     self.idleCounter = 0
                     return True
-                
+
+        baseNeighbours = []
+        offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+        for room in terrain.rooms:
+            pos = room.getPosition()
+            for offset in offsets:
+                checkPos = (pos[0]+offset[0],pos[1]+offset[1],0)
+                if terrain.getRoomByPosition(checkPos):
+                    continue
+                if checkPos in baseNeighbours:
+                    continue
+                baseNeighbours.append(checkPos)
+        random.shuffle(baseNeighbours)
+
+        possibleBuildSites = []
+        for candidate in baseNeighbours:
+            if (not candidate in terrain.scrapFields) and (not candidate in terrain.forests):
+                possibleBuildSites.append(candidate)
+
+        for candidate in possibleBuildSites:
+            items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
+            if items and items[-1].type == "RoomBuilder":
+                quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                self.addQuest(quest)
+                self.idleCounter = 0
+                return True
+
+        for candidate in possibleBuildSites:
+            if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
+                quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                self.addQuest(quest)
+                self.idleCounter = 0
+                return True
+        for candidate in possibleBuildSites:
+            quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+            self.addQuest(quest)
+            self.idleCounter = 0
+            return True
+        
     def checkTriggerMachinePlacing(self,character,room):
         if (not room.floorPlan) and room.buildSites:
             for buildSite in room.buildSites:

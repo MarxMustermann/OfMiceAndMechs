@@ -1077,6 +1077,7 @@ rawMaterialLookup = {
     "Stripe": ["MetalBars"],
     "Bolt": ["MetalBars"],
     "Rod": ["MetalBars"],
+    "Painter": ["Tank","Heater"],
     "Tank": ["Sheet"],
     "Heater": ["Radiator"],
     "Connector": ["Mount"],

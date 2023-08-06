@@ -53,6 +53,7 @@ If you miss resources, produce them.
                     "Heater"          :["Radiator","MetalBars"],
                     "MemoryCell"      :["Connector","MetalBars"],
                     "Tank"            :["Sheet","MetalBars"],
+                    "Painter"         :["Tank", "Heater"],
                   }
         if not self.itemType in itemMap:
             print(self.itemType)
@@ -122,8 +123,6 @@ If you miss resources, produce them.
         return self.getNextStep(character)[1]
 
     def producedBlueprint(self,extraInfo):
-        print(extraInfo)
-        print(self.itemType)
         if extraInfo["itemType"] == self.itemType:
             self.postHandler()
 

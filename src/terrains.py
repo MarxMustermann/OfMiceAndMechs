@@ -960,6 +960,9 @@ class Terrain(src.saveing.Saveable):
 
                 if not newPos == targetPos and newPos in self.scrapFields:
                     continue
+                items = self.getItemByPosition((newPos[0]*15+7,newPos[1]*15+7,0))
+                if not newPos == targetPos and items and items[0].type == "RoomBuilder":
+                    continue
 
                 passable = False
 
@@ -997,8 +1000,8 @@ class Terrain(src.saveing.Saveable):
 
         return paths.get(targetPos)
 
-    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
-        path = self.getPathTile_test(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character)
+    def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,clearing=False):
+        path = self.getPathTile_test(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character,clearing=clearing)
         #path = self.getPathTile(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character)
 
         command = ""
@@ -1030,7 +1033,7 @@ class Terrain(src.saveing.Saveable):
 
         return False
 
-    def getPathTile_test(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None):
+    def getPathTile_test(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,clearing=False):
         """
         path = self.pathCache.get((tilePos,startPos,targetPos))
         if path:
@@ -1048,7 +1051,7 @@ class Terrain(src.saveing.Saveable):
         """
 
         pathfinder = self.pathfinderCache.get(tilePos)
-        if not pathfinder or ignoreEndBlocked:
+        if not pathfinder or ignoreEndBlocked or clearing:
             tileMap = []
             for x in range(0,15):
                 tileMap.append([])
@@ -1072,6 +1075,8 @@ class Terrain(src.saveing.Saveable):
                 for x in range(1,14):
                      if not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
                         tileMap[x][y] = 0
+                        if clearing:
+                            tileMap[x][y] = 200
 
             for y in range(1,14):
                 for x in range(1,14):
@@ -1079,7 +1084,7 @@ class Terrain(src.saveing.Saveable):
                     if items:
                         if items[0].type == "Bush":
                             tileMap[x][y] = 127
-            if ignoreEndBlocked:
+            if ignoreEndBlocked or clearing:
                 tileMap[targetPos[0]][targetPos[1]] = 1
 
             cost = np.array(tileMap, dtype=np.int8)
@@ -1704,6 +1709,10 @@ class Terrain(src.saveing.Saveable):
                 for marker in quest.getQuestMarkersSmall(src.gamestate.gamestate.mainChar,renderForTile=True):
                     pos = marker[0]
                     pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
+                    if pos[0] < 0:
+                        continue
+                    if pos[1] < 0:
+                        continue
                     try:
                         display = chars[pos[1]][pos[0]]
                     except:

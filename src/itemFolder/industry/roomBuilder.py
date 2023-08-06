@@ -252,7 +252,9 @@ The room has to be a rectangle.
             else:
                 self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",10,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"XX")})
 
-        self.container.removeItem(self)
+        terrain = self.container
+        for item in self.container.itemsByBigCoordinate.get(self.getBigPosition(),[])[:]:
+            terrain.removeItem(item)
 
         self.xPosition = roomLeft
         self.yPosition = roomTop

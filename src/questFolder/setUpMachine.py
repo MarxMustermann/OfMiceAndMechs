@@ -74,6 +74,44 @@ If you don't find a %s blueprint, research it.
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
+
+            itemPlaced = None
+            if self.targetPosition:
+                if self.targetPositionBig:
+                    terrain = character.getTerrain()
+                    rooms = terrain.getRoomByPosition(self.targetPositionBig)
+                    if rooms:
+                        container = rooms[0]
+                    else:
+                        container = terrain
+                else:
+                    container = character.container
+
+                if character.container.isRoom:
+                    items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
+                else:
+                    items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+
+                if items and items[-1].type == "Machine" and items[-1].toProduce == self.itemType:
+                    itemPlaced = items[-1]
+
+            if itemPlaced:
+                if itemPlaced.bolted:
+                    return (None,None)
+                if not itemPlaced.container == character.container:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine is placed")
+                    return ([quest],None)
+                if character.getDistance(itemPlaced.getPosition()) > 1:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="go to machine")
+                    return ([quest],None)
+                
+                directions = [((0,0,0),""),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
+                directionFound = None
+                for direction in directions:
+                    if character.getPosition(offset=direction[0]) == itemPlaced.getPosition():
+                        return (None,(direction[1]+"cb","bolt down the machine"))
+
+
             if character.inventory and character.inventory[-1].type == "Machine" and character.inventory[-1].toProduce == self.itemType:
                 if not self.targetPosition:
                     validTargetPosition = False
@@ -89,7 +127,7 @@ If you don't find a %s blueprint, research it.
                         else:
                             room = random.choice(terrain.rooms)
 
-                        if room.getItemByPosition(targetPosition):
+                        if room.getItemByPosition(targetPosition) or room.getPaintedByPosition(targetPosition):
                             continue
                         if room.getItemByPosition((targetPosition[0]-1,targetPosition[1],0)):
                             continue
@@ -284,7 +322,7 @@ If you don't find a %s blueprint, research it.
         if not items:
             return False
 
-        if items[-1].type == "Machine" and items[-1].toProduce == self.itemType:
+        if items[-1].type == "Machine" and items[-1].toProduce == self.itemType and items[-1].bolted:
             self.postHandler()
             return True
          
@@ -308,6 +346,16 @@ If you don't find a %s blueprint, research it.
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character, self.boltedItem, "boltedItem")
+        super().assignToCharacter(character)
+
+    def boltedItem(self,extraInfo):
+        self.triggerCompletionCheck(self.character)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

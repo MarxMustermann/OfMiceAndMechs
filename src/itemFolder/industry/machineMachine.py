@@ -59,13 +59,12 @@ Select the thing to produce and confirm.
         options.append(("produce", "produce machine"))
         if self.lastProduced:
             options.append(("repeat", "repeat last production"))
-        self.submenue = src.interaction.SelectionMenu(
-            "select the item to produce", options
+        submenue = src.interaction.SelectionMenu(
+                "select the item to produce", options
         )
-        character.macroState["submenue"] = self.submenue
-        character.macroState["submenue"].followUp = self.basicSwitch
-        self.character = character
-        self.character.runCommandString("~",nativeKey=True)
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"basicSwitch","params":{"character":character}}
+        character.runCommandString("~",nativeKey=True)
 
     # abstraction: should use superclass functionality
     def configure(self, character):
@@ -104,19 +103,23 @@ Select the thing to produce and confirm.
                 self.produce(task["type"])
 
     # abstraction: should use superclass functionality
-    def basicSwitch(self):
+    def basicSwitch(self,extraInfo):
         """
         handle a character having seleted a activation action
         by running the selected action
         """
+        character = extraInfo["character"]
 
-        selection = self.character.macroState["submenue"].getSelection()
+        if not extraInfo.get("selection"):
+            return
+
+        selection = extraInfo["selection"]
         if selection == "blueprint":
-            self.addBlueprint()
+            self.addBlueprint(character)
         elif selection == "produce":
-            self.productionSwitch()
+            self.productionSwitch(character)
         elif selection == "repeat":
-            self.repeatProduction()
+            self.repeatProduction(character)
 
     def readyToUse(self):
         if self.endProducts == {}:
@@ -159,7 +162,7 @@ Select the thing to produce and confirm.
         else:
             return self.display
 
-    def addBlueprint(self, blueprint=None):
+    def addBlueprint(self, character, blueprint=None):
         """
         try to load a blueprint into the machine
         """
@@ -177,7 +180,7 @@ Select the thing to produce and confirm.
             if not blueprintFound:
                 self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-                self.character.addMessage("no blueprint found above/north")
+                character.addMessage("no blueprint found above/north")
                 return
         else:
             blueprintFound = blueprint
@@ -189,31 +192,31 @@ Select the thing to produce and confirm.
             self.blueprintLevels[blueprintFound.endProduct] = blueprintFound.level
 
         if not blueprint:
-            self.character.addMessage(
+            character.addMessage(
                 "blueprint for " + blueprintFound.endProduct + " inserted"
             )
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"bb")})
             self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
             self.container.removeItem(blueprintFound)
 
-    def repeatProduction(self):
-        self.produce(self.lastProduced)
+    def repeatProduction(self,character):
+        self.produce(character, self.lastProduced)
 
-    def productionSwitch(self):
+    def productionSwitch(self,character):
         """
         handle a character trying to produce a item
         by offering a selection of machines that can be produced
         """
 
         if self.endProducts == {}:
-            self.character.addMessage("no blueprints available.")
+            character.addMessage("no blueprints available.")
             return
 
         if (
             src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown
             and not self.charges
         ):
-            self.character.addMessage(
+            character.addMessage(
                 "cooldown not reached. Wait %s ticks"
                 % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
             )
@@ -226,20 +229,20 @@ Select the thing to produce and confirm.
             "select the item to produce", options
         )
         self.submenue.tag = "machineSelection"
-        self.character.macroState["submenue"] = self.submenue
-        self.character.macroState["submenue"].followUp = self.produceSelection
+        character.macroState["submenue"] = self.submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"produceSelection","params":{"character":character}}
 
-    def produceSelection(self):
+    def produceSelection(self,extraInfo):
         """
         trigger production of a selected item
         """
 
-        if not self.submenue.selection:
+        if not extraInfo.get("selection"):
             return
 
-        self.produce(self.submenue.selection)
+        self.produce(extraInfo["character"],extraInfo["selection"])
 
-    def produce(self, itemType):
+    def produce(self, character, itemType):
         """
         produce an item
 
@@ -260,7 +263,7 @@ Select the thing to produce and confirm.
 
         # refuse production without resources
         if resourcesNeeded:
-            self.character.addMessage(
+            character.addMessage(
                 "missing resources: %s" % (",".join(resourcesNeeded))
             )
             return
@@ -276,7 +279,7 @@ Select the thing to produce and confirm.
         if targetFull:
             self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-            self.character.addMessage(
+            character.addMessage(
                 "the target area is full, the machine does not produce anything"
             )
             return
@@ -291,7 +294,7 @@ Select the thing to produce and confirm.
         self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"M|")})
         self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
         self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"++")})
-        self.character.addMessage(
+        character.addMessage(
             "you produce a machine that produces %s" % (itemType,)
         )
 

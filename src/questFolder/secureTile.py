@@ -86,9 +86,6 @@ Try luring enemies into landmines or detonating some bombs."""
             return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def solver(self, character):
-        if character == src.gamestate.gamestate.mainChar:
-            print("solver secure tile")
-
         if self.triggerCompletionCheck(character):
             return
 
@@ -105,9 +102,6 @@ Try luring enemies into landmines or detonating some bombs."""
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
-            if character == src.gamestate.gamestate.mainChar:
-                print("get next step secure tile")
-
             if not self.strict:
                 self.huntdownCooldown -= 1
                 if self.huntdownCooldown < 0:

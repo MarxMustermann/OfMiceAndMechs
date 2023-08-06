@@ -140,16 +140,18 @@ If you don't find a %s machine needed, build it.
             foundMachine = None
             for room in character.getTerrain().rooms:
                 for item in room.itemsOnFloor:
-                    if item.type == "Machine" and item.toProduce == self.itemType:
-                        foundMachine = item
-                        break
+                    if not (item.type == "Machine" and item.toProduce == self.itemType):
+                        continue
+                    if not item.bolted:
+                        continue
+                    foundMachine = item
+                    break
                 if foundMachine:
                     break
 
             if foundMachine:
                 neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
                 inputOffsets = [(-1,0,0),(0,1,0),(0,-1,0)]
-                counter = 0
                 for neededItem in neededItems:
                     foundItem = False
                     for inputOffset in inputOffsets:
@@ -158,13 +160,36 @@ If you don't find a %s machine needed, build it.
                             continue
                         foundItem = True
                         break
+                    
+                    if foundItem:
+                        continue
 
-                    if not foundItem:
-                        inputOffset = inputOffsets[counter]
+                    enptyInputOffsets = []
+                    for inputOffset in inputOffsets:
+                        items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=inputOffset))
+                        if items and not items[-1].walkable:
+                            continue
+                        if items and len(items) < 25:
+                            continue
+                        enptyInputOffsets.append(inputOffset)
+                    
+                    preferedOffset = None
+                    for inputOffset in enptyInputOffsets:
+                        newPos = foundMachine.getPosition(offset=inputOffset)
+                        for inputStockpile in foundMachine.container.inputSlots:
+                            if not inputStockpile[0] == newPos:
+                                continue
+                            if not inputStockpile[1] == neededItem:
+                                continue
+
+                            quest = src.quests.questMap["PlaceItem"](targetPosition=foundMachine.getPosition(offset=inputOffset),targetPositionBig=foundMachine.container.getPosition(),itemType=neededItem,tryHard=self.tryHard)
+                            return ([quest], None)
+                            
+
+                    if enptyInputOffsets:
+                        inputOffset = enptyInputOffsets[0]
                         quest = src.quests.questMap["PlaceItem"](targetPosition=foundMachine.getPosition(offset=inputOffset),targetPositionBig=foundMachine.container.getPosition(),itemType=neededItem,tryHard=self.tryHard)
                         return ([quest], None)
-
-                    counter += 1
 
                 items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=(1,0,0)))
                 if items:

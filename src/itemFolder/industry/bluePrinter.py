@@ -54,6 +54,7 @@ The items from the blueprint reciepe need to be added to the west or south.
             [["Sheet", "Connector"], "ItemDowngrader"],
             [["Scrap", "MetalBars"], "Scraper"],
             [["Tank", "Connector"], "ReactionChamber"],
+            [["Tank", "Heater"], "Painter"],
             [["Frame", "MetalBars"], "Case"],
             [["Frame"], "PocketFrame"],
             [["Connector", "MetalBars"], "MemoryCell"],

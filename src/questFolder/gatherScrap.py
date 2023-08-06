@@ -99,10 +99,24 @@ Scrapfields are shown on the minimap as white ss"""]
                 quest = src.quests.questMap["ClearInventory"]()
                 return ([quest],None)
 
-        items = character.container.getItemByPosition(character.getPosition())
-        if items:
-            if items[-1].type == "Scrap":
-                return (None,("k"*min(10-len(character.inventory),items[-1].amount),"pick up scrap"))
+        room = character.container
+        if not isinstance(room,src.rooms.Room):
+            directions = [(0,0,0),(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]
+            for direction in directions:
+                items = character.container.getItemByPosition(character.getPosition(offset=direction))
+                if items:
+                    if items[0].type == "Scrap":
+                        command = "k"
+                        if direction == (1,0,0):
+                            command = "Kd"
+                        if direction == (-1,0,0):
+                            command = "Ka"
+                        if direction == (0,1,0):
+                            command = "Ks"
+                        if direction == (0,-1,0):
+                            command = "Kw"
+
+                        return (None,(command*min(10-len(character.inventory),items[0].amount),"pick up scrap"))
 
         foundScrap = None
         room = character.container
@@ -150,33 +164,12 @@ Scrapfields are shown on the minimap as white ss"""]
             else:
                 targetPos = (source[0][0],source[0][1],0)
 
-            quest = src.quests.questMap["GoToTile"](targetPosition=targetPos,description="go to scrap field")
+            quest = src.quests.questMap["GoToTile"](targetPosition=targetPos,description="go to scrap field",reason="go to scrap field")
             return ([quest],None)
 
-        command = ""
-
-        for step in pathMap[foundScrap[0]]:
-            if step == (-1,0):
-                command += "a"
-            if step == (1,0):
-                command += "d"
-            if step == (0,-1):
-                command += "w"
-            if step == (0,1):
-                command += "s"
-
-        if foundScrap[2] == (-1,0):
-            pickUpCommand = "Ka"
-        if foundScrap[2] == (1,0):
-            pickUpCommand = "Kd"
-        if foundScrap[2] == (0,1):
-            pickUpCommand = "Ks"
-        if foundScrap[2] == (0,-1):
-            pickUpCommand = "Kw"
-        if foundScrap[2] == (0,0):
-            pickUpCommand = "k"
-
-        command += pickUpCommand*min(10-len(character.inventory),character.container.getItemByPosition(foundScrap[1])[0].amount)
-        return (None,(command,"pick up scrap"))
+        
+        print(foundScrap[1])
+        quest = src.quests.questMap["GoToPosition"](targetPosition=(foundScrap[1][0]%15,foundScrap[1][1]%15,0),description="go to scrap",reason="go to scrap",ignoreEndBlocked=True)
+        return ([quest],None)
 
 src.quests.addType(GatherScrap)

@@ -3075,17 +3075,22 @@ class SubMenu(src.saveing.Saveable):
                 counter += 1
                 if counter == self.selectionIndex:
                     out += " -> " + str(v) + "\n"
+                    if self.extraDescriptions and self.options[k] in self.extraDescriptions:
+                        out += self.extraDescriptions[self.options[k]]+"\n\n"
                 else:
                     out += "    " + str(v) + "\n"
 
             # show the rendered options
             # bad code: urwid specific code
-            main.set_text(
-                (
-                    urwid.AttrSpec("default", "default"),
-                    self.persistentText + "\n\n" + out,
+            try:
+                main.set_text(
+                    (
+                        urwid.AttrSpec("default", "default"),
+                        self.persistentText + "\n\n" + out,
+                    )
                 )
-            )
+            except:
+                pass
 
         return False
 
@@ -3242,7 +3247,7 @@ class SelectionMenu(SubMenu):
     does a simple selection and terminates
     """
 
-    def __init__(self, text="", options=None, default=None, targetParamName="selection"):
+    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None):
         """
         set up the selection
 
@@ -3259,6 +3264,7 @@ class SelectionMenu(SubMenu):
         self.type = "SelectionMenu"
         super().__init__(default=default,targetParamName=targetParamName)
         self.setOptions(text, options)
+        self.extraDescriptions = extraDescriptions
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -3278,7 +3284,10 @@ class SelectionMenu(SubMenu):
                 self.callIndirect(self.followUp)
             return True
         if not noRender:
-            header.set_text("")
+            try:
+                header.set_text("")
+            except:
+                pass
 
         # let superclass handle the actual selection
         if not self.getSelection():
@@ -5556,6 +5565,38 @@ class MapMenu(SubMenu):
             if self.followUp:
                 self.followUp()
             return True
+
+        quest = character.getActiveQuest()
+        if quest:
+            for marker in quest.getQuestMarkersTile(character):
+                pos = marker[0]
+                try:
+                    display = self.mapContent[pos[1]][pos[0]]
+                except:
+                    23/0
+                    continue
+
+                actionMeta = None
+                if isinstance(display,src.interaction.ActionMeta):
+                    actionMeta = display
+                    display = display.content
+
+                if isinstance(display,int):
+                    display = src.canvas.displayChars.indexedMapping[display]
+                if isinstance(display,str):
+                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                if hasattr(display[0],"fg"):
+                    display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                else:
+                    if not isinstance(display[0],tuple):
+                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                if actionMeta:
+                    actionMeta.content = display
+                    display = actionMeta
+
+                self.mapContent[pos[1]][pos[0]] = display
 
         # show rendered map
         mapText = []

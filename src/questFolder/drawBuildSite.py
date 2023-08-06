@@ -44,7 +44,7 @@ Try as hard as you can to achieve this.
         return text
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -68,18 +68,82 @@ Try as hard as you can to achieve this.
                 self.addQuest(quest)
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
+            submenue = character.macroState.get("submenue")
+            if submenue:
+                if submenue.tag == "paintModeSelection":
+                    if submenue.text == "":
+                        return (None,(["b"],"to configure the painter to build site"))
+                    elif submenue.text == "b":
+                        return (None,(["enter"],"to configure the painter to nuild site"))
+                    else:
+                        return (None,(["backspace"],"to delete input"))
+
+                if submenue.tag == "paintTypeSelection":
+                    itemType = self.itemType
+                    if not itemType:
+                        itemType = ""
+
+                    if itemType == submenue.text:
+                        return (None,(["enter"],"to configure the item type"))
+                    
+                    correctIndex = 0
+                    while correctIndex < len(itemType) and correctIndex < len(submenue.text):
+                        if not itemType[correctIndex] == submenue.text[correctIndex]:
+                            break
+                        correctIndex += 1
+                    
+                    if correctIndex < len(submenue.text):
+                        return (None,(["backspace"],"to delete input"))
+
+                    return (None,(itemType[correctIndex:],"to enter type"))
+
+                if submenue.tag == "paintExtraParamName":
+                    nameToSet = "toProduce"
+
+                    if nameToSet == submenue.text:
+                        return (None,(["enter"],"to set the name of the extra parameter"))
+                    
+                    correctIndex = 0
+                    while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
+                        if not nameToSet[correctIndex] == submenue.text[correctIndex]:
+                            break
+                        correctIndex += 1
+                    
+                    if correctIndex < len(submenue.text):
+                        return (None,(["backspace"],"to delete input"))
+
+                    return (None,(nameToSet[correctIndex:],"to enter name of the extra parameter"))
+
+                if submenue.tag == "paintExtraParamValue":
+                    valueToSet = self.extraInfo["toProduce"]
+
+                    if valueToSet == submenue.text:
+                        return (None,(["enter"],"to set the value of the extra parameter"))
+                    
+                    correctIndex = 0
+                    while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
+                        if not valueToSet[correctIndex] == submenue.text[correctIndex]:
+                            break
+                        correctIndex += 1
+                    
+                    if correctIndex < len(submenue.text):
+                        return (None,(["backspace"],"to delete input"))
+
+                    return (None,(valueToSet[correctIndex:],"to enter value of the extra parameter"))
+
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
-                self.fail("target room missing")
+                if not dryRun:
+                    self.fail("target room missing")
                 return (None,None)
             room = rooms[0]
 
             for buildSite in room.buildSites:
-                print(buildSite)
                 if buildSite[0] == self.targetPosition:
-                    self.postHandler()
+                    if not dryRun:
+                        self.postHandler()
                     return (None,None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))

@@ -91,7 +91,7 @@ Try as hard as you can to achieve this.
         return text
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -115,29 +115,85 @@ Try as hard as you can to achieve this.
                 self.addQuest(quest)
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def handleQuestFailure(self,extraParam):
+        self.fail(extraParam["reason"])
+
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
+            submenue = character.macroState.get("submenue")
+            if submenue:
+                if submenue.tag == "paintModeSelection":
+                    if submenue.text == "":
+                        if self.stockpileType == "i":
+                            return (None,(["i"],"to configure the painter to input stockpile"))
+                        if self.stockpileType == "o":
+                            return (None,(["o"],"to configure the painter to output stockpile"))
+                        if self.stockpileType == "s":
+                            return (None,(["s"],"to configure the painter to storage stockpile"))
+                    elif self.stockpileType == submenue.text:
+                        if self.stockpileType == "i":
+                            return (None,(["enter"],"to configure the painter to input stockpile"))
+                        if self.stockpileType == "o":
+                            return (None,(["enter"],"to configure the painter to output stockpile"))
+                        if self.stockpileType == "s":
+                            return (None,(["enter"],"to configure the painter to storage stockpile"))
+                    else:
+                        return (None,(["backspace"],"to delete input"))
+
+                if submenue.tag == "paintTypeSelection":
+                    itemType = self.itemType
+                    if not itemType:
+                        itemType = ""
+
+                    if itemType == submenue.text:
+                        if self.stockpileType == "i":
+                            return (None,(["enter"],"to configure the painter to input stockpile"))
+                        if self.stockpileType == "o":
+                            return (None,(["enter"],"to configure the painter to output stockpile"))
+                        if self.stockpileType == "s":
+                            return (None,(["enter"],"to configure the painter to storage stockpile"))
+                    
+                    correctIndex = 0
+                    while correctIndex < len(itemType) and correctIndex < len(submenue.text):
+                        if not itemType[correctIndex] == submenue.text[correctIndex]:
+                            break
+                        correctIndex += 1
+                    
+                    if correctIndex < len(submenue.text):
+                        return (None,(["backspace"],"to delete input"))
+
+                    return (None,(itemType[correctIndex:],"to enter type"))
+
+
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
-                self.fail("target room missing")
+                if not dryRun:
+                    self.fail("target room missing")
                 return (None,None)
             room = rooms[0]
 
             if self.stockpileType == "i":
                 for inputSlot in room.inputSlots:
-                    if inputSlot[0] == self.targetPosition:
-                        self.postHandler()
+                    if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
+                        if not dryRun:
+                            self.postHandler()
                         return (None,None)
             if self.stockpileType == "o":
                 for outputSlot in room.outputSlots:
-                    if outputSlot[0] == self.targetPosition:
-                        self.postHandler()
+                    if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
+                        if not dryRun:
+                            self.postHandler()
                         return (None,None)
             if self.stockpileType == "s":
                 for storageSlot in room.storageSlots:
-                    if storageSlot[0] == self.targetPosition:
-                        self.postHandler()
+                    if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
+                        if not dryRun:
+                            self.postHandler()
                         return (None,None)
+
+            if not character.getBigPosition() == self.targetPositionBig:
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+                return ([quest],None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             foundOffset = None
@@ -147,6 +203,7 @@ Try as hard as you can to achieve this.
                     continue
 
                 foundOffset = (offset,items[-1])
+
             if foundOffset:
                 item = foundOffset[1]
                 if character.getDistance(item.getPosition()) > 0:
@@ -172,12 +229,10 @@ Try as hard as you can to achieve this.
             if not self.painterPos:
                 if not character.inventory or not character.inventory[-1].type == "Painter":
                     quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
+                    if not dryRun:
+                        self.startWatching(quest,self.handleQuestFailure,"failed")
                     return ([quest],None)
                 painter = character.inventory[-1]
-
-            if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
-                return ([quest],None)
 
             if character.getDistance(self.targetPosition) > 0:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")

@@ -1737,8 +1737,6 @@ press any other key to attack normaly"""
         """
 
         if self.disableCommandsOnPlus:
-            print(self)
-            print(self.name)
             if self.getActiveQuest().getSolvingCommandString(self):
                 return
             try:

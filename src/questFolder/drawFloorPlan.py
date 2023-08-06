@@ -55,28 +55,20 @@ Draw a floor plan assigned to a room%s.
                     if walkingSpaces[-1] in character.container.walkingSpace:
                         walkingSpaces.pop()
 
-                if walkingSpaces:
-                    quest = src.quests.questMap["DrawWalkingSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=walkingSpaces[-1])
-                    return ([quest],None)
+                quests = []
+                counter = 0
+                for walkingSpace in reversed(walkingSpaces):
+                    if counter > 9:
+                        break
+                    counter += 1
+                    quest = src.quests.questMap["DrawWalkingSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=walkingSpace)
+                    quests.append(quest)
+
+                if quests:
+                    return (list(reversed(quests)),None)
 
                 if not walkingSpaces == None:
                     del character.container.floorPlan["walkingSpace"]
-
-            if "inputSlots" in character.container.floorPlan:
-                inputSlots = character.container.floorPlan.get("inputSlots")
-                if inputSlots:
-                    for existingInputslot in character.container.inputSlots:
-                        if existingInputslot[0] == inputSlots[-1][0]:
-                            inputSlots.pop()
-                            break
-
-                    if inputSlots:
-                        inputSlot = inputSlots[-1]
-                        quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
-                        return ([quest],None)
-
-                if not inputSlots == None:
-                    del character.container.floorPlan["inputSlots"]
 
             if "outputSlots" in character.container.floorPlan:
                 outputSlots = character.container.floorPlan.get("outputSlots")
@@ -86,13 +78,76 @@ Draw a floor plan assigned to a room%s.
                             outputSlots.pop()
                             break
 
-                    if outputSlots:
-                        outputSlot = outputSlots[-1]
+                outputSlots = character.container.floorPlan.get("outputSlots")[:]
+                if outputSlots:
+                    quests = []
+                    counter = 0
+                    counter2 = 0
+                    while counter < len(outputSlots):
+                        if counter2 > 4:
+                            break
+                        outputSlot = outputSlots[counter]
+
+                        counter += 1
+                        counter2 += 1
+
                         quest = src.quests.questMap["DrawStockpile"](itemType=outputSlot[1],stockpileType="o",targetPositionBig=self.targetPosition,targetPosition=outputSlot[0])
-                        return ([quest],None)
+                        quests.append(quest)
+
+                        for outputSlot2 in outputSlots[counter:]:
+                            if outputSlot[1] == outputSlot2[1]:
+                                quest = src.quests.questMap["DrawStockpile"](itemType=outputSlot2[1],stockpileType="o",targetPositionBig=self.targetPosition,targetPosition=outputSlot2[0])
+                                quests.append(quest)
+                                outputSlots.remove(outputSlot2)
+                                counter2 += 1
+
+                    if quests:
+                        return (list(reversed(quests)),None)
 
                 if not outputSlots == None:
                     del character.container.floorPlan["outputSlots"]
+
+            if "buildSites" in character.container.floorPlan:
+                buildSites = character.container.floorPlan.get("buildSites")
+                if buildSites:
+                    for existingBuildSite in character.container.buildSites:
+                        if existingBuildSite[0] == buildSites[-1][0]:
+                            buildSites.pop()
+                            break
+
+                buildSites = character.container.floorPlan.get("buildSites")[:]
+                if buildSites:
+                    quests = []
+                    counter = 0
+                    counter2 = 0
+                    while counter < len(buildSites):
+                        if counter2 > 4:
+                            break
+                        buildSite = buildSites[counter]
+
+                        counter += 1
+                        counter2 += 1
+
+                        quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
+                        quests.append(quest)
+
+                        for buildSite2 in buildSites[counter:]:
+                            if buildSite[1] == buildSite2[1] and buildSite[2] == buildSite2[2]:
+                                quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite2[1],targetPositionBig=self.targetPosition,targetPosition=buildSite2[0],extraInfo=buildSite2[2])
+                                quests.append(quest)
+                                buildSites.remove(buildSite2)
+                                counter2 += 1
+
+                    if quests:
+                        return (list(reversed(quests)),None)
+
+                    if buildSites:
+                        buildSite = buildSites[-1]
+                        quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
+                        return ([quest],None)
+
+                if not buildSites == None:
+                    del character.container.floorPlan["buildSites"]
 
             if "storageSlots" in character.container.floorPlan:
                 storageSlots = character.container.floorPlan.get("storageSlots")
@@ -110,22 +165,42 @@ Draw a floor plan assigned to a room%s.
                 if not storageSlots == None:
                     del character.container.floorPlan["storageSlots"]
 
-            if "buildSites" in character.container.floorPlan:
-                buildSites = character.container.floorPlan.get("buildSites")
-
-                if buildSites:
-                    for existingBuildSite in character.container.buildSites:
-                        if existingBuildSite[0] == buildSites[-1][0]:
-                            buildSites.pop()
+            if "inputSlots" in character.container.floorPlan:
+                inputSlots = character.container.floorPlan.get("inputSlots")
+                if inputSlots:
+                    for existingInputslot in character.container.inputSlots:
+                        if existingInputslot[0] == inputSlots[-1][0]:
+                            inputSlots.pop()
                             break
 
-                    if buildSites:
-                        buildSite = buildSites[-1]
-                        quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
-                        return ([quest],None)
+                inputSlots = character.container.floorPlan.get("inputSlots")[:]
+                if inputSlots:
+                    quests = []
+                    counter = 0
+                    counter2 = 0
+                    while counter < len(inputSlots):
+                        if counter2 > 4:
+                            break
+                        inputSlot = inputSlots[counter]
 
-                if not buildSites == None:
-                    del character.container.floorPlan["buildSites"]
+                        counter += 1
+                        counter2 += 1
+
+                        quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
+                        quests.append(quest)
+
+                        for inputSlot2 in inputSlots[counter:]:
+                            if inputSlot[1] == inputSlot2[1]:
+                                quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot2[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot2[0])
+                                quests.append(quest)
+                                inputSlots.remove(inputSlot2)
+                                counter2 += 1
+
+                    if quests:
+                        return (list(reversed(quests)),None)
+
+                if not inputSlots == None:
+                    del character.container.floorPlan["inputSlots"]
 
             if character.container.floorPlan:
                 character.container.floorPlan = None

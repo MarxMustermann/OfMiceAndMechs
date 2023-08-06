@@ -30,9 +30,6 @@ A painter. it can be used to draw markers on the floor
 
         self.offset = (0,0,0)
 
-        self.character = None
-        self.submenue = None
-    
         # set up meta information for saving
         self.attributesToStore.extend(["activated"])
         self.objectsToStore.append("character")
@@ -83,69 +80,79 @@ This should be used in cases where you can not place the Painter on the position
         return "x?"
 
     def configure(self, character):
-       self.submenue = src.interaction.OneKeystrokeMenu(
+        submenue = src.interaction.OneKeystrokeMenu(
                "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info\nd: set direction"
                                        )
-       character.macroState["submenue"] = self.submenue
-       character.macroState["submenue"].followUp = self.configure2
-       self.character = character
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"configure2","params":{"character":character}}
 
-    def configure2(self):
-        if self.submenue.keyPressed == "c":
+    def configure2(self,extraInfo):
+        character = extraInfo["character"]
+        keyPressed = extraInfo["keyPressed"]
+
+        if keyPressed == "c":
             self.paintExtraInfo = {}
             return
 
-        if self.submenue.keyPressed == "d":
-           self.submenue = src.interaction.InputMenu(
+        if keyPressed == "d":
+           submenue = src.interaction.InputMenu(
                "type in the direction to set\n\n"+
                "(w,a,s,d)"
                )
-           self.character.macroState["submenue"] = self.submenue
-           self.character.macroState["submenue"].followUp = self.setDirection
+           character.macroState["submenue"] = submenue
+           character.macroState["submenue"].followUp = {"container":self,"method":"setDirection","params":{"character":character}}
            return
 
-        if self.submenue.keyPressed == "m":
-           self.submenue = src.interaction.InputMenu(
+        if keyPressed == "m":
+           submenue = src.interaction.InputMenu(
                "type in the mode you want to set\n\n"+
                "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete (i,o,s,w,b,d)"
                )
-           self.character.macroState["submenue"] = self.submenue
-           self.character.macroState["submenue"].followUp = self.setMode
+           submenue.tag = "paintModeSelection"
+           character.macroState["submenue"] = submenue
+           character.macroState["submenue"].followUp = {"container":self,"method":"setMode","params":{"character":character}}
            return
 
-        if self.submenue.keyPressed == "t":
-           self.submenue = src.interaction.InputMenu(
+        if keyPressed == "t":
+           submenue = src.interaction.InputMenu(
                "type in the type you want to set"
                                        )
-           self.character.macroState["submenue"] = self.submenue
-           self.character.macroState["submenue"].followUp = self.setType
+           character.macroState["submenue"] = submenue
+           submenue.tag = "paintTypeSelection"
+           character.macroState["submenue"].followUp = {"container":self,"method":"setType","params":{"character":character}}
            return
 
-        if self.submenue.keyPressed == "e":
-           self.submenue = src.interaction.InputMenu(
+        if keyPressed == "e":
+           submenue = src.interaction.InputMenu(
                "type in the name of the extra parameter you want to set",
                targetParamName="name",
                                        )
-           self.character.macroState["submenue"] = self.submenue
-           self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":{"character":self.character}}
+           character.macroState["submenue"] = submenue
+           submenue.tag = "paintExtraParamName"
+           character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":{"character":character}}
            return
 
     def addExtraInfo1(self,extraInfo):
-        self.submenue = src.interaction.InputMenu(
+        character = extraInfo["character"]
+        submenue = src.interaction.InputMenu(
                "type in the type of the extra parameter you want to set (empty for string)",
                targetParamName="type",
                                        )
-        self.character.macroState["submenue"] = self.submenue
-        self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":extraInfo}
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":extraInfo}
         return
 
     def addExtraInfo2(self,extraInfo):
-        self.submenue = src.interaction.InputMenu(
+        character = extraInfo["character"]
+
+        submenue = src.interaction.InputMenu(
                "type in the value of the extra parameter you want to set",
                targetParamName="value",
                                        )
-        self.character.macroState["submenue"] = self.submenue
-        self.character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo3","params":extraInfo}
+
+        character.macroState["submenue"] = submenue
+        submenue.tag = "paintExtraParamValue"
+        character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo3","params":extraInfo}
         return
 
     def addExtraInfo3(self,extraInfo):
@@ -157,8 +164,8 @@ This should be used in cases where you can not place the Painter on the position
             value = json.loads(value)
         self.paintExtraInfo[extraInfo["name"]] = value
 
-    def setDirection(self):
-        mode = self.submenue.text
+    def setDirection(self,extraInfo):
+        mode = extraInfo.get("text")
         offset = (0,0,0)
         if mode == "w":
             offset = (0,-1,0)
@@ -169,10 +176,12 @@ This should be used in cases where you can not place the Painter on the position
         if mode == "d":
             offset = (1,0,0)
         self.offset = offset
-        self.character.addMessage("you set the offset to %s"%(self.offset,))
+        extraInfo["character"].addMessage("you set the offset to %s"%(self.offset,))
 
-    def setMode(self):
-        mode = self.submenue.text
+    def setMode(self,extraInfo):
+        character = extraInfo["character"]
+
+        mode = extraInfo.get("text")
         if mode == "i":
             mode = "inputSlot"
         if mode == "o":
@@ -186,14 +195,15 @@ This should be used in cases where you can not place the Painter on the position
         if mode == "d":
             mode = "delete"
         self.paintMode = mode
-        self.character.addMessage("you set the mode to %s"%(self.paintMode,))
 
-    def setType(self):
-        if self.submenue.text in ("","None"):
+        character.addMessage("you set the mode to %s"%(self.paintMode,))
+
+    def setType(self,extraInfo):
+        if extraInfo.get("text") in ("","None",None):
             self.paintType = None
         else:
-            self.paintType = self.submenue.text
-        self.character.addMessage("you set the type to %s"%(self.paintType,))
+            self.paintType = extraInfo["text"]
+        extraInfo["character"].addMessage("you set the type to %s"%(self.paintType,))
 
     def apply(self, character):
         """
@@ -205,8 +215,29 @@ This should be used in cases where you can not place the Painter on the position
 
         super().apply(character)
         if isinstance(character.container,src.rooms.Room):
+
             room = character.container
             pos = character.getPosition(offset=self.offset)
+
+            # delete old marking
+            if pos in room.walkingSpace:
+                room.walkingSpace.remove(pos)
+            for inputSlot in room.inputSlots[:]:
+                if inputSlot[0] == pos:
+                    room.inputSlots.remove(inputSlot)
+            for outputSlot in room.outputSlots[:]:
+                if outputSlot[0] == pos:
+                    room.outputSlots.remove(outputSlot)
+            for storageSlot in room.storageSlots[:]:
+                if storageSlot[0] == pos:
+                    room.storageSlots.remove(storageSlot)
+            for buildSite in room.buildSites[:]:
+                if buildSite[0] == pos:
+                    room.buildSites.remove(buildSite)
+
+            if self.paintMode == "delete":
+                character.changed("deleted marking",{})
+
             if self.paintMode == "inputSlot":
                 room.addInputSlot(pos,self.paintType,self.paintExtraInfo)
                 if room.floorPlan:
@@ -248,21 +279,6 @@ This should be used in cases where you can not place the Painter on the position
                             break
                 if not "machine placing" in room.requiredDuties:
                     room.requiredDuties.append("machine placing")
-            if self.paintMode == "delete":
-                if pos in room.walkingSpace:
-                    room.walkingSpace.remove(pos)
-                for inputSlot in room.inputSlots[:]:
-                    if inputSlot[0] == pos:
-                        room.inputSlots.remove(inputSlot)
-                for outputSlot in room.outputSlots[:]:
-                    if outputSlot[0] == pos:
-                        room.outputSlots.remove(outputSlot)
-                for storageSlot in room.storageSlots[:]:
-                    if storageSlot[0] == pos:
-                        room.storageSlots.remove(storageSlot)
-                for buildSite in room.buildSites[:]:
-                    if buildSite[0] == pos:
-                        room.buildSites.remove(buildSite)
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})

@@ -267,11 +267,11 @@ class Room(src.saveing.Saveable):
     def getTilePosition(self,offset=(0,0,0)):
         return (self.xPosition+offset[0],self.yPosition+offset[1],0+offset[2])
 
-    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None,character=None):
+    def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None,character=None,clearing=False):
         if path == None:
             #path = self.getPathTile_test(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
             #path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
-            path = self.getPathTile_test2(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
+            path = self.getPathTile_test2(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character,clearing=clearing)
 
         command = ""
         if isinstance(self,src.rooms.TrapRoom) and not (character.faction == self.faction):
@@ -283,7 +283,7 @@ class Room(src.saveing.Saveable):
                 command += movementMap[offset]
         return (command,path)
 
-    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+    def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
 
         roomMap = []
         for x in range(0,13):
@@ -295,24 +295,33 @@ class Room(src.saveing.Saveable):
             roomMap[walkingSpacePos[0]][walkingSpacePos[1]] = 10
 
         for storageSlot in self.storageSlots:
-            roomMap[storageSlot[0][0]][storageSlot[0][1]] = 50
+            if clearing:
+                roomMap[storageSlot[0][0]][storageSlot[0][1]] = 20
+            else:
+                roomMap[storageSlot[0][0]][storageSlot[0][1]] = 50
 
         for y in range(0,13):
             for x in range(0,13):
                 if self.getItemByPosition((x,y,0)):
-                    roomMap[x][y] = 100
+                    if clearing:
+                        roomMap[x][y] = 10
+                    else:
+                        roomMap[x][y] = 100
 
         for y in range(0,13):
             for x in range(0,13):
                 if not self.getPositionWalkable((x,y,0),character=character):
-                   roomMap[x][y] = 0
+                    if clearing and not (y == 0 or y == 12 or x == 0 or x == 12):
+                        roomMap[x][y] = 100
+                    else:
+                        roomMap[x][y] = 0
 
         roomMap[6][0] = 1
         roomMap[6][12] = 1
         roomMap[0][6] = 1
         roomMap[12][6] = 1
 
-        if ignoreEndBlocked:
+        if ignoreEndBlocked or clearing:
             roomMap[targetPos[0]][targetPos[1]] = 1
         return roomMap
 
@@ -367,7 +376,7 @@ class Room(src.saveing.Saveable):
         self.pathfindingTargetPos = None
         return moves
         
-    def getPathTile_test2(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
+    def getPathTile_test2(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
 
         """
         path = self.pathCache.get((startPos,targetPos))
@@ -385,8 +394,8 @@ class Room(src.saveing.Saveable):
                 return path[:]
         """
 
-        if not self.cachedPathfinder or ignoreEndBlocked:
-            roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character)
+        if not self.cachedPathfinder or ignoreEndBlocked or clearing:
+            roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character,clearing=clearing)
             cost = self.convertRoomMap(roomMap)
         
             pathfinder = tcod.path.AStar(cost,diagonal = 0)
@@ -395,7 +404,7 @@ class Room(src.saveing.Saveable):
 
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
         
-        if not ignoreEndBlocked:
+        if not (ignoreEndBlocked or clearing):
             self.cachedPathfinder = pathfinder
         
         moves = self.convertPath(path,startPos)
@@ -956,8 +965,10 @@ class Room(src.saveing.Saveable):
             src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
             src.gamestate.gamestate.mainChar.runCommandString("~")
 
-    def getItemByType(self,itemType):
+    def getItemByType(self,itemType,needsBolted=False):
         for item in self.itemsOnFloor:
+            if needsBolted and not item.bolted:
+                continue
             if item.type == itemType:
                 return item
         return None
@@ -1247,27 +1258,36 @@ class Room(src.saveing.Saveable):
                                 except:
                                     continue
 
-                                actionMeta = None
-                                if isinstance(display,src.interaction.ActionMeta):
-                                    actionMeta = display
-                                    display = display.content
-
-                                if isinstance(display,int):
-                                    display = src.canvas.displayChars.indexedMapping[display]
-                                if isinstance(display,str):
-                                    display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
-
-                                if hasattr(display[0],"fg"):
-                                    display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                                if isinstance(display,list):
+                                    displayList = display
                                 else:
-                                    if not isinstance(display[0],tuple):
-                                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+                                    displayList = [display]
 
-                                if actionMeta:
-                                    actionMeta.content = display
-                                    display = actionMeta
+                                newDisplay = []
+                                for display in displayList:
+                                    actionMeta = None
+                                    if isinstance(display,src.interaction.ActionMeta):
+                                        actionMeta = display
+                                        display = display.content
 
-                                chars[pos[1]][pos[0]] = display
+                                    if isinstance(display,int):
+                                        display = src.canvas.displayChars.indexedMapping[display]
+                                    if isinstance(display,str):
+                                        display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                                    if hasattr(display[0],"fg"):
+                                        display = (src.interaction.urwid.AttrSpec(display[0].fg,"#555"),display[1])
+                                    else:
+                                        if not isinstance(display[0],tuple):
+                                            display = (src.interaction.urwid.AttrSpec(display[0].foreground,"#555"),display[1])
+
+                                    if actionMeta:
+                                        actionMeta.content = display
+                                        display = actionMeta
+
+                                    newDisplay.append(display)
+
+                                chars[pos[1]][pos[0]] = newDisplay
                 else:
                     src.logger.debugMessages.append(
                         "chracter is rendered outside of room"

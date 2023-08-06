@@ -7,11 +7,23 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
     def __init__(self, description="clear path to position", creator=None, targetPosition=None, tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description
+        self.metaDescription = description+" %s"%(targetPosition,)
         self.targetPosition = targetPosition
         self.tryHard = tryHard
         self.reason = reason
         self.path = None
+
+    def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = ",\nto %s"%(self.reason,)
+        text = """
+Clear path to position %s%s.
+
+Pick up and unbolt items that are in the way.
+"""%(self.targetPosition,reason,)
+        
+        return text
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -54,43 +66,21 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:
             if not self.path:
-                totalOffset = (0,0,0)
                 x = character.xPosition%15
                 y = character.yPosition%15
-
                 path = []
-                while not (x,y,0) == self.targetPosition:
-                    offsets = []
-                    if x < self.targetPosition[0]:
-                        if character.container.getPositionWalkable(character.getPosition(offset=(totalOffset[0]+1,totalOffset[1],0))):
-                            offsets.append(( 1, 0,0))
-                    if x > self.targetPosition[0]:
-                        if character.container.getPositionWalkable(character.getPosition(offset=(totalOffset[0]-1,totalOffset[1],0))):
-                            offsets.append((-1, 0,0))
-                    if y < self.targetPosition[1]:
-                        if character.container.getPositionWalkable(character.getPosition(offset=(totalOffset[0],totalOffset[1]+1,0))):
-                            offsets.append(( 0, 1,0))
-                    if y > self.targetPosition[1]:
-                        if character.container.getPositionWalkable(character.getPosition(offset=(totalOffset[0],totalOffset[1]-1,0))):
-                            offsets.append(( 0,-1,0))
 
-                    if not offsets:
-                        if x < self.targetPosition[0]:
-                            offsets.append(( 1, 0,0))
-                        if x > self.targetPosition[0]:
-                            offsets.append((-1, 0,0))
-                        if y < self.targetPosition[1]:
-                            offsets.append(( 0, 1,0))
-                        if y > self.targetPosition[1]:
-                            offsets.append(( 0,-1,0))
+                if character.container.isRoom:
+                    generatedPath = character.container.getPathCommandTile(character.getSpacePosition(),self.targetPosition,character=character,clearing=True)[1]
+                else:
+                    generatedPath = character.container.getPathCommandTile(character.getTilePosition(),character.getSpacePosition(),self.targetPosition,character=character,clearing=True)[1]
 
-                    offset = random.choice(offsets)
-                    totalOffset = (totalOffset[0]+offset[0],totalOffset[1]+offset[1],0)
-
+                for offset in generatedPath:
                     x += offset[0]
                     y += offset[1]
 
                     path.append((x,y,0))
+
                 self.path = path
 
             if not self.path:
@@ -118,16 +108,38 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
 
             if not character.container.getPositionWalkable(character.getPosition(offset=offset)):
                 if not character.getFreeInventorySpace():
-                    return (None,("l","drop item"))
+                    if not character.container.getItemByPosition(character.getPosition()):
+                        return (None,("l","drop item"))
+                    directions = ["."]
+                    if not character.xPosition in (0,1,):
+                        directions.append("a")
+                    if not character.yPosition in (0,1,):
+                        directions.append("w")
+                    if not (character.xPosition in (11,12,) and character.container.isRoom):
+                        directions.append("d")
+                    if not (character.yPosition in (11,12,) and character.container.isRoom):
+                        directions.append("s")
+                    if not (character.xPosition in (13,14,) and not character.container.isRoom):
+                        directions.append("d")
+                    if not (character.yPosition in (13,14,) and not character.container.isRoom):
+                        directions.append("s")
+                    return (None,("L"+directions[0],"drop item"))
 
+                direction = "."
                 if offset == (-1, 0,0):
-                    return (None,("Ka","clear next tile"))
+                    direction = "a"
                 if offset == ( 1, 0,0):
-                    return (None,("Kd","clear next tile"))
+                    direction = "d"
                 if offset == ( 0,-1,0):
-                    return (None,("Kw","clear next tile"))
+                    direction = "w"
                 if offset == ( 0, 1,0):
-                    return (None,("Ks","clear next tile"))
+                    direction = "s"
+
+                items = character.container.getItemByPosition(character.getPosition(offset=offset))
+                if items and items[0].bolted:
+                    return (None,(direction+"cb","make item movable"))
+                else:
+                    return (None,("K"+direction,"clear next tile"))
 
             if offset == (-1, 0,0):
                 return (None,("a","move to next tile"))

@@ -50,6 +50,103 @@ It generates missions and hands out rewards."""
 Use it by activating it. You will recieve further instructions."""
 
         self.lastRoomReward = 1
+        
+        self.descriptions = {
+                "spawn resource gathering NPC":"""
+This clone will fetch scrap.
+
+The clone will walk around randomly around the city.
+When it finds a room with empty scrap input stockpiles,
+it will move to a scrap field and fetch scrap.
+It will return and fill the input stockpile afterwards.
+The clone moves on once all scarp input stockpiles are filled.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn machine operation NPC":"""
+This clone will operate machines.
+
+The clone will walk around randomly around the city.
+When it finds a room with machines ready to be used it operate machines.
+Once all machines are used the cone will move on to the next room.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn resource fetching NPC":"""
+This clone carries items between rooms.
+
+The clone will walk around randomly around the city.
+When it finds a room with empty input stockpiles,
+it will check for filled output or storage stockpiles in other rooms.
+If it finds a source it will fetch items and put it into the input stockpile.
+The clone moves on once all input stockpiles are filled or can not be filled.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn hauling NPC":"""
+This clone will carry items within rooms.
+
+The clone will walk around randomly around the city.
+When it finds a room with empty input stockpiles,
+it check the same room for a filled output or storage stockpile.
+The clone moves on once all input stockpiles are filled or can not be filled.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn painting NPC":"""
+This clone will paint stockpiles and build sites.
+
+The clone will walk around randomly around the city.
+When it finds a room with a floor plan attached,
+it draws the stockpiles and build sites listed in the floor plan onto the floor.
+It needs a Painter to do that.
+The clone moves on once everything has been transfered from the floorplan to the floor.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn machine placing NPC":"""
+This clone will place machines on build sites.
+
+The clone will walk around randomly around the city.
+When it finds a room with a build site,
+it will fetch the required item and place it on the build site.
+It may produce the required machine.
+The clone moves on once no build site is left in the room.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn room building NPC":"""
+This clone builds new rooms.
+
+It will check the CityPlaner for scheduled rooms.
+If there is a room to be build it will fetch the building materials and place them.
+Afterwards it activates the RoomBuilder to build the room.
+In case a room is being build the room builder will work there.
+After the room is build it will check for more rooms to be build.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn maggot gathering NPC":"""
+This clone gathers VatMaggots.
+
+The clone will walk around randomly around the city.
+When it finds a room with an empty input stockpile for VatMaggots,
+it will go to a forest and collect VatMaggots.
+Afterwards it will fill the input stockpile.
+Once all input stockpiles are filled it will move on.
+
+Since this clone is burned in it can not change duties.
+""",
+                "spawn scavenging NPC":"""
+This clone scavanges the area near the city for items.
+
+The clone will walk around the area near the city randomly.
+If the tile entered contains items it will pick them up.
+Once the inventory is filled, it will return and store the items.
+
+Since this clone is burned in it can not change duties.
+""",
+            }
 
     def setSpecialItemMap(self,specialItemMap):
         self.specialItemMap = specialItemMap
@@ -95,19 +192,19 @@ Use it by activating it. You will recieve further instructions."""
             options.append(("spawn lightning rods","(10) spawn 25 ligthning rods"))
             options.append(("spawn new clone","(15) spawn new clone"))
         else:
-            options.append(("spawn gatherer","(10) spawn gatherer"))
-            options.append(("spawn operator","(10) spawn operator"))
-            options.append(("spawn fetcher","(10) spawn fetcher"))
+            options.append(("spawn resource gathering NPC","(10) spawn gatherer"))
+            options.append(("spawn machine operation NPC","(10) spawn operator"))
+            options.append(("spawn resource fetching NPC","(10) spawn fetcher"))
             options.append(("spawn hauling NPC","(10) spawn hauler"))
             options.append(("spawn painting NPC","(10) spawn painter"))
             options.append(("spawn machine placing NPC","(10) spawn machine placer"))
-            options.append(("spawn room builder","(10) spawn room builder"))
-            options.append(("spawn maggot gatherer","(10) spawn maggot gatherer"))
-            options.append(("spawn scavenger","(10) spawn scavenger"))
+            options.append(("spawn room building NPC","(10) spawn room builder"))
+            options.append(("spawn maggot gathering NPC","(10) spawn maggot gatherer"))
+            options.append(("spawn scavenging NPC","(10) spawn scavenger"))
             options.append(("spawn food item","(5) spawn food item"))
             options.append(("spawn scrap","(20) spawn scrap"))
             options.append(("spawn personnel tracker","(5) spawn personnel tracker"))
-        submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType")
+        submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType",extraDescriptions=self.descriptions)
         submenue.tag = "rewardSelection"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseEpochRewards","params":{"character":character}}
@@ -272,36 +369,35 @@ Use it by activating it. You will recieve further instructions."""
         elif extraInfo["rewardType"] == "spawn new clone":
             text = "spawning new clone"
             self.spawnNewClone(character)
-        elif extraInfo["rewardType"] == "spawn gatherer":
-            text = "spawning gatherer"
+
+        elif extraInfo["rewardType"] == "spawn resource gathering NPC":
+            text = "You spawned a clone with the duty resource gathering.\n\n"+self.descriptions["spawn resource gathering NPC"]
             self.spawnBurnedInNPC(character,"resource gathering")
-        elif extraInfo["rewardType"] == "spawn operator":
-            text = "spawning operator"
+        elif extraInfo["rewardType"] == "spawn machine operation NPC":
+            text = "You spawned a clone with the duty machine operation.\n\n"+self.descriptions["spawn machine operation NPC"]
             self.spawnBurnedInNPC(character,"machine operation")
-        elif extraInfo["rewardType"] == "spawn fetcher":
-            text = "spawning fetcher"
+        elif extraInfo["rewardType"] == "spawn resource fetching NPC":
+            text = "You spawned a clone with the duty resource fetching.\n\n"+self.descriptions["spawn resource fetching NPC"]
             self.spawnBurnedInNPC(character,"resource fetching")
         elif extraInfo["rewardType"] == "spawn hauling NPC":
-            text = "spawning hauler"
+            text = "You spawned a clone with the duty hauling.\n\n"+self.descriptions["spawn hauling NPC"]
             self.spawnBurnedInNPC(character,"hauling")
         elif extraInfo["rewardType"] == "spawn painting NPC":
-            text = "spawning painter"
+            text = "You spawned a clone with the duty painting.\n\n"+self.descriptions["spawn painting NPC"]
             self.spawnBurnedInNPC(character,"painting")
         elif extraInfo["rewardType"] == "spawn machine placing NPC":
-            text = "spawning machine placer"
+            text = "You spawned a clone with the duty machine placing.\n\n"+self.descriptions["spawn machine placing NPC"]
             self.spawnBurnedInNPC(character,"machine placing")
-        elif extraInfo["rewardType"] == "spawn room builder":
-            text = "spawning room builder"
+        elif extraInfo["rewardType"] == "spawn room building NPC":
+            text = "You spawned a clone with the duty room building.\n\n"+self.descriptions["spawn room building NPC"]
             self.spawnBurnedInNPC(character,"room building")
-        elif extraInfo["rewardType"] == "spawn maggot gatherer":
-            text = "spawning maggot gatherer"
+        elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
+            text = "You spawned a clone with the duty maggot gathering.\n\n"+self.descriptions["spawn maggot gathering NPC"]
             self.spawnBurnedInNPC(character,"maggot gathering")
-        elif extraInfo["rewardType"] == "spawn scavenger":
-            text = "spawning scavenger"
+        elif extraInfo["rewardType"] == "spawn scavenging NPC":
+            text = "You spawned a clone with the duty scavenging.\n\n"+self.descriptions["spawn scavenging NPC"]
             self.spawnBurnedInNPC(character,"scavenging")
-        elif extraInfo["rewardType"] == "spawn scavenger":
-            text = "spawning scavenger"
-            self.spawnBurnedInNPC(character,"scavenging")
+
         elif extraInfo["rewardType"] == "spawn food item":
             text = "spawning food"
             self.spawnResource(character,"food")
@@ -452,7 +548,7 @@ The item will appear in your inventory.
 press enter to continue"""%(npc.name,duty,terrain)
                 src.interaction.showInterruptText(text)
             '''
-            text = "spawning burned in NPC"
+            text = "spawning burned in NPC (%s)"%(duty,)
 
         if character:
             character.addMessage(text)
@@ -763,6 +859,7 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
         return enemies
 
     def apply(self,character):
+        
         self.changed("epoch artwork used",(character,))
         character.registers["baseCommander"] = "No"
         if character.rank == None:

@@ -4076,7 +4076,7 @@ try to remember how you got here ..."""
 
     def createColonyBase(self,pos):
         mainChar = src.characters.Character()
-        mainChar.disableCommandsOnPlus = True
+        #mainChar.disableCommandsOnPlus = True
         mainChar.questsDone = [
             "NaiveMoveQuest",
             "MoveQuestMeta",
@@ -4175,7 +4175,8 @@ try to remember how you got here ..."""
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
         colonyBaseInfo["epochArtwork"] = epochArtwork
         epochArtwork.leader = mainChar
-        epochArtwork.epochSurvivedRewardAmount = 0
+        epochArtwork.epochSurvivedRewardAmount = 5
+        epochArtwork.changeCharges(10)
         mainChar.rank = 3
         mainRoom.addItem(epochArtwork,(3,3,0))
         """
@@ -4204,7 +4205,7 @@ try to remember how you got here ..."""
         mainRoom.addItem(scrapCompactor,(2,11,0))
 
         machinemachine = src.items.itemMap["MachineMachine"]()
-        machinemachine.charges = 100
+        machinemachine.charges = 10000
         mainRoom.addItem(machinemachine,(10,4,0))
 
         item = src.items.itemMap["BluePrint"]()
@@ -5732,7 +5733,6 @@ When you rise in rank you will be able to build a way out of here."""
         room = random.choice(terrain.rooms)
 
         if not src.gamestate.gamestate.tick < 100:
-            """
             npc = src.characters.Character()
             npc.questsDone = [
                 "NaiveMoveQuest",
@@ -5772,7 +5772,7 @@ When you rise in rank you will be able to build a way out of here."""
             #npc.rank = 6
             room.addCharacter(npc,6,6)
             npc.flask = src.items.itemMap["GooFlask"]()
-            npc.flask.uses = 10
+            npc.flask.uses = 100
 
             npc.duties = []
             duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","cleaning","machine placing","room building","scavenging"))
@@ -5794,7 +5794,6 @@ When you rise in rank you will be able to build a way out of here."""
             quest.activate()
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
-            """
 
             '''
             numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)

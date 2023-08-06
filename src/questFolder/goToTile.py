@@ -289,31 +289,16 @@ The target tile is %s
         super().solver(character)
 
     def unhandledSubQuestFail(self,extraParam):
+        if not extraParam["quest"] in self.subQuests:
+            return
+
+        self.subQuests.remove(extraParam["quest"])
+
         if extraParam["reason"] and "no path found" in extraParam["reason"]:
-            if self.path[0] == (0,1):
-                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(7,13,0))
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                self.subQuests.remove(extraParam["quest"])
-                return
-            if self.path[0] == (0,-1):
-                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(7,1,0))
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                self.subQuests.remove(extraParam["quest"])
-                return
-            if self.path[0] == (1,0):
-                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(13,7,0))
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                self.subQuests.remove(extraParam["quest"])
-                return
-            if self.path[0] == (-1,0):
-                quest = src.quests.questMap["ClearPathToPosition"](targetPosition=(1,7,0))
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                self.subQuests.remove(extraParam["quest"])
-                return
+            quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
+            self.addQuest(quest)
+            self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+            return
 
         self.fail(extraParam["reason"])
 

@@ -26,7 +26,7 @@ Set the floor plan: %s
         out = [text]
         return out
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         
         if self.subQuests:
             return (None,None)
@@ -42,8 +42,19 @@ Set the floor plan: %s
                 command += "w"*(submenue.cursor[1]-self.roomPosition[1])
             if submenue.cursor[1] < self.roomPosition[1]:
                 command += "s"*(self.roomPosition[1]-submenue.cursor[1])
+
+            cityPlaner = character.container.getItemsByType("CityPlaner")[0]
+            if self.roomPosition in cityPlaner.plannedRooms:
+                command += "x"
+                return (None,(command,"to remove old construction site marker"))
+
+            if not self.roomPosition in cityPlaner.getAvailableRooms():
+                if not dryRun:
+                    self.fail("room already registered")
+                return (None,None)
+
             command += "f"
-            return (None,(command,"to schedule building a room"))
+            return (None,(command,"to set a floor plan"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
@@ -123,7 +134,7 @@ Set the floor plan: %s
         if self.triggerCompletionCheck(character):
             return
 
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

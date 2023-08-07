@@ -141,7 +141,7 @@ def setUpTcod():
     tcod = internalTcod
 
     screen_width = 200
-    screen_height = 51
+    screen_height = 55
 
     """
     tileset = tcod.tileset.load_tilesheet(
@@ -176,7 +176,7 @@ def setUpTcod():
 
     root_console.print(x=1,y=1,string="loading game")
 
-    context.present(root_console)
+    context.present(root_console,integer_scaling=False,keep_aspect=True)
 
     import tcod.sdl.audio as audio
     import soundfile as sf
@@ -6505,10 +6505,12 @@ def getTcodEvents():
     src.gamestate.gamestate.waitedForInputThisTurn = True
     global lastcheck
 
-    events = tcod.event.get()
+    foundEvent = False
 
-    if lastcheck < time.time()-0.05:
+    if lastcheck < time.time()-0.01:
+        events = tcod.event.get()
         for event in events:
+            foundEvent = True
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent):
@@ -6778,6 +6780,7 @@ def getTcodEvents():
                 keyboardListener(translatedKey)
 
         lastcheck = time.time()
+        return foundEvent
 
 class UiAnchor(object):
     def __init__(self,tag=""):
@@ -7166,7 +7169,7 @@ def renderGameDisplay(renderChar=None):
                             printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
                 if not char.specialRender:
-                    tcodContext.present(tcodConsole)
+                    tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             if not useTiles and not tcodConsole:
                 main.set_text(
                     (
@@ -7262,7 +7265,7 @@ def renderGameDisplay(renderChar=None):
             #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
             if not renderChar:
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 
@@ -7543,7 +7546,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
                 printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             def doLoad():
                 if canLoad:
@@ -7757,7 +7760,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| press y to confirm                    |"),(offsetX+2,offsetY+23))
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+24))
 
-        tcodContext.present(tcodConsole)
+        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
@@ -7766,6 +7769,14 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     key = event.sym
                     if key == tcod.event.KeySym.ESCAPE:
                         submenu = None
+                    if key == tcod.event.KeySym.F11:
+                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                        )
+                        tcod.lib.SDL_SetWindowFullscreen(
+                            tcodContext.sdl_window_p,
+                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                        )
                     if key == tcod.event.KeySym.N0:
                         gameIndex = 0
                         submenu = None
@@ -7800,6 +7811,14 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
                     convertedKey = None
+                    if key == tcod.event.KeySym.F11:
+                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                        )
+                        tcod.lib.SDL_SetWindowFullscreen(
+                            tcodContext.sdl_window_p,
+                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                        )
                     if key == tcod.event.KeySym.ESCAPE:
                         submenu = None
                     if key == tcod.event.KeySym.m:
@@ -7843,6 +7862,14 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             elif submenu == "difficulty":
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
+                    if key == tcod.event.KeySym.F11:
+                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                        )
+                        tcod.lib.SDL_SetWindowFullscreen(
+                            tcodContext.sdl_window_p,
+                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                        )
                     if key == tcod.event.KeySym.ESCAPE:
                         submenu = None
                     if key == tcod.event.KeySym.e:
@@ -7858,6 +7885,14 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
 
+                    if key == tcod.event.KeySym.F11:
+                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                        )
+                        tcod.lib.SDL_SetWindowFullscreen(
+                            tcodContext.sdl_window_p,
+                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                        )
                     if key == tcod.event.KeySym.y:
                         try:
                             # register the save
@@ -7879,6 +7914,14 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         raise SystemExit()
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
+                    if key == tcod.event.KeySym.F11:
+                        fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                            tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                        )
+                        tcod.lib.SDL_SetWindowFullscreen(
+                            tcodContext.sdl_window_p,
+                            0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                        )
                     if key == tcod.event.KeySym.ESCAPE:
                         raise SystemExit()
                     if key == tcod.event.KeySym.p:
@@ -7900,7 +7943,7 @@ def showDeathScreen():
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole)
+        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
@@ -7920,7 +7963,7 @@ def showInterruptText(text):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole)
+        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
@@ -7964,7 +8007,7 @@ You """+"."*stageState["substep"]+"""
 """
                 printUrwidToTcod(text,(60,24))
                 printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(63,27))
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1
@@ -8063,7 +8106,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(text,(47-min(9,stageState["animationStep"]//2),19-min(stageState["animationStep"],17)))
                 else:
                     printUrwidToTcod(text,(38,2))
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:
                 stageState["animationStep"] += 1
@@ -8350,7 +8393,7 @@ You """+"."*stageState["substep"]+"""
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 printUrwidToTcod(text,(38,2))
                 printUrwidToTcod(terrainRender,(19,5))
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -8445,7 +8488,7 @@ You """+"."*stageState["substep"]+"""
                 printUrwidToTcod(text2,(42,3))
                 printUrwidToTcod(terrainRender,(19,5))
             
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None
@@ -8508,7 +8551,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod("press space to stop watching",(47,4))
                 else:
                     printUrwidToTcod("press space to continue watching",(46,4))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
                 stageState["lastChange"] = time.time()
@@ -8550,7 +8593,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(terrainRender,(19+2*offset,5+offset))
                 printUrwidToTcod(text1,(38,2+offset))
                 printUrwidToTcod(text2,(42,3+offset))
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 0.3:
                 stageState["lastChange"] = time.time()
@@ -8582,7 +8625,7 @@ FOLLOW YOUR ORDERS
                 printUrwidToTcod(text2,(44,23))
             if stageState["substep"] > 3:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
                 if time.time()-stageState["lastChange"] > 0.1:
@@ -8614,6 +8657,14 @@ FOLLOW YOUR ORDERS
                     raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                    )
+                    tcod.lib.SDL_SetWindowFullscreen(
+                        tcodContext.sdl_window_p,
+                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                    )
                 if key == tcod.event.KeySym.RETURN:
                     skip = True
                 if key == tcod.event.KeySym.SPACE:
@@ -8687,13 +8738,13 @@ The pain ate your mind and
 starts to burn your flesh.                                                
 """]
             if not subStep < len(textBase)-1:
-                tcodContext.present(tcodConsole)
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
                 time.sleep(0.01)
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -8713,7 +8764,7 @@ starts to burn your flesh.
                 painColor = random.choice(painColors)
                 printUrwidToTcod((src.interaction.urwid.AttrSpec(painColor, "black"), painChar),painPos)
 
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.01)
             text = """
                                                                                    
@@ -8738,7 +8789,7 @@ starts to burn your flesh.
                                                                                    
 """
             printUrwidToTcod(text,(38,13))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.02)
             textBase = """
 The pain grows and grows and grows and grows and grows and grows and
@@ -8749,7 +8800,7 @@ grows and grows and grows and grows
 """.split(" ")
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text,(45,17))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             for i in range(0,100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
@@ -8946,7 +8997,7 @@ suggested action:
 press enter to continue
 """
             printUrwidToTcod(text,(45,17))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
@@ -9024,7 +9075,7 @@ to remember"""
 
             offset = src.gamestate.gamestate.mainChar.getPosition() 
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+6,22+6))
-            tcodContext.present(tcodConsole)
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.1)
         else:
             break
@@ -9038,6 +9089,14 @@ to remember"""
                     raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                    )
+                    tcod.lib.SDL_SetWindowFullscreen(
+                        tcodContext.sdl_window_p,
+                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                    )
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
@@ -9248,11 +9307,15 @@ def clearMessages(char):
     while len(char.messages) > 100:
         char.messages = char.messages[-100:]
 
+skipNextRender = False
 def advanceChar(char,render=True):
+    global skipNextRender
+
     state = char.macroState
 
     rerender = True
     lastRender = None
+    lastLoop = time.time()
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender:
             if char.getTerrain():
@@ -9266,10 +9329,29 @@ def advanceChar(char,render=True):
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
-            getTcodEvents()
-            if (time.time()-lastRender) > 0.1 and render:
+            newInputs = getTcodEvents()
+
+            if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
+                skipNextRender = True
+
+                terrain = char.getTerrain()
+                if terrain.animations:
+                    skipNextRender = False
+                for room in terrain.rooms:
+                    if room.animations:
+                        skipNextRender = False
+
                 renderGameDisplay()
                 lastRender = time.time()
+
+            if newInputs:
+                skipNextRender = False
+
+            desiredTime = 0.01
+            timeDiff = time.time()-lastLoop
+            if timeDiff < desiredTime:
+                time.sleep(desiredTime-timeDiff)
+            lastLoop = time.time()
 
         hasAutosolveQuest = False
         for quest in char.getActiveQuests():
@@ -9282,12 +9364,14 @@ def advanceChar(char,render=True):
                 (char.doHuntKill(),["norecord"]),
                  charState=state, noAdvanceGame=True, char=char)
             rerender = True
+            skipNextRender = False
         elif char.hasOwnAction > 0:
             for commandChar in char.getOwnAction():
                 processInput(
                     (commandChar,["norecord"]),
                      charState=state, noAdvanceGame=True, char=char)
             rerender = True
+            skipNextRender = False
         elif state["commandKeyQueue"]:
             if (char == src.gamestate.gamestate.mainChar):
                 char.getTerrain().animations = []
@@ -9298,12 +9382,15 @@ def advanceChar(char,render=True):
                 key, charState=state, noAdvanceGame=True, char=char
             )
             rerender = True
+            skipNextRender = False
         elif hasAutosolveQuest:
             rerender = True
             char.runCommandString("+")
+            skipNextRender = False
         else:
             if (char == src.gamestate.gamestate.mainChar):
-                getTcodEvents()
+                if getTcodEvents():
+                    skipNextRender = False
             else:
                 char.timeTaken = 1
 

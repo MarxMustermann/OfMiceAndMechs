@@ -1750,7 +1750,8 @@ class Terrain(src.saveing.Saveable):
         for animation in self.animations[:]:
             (pos,animationType,duration,extraInfo) = animation
             pos = (pos[0]-coordinateOffset[1],pos[1]-coordinateOffset[0])
-            if pos[0] < 0 or pos[1] < 0:
+            if pos[0] < 0 or pos[1] < 0 or pos[0] > size[0] or pos[1] > size[1]:
+                self.animations.remove(animation)
                 continue
 
             if pos in usedAnimationSlots:
@@ -1768,10 +1769,7 @@ class Terrain(src.saveing.Saveable):
                     display = ".x"
                 else:
                     display = ".."
-                try:
-                    chars[pos[1]][pos[0]] = display
-                except:
-                    continue
+                chars[pos[1]][pos[0]] = display
 
                 if duration > 10:
                     animation[2] -= 10
@@ -1783,10 +1781,7 @@ class Terrain(src.saveing.Saveable):
                     display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
                 if animationType == "shielded":
                     display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
-                try:
-                    chars[pos[1]][pos[0]] = display
-                except:
-                    continue
+                chars[pos[1]][pos[0]] = display
 
                 if duration > 10:
                     animation[2] -= 10
@@ -1808,10 +1803,7 @@ class Terrain(src.saveing.Saveable):
                 if extraInfo["mainChar"]:
                     display = "!!"
                     display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
-                try:
-                    chars[pos[1]][pos[0]] = display
-                except:
-                    continue
+                chars[pos[1]][pos[0]] = display
                 animation[2] -= 1
 
                 if duration < 1:
@@ -1822,10 +1814,7 @@ class Terrain(src.saveing.Saveable):
                 display = character
                 display = (src.interaction.urwid.AttrSpec("#740","#000"),display)
 
-                try:
-                    chars[pos[1]][pos[0]] = display
-                except:
-                    continue
+                chars[pos[1]][pos[0]] = display
                 animation[2] -= 1
 
                 if duration < 1:
@@ -1834,10 +1823,7 @@ class Terrain(src.saveing.Saveable):
                 display = "##"
                 display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
 
-                try:
-                    chars[pos[1]][pos[0]] = display
-                except:
-                    continue
+                chars[pos[1]][pos[0]] = display
                 animation[2] -= 1
 
                 if duration < 1:
@@ -1846,10 +1832,7 @@ class Terrain(src.saveing.Saveable):
                 display = extraInfo["char"]
 
                 if display:
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
                 animation[2] -= 1
 
                 if duration < 1:
@@ -1858,10 +1841,7 @@ class Terrain(src.saveing.Saveable):
                 display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
                 if display:
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
                 animation[2] -= 1
 
                 if duration < 1:

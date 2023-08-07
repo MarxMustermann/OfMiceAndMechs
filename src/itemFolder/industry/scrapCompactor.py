@@ -124,16 +124,11 @@ class ScrapCompactor(src.items.Item):
 
         character.changed("operated machine",{"character":character,"machine":self})
 
-        jobOrder = None
-        for item in character.inventory:
-            if (
-                item.type == "JobOrder"
-                and not item.done
-                and item.tasks[-1]["task"] == "produce"
-                and item.tasks[-1]["toProduce"] == "MetalBars"
-            ):
-                jobOrder = item
-                break
+        if not self.bolted:
+            character.addMessage(
+                "this machine needs to be bolted down to be used"
+            )
+            return
 
         tick = self.getTick()
 

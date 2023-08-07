@@ -249,6 +249,7 @@ This should be used in cases where you can not place the Painter on the position
                     room.requiredDuties.append("resource fetching")
                 if self.paintType == "Scrap":
                     room.requiredDuties.append("resource gathering")
+                character.changed("drew marking",{})
             if self.paintMode == "outputSlot":
                 room.addOutputSlot(pos,self.paintType,self.paintExtraInfo)
                 if room.floorPlan:
@@ -256,6 +257,7 @@ This should be used in cases where you can not place the Painter on the position
                         if outputSlot[0] == pos:
                             room.floorPlan["outputSlots"].remove(outputSlot)
                             break
+                character.changed("drew marking",{})
             if self.paintMode == "storageSlot":
                 room.addStorageSlot(pos,self.paintType,self.paintExtraInfo)
                 if room.floorPlan:
@@ -263,6 +265,7 @@ This should be used in cases where you can not place the Painter on the position
                         if storageSlot[0] == pos:
                             room.floorPlan["storageSlots"].remove(storageSlot)
                             break
+                character.changed("drew marking",{})
             if self.paintMode == "walkingSpace":
                 room.walkingSpace.add(character.getPosition(offset=self.offset))
                 if room.floorPlan:
@@ -270,6 +273,7 @@ This should be used in cases where you can not place the Painter on the position
                         if walkingSpacePos == pos:
                             room.floorPlan["walkingSpace"].remove(walkingSpacePos)
                             break
+                character.changed("drew marking",{})
             if self.paintMode == "buildSite":
                 room.addBuildSite(character.getPosition(offset=self.offset),self.paintType, self.paintExtraInfo)
                 if room.floorPlan:
@@ -279,6 +283,7 @@ This should be used in cases where you can not place the Painter on the position
                             break
                 if not "machine placing" in room.requiredDuties:
                     room.requiredDuties.append("machine placing")
+                character.changed("drew marking",{})
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})

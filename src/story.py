@@ -4076,7 +4076,7 @@ try to remember how you got here ..."""
 
     def createColonyBase(self,pos):
         mainChar = src.characters.Character()
-        #mainChar.disableCommandsOnPlus = True
+        mainChar.disableCommandsOnPlus = True
         mainChar.questsDone = [
             "NaiveMoveQuest",
             "MoveQuestMeta",
@@ -5810,7 +5810,6 @@ When you rise in rank you will be able to build a way out of here."""
                 src.interaction.showInterruptText(text)
             '''
 
-        '''
         if not src.gamestate.gamestate.tick < 100:
             text = """
 An epoch has passed and a new outcast has found a way into your base:
@@ -5818,11 +5817,10 @@ An epoch has passed and a new outcast has found a way into your base:
 %s 
 ---------
 duty: %s
-food: ~10 000 moves
+food: ~100 000 moves
 
 press enter to continue"""%(npc.name,duty,)
             src.interaction.showInterruptText(text)
-        '''
 
         """
         for i in range(0,25):

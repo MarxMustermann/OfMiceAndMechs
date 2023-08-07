@@ -131,6 +131,12 @@ Activate the machine to produce.
 
         character.changed("operated machine",{"character":character,"machine":self})
 
+        if not self.bolted:
+            character.addMessage(
+                "this machine need to be bolted down to be used."
+                )
+            return
+
         if not self.checkCoolDownEnded():
             character.addMessage(
                 "cooldown not reached. Wait %s ticks"

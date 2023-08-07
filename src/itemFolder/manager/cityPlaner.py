@@ -79,9 +79,11 @@ class CityPlaner(src.items.Item):
         for room in terrain.rooms:
             if len(room.itemsOnFloor) > 13+13+12+12 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots:
                 continue
-            if room.getPosition() in self.generalPurposeRooms:
+
+            pos = room.getPosition()
+            if pos in self.generalPurposeRooms or (pos[0],pos[1]) in self.generalPurposeRooms:
                 continue
-            if room.getPosition() in self.specialPurposeRooms:
+            if pos in self.specialPurposeRooms or (pos[0],pos[1]) in self.specialPurposeRooms:
                 continue
             result.append(room)
 

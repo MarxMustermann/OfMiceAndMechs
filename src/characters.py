@@ -1737,13 +1737,25 @@ press any other key to attack normaly"""
         """
 
         if self.disableCommandsOnPlus:
-            if self.getActiveQuest().getSolvingCommandString(self):
-                return
+            
+            hasComand = False
+            quest = self.getActiveQuest()
             try:
-                if quest.getNextStep()[1]:
-                    return
+                if quest.getSolvingCommandString(self):
+                    hasComand = True
             except:
                 pass
+
+
+            if hasComand:
+                hasAutoSolve = False
+                for quest in self.getActiveQuests():
+                    if quest.autoSolve:
+                        hasAutoSolve = True
+
+                if not hasAutoSolve:
+                    self.runCommandString(".")
+                    return
 
         if not solver and self.quests:
             self.quests[0].solver(self)

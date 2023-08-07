@@ -98,7 +98,7 @@ Remove all items from the space %s on tile %s%s.
                     if character.getPosition(offset=offset) == self.targetPosition:
                         if items[0].bolted:
                             return (None, (direction+"cb","to unbolt item"))
-                        return (None, ("K"+direction,"to pick up item"))
+                        return (None, (direction+"k","to pick up item"))
                 else:
                     if character.getPosition(offset=offset) == (self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0):
                         return (None, ("K"+direction,"to pick up item"))

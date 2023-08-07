@@ -33,6 +33,23 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         if not character:
             return
 
+        room = character.getTerrain().getRoomByPosition((self.targetPositionBig))[0]
+        if self.stockpileType == "i":
+            for inputSlot in room.inputSlots:
+                if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
+                    self.postHandler()
+                    return True
+        if self.stockpileType == "o":
+            for outputSlot in room.outputSlots:
+                if outputSlot[0] == self.targetPosition and outputSlot[1] == self.itemType:
+                    self.postHandler()
+                    return True
+        if self.stockpileType == "s":
+            for storageSlot in room.storageSlots:
+                if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
+                    self.postHandler()
+                    return True
+
     def generateTextDescription(self):
         reason = ""
         if self.reason:
@@ -91,6 +108,9 @@ Try as hard as you can to achieve this.
         return text
 
     def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
+
         (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
@@ -215,7 +235,7 @@ Try as hard as you can to achieve this.
                 if self.stockpileType == "o" and not item.paintMode == "outputSlot":
                     return (None,(["c","m","o","enter"],"to configure the painter to output stockpile"))
                 if self.stockpileType == "s" and not item.paintMode == "storageSlot":
-                    return (None,(["c","m","s","enter"],"to configure the painter to output stockpile"))
+                    return (None,(["c","m","s","enter"],"to configure the painter to storage stockpile"))
                 if not (self.itemType == item.paintType):
                     if self.itemType:
                         return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
@@ -262,5 +282,22 @@ Try as hard as you can to achieve this.
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+
+    def handleDrewMarking(self,extraInfo):
+        if not self.active:
+            return
+        if self.completed:
+            1/0
+
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+        
+        self.startWatching(character,self.handleDrewMarking, "drew marking")
+
+        return super().assignToCharacter(character)
+
 
 src.quests.addType(DrawStockpile)

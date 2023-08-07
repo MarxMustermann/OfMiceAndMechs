@@ -129,11 +129,12 @@ Press d to move the cursor and show the subquests description.
             return
 
         self.subQuests.remove(extraParam["quest"])
-        if "no source" in extraParam["reason"] and "Painter" in extraParam["reason"]:
-            quest = src.quests.questMap["FetchItems"](tryHard=True,toCollect="Painter",amount=1)
-            self.startWatching(quest,self.handleQuestFailure,"failed")
-            self.addQuest(quest)
-            return
+        if extraParam.get("reason"):
+            if "no source" in extraParam["reason"] and "Painter" in extraParam["reason"]:
+                quest = src.quests.questMap["FetchItems"](tryHard=True,toCollect="Painter",amount=1)
+                self.startWatching(quest,self.handleQuestFailure,"failed")
+                self.addQuest(quest)
+                return
             
         if extraParam["reason"] == "no storage available":
             terrain = self.character.getTerrain()
@@ -522,8 +523,15 @@ Press d to move the cursor and show the subquests description.
                 if inStorage:
                     continue
 
+                generatedPath = cityCore.getPathCommandTile((6,6,0),item.getPosition(),character=character,ignoreEndBlocked=True)[0]
+                if not generatedPath:
+                    continue
+
                 quest = src.quests.questMap["CleanSpace"](targetPositionBig=(7,7,0),targetPosition=item.getPosition(),reason="unclutter the city core and put the items into storage")
                 quests.append(quest)
+
+                if len(quests) > 4:
+                    break
             if quests:
                 return (quests,None)
 
@@ -726,7 +734,7 @@ Press d to move the cursor and show the subquests description.
                             amount = None
                             if inputSlot[1] == "Case":
                                 amount = 1
-                            quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="fetch materials from storage")
+                            quest2 = src.quests.questMap["FetchItems"](toCollect=inputSlot[1],amount=amount,reason="get material to fill input stockpiles")
                             quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
                             return ([quest4,quest2],None)
 

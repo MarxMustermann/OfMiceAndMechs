@@ -160,10 +160,10 @@ class Room(src.saveing.Saveable):
                 item.bolted = False
                 self.addItem(item,outputSlot[0])
 
-    def getNonEmptyOutputslots(self,itemType=None):
+    def getNonEmptyOutputslots(self,itemType=None,allowStorage=True):
         result = []
         for outputSlot in self.outputSlots:
-            if itemType and not outputSlot[1] == itemType:
+            if itemType and outputSlot[1] and not outputSlot[1] == itemType:
                 continue
 
             items = self.getItemByPosition(outputSlot[0])
@@ -175,25 +175,26 @@ class Room(src.saveing.Saveable):
 
             result.append(outputSlot)
 
-        for storageSlot in self.storageSlots:
-            if itemType and not storageSlot[1] == None and not storageSlot[1] == itemType:
-                continue
+        if allowStorage:
+            for storageSlot in self.storageSlots:
+                if itemType and not storageSlot[1] == None and not storageSlot[1] == itemType:
+                    continue
 
-            items = self.getItemByPosition(storageSlot[0])
-            if not items:
-                continue
+                items = self.getItemByPosition(storageSlot[0])
+                if not items:
+                    continue
 
-            if itemType and not items[0].type == itemType:
-                continue
+                if itemType and not items[0].type == itemType:
+                    continue
 
-            result.append(storageSlot)
+                result.append(storageSlot)
 
         return result
 
     def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False):
         result = []
         for inputSlot in self.inputSlots:
-            if (itemType and not inputSlot[1] == itemType) and (not allowAny or  not inputSlot[1] == None):
+            if (itemType and not inputSlot[1] == itemType) and (not allowAny or not inputSlot[1] == None):
                 continue
 
             items = self.getItemByPosition(inputSlot[0])
@@ -1239,6 +1240,8 @@ class Room(src.saveing.Saveable):
 
                         chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, "black"), char)
 
+                        if character.timeTaken > 2:
+                            chars[character.yPosition][character.xPosition][0].bg = "#553"
                         if character.showThinking:
                             chars[character.yPosition][character.xPosition][0].bg = "#333"
                             character.showThinking = False

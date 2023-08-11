@@ -77,6 +77,7 @@ If you don't find a source, produce new items.
 This quest has no subquests. Press r to generate subquests for this quest."""))
         else:
             out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
+This quests has subquests.
 Press d to move the cursor and show the subquests description.
 """))
 
@@ -158,6 +159,9 @@ Press d to move the cursor and show the subquests description.
                         return (room.getPosition(),)
 
     def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
+
         (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
@@ -172,12 +176,6 @@ Press d to move the cursor and show the subquests description.
     def getNextStep(self, character,dryRun=True,ignoreCommands=False):
         if self.subQuests:
             return (None,None)
-
-        if character.getFreeInventorySpace() <= 0:
-            quest = src.quests.questMap["ClearInventory"](reason="be able to store items")
-            if not dryRun:
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-            return ([quest],None)
 
         if not self.amount:
             numItemsCollected = 0
@@ -301,15 +299,21 @@ Press d to move the cursor and show the subquests description.
                     return ([quest],None)
 
             if not foundItem:
-                if self.tryHard:
-                    if self.toCollect == "Scrap":
+                if self.toCollect == "Scrap":
+                    if self.tryHard:
                         quest = src.quests.questMap["GatherScrap"](reason="have items to fetch")
                         return ([quest],None)
-                    else:
+                else:
+                    if "metal working" in self.character.duties:
+                        if not self.toCollect in ("MetalBars","Scrap",):
+                            newQuest = src.quests.questMap["MetalWorking"](toProduce=self.toCollect,amount=1,reason="produce a item you do not have",produceToInventory=True)
+                            return ([newQuest],None)
+                    if self.tryHard:
                         quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard,reason="have items to fetch")
                         return ([quest],None)
 
-                self.fail(reason="no source for item %s"%(self.toCollect,))
+                if not dryRun:
+                    self.fail(reason="no source for item %s"%(self.toCollect,))
                 return (None,None)
         return (None,None)
 

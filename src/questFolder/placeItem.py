@@ -20,10 +20,11 @@ class PlaceItem(src.quests.MetaQuestSequence):
         if self.reason:
             reason = ",\nto %s"%(self.reason,)
         text = """
-place item %s on position %s on tile %s%s."""%(self.itemType,self.targetPosition,self.targetPositionBig,reason,)
+Place item %s on position %s on tile %s%s."""%(self.itemType,self.targetPosition,self.targetPositionBig,reason,)
         if self.boltDown:
             text += """
-Bolt down the item afterwards."""
+
+Bolt down the item after placing it."""
 
         if not self.character.inventory or not self.character.inventory[-1].type == self.itemType:
             text += """
@@ -66,6 +67,11 @@ If you don't find the items to place, produce them.
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""
 This quest has no subquests. Press r to generate subquests for this quest."""))
+        else:
+            out.append((src.interaction.urwid.AttrSpec("#080", "black"),"""
+This quests has subquests.
+Press d to move the cursor and show the subquests description.
+"""))
 
         return out
 
@@ -159,6 +165,10 @@ This quest has no subquests. Press r to generate subquests for this quest."""))
                 submenue = character.macroState.get("submenue")
                 if submenue:
                     return (None,(["esc"],"exit the menu"))
+
+            if not character.getBigPosition() == self.targetPositionBig:
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
+                return ([quest],None)
 
             itemFound = None
             itemPlaced = None

@@ -170,12 +170,6 @@ class ScrapCompactor(src.items.Item):
 
         character.addMessage("you produce a metal bar")
 
-        if jobOrder:
-            if len(jobOrder.tasks) > 1:
-                jobOrder.tasks.pop()
-            else:
-                jobOrder.done = True
-
         # remove resources
         if scrap.amount <= 1:
             self.container.removeItem(scrap)

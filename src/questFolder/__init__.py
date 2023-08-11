@@ -75,3 +75,6 @@ import src.questFolder.scheduleRoomBuilding
 import src.questFolder.assignFloorPlan
 import src.questFolder.deleteMarking
 import src.questFolder.clearPathToPosition
+import src.questFolder.scrapHammering
+import src.questFolder.metalWorking
+import src.questFolder.machining

@@ -1,4 +1,5 @@
 import src
+import random
 
 class DrawFloorPlan(src.quests.MetaQuestSequence):
     type = "DrawFloorPlan"
@@ -26,7 +27,7 @@ Draw a floor plan assigned to a room%s.
         if not character:
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
 
             if not isinstance(character.container,src.rooms.Room):
@@ -41,13 +42,14 @@ Draw a floor plan assigned to a room%s.
                     command = "w"
                 return (None,(command,"draw to stockpile"))
 
-            if not character.container.floorPlan:
-                self.fail()
-                return (None,None)
-
             if not (character.getBigPosition() == self.targetPosition):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 return ([quest],None)
+
+            if not character.container.floorPlan:
+                if not dryRun:
+                    self.fail()
+                return (None,None)
 
             if "walkingSpace" in character.container.floorPlan:
                 walkingSpaces = character.container.floorPlan.get("walkingSpace")
@@ -57,6 +59,10 @@ Draw a floor plan assigned to a room%s.
 
                 quests = []
                 counter = 0
+                walkingSpaces = list(walkingSpaces)
+                if len(walkingSpaces) > 1:
+                    index = random.randint(0,len(walkingSpaces)-1)
+                    walkingSpaces = walkingSpaces[index:]+walkingSpaces[:index]
                 for walkingSpace in reversed(walkingSpaces):
                     if counter > 9:
                         break
@@ -79,6 +85,9 @@ Draw a floor plan assigned to a room%s.
                             break
 
                 outputSlots = character.container.floorPlan.get("outputSlots")[:]
+                if len(outputSlots) > 1:
+                    index = random.randint(0,len(outputSlots)-1)
+                    walkingSpaces = outputSlots[index:]+outputSlots[:index]
                 if outputSlots:
                     quests = []
                     counter = 0
@@ -116,6 +125,9 @@ Draw a floor plan assigned to a room%s.
                             break
 
                 buildSites = character.container.floorPlan.get("buildSites")[:]
+                if len(buildSites) > 1:
+                    index = random.randint(0,len(buildSites)-1)
+                    buildSites = buildSites[index:]+buildSites[:index]
                 if buildSites:
                     quests = []
                     counter = 0
@@ -137,6 +149,8 @@ Draw a floor plan assigned to a room%s.
                                 quests.append(quest)
                                 buildSites.remove(buildSite2)
                                 counter2 += 1
+                                if counter2 > 9:
+                                    break
 
                     if quests:
                         return (list(reversed(quests)),None)
@@ -157,10 +171,37 @@ Draw a floor plan assigned to a room%s.
                             storageSlots.pop()
                             break
 
-                    if storageSlots:
-                        storageSlot = storageSlots[-1]
-                        quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot[0])
-                        return ([quest],None)
+                storageSlots = character.container.floorPlan.get("storageSlots")[:]
+                if len(storageSlots) > 1:
+                    index = random.randint(0,len(storageSlots)-1)
+                    storageSlots = storageSlots[index:]+storageSlots[:index]
+
+                if storageSlots:
+                    quests = []
+                    counter = 0
+                    counter2 = 0
+                    while counter < len(storageSlots):
+                        if counter2 > 4:
+                            break
+                        storageSlot = storageSlots[counter]
+
+                        counter += 1
+                        counter2 += 1
+
+                        quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot[0],extraInfo=storageSlot[2])
+                        quests.append(quest)
+
+                        for storageSlot2 in storageSlots[counter:]:
+                            if storageSlot[1] == storageSlot2[1] and storageSlot[2] == storageSlot2[2]:
+                                quest = src.quests.questMap["DrawStockpile"](itemType=storageSlot2[1],stockpileType="s",targetPositionBig=self.targetPosition,targetPosition=storageSlot2[0],extraInfo=storageSlot[2])
+                                quests.append(quest)
+                                storageSlots.remove(storageSlot2)
+                                counter2 += 1
+
+                                if counter2 > 9:
+                                    break
+                    if quests:
+                        return (list(reversed(quests)),None)
 
                 if not storageSlots == None:
                     del character.container.floorPlan["storageSlots"]
@@ -174,6 +215,7 @@ Draw a floor plan assigned to a room%s.
                             break
 
                 inputSlots = character.container.floorPlan.get("inputSlots")[:]
+                random.shuffle(inputSlots)
                 if inputSlots:
                     quests = []
                     counter = 0
@@ -205,7 +247,8 @@ Draw a floor plan assigned to a room%s.
             if character.container.floorPlan:
                 character.container.floorPlan = None
 
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return (None,None)
         return (None,None)
 
@@ -216,7 +259,7 @@ Draw a floor plan assigned to a room%s.
         return self.getNextStep(character)[1]
 
     def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -225,7 +268,7 @@ Draw a floor plan assigned to a room%s.
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

@@ -22,6 +22,12 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
         if not character:
             return
 
+        room = character.getTerrain().getRoomByPosition((self.targetPositionBig))[0]
+        for buildSite in room.buildSites:
+            if buildSite[0] == self.targetPosition:
+                self.postHandler()
+                return True
+
     def generateTextDescription(self):
         reason = ""
         if self.reason:
@@ -217,5 +223,21 @@ Try as hard as you can to achieve this.
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+
+    def handleDrewMarking(self,extraInfo):
+        if not self.active:
+            return
+        if self.completed:
+            1/0
+
+        self.triggerCompletionCheck(self.character)
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+        
+        self.startWatching(character,self.handleDrewMarking, "drew marking")
+
+        return super().assignToCharacter(character)
 
 src.quests.addType(DrawBuildSite)

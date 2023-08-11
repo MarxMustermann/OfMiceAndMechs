@@ -2861,11 +2861,13 @@ class SubMenu(src.saveing.Saveable):
         self.followUp = None
         self.done = False
         self.tag = None
+        self.extraInfo ={}
 
         self.options = collections.OrderedDict()
         self.niceOptions = collections.OrderedDict()
         self.default = default
         self.targetParamName = targetParamName
+        self.extraDescriptions = {}
         super().__init__()
         self.attributesToStore.extend(
             [
@@ -2986,6 +2988,8 @@ class SubMenu(src.saveing.Saveable):
             returns True when done
         """
 
+        origKey = key
+
         if not self.options:
             self.done = True
             return True
@@ -3063,11 +3067,12 @@ class SubMenu(src.saveing.Saveable):
                 self.selection = self.options[key]
                 self.options = None
                 if self.followUp:
-                    self.callIndirect(self.followUp,extraParams={self.targetParamName:self.selection})
+                    self.callIndirect(self.followUp,extraParams={self.targetParamName:self.selection,"key":origKey})
                 return True
         else:
             self.lockOptions = False
 
+        extraDescription = None
         if not noRender:
             # render the options
             counter = 0
@@ -3076,9 +3081,12 @@ class SubMenu(src.saveing.Saveable):
                 if counter == self.selectionIndex:
                     out += " -> " + str(v) + "\n"
                     if self.extraDescriptions and self.options[k] in self.extraDescriptions:
-                        out += self.extraDescriptions[self.options[k]]+"\n\n"
+                        extraDescription = self.extraDescriptions[self.options[k]]+"\n\n"
                 else:
                     out += "    " + str(v) + "\n"
+
+            if extraDescription:
+                out += extraDescription
 
             # show the rendered options
             # bad code: urwid specific code
@@ -4046,7 +4054,7 @@ class InputMenu(SubMenu):
 
     type = "InputMenu"
 
-    def __init__(self, query="", ignoreFirst=False, targetParamName="text",stealAllKeys=True):
+    def __init__(self, query="", ignoreFirst=False, targetParamName="text",stealAllKeys=False):
         """
         initialise internal state
 
@@ -4992,6 +5000,10 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
                 result = char.quests[0].getSolvingCommandString(char)
                 solvingCommangString = None
                 if result:
+                    if isinstance(result,list):
+                        result = (result,"continue")
+                    if isinstance(result,str):
+                        result = (result,"continue")
                     (solvingCommangString,reason) = result
                     if isinstance(solvingCommangString,list):
                         solvingCommangString = "".join(solvingCommangString)
@@ -5152,6 +5164,7 @@ class ViewNPCsMenu(SubMenu):
         self.persistentText = ["press w/a and s/d to scroll\n\n"]
         self.persistentText = ["press . to pass a turn\n\n"]
         self.persistentText = ["press t to take over clone\n\n"]
+        self.persistentText = ["press r to reset clone quests\n\n"]
 
         characters = self.personnelArtwork.getPersonnelList()
 
@@ -5191,6 +5204,17 @@ class ViewNPCsMenu(SubMenu):
 
         if key in ("t",):
             src.gamestate.gamestate.mainChar = selectedCharacter
+        if key in ("r",):
+            for quest in selectedCharacter.quests:
+                quest.fail()
+
+            containerQuest = src.quests.questMap["BeUsefull"]()
+            selectedCharacter.quests.append(containerQuest)
+            containerQuest.assignToCharacter(selectedCharacter)
+            containerQuest.activate()
+            containerQuest.autoSolve = True
+
+            selectedCharacter.timeTaken = 0
 
         self.persistentText.append("\nname: %s (marked by %s)"%(selectedCharacter.name,"XX"))
         part1 = "position: %s "%(selectedCharacter.getPosition(),)
@@ -5402,13 +5426,16 @@ class JobAsMatrixMenu(SubMenu):
 
         terrain = self.dutyArtwork.getTerrain()
         npcs = []
+        npcs.append(src.gamestate.gamestate.mainChar)
         for char in terrain.characters:
-            npcs.append(char)
+            if not char in npcs:
+                npcs.append(char)
         for room in terrain.rooms:
             for char in room.characters:
-                npcs.append(char)
+                if not char in npcs:
+                    npcs.append(char)
 
-        duties = ["trap setting","resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing","Questing"]
+        duties = list(reversed(["scavenging","storage sorting","machine operation","clone spawning","city planning","painting","maggot gathering","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]))
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -5420,7 +5447,7 @@ class JobAsMatrixMenu(SubMenu):
         if key == "d":
             if not self.index[1] > len(duties)-2:
                 self.index[1] += 1
-        if key == "j":
+        if key in ("j","k","l"):
             rowCounter = 0
             for npc in npcs:
                 if not npc.faction == character.faction:
@@ -5433,7 +5460,12 @@ class JobAsMatrixMenu(SubMenu):
                     if dutyname in npc.duties:
                         npc.duties.remove(dutyname)
                     else:
-                        npc.duties.append(dutyname)
+                        if key == "l":
+                            pass
+                        elif key == "j":
+                            npc.duties.append(dutyname)
+                        elif key == "k":
+                            npc.duties.insert(0,dutyname)
                 rowCounter += 1
 
         text = "press wasd to move cursor"
@@ -5443,6 +5475,7 @@ class JobAsMatrixMenu(SubMenu):
 
         text.append("\ncharacter                 ")
         rowCounter = 0
+        dutyCounter = 0
         for duty in duties:
             color = "default"
             if rowCounter == self.index[1]:
@@ -5450,6 +5483,11 @@ class JobAsMatrixMenu(SubMenu):
             text.append("|")
             text.append((urwid.AttrSpec("default", color)," "+duty+" "))
             rowCounter += 1
+            dutyCounter += 1
+            if dutyCounter == 6:
+                text.append("\n                          ")
+                dutyCounter = 0
+
 
         def convertName(name):
             return name.ljust(25," ")[0:24]
@@ -5484,7 +5522,7 @@ class JobAsMatrixMenu(SubMenu):
                     text.append((urwid.AttrSpec("default", color),"  "))
 
                 if duty in npc.duties:
-                    text.append("X")
+                    text.append(str(npc.duties.index(duty)+1))
                 else:
                     color = "default"
                     if rowCounter == self.index[1] or lineCounter == self.index[0]:

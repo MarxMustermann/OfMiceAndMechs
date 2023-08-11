@@ -72,6 +72,11 @@ Use the CityPlaner to designate the room.
             if submenue.cursor[1] < self.roomPosition[1]:
                 command += "s"*(self.roomPosition[1]-submenue.cursor[1])
 
+            cityPlaner = character.container.getItemsByType("CityPlaner")[0]
+            if self.roomPosition in cityPlaner.plannedRooms:
+                command += "x"
+                return (None,(command,"to remove old construction site marker"))
+
             if self.roomType == "generalPurposeRoom":
                 command += "g"
                 return (None,(command,"to designate room as general pupose room"))

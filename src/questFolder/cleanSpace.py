@@ -4,7 +4,7 @@ import random
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
-    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None):
+    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -13,6 +13,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.targetPosition = targetPosition 
         self.targetPositionBig = targetPositionBig
         self.reason = reason
+        self.abortOnfullInventory = abortOnfullInventory
 
     def generateTextDescription(self):
         reason = ""
@@ -62,6 +63,10 @@ Remove all items from the space %s on tile %s%s.
             terrain = character.getTerrain()
             rooms = terrain.getRoomByPosition(self.targetPositionBig)
             if not character.getFreeInventorySpace():
+                if self.abortOnfullInventory:
+                    if not dryRun:
+                        self.fail("full inventory")
+                    return (None,None)
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
 

@@ -164,7 +164,7 @@ Since this clone is burned in it can not change duties.
         self.recalculateGlasstears(character)
         character.changed("got epoch evaluation",{"character":character})
 
-    def getEpochRewards(self,character):
+    def getEpochRewards(self,character,selected=None):
 
         options = []
         options.append(("None","(0) None"))
@@ -192,25 +192,32 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn lightning rods","(10) spawn 25 ligthning rods"))
             options.append(("spawn new clone","(15) spawn new clone"))
         else:
+            options.append(("spawn npcs","(?) spawn npcs"))
             options.append(("spawn resource gathering NPC","(10) spawn gatherer"))
-            options.append(("spawn machine operation NPC","(10) spawn operator"))
             options.append(("spawn resource fetching NPC","(10) spawn fetcher"))
             options.append(("spawn hauling NPC","(10) spawn hauler"))
-            options.append(("spawn painting NPC","(10) spawn painter"))
-            options.append(("spawn machine placing NPC","(10) spawn machine placer"))
             options.append(("spawn room building NPC","(10) spawn room builder"))
-            options.append(("spawn maggot gathering NPC","(10) spawn maggot gatherer"))
+            options.append(("spawn scrap hammering NPC","(10) spawn scrap hammerer"))
+            options.append(("spawn metal working NPC","(10) spawn metal worker"))
+            options.append(("spawn painting NPC","(10) spawn painter"))
             options.append(("spawn scavenging NPC","(10) spawn scavenger"))
-            options.append(("spawn food item","(5) spawn food item"))
-            options.append(("spawn scrap","(20) spawn scrap"))
-            options.append(("spawn personnel tracker","(5) spawn personnel tracker"))
+            options.append(("spawn machine operation NPC","(10) spawn machine operator"))
+            options.append(("spawn machine placing NPC","(10) spawn machine placer"))
+            options.append(("spawn storage sorting NPC","(10) spawn storage sorter"))
+            options.append(("spawn maggot gathering NPC","(10) spawn maggot gatherer"))
+            options.append(("spawn personnel tracker","(10) spawn personnel tracker"))
+            options.append(("spawn scrap","(20) respawn scrap field"))
         submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType",extraDescriptions=self.descriptions)
+
+        counter = 0
+        for option in options:
+            counter += 1
+            if option[0] == selected:
+                submenue.selectionIndex = counter
+
         submenue.tag = "rewardSelection"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseEpochRewards","params":{"character":character}}
-
-    def getEpochRewardsProxy(self,extraInfo):
-        self.getEpochRewards(extraInfo["character"])
 
     def dispenseEpochRewards(self,extraInfo):
         character = extraInfo.get("character")
@@ -371,32 +378,44 @@ Since this clone is burned in it can not change duties.
             self.spawnNewClone(character)
 
         elif extraInfo["rewardType"] == "spawn resource gathering NPC":
-            text = "You spawned a clone with the duty resource gathering.\n\n"+self.descriptions["spawn resource gathering NPC"]
+            text = "You spawned a clone with the duty resource gathering."
             self.spawnBurnedInNPC(character,"resource gathering")
         elif extraInfo["rewardType"] == "spawn machine operation NPC":
-            text = "You spawned a clone with the duty machine operation.\n\n"+self.descriptions["spawn machine operation NPC"]
+            text = "You spawned a clone with the duty machine operation."
             self.spawnBurnedInNPC(character,"machine operation")
         elif extraInfo["rewardType"] == "spawn resource fetching NPC":
-            text = "You spawned a clone with the duty resource fetching.\n\n"+self.descriptions["spawn resource fetching NPC"]
+            text = "You spawned a clone with the duty resource fetching."
             self.spawnBurnedInNPC(character,"resource fetching")
         elif extraInfo["rewardType"] == "spawn hauling NPC":
-            text = "You spawned a clone with the duty hauling.\n\n"+self.descriptions["spawn hauling NPC"]
+            text = "You spawned a clone with the duty hauling."
             self.spawnBurnedInNPC(character,"hauling")
         elif extraInfo["rewardType"] == "spawn painting NPC":
-            text = "You spawned a clone with the duty painting.\n\n"+self.descriptions["spawn painting NPC"]
+            text = "You spawned a clone with the duty painting."
             self.spawnBurnedInNPC(character,"painting")
         elif extraInfo["rewardType"] == "spawn machine placing NPC":
-            text = "You spawned a clone with the duty machine placing.\n\n"+self.descriptions["spawn machine placing NPC"]
+            text = "You spawned a clone with the duty machine placing."
             self.spawnBurnedInNPC(character,"machine placing")
         elif extraInfo["rewardType"] == "spawn room building NPC":
-            text = "You spawned a clone with the duty room building.\n\n"+self.descriptions["spawn room building NPC"]
+            text = "You spawned a clone with the duty room building."
             self.spawnBurnedInNPC(character,"room building")
         elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
-            text = "You spawned a clone with the duty maggot gathering.\n\n"+self.descriptions["spawn maggot gathering NPC"]
+            text = "You spawned a clone with the duty maggot gathering."
             self.spawnBurnedInNPC(character,"maggot gathering")
         elif extraInfo["rewardType"] == "spawn scavenging NPC":
-            text = "You spawned a clone with the duty scavenging.\n\n"+self.descriptions["spawn scavenging NPC"]
+            text = "You spawned a clone with the duty scavenging."
             self.spawnBurnedInNPC(character,"scavenging")
+        elif extraInfo["rewardType"] == "spawn scrap hammering NPC":
+            text = "You spawned a clone with the scrap hammering"
+            self.spawnBurnedInNPC(character,"scrap hammering")
+        elif extraInfo["rewardType"] == "spawn metal working NPC":
+            text = "You spawned a clone with the duty metal working"
+            self.spawnBurnedInNPC(character,"metal working")
+        elif extraInfo["rewardType"] == "spawn storage sorting NPC":
+            text = "You spawned a clone with the duty storage sorting"
+            self.spawnBurnedInNPC(character,"storage sorting")
+        elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
+            text = "You spawned a clone with the duty maggot gathering"
+            self.spawnBurnedInNPC(character,"maggot gathering")
 
         elif extraInfo["rewardType"] == "spawn food item":
             text = "spawning food"
@@ -407,13 +426,16 @@ Since this clone is burned in it can not change duties.
         elif extraInfo["rewardType"] == "spawn personnel tracker":
             text = "spawning personnel tracker"
             self.spawnArtwork(character,"PersonnelTracker",0)
+        elif extraInfo["rewardType"] == "spawn npcs":
+            text = "spawning npcs"
+            while self.charges >= 10:
+                self.spawnBurnedInNPC(character,None)
 
         character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
-        submenue = src.interaction.TextMenu(text)
+        character.addMessage(text)
 
-        character.macroState["submenue"] = submenue
-        character.macroState["submenue"].followUp = {"container":self,"method":"getEpochRewardsProxy","params":{"character":character}}
-        return
+        self.getEpochRewards(character,selected=extraInfo["rewardType"])
+
     
     def spawnArtwork(self, character,itemType, cost):
         text = ""
@@ -517,7 +539,8 @@ Since this clone is burned in it can not change duties.
             npc.duties = []
             #duty = random.choice(("hauling","resource fetching","maggot gathering","resource gathering","machine operation","hauling","resource fetching","cleaning","machine placing","maggot gathering"))
             #duty = random.choice(("maggot gathering",))
-            npc.duties.append(duty)
+            if duty:
+                npc.duties.append(duty)
             npc.registers["HOMEx"] = 7
             npc.registers["HOMEy"] = 7
             npc.registers["HOMETx"] = terrain.xPosition

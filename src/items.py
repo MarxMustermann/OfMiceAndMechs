@@ -301,6 +301,10 @@ class Item(src.saveing.Saveable):
             return
 
         # call the function set for the selection
+        if selection+"_"+params.get("key","") in self.applyMap:
+            self.applyMap[selection+"_"+params.get("key","")](character)
+            return
+
         self.applyMap[selection](character)
 
     def getTerrain(self):

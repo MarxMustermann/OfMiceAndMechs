@@ -51,7 +51,6 @@ This quest ends after you do this.%s"""%(self.targetPosition,containerString,rea
 
 This quest will not resolve further into subQuests. 
 Close this menu by pressing esc and follow the instructions on the left hand menu.
-To reopen this menu after closing it press q.
 """
         return text
 

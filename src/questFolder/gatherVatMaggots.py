@@ -102,9 +102,8 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                 treeFound = item
 
         if maggotFound:
-            quest = src.quests.questMap["GoToPosition"](ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=maggotFound.getSmallPosition(),ignoreEndBlocked=True)
             quest.assignToCharacter(character)
-            quest.setParameters({"targetPosition":maggotFound.getSmallPosition()})
             quest.activate()
             self.addQuest(quest)
             return
@@ -134,9 +133,9 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                 character.runCommandString(command)
                 return
 
-            quest = src.quests.questMap["GoToPosition"](ignoreEndBlocked=True)
+            print(">this")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=treeFound.getSmallPosition(),ignoreEndBlocked=True)
             quest.assignToCharacter(character)
-            quest.setParameters({"targetPosition":treeFound.getSmallPosition()})
             quest.activate()
             self.addQuest(quest)
             return

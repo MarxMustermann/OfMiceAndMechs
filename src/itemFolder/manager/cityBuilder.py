@@ -93,6 +93,9 @@ class CityBuilder(src.items.Item):
             return
         super().apply()
 
+    def getLongINfo(self):
+        return "plan your city with this item. %s"%(self.autoExtensionThreashold,)
+
     def addTasksToLocalRoom(self, tasks, character):
         """
         delegate tasks to the room the item is in

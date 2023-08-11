@@ -3,7 +3,7 @@ import src
 class DrawStockpile(src.quests.MetaQuestSequence):
     type = "DrawStockpile"
 
-    def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None):
+    def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.targetPosition = targetPosition
@@ -28,6 +28,11 @@ class DrawStockpile(src.quests.MetaQuestSequence):
             if itemType:
                 itemTypeName = " for %s"%(itemType,)
             self.metaDescription = "draw %sstockpile%s"%(stockpileTypeName,itemTypeName,)
+
+        if not extraInfo:
+            self.extraInfo = {}
+        else:
+            self.extraInfo = extraInfo
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -184,6 +189,46 @@ Try as hard as you can to achieve this.
 
                     return (None,(itemType[correctIndex:],"to enter type"))
 
+                if submenue.tag == "paintExtraParamName":
+                    nameToSet = ""
+                    for (key,value) in self.extraInfo.items():
+                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (not value == submenue.extraInfo["item"].paintExtraInfo[key]):
+                            nameToSet = key
+
+                    if nameToSet == submenue.text:
+                        return (None,(["enter"],"to set the name of the extra parameter"))
+                    
+                    correctIndex = 0
+                    while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
+                        if not nameToSet[correctIndex] == submenue.text[correctIndex]:
+                            break
+                        correctIndex += 1
+                    
+                    if correctIndex < len(submenue.text):
+                        return (None,(["backspace"],"to delete input"))
+
+                    return (None,(nameToSet[correctIndex:],"to enter name of the extra parameter"))
+
+                if submenue.tag == "paintExtraParamValue":
+                    #BUG: ordering is not actually checked
+                    valueToSet = ""
+                    for (key,value) in self.extraInfo.items():
+                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (not value == submenue.extraInfo["item"].paintExtraInfo[key]):
+                            valueToSet = value
+
+                    if valueToSet == submenue.text:
+                        return (None,(["enter"],"to set the value of the extra parameter"))
+                    
+                    correctIndex = 0
+                    while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
+                        if not valueToSet[correctIndex] == submenue.text[correctIndex]:
+                            break
+                        correctIndex += 1
+                    
+                    if correctIndex < len(submenue.text):
+                        return (None,(["backspace"],"to delete input"))
+
+                    return (None,(valueToSet[correctIndex:],"to enter value of the extra parameter"))
 
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
@@ -241,6 +286,15 @@ Try as hard as you can to achieve this.
                         return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
                     else:
                         return (None,(["c","t"] + ["enter"],"to remove the item type for the stockpile"))
+
+                for (key,value) in item.paintExtraInfo.items():
+                    if not key in self.extraInfo:
+                        return (None,(["c","c"],"to clear the painters extra info"))
+
+                for (key,value) in self.extraInfo.items():
+                    if (not key in item.paintExtraInfo) or (not value == item.paintExtraInfo[key]):
+                        return (None,(["c","e",key,"enter",value,"enter"],"to clear the painters extra info"))
+
                 if not (item.offset == (0,0,0)):
                     return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
                     

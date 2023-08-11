@@ -48,7 +48,7 @@ If you don't find a %s blueprint, research it.
         if self.triggerCompletionCheck(character):
             return
 
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -72,7 +72,7 @@ If you don't find a %s blueprint, research it.
                 self.addQuest(quest)
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
 
             itemPlaced = None
@@ -179,8 +179,11 @@ If you don't find a %s blueprint, research it.
                         continue
 
             if not machineMachine:
-                self.fail(reason="no machine machine found")
-                return (None,None)
+                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
+                return ([newQuest],None)
+                #if not dryRun:
+                #    self.fail(reason="no machine machine found")
+                #return (None,None)
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(1,0,0)))
             if items and items[-1].type == "Machine":

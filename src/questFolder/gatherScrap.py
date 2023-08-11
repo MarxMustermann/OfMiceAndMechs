@@ -4,11 +4,12 @@ import random
 class GatherScrap(src.quests.MetaQuestSequence):
     type = "GatherScrap"
 
-    def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None):
+    def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None,amount=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
+        self.amount = amount
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
@@ -31,6 +32,8 @@ looks like this: """,scrap1.render()," or ",scrap2.render()," or ",scrap3.render
 Scrapfields are shown on the minimap as white ss"""]
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
+        if self.completed:
+            1/0
         if not self.active:
             return
 
@@ -51,6 +54,7 @@ Scrapfields are shown on the minimap as white ss"""]
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
+        self.startWatching(character,self.wrapedTriggerCompletionCheck, "itemPickedUp")
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):

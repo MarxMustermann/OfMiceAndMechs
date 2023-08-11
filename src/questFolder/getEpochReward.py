@@ -6,7 +6,7 @@ class GetEpochReward(src.quests.MetaQuestSequence):
     def __init__(self, description="get epoch reward", creator=None,rewardType=None,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description
+        self.metaDescription = description + " (" + rewardType + ")"
         self.rewardType = rewardType
         self.reason = reason
 
@@ -19,8 +19,8 @@ class GetEpochReward(src.quests.MetaQuestSequence):
 Claim a reward for completing the epoch challenge%s.
 
 You accumulated some glass tears.
-Spend themto claim the actual reward.
-"""%(reason,)
+Spend them to claim the actual reward (%s).
+"""%(reason,self.rewardType,)
 
         if self.rewardType == "room building":
             text += """
@@ -132,6 +132,10 @@ This will allow you to focus on other tasks.
         pos = character.getBigPosition()
 
         if pos == (7,7,0):
+            if not character.container.isRoom:
+                quest = src.quests.questMap["EnterRoom"]()
+                return ([quest],None)
+
             epochArtwork = character.container.getItemsByType("EpochArtwork")[0]
             command = None
             if character.getPosition(offset=(1,0,0)) == epochArtwork.getPosition():
@@ -155,6 +159,8 @@ This will allow you to focus on other tasks.
     def handleGotEpochReward(self, extraInfo):
         if self.completed:
             1/0
+        if not self.active:
+            return
 
         self.postHandler()
         return

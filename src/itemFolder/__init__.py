@@ -15,3 +15,4 @@ import src.itemFolder.manager
 import src.itemFolder.dungeon
 import src.itemFolder.hacks
 import src.itemFolder.military
+import src.itemFolder.workshops

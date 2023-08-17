@@ -61,6 +61,7 @@ def advanceGame():
 
     src.gamestate.gamestate.multi_chars = multi_chars
     src.gamestate.gamestate.tick += 1
+    print(src.gamestate.gamestate.tick)
 
     for character in multi_chars:
         character.timeTaken -= 1
@@ -718,6 +719,9 @@ def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].apply(char)
             char.timeTaken += char.movementSpeed
+    elif key == "i":
+        if char.inventory:
+            char.inventory[-1].apply(char)
     elif key == "j":
         character = char
         if not character.jobOrders:
@@ -768,6 +772,50 @@ def doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags):
                         while item.uses and character.health < character.maxHealth:
                             item.apply(character)
     del char.interactionState["advancedInteraction"]
+
+def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
+    if not char.container:
+        del char.interactionState["advancedConfigure"]
+        return
+    if key == "w":
+        items = char.container.getItemByPosition(
+            (char.xPosition, char.yPosition - 1, char.zPosition)
+        )
+        if items:
+            items[0].configure(char)
+            char.timeTaken += char.movementSpeed
+    elif key == "s":
+        items = char.container.getItemByPosition(
+            (char.xPosition, char.yPosition + 1, char.zPosition)
+        )
+        if items:
+            items[0].configure(char)
+            char.timeTaken += char.movementSpeed
+    elif key == "d":
+        items = char.container.getItemByPosition(
+            (char.xPosition + 1, char.yPosition, char.zPosition)
+        )
+        if items:
+            items[0].configure(char)
+            char.timeTaken += char.movementSpeed
+    elif key == "a":
+        items = char.container.getItemByPosition(
+            (char.xPosition - 1, char.yPosition, char.zPosition)
+        )
+        if items:
+            items[0].configure(char)
+            char.timeTaken += char.movementSpeed
+    elif key == ".":
+        items = char.container.getItemByPosition(
+            (char.xPosition, char.yPosition, char.zPosition)
+        )
+        if items:
+            items[0].configure(char)
+            char.timeTaken += char.movementSpeed
+    elif key == "i":
+        if char.inventory:
+            char.inventory[-1].configure(char)
+    del char.interactionState["advancedConfigure"]
 
 def doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags):
     char.timeTaken += char.movementSpeed
@@ -1950,6 +1998,10 @@ def handlePriorityActions(char,charState,flags,key,main,header,footer,urwid):
         doAdvancedInteraction(key,char,charState,main,header,footer,urwid,flags)
         return
 
+    if "advancedConfigure" in char.interactionState:
+        doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags)
+        return
+
     if "advancedPickup" in char.interactionState:
         doAdvancedPickup(key,char,charState,main,header,footer,urwid,flags)
         return
@@ -2443,6 +2495,7 @@ press key for the advanced interaction
 * s = activate east
 * d = activate south
 * . = activate item on floor
+* i = activate last item in inventory
 * f = eat food
 * h = heal
 * H = heal fully
@@ -2458,6 +2511,31 @@ press key for the advanced interaction
                 char.specialRender = True
 
             char.interactionState["advancedInteraction"] = {}
+            return
+
+        if key in ("C",):
+            if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
+                text = """
+
+press key for the configuration interaction
+
+* w = configure north
+* a = configure west
+* s = configure east
+* d = configure south
+* . = configure item on floor
+* i = configure last item in inventory
+
+"""
+
+                header.set_text(
+                    (urwid.AttrSpec("default", "default"), "advanced config")
+                )
+                main.set_text((urwid.AttrSpec("default", "default"), text))
+                footer.set_text((urwid.AttrSpec("default", "default"), ""))
+                char.specialRender = True
+
+            char.interactionState["advancedConfigure"] = {}
             return
 
         if key in ("g",):
@@ -5435,7 +5513,7 @@ class JobAsMatrixMenu(SubMenu):
                 if not char in npcs:
                     npcs.append(char)
 
-        duties = list(reversed(["scavenging","storage sorting","machine operation","clone spawning","city planning","painting","maggot gathering","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]))
+        duties = list(reversed(["epoch questing","scavenging","storage sorting","machine operation","clone spawning","city planning","painting","maggot gathering","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]))
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1
@@ -7995,6 +8073,31 @@ def showDeathScreen():
                 if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
                     raise SystemExit()
 
+def showInterruptChoice(text,options):
+    tcod.event.get()
+
+    while 1:
+        tcodConsole.clear()
+        printUrwidToTcod(text,(0,0))
+        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+
+            if isinstance(event,tcod.event.TextInput):
+                translatedKey = event.text
+
+                if translatedKey == None:
+                    continue
+
+                if translatedKey in options:
+                    return translatedKey
+
 def showInterruptText(text):
     tcod.event.get()
 
@@ -9155,6 +9258,7 @@ to remember"""
                                     break
                             stage += 1
                             subStep = 0
+
 def gameLoop(loop=None, user_data=None):
     while 1:
         advanceGame()

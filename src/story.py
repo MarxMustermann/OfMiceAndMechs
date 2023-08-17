@@ -3941,9 +3941,6 @@ class MainGame(BasicPhase):
         self.colonyBaseInfos = []
         #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
 
-        print(self.specialItemMap)
-        print(self.colonyBaseInfos)
-
         if self.preselection == "Siege":
             self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
             self.activeStory = random.choice(self.siegedBaseInfos)
@@ -3954,7 +3951,9 @@ class MainGame(BasicPhase):
             self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
             self.activeStory = random.choice(self.raidBaseInfos)
         else:
-            self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
+            self.colonyBaseInfos.append(self.createColonyBase((6,7),mainCharBase=True))
+            self.colonyBaseInfos.append(self.createColonyBase((5,7)))
+            self.setUpThroneDungeon((7,7))
             self.activeStory = self.colonyBaseInfos[0]
 
         for story in self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos:
@@ -3995,8 +3994,6 @@ class MainGame(BasicPhase):
         self.kickoff()
 
     def mainCharacterDeath(self,extraParam):
-        print(extraParam)
-        print(self.activeStory)
         if self.activeStory["type"] == "colonyBase":
             if len(self.activeStory["terrain"].rooms) == 1:
                 roomText = """    you failed to even build the first room"""
@@ -4074,9 +4071,79 @@ try to remember how you got here ..."""
         """
         pass
 
-    def createColonyBase(self,pos):
+    def setUpDungeon(self,pos):
+        #set up dungeons
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        glassHeart = src.items.itemMap["GlassHeart"]()
+        mainRoom.addItem(glassHeart,(6,6,0))
+
+    def setUpThroneDungeon(self,pos):
+        #set up dungeons
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        glassHeart = src.items.itemMap["Throne"]()
+        mainRoom.addItem(glassHeart,(6,6,0))
+
+        for x in range(1,14):
+            for y in range(1,14):
+                if x == 7 and y == 7:
+                    continue
+
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 30
+                enemy.baseDamage = 7
+                enemy.maxHealth = 30
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+                for i in range(0,random.randint(0,3)):
+                    for k in range(0,2):
+                        scrap = src.items.itemMap["Scrap"](amount=20)
+                        currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+
+    def createColonyBase(self,pos,mainCharBase=False):
         mainChar = src.characters.Character()
-        mainChar.disableCommandsOnPlus = True
+        if mainCharBase:
+            mainChar.disableCommandsOnPlus = True
         mainChar.questsDone = [
             "NaiveMoveQuest",
             "MoveQuestMeta",
@@ -4111,6 +4178,15 @@ try to remember how you got here ..."""
             "DropQuestMeta",
         ]
 
+        if not mainCharBase:
+            quest = src.quests.questMap["BeUsefull"]()
+            #quest = src.quests.questMap["ExtendBase"]()
+            quest.autoSolve = True
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            mainChar.foodPerRound = 1
+
         thisFactionId = self.factionCounter
         mainChar.faction = "city #%s"%(thisFactionId,)
         mainChar.registers["HOMEx"] = 7
@@ -4125,13 +4201,15 @@ try to remember how you got here ..."""
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         colonyBaseInfo["terrain"] = currentTerrain
         colonyBaseInfo["mainChar"] = mainChar
-        mainChar.personality["autoFlee"] = False
-        mainChar.personality["abortMacrosOnAttack"] = False
-        mainChar.personality["autoCounterAttack"] = False
+
+        if mainCharBase:
+            mainChar.personality["autoFlee"] = False
+            mainChar.personality["abortMacrosOnAttack"] = False
+            mainChar.personality["autoCounterAttack"] = False
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        mainChar.duties = ["tutorial","city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4153,11 +4231,22 @@ try to remember how you got here ..."""
             mainChar, 6, 6
         )
 
+        item = src.items.itemMap["SpecialItemSlot"]()
+        item.itemID = 1
+        if mainCharBase:
+            item.hasItem = True
+        mainRoom.addItem(item,(1,3,0))
+        item = src.items.itemMap["SpecialItemSlot"]()
+        if not mainCharBase:
+            item.hasItem = True
+        item.itemID = 2
+        mainRoom.addItem(item,(2,3,0))
+
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
         colonyBaseInfo["epochArtwork"] = epochArtwork
         epochArtwork.leader = mainChar
         epochArtwork.epochSurvivedRewardAmount = 0
-        epochArtwork.changeCharges(70)
+        epochArtwork.changeCharges(60)
         mainChar.rank = 3
         mainRoom.addItem(epochArtwork,(3,3,0))
         """
@@ -4173,25 +4262,6 @@ try to remember how you got here ..."""
 
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
-
-        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(4,7),(5,6),(6,5),(7,4)]
-        positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doClearField(pos[0], pos[1])
-            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
-
-        positions = [(7,6),(6,7),(7,8),(8,7),]
-        positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doClearField(pos[0], pos[1])
-            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
-
-        pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
-        architect.doClearField(pos[0], pos[1])
-        tree = src.items.itemMap["Tree"]()
-        tree.numMaggots = tree.maxMaggot
-        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
-        currentTerrain.forests.append(pos)
 
         anvilPos = (10,2,0)
         machinemachine = src.items.itemMap["Anvil"]()
@@ -4281,6 +4351,107 @@ try to remember how you got here ..."""
 
         for y in range(1,12):
             mainRoom.walkingSpace.add((6,y,0))
+
+        # scatter items around
+        for i in range(0,20):
+            item = src.items.itemMap["ScrapCompactor"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,75):
+            item = src.items.itemMap["Case"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,200):
+            item = src.items.itemMap["MetalBars"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,25):
+            item = src.items.itemMap["Frame"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,25):
+            item = src.items.itemMap["Rod"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,50):
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,10):
+            bigPos = (random.randint(1,13),random.randint(1,13),0)
+            for i in range(0,20):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,pos)
+        for bigPos in [(4,4,0),(10,4,0),(4,10,0),(10,10,0)]:
+            for i in range(0,20):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,pos)
+        for i in range(0,40):
+            item = src.items.itemMap["Door"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+
+        for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
+            architect.doClearField(pos[0], pos[1])
+
+        # spawn enemies
+        for x in range(1,14):
+            for y in range(1,14):
+                if (x < 11 and x > 3) and (y < 11 and y > 3):
+                    continue
+
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 28
+                enemy.baseDamage = 7
+                enemy.maxHealth = 28
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+        pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
+        architect.doClearField(pos[0], pos[1])
+        tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
+        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
+        currentTerrain.forests.append(pos)
+
+        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(5,6),(6,5),(7,4)]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doClearField(pos[0], pos[1])
+            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doClearField(pos[0], pos[1])
+            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
+
+        itemsToRemove = []
+        for x in range(1,14):
+            for y in range(1,14):
+                clearPositions = [(7,1,0),(7,2,0),(1,7,0),(2,7,0),(7,13,0),(7,12,0),(13,7,0),(12,7,0)]
+                for clearPosition in clearPositions:
+                    itemsToRemove.extend(currentTerrain.getItemByPosition((x*15+clearPosition[0],y*15+clearPosition[1],0)))
+        currentTerrain.removeItems(itemsToRemove)
 
         return colonyBaseInfo
 

@@ -11,7 +11,6 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         self.itemType = itemType
         self.stockpileType = stockpileType
         self.tryHard = tryHard
-        self.painterPos = None
         self.reason = reason
 
         if description:
@@ -256,63 +255,49 @@ Try as hard as you can to achieve this.
                             self.postHandler()
                         return (None,None)
 
-            if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
+            if not character.inventory or not character.inventory[-1].type == "Painter":
+                quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
+                return ([quest],None)
+
+            item = character.inventory[-1]
+
+            if not self.targetPositionBig == character.getBigPosition():
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the stockpile should be drawn on")
+                return ([quest],None)
+            if character.getDistance(self.targetPosition) > 0:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
                 return ([quest],None)
 
             offsets = ((0,0,0),(0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             foundOffset = None
             for offset in offsets:
-                items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-                if not items or not items[-1].type == "Painter":
-                    continue
+                if character.getPosition(offset=offset) == self.targetPosition:
+                    foundOffset = offset
 
-                foundOffset = (offset,items[-1])
+            if self.stockpileType == "i" and not item.paintMode == "inputSlot":
+                return (None,(["C","i","m","i","enter"],"to configure the painter to input stockpile"))
+            if self.stockpileType == "o" and not item.paintMode == "outputSlot":
+                return (None,(["C","i","m","o","enter"],"to configure the painter to output stockpile"))
+            if self.stockpileType == "s" and not item.paintMode == "storageSlot":
+                return (None,(["C","i","m","s","enter"],"to configure the painter to storage stockpile"))
+            if not (self.itemType == item.paintType):
+                if self.itemType:
+                    return (None,(["C","i","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
+                else:
+                    return (None,(["C","i","t"] + ["enter"],"to remove the item type for the stockpile"))
 
-            if foundOffset:
-                item = foundOffset[1]
-                if character.getDistance(item.getPosition()) > 0:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
-                    return ([quest],None)
+            for (key,value) in item.paintExtraInfo.items():
+                if not key in self.extraInfo:
+                    return (None,(["C","i","c"],"to clear the painters extra info"))
 
-                if self.stockpileType == "i" and not item.paintMode == "inputSlot":
-                    return (None,(["c","m","i","enter"],"to configure the painter to input stockpile"))
-                if self.stockpileType == "o" and not item.paintMode == "outputSlot":
-                    return (None,(["c","m","o","enter"],"to configure the painter to output stockpile"))
-                if self.stockpileType == "s" and not item.paintMode == "storageSlot":
-                    return (None,(["c","m","s","enter"],"to configure the painter to storage stockpile"))
-                if not (self.itemType == item.paintType):
-                    if self.itemType:
-                        return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
-                    else:
-                        return (None,(["c","t"] + ["enter"],"to remove the item type for the stockpile"))
+            for (key,value) in self.extraInfo.items():
+                if (not key in item.paintExtraInfo) or (not value == item.paintExtraInfo[key]):
+                    return (None,(["C","i","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
-                for (key,value) in item.paintExtraInfo.items():
-                    if not key in self.extraInfo:
-                        return (None,(["c","c"],"to clear the painters extra info"))
-
-                for (key,value) in self.extraInfo.items():
-                    if (not key in item.paintExtraInfo) or (not value == item.paintExtraInfo[key]):
-                        return (None,(["c","e",key,"enter",value,"enter"],"to clear the painters extra info"))
-
-                if not (item.offset == (0,0,0)):
-                    return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
-                    
-                return (None,("jk","draw to stockpile"))
-
-            if not self.painterPos:
-                if not character.inventory or not character.inventory[-1].type == "Painter":
-                    quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
-                    if not dryRun:
-                        self.startWatching(quest,self.handleQuestFailure,"failed")
-                    return ([quest],None)
-                painter = character.inventory[-1]
-
-            if character.getDistance(self.targetPosition) > 0:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,reason="get to the drawing spot")
-                return ([quest],None)
-
-            return (None,("l","drop the Painter"))
+            if not (item.offset == (0,0,0)):
+                return (None,(["C","i","d","."] + ["enter"],"to remove the offset from the painter"))
+                
+            return (None,("Ji","draw to stockpile"))
 
         return (None,None)
 

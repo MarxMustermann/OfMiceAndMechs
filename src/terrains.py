@@ -133,6 +133,8 @@ class Terrain(src.saveing.Saveable):
         return (self.xPosition,self.yPosition,0)
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
+        if not self == src.gamestate.gamestate.mainChar.getTerrain():
+            return
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
     def getRoomsByTag(self,tag):
@@ -1840,8 +1842,11 @@ class Terrain(src.saveing.Saveable):
             elif animationType in ("charsequence",):
                 display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
-                if display:
-                    chars[pos[1]][pos[0]] = display
+                try: 
+                    if display:
+                        chars[pos[1]][pos[0]] = display
+                except:
+                    pass
                 animation[2] -= 1
 
                 if duration < 1:

@@ -137,16 +137,12 @@ Place the items in the correct input or storage stockpile.
             random.shuffle(inputSlots)
 
             if self.targetPosition:
-                print("inputSlots")
-                print(inputSlots)
                 newInputs = []
                 for slot in inputSlots:
                     if not self.targetPosition == slot[0]:
                         continue
                     newInputs.append(slot)
                 inputSlots = newInputs
-                print("newInputs")
-                print(newInputs)
 
             # find neighboured input fields
             foundDirectDrop = None

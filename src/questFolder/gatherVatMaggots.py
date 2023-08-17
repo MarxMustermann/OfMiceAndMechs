@@ -133,7 +133,6 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                 character.runCommandString(command)
                 return
 
-            print(">this")
             quest = src.quests.questMap["GoToPosition"](targetPosition=treeFound.getSmallPosition(),ignoreEndBlocked=True)
             quest.assignToCharacter(character)
             quest.activate()

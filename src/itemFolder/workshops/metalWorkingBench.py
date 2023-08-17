@@ -63,6 +63,18 @@ class MetalWorkingBench(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
+        if params.get("type") == "Machine":
+            character.addMessage("Not possible. Use a MachiningTable.")
+            return
+        blackListed = ["GlassHeart","Machine",]
+        if params.get("type") == "Machine":
+            character.addMessage("Not possible.")
+            return
+
+        if not params.get("type") in src.items.itemMap:
+            character.addMessage("Item type unknown.")
+            return
+
         preferInventoryOut = True
         if params.get("key") == "k":
             preferInventoryOut = False
@@ -85,7 +97,12 @@ class MetalWorkingBench(src.items.Item):
             character.changed("inventory full error",{})
             return 
 
-        new = src.items.itemMap[params["type"]]()
+        badListed = ["Sword","Armor","Rod"]
+        if params["type"] in badListed:
+            character.addMessage("producing this item here will result in a low quality item")
+            new = src.items.itemMap[params["type"]](badQuality=True)
+        else:
+            new = src.items.itemMap[params["type"]]()
         new.bolted = False
 
         if params["type"] in self.scheduledItems:
@@ -99,7 +116,7 @@ class MetalWorkingBench(src.items.Item):
         else:
             self.container.removeItem(metalBar)
 
-        if dropsSpotsFull or (preferInventoryOut and (character.getFreeInventorySpace() > 0 or not metalBar in character.inventory)):
+        if dropsSpotsFull or (preferInventoryOut and character.getFreeInventorySpace() > 0):
             character.inventory.append(new)
         else:
             for output in self.outs:

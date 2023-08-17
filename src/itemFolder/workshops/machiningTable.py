@@ -48,8 +48,16 @@ class MachiningTable(src.items.Item):
             options.append(("Case","Case Machine"))
             options.append(("Wall","Wall Machine"))
             options.append(("ScrapCompactor","ScrapCompactor Machine"))
+            options.append(("byName","produce by name"))
             submenue = src.interaction.SelectionMenu("Produce machine for what item?",options,targetParamName="type")
             submenue.tag = "machiningProductSelection"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
+            return
+
+        if params.get("type") == "byName":
+            submenue = src.interaction.InputMenu("Type the name of the item to produce?",targetParamName="type")
+            submenue.tag = "machiningTableProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return

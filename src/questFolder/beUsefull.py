@@ -95,6 +95,50 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def getSolvingCommandString(self,character,dryRun=True):
+        if not self.showedKillStuff and not self.showedEnemyWarning:
+            print(character.yPosition//15)
+            print(character.yPosition%15)
+            danger = False
+            if character.yPosition//15 == 4 and character.yPosition%15 == 1 and character.xPosition%15 == 7:
+                danger = True
+            if character.yPosition//15 == 10 and character.yPosition%15 == 13 and character.xPosition%15 == 7:
+                danger = True
+            if character.xPosition//15 == 4 and character.xPosition%15 == 1 and character.yPosition%15 == 7:
+                danger = True
+            if character.xPosition//15 == 10 and character.xPosition%15 == 13 and character.yPosition%15 == 7:
+                danger = True
+            if danger:
+                text = """
+Careful now. If you step onto the next tile you will die.
+
+There is an enemy there. Enemies are shown as <-
+
+Leave the enemies alone. You have been warned.
+
+= press enter to continue playing ="""
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                self.showedEnemyWarning = True
+        if self.storySkipTurnsWatchNPCs:
+            foundWall = False
+            terrain = character.getTerrain()
+            cityCore = terrain.getRoomByPosition((7,7,0))[0]
+            for item in cityCore.itemsOnFloor:
+                if item.bolted:
+                    continue
+                if item.type == "Wall":
+                    return ["."]
+            self.storySkipTurnsWatchNPCs = False
+            text = """
+Your base has run out of walls.
+The NPCs will build new Walls, but are slow to do so.
+We should stop watching and do something about that.
+
+
+= press enter to continue playing ="""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:
@@ -219,6 +263,14 @@ Press d to move the cursor and show the subquests description.
         return super().setParameters(parameters)
 
     def solver(self, character):
+
+        if (not len(self.subQuests) or not self.subQuests[0].type == "Fight") and character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+
         character.timeTaken += 0.01
         for quest in self.subQuests[:]:
             if quest.completed:
@@ -317,9 +369,14 @@ Press d to move the cursor and show the subquests description.
                     freeStorage += 1
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
+            for outputSlot in room.outputSlots:
+                items = room.getItemByPosition(outputSlot[0])
+                for item in items:
+                    itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
 
         if freeStorage:
-            checkItems = [("RoomBuilder",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1),("Case",2,1),("Frame",2,1),("Rod",2,1)]
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1),("Case",2,1),("Frame",2,1),("Rod",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
                     self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
@@ -357,7 +414,7 @@ Press d to move the cursor and show the subquests description.
 
         chargesUsed = 0
         quests = []
-        for duty in ["metal working","scrap hammering","resource gathering","resource fetching","hauling","scavenging","machine operation","room building","painting","machine placing","maggot gathering"]:
+        for duty in ["resource gathering","scrap hammering","hauling","metal working","resource fetching","room building","painting","machine placing","machine operation","maggot gathering"]:
 
             if not duty in npcDuties and epochArtwork.charges >= 10+chargesUsed:
                 quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
@@ -499,6 +556,7 @@ Press d to move the cursor and show the subquests description.
                 return True
 
 
+        """
         #set special purpose room
         foundMeetingHall = False
         for room in terrain.rooms:
@@ -511,6 +569,7 @@ Press d to move the cursor and show the subquests description.
                     quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="specialPurposeRoom",roomTag="meetingHall",reason="have a place where idle NPCs meet")
                     self.addQuest(quest)
                     return True
+        """
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
@@ -637,10 +696,13 @@ Press d to move the cursor and show the subquests description.
 
     def checkTriggerHauling(self,character,room):
         checkedTypes = set()
+        rooms = character.getTerrain().rooms[:]
+        random.shuffle(rooms)
 
         for trueInput in (True,False):
-            for room in [room] + character.getTerrain().rooms:
+            for room in [room] + rooms:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
+                random.shuffle(emptyInputSlots)
 
                 if emptyInputSlots:
 
@@ -898,6 +960,74 @@ Press d to move the cursor and show the subquests description.
                 self.idleCounter = 0
                 return True
 
+        terrain = character.getTerrain()
+        numFreeStorage = 0
+        for room in terrain.rooms:
+            for storageSlot in room.storageSlots:
+                items = room.getItemByPosition(storageSlot[0])
+                if items:
+                    continue
+                if not storageSlot[1] == None:
+                    continue
+                if not storageSlot[2] == {}:
+                    continue
+                numFreeStorage += 1
+
+        if numFreeStorage < 10:
+            cityPlaner = None
+            rooms = terrain.getRoomByPosition((7,7,0))
+            if rooms:
+                room = rooms[0]
+                cityPlaner = room.getItemByType("CityPlaner")
+
+            for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+
+                terrain = self.character.getTerrain()
+                room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+                counter = 1
+                quests = []
+                for y in (1,3,5,7,9,11):
+                    for x in range(1,12):
+                        if x == 6:
+                            continue
+                        if counter > 15:
+                            continue
+
+                        if room.getItemByPosition((x,y,0)):
+                            continue
+
+                        if (x,y,0) in room.walkingSpace:
+                            continue
+
+                        blockedSpot = False
+                        for storageSlot in room.storageSlots:
+                            if storageSlot[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        for outputSlot in room.outputSlots:
+                            if outputSlot[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        for inpputSlot in room.inputSlots:
+                            if inputSlot[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        for buildSite in room.buildSites:
+                            if buildSites[0] == (x,y,0):
+                                blockedSpot = True
+                                break
+                        if blockedSpot:
+                            continue
+
+                        counter += 1
+                        quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
+                        quests.append(quest)
+
+                for quest in reversed(quests):
+                    self.addQuest(quest)
+                if quests:
+                    return True
+
         # get storage stockpiles that have the filled tag
         desireFilledStorageSlots = {}
         for room in character.getTerrain().rooms:
@@ -908,10 +1038,10 @@ Press d to move the cursor and show the subquests description.
                     if not storageSlot[1] in desireFilledStorageSlots:
                         desireFilledStorageSlots[storageSlot[1]] = 0
                     desireFilledStorageSlots[storageSlot[1]] += 1
-        print(desireFilledStorageSlots)
+
 
         # check rules to add more to be filled storage slots
-        checkDesireFilledStorageSlots = [("Wall",10),("Door",5),("RoomBuilder",1),("Painter",1),("ScrapCompactor",2),("MetalBars",3),("Scrap",2)]
+        checkDesireFilledStorageSlots = [("Wall",10),("Door",5),("MetalBars",3)]
         for checkDesireFilledStorageSlot in checkDesireFilledStorageSlots:
             if desireFilledStorageSlots.get(checkDesireFilledStorageSlot[0],0) >= checkDesireFilledStorageSlot[1]:
                 continue
@@ -1020,36 +1150,13 @@ Press d to move the cursor and show the subquests description.
         
     def checkTriggerMachinePlacing(self,character,room):
         terrain = character.getTerrain()
-        cityCore = terrain.getRoomByPosition((7,7,0))[0]
-        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
-
-        if not cityPlaner:
-            itemsInStorage = {}
-            freeStorage = 0
-            for room in character.getTerrain().rooms:
-                for storageSlot in room.storageSlots:
-                    items = room.getItemByPosition(storageSlot[0])
-                    if not items:
-                        freeStorage += 1
-                    for item in items:
-                        itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
-            
-            if itemsInStorage.get("CityPlaner") or "metal working" in character.duties:
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to have it to plan the city with")
-                self.addQuest(quest)
-                return True
-
-        for room in [room]+terrain.rooms:
+        rooms = terrain.rooms[:]
+        random.shuffle(rooms)
+        produceQuest = None
+        for room in [room]+rooms:
             if (not room.floorPlan) and room.buildSites:
-                for buildSite in room.buildSites:
-                    if buildSite[1] == "Machine":
-                        self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
-                        self.idleCounter = 0
-                        return True
                 checkedMaterial = set()
                 for buildSite in random.sample(room.buildSites,len(room.buildSites)):
-                    if "reservedTill" in buildSite[2] and buildSite[2]["reservedTill"] > room.timeIndex:
-                        continue
                     if buildSite[1] in checkedMaterial:
                         continue
                     checkedMaterial.add(buildSite[1])
@@ -1061,6 +1168,12 @@ Press d to move the cursor and show the subquests description.
                     source = None
                     if character.inventory and character.inventory[-1].type == neededItem:
                         hasItem = True
+
+                    if buildSite[1] == "Machine":
+                        self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
+                        self.idleCounter = 0
+                        return True
+
 
                     if not hasItem:
                         for candidateSource in room.sources:
@@ -1087,11 +1200,16 @@ Press d to move the cursor and show the subquests description.
                                 break
 
                         if not source:
-                            if not buildSite[1] == "Machine" and "metal working" in character.duties:
-                                self.addQuest(src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=True))
+                            if not buildSite[1] in ("Machine","Command") and "metal working" in character.duties:
+                                self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
+                                self.idleCounter = 0
                                 return True
 
-                            character.addMessage("no machine placing - no filled output slots")
+                            if buildSite[1] == "Machine":
+                                self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
+                                self.idleCounter = 0
+                                return True
+
                             continue
 
                     if hasItem:
@@ -1100,12 +1218,11 @@ Press d to move the cursor and show the subquests description.
                                 self.addQuest(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
                             else:
                                 self.addQuest(src.quests.questMap["RunCommand"](command="jjssj.\n"))
-                        if not character.container == room:
-                            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
-                            return True
                         self.addQuest(src.quests.questMap["RunCommand"](command="lcb"))
                         self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
                         buildSite[2]["reservedTill"] = room.timeIndex+100
+                        self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                        #self.addQuest(produceQuest)
                     elif source:
                         if not character.getFreeInventorySpace() > 0:
                             quest = src.quests.questMap["ClearInventory"]()
@@ -1121,6 +1238,76 @@ Press d to move the cursor and show the subquests description.
                             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
                         self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
                     self.idleCounter = 0
+                    return True
+
+        # spawn city planer if there is none
+        terrain = character.getTerrain()
+        cityCore = terrain.getRoomByPosition((7,7,0))[0]
+        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
+
+        if not cityPlaner:
+            itemsInStorage = {}
+            freeStorage = 0
+            for room in character.getTerrain().rooms:
+                for storageSlot in room.storageSlots:
+                    items = room.getItemByPosition(storageSlot[0])
+                    if not items:
+                        freeStorage += 1
+                    for item in items:
+                        itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
+            
+            if itemsInStorage.get("CityPlaner") or "metal working" in character.duties:
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to have it to plan the city with")
+                self.addQuest(quest)
+                return True
+
+        # spawn basic items, if not there
+        foundPlacedItems = {}
+        foundPlacedMachines = {}
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            for item in room.itemsOnFloor:
+                if not item.bolted:
+                    continue
+
+                if not item.type in foundPlacedItems:
+                    foundPlacedItems[item.type] = []
+                foundPlacedItems[item.type].append(item)
+
+        checkItems = ["ScrapCompactor","MaggotFermenter","BioPress","GooProducer"]
+        checkItems = ["ScrapCompactor"]
+        for checkItem in checkItems:
+            if checkItem in foundPlacedItems:
+                continue
+
+            for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+
+                terrain = self.character.getTerrain()
+                room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+
+                validTargetPosition = False
+                terrain = character.getTerrain()
+                counter = 0
+                while not validTargetPosition and counter < 10:
+                    counter += 1
+                    targetPosition = (random.randint(3,9),random.randint(3,9),0)
+
+                    offsetBlocked = False
+                    for offset in [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0),(0,0,0)]:
+                        checkPos = (targetPosition[0]+offset[0],targetPosition[1]+offset[1],0)
+                        if room.getItemByPosition(checkPos) or room.getPaintedByPosition(checkPos):
+                            offsetBlocked = True
+                            break
+
+                    if offsetBlocked:
+                        continue
+
+                    validTargetPosition = True
+                    break
+
+                if validTargetPosition:
+                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="to have at least one scrpa compactor")
+                    self.addQuest(quest)
                     return True
 
     def checkTriggerFillFlask(self,character,room):
@@ -1190,6 +1377,9 @@ Press d to move the cursor and show the subquests description.
             return True
         return False
 
+    def checkTriggerEpochQuesting(self,character,room):
+        1/0
+
     def generateSubquests(self,character):
 
         for quest in self.subQuests:
@@ -1203,6 +1393,13 @@ Press d to move the cursor and show the subquests description.
         if not self.idleCounter:
             self.checkedRoomPositions = []
         """
+
+        if (not len(self.subQuests) or not self.subQuests[0].type == "Fight") and character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
 
         try:
             self.checkedRoomPositions
@@ -1358,7 +1555,6 @@ Press d to move the cursor and show the subquests description.
                     self.addQuest(quest)
                     quest.activate()
                     self.idleCounter = 0
-                    print(room.requiredDuties)
                 """
 
                 checkRoom.requiredDuties.remove(duty)
@@ -1435,6 +1631,14 @@ Press d to move the cursor and show the subquests description.
                 if self.checkTriggerCloneSpawning(character,room):
                     return
 
+            if duty == "epoch questing":
+                if self.checkTriggerEpochQuesting(character,room):
+                    return
+
+            if duty == "tutorial" and character == src.gamestate.gamestate.mainChar:
+                if self.specialTutorialLogic(character,room):
+                    return
+
         for room in character.getTerrain().rooms:
             if room.tag == "meetingHall":
                 if not room == character.container:
@@ -1447,6 +1651,20 @@ Press d to move the cursor and show the subquests description.
                 self.addQuest(quest)
                 character.timeTaken += self.idleCounter
                 return
+
+        if 1 == 1:
+            room = character.getTerrain().getRoomByPosition((7,7,0))[0]
+            if not room == character.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to meeting hall")
+                self.idleCounter += 1
+                self.addQuest(quest)
+                return
+            quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
+            self.idleCounter += 1
+            self.addQuest(quest)
+            character.timeTaken += self.idleCounter
+            return
+
 
         if not self.targetPosition:
             self.checkedRoomPositions.append(character.getBigPosition())
@@ -1485,5 +1703,775 @@ Press d to move the cursor and show the subquests description.
 
         self.idleCounter += 5
         character.runCommandString("20.")
+
+    showedInitialGreeting = False
+    showedBaseBuildingText = False
+    showedNPCSpawningText = False
+    showedNPCWatchingText = False
+    showedHelpCraftingText = False
+    showedHelpCraftingText2 = False
+    showedScavengingText = False
+    showedRoom1Build = False
+    showedKillStuff = False
+    showedKillStuff2 = False
+    showedKillStuff3 = False
+    showedKillStuff4 = False
+    showedEnemyWarning = False
+
+    storySkipTurnsWatchNPCs = False
+    def specialTutorialLogic(self,character,room):
+        if not self.showedInitialGreeting:
+            text = """
+Hello!
+
+So... I'm MarxMustermann and you are looking at a very early version of a game.
+This is a mixture of a tutorial and a feature presentation.
+
+I will rudely interrupt your gameplay from time to time to explain things.
+
+Let's start with the games crafting component. It is pretty simple right now.
+let me show you...
+
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedInitialGreeting = True
+
+        terrain = character.getTerrain()
+        cityCore = terrain.getRoomByPosition((7,7,0))[0]
+        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
+        if not cityPlaner:
+            return
+
+        if not self.showedBaseBuildingText:
+            text = """
+You have seen the first component:
+* You can craft items at workshops.
+
+The second ascpect of the game is planing and building a base.
+You can use the newly crafted CityPlaner to plan your base.
+
+let me show you how add more rooms to the base ...
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedBaseBuildingText = True
+
+        if not cityPlaner.plannedRooms and not self.showedNPCSpawningText:
+            return
+
+        if not self.showedNPCSpawningText:
+            text = """
+You now scheduled 2 room to be build. You can craft all items needed to build the room.
+To actually do that would be pretty boring, so you get NPCs helping you.
+
+You have seen two components:
+* You can plan a base
+* You can craft items at workshops.
+
+The third component is worker management.
+You can spawn workers of different types that will do different duties.
+Ensure the needed workers are available and they will build the base for you.
+
+let me show you how that works out...
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedNPCSpawningText = True
+
+        epochArtwork = cityCore.getItemsByType("EpochArtwork",needsBolted=True)[0]
+        if epochArtwork.charges and not self.showedNPCWatchingText:
+            return
+
+        if not self.showedNPCWatchingText:
+            text = """
+Now let's sit back and watch the workers do stuff for a while.
+Standing around and watching the workers is optional in the game, but i like it.
+
+You wait one turn by pressing the "." key, press and hold it to pass more time.
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedNPCWatchingText = True
+            self.storySkipTurnsWatchNPCs = True
+
+        if not self.showedHelpCraftingText:
+            for item in cityCore.itemsOnFloor:
+                if item.bolted:
+                    continue
+                if item.type == "Wall":
+                    return True
+            
+        if not self.showedHelpCraftingText:
+            text = """
+Craft a Wall to help building the base.
+
+The workers will do the basic neccesities besides the scheduled tasks.
+So your base will usually work as long as workers and scrap are available.
+But helping you base out with important tasks is part of the game.
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedHelpCraftingText = True
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
+            return True
+            
+        if not self.showedHelpCraftingText2:
+            text = """
+Have you seen the animations running wild and your CPU load spiking when crafting?
+That is you taking 100 turns in one action to craft the Wall.
+
+Each Wall takes 100 turns to be produced at the workshop.
+That is why walls are only produced slowly.
+
+Produce some more Walls and see time flying by.
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedHelpCraftingText2 = True
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
+            return True
+
+        try:
+            self.showedRestockingQuestText
+        except:
+            self.showedRestockingQuestText = False
+
+        terrain = character.getTerrain()
+        if len(terrain.rooms) == 1:
+            if character.getFreeInventorySpace() > 0:
+                if not self.showedScavengingText:
+                    text = """
+The game is not only crafting and management.
+You can go out and explore the world.
+
+Scavenge the environment for building materials.
+On the current terrain there are Walls waiting for you to pick them up.
+
+Collect some of those walls and get to know the environment better.
+Avoid the enemies for now.
+
+= press enter to continue playing =
+"""
+                    character.addMessage(text)
+                    src.interaction.showInterruptText(text)
+                    self.showedScavengingText = True
+                self.addQuest(src.quests.questMap["Scavenge"](toCollect="Wall"))
+                return True
+            else:
+                if not self.showedRestockingQuestText:
+                    text = """
+You acucumulated an inventory full of items. Great!
+Now put them into storage.
+
+Your bases storage and logistics system is based on stockpiles.
+Stockpiles are those coloured floor pieces.
+
+There are input stockpiles (light red), that get filled from storage.
+There are output stockpiles (light blue), that get emptied to storage.
+And there are storage stockpiles (bright white), that are used to store items.
+
+Sort your inventory into the appropriate stockpiles.
+
+= press enter to continue playing =
+"""
+                    character.addMessage(text)
+                    src.interaction.showInterruptText(text)
+                    self.showedRestockingQuestText = True
+                self.addQuest(src.quests.questMap["ClearInventory"]())
+                return True
+
+        if not self.showedRoom1Build:
+            text = """
+The first new room is completed. You did this by:
+1. planing the room
+2. spawning the NPCs needed
+3. supplying the building materials
+
+The new room means two things for you:
+1. You have to decide what to do with the room.
+2. You can spawn more NPCs now.
+
+Spawn more NPCs and designate the new room as generalPurposeRoom.
+That allows the NPCs to use it freely.
+
+For example the NPCs will use it when the normal storage is full.
+In that case a NPC will automatically draw new storage stockpiles there.
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedRoom1Build = True
+
+        if not self.showedKillStuff4:
+            if epochArtwork.recalculateGlasstears(character,dryRun=True):
+                return
+
+            if epochArtwork.charges:
+                return
+
+        if not self.showedKillStuff:
+            text = """
+You have seen the basic controls for your base now.
+Lets move on to an entirely different topic.
+
+Fighting is the fourth component of the game.
+The basic fighting system is pretty simple, just walk into an enemy and you will attack it.
+
+Lets try beating up some wildlife.
+The enemies here look like this <-
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedKillStuff = True
+            quest = src.quests.questMap["SecureTile"](toSecure=(3,7,0),endWhenCleared=True)
+            self.addQuest(quest)
+            return True
+
+        if not self.showedKillStuff2:
+            text = """
+That enemy did beat you up pretty badly.
+The reason for this is, that you were fighting without a weapon.
+Having or not having equipment makes a big difference.
+
+I healed you to make up for beeing mean.
+Now craft yourself a Sword and Armor to be better prepared for a fight.
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            character.health = character.maxHealth
+            self.showedKillStuff2 = True
+            self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=True))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=True))
+            return True
+
+        if not self.showedKillStuff3:
+            text = """
+Great. Equip your gear and try again.
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedKillStuff3 = True
+            quest = src.quests.questMap["SecureTile"](toSecure=(1,7,0),endWhenCleared=True)
+            self.addQuest(quest)
+            quest = src.quests.questMap["SecureTile"](toSecure=(2,7,0),endWhenCleared=True)
+            self.addQuest(quest)
+            quest = src.quests.questMap["Equip"]()
+            self.addQuest(quest)
+            return True
+
+        if not self.showedKillStuff4:
+            text = """
+That fight went a whole lot better than last time.
+Workshop produced weapons and armor are pretty bad, but they help.
+
+You have seen the following components of the game so far:
+* You can plan a base
+* You can spawn workers
+* Workshops can be used to craft items
+* You can fight monsters for resources
+
+There is an enemy base, too.
+
+Let's visit it!
+
+= press enter to continue playing =
+"""
+            self.showedKillStuff4 = True
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            quest = src.quests.questMap["RaidTutorial"]()
+            self.addQuest(quest)
+            return True
+
+        try: 
+            self.showedBuildRoomInfo
+        except:
+            self.showedBuildRoomInfo = False
+
+        if len(terrain.rooms) < 3:
+            if not self.showedBuildRoomInfo:
+                text = """
+Complete the third room, to have some space to work with.
+
+The quest system will suggest that you will use crafting to do this.
+You can also do this by scavanging or stealing from the enemy base.
+
+Not following instructions too closely is an important part of the game.
+With some experience you will mostly disregard the quest system.
+
+= press enter to continue playing =
+"""
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                self.showedBuildRoomInfo = True
+                character.duties = ["tutorial","city planning","clone spawning","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
+                return True
+            return
+
+        try: 
+            self.showedBuildMachines
+        except:
+            self.showedBuildMachines = False
+
+        try: 
+            self.selectedMachineTutorial
+        except:
+            self.selectedMachineTutorial = None
+
+        if self.selectedMachineTutorial == None:
+            text = """
+So the goal for our base is clear now:
+Make the base churn out some weapons and then we'll raid the enemy base again.
+
+Workshop made weapons and armor are very low quality.
+To produce quality weapons a different crafting system needs to be used.
+
+This other crafting system is a bit complicated and really understanding it is optional.
+It works similar to a factory builder or automation game.
+
+Do you want to get a deep explanation or just be told what you need to know?
+
+= press j to get a deep explanation =
+= press k to get the short version =
+"""
+            character.addMessage(text)
+            keyPressed = src.interaction.showInterruptChoice(text,["j","k"])
+            if keyPressed == "j":
+                text = """
+
+errr... i'm still working on this.
+I'll pretend you chose the other option.
+
+= press enter to contiue =
+"""
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                #self.selectedMachineTutorial = True
+                self.selectedMachineTutorial = False
+            else:
+                self.selectedMachineTutorial = False
+
+        if self.selectedMachineTutorial:
+            text = """
+This game is also a bit of a factory builder.
+It has Machines and Workshops. You already have seen Workshops, but let's compare:
+
+Workshops:
+You can craft things there and you will loose x turns.
+You can craft many different things.
+Many NPCs can use a workshop at once.
+A workshop is cheap to produce and expensive to use.
+
+Machines:
+Machines produce things instantly and you don't lose turns for using a Machine.
+A Machine only produces one specific thing.
+The Machine goes into a cool down and cannot be used for x turns after producing something.
+A workshop is expensive to produce and cheap to use.
+
+The anvil you used to produce MetalBars from Scrap is a workshop. 
+A ScrapCompactor also produces MetalBars from Scrap, but is a machine.
+
+Let's set a ScrapCompactor up so you can try it out.
+
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedBuildMachines = True
+            self.addQuest(src.quests.questMap["ProduceItem"](itemType="MetalBars"))
+            self.addQuest(src.quests.questMap["PlaceItem"](itemType="ScrapCompactor",targetPositionBig=(6,7,0),targetPosition=(2,2,0),boltDown=True))
+            return True
+
+        try: 
+            self.showedBuildMachines2
+        except:
+            self.showedBuildMachines2 = False
+
+        if self.selectedMachineTutorial and not self.showedBuildMachines2:
+            text = """
+Most Machines are built at a MachiningTable. That is a workshop.
+It takes 1000 turns to produce a Machine there, so you want to avoid that.
+
+Produce a Rod-Machine to try it out.
+!!! On my machine the game hangs up for like a minute when doing this, so be patient !!!
+
+
+= press enter to continue playing =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedBuildMachines2 = True
+            newQuest = src.quests.questMap["Machining"](toProduce="Rod",amount=1,produceToInventory=True)
+            self.addQuest(newQuest)
+            return True
+
+        try: 
+            self.showedBuildMachines3
+        except:
+            self.showedBuildMachines3 = False
+        if self.selectedMachineTutorial and not self.showedBuildMachines3:
+            text = """
+Ohhhkay... producing machines takes long, but how does this make the game a factory builder?
+
+The machines have overcomplicated production chains. For example walls are produced like this:
+
+A ScrapCompactor takes Scrap               from the left/top/down and outputs MetalBars  to the right
+A Rod-Machine    takes MetalBars           from the left/top/down and outputs Rods       to the right
+A Frame-Machine  takes Rods                from the left/top/down and outputs Frames     to the right
+A Case-Machine   takes Frame               from the left/top/down and outputs Cases      to the right
+A Wall-Machine   takes Cases and MetalBars from the left/top/down and outputs Walls      to the right
+
+These machines can and should be chained. Chaining machines to production chains happens by placing machines next to each other.
+Those production chains can and should be integrated to your bases logistics by placing stockpiles next to them.
+
+Set up a production chain for walls.
+(i spawned the needed machines into your inventory)
+
+
+= press enter to continue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+
+            oldEnd = character.inventory.pop()
+
+            newItem = src.items.itemMap["Machine"]()
+            newItem.setToProduce("Wall")
+            newItem.bolted = False
+            character.inventory.append(newItem)
+
+            newItem = src.items.itemMap["Machine"]()
+            newItem.setToProduce("Case")
+            newItem.bolted = False
+            character.inventory.append(newItem)
+
+            newItem = src.items.itemMap["Machine"]()
+            newItem.setToProduce("Frame")
+            newItem.bolted = False
+            character.inventory.append(newItem)
+
+            character.inventory.append(oldEnd)
+
+            for x in range(4,9):
+                newQuest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Wall",stockpileType="s",targetPositionBig=(6,7,0),targetPosition=(x,2,0),extraInfo={"desiredState":"filled"})
+                self.addQuest(newQuest)
+            newQuest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Scrap",stockpileType="i",targetPositionBig=(6,7,0),targetPosition=(1,2,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="s",targetPositionBig=(6,7,0),targetPosition=(3,2,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="MetalBars",stockpileType="i",targetPositionBig=(6,7,0),targetPosition=(9,2,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType="Wall",stockpileType="s",targetPositionBig=(6,7,0),targetPosition=(10,3,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["SetUpMachine"](itemType="Wall",targetPositionBig=(6,7,0),targetPosition=(9,3,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["SetUpMachine"](itemType="Case",targetPositionBig=(6,7,0),targetPosition=(7,3,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["SetUpMachine"](itemType="Frame",targetPositionBig=(6,7,0),targetPosition=(5,3,0))
+            self.addQuest(newQuest)
+            newQuest = src.quests.questMap["SetUpMachine"](itemType="Rod",targetPositionBig=(6,7,0),targetPosition=(3,3,0))
+            self.addQuest(newQuest)
+            self.showedBuildMachines3 = True
+            return True
+
+        try: 
+            self.showedBuildMachines4
+        except:
+            self.showedBuildMachines4 = False
+
+        if self.selectedMachineTutorial and not self.showedBuildMachines4:
+            text = """
+Try it out!
+
+= press enter to continue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedBuildMachines4 = True
+            self.addQuest(src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True))
+            self.addQuest(src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True))
+            self.addQuest(src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True))
+            self.addQuest(src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True))
+            return True
+
+        try:
+            self.showedBuildWeaponPrductionRoom
+        except:
+            self.showedBuildWeaponPrductionRoom = False
+
+        try:
+            self.showedPlanWeaponProduction
+        except:
+            self.showedPlanWeaponProduction = False
+
+        if not self.showedPlanWeaponProduction:
+            if not cityPlaner or not cityPlaner.getAvailableRooms():
+                if not self.showedBuildWeaponPrductionRoom:
+                    text = """
+You need to have an empty room available to continue.
+
+Supply the materials to build a new room.
+
+= press enter to continue playing =
+"""
+                    character.addMessage(text)
+                    src.interaction.showInterruptText(text)
+                    self.showedBuildWeaponPrductionRoom = True
+                return
+                
+        if cityPlaner and cityPlaner.getAvailableRooms():
+            if not self.showedPlanWeaponProduction:
+                if self.selectedMachineTutorial:
+                    text = """
+Let's start to make the use of your base and worduce some weapons.
+a weapon production.
+This room will build 
+
+= press enter to continue playing =
+"""
+                else:
+                    text = """
+Better weapons are produced in production lines.
+There are predesigned productions lines you can choose from.
+The machines used in those production lines take a long to be built,
+but once set up those production lines enable you to mass produce things.
+
+So you'll want to:
+* set up weapon production lines for items you need in better quality. For example Weapons.
+* set up production lines for items you want to mass produce. For example for Walls or MetalBars.
+
+Start by using the city builder to order a weapon production line to be built.
+
+= press enter to continue playing =
+"""
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                self.showedPlanWeaponProduction = True
+
+                floorPlansToSet = ["weaponProduction"]
+                for room in terrain.rooms:
+                    if room.tag in floorPlansToSet:
+                        floorPlansToSet.remove(room.tag)
+                if floorPlansToSet:
+                    for room in cityPlaner.getAvailableRooms():
+                        quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=floorPlansToSet[0],reason="start the process of making the room useful")
+                        self.addQuest(quest)
+                        return True
+
+        foundWeaponProduction = False
+        for room in terrain.rooms:
+            if not room.tag == "weaponProduction":
+                continue
+            if room.floorPlan:
+                continue
+            foundWeaponProduction = True
+
+            try:
+                self.showedFloorPlanDone
+            except:
+                self.showedFloorPlanDone = False
+
+            if not self.showedFloorPlanDone:
+                text = """
+The layout for the production line was painted.
+
+Go check it out.
+
+You can use e to examine things.
+
+== press space to continue =
+"""
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                self.showedFloorPlanDone = True
+                newQuest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                self.addQuest(newQuest)
+                return True
+
+        try:
+            self.showedWaitForFloorPlan
+        except:
+            self.showedWaitForFloorPlan = False
+
+        if not foundWeaponProduction:
+            if not self.showedWaitForFloorPlan:
+                text = """
+A NPCs will now draw the layout of the production line on the floor.
+
+Be usefull until the floorplan is completed.
+The quest system will suggest you to craft, but do what you want really.
+Explore, be creative or just watch the NPCs.
+
+= press space to continue =
+"""
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                self.showedWaitForFloorPlan = True
+                character.duties = ["tutorial","city planning","clone spawning","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
+                return True
+            return
+
+
+        try:
+            self.showedMachineRaid
+        except:
+            self.showedMachineRaid = False
+
+        if not self.showedMachineRaid:
+            text = """
+The layout for the production line is now visible on the floor.
+
+Stockpiles are part of the layout. Those are ready to use as they are.
+But the actual machines are missing and only their buildsites are marked.
+The build sites are shown in green.
+
+Your NPCs will set the machines up, but each machine takes 1000 turns to be produced.
+You need 10 machines, so you'd have to wait for 10 000 turns.
+Usually you'd go adventuring while you wait.
+
+In this case, i have spawned the machines you need into the enemy base.
+Go fetch them
+
+== press space to continue =
+"""
+            otherTerrain = src.gamestate.gamestate.terrainMap[7][5]
+            toSpawn = ["Rod","Rod","Rod","Rod","Sword","Sword","Sword","Sword","Armor","Armor"]
+            for room in otherTerrain.rooms:
+                if not room.tag == "generalPurposeRoom":
+                    continue
+                for itemType in toSpawn:
+                    item = src.items.itemMap["Machine"]()
+                    item.setToProduce(itemType)
+                    item.bolted = False
+                    room.addItem(item,(random.randint(2,10),random.randint(2,10),0))
+                break
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedMachineRaid = True
+            newQuest = src.quests.questMap["RaidTutorial2"](targetPosition=room.getPosition())
+            self.addQuest(newQuest)
+            return True
+
+        try:
+            self.showedProduceGoodArmor
+        except:
+            self.showedProduceGoodArmor = False
+
+        if not self.showedProduceGoodArmor:
+            text = """
+A NPC will now set up the Machines.
+
+Help out and produce some equipment until you have some decent gear.
+
+== press space to continue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedProduceGoodArmor = True
+
+            for otherCharacter in terrain.characters:
+                if otherCharacter == character:
+                    continue
+                if "machine placing" in otherCharacter.duties:
+                    otherCharacter.timeTaken = 0
+            for room in terrain.rooms:
+                for otherCharacter in room.characters:
+                    if otherCharacter == character:
+                        continue
+                    if "machine placing" in otherCharacter.duties:
+                        otherCharacter.timeTaken = 0
+
+            character.duties = ["tutorial","city planning","clone spawning","machine operation","machine placing"]
+            return True
+
+        for room in terrain.rooms:
+            for armor in room.getItemsByType("Armor"):
+                if armor.armorValue > character.armor.armorValue:
+                    newQuest = src.quests.questMap["Equip2"]()
+                    self.addQuest(newQuest)
+                    return True
+            for weapon in room.getItemsByType("Sword"):
+                if weapon.baseDamage > character.weapon.baseDamage:
+                    newQuest = src.quests.questMap["Equip2"]()
+                    self.addQuest(newQuest)
+                    return True
+
+
+        if character.armor.armorValue <= 2 or character.weapon.baseDamage <= 13:
+            return
+
+        try:
+            self.showedSpecialItemRaid
+        except:
+            self.showedSpecialItemRaid = False
+
+        if not self.showedSpecialItemRaid:
+            text = """
+You are well enough equipped now to obtain the enemys special item now.
+
+Go fetch the special item.
+
+= press space to continue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedSpecialItemRaid = True
+            newQuest = src.quests.questMap["RaidTutorial3"]()
+            self.addQuest(newQuest)
+            return True
+
+
+        # ghul tutorial
+        # introduce full clones
+        # get top equipment
+        # go to throne
+
+        try:
+            self.showedThroneRun
+        except:
+            self.showedThroneRun = False
+
+        if not self.showedThroneRun:
+            text = """
+You now have won the capture the flag.
+
+Now let's enter the throne and win the game.
+
+I healed you again.
+
+= press space to continue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.showedThroneRun = True
+            character.health = character.maxHealth
+            newQuest = src.quests.questMap["RaidTutorial4"]()
+            self.addQuest(newQuest)
+            return True
+
 
 src.quests.addType(BeUsefull)

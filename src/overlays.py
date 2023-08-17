@@ -291,6 +291,10 @@ class NPCsOverlay(object):
                     if not color:
                         color = "#3f3"
 
+                if not character.faction == src.gamestate.gamestate.mainChar.faction:
+                    color = "#f00"
+                    char = "EE"
+
                 chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec(color, "black"), char)
 
                 if character.showThinking:

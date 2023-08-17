@@ -85,6 +85,7 @@ This should be used in cases where you can not place the Painter on the position
                                        )
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configure2","params":{"character":character}}
+        character.runCommandString("~",nativeKey=True)
 
     def configure2(self,extraInfo):
         character = extraInfo["character"]
@@ -242,7 +243,7 @@ This should be used in cases where you can not place the Painter on the position
 
             if self.paintMode == "inputSlot":
                 room.addInputSlot(pos,self.paintType,self.paintExtraInfo)
-                if room.floorPlan:
+                if room.floorPlan and room.floorPlan.get("inputSlots"):
                     for inputSlot in room.floorPlan.get("inputSlots")[:]:
                         if inputSlot[0] == pos:
                             room.floorPlan["inputSlots"].remove(inputSlot)
@@ -254,7 +255,7 @@ This should be used in cases where you can not place the Painter on the position
                 character.changed("drew marking",{})
             if self.paintMode == "outputSlot":
                 room.addOutputSlot(pos,self.paintType,self.paintExtraInfo)
-                if room.floorPlan:
+                if room.floorPlan and room.floorPlan.get("outputSlots"):
                     for outputSlot in room.floorPlan.get("outputSlots")[:]:
                         if outputSlot[0] == pos:
                             room.floorPlan["outputSlots"].remove(outputSlot)
@@ -262,7 +263,7 @@ This should be used in cases where you can not place the Painter on the position
                 character.changed("drew marking",{})
             if self.paintMode == "storageSlot":
                 room.addStorageSlot(pos,self.paintType,self.paintExtraInfo)
-                if room.floorPlan:
+                if room.floorPlan and room.floorPlan.get("storageSlots"):
                     for storageSlot in room.floorPlan.get("storageSlots")[:]:
                         if storageSlot[0] == pos:
                             room.floorPlan["storageSlots"].remove(storageSlot)
@@ -270,7 +271,7 @@ This should be used in cases where you can not place the Painter on the position
                 character.changed("drew marking",{})
             if self.paintMode == "walkingSpace":
                 room.walkingSpace.add(character.getPosition(offset=self.offset))
-                if room.floorPlan:
+                if room.floorPlan and room.floorPlan.get("walkingSpace"):
                     for walkingSpacePos in room.floorPlan.get("walkingSpace")[:]:
                         if walkingSpacePos == pos:
                             room.floorPlan["walkingSpace"].remove(walkingSpacePos)
@@ -288,7 +289,7 @@ This should be used in cases where you can not place the Painter on the position
                 character.changed("drew marking",{})
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})
+        character.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})
 
         character.addMessage("you paint a marking on the floor")
         character.addMessage((self.paintMode,self.paintType,str(self.paintExtraInfo)))

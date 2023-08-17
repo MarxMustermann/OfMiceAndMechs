@@ -1007,6 +1007,9 @@ press any other key to attack normaly"""
 
         baseDamage = self.baseDamage
 
+        if self.weapon:
+            baseDamage += self.weapon.baseDamage
+
         if self.exhaustion > 10:
             baseDamage = baseDamage//2
 
@@ -1028,8 +1031,6 @@ press any other key to attack normaly"""
         if bestial:
             baseDamage = int(baseDamage*2)
 
-        if self.weapon:
-            baseDamage += self.weapon.baseDamage//2
         damage = baseDamage
 
         if self.bonusDamageOnLowerExhaustion:

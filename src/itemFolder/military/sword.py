@@ -14,19 +14,17 @@ class Sword(src.items.Item):
     bolted = False
     walkable = True
 
-    def __init__(self,generateFrom=None):
+    def __init__(self,generateFrom=None,badQuality=False):
         """
         set initial state
         """
 
         super().__init__(display="wt")
 
-        self.baseDamage = int(random.triangular(10,25,15))
-        self.attributesToStore.extend(
-                [
-                    "baseDamage",
-                ]
-            )
+        if badQuality:
+            self.baseDamage = 10
+        else:
+            self.baseDamage = int(random.triangular(10,25,15))
 
     def getLongInfo(self):
         """

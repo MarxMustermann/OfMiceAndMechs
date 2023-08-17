@@ -61,6 +61,9 @@ class Anvil(src.items.Item):
             character.changed("inventory full error",{})
             return
 
+        if self.scheduledItems:
+            self.scheduledItems.pop()
+
         new = src.items.itemMap["MetalBars"]()
 
         character.timeTaken += 10
@@ -75,7 +78,7 @@ class Anvil(src.items.Item):
                 scrap.amount -= 1
                 scrap.setWalkable()
 
-        if dropsSpotsFull or (preferInventoryOut and (character.getFreeInventorySpace() > 0 or not scrap in character.inventory)):
+        if dropsSpotsFull or (preferInventoryOut and character.getFreeInventorySpace() > 0):
             character.inventory.append(new)
         else:
             for output in self.outs:

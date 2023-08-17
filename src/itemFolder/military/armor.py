@@ -12,14 +12,17 @@ class Armor(src.items.Item):
     walkable = True
     damageType = "attacked"
 
-    def __init__(self):
+    def __init__(self,badQuality=False):
         """
         set up internal state    
         """
 
         super().__init__(display="ar")
 
-        self.armorValue = random.randint(1, 5)
+        if badQuality:
+            self.armorValue = 1
+        else:
+            self.armorValue = random.randint(1, 5)
 
     def getArmorValue(self, damageType):
         """

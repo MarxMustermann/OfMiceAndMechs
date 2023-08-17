@@ -46,6 +46,9 @@ If you don't find a %s machine needed, build it.
         super().assignToCharacter(character)
 
     def producedItem(self,extraInfo):
+        if not self.active:
+            return
+
         if extraInfo["item"].type == self.itemType:
             self.postHandler()
 
@@ -84,7 +87,7 @@ If you don't find a %s machine needed, build it.
                 foundItem = None
                 for room in character.getTerrain().rooms:
                     for item in room.itemsOnFloor:
-                        if item.type == "ScrapCompactor":
+                        if item.bolted and item.type == "ScrapCompactor":
                             foundRoom = room
                             foundItem = item
                             break

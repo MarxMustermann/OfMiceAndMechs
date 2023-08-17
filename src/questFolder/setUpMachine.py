@@ -167,6 +167,16 @@ If you don't find a %s blueprint, research it.
                     if character.getPosition(offset=direction[0]) == self.targetPosition:
                         return (None,("L"+direction[1]+"cb","place the machine"))
 
+            for room in terrain.rooms:
+                items = room.getItemsByType("Machine")
+                for item in items:
+                    if item.bolted:
+                        continue
+                    if not item.toProduce == self.itemType:
+                        continue
+                    newQuest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
+                    return ([newQuest],None)
+
             machineMachine = None
             bluePrint = None
             for room in character.getTerrain().rooms:
@@ -179,6 +189,7 @@ If you don't find a %s blueprint, research it.
                         continue
 
             if not machineMachine:
+
                 newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
                 return ([newQuest],None)
                 #if not dryRun:

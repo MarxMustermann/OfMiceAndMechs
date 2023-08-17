@@ -171,8 +171,6 @@ Scrapfields are shown on the minimap as white ss"""]
             quest = src.quests.questMap["GoToTile"](targetPosition=targetPos,description="go to scrap field",reason="go to scrap field")
             return ([quest],None)
 
-        
-        print(foundScrap[1])
         quest = src.quests.questMap["GoToPosition"](targetPosition=(foundScrap[1][0]%15,foundScrap[1][1]%15,0),description="go to scrap",reason="go to scrap",ignoreEndBlocked=True)
         return ([quest],None)
 

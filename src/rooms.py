@@ -162,7 +162,9 @@ class Room(src.saveing.Saveable):
 
     def getNonEmptyOutputslots(self,itemType=None,allowStorage=True):
         result = []
-        for outputSlot in self.outputSlots:
+        outputSlots = self.outputSlots[:]
+        random.shuffle(outputSlots)
+        for outputSlot in outputSlots:
             if itemType and outputSlot[1] and not outputSlot[1] == itemType:
                 continue
 
@@ -176,7 +178,9 @@ class Room(src.saveing.Saveable):
             result.append(outputSlot)
 
         if allowStorage:
-            for storageSlot in self.storageSlots:
+            storageSlots = self.storageSlots[:]
+            random.shuffle(storageSlots)
+            for storageSlot in storageSlots:
                 if itemType and not storageSlot[1] == None and not storageSlot[1] == itemType:
                     continue
 
@@ -1023,7 +1027,12 @@ class Room(src.saveing.Saveable):
 
             for entry in self.storageSlots:
                 pos = entry[0]
-                display = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
+                if entry[2]:
+                    display = (src.interaction.urwid.AttrSpec("#f00", "black"), "::")
+                elif entry[1]:
+                    display = (src.interaction.urwid.AttrSpec("#f0f", "black"), "::")
+                else:
+                    display = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
                 #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
@@ -1237,6 +1246,10 @@ class Room(src.saveing.Saveable):
                             color = colormap.get(character.name[0])
                             if not color:
                                 color = "#3f3"
+
+                        if not character.faction == src.gamestate.gamestate.mainChar.faction:
+                            color = "#f00"
+                            char = "EE"
 
                         chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, "black"), char)
 

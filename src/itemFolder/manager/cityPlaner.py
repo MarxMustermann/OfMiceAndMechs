@@ -344,6 +344,7 @@ class CityPlaner(src.items.Item):
             options.append(("basicRoombuildingItemsProduction","basic room building items production"))
             options.append(("productionRoom","production room"))
             options.append(("gooProcessing","goo processing"))
+            options.append(("weaponProduction","weapon production"))
             options.append(("exit","exit menu"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             submenue.tag = "floorplanSelection"
@@ -455,6 +456,7 @@ class CityPlaner(src.items.Item):
             inputSlots.append(((6,3,0),"PressCake",{}))
             buildSites.append(((7,3,0),"GooProducer",{}))
             buildSites.append(((8,3,0),"GooDispenser",{}))
+            buildSites.append(((9,3,0),"VialFiller",{}))
 
         if floorPlanType == "scrapCompactorProduction":
             for y in (1,4,6,8,11,):
@@ -678,6 +680,26 @@ class CityPlaner(src.items.Item):
                     continue
                 storageSlots.append(((x,11,0),None,{}))
 
+        if floorPlanType == "weaponProduction":
+            for y in (1,4,7,10):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            walkingSpaces.append((6,11,0))
+            for y in (2,3,5,6,8,9):
+                walkingSpaces.append((1,y,0))
+                inputSlots.append(((2,y,0),"Scrap",{}))
+                buildSites.append(((3,y,0),"ScrapCompactor",{}))
+                inputSlots.append(((4,y,0),"MetalBars",{}))
+                walkingSpaces.append((11,y,0))
+            for y in (2,3,5,6,):
+                buildSites.append(((5,y,0),"Machine",{"toProduce":"Rod"}))
+                inputSlots.append(((6,y,0),"Rod",{}))
+                buildSites.append(((7,y,0),"Machine",{"toProduce":"Sword"}))
+                outputSlots.append(((8,y,0),"Sword",{}))
+            for y in (8,9,):
+                buildSites.append(((5,y,0),"Machine",{"toProduce":"Armor"}))
+                outputSlots.append(((6,y,0),"Armor",{}))
+
         floorPlan = {}
         if walkingSpaces:
             floorPlan["walkingSpace"] = walkingSpaces
@@ -843,7 +865,7 @@ class CityPlaner(src.items.Item):
                             "method":"setGeneralPurposeRoomFromMap",
                             "params":{"character":character},
                         },
-                        "description":"to designate room as general storage room",
+                        "description":"to designate room as general purpose room",
                     }
                 functionMap[(room.xPosition,room.yPosition)]["p"] = {
                         "function": {
@@ -851,7 +873,7 @@ class CityPlaner(src.items.Item):
                             "method":"setSpecialPurposeRoomFromMap",
                             "params":{"character":character},
                         },
-                        "description":"to designate room as special storage room",
+                        "description":"to designate room as special purpose room",
                     }
             else:
                 mapContent[room.yPosition][room.xPosition] = room.displayChar

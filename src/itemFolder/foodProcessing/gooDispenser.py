@@ -39,6 +39,31 @@ Filling a flask will use up a charge from your goo dispenser.
 
         self.description = self.baseName + " (%s charges)" % (self.charges)
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the ScrapCompactor")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the ScrapCompactor")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
     def render(self):
         if self.readyToUse():
             baseDisplay = "%="

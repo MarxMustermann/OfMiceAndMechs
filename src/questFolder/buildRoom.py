@@ -61,7 +61,6 @@ Press d to move the cursor and show the subquests description.
         reason = extraParam.get("reason")
         if reason:
             if reason.startswith("no source for item "):
-                print(reason)
                 if not reason.split(" ")[4] in ("Wall","MetalBars","Scrap",):
                         newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True)
                         self.addQuest(newQuest)

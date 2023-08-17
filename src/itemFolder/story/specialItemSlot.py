@@ -49,6 +49,7 @@ class SpecialItemSlot(src.items.Item):
                 self.hasItem = True
                 character.addMessage("you add the special item")
                 character.awardReputation(1000,carryOver=False)
+                character.movementSpeed = character.movementSpeed/2
             else:
                 character.addMessage("you need to have special item #%s in your inventory"%(self.itemID,))
         else:
@@ -63,6 +64,7 @@ class SpecialItemSlot(src.items.Item):
                 self.container.addItem(newItem,(self.xPosition+1,self.yPosition,self.zPosition))
 
             self.hasItem = False
+            character.movementSpeed = character.movementSpeed*2
 
     def render(self):
         if self.hasItem:

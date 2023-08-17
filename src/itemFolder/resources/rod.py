@@ -14,14 +14,17 @@ class Rod(src.items.Item):
     bolted = False
     walkable = True
 
-    def __init__(self):
+    def __init__(self,badQuality=False):
         """
         set initial state
         """
 
         super().__init__(display=src.canvas.displayChars.rod)
 
-        self.baseDamage = int(random.triangular(4,21,10))
+        if badQuality:
+            self.baseDamage = 4
+        else:
+            self.baseDamage = int(random.triangular(4,21,10))
         self.attributesToStore.extend(
                 [
                     "baseDamage",

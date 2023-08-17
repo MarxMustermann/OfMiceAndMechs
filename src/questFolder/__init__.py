@@ -28,6 +28,7 @@ import src.questFolder.clearTile
 import src.questFolder.clearInventory
 import src.questFolder.gatherScrap
 import src.questFolder.equip
+import src.questFolder.equip2
 import src.questFolder.runCommand
 import src.questFolder.reloadTraproom
 import src.questFolder.goHome
@@ -78,3 +79,8 @@ import src.questFolder.clearPathToPosition
 import src.questFolder.scrapHammering
 import src.questFolder.metalWorking
 import src.questFolder.machining
+import src.questFolder.raidTutorial
+import src.questFolder.raidTutorial2
+import src.questFolder.raidTutorial3
+import src.questFolder.raidTutorial4
+import src.questFolder.fight

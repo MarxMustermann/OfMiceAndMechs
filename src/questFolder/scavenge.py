@@ -98,6 +98,14 @@ This quest will end when your inventory is full."""
                 if terrain.getRoomByPosition(target):
                     continue
 
+                foundEnemy = False
+                for otherCharacter in terrain.charactersByTile.get(target,[]):
+                    if otherCharacter.faction == character.faction: 
+                        continue
+                    foundEnemy = True
+                if foundEnemy:
+                    continue
+
                 centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
                 if centerItems and centerItems[0].type == "RoomBuilder":
                     continue
@@ -124,6 +132,15 @@ This quest will end when your inventory is full."""
                 if terrain.getRoomByPosition(target):
                     continue
 
+                foundEnemy = False
+                for otherCharacter in terrain.charactersByTile.get(target,[]):
+                    if otherCharacter.faction == character.faction: 
+                        continue
+                    foundEnemy = True
+                if foundEnemy:
+                    continue
+
+
                 self.lastMoveDirection = offset
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
                 return
@@ -132,6 +149,15 @@ This quest will end when your inventory is full."""
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
                 if terrain.getRoomByPosition(target):
                     continue
+
+                foundEnemy = False
+                for otherCharacter in terrain.charactersByTile.get(target,[]):
+                    if otherCharacter.faction == character.faction: 
+                        continue
+                    foundEnemy = True
+                if foundEnemy:
+                    continue
+
                 self.lastMoveDirection = offset
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
                 return

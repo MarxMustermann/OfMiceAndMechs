@@ -31,9 +31,13 @@ Try luring enemies into landmines or detonating some bombs."""
         return text
 
     def wrapedTriggerCompletionCheck2(self, extraInfo):
+        if not self.active:
+            return
         self.triggerCompletionCheck(extraInfo["character"])
 
     def handleTileChange2(self):
+        if not self.active:
+            return
         self.triggerCompletionCheck(self.character)
 
     def assignToCharacter(self, character):
@@ -79,9 +83,7 @@ Try luring enemies into landmines or detonating some bombs."""
         if not self.subQuests:
             if character.getBigPosition() == self.targetPosition:
                 enemies = character.getNearbyEnemies()
-                if enemies:
-                    return "gg"
-                else:
+                if not enemies:
                     return "10."
             return super().getSolvingCommandString(character,dryRun=dryRun)
 
@@ -89,7 +91,7 @@ Try luring enemies into landmines or detonating some bombs."""
         if self.triggerCompletionCheck(character):
             return
 
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -100,17 +102,20 @@ Try luring enemies into landmines or detonating some bombs."""
             return
         super().solver(character)
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
             if not self.strict:
                 self.huntdownCooldown -= 1
                 if self.huntdownCooldown < 0:
                     enemies = character.getNearbyEnemies()
                     if enemies:
-                        self.huntdownCooldown = 100
+                        if not dryRun:
+                            self.huntdownCooldown = 100
                         if random.random() < 1.3:
                             quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
                             return ([quest],None)
+                        quest = src.quests.questMap["Fight"]()
+                        return ([quest],None)
 
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 

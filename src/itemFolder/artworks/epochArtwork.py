@@ -205,7 +205,8 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn machine placing NPC","(10) spawn machine placer"))
             options.append(("spawn storage sorting NPC","(10) spawn storage sorter"))
             options.append(("spawn maggot gathering NPC","(10) spawn maggot gatherer"))
-            options.append(("spawn personnel tracker","(10) spawn personnel tracker"))
+            options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
+            options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
             options.append(("spawn scrap","(20) respawn scrap field"))
         submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType",extraDescriptions=self.descriptions)
 
@@ -426,6 +427,9 @@ Since this clone is burned in it can not change duties.
         elif extraInfo["rewardType"] == "spawn personnel tracker":
             text = "spawning personnel tracker"
             self.spawnArtwork(character,"PersonnelTracker",0)
+        elif extraInfo["rewardType"] == "spawn PerformanceTester":
+            text = "spawning PerformanceTester"
+            self.spawnArtwork(character,"PerformanceTester",0)
         elif extraInfo["rewardType"] == "spawn npcs":
             text = "spawning npcs"
             while self.charges >= 10:

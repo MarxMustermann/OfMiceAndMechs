@@ -9,7 +9,7 @@ class Anvil(src.items.Item):
     name = "anvil"
     description = "Use it to hammer things" 
     walkable = False
-    bolted = False
+    bolted = True
 
     def __init__(self):
         """

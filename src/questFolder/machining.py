@@ -45,6 +45,22 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.InputMenu) and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+            if self.toProduce == submenue.text:
+                return (None,(["enter"],"to set the name of the machine should produce"))
+            
+            correctIndex = 0
+            while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
+                if not self.toProduce[correctIndex] == submenue.text[correctIndex]:
+                    break
+                correctIndex += 1
+            
+            if correctIndex < len(submenue.text):
+                return (None,(["backspace"],"to delete input"))
+
+            return (None,(self.toProduce[correctIndex:],"to enter name of the machine should produce"))
+
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "machiningProductSelection":
@@ -52,9 +68,12 @@ Press d to move the cursor and show the subquests description.
                 counter = 1
                 for option in submenue.options.items():
                     if option[1] == self.toProduce:
+                        index = counter
                         break
                     counter += 1
-                index = counter
+
+                if index == None:
+                    index = counter-1
 
                 offset = index-submenue.selectionIndex
                 if self.produceToInventory:
@@ -97,35 +116,18 @@ Press d to move the cursor and show the subquests description.
             quest = src.quests.questMap["GoToPosition"](targetPosition=benches[0].getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
             return ([quest],None)
 
-        selectionBit = ""
-        if self.toProduce == "Rod":
-            selectionBit = ""
-        if self.toProduce == "Frame":
-            selectionBit = "s"
-        if self.toProduce == "Case":
-            selectionBit = "ss"
-        if self.toProduce == "Wall":
-            selectionBit = "sss"
-        if self.toProduce == "ScrapCompactor":
-            selectionBit = "ssss"
-
-        if self.produceToInventory:
-            activationCommand = "j"
-        else:
-            activationCommand = "k"
-
         pos = character.getPosition()
         benchPos = benchNearBy.getPosition()
         if (pos[0],pos[1],pos[2]) == benchPos:
-            return (None,("jj"+selectionBit+activationCommand,"produce machine"))
+            return (None,("jj","start producing machine"))
         if (pos[0]-1,pos[1],pos[2]) == benchPos:
-            return (None,("ajj"+selectionBit+activationCommand,"produce machine"))
+            return (None,("ajj","start producing machine"))
         if (pos[0]+1,pos[1],pos[2]) == benchPos:
-            return (None,("djj"+selectionBit+activationCommand,"produce machine"))
+            return (None,("djj","start producing machine"))
         if (pos[0],pos[1]-1,pos[2]) == benchPos:
-            return (None,("wjj"+selectionBit+activationCommand,"produce machine"))
+            return (None,("wjj","start producing machine"))
         if (pos[0],pos[1]+1,pos[2]) == benchPos:
-            return (None,("sjj"+selectionBit+activationCommand,"produce machine"))
+            return (None,("sjj","start producing machine"))
 
         return (None,None)
 

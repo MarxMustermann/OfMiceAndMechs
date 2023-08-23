@@ -95,20 +95,37 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def getSolvingCommandString(self,character,dryRun=True):
-        if not self.showedKillStuff and not self.showedEnemyWarning:
-            print(character.yPosition//15)
-            print(character.yPosition%15)
-            danger = False
-            if character.yPosition//15 == 4 and character.yPosition%15 == 1 and character.xPosition%15 == 7:
-                danger = True
-            if character.yPosition//15 == 10 and character.yPosition%15 == 13 and character.xPosition%15 == 7:
-                danger = True
-            if character.xPosition//15 == 4 and character.xPosition%15 == 1 and character.yPosition%15 == 7:
-                danger = True
-            if character.xPosition//15 == 10 and character.xPosition%15 == 13 and character.yPosition%15 == 7:
-                danger = True
-            if danger:
-                text = """
+        if "tutorial" in character.duties and not self.showedKillStuff:
+            if not self.showedEnemyWarning:
+                danger = False
+                bigPos = character.getBigPosition()
+                terrain = character.getTerrain()
+                if character.yPosition%15 == 1 and character.xPosition%15 == 7:
+                    for otherCharacter in terrain.charactersByTile.get((bigPos[0],bigPos[1]-1,0),[]):
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        danger = True
+                        break
+                if character.yPosition%15 == 13 and character.xPosition%15 == 7:
+                    for otherCharacter in terrain.charactersByTile.get((bigPos[0],bigPos[1]+1,0),[]):
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        danger = True
+                        break
+                if character.xPosition%15 == 1 and character.yPosition%15 == 7:
+                    for otherCharacter in terrain.charactersByTile.get((bigPos[0]-1,bigPos[1],0),[]):
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        danger = True
+                        break
+                if character.xPosition%15 == 13 and character.yPosition%15 == 7:
+                    for otherCharacter in terrain.charactersByTile.get((bigPos[0]+1,bigPos[1],0),[]):
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        danger = True
+                        break
+                if danger:
+                    text = """
 Careful now. If you step onto the next tile you will die.
 
 There is an enemy there. Enemies are shown as <-
@@ -116,9 +133,23 @@ There is an enemy there. Enemies are shown as <-
 Leave the enemies alone. You have been warned.
 
 = press enter to continue playing ="""
-                character.addMessage(text)
-                src.interaction.showInterruptText(text)
-                self.showedEnemyWarning = True
+                    character.addMessage(text)
+                    src.interaction.showInterruptText(text)
+                    self.showedEnemyWarning = True
+            else:
+                border = False
+                if character.yPosition%15 == 1 and character.xPosition%15 == 7:
+                    border = True
+                if character.yPosition%15 == 13 and character.xPosition%15 == 7:
+                    border = True
+                if character.xPosition%15 == 1 and character.yPosition%15 == 7:
+                    border = True
+                if character.xPosition%15 == 13 and character.yPosition%15 == 7:
+                    border = True
+                
+                if not border:
+                    self.showedEnemyWarning = False
+
         if self.storySkipTurnsWatchNPCs:
             foundWall = False
             terrain = character.getTerrain()
@@ -130,7 +161,7 @@ Leave the enemies alone. You have been warned.
                     return ["."]
             self.storySkipTurnsWatchNPCs = False
             text = """
-Your base has run out of walls.
+The room building NPCs has used up all walls stored in your base.
 The NPCs will build new Walls, but are slow to do so.
 We should stop watching and do something about that.
 
@@ -1717,20 +1748,41 @@ We should stop watching and do something about that.
     showedKillStuff3 = False
     showedKillStuff4 = False
     showedEnemyWarning = False
-
     storySkipTurnsWatchNPCs = False
+
     def specialTutorialLogic(self,character,room):
         if not self.showedInitialGreeting:
             text = """
 Hello!
 
-So... I'm MarxMustermann and you are looking at a very early version of a game.
+I'm MarxMustermann and you are looking at a very early version of a game.
 This is a mixture of a tutorial and a feature presentation.
 
 I will rudely interrupt your gameplay from time to time to explain things.
 
+
+= press enter to continue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+
+            text = """
 Let's start with the games crafting component. It is pretty simple right now.
-let me show you...
+Let's produce and set up a CityPlaner first. That requires you to do several actions.
+I'll use the quest system to steer you through that.
+
+The quest system will guide you by
+* generating sub quests when pressing "+". 
+  This means that your task will be split into simple sub tasks.
+* showing you quest markers.
+  The quest markers from the current active quest are shown as grey background.
+  Those questmarkers are shown on the gamemap, minimap and some menus
+* Showing you the keys you need to press to solve the current task.
+  A task will show you suggested keystrokes, if a task is so simple that it can't split into sub quests.
+  Those are shown as "suggested action" on the left hand side menu
+
+So press "+" until you see a suggested action and type the suggested keys one after another.
+When you know what you are doing, press "+" less and act more independently.
 
 
 = press enter to continue playing =
@@ -1759,6 +1811,7 @@ let me show you how add more rooms to the base ...
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             self.showedBaseBuildingText = True
 
         if not cityPlaner.plannedRooms and not self.showedNPCSpawningText:
@@ -1766,7 +1819,7 @@ let me show you how add more rooms to the base ...
 
         if not self.showedNPCSpawningText:
             text = """
-You now scheduled 2 room to be build. You can craft all items needed to build the room.
+You now scheduled 2 rooms to be build. You can craft all items needed to build the room.
 To actually do that would be pretty boring, so you get NPCs helping you.
 
 You have seen two components:
@@ -1794,12 +1847,13 @@ let me show you how that works out...
 Now let's sit back and watch the workers do stuff for a while.
 Standing around and watching the workers is optional in the game, but i like it.
 
-You wait one turn by pressing the "." key, press and hold it to pass more time.
+You wait one turn by pressing the "." key, press and hold "." to pass more time.
 
 = press enter to continue playing =
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             self.showedNPCWatchingText = True
             self.storySkipTurnsWatchNPCs = True
 
@@ -1822,16 +1876,14 @@ But helping you base out with important tasks is part of the game.
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             self.showedHelpCraftingText = True
-            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True,reason="help out the NPCs with production"))
             return True
             
         if not self.showedHelpCraftingText2:
             text = """
-Have you seen the animations running wild and your CPU load spiking when crafting?
-That is you taking 100 turns in one action to craft the Wall.
-
-Each Wall takes 100 turns to be produced at the workshop.
+Each wall takes 100 turns to be produced at the workshop.
 That is why walls are only produced slowly.
 
 Produce some more Walls and see time flying by.
@@ -1841,9 +1893,10 @@ Produce some more Walls and see time flying by.
             character.addMessage(text)
             src.interaction.showInterruptText(text)
             self.showedHelpCraftingText2 = True
-            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
-            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
-            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True))
+            src.gamestate.gamestate.save()
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True,reason="see time flying by"))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True,reason="see time flying by"))
+            self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True,reason="see time flying by"))
             return True
 
         try:
@@ -1861,16 +1914,17 @@ You can go out and explore the world.
 
 Scavenge the environment for building materials.
 On the current terrain there are Walls waiting for you to pick them up.
+Beware of the enemies for now, fighting them means your death.
 
 Collect some of those walls and get to know the environment better.
-Avoid the enemies for now.
 
 = press enter to continue playing =
 """
                     character.addMessage(text)
+                    src.gamestate.gamestate.save()
                     src.interaction.showInterruptText(text)
                     self.showedScavengingText = True
-                self.addQuest(src.quests.questMap["Scavenge"](toCollect="Wall"))
+                self.addQuest(src.quests.questMap["Scavenge"](toCollect="Wall",reason="gather walls for extending the base"))
                 return True
             else:
                 if not self.showedRestockingQuestText:
@@ -1892,7 +1946,7 @@ Sort your inventory into the appropriate stockpiles.
                     character.addMessage(text)
                     src.interaction.showInterruptText(text)
                     self.showedRestockingQuestText = True
-                self.addQuest(src.quests.questMap["ClearInventory"]())
+                self.addQuest(src.quests.questMap["ClearInventory"](description="store collected items",reason="make the collected walls available to the NPCs"))
                 return True
 
         if not self.showedRoom1Build:
@@ -1915,6 +1969,7 @@ In that case a NPC will automatically draw new storage stockpiles there.
 = press enter to continue playing =
 """
             character.addMessage(text)
+            src.gamestate.gamestate.save()
             src.interaction.showInterruptText(text)
             self.showedRoom1Build = True
 
@@ -1928,20 +1983,21 @@ In that case a NPC will automatically draw new storage stockpiles there.
         if not self.showedKillStuff:
             text = """
 You have seen the basic controls for your base now.
-Lets move on to an entirely different topic.
+You might habe noticed that most of the walls are protected by enemies.
 
-Fighting is the fourth component of the game.
+That leads to the Fighting component of the game.
 The basic fighting system is pretty simple, just walk into an enemy and you will attack it.
 
 Lets try beating up some wildlife.
-The enemies here look like this <-
 
 = press enter to continue playing =
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             self.showedKillStuff = True
-            quest = src.quests.questMap["SecureTile"](toSecure=(3,7,0),endWhenCleared=True)
+            bigPos = random.choice([(4,4,0),(10,4,0),(4,10,0),(10,10,0)])
+            quest = src.quests.questMap["SecureTile"](toSecure=bigPos,endWhenCleared=True)
             self.addQuest(quest)
             return True
 
@@ -1951,13 +2007,14 @@ That enemy did beat you up pretty badly.
 The reason for this is, that you were fighting without a weapon.
 Having or not having equipment makes a big difference.
 
-I healed you to make up for beeing mean.
+I healed you to make up for me beeing mean.
 Now craft yourself a Sword and Armor to be better prepared for a fight.
 
 = press enter to continue playing =
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             character.health = character.maxHealth
             self.showedKillStuff2 = True
             self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
@@ -1973,11 +2030,11 @@ Great. Equip your gear and try again.
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             self.showedKillStuff3 = True
-            quest = src.quests.questMap["SecureTile"](toSecure=(1,7,0),endWhenCleared=True)
-            self.addQuest(quest)
-            quest = src.quests.questMap["SecureTile"](toSecure=(2,7,0),endWhenCleared=True)
-            self.addQuest(quest)
+            for bigPos in [(4,4,0),(10,4,0),(4,10,0),(10,10,0)]:
+                quest = src.quests.questMap["SecureTile"](toSecure=bigPos,endWhenCleared=True)
+                self.addQuest(quest)
             quest = src.quests.questMap["Equip"]()
             self.addQuest(quest)
             return True
@@ -1985,25 +2042,27 @@ Great. Equip your gear and try again.
         if not self.showedKillStuff4:
             text = """
 That fight went a whole lot better than last time.
-Workshop produced weapons and armor are pretty bad, but they help.
 
 You have seen the following components of the game so far:
 * You can plan a base
 * You can spawn workers
 * Workshops can be used to craft items
-* You can fight monsters for resources
+* You can fight monsters to unlock resources
 
-There is an enemy base, too.
 
-Let's visit it!
+Workshop produced weapons and armor are pretty bad, but they help.
+Let's produce some better weapons.
+
 
 = press enter to continue playing =
 """
             self.showedKillStuff4 = True
+            src.gamestate.gamestate.save()
             character.addMessage(text)
             src.interaction.showInterruptText(text)
-            quest = src.quests.questMap["RaidTutorial"]()
-            self.addQuest(quest)
+            character.health = character.maxHealth
+            #quest = src.quests.questMap["RaidTutorial"]()
+            #self.addQuest(quest)
             return True
 
         try: 
@@ -2017,7 +2076,7 @@ Let's visit it!
 Complete the third room, to have some space to work with.
 
 The quest system will suggest that you will use crafting to do this.
-You can also do this by scavanging or stealing from the enemy base.
+You can also do this by scavanging and fighting monsters for resources
 
 Not following instructions too closely is an important part of the game.
 With some experience you will mostly disregard the quest system.
@@ -2026,7 +2085,9 @@ With some experience you will mostly disregard the quest system.
 """
                 character.addMessage(text)
                 src.interaction.showInterruptText(text)
+                src.gamestate.gamestate.save()
                 self.showedBuildRoomInfo = True
+                character.health = character.maxHealth
                 character.duties = ["tutorial","city planning","clone spawning","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
                 return True
             return
@@ -2043,10 +2104,8 @@ With some experience you will mostly disregard the quest system.
 
         if self.selectedMachineTutorial == None:
             text = """
-So the goal for our base is clear now:
-Make the base churn out some weapons and then we'll raid the enemy base again.
-
-Workshop made weapons and armor are very low quality.
+You only have workshop made weapons and armor, those are very low quality.
+Equipmant quality matters a lot in a fight.
 To produce quality weapons a different crafting system needs to be used.
 
 This other crafting system is a bit complicated and really understanding it is optional.
@@ -2270,6 +2329,7 @@ Start by using the city builder to order a weapon production line to be built.
 """
                 character.addMessage(text)
                 src.interaction.showInterruptText(text)
+                src.gamestate.gamestate.save()
                 self.showedPlanWeaponProduction = True
 
                 floorPlansToSet = ["weaponProduction"]
@@ -2307,6 +2367,7 @@ You can use e to examine things.
 """
                 character.addMessage(text)
                 src.interaction.showInterruptText(text)
+                src.gamestate.gamestate.save()
                 self.showedFloorPlanDone = True
                 newQuest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                 self.addQuest(newQuest)
@@ -2330,6 +2391,7 @@ Explore, be creative or just watch the NPCs.
 """
                 character.addMessage(text)
                 src.interaction.showInterruptText(text)
+                src.gamestate.gamestate.save()
                 self.showedWaitForFloorPlan = True
                 character.duties = ["tutorial","city planning","clone spawning","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
                 return True
@@ -2353,8 +2415,9 @@ Your NPCs will set the machines up, but each machine takes 1000 turns to be prod
 You need 10 machines, so you'd have to wait for 10 000 turns.
 Usually you'd go adventuring while you wait.
 
-In this case, i have spawned the machines you need into the enemy base.
-Go fetch them
+I know a place where you can find the machines you need.
+Let's go on a adventure to fetch them. 
+(i healed you)
 
 == press space to continue =
 """
@@ -2369,11 +2432,13 @@ Go fetch them
                     item.bolted = False
                     room.addItem(item,(random.randint(2,10),random.randint(2,10),0))
                 break
+            character.health = character.maxHealth
             character.addMessage(text)
             src.interaction.showInterruptText(text)
             self.showedMachineRaid = True
-            newQuest = src.quests.questMap["RaidTutorial2"](targetPosition=room.getPosition())
+            newQuest = src.quests.questMap["RaidTutorial2"](description="fetch machines",targetPosition=room.getPosition())
             self.addQuest(newQuest)
+            src.gamestate.gamestate.save()
             return True
 
         try:
@@ -2391,6 +2456,7 @@ Help out and produce some equipment until you have some decent gear.
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            src.gamestate.gamestate.save()
             self.showedProduceGoodArmor = True
 
             for otherCharacter in terrain.characters:
@@ -2431,13 +2497,14 @@ Help out and produce some equipment until you have some decent gear.
 
         if not self.showedSpecialItemRaid:
             text = """
-You are well enough equipped now to obtain the enemys special item now.
+You are well enough equipped to obtain the enemys special item now.
 
 Go fetch the special item.
 
 = press space to continue =
 """
             character.addMessage(text)
+            src.gamestate.gamestate.save()
             src.interaction.showInterruptText(text)
             self.showedSpecialItemRaid = True
             newQuest = src.quests.questMap["RaidTutorial3"]()
@@ -2466,6 +2533,7 @@ I healed you again.
 = press space to continue =
 """
             character.addMessage(text)
+            src.gamestate.gamestate.save()
             src.interaction.showInterruptText(text)
             self.showedThroneRun = True
             character.health = character.maxHealth

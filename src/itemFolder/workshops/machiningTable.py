@@ -9,7 +9,7 @@ class MachiningTable(src.items.Item):
     name = "MachiningTable"
     description = "Use it to build machines" 
     walkable = False
-    bolted = False
+    bolted = True
 
     def __init__(self):
         """
@@ -62,10 +62,6 @@ class MachiningTable(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
         
-        preferInventoryOut = True
-        if params.get("key") == "k":
-            preferInventoryOut = False
-        
         metalBarsFound = []
         for item in character.inventory+self.getInputItems():
             if item.type == "MetalBars":
@@ -78,8 +74,53 @@ class MachiningTable(src.items.Item):
 
         metalBar = metalBarsFound[-1]
 
+        if metalBar in character.inventory:
+            character.inventory.remove(metalBar)
+        else:
+            self.container.removeItem(metalBar)
+
+        if params["type"] in self.scheduledItems:
+            self.scheduledItems.remove(params["type"])
+
+        params["productionTime"] = 1000
+        params["doneProductionTime"] = 0
+        self.produceItem_wait(params)
+        character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
+
+    def produceItem_wait(self,params):
+        character = params["character"]           
+        ticksLeft = params["productionTime"]-params["doneProductionTime"]
+
+        baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
+        progressBar = ""
+        while len(baseProgressbar) > 10:
+            progressBar += baseProgressbar[:10]+"\n"
+            baseProgressbar = baseProgressbar[10:]
+        progressBar += baseProgressbar
+        if ticksLeft > 10:
+            character.timeTaken += 10
+            params["doneProductionTime"] += 10
+            submenue = src.interaction.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
+            submenue.tag = "metalWorkingProductWait"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
+        else:
+            character.timeTaken += ticksLeft
+            params["doneProductionTime"] += ticksLeft
+            submenue = src.interaction.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
+            submenue.tag = "metalWorkingProductWait"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
+
+    def produceItem_done(self,params):
+        character = params["character"]           
+
+        preferInventoryOut = True
+        if params.get("key") == "k":
+            preferInventoryOut = False
+        
         dropsSpotsFull = self.checkForDropSpotsFull()
-        if not character.getFreeInventorySpace() > 0 and not metalBar in character.inventory and dropsSpotsFull:
+        if not character.getFreeInventorySpace() > 0 and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return 
@@ -88,19 +129,13 @@ class MachiningTable(src.items.Item):
         new.setToProduce(params["type"])
         new.bolted = False
 
-        if params["type"] in self.scheduledItems:
-            self.scheduledItems.remove(params["type"])
-
-        character.timeTaken += 1000
         character.addMessage("You produce a wall")
-        character.addMessage("It takes you 10o0 turns to do that")
-        if metalBar in character.inventory:
-            character.inventory.remove(metalBar)
-        else:
-            self.container.removeItem(metalBar)
+        character.addMessage("It takes you 1000 turns to do that")
 
-        if dropsSpotsFull or (preferInventoryOut and (character.getFreeInventorySpace() > 0 or not metalBar in character.inventory)):
+        if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
             character.inventory.append(new)
+        elif dropsSpotsFull:
+            character.addMessage("you failed to produce since both your inventory and the dropspots are full.")
         else:
             for output in self.outs:
                 targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])

@@ -3941,6 +3941,9 @@ class MainGame(BasicPhase):
         self.colonyBaseInfos = []
         #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
 
+        self.colonyBaseInfos2 = []
+        #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
+
         if self.preselection == "Siege":
             self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
             self.activeStory = random.choice(self.siegedBaseInfos)
@@ -3950,6 +3953,13 @@ class MainGame(BasicPhase):
         elif self.preselection == "Raid":
             self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
             self.activeStory = random.choice(self.raidBaseInfos)
+            """
+        else:
+            self.colonyBaseInfos2.append(self.createColonyBase2((6,7),mainCharBase=True))
+            self.colonyBaseInfos2.append(self.createColonyBase2((5,7)))
+            self.setUpThroneDungeon((7,7))
+            self.activeStory = self.colonyBaseInfos2[0]
+        """
         else:
             self.colonyBaseInfos.append(self.createColonyBase((6,7),mainCharBase=True))
             self.colonyBaseInfos.append(self.createColonyBase((5,7)))
@@ -4209,7 +4219,9 @@ try to remember how you got here ..."""
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["tutorial","city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        mainChar.duties = ["city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        if mainCharBase:
+            mainChar.duties.insert(0,"tutorial")
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4383,6 +4395,376 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
+        for i in range(0,50):
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            pos = (random.randint(15*5,15*10),random.randint(15*5,15*10),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,10):
+            bigPos = None
+            for i in range(0,10):
+                pos = (random.randint(1,13),random.randint(1,13),0)
+                if (pos[0] < 11 and pos[0] > 4) and (pos[1] < 11 and pos[1] > 4):
+                    continue
+                bigPos = pos
+                break
+
+            if not bigPos:
+                break
+
+            for i in range(0,20):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,pos)
+
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 20
+            enemy.baseDamage = 5
+            enemy.maxHealth = 20
+            enemy.godMode = True
+            enemy.movementSpeed = 0.8
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            currentTerrain.addCharacter(enemy, bigPos[0]*15+7, bigPos[1]*15+7)
+
+        for bigPos in [(4,4,0),(10,4,0),(4,10,0),(10,10,0)]:
+            for i in range(0,20):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,pos)
+
+            enemy = src.characters.Monster(4,4)
+            enemy.health = 20
+            enemy.baseDamage = 5
+            enemy.maxHealth = 20
+            enemy.godMode = True
+            enemy.movementSpeed = 0.8
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            currentTerrain.addCharacter(enemy, bigPos[0]*15+7, bigPos[1]*15+7)
+
+        for i in range(0,40):
+            item = src.items.itemMap["Door"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+
+        for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
+            architect.doClearField(pos[0], pos[1])
+
+        # spawn enemies
+        for x in range(1,14):
+            for y in range(1,14):
+                if (x < 12 and x > 2) and (y < 12 and y > 2):
+                    continue
+
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 20
+                enemy.baseDamage = 5
+                enemy.maxHealth = 20
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+
+        pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
+        architect.doClearField(pos[0], pos[1])
+        tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
+        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
+        currentTerrain.forests.append(pos)
+
+        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(5,6),(6,5),(7,4)]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doClearField(pos[0], pos[1])
+            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(positions)]
+        for pos in positions:
+            architect.doClearField(pos[0], pos[1])
+            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
+
+        itemsToRemove = []
+        for x in range(1,14):
+            for y in range(1,14):
+                clearPositions = [(7,1,0),(7,2,0),(1,7,0),(2,7,0),(7,13,0),(7,12,0),(13,7,0),(12,7,0)]
+                for clearPosition in clearPositions:
+                    itemsToRemove.extend(currentTerrain.getItemByPosition((x*15+clearPosition[0],y*15+clearPosition[1],0)))
+        currentTerrain.removeItems(itemsToRemove)
+
+        return colonyBaseInfo
+
+    def createColonyBase2(self,pos,mainCharBase=False):
+        mainChar = src.characters.Character()
+        if mainCharBase:
+            mainChar.disableCommandsOnPlus = True
+        mainChar.questsDone = [
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "CollectQuestMeta",
+            "FireFurnaceMeta",
+            "ExamineQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+            "LeaveRoomQuest",
+        ]
+
+        mainChar.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest" "NaiveDropQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
+
+        if not mainCharBase:
+            quest = src.quests.questMap["BeUsefull"]()
+            #quest = src.quests.questMap["ExtendBase"]()
+            quest.autoSolve = True
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            mainChar.foodPerRound = 1
+
+        thisFactionId = self.factionCounter
+        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+        mainChar.registers["HOMETx"] = pos[0]
+        mainChar.registers["HOMETy"] = pos[1]
+        mainChar.foodPerRound = 1
+        mainChar.personality["viewChar"] = "name"
+        mainChar.personality["viewColour"] = "name"
+        self.factionCounter += 1
+        colonyBaseInfo = {"type":"colonyBase"}
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        colonyBaseInfo["terrain"] = currentTerrain
+        colonyBaseInfo["mainChar"] = mainChar
+
+        if mainCharBase:
+            mainChar.personality["autoFlee"] = False
+            mainChar.personality["abortMacrosOnAttack"] = False
+            mainChar.personality["autoCounterAttack"] = False
+
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 100
+        mainChar.duties = ["city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        mainRoom.addCharacter(
+            mainChar, 6, 6
+        )
+
+        item = src.items.itemMap["SpecialItemSlot"]()
+        item.itemID = 1
+        if mainCharBase:
+            item.hasItem = True
+        mainRoom.addItem(item,(1,1,0))
+        item = src.items.itemMap["SpecialItemSlot"]()
+        if not mainCharBase:
+            item.hasItem = True
+        item.itemID = 2
+        mainRoom.addItem(item,(2,1,0))
+
+        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
+        colonyBaseInfo["epochArtwork"] = epochArtwork
+        epochArtwork.leader = mainChar
+        epochArtwork.epochSurvivedRewardAmount = 0
+        epochArtwork.changeCharges(60)
+        mainChar.rank = 3
+        mainRoom.addItem(epochArtwork,(3,1,0))
+        """
+        quest = src.quests.questMap["EpochQuest"]()
+        mainChar.assignQuest(quest,active=True)
+
+        #cityBuilder = src.items.itemMap["CityBuilder2"]()
+        #cityBuilder.architect = architect
+        #mainRoom.addItem(cityBuilder,(7,1,0))
+        #cityBuilder.registerRoom(mainRoom)
+
+        """
+
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        mainRoom.addItem(dutyArtwork,(5,1,0))
+
+        anvilPos = (10,2,0)
+        machinemachine = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        metalWorkBenchPos = (8,3,0)
+        machinemachine = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+        mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+        mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+        anvilPos = (9,5,0)
+        machinemachine = src.items.itemMap["MachiningTable"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"MetalBars")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        for y in (7,9,11):
+            for x in range(7,12):
+                mainRoom.addStorageSlot((x,y,0),None)
+            for x in range(1,6):
+                mainRoom.addStorageSlot((x,y,0),None)
+
+        for y in (11,9,):
+            for x in range(7,12):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                mainRoom.addItem(item,(x,y,0))
+            for x in range(1,6):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                mainRoom.addItem(item,(x,y,0))
+
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(1,7,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(2,7,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(3,7,0))
+        item = src.items.itemMap["Door"]()
+        item.bolted = False
+        mainRoom.addItem(item,(4,7,0))
+        item = src.items.itemMap["RoomBuilder"]()
+        item.bolted = False
+        mainRoom.addItem(item,(5,7,0))
+
+        item = src.items.itemMap["ProductionArtwork"]()
+        item.bolted = True
+        item.charges = 1
+        mainRoom.addItem(item,(4,3,0))
+
+        item = src.items.itemMap["MachineMachine"]()
+        item.bolted = True
+        mainRoom.addItem(item,(4,5,0))
+
+        item = src.items.itemMap["BluePrinter"]()
+        item.bolted = True
+        mainRoom.addItem(item,(2,4,0))
+
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,10,0))
+        for x in range(7,12):
+            mainRoom.walkingSpace.add((x,10,0))
+
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,6,0))
+        for x in range(7,12):
+            mainRoom.walkingSpace.add((x,6,0))
+        mainRoom.walkingSpace.add((5,2,0))
+        mainRoom.walkingSpace.add((4,2,0))
+        mainRoom.walkingSpace.add((3,2,0))
+        mainRoom.walkingSpace.add((2,2,0))
+        mainRoom.walkingSpace.add((1,2,0))
+        mainRoom.walkingSpace.add((7,5,0))
+        mainRoom.walkingSpace.add((7,4,0))
+        mainRoom.walkingSpace.add((7,2,0))
+        mainRoom.walkingSpace.add((7,1,0))
+        mainRoom.walkingSpace.add((8,1,0))
+        mainRoom.walkingSpace.add((9,1,0))
+        mainRoom.walkingSpace.add((11,5,0))
+        mainRoom.walkingSpace.add((11,4,0))
+        mainRoom.walkingSpace.add((11,3,0))
+        mainRoom.walkingSpace.add((10,4,0))
+
+        for y in range(1,12):
+            mainRoom.walkingSpace.add((6,y,0))
+
+        # scatter items around
+        for i in range(0,20):
+            item = src.items.itemMap["ScrapCompactor"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,75):
+            item = src.items.itemMap["Case"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,200):
+            item = src.items.itemMap["MetalBars"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,25):
+            item = src.items.itemMap["Frame"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,25):
+            item = src.items.itemMap["Rod"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,50):
+            item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
         for i in range(0,10):
             bigPos = (random.randint(1,13),random.randint(1,13),0)
             for i in range(0,20):
@@ -4408,7 +4790,7 @@ try to remember how you got here ..."""
         # spawn enemies
         for x in range(1,14):
             for y in range(1,14):
-                if (x < 11 and x > 3) and (y < 11 and y > 3):
+                if (x < 10 and x > 2) and (y < 10 and y > 2):
                     continue
 
                 enemy = src.characters.Monster(4,4)
@@ -4455,574 +4837,6 @@ try to remember how you got here ..."""
 
         return colonyBaseInfo
 
-    def createColonyBase_old(self,pos):
-        mainChar = src.characters.Character()
-        mainChar.disableCommandsOnPlus = True
-        mainChar.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-        ]
-
-        mainChar.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
-
-        thisFactionId = self.factionCounter
-        mainChar.faction = "city #%s"%(thisFactionId,)
-        mainChar.registers["HOMEx"] = 7
-        mainChar.registers["HOMEy"] = 7
-        mainChar.registers["HOMETx"] = pos[0]
-        mainChar.registers["HOMETy"] = pos[1]
-        mainChar.foodPerRound = 1
-        mainChar.personality["viewChar"] = "name"
-        mainChar.personality["viewColour"] = "name"
-        self.factionCounter += 1
-        colonyBaseInfo = {"type":"colonyBase"}
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-        colonyBaseInfo["terrain"] = currentTerrain
-        colonyBaseInfo["mainChar"] = mainChar
-        mainChar.personality["autoFlee"] = False
-        mainChar.personality["abortMacrosOnAttack"] = False
-        mainChar.personality["autoCounterAttack"] = False
-
-        mainChar.flask = src.items.itemMap["GooFlask"]()
-        mainChar.flask.uses = 100
-
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        mainRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        if random.random() > 1.5:
-            scrapRoom = architect.doAddRoom(
-                    {
-                           "coordinate": (7,6),
-                           "roomType": "EmptyRoom",
-                           "doors": "0,6 6,0 12,6 6,12",
-                           "offset": [1,1],
-                           "size": [13, 13],
-                    },
-                    None,
-               )
-
-            for i in range(1,50):
-                pos = (random.randint(1,11),random.randint(1,11),0)
-                if scrapRoom.getItemByPosition(pos):
-                    continue
-                scrap = src.items.itemMap["Scrap"](amount=random.randint(1,25))
-                scrapRoom.addItem(scrap,pos)
-
-        mainRoom.storageRooms = []
-
-        mainRoom.addCharacter(
-            mainChar, 6, 6
-        )
-
-        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
-        colonyBaseInfo["epochArtwork"] = epochArtwork
-        epochArtwork.leader = mainChar
-        epochArtwork.epochSurvivedRewardAmount = 5
-        epochArtwork.changeCharges(10)
-        mainChar.rank = 3
-        mainRoom.addItem(epochArtwork,(3,3,0))
-        """
-        quest = src.quests.questMap["EpochQuest"]()
-        mainChar.assignQuest(quest,active=True)
-
-        #cityBuilder = src.items.itemMap["CityBuilder2"]()
-        #cityBuilder.architect = architect
-        #mainRoom.addItem(cityBuilder,(7,1,0))
-        #cityBuilder.registerRoom(mainRoom)
-
-        """
-        bluePrintingArtwork = src.items.itemMap["BluePrinter"]()
-        mainRoom.addItem(bluePrintingArtwork,(9,8,0))
-        item = src.items.itemMap["Machine"]()
-        item.toProduce = "Sheet"
-        mainRoom.addItem(item,(8,7,0))
-
-        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-        mainRoom.addItem(scrapCompactor,(8,4,0))
-        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
-        mainRoom.addItem(scrapCompactor,(8,5,0))
-
-        scrapCompactor = src.items.itemMap["CityPlaner"]()
-        scrapCompactor.bolted = False
-        mainRoom.addItem(scrapCompactor,(2,11,0))
-
-        machinemachine = src.items.itemMap["MachineMachine"]()
-        machinemachine.charges = 10000
-        mainRoom.addItem(machinemachine,(10,4,0))
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Wall")
-        machinemachine.endProducts["Wall"] = item
-        machinemachine.blueprintLevels["Wall"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Door")
-        machinemachine.endProducts["Door"] = item
-        machinemachine.blueprintLevels["Door"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("ScrapCompactor")
-        machinemachine.endProducts["ScrapCompactor"] = item
-        machinemachine.blueprintLevels["ScrapCompactor"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Case")
-        machinemachine.endProducts["Case"] = item
-        machinemachine.blueprintLevels["Case"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Frame")
-        machinemachine.endProducts["Frame"] = item
-        machinemachine.blueprintLevels["Frame"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Rod")
-        machinemachine.endProducts["Rod"] = item
-        machinemachine.blueprintLevels["Rod"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("RoomBuilder")
-        machinemachine.endProducts["RoomBuilder"] = item
-        machinemachine.blueprintLevels["RoomBuilder"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("pusher")
-        machinemachine.endProducts["pusher"] = item
-        machinemachine.blueprintLevels["pusher"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("puller")
-        machinemachine.endProducts["puller"] = item
-        machinemachine.blueprintLevels["puller"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Sheet")
-        machinemachine.endProducts["Sheet"] = item
-        machinemachine.blueprintLevels["Sheet"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Radiator")
-        machinemachine.endProducts["Radiator"] = item
-        machinemachine.blueprintLevels["Radiator"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Stripe")
-        machinemachine.endProducts["Stripe"] = item
-        machinemachine.blueprintLevels["Stripe"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Bolt")
-        machinemachine.endProducts["Bolt"] = item
-        machinemachine.blueprintLevels["Bolt"] = 1
-
-        item = src.items.itemMap["BluePrint"]()
-        item = src.items.itemMap["BluePrint"]()
-        item.setToProduce("Mount")
-        machinemachine.endProducts["Mount"] = item
-        machinemachine.blueprintLevels["Mount"] = 1
-
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(7,2,0))
-        item = src.items.itemMap["Machine"]()
-        item.bolted = True
-        item.setToProduce("Wall")
-        mainRoom.addItem(item,(8,2,0))
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(9,2,0))
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(10,2,0))
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,2,0))
-        item = src.items.itemMap["Door"]()
-        item.bolted = False
-        mainRoom.addItem(item,(7,1,0))
-        item = src.items.itemMap["Door"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,1,0))
-        item = src.items.itemMap["Door"]()
-        item.bolted = False
-        mainRoom.addItem(item,(9,1,0))
-        item = src.items.itemMap["Door"]()
-        item.bolted = False
-        mainRoom.addItem(item,(10,1,0))
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,1,0))
-
-        #machine = src.items.itemMap["Machine"]()
-        #machine = src.items.itemMap["Machine"]()
-        #machine.setToProduce("Sheet")
-        #mainRoom.addItem(machine,(4,9,0))
-
-        """
-        item = src.items.itemMap["BasicTrainer"]()
-        mainRoom.addItem(item,(1,1,0))
-        item = src.items.itemMap["PersonnelArtwork"]()
-        mainRoom.addItem(item,(2,1,0))
-        item = src.items.itemMap["Assimilator"]()
-        mainRoom.addItem(item,(1,3,0))
-
-        scrapCompactor = src.items.itemMap["ProductionArtwork"]()
-        mainRoom.addItem(scrapCompactor,(4,1,0))
-        """
-
-        for x in range(7,12):
-            mainRoom.addStorageSlot((x,11,0),None)
-        for x in range(1,6):
-            mainRoom.addStorageSlot((x,11,0),None)
-
-        for x in range(1,6):
-            mainRoom.walkingSpace.add((x,10,0))
-        for x in range(7,12):
-            mainRoom.walkingSpace.add((x,10,0))
-
-        mainRoom.walkingSpace.add((7,1,0))
-        mainRoom.addOutputSlot((9,2,0),"Wall")
-        mainRoom.addInputSlot((7,2,0),"MetalBars")
-        mainRoom.addInputSlot((8,1,0),"Case")
-        mainRoom.addInputSlot((7,4,0),"Scrap")
-        mainRoom.addInputSlot((7,5,0),"Scrap")
-        mainRoom.addInputSlot((9,4,0),"MetalBars")
-        mainRoom.addOutputSlot((9,5,0),"MetalBars")
-        mainRoom.addInputSlot((7,7,0),"MetalBars")
-        mainRoom.addInputSlot((9,7,0),"Sheet")
-
-        for x in range(1,6):
-            mainRoom.addStorageSlot((x,9,0),None)
-            item = src.items.itemMap["Wall"]()
-            item.bolted = False
-            mainRoom.addItem(item,(x,9,0))
-
-        for x in range(1,6):
-            item = src.items.itemMap["Wall"]()
-            item.bolted = False
-            mainRoom.addItem(item,(x,8,0))
-            
-        for x in range(1,6):
-            mainRoom.addStorageSlot((x,7,0),None)
-            item = src.items.itemMap["Wall"]()
-            item.bolted = False
-            mainRoom.addItem(item,(x,7,0))
-
-        for x in range(1,6):
-            mainRoom.addStorageSlot((x,5,0),None)
-            if x == 5:
-                item = src.items.itemMap["Wall"]()
-            else:
-                item = src.items.itemMap["Door"]()
-            item.bolted = False
-            mainRoom.addItem(item,(x,5,0))
-
-        mainRoom.addPathCross()
-        mainRoom.walkingSpace.add((4,3,0))
-        mainRoom.walkingSpace.add((5,3,0))
-        mainRoom.walkingSpace.add((7,3,0))
-        mainRoom.walkingSpace.add((8,3,0))
-        mainRoom.walkingSpace.add((9,3,0))
-        mainRoom.walkingSpace.add((10,5,0))
-        mainRoom.walkingSpace.add((11,5,0))
-
-        item = src.items.itemMap["Painter"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,11,0))
-        item = src.items.itemMap["Painter"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,11,0))
-        item = src.items.itemMap["Painter"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,11,0))
-        item = src.items.itemMap["Painter"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,11,0))
-        item = src.items.itemMap["Painter"]()
-        item.bolted = False
-        mainRoom.addItem(item,(11,11,0))
-        item = src.items.itemMap["Bolt"]()
-        item.bolted = False
-        mainRoom.addItem(item,(10,11,0))
-        item = src.items.itemMap["Stripe"]()
-        item.bolted = False
-        mainRoom.addItem(item,(9,11,0))
-        item = src.items.itemMap["Mount"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,11,0))
-        item = src.items.itemMap["Mount"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,11,0))
-        item = src.items.itemMap["Mount"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,11,0))
-        item = src.items.itemMap["Mount"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,11,0))
-        item = src.items.itemMap["Mount"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,11,0))
-        item = src.items.itemMap["Rod"]()
-        item.bolted = False
-        mainRoom.addItem(item,(5,11,0))
-        item = src.items.itemMap["Rod"]()
-        item.bolted = False
-        mainRoom.addItem(item,(5,11,0))
-        item = src.items.itemMap["Radiator"]()
-        item.bolted = False
-        mainRoom.addItem(item,(7,11,0))
-
-        item = src.items.itemMap["RoomBuilder"]()
-        item.bolted = False
-        mainRoom.addItem(item,(3,11,0))
-
-        item = src.items.itemMap["Sheet"]()
-        item.bolted = False
-        mainRoom.addItem(item,(4,11,0))
-        item = src.items.itemMap["Sheet"]()
-        item.bolted = False
-        mainRoom.addItem(item,(4,11,0))
-        item = src.items.itemMap["Sheet"]()
-        item.bolted = False
-        mainRoom.addItem(item,(4,11,0))
-        item = src.items.itemMap["Sheet"]()
-        item.bolted = False
-        mainRoom.addItem(item,(4,11,0))
-        item = src.items.itemMap["Sheet"]()
-        item.bolted = False
-        mainRoom.addItem(item,(4,11,0))
-
-        item = src.items.itemMap["MoldSpore"]()
-        item.bolted = False
-        mainRoom.addItem(item,(1,11,0))
-        item = src.items.itemMap["MoldSpore"]()
-        item.bolted = False
-        mainRoom.addItem(item,(1,11,0))
-        item = src.items.itemMap["MoldSpore"]()
-        item.bolted = False
-        mainRoom.addItem(item,(1,11,0))
-        item = src.items.itemMap["MoldSpore"]()
-        item.bolted = False
-        mainRoom.addItem(item,(1,11,0))
-
-        """
-        for x in range(1,6):
-            for y in range(1,6):
-                if x >= 3 and y == 3:
-                    continue
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                mainRoom.addItem(item,(x,y,0))
-        item = src.items.itemMap["Wall"]()
-        item.bolted = False
-        mainRoom.addItem(item,(7,3,0))
-        item = src.items.itemMap["Wall"]()
-        item.bolted = False
-        mainRoom.addItem(item,(8,3,0))
-
-        for x in range(1,6):
-            for y in range(7,11):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                mainRoom.addItem(item,(x,y,0))
-        """
-
-        # scatter items around
-        for i in range(0,20):
-            item = src.items.itemMap["ScrapCompactor"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for i in range(0,75):
-            item = src.items.itemMap["Case"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for i in range(0,200):
-            item = src.items.itemMap["MetalBars"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for i in range(0,25):
-            item = src.items.itemMap["Frame"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for i in range(0,25):
-            item = src.items.itemMap["Rod"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for i in range(0,50):
-            item = src.items.itemMap["Wall"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for i in range(0,10):
-            bigPos = (random.randint(1,13),random.randint(1,13),0)
-            for i in range(0,20):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
-                currentTerrain.addItem(item,pos)
-        for i in range(0,40):
-            item = src.items.itemMap["Door"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        """
-        for i in range(0,75):
-            item = src.items.itemMap["Cocoon"]()
-            item.bolted = False
-            item.charges = random.choice([0,1,2])
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
-            currentTerrain.addItem(item,pos)
-        """
-
-        """
-        for i in range(0,10):
-
-            bigPos = (random.randint(1,13),random.randint(1,13),0)
-            if bigPos == (7,7,0):
-                continue
-
-            item = src.items.itemMap["Corpse"]()
-            item.bolted = False
-            item.charges = random.choice([0,1,2])
-            pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+13),random.randint(bigPos[1]*15+1,bigPos[1]*15+13),0)
-            currentTerrain.addItem(item,pos)
-
-            enemy = src.characters.Monster(4,4)
-            enemy.godMode = True
-            enemy.health = 30
-            enemy.baseDamage = 15
-            enemy.movementSpeed = 1.5
-            enemy.specialDisplay = "cs"
-            enemy.faction = "invader"
-            enemy.tag = "lurker"
-
-            quest = src.quests.questMap["SecureTile"](toSecure=(pos[0]//15,pos[1]//15,pos[2]//15))
-            quest.autoSolve = True
-            quest.activate()
-            quest.assignToCharacter(enemy)
-            enemy.quests.append(quest)
-            currentTerrain.addCharacter(enemy,pos[0],pos[1])
-        """
-
-        #for i in range(0,10):
-        #    sheet = src.items.itemMap["Sheet"]()
-        #    mainRoom.addItem(sheet,(8,7,0))
-
-        note = src.items.itemMap["Note"]()
-        note.text = """
-blueprint reciepes:
-
-Scrap = ScrapCompactor
-MetalBars => Wall
-Frame + MetalBars => Case
-Rod + MetalBars => Frame
-Rod => Rod
--
-Connector => Door
-Mount + MetalBars => Connector
-Mount => Mount
--
-Puller => room builder
-Bolt + MetalBars => puller
-Bolt => Bolt
-Stripe + MetalBars => pusher
-Stripe => Stripe
--
-VatMaggot => MaggotFermenter
-BioMass => 
--
-Corpse + Rod + Bolt => CorpseAnimator
-Mount + Rod => Sword
-"""
-        mainRoom.addItem(note,(10,9,0))
-
-        for x in range(1,12):
-            for y in range(1,12):
-                if mainRoom.getItemByPosition((x,y,0)):
-                    continue
-
-                if (x,y,0) in mainRoom.walkingSpace:
-                    continue
-
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                mainRoom.addItem(item,(x,y,0))
-
-        for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
-            architect.doClearField(pos[0], pos[1])
-
-        positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(4,7),(5,6),(6,5),(7,4)]
-        positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doClearField(pos[0], pos[1])
-            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
-
-        positions = [(7,6),(6,7),(7,8),(8,7),]
-        positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doClearField(pos[0], pos[1])
-            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
-
-        pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
-        architect.doClearField(pos[0], pos[1])
-        tree = src.items.itemMap["Tree"]()
-        tree.numMaggots = tree.maxMaggot
-        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
-        currentTerrain.forests.append(pos)
-
-        itemsToRemove = []
-        for x in range(1,14):
-            for y in range(1,14):
-                clearPositions = [(7,1,0),(7,2,0),(1,7,0),(2,7,0),(7,13,0),(7,12,0),(13,7,0),(12,7,0)]
-                for clearPosition in clearPositions:
-                    itemsToRemove.extend(currentTerrain.getItemByPosition((x*15+clearPosition[0],y*15+clearPosition[1],0)))
-        currentTerrain.removeItems(itemsToRemove)
-
-        return colonyBaseInfo
 
     def createProductionBase(self,pos):
         mainChar = src.characters.Character()
@@ -6104,6 +5918,9 @@ When you rise in rank you will be able to build a way out of here."""
         for colonyBaseInfo in self.colonyBaseInfos:
             self.advanceColonyBase(colonyBaseInfo)
 
+        for colonyBaseInfo in self.colonyBaseInfos2:
+            self.advanceColonyBase2(colonyBaseInfo)
+
         self.numRounds += 1
         
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
@@ -6115,7 +5932,7 @@ When you rise in rank you will be able to build a way out of here."""
     def advanceColonyBase(self,state):
         pass
 
-    def advanceColonyBase_old(self,state):
+    def advanceColonyBase2(self,state):
         terrain = state["terrain"]
         room = random.choice(terrain.rooms)
 

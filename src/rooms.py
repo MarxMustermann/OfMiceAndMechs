@@ -115,6 +115,8 @@ class Room(src.saveing.Saveable):
         return result
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
+        if src.interaction.noFlicker:
+            return
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
     def addBuildSite(self,position,specification,extraInfo=None):

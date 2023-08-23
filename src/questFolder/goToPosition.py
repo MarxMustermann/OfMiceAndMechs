@@ -138,7 +138,9 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             return
         if self.completed:
             1/0
-        self.fail()
+        #self.fail()
+        self.smallPath = []
+        self.path = []
 
     def assignToCharacter(self, character):
         if self.character:

@@ -9,7 +9,7 @@ class MetalWorkingBench(src.items.Item):
     name = "MetalWorkingBench"
     description = "Use it to build simple things" 
     walkable = False
-    bolted = False
+    bolted = True
 
     def __init__(self):
         """
@@ -57,7 +57,7 @@ class MetalWorkingBench(src.items.Item):
             return
 
         if params.get("type") == "byName":
-            submenue = src.interaction.InputMenu("Type the name of the item to produce?",targetParamName="type")
+            submenue = src.interaction.InputMenu("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "metalWorkingProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
@@ -75,10 +75,6 @@ class MetalWorkingBench(src.items.Item):
             character.addMessage("Item type unknown.")
             return
 
-        preferInventoryOut = True
-        if params.get("key") == "k":
-            preferInventoryOut = False
-        
         metalBarsFound = []
         for item in character.inventory+self.getInputItems():
             if item.type == "MetalBars":
@@ -97,6 +93,44 @@ class MetalWorkingBench(src.items.Item):
             character.changed("inventory full error",{})
             return 
 
+        if params["type"] in self.scheduledItems:
+            self.scheduledItems.remove(params["type"])
+
+        if metalBar in character.inventory:
+            character.inventory.remove(metalBar)
+        else:
+            self.container.removeItem(metalBar)
+
+        params["productionTime"] = 100
+        params["doneProductionTime"] = 0
+        self.produceItem_wait(params)
+        character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
+
+    def produceItem_wait(self,params):
+        character = params["character"]           
+        ticksLeft = params["productionTime"]-params["doneProductionTime"]
+
+        progressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
+        if ticksLeft > 10:
+            character.timeTaken += 10
+            params["doneProductionTime"] += 10
+            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue.tag = "metalWorkingProductWait"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
+        else:
+            character.timeTaken += ticksLeft
+            params["doneProductionTime"] += ticksLeft
+            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue.tag = "metalWorkingProductWait"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
+
+    def produceItem_done(self,params):
+        character = params["character"]           
+        character.addMessage("You produce a wall")
+        character.addMessage("It took you 100 turns to do that")
+
         badListed = ["Sword","Armor","Rod"]
         if params["type"] in badListed:
             character.addMessage("producing this item here will result in a low quality item")
@@ -105,19 +139,16 @@ class MetalWorkingBench(src.items.Item):
             new = src.items.itemMap[params["type"]]()
         new.bolted = False
 
-        if params["type"] in self.scheduledItems:
-            self.scheduledItems.remove(params["type"])
+        dropsSpotsFull = self.checkForDropSpotsFull()
 
-        character.timeTaken += 100
-        character.addMessage("You produce a wall")
-        character.addMessage("It takes you 100 turns to do that")
-        if metalBar in character.inventory:
-            character.inventory.remove(metalBar)
-        else:
-            self.container.removeItem(metalBar)
+        preferInventoryOut = True
+        if params.get("key") == "k":
+            preferInventoryOut = False
 
-        if dropsSpotsFull or (preferInventoryOut and character.getFreeInventorySpace() > 0):
+        if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
             character.inventory.append(new)
+        elif dropsSpotsFull:
+            character.addMessage("you failed to produce since both your inventory and the dropspots are full.")
         else:
             for output in self.outs:
                 targetPos = (self.xPosition+output[0], self.yPosition+output[1], self.zPosition+output[2])
@@ -134,7 +165,7 @@ class MetalWorkingBench(src.items.Item):
                     self.container.addItem(new,targetPos)
                     break
 
-        character.changed("worked metal",{})
+        character.changed("worked metal",{"item":new})
 
     def getInputItems(self):
 

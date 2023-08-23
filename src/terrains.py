@@ -83,7 +83,6 @@ class Terrain(src.saveing.Saveable):
         self.events = []
         self.biomeInfo = {"moisture": 1}
         self.hidden = True
-        self.characterByFieldMap = {}
         self.minimapOverride = {(7,7,0):"CC"}
         self.animations = []
         self.pathfinderCache = {}
@@ -134,6 +133,8 @@ class Terrain(src.saveing.Saveable):
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
         if not self == src.gamestate.gamestate.mainChar.getTerrain():
+            return
+        if src.interaction.noFlicker:
             return
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
@@ -1078,7 +1079,7 @@ class Terrain(src.saveing.Saveable):
                      if not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
                         tileMap[x][y] = 0
                         if clearing:
-                            tileMap[x][y] = 200
+                            tileMap[x][y] = 100
 
             for y in range(1,14):
                 for x in range(1,14):

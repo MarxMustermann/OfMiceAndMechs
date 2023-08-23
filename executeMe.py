@@ -62,6 +62,7 @@ parser.add_argument(
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
 parser.add_argument("-notcod", "--notcod", action="store_true", help="do not use tcod renderer")
 parser.add_argument("-df", "--difficulty", type=str, help="set the difficulty for this run")
+parser.add_argument("-nf", "--noFlicker", action="store_true", help="disable flickering (not fully done yet)")
 args = parser.parse_args()
 
 ################################################################################
@@ -89,6 +90,9 @@ canvas.displayChars = displayChars
 
 if args.speed:
     interaction.speed = args.speed
+
+if args.noFlicker:
+    interaction.noFlicker = args.noFlicker
 
 if args.seed:
     seed = int(args.seed)

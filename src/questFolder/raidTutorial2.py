@@ -8,7 +8,10 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
+        self.shownPickUpMachines = False
         self.shownPickedUpMachines = False
+        self.shownCheatText = False
+        self.shownEnemyBaseIntro = False
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -44,9 +47,39 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
                 if not character.getSpacePosition() == (1,7,0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                     return ([quest],None)
+
+            if not self.shownCheatText:
+                text = """
+To get to the neighbour terrain we have to cheat a little.
+Just move left and ignore the big wall.
+
+This will be done properly at some point.
+The game is pretty bare bones in many places.
+
+
+= press enter to continue =
+"""
+                src.interaction.showInterruptText(text)
+                self.shownCheatText = True
             return (None,("a","to cheat yourself onto the neighbour terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 5):
+            if not self.shownEnemyBaseIntro:
+                text = """
+You reached enemy territory. The enemy has a base in the middle of the terrain.
+The base works very similar to your base. Go check it out.
+I placed the machines you need into their base, go fetch them.
+
+Be careful, though. The base is hostile and workers will attack you, if you get too close to them.
+The quest system might suggest paths that are suicidal. In that case use other paths.
+I healed you again, just in case.
+
+= press enter to continue =
+"""
+                src.interaction.showInterruptText(text)
+                character.health = character.maxHealth
+                self.shownEnemyBaseIntro = True
+
             for room in terrain.rooms:
                 if room.tag == "generalPurposeRoom":
                     targetRoom = room
@@ -61,19 +94,34 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["GoToTile"](targetPosition=targetRoom.getPosition())
                     return ([quest],None)
 
+                if not self.shownPickUpMachines:
+                    text = """
+You reached the room with the machines to steal.
+Dispatch any enemies in this room and pick up the machines.
+
+= press enter to continue =
+"""
+                    src.interaction.showInterruptText(text)
+                    self.shownPickUpMachines = True
+
+
                 for item in machinesToSteal:
                     quest = src.quests.questMap["CleanSpace"](targetPositionBig=targetRoom.getPosition(),targetPosition=item.getPosition())
                     return ([quest],None)
 
-
             if not self.shownPickedUpMachines:
                 text = """
-Great! you picked up the machines.
+Great! You picked up the machines.
 
-In the real game this raid would not only help you out a lot,
-but it would also be very damaging to the enemy base.
+Right now, their base contains nothing worth stealing besides the machines you stole.
+Except one thing. Do you see the item shown as \\/ ?
 
-Atrittioning your enemy might be a good way to get closer to obtaining their special item.
+There is only two of these special items in the world and they cannot be crafted.
+You need two of those items to win the game. 
+Their base is too busy to steal that item.
+
+So go home and build better weapons
+
 
 = press enter to continue =
 

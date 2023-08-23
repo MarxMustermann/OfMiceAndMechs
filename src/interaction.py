@@ -38,6 +38,7 @@ urwid = None
 fixedTicks = False
 speed = None
 libtcodpy = None
+noFlicker = False
 
 def advanceGame():
     """
@@ -5797,7 +5798,7 @@ class OneKeystrokeMenu(SubMenu):
 
     type = "OneKeystrokeMenu"
 
-    def __init__(self, text=""):
+    def __init__(self, text="",targetParamName="keyPressed"):
         """
         initialise inernal state
 
@@ -5810,6 +5811,7 @@ class OneKeystrokeMenu(SubMenu):
         self.firstRun = True
         self.keyPressed = ""
         self.done = False
+        self.targetParamName = targetParamName
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -5833,7 +5835,7 @@ class OneKeystrokeMenu(SubMenu):
         if key not in ("~",) and not self.firstRun:
             self.keyPressed = key
             if self.followUp:
-                self.callIndirect(self.followUp,{"keyPressed":key})
+                self.callIndirect(self.followUp,{self.targetParamName:key})
             self.done = True
             return True
 
@@ -7876,6 +7878,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"| press y to confirm                    |"),(offsetX+2,offsetY+23))
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+24))
 
+        if submenu == "confirmQuit":
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+21))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| Do you really want to quit? |"),(offsetX+2,offsetY+22))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| press y/enter to confirm    |"),(offsetX+2,offsetY+23))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+24))
+
         tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
         events = tcod.event.get()
@@ -8022,6 +8030,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             json.dump(rawState,globalInfoFile)
 
                     submenu = None
+            elif submenu == "confirmQuit":
+                if isinstance(event,tcod.event.KeyDown):
+                    key = event.sym
+                    if key in (tcod.event.KeySym.RETURN,tcod.event.KeySym.y):
+                        raise SystemExit()
+                    submenu = None
             else:
                 if isinstance(event, tcod.event.Quit):
                     raise SystemExit()
@@ -8039,7 +8053,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
                         )
                     if key == tcod.event.KeySym.ESCAPE:
-                        raise SystemExit()
+                        submenu = "confirmQuit"
                     if key == tcod.event.KeySym.p:
                         startGame = True
                     if key == tcod.event.KeySym.g:
@@ -8878,7 +8892,7 @@ You know that something is wrong within your implant.
 The pain ate your mind and           
 starts to burn your flesh.                                                
 """]
-            if not subStep < len(textBase)-1:
+            if not noFlicker and not subStep < len(textBase)-1:
                 tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
                 time.sleep(0.01)
             text = "".join(textBase[0:subStep])
@@ -8905,7 +8919,8 @@ starts to burn your flesh.
                 painColor = random.choice(painColors)
                 printUrwidToTcod((src.interaction.urwid.AttrSpec(painColor, "black"), painChar),painPos)
 
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            if not noFlicker:
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.01)
             text = """
                                                                                    
@@ -8930,7 +8945,8 @@ starts to burn your flesh.
                                                                                    
 """
             printUrwidToTcod(text,(38,13))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            if not noFlicker:
+                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.02)
             textBase = """
 The pain grows and grows and grows and grows and grows and grows and

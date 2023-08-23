@@ -41,7 +41,7 @@ Press d to move the cursor and show the subquests description.
 
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False,dryRun=True):
         if self.subQuests:
             return (None,None)
 
@@ -114,6 +114,10 @@ Press d to move the cursor and show the subquests description.
                 break
 
         if not benchNearBy:
+            if not benches:
+                if not dryRun:
+                    self.fail("no metal bench available")
+                return (None,None)
             quest = src.quests.questMap["GoToPosition"](targetPosition=benches[0].getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
             return ([quest],None)
 
@@ -169,6 +173,9 @@ Press d to move the cursor and show the subquests description.
         if not self.active:
             return
 
+        if not self.toProduce == extraInfo["item"].type:
+            return
+
         self.amountDone += 1
         if not self.amount == None:
             if self.amountDone >= self.amount:
@@ -205,7 +212,7 @@ Press d to move the cursor and show the subquests description.
         return super().assignToCharacter(character)
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character, dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

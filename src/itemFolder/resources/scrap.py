@@ -76,6 +76,7 @@ class Scrap(src.items.Item):
 
         if self.container and self.container.isRoom:
             self.container.cachedPathfinder = None
+
     def render(self):
         """
         render the scrap depending on amount

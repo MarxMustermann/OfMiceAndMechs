@@ -1768,8 +1768,8 @@ class Room(src.saveing.Saveable):
                 if character.faction == other.faction:
                     continue
 
-                character.collidedWith(other)
-                other.collidedWith(character)
+                character.collidedWith(other,actor=character)
+                other.collidedWith(character,actor=character)
                 return
 
             character.timeTaken += character.movementSpeed

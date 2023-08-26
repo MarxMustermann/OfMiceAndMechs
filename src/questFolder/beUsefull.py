@@ -295,7 +295,7 @@ We should stop watching and do something about that.
 
     def solver(self, character):
 
-        if (not len(self.subQuests) or not self.subQuests[0].type == "Fight") and character.getNearbyEnemies():
+        if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             self.addQuest(quest)
             quest.activate()
@@ -1243,6 +1243,11 @@ We should stop watching and do something about that.
 
                             continue
 
+                    if not buildSite[1] == "Command":
+                        self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
+                        self.idleCounter = 0
+                        return True
+
                     if hasItem:
                         if buildSite[1] == "Command":
                             if "command" in buildSite[2]:
@@ -1425,7 +1430,7 @@ We should stop watching and do something about that.
             self.checkedRoomPositions = []
         """
 
-        if (not len(self.subQuests) or not self.subQuests[0].type == "Fight") and character.getNearbyEnemies():
+        if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             self.addQuest(quest)
             quest.activate()
@@ -1805,7 +1810,7 @@ You have seen the first component:
 The second ascpect of the game is planing and building a base.
 You can use the newly crafted CityPlaner to plan your base.
 
-let me show you how add more rooms to the base ...
+Let me show you how add more rooms to the base.
 
 = press enter to continue playing =
 """
@@ -1830,7 +1835,7 @@ The third component is worker management.
 You can spawn workers of different types that will do different duties.
 Ensure the needed workers are available and they will build the base for you.
 
-let me show you how that works out...
+Let me show you how that works out.
 
 = press enter to continue playing =
 """
@@ -1844,7 +1849,7 @@ let me show you how that works out...
 
         if not self.showedNPCWatchingText:
             text = """
-Now let's sit back and watch the workers do stuff for a while.
+Now let's sit back and watch the workers build the room for a while.
 Standing around and watching the workers is optional in the game, but i like it.
 
 You wait one turn by pressing the "." key, press and hold "." to pass more time.
@@ -1985,7 +1990,7 @@ In that case a NPC will automatically draw new storage stockpiles there.
 You have seen the basic controls for your base now.
 You might habe noticed that most of the walls are protected by enemies.
 
-That leads to the Fighting component of the game.
+That leads to the fighting component of the game.
 The basic fighting system is pretty simple, just walk into an enemy and you will attack it.
 
 Lets try beating up some wildlife.
@@ -2007,7 +2012,6 @@ That enemy did beat you up pretty badly.
 The reason for this is, that you were fighting without a weapon.
 Having or not having equipment makes a big difference.
 
-I healed you to make up for me beeing mean.
 Now craft yourself a Sword and Armor to be better prepared for a fight.
 
 = press enter to continue playing =
@@ -2015,7 +2019,6 @@ Now craft yourself a Sword and Armor to be better prepared for a fight.
             character.addMessage(text)
             src.interaction.showInterruptText(text)
             src.gamestate.gamestate.save()
-            character.health = character.maxHealth
             self.showedKillStuff2 = True
             self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
             self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=True))
@@ -2026,15 +2029,19 @@ Now craft yourself a Sword and Armor to be better prepared for a fight.
             text = """
 Great. Equip your gear and try again.
 
+I healed you as well.
+
 = press enter to continue playing =
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
+            character.health = character.maxHealth
             src.gamestate.gamestate.save()
             self.showedKillStuff3 = True
             for bigPos in [(4,4,0),(10,4,0),(4,10,0),(10,10,0)]:
-                quest = src.quests.questMap["SecureTile"](toSecure=bigPos,endWhenCleared=True)
-                self.addQuest(quest)
+                if terrain.charactersByTile.get(bigPos):
+                    quest = src.quests.questMap["SecureTile"](toSecure=bigPos,endWhenCleared=True)
+                    self.addQuest(quest)
             quest = src.quests.questMap["Equip"]()
             self.addQuest(quest)
             return True
@@ -2103,6 +2110,7 @@ With some experience you will mostly disregard the quest system.
             self.selectedMachineTutorial = None
 
         if self.selectedMachineTutorial == None:
+            '''
             text = """
 You only have workshop made weapons and armor, those are very low quality.
 Equipmant quality matters a lot in a fight.
@@ -2132,6 +2140,20 @@ I'll pretend you chose the other option.
                 self.selectedMachineTutorial = False
             else:
                 self.selectedMachineTutorial = False
+            '''
+            text = """
+You only have workshop made weapons and armor, those are very low quality.
+Equipmant quality matters a lot in a fight.
+To produce quality weapons a different crafting system needs to be used.
+
+This other crafting system is a bit complicated and really understanding it is optional.
+It works similar to a factory builder or automation game.
+
+= press enter to contiue =
+"""
+            character.addMessage(text)
+            src.interaction.showInterruptText(text)
+            self.selectedMachineTutorial = False
 
         if self.selectedMachineTutorial:
             text = """
@@ -2423,7 +2445,9 @@ Let's go on a adventure to fetch them.
 """
             otherTerrain = src.gamestate.gamestate.terrainMap[7][5]
             toSpawn = ["Rod","Rod","Rod","Rod","Sword","Sword","Sword","Sword","Armor","Armor"]
+            generalPurposeRoom = None
             for room in otherTerrain.rooms:
+                print(room.tag)
                 if not room.tag == "generalPurposeRoom":
                     continue
                 for itemType in toSpawn:
@@ -2431,14 +2455,32 @@ Let's go on a adventure to fetch them.
                     item.setToProduce(itemType)
                     item.bolted = False
                     room.addItem(item,(random.randint(2,10),random.randint(2,10),0))
+                generalPurposeRoom = room
                 break
+
+            characters = otherTerrain.characters
+            for room in otherTerrain.rooms:
+                characters.extend(room.characters)
+
+            paintingNPC = None
+            for otherCharacter in characters:
+                new = src.items.itemMap["Rod"]()
+                new.baseDamage = 4
+                otherCharacter.weapon = new
+                if "painting" in otherCharacter.duties and len(otherCharacter.duties) == 1:
+                    paintingNPC = otherCharacter
+
+            quest = src.quests.questMap["SecureTile"](toSecure=generalPurposeRoom.getPosition(),endWhenCleared=False)
+            quest.autoSolve = True
+            paintingNPC.assignQuest(quest,active=True)
+
             character.health = character.maxHealth
             character.addMessage(text)
             src.interaction.showInterruptText(text)
             self.showedMachineRaid = True
             newQuest = src.quests.questMap["RaidTutorial2"](description="fetch machines",targetPosition=room.getPosition())
             self.addQuest(newQuest)
-            src.gamestate.gamestate.save()
+            #src.gamestate.gamestate.save()
             return True
 
         try:
@@ -2448,7 +2490,7 @@ Let's go on a adventure to fetch them.
 
         if not self.showedProduceGoodArmor:
             text = """
-A NPC will now set up the Machines.
+Spawn a machine placing NPC. It will set up the Machines.
 
 Help out and produce some equipment until you have some decent gear.
 
@@ -2497,15 +2539,23 @@ Help out and produce some equipment until you have some decent gear.
 
         if not self.showedSpecialItemRaid:
             text = """
-You are well enough equipped to obtain the enemys special item now.
+You are well enough equipped to properly raid the enemy base.
 
-Go fetch the special item.
+I healed you and spawned 2 healing vials into your inventory.
+That should give you enough health to kill them all.
 
 = press space to continue =
 """
             character.addMessage(text)
+            character.health = character.maxHealth
             src.gamestate.gamestate.save()
             src.interaction.showInterruptText(text)
+
+            for i in range(0,2):
+                item = src.items.itemMap["Vial"]()
+                item.uses = 10
+                character.inventory.append(item)
+
             self.showedSpecialItemRaid = True
             newQuest = src.quests.questMap["RaidTutorial3"]()
             self.addQuest(newQuest)

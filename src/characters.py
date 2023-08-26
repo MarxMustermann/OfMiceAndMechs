@@ -1137,7 +1137,8 @@ press any other key to attack normaly"""
 
         if not other.faction == self.faction:
             if self.personality.get("attacksEnemiesOnContact"):
-                self.attack(other)
+                if actor == self:
+                    self.attack(other)
         else:
             if self.personality.get("annoyenceByNpcCollisions"):
                 self.frustration += self.personality.get("annoyenceByNpcCollisions")
@@ -1848,6 +1849,15 @@ press any other key to attack normaly"""
             for otherCharacter in container.characters:
                 if otherCharacter.xPosition//15 == self.xPosition//15 and otherCharacter.yPosition//15 == self.yPosition//15:
                     otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
+
+    def canHeal(self):
+        for item in self.inventory:
+            if not isinstance(item,src.items.itemMap["Vial"]):
+                continue
+            if not item.uses:
+                continue
+            return True
+        return False
 
     # obsolete: needs to be reintegrated
     # bad pattern: should be contained in quest solver

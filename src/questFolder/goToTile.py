@@ -64,7 +64,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         if not self.character:
             return
 
-        self.generateSubquests(self.character)
+        #self.generateSubquests(self.character)
 
     def getQuestMarkersTile(self,character):
         if self.character.xPosition%15 == 0 or  self.character.yPosition%15 == 0 or self.character.xPosition%15 == 14 or self.character.yPosition%15 == 14:
@@ -270,7 +270,7 @@ The target tile is %s
         return nextStep[1]
 
     def generatePath(self,character):
-        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition)
+        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character)
 
     def solver(self, character):
         if not self.path:

@@ -64,6 +64,9 @@ kill,kill,kill!
             self.postHandler()
             return (None,None)
 
+        if character.health < 20 and character.canHeal():
+            return (None,"JH","to heal")
+
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
             if submenue:

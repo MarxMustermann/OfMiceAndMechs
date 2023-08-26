@@ -83,7 +83,7 @@ Try luring enemies into landmines or detonating some bombs."""
         if not self.subQuests:
             if character.getBigPosition() == self.targetPosition:
                 enemies = character.getNearbyEnemies()
-                if not enemies:
+                if not enemies and not self.endWhenCleared:
                     return "10."
             return super().getSolvingCommandString(character,dryRun=dryRun)
 
@@ -104,6 +104,9 @@ Try luring enemies into landmines or detonating some bombs."""
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
+            if character.health < 80 and character.canHeal():
+                return (None,"JH","to heal")
+
             if not self.strict:
                 self.huntdownCooldown -= 1
                 if self.huntdownCooldown < 0:

@@ -16,23 +16,24 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
 
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False,dryRun=True):
         if self.subQuests:
             return (None,None)
 
         terrain = character.getTerrain()
-        print(terrain.yPosition)
-        print(terrain.xPosition)
 
         try:
             self.shownPickedUpSpecialItemSlot
         except:
             self.shownPickedUpSpecialItemSlot = False
 
+        if character.health < 80 and character.canHeal():
+            return (None,"JH","to heal")
+
         if (terrain.yPosition == 7 and terrain.xPosition == 6) and not self.shownPickedUpSpecialItemSlot:
-            if character.inventory:
-                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                return ([quest],None)
+            #if character.inventory:
+            #    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+            #    return ([quest],None)
             if not character.getBigPosition() in ((0,7,0),(1,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
@@ -43,94 +44,46 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
             return (None,("a","to cheat yourself onto the neighbour terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 5):
-            specialItemSlot = None
+            enemies = []
+            for otherCharacter in terrain.characters:
+                if isinstance(otherCharacter,src.characters.Monster):
+                    continue
+                if otherCharacter.faction == character.faction:
+                    continue
+                enemies.append(otherCharacter)
+
             for room in terrain.rooms:
-                for item in room.getItemsByType("SpecialItemSlot"):
-                    if not item.hasItem:
+                for otherCharacter in room.characters:
+                    if isinstance(otherCharacter,src.characters.Monster):
                         continue
-                    specialItemSlot = item
-                    break
+                    if otherCharacter.faction == character.faction:
+                        continue
+                    enemies.append(otherCharacter)
 
-            if specialItemSlot:
-                if not character.container == specialItemSlot.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=specialItemSlot.container.getPosition())
-                    return ([quest],None)
-                
-                if character.getDistance(specialItemSlot.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition(),ignoreEndBlocked=True)
-                    return ([quest],None)
+            for enemy in  enemies:
+                if not enemy.container:
+                    continue
+                if enemy.getBigPosition() == (0,0,0):
+                    continue
+                quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
+                return ([quest],None)
 
-                offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w")]
-                for offset in offsets:
-                    if character.getPosition(offset=offset[0]) == specialItemSlot.getPosition():
-                        return (None,("J"+offset[1],"eject the special item"))
-                7/0
-                    
-            specialItem = None
-            for room in terrain.rooms:
-                for item in room.getItemsByType("SpecialItem"):
-                    specialItem = item
-                    break
-
-            if specialItem:
-                if not character.container == specialItem.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=specialItem.container.getPosition())
-                    return ([quest],None)
-                
-                if character.getDistance(specialItem.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=specialItem.getPosition(),ignoreEndBlocked=True)
-                    return ([quest],None)
-
-                offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w")]
-                for offset in offsets:
-                    if character.getPosition(offset=offset[0]) == specialItem.getPosition():
-                        return (None,("K"+offset[1],"pick up the special item"))
-                7/0
-                    
-            if not self.shownPickedUpSpecialItemSlot:
+            if not dryRun:
                 text = """
-Great! you picked up the special item. 
-Now return it to your base.
+You defeated the enemy base.
+This concludes the tutorial and feature show off.
+
+I tried to keep it short and still teach the most important things.
+I'd be happy to get feedback on how all of this worked out.
+
+Since the actual game is not ready yet, i'll crash the game now.
 
 = press space to continue =
 """
                 src.interaction.showInterruptText(text)
-                self.shownPickedUpSpecialItemSlot = True
-
-            if not character.getBigPosition() in ((14,7,0),(13,7,0)):
-                quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
-                return ([quest],None)
-            if not character.getBigPosition() in ((14,7,0),):
-                if not character.getSpacePosition() == (13,7,0):
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
-                    return ([quest],None)
-            return (None,("d","to cheat yourself onto the neighbour terrain"))
-
-        if (terrain.yPosition == 7 and terrain.xPosition == 6):
-            specialItemSlot = None
-            for room in terrain.rooms:
-                for item in room.getItemsByType("SpecialItemSlot"):
-                    if item.hasItem:
-                        continue
-                    specialItemSlot = item
-                    break
-
-            if specialItemSlot:
-                if not character.container == specialItemSlot.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=specialItemSlot.container.getPosition())
-                    return ([quest],None)
-                
-                if character.getDistance(specialItemSlot.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition(),ignoreEndBlocked=True)
-                    return ([quest],None)
-
-                offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w")]
-                for offset in offsets:
-                    if character.getPosition(offset=offset[0]) == specialItemSlot.getPosition():
-                        return (None,("J"+offset[1],"eject the special item"))
-                7/0
-
-            self.postHandler()
+                1/0
+            
+                self.postHandler()
             return (None,None)
 
     def getSolvingCommandString(self, character, dryRun=True):
@@ -147,7 +100,7 @@ Now return it to your base.
             return
 
     def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

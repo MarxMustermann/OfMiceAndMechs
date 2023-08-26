@@ -385,7 +385,7 @@ class Terrain(src.saveing.Saveable):
         except:
             pass
 
-        if character in self.characters:
+        while character in self.characters:
             self.characters.remove(character)
         character.room = None
         character.terrain = None
@@ -945,6 +945,31 @@ class Terrain(src.saveing.Saveable):
             else:
                 neutralOffsets.append((0,+1))
                 neutralOffsets.append((0,-1))
+
+            if character:
+                for offset in goodOffsets[:]:
+                    foundEnemy = False
+                    newPos = (pos[0]+offset[0],pos[1]+offset[1],pos[2])
+                    for otherCharacter in self.charactersByTile.get(newPos,[]):
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        foundEnemy = True
+                        break
+                    if foundEnemy:
+                        goodOffsets.remove(offset)
+                        badOffsets.append(offset)
+
+                for offset in neutralOffsets[:]:
+                    foundEnemy = False
+                    newPos = (pos[0]+offset[0],pos[1]+offset[1],pos[2])
+                    for otherCharacter in self.charactersByTile.get(newPos,[]):
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        foundEnemy = True
+                        break
+                    if foundEnemy:
+                        neutralOffsets.remove(offset)
+                        badOffsets.append(offset)
 
             #localRandom.shuffle(goodOffsets)
             #localRandom.shuffle(neutralOffsets)

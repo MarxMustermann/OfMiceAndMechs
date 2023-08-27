@@ -6039,7 +6039,8 @@ When you rise in rank you will be able to build a way out of here."""
             '''
 
         if not src.gamestate.gamestate.tick < 100:
-            text = """
+            if state["mainChar"] == src.gamestate.gamestate.mainChar:
+                text = """
 An epoch has passed and a new outcast has found a way into your base:
 
 %s 
@@ -6048,7 +6049,7 @@ duty: %s
 food: ~100 000 moves
 
 press enter to continue"""%(npc.name,duty,)
-            src.interaction.showInterruptText(text)
+                src.interaction.showInterruptText(text)
 
         """
         for i in range(0,25):

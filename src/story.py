@@ -4811,7 +4811,10 @@ try to remember how you got here ..."""
         # spawn enemies
         for x in range(1,14):
             for y in range(1,14):
-                if (x < 10 and x > 2) and (y < 10 and y > 2):
+                if (x < 9 and x > 5) and (y < 9 and y > 5):
+                    continue
+
+                if random.random() < 0.6:
                     continue
 
                 enemy = src.characters.Monster(4,4)

@@ -4765,24 +4765,45 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,10):
-            bigPos = (random.randint(1,13),random.randint(1,13),0)
-            for i in range(0,20):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
-                currentTerrain.addItem(item,pos)
-        for bigPos in [(4,4,0),(10,4,0),(4,10,0),(10,10,0)]:
-            for i in range(0,20):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
-                currentTerrain.addItem(item,pos)
         for i in range(0,40):
             item = src.items.itemMap["Door"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
+
+        for i in range(0,20):
+            bigPos = None
+            for i in range(0,10):
+                pos = (random.randint(1,13),random.randint(1,13),0)
+                if (pos[0] < 11 and pos[0] > 4) and (pos[1] < 11 and pos[1] > 4):
+                    continue
+                bigPos = pos
+                break
+
+            if not bigPos:
+                break
+
+            for i in range(0,20):
+                item = src.items.itemMap["Wall"]()
+                item.bolted = False
+                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,pos)
+
+            for i in range(0,3):
+                enemy = src.characters.Monster(4,4)
+                enemy.health = 20
+                enemy.baseDamage = 5
+                enemy.maxHealth = 20
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, bigPos[0]*15+7, bigPos[1]*15+7)
 
         for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
             architect.doClearField(pos[0], pos[1])

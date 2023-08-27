@@ -406,8 +406,19 @@ We should stop watching and do something about that.
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
 
         if freeStorage:
-            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1),("Case",2,1),("Frame",2,1),("Rod",2,1)]
-            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1),("Case",2,1),("Frame",2,1),("Rod",2,1)]
+
+            for room in character.getTerrain().rooms:
+                for buildSite in room.buildSites:
+                    print(buildSite)
+                    if buildSite[1] == "Machine":
+                        continue
+                    if buildSite[1] in itemsInStorage:
+                        continue
+                    newQuest = src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False)
+                    self.addQuest(newQuest)
+                    return True
+            
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
                     self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))

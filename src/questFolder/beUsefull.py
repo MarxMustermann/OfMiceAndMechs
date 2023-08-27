@@ -415,6 +415,41 @@ We should stop watching and do something about that.
                     self.idleCounter = 0
                     return True
 
+    def checkTriggerMachining(self,character,room):
+
+        machinesInStorage = {}
+        for room in character.getTerrain().rooms:
+            for storageSlot in room.storageSlots:
+                items = room.getItemByPosition(storageSlot[0])
+                for item in items:
+                    if not item.type == "Machine":
+                        continue
+                    machinesInStorage[item.toProduce] = machinesInStorage.get(item.toProduce,0)+1
+            for outputSlot in room.outputSlots:
+                items = room.getItemByPosition(outputSlot[0])
+                for item in items:
+                    if not item.type == "Machine":
+                        continue
+                    machinesInStorage[item.toProduce] = machinesInStorage.get(item.toProduce,0)+1
+
+        for room in character.getTerrain().rooms:
+            for buildSite in room.buildSites:
+                print(buildSite)
+                if not buildSite[1] == "Machine":
+                    continue
+                if buildSite[2]["toProduce"] in machinesInStorage:
+                    continue
+                newQuest = src.quests.questMap["Machining"](toProduce=buildSite[2]["toProduce"],amount=1,produceToInventory=False)
+                self.addQuest(newQuest)
+                return True
+        
+        itemsToCheck = ["Wall","Case","Frame","Rod","Door","RoomBuilder","ScrapCompactor","Sword","Armor"]
+        for itemType in itemsToCheck:
+            if not itemType in machinesInStorage:
+                newQuest = src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)
+                self.addQuest(newQuest)
+                return True
+
     def checkTriggerCloneSpawning(self,character,room):
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
@@ -1657,6 +1692,10 @@ We should stop watching and do something about that.
 
             if duty == "metal working":
                 if self.checkTriggerMetalWorking(character,room):
+                    return
+
+            if duty == "machining":
+                if self.checkTriggerMachining(character,room):
                     return
 
             if duty == "city planning":

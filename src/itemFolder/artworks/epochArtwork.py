@@ -199,6 +199,7 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn room building NPC","(10) spawn room builder"))
             options.append(("spawn scrap hammering NPC","(10) spawn scrap hammerer"))
             options.append(("spawn metal working NPC","(10) spawn metal worker"))
+            options.append(("spawn machining NPC","(10) spawn machining worker"))
             options.append(("spawn painting NPC","(10) spawn painter"))
             options.append(("spawn scavenging NPC","(10) spawn scavenger"))
             options.append(("spawn machine operation NPC","(10) spawn machine operator"))
@@ -411,6 +412,9 @@ Since this clone is burned in it can not change duties.
         elif extraInfo["rewardType"] == "spawn metal working NPC":
             text = "You spawned a clone with the duty metal working"
             self.spawnBurnedInNPC(character,"metal working")
+        elif extraInfo["rewardType"] == "spawn machining NPC":
+            text = "You spawned a clone with the duty machining"
+            self.spawnBurnedInNPC(character,"machining")
         elif extraInfo["rewardType"] == "spawn storage sorting NPC":
             text = "You spawned a clone with the duty storage sorting"
             self.spawnBurnedInNPC(character,"storage sorting")

@@ -5514,7 +5514,7 @@ class JobAsMatrixMenu(SubMenu):
                 if not char in npcs:
                     npcs.append(char)
 
-        duties = list(reversed(["epoch questing","scavenging","storage sorting","machine operation","clone spawning","city planning","painting","maggot gathering","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]))
+        duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering"]))
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1

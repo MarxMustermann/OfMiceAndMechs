@@ -174,6 +174,19 @@ If you don't find a %s blueprint, research it.
                         continue
                     if not item.toProduce == self.itemType:
                         continue
+
+                    storedItem = False
+                    itemPos = item.getPosition()
+                    for storageSlot in room.storageSlots:
+                        if storageSlot[0] == itemPos:
+                            storedItem = True
+                    for outputSlot in room.outputSlots:
+                        if outputSlot[0] == itemPos:
+                            storedItem = True
+
+                    if not storedItem:
+                        continue
+
                     newQuest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
                     return ([newQuest],None)
 

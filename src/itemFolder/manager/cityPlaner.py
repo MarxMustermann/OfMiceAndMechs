@@ -695,10 +695,10 @@ class CityPlaner(src.items.Item):
                 buildSites.append(((5,y,0),"Machine",{"toProduce":"Rod"}))
                 inputSlots.append(((6,y,0),"Rod",{}))
                 buildSites.append(((7,y,0),"Machine",{"toProduce":"Sword"}))
-                outputSlots.append(((8,y,0),"Sword",{}))
+                storageSlots.append(((8,y,0),"Sword",{}))
             for y in (8,9,):
                 buildSites.append(((5,y,0),"Machine",{"toProduce":"Armor"}))
-                outputSlots.append(((6,y,0),"Armor",{}))
+                storageSlots.append(((6,y,0),"Armor",{}))
 
         floorPlan = {}
         if walkingSpaces:

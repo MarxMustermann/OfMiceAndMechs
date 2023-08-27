@@ -409,7 +409,6 @@ We should stop watching and do something about that.
 
             for room in character.getTerrain().rooms:
                 for buildSite in room.buildSites:
-                    print(buildSite)
                     if buildSite[1] == "Machine":
                         continue
                     if buildSite[1] in itemsInStorage:

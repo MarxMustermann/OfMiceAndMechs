@@ -206,6 +206,7 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn machine placing NPC","(10) spawn machine placer"))
             options.append(("spawn storage sorting NPC","(10) spawn storage sorter"))
             options.append(("spawn maggot gathering NPC","(10) spawn maggot gatherer"))
+            options.append(("spawn cleaning NPC","(10) spawn cleaner"))
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
             options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
             options.append(("spawn scrap","(20) respawn scrap field"))
@@ -227,6 +228,8 @@ Since this clone is burned in it can not change duties.
         if not "rewardType" in extraInfo:
             return
         
+        if extraInfo["rewardType"] == None:
+            return
         if extraInfo["rewardType"] == "None":
             return
 
@@ -421,6 +424,9 @@ Since this clone is burned in it can not change duties.
         elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
             text = "You spawned a clone with the duty maggot gathering"
             self.spawnBurnedInNPC(character,"maggot gathering")
+        elif extraInfo["rewardType"] == "spawn cleaning NPC":
+            text = "You spawned a clone with the duty cleaning"
+            self.spawnBurnedInNPC(character,"cleaning")
 
         elif extraInfo["rewardType"] == "spawn food item":
             text = "spawning food"
@@ -893,13 +899,13 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
         
         self.changed("epoch artwork used",(character,))
         character.registers["baseCommander"] = "No"
-        if character.rank == None:
-            self.getInitialReward1(character)
-            return
+        #if character.rank == None:
+        #    self.getInitialReward1(character)
+        #    return
 
-        if character.rank > 3:
-            self.showLocked(character)
-            return
+        #if character.rank > 3:
+        #    self.showLocked(character)
+        #    return
             
         if not self.leader or self.leader.dead:
             self.leader = character

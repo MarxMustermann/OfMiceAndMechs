@@ -3953,18 +3953,41 @@ class MainGame(BasicPhase):
         elif self.preselection == "Raid":
             self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
             self.activeStory = random.choice(self.raidBaseInfos)
-            """
         else:
-            self.colonyBaseInfos2.append(self.createColonyBase2((6,7),mainCharBase=True))
-            self.colonyBaseInfos2.append(self.createColonyBase2((5,7)))
-            self.setUpThroneDungeon((7,7))
+            self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
+            self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
+            #self.siegedBaseInfos.append(self.createSiegedBase((6,6)))
+
+            #self.colonyBaseInfos2.append(self.createColonyBase2((4,4)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((4,5)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((4,6)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((4,7)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((4,8)))
+
+            #self.colonyBaseInfos2.append(self.createColonyBase2((3,4)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((3,5)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((3,6)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((3,7)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((3,8)))
+
+            #self.colonyBaseInfos2.append(self.createColonyBase2((2,4)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((2,5)))
+            #self.colonyBaseInfos2.append(self.createColonyBase2((2,6)))
+
+            #self.setUpThroneDungeon((7,7))
+            self.setUpGlassHeartDungeon((7,6),3,1)
+            self.setUpGlassHeartDungeon((7,5),4,2)
+            self.setUpGlassHeartDungeon((7,4),5,3)
+            self.setUpGlassHeartDungeon((7,3),6,4)
+            self.setUpGlassHeartDungeon((7,2),7,5)
             self.activeStory = self.colonyBaseInfos2[0]
-        """
+            """
         else:
             self.colonyBaseInfos.append(self.createColonyBase((6,7),mainCharBase=True))
             self.colonyBaseInfos.append(self.createColonyBase((5,7)))
             self.setUpThroneDungeon((7,7))
             self.activeStory = self.colonyBaseInfos[0]
+        """
 
         for story in self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos:
             story["epochArtwork"].setSpecialItemMap(self.specialItemMap)
@@ -4005,19 +4028,13 @@ class MainGame(BasicPhase):
 
     def mainCharacterDeath(self,extraParam):
         if self.activeStory["type"] == "colonyBase":
-            if len(self.activeStory["terrain"].rooms) == 1:
-                roomText = """    you failed to even build the first room"""
-            else:
-                roomText = """    you manged to build %s rooms."""%(len(self.activeStory["terrain"].rooms)-1,)
             text = """
     You died.
 
     you were playing the scenario: %s
 
-%s
-
     - press enter to continue -
-"""%(self.activeStory["type"],roomText,)
+"""%(self.activeStory["type"],)
         else:
             text = """
     You died.
@@ -4027,7 +4044,45 @@ class MainGame(BasicPhase):
     - press enter to continue -
 """%(self.activeStory["type"],)
         src.interaction.showInterruptText(text)
-        raise SystemExit()
+
+        if self.activeStory["type"] == "colonyBase":
+            characterPool = []
+            terrain = self.activeStory["terrain"]
+            characterPool.extend(terrain.characters)
+
+            for room in terrain.rooms:
+                characterPool.extend(room.characters)
+
+            for character in characterPool[:]:
+                if not character.faction == self.activeStory["mainChar"].faction:
+                    characterPool.remove(character)
+                if isinstance(character,src.characters.Ghul):
+                    characterPool.remove(character)
+
+            if not characterPool:
+                text = """
+    no remainder of your faction found. You lost the game.
+
+    - press enter to exit the game -
+"""
+                src.interaction.showInterruptText(text)
+                raise SystemExit()
+
+            text = """
+    You respawn as another member of your faction.
+"""
+            src.interaction.showInterruptText(text)
+
+            newChar = random.choice(characterPool)
+            src.gamestate.gamestate.mainChar = newChar
+            newChar.addListener(self.mainCharacterDeath,"died")
+
+            newChar.runCommandString("",clear=True)
+            for quest in newChar.quests:
+                quest.autoSolve = False
+            newChar.disableCommandsOnPlus = True
+        else:
+            raise SystemExit()
 
     def kickoff(self):
         if self.activeStory["type"] == "siegedBase":
@@ -4150,6 +4205,182 @@ try to remember how you got here ..."""
                         scrap = src.items.itemMap["Scrap"](amount=20)
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
 
+    def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
+        #set up dungeons
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        rooms = []
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,8),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (8,8),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (8,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (8,6),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,6),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (6,6),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (6,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0 0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (5,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (4,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        rooms.append(room)
+
+        counter = 0
+        for room in reversed(rooms):
+            #for i in range(1,2+counter//3):
+            for i in range(1,2):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+
+                enemy = src.characters.Monster(4,4)
+                enemy.baseDamage = 5+multiplier
+                enemy.maxHealth = (20+10*counter)*multiplier
+                enemy.health = enemy.maxHealth
+                enemy.godMode = True
+                enemy.movementSpeed = 1.3-0.1*multiplier
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                room.addCharacter(enemy, pos[0], pos[1])
+            counter += 1
+
+        glassHeart = src.items.itemMap["SpecialItemSlot"]()
+        glassHeart.hasItem = True
+        glassHeart.itemID = itemID
+        mainRoom.addItem(glassHeart,(6,6,0))
+        
+        for x in range(1,13):
+            for y in range(1,13):
+                if currentTerrain.getRoomByPosition((x,y,0)):
+                    continue
+                if random.random() < 0.7:
+                    continue
+                if x <= 9 and x >= 5:
+                    continue
+                if y <= 9 and y >= 5:
+                    continue
+
+                pos = (random.randint(1,11),random.randint(1,11),0)
+
+                enemy = src.characters.Monster(4,4)
+                enemy.baseDamage = 2+multiplier
+                enemy.maxHealth = 20*multiplier
+                enemy.health = enemy.maxHealth
+                enemy.godMode = True
+                enemy.movementSpeed = 1.1-random.random()/4
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
+
+
     def createColonyBase(self,pos,mainCharBase=False):
         mainChar = src.characters.Character()
         if mainCharBase:
@@ -4219,7 +4450,7 @@ try to remember how you got here ..."""
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        mainChar.duties = ["city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
         if mainCharBase:
             mainChar.duties.insert(0,"tutorial")
 
@@ -4514,8 +4745,80 @@ try to remember how you got here ..."""
 
         return colonyBaseInfo
 
+    def createColony_baseLeaderDeath(self,extraParam):
+        faction = extraParam["character"].faction
+        if faction == src.gamestate.gamestate.mainChar.faction:
+            text = "The leader of your faction %s died"%(faction,)
+            src.interaction.showInterruptText(text)
+        print(extraParam)
+
+        for colonyBaseInfo in self.colonyBaseInfos2:
+            if not colonyBaseInfo["mainChar"] == extraParam["character"]:
+                continue
+            print(colonyBaseInfo)
+
+            candidates = []
+            candidates.extend(colonyBaseInfo["terrain"].characters)
+            for room in colonyBaseInfo["terrain"].rooms:
+                candidates.extend(room.characters)
+
+            for candidate in candidates[:]:
+                if candidate.dead:
+                    candidates.remove(candidate)
+                    continue
+                if candidate.health == 0:
+                    candidates.remove(candidate)
+                    continue
+                if not candidate.faction == faction:
+                    candidates.remove(candidate)
+                    continue
+
+            bestCandidate = None
+            for candidate in candidates:
+                if not bestCandidate:
+                    bestCandidate = candidate
+
+                if candidate.reputation > bestCandidate.reputation:
+                    bestCandidate = candidate
+
+            if not bestCandidate:
+                text = "the faction was wiped out"
+                src.interaction.showInterruptText(text)
+                return
+
+            if faction == src.gamestate.gamestate.mainChar.faction:
+                text = "%s takes over"%(bestCandidate.name,)
+                src.interaction.showInterruptText(text)
+            if bestCandidate == src.gamestate.gamestate.mainChar:
+                text = "you takes over"%(bestCandidate.name,)
+                src.interaction.showInterruptText(text)
+
+            for subordinate in colonyBaseInfo["mainChar"].subordinates:
+                if subordinate == bestCandidate:
+                    continue
+                subordinate.superior = bestCandidate
+                bestCandidate.subordinates.append(subordinate)
+
+            bestCandidate.rank = 3
+            bestCandidate.duties = ["city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+            bestCandidate.addListener(self.createColony_baseLeaderDeath,"died_pre")
+            colonyBaseInfo["mainChar"] = bestCandidate
+
+            for quest in bestCandidate.quests:
+                quest.fail()
+            bestCandidate.quests = []
+
+            quest = src.quests.questMap["BeUsefull"]()
+            quest.autoSolve = True
+            quest.assignToCharacter(bestCandidate)
+            quest.activate()
+            bestCandidate.assignQuest(quest,active=True)
+            bestCandidate.foodPerRound = 1
+            bestCandidate.superior = None
+
     def createColonyBase2(self,pos,mainCharBase=False):
         mainChar = src.characters.Character()
+        mainChar.addListener(self.createColony_baseLeaderDeath,"died_pre")
         if mainCharBase:
             mainChar.disableCommandsOnPlus = True
         mainChar.questsDone = [
@@ -4583,7 +4886,7 @@ try to remember how you got here ..."""
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["city planning","clone spawning","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        mainChar.duties = ["city planning","clone spawning","questing","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4600,6 +4903,31 @@ try to remember how you got here ..."""
                 },
                 None,
            )
+        """
+        testRoom = architect.doAddRoom(
+                {
+                       "coordinate": (6,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "2,4",
+                       "offset": [1,1],
+                       "size": [5, 5],
+                },
+                None,
+            )
+        roomControls = src.items.itemMap["RoomControls"]()
+        testRoom.addItem(roomControls,(1,1,0))
+        testRoom.engineStrength = 100
+        testRoom2 = architect.doAddRoom(
+                {
+                       "coordinate": (5,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "2,4",
+                       "offset": [1,1],
+                       "size": [5, 5],
+                },
+                None,
+            )
+        """
 
         mainRoom.addCharacter(
             mainChar, 6, 6
@@ -4615,13 +4943,18 @@ try to remember how you got here ..."""
             item.hasItem = True
         item.itemID = 2
         mainRoom.addItem(item,(2,1,0))
+        for i in range(0,5):
+            item = src.items.itemMap["SpecialItemSlot"]()
+            item.hasItem = False
+            item.itemID = 3+i
+            mainRoom.addItem(item,(7+i,7,0))
 
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
         colonyBaseInfo["epochArtwork"] = epochArtwork
         epochArtwork.leader = mainChar
         epochArtwork.epochSurvivedRewardAmount = 0
         epochArtwork.changeCharges(60)
-        mainChar.rank = 3
+        mainChar.rank = 6
         mainRoom.addItem(epochArtwork,(3,1,0))
         """
         quest = src.quests.questMap["EpochQuest"]()
@@ -4631,11 +4964,14 @@ try to remember how you got here ..."""
         #cityBuilder.architect = architect
         #mainRoom.addItem(cityBuilder,(7,1,0))
         #cityBuilder.registerRoom(mainRoom)
-
         """
 
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
+
+        personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        personnelArtwork.charges = 10
+        mainRoom.addItem(personnelArtwork,(1,8,0))
 
         anvilPos = (10,2,0)
         machinemachine = src.items.itemMap["Anvil"]()
@@ -4662,8 +4998,9 @@ try to remember how you got here ..."""
         mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
 
         for y in (7,9,11):
-            for x in range(7,12):
-                mainRoom.addStorageSlot((x,y,0),None)
+            if not y == 7:
+                for x in range(7,12):
+                    mainRoom.addStorageSlot((x,y,0),None)
             for x in range(1,6):
                 mainRoom.addStorageSlot((x,y,0),None)
 
@@ -4803,11 +5140,12 @@ try to remember how you got here ..."""
                 quest.activate()
                 enemy.quests.append(quest)
 
-                currentTerrain.addCharacter(enemy, bigPos[0]*15+7, bigPos[1]*15+7)
+                currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
 
         for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
             architect.doClearField(pos[0], pos[1])
 
+        """
         # spawn enemies
         for x in range(1,14):
             for y in range(1,14):
@@ -4831,6 +5169,7 @@ try to remember how you got here ..."""
                 enemy.quests.append(quest)
 
                 currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+        """
 
         pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
         architect.doClearField(pos[0], pos[1])

@@ -71,9 +71,17 @@ This quest will end when your inventory is full."""
                     continue
                 if terrain.getRoomByPosition(target):
                     continue
+                
+                hasIdleSubordinate = False
+                for subordinate in character.subordinates:
+                    if len(subordinate.quests) < 2: 
+                        hasIdleSubordinate = True
 
-                self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory"))
-                return
+                if hasIdleSubordinate:
+                    character.runCommandString("Hjsssssj")
+                else:
+                    self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory"))
+                    return
 
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
 
@@ -161,6 +169,10 @@ This quest will end when your inventory is full."""
                 self.lastMoveDirection = offset
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
                 return
+
+            bigPos = (random.randint(1,13),random.randint(1,13),0)
+            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items"))
+            return
 
         super().solver(character)
 

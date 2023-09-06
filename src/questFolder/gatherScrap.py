@@ -164,7 +164,22 @@ Scrapfields are shown on the minimap as white ss"""]
                 self.fail(reason="no scrap source found")
                 return (None,None)
             elif source == None:
-                targetPos = random.choice(character.getTerrain().scrapFields)
+                terrain = character.getTerrain()
+                scrapFields = terrain.scrapFields[:]
+                for scrapField in scrapFields[:]:
+                    foundScrap = False
+                    for item in terrain.itemsByBigCoordinate.get(scrapField,[]):
+                        if item.type == "Scrap":
+                            foundScrap = True
+                            break
+                    if not foundScrap:
+                        scrapFields.remove(scrapField)
+
+                if not scrapFields:
+                    self.fail(reason="no scrap source")
+                    return (None,None)
+
+                targetPos = random.choice(scrapFields)
             else:
                 targetPos = (source[0][0],source[0][1],0)
 

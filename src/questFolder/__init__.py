@@ -84,3 +84,6 @@ import src.questFolder.raidTutorial2
 import src.questFolder.raidTutorial3
 import src.questFolder.raidTutorial4
 import src.questFolder.fight
+import src.questFolder.flee
+import src.questFolder.supportAttack
+import src.questFolder.delveDungeon

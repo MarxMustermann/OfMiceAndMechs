@@ -63,25 +63,25 @@ To stop using the room controls press j again.
             reset key mapping
             """
 
-            del character.macroState["stealKey"][config.commandChars.move_north]
-            del character.macroState["stealKey"][config.commandChars.move_south]
-            del character.macroState["stealKey"][config.commandChars.move_west]
-            del character.macroState["stealKey"][config.commandChars.move_east]
+            del character.macroState["stealKey"]["w"]
+            del character.macroState["stealKey"]["s"]
+            del character.macroState["stealKey"]["a"]
+            del character.macroState["stealKey"]["d"]
             del character.macroState["stealKey"]["up"]
             del character.macroState["stealKey"]["down"]
             del character.macroState["stealKey"]["right"]
             del character.macroState["stealKey"]["left"]
-            del character.macroState["stealKey"][config.commandChars.activate]
+            del character.macroState["stealKey"]["j"]
 
         # map the keystrokes
-        character.macroState["stealKey"][config.commandChars.move_north] = moveNorth
-        character.macroState["stealKey"][config.commandChars.move_south] = moveSouth
-        character.macroState["stealKey"][config.commandChars.move_west] = moveWest
-        character.macroState["stealKey"][config.commandChars.move_east] = moveEast
+        character.macroState["stealKey"]["w"] = moveNorth
+        character.macroState["stealKey"]["s"] = moveSouth
+        character.macroState["stealKey"]["a"] = moveWest
+        character.macroState["stealKey"]["d"] = moveEast
         character.macroState["stealKey"]["up"] = moveNorth
         character.macroState["stealKey"]["down"] = moveSouth
         character.macroState["stealKey"]["left"] = moveWest
         character.macroState["stealKey"]["right"] = moveEast
-        character.macroState["stealKey"][config.commandChars.activate] = disapply
+        character.macroState["stealKey"]["j"] = disapply
 
 src.items.addType(RoomControls)

@@ -4,7 +4,7 @@ import random
 class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = "%s %s"%(description,targetPosition,)
@@ -16,6 +16,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.paranoid = paranoid
         self.showCoordinates = showCoordinates
         self.reason = reason
+        self.abortHealthPercentage = abortHealthPercentage
 
     def sanatiyCheckPath(self):
         1/0
@@ -153,12 +154,17 @@ The target tile is %s
         
         return False
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if character == None:
             return (None,None)
 
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
+
+        if character.health < character.maxHealth*self.abortHealthPercentage:
+            if not dryRun:
+                self.fail()
+            return (None,None)
 
         if not self.path:
             self.generatePath(character)
@@ -176,6 +182,16 @@ The target tile is %s
                     if otherCharacter.faction == character.faction:
                         continue
                     return (None,("gg","guard the room"))
+
+            for otherCharacter in character.container.characters:
+                if otherCharacter.faction == character.faction:
+                    continue
+                if character.health < character.maxHealth//5:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
 
             if not self.isPathSane(character):
                 self.generatePath(character)
@@ -216,6 +232,13 @@ The target tile is %s
             if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
                 if character.container.getEnemiesOnTile(character):
                     return (None,("gg","guard the tile"))
+            if character.container.getEnemiesOnTile(character):
+                if character.health < character.maxHealth//5:
+                    quest = src.quests.questMap["Flee"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
                 return (None,("w","enter the tile"))
             if character.xPosition%15 == 7 and character.yPosition%15 == 0:
@@ -257,7 +280,9 @@ The target tile is %s
                 return ([quest],None)
     
     def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if character == src.gamestate.gamestate.mainChar:
+            print("gototile generateSubquests")
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -273,10 +298,12 @@ The target tile is %s
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character)
 
     def solver(self, character):
+        if character == src.gamestate.gamestate.mainChar:
+            print("gototile solver")
         if not self.path:
             self.generatePath(character)
 
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -289,6 +316,7 @@ The target tile is %s
         super().solver(character)
 
     def unhandledSubQuestFail(self,extraParam):
+        print("gototile unhandled")
         if not extraParam["quest"] in self.subQuests:
             return
 

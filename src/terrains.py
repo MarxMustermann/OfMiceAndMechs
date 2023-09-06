@@ -487,7 +487,8 @@ class Terrain(src.saveing.Saveable):
 
             if char.xPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
-                self.charactersByTile[oldBigPos].remove(char)
+                if char in self.charactersByTile[oldBigPos]:
+                    self.charactersByTile[oldBigPos].remove(char)
                 bigPos = char.getBigPosition((-1,0,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
@@ -552,7 +553,8 @@ class Terrain(src.saveing.Saveable):
 
             if char.yPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
-                self.charactersByTile[oldBigPos].remove(char)
+                if char in self.charactersByTile[oldBigPos]:
+                    self.charactersByTile[oldBigPos].remove(char)
                 bigPos = char.getBigPosition(offset=(0,-1,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
@@ -584,7 +586,8 @@ class Terrain(src.saveing.Saveable):
 
             if char.yPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
-                self.charactersByTile[oldBigPos].remove(char)
+                if char in self.charactersByTile[oldBigPos]:
+                    self.charactersByTile[oldBigPos].remove(char)
                 bigPos = char.getBigPosition(offset=(0,1,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
@@ -1553,6 +1556,18 @@ class Terrain(src.saveing.Saveable):
                continue
             out.append(otherChar)
 
+        for room in self.getRoomByPosition(pos):
+            for character in room.characters:
+                if character == otherChar:
+                   continue
+                if character.faction == otherChar.faction:
+                   continue
+                if otherChar.dead:
+                   continue
+                if not pos == otherChar.getBigPosition():
+                   continue
+                out.append(otherChar)
+
         return out
 
     def render(self,size=None,coordinateOffset=(0,0)):
@@ -1917,9 +1932,8 @@ class Terrain(src.saveing.Saveable):
         for (k,v) in self.minimapOverride.items():
             chars[k[1]][k[0]] = v
 
-        #for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
-        if 1==1:
-            quest = src.gamestate.gamestate.mainChar.getActiveQuest()
+        quest = src.gamestate.gamestate.mainChar.getActiveQuest()
+        if quest:
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
                 try:
@@ -2093,10 +2107,11 @@ class Terrain(src.saveing.Saveable):
                 if (
                     posX,
                     room.yPosition * 15 + room.offsetY - 1,
-                ) in self.itemByCoordinates:
+                    0
+                ) in self.itemsByCoordinate:
                     movementBlock.update(
-                        self.itemByCoordinates[
-                            (posX, room.yPosition * 15 + room.offsetY - 1)
+                        self.itemsByCoordinate[
+                            (posX, room.yPosition * 15 + room.offsetY - 1,0)
                         ]
                     )
         elif direction == "south":
@@ -2107,25 +2122,22 @@ class Terrain(src.saveing.Saveable):
                 if (
                     posX,
                     room.yPosition * 15 + room.offsetY + room.sizeY,
-                ) in self.itemByCoordinates:
+                    0
+                ) in self.itemsByCoordinate:
                     movementBlock.update(
-                        self.itemByCoordinates[
-                            (posX, room.yPosition * 15 + room.offsetY + room.sizeY)
+                        self.itemsByCoordinate[
+                            (posX, room.yPosition * 15 + room.offsetY + room.sizeY,0)
                         ]
                     )
         elif direction == "west":
             posY = room.yPosition * 15 + room.offsetY - 1
             maxY = room.yPosition * 15 + room.offsetY + room.sizeY - 1
             while posY < maxY:
+                pos = ( room.xPosition * 15 + room.offsetX - 1, posY, 0)
                 posY += 1
-                if (
-                    room.xPosition * 15 + room.offsetX - 1,
-                    posY,
-                ) in self.itemByCoordinates:
+                if self.itemsByCoordinate.get(pos,[]):
                     movementBlock.update(
-                        self.itemByCoordinates[
-                            (room.xPosition * 15 + room.offsetX - 1, posY)
-                        ]
+                        self.itemsByCoordinate[pos]
                     )
         elif direction == "east":
             posY = room.yPosition * 15 + room.offsetY - 1
@@ -2135,10 +2147,11 @@ class Terrain(src.saveing.Saveable):
                 if (
                     room.xPosition * 15 + room.offsetX + room.sizeX,
                     posY,
-                ) in self.itemByCoordinates:
+                    0
+                ) in self.itemsByCoordinate:
                     movementBlock.update(
-                        self.itemByCoordinates[
-                            (room.xPosition * 15 + room.offsetX + room.sizeX, posY)
+                        self.itemsByCoordinate[
+                            (room.xPosition * 15 + room.offsetX + room.sizeX, posY,0)
                         ]
                     )
         else:

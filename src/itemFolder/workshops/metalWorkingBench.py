@@ -41,6 +41,7 @@ class MetalWorkingBench(src.items.Item):
     def produceItem(self,params):
         character = params["character"]           
 
+        print(params)
         if not "type" in params:
             options = []
             options.append(("Wall","Wall"))

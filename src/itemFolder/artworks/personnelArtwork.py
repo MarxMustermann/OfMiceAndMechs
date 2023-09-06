@@ -262,7 +262,6 @@ Use the complex interaction to recharge the personel artwork
         char.registers["HOMETy"] = terrainPosition[1]
         char.personality["abortMacrosOnAttack"] = False
         char.rank = 6
-        char.movementSpeed = 0.5
 
         character.subordinates.append(char)
         char.superior = character

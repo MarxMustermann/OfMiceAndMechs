@@ -24,10 +24,8 @@ A throne. Use it to win the game.
 """
 
     def apply(self,character):
-        character.addMessage("You rule the world now.")
-
         hasAllSpecialItems = True
-        currentTerrain = src.gamestate.gamestate.terrainMap[7][6]
+        currentTerrain = character.getTerrain()
         room = currentTerrain.getRoomByPosition((7,7,0))[0]
         for item in room.itemsOnFloor:
             if item.type == "SpecialItemSlot" and not item.hasItem:
@@ -46,10 +44,9 @@ I'm currently working on making this thing more fluid and hope to get tha actual
 
 I'd love to get feedback. Do not hestiate to contact me.
 
-Since you reached the end of the implemented content, i'll crash the game now.
+The game will continue to run, but there is not further content for you to see.
 
 = press enter to continue =
 """
             src.interaction.showInterruptText(text)
-            1/0
 src.items.addType(Throne)

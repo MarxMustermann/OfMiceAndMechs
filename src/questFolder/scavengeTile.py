@@ -47,6 +47,15 @@ This quest will end when the target tile has no items left."""
         self.triggerCompletionCheck(character=character)
 
         if not self.subQuests:
+            hasIdleSubordinate = False
+            for subordinate in character.subordinates:
+                if len(subordinate.quests) < 2: 
+                    hasIdleSubordinate = True
+
+            if hasIdleSubordinate:
+                character.runCommandString("Hjsssssj")
+                return
+
             if not character.getFreeInventorySpace() > 0:
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 self.addQuest(quest)

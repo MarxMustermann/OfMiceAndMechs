@@ -1,10 +1,10 @@
 import src
 import random
 
-class Fight(src.quests.MetaQuestSequence):
-    type = "Fight"
+class Flee(src.quests.MetaQuestSequence):
+    type = "Flee"
 
-    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False):
+    def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -14,7 +14,7 @@ class Fight(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return ["""
-kill,kill,kill!
+run,run,run!!!
 """]
 
     def triggerCompletionCheck(self,character=None):
@@ -69,7 +69,7 @@ kill,kill,kill!
         if character.health < character.maxHealth//5 and character.canHeal():
             return (None,"JH","to heal")
 
-        if character.health < character.maxHealth//5:
+        if character.health > character.maxHealth//2:
             self.fail()
             return (None,None)
 
@@ -81,26 +81,26 @@ kill,kill,kill!
         commands = []
         command = None
         for foundEnemy in character.getNearbyEnemies():
-            for offset in [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),"m")]:
+            for offset in [((1,0,0),"a"),((-1,0,0),"d"),((0,1,0),"w"),((0,-1,0),"s")]:
                 if character.getPosition(offset=offset[0]) == foundEnemy.getPosition():
                     command = offset[1]
                     break
 
             x = foundEnemy.xPosition
             while x-character.xPosition > 0:
-                commands.append("d")
+                commands.append("a")
                 x -= 1
             x = foundEnemy.xPosition
             while x-character.xPosition < 0:
-                commands.append("a")
+                commands.append("d")
                 x += 1
             y = foundEnemy.yPosition
             while y-character.yPosition > 0:
-                commands.append("s")
+                commands.append("w")
                 y -= 1
             y = foundEnemy.yPosition
             while y-character.yPosition < 0:
-                commands.append("w")
+                commands.append("s")
                 y += 1
 
         if not command and commands:
@@ -126,6 +126,6 @@ kill,kill,kill!
         if command == None:
             return (None,None)
 
-        return (None,(command,"fight"))
+        return (None,(command,"flee"))
 
-src.quests.addType(Fight)
+src.quests.addType(Flee)

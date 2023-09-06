@@ -69,6 +69,7 @@ class Character(src.saveing.Saveable):
         self.isStaff = False
         self.stepsOnMines = False
         self.implantLoad = 0
+        self.hasFreeWill = False
 
         self.showThinking = False
         self.showGotCommand = False
@@ -1792,6 +1793,7 @@ press any other key to attack normaly"""
             reason: the reason for dieing
             addCorpse: flag to control adding a corpse
         """
+        self.changed("died_pre", {"character": self, "reason": reason})
         self.quests = []
 
         self.lastRoom = self.room
@@ -2279,6 +2281,10 @@ press any other key to attack normaly"""
                 + " key"
             )
             return
+
+        if self.health < self.maxHealth:
+            if src.gamestate.gamestate.tick%self.health == 0:
+                self.heal(1,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
         if self.satiation < 300:

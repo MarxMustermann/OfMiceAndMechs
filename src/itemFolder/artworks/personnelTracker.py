@@ -245,9 +245,9 @@ class PersonnelTracker(src.items.Item):
         char.runCommandString("********")
 
     def apply(self,character):
-        if not character.rank or character.rank > 5:
-            character.addMessage("you need to have be at least rank 5 to use this machine")
-            return
+        #if not character.rank or character.rank > 5:
+        #    character.addMessage("you need to have be at least rank 5 to use this machine")
+        #    return
         super().apply(character)
 
     def configure(self,character):

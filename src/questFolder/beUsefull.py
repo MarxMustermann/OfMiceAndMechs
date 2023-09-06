@@ -294,15 +294,18 @@ We should stop watching and do something about that.
         return super().setParameters(parameters)
 
     def solver(self, character):
+        if character == src.gamestate.gamestate.mainChar:
+            print("solver beuseful")
 
-        if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
+        if character.health > character.maxHealth//5:
+            if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"]()
+                self.addQuest(quest)
+                quest.activate()
+                quest.assignToCharacter(character)
+                return
 
-        character.timeTaken += 0.01
+        character.timeTaken += 0.1
         for quest in self.subQuests[:]:
             if quest.completed:
                 self.subQuests.remove(quest)
@@ -417,7 +420,7 @@ We should stop watching and do something about that.
                     self.addQuest(newQuest)
                     return True
             
-            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Vial",1,1),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
                     self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
@@ -490,7 +493,7 @@ We should stop watching and do something about that.
 
         chargesUsed = 0
         quests = []
-        for duty in ["resource gathering","scrap hammering","hauling","metal working","resource fetching","room building","painting","machine placing","machine operation","maggot gathering"]:
+        for duty in ["resource gathering","scrap hammering","hauling","metal working","resource fetching","room building","painting","machining","machine placing","machine operation","maggot gathering","cleaning"]:
 
             if not duty in npcDuties and epochArtwork.charges >= 10+chargesUsed:
                 quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
@@ -649,7 +652,7 @@ We should stop watching and do something about that.
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
-            floorPlansToSet = ["gooProcessing"]
+            floorPlansToSet = ["gooProcessing","weaponProduction"]
             for room in terrain.rooms:
                 if room.tag in floorPlansToSet:
                     floorPlansToSet.remove(room.tag)
@@ -1056,53 +1059,54 @@ We should stop watching and do something about that.
                 room = rooms[0]
                 cityPlaner = room.getItemByType("CityPlaner")
 
-            for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+            if cityPlaner:
+                for generalPurposeRoom in cityPlaner.generalPurposeRooms:
 
-                terrain = self.character.getTerrain()
-                room = terrain.getRoomByPosition(generalPurposeRoom)[0]
-                counter = 1
-                quests = []
-                for y in (1,3,5,7,9,11):
-                    for x in range(1,12):
-                        if x == 6:
-                            continue
-                        if counter > 15:
-                            continue
+                    terrain = self.character.getTerrain()
+                    room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+                    counter = 1
+                    quests = []
+                    for y in (1,3,5,7,9,11):
+                        for x in range(1,12):
+                            if x == 6:
+                                continue
+                            if counter > 15:
+                                continue
 
-                        if room.getItemByPosition((x,y,0)):
-                            continue
+                            if room.getItemByPosition((x,y,0)):
+                                continue
 
-                        if (x,y,0) in room.walkingSpace:
-                            continue
+                            if (x,y,0) in room.walkingSpace:
+                                continue
 
-                        blockedSpot = False
-                        for storageSlot in room.storageSlots:
-                            if storageSlot[0] == (x,y,0):
-                                blockedSpot = True
-                                break
-                        for outputSlot in room.outputSlots:
-                            if outputSlot[0] == (x,y,0):
-                                blockedSpot = True
-                                break
-                        for inpputSlot in room.inputSlots:
-                            if inputSlot[0] == (x,y,0):
-                                blockedSpot = True
-                                break
-                        for buildSite in room.buildSites:
-                            if buildSites[0] == (x,y,0):
-                                blockedSpot = True
-                                break
-                        if blockedSpot:
-                            continue
+                            blockedSpot = False
+                            for storageSlot in room.storageSlots:
+                                if storageSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for outputSlot in room.outputSlots:
+                                if outputSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for inputSlot in room.inputSlots:
+                                if inputSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for buildSite in room.buildSites:
+                                if buildSites[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            if blockedSpot:
+                                continue
 
-                        counter += 1
-                        quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
-                        quests.append(quest)
+                            counter += 1
+                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
+                            quests.append(quest)
 
-                for quest in reversed(quests):
-                    self.addQuest(quest)
-                if quests:
-                    return True
+                    for quest in reversed(quests):
+                        self.addQuest(quest)
+                    if quests:
+                        return True
 
         # get storage stockpiles that have the filled tag
         desireFilledStorageSlots = {}
@@ -1355,41 +1359,42 @@ We should stop watching and do something about that.
                     foundPlacedItems[item.type] = []
                 foundPlacedItems[item.type].append(item)
 
-        checkItems = ["ScrapCompactor","MaggotFermenter","BioPress","GooProducer"]
-        checkItems = ["ScrapCompactor"]
-        for checkItem in checkItems:
-            if checkItem in foundPlacedItems:
-                continue
+        if cityPlaner:
+            checkItems = ["ScrapCompactor","MaggotFermenter","BioPress","GooProducer"]
+            checkItems = ["ScrapCompactor"]
+            for checkItem in checkItems:
+                if checkItem in foundPlacedItems:
+                    continue
 
-            for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+                for generalPurposeRoom in cityPlaner.generalPurposeRooms:
 
-                terrain = self.character.getTerrain()
-                room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+                    terrain = self.character.getTerrain()
+                    room = terrain.getRoomByPosition(generalPurposeRoom)[0]
 
-                validTargetPosition = False
-                terrain = character.getTerrain()
-                counter = 0
-                while not validTargetPosition and counter < 10:
-                    counter += 1
-                    targetPosition = (random.randint(3,9),random.randint(3,9),0)
+                    validTargetPosition = False
+                    terrain = character.getTerrain()
+                    counter = 0
+                    while not validTargetPosition and counter < 10:
+                        counter += 1
+                        targetPosition = (random.randint(3,9),random.randint(3,9),0)
 
-                    offsetBlocked = False
-                    for offset in [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0),(0,0,0)]:
-                        checkPos = (targetPosition[0]+offset[0],targetPosition[1]+offset[1],0)
-                        if room.getItemByPosition(checkPos) or room.getPaintedByPosition(checkPos):
-                            offsetBlocked = True
-                            break
+                        offsetBlocked = False
+                        for offset in [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0),(0,0,0)]:
+                            checkPos = (targetPosition[0]+offset[0],targetPosition[1]+offset[1],0)
+                            if room.getItemByPosition(checkPos) or room.getPaintedByPosition(checkPos):
+                                offsetBlocked = True
+                                break
 
-                    if offsetBlocked:
-                        continue
+                        if offsetBlocked:
+                            continue
 
-                    validTargetPosition = True
-                    break
+                        validTargetPosition = True
+                        break
 
-                if validTargetPosition:
-                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="to have at least one scrpa compactor")
-                    self.addQuest(quest)
-                    return True
+                    if validTargetPosition:
+                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="to have at least one scrpa compactor")
+                        self.addQuest(quest)
+                        return True
 
     def checkTriggerFillFlask(self,character,room):
         if character.flask and character.flask.uses < 3:
@@ -1461,6 +1466,46 @@ We should stop watching and do something about that.
     def checkTriggerEpochQuesting(self,character,room):
         1/0
 
+    def checkTriggerQuesting(self,character,room):
+        if character.health == character.maxHealth:
+            terrain = character.getTerrain()
+            toCheck = terrain.characters[:]
+            for room in terrain.rooms:
+                toCheck.extend(room.characters)
+
+            numNPCs = 0
+            for char in toCheck:
+                if char.faction == toCheck.faction:
+                    numNPCs += 1
+
+            if numNPCs < 10:
+                return 
+
+            positions = [(7,6),(7,5),(7,4),(7,3),(7,2),(6,6),(8,6)]
+            for pos in positions:
+                if character.registers["HOMETx"] == positions[0] and character.registers["HOMETy"] == positions[1]:
+                    continue
+
+                terrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+                rooms = terrain.getRoomByPosition((7,7,0))
+                if not rooms:
+                    continue
+                room = rooms[0]
+                specialItemSlot = room.getItemByType("SpecialItemSlot")
+                if not specialItemSlot or not specialItemSlot.hasItem:
+                    continue
+
+                quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+
+                quest = src.quests.questMap["Equip"]()
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.idleCounter = 0
+                return True
+
     def generateSubquests(self,character):
 
         for quest in self.subQuests:
@@ -1481,6 +1526,17 @@ We should stop watching and do something about that.
             quest.activate()
             quest.assignToCharacter(character)
             return
+
+        terrain = character.getTerrain()
+        if not terrain.xPosition == character.registers["HOMETx"] or not terrain.yPosition == character.registers["HOMETy"]:
+            quest = src.quests.questMap["GoHome"]()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            return
+        print(character.name)
+        print(terrain.xPosition)
+        print(terrain.yPosition)
 
         try:
             self.checkedRoomPositions
@@ -1720,6 +1776,10 @@ We should stop watching and do something about that.
                 if self.checkTriggerEpochQuesting(character,room):
                     return
 
+            if duty == "questing":
+                if self.checkTriggerQuesting(character,room):
+                    return
+
             if duty == "tutorial" and character == src.gamestate.gamestate.mainChar:
                 if self.specialTutorialLogic(character,room):
                     return
@@ -1731,6 +1791,10 @@ We should stop watching and do something about that.
                     self.idleCounter += 1
                     self.addQuest(quest)
                     return
+                if self.idleCounter > 15:
+                    if self.checkTriggerQuesting(character,room):
+                        self.idleCounter = 0
+                        return
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
                 self.idleCounter += 1
                 self.addQuest(quest)
@@ -1744,6 +1808,10 @@ We should stop watching and do something about that.
                 self.idleCounter += 1
                 self.addQuest(quest)
                 return
+            if self.idleCounter > 15:
+                if self.checkTriggerQuesting(character,room):
+                    self.idleCounter = 0
+                    return
             quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
             self.idleCounter += 1
             self.addQuest(quest)

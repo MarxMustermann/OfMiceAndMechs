@@ -144,6 +144,17 @@ Swords can range from 10 to 25 damage per hit.
                     if source:
                         break
                 if not source:
+                    for itemType in toSearchFor:
+                        for room in character.getTerrain().rooms:
+                            sourceSlots = room.getNonEmptyOutputslots(itemType=itemType)
+                            if not sourceSlots:
+                                continue
+                            source = (room.getPosition(),itemType)
+                            break
+                        if source:
+                            break
+
+                if not source:
                     #character.runCommandString(".14.")
                     self.fail(reason="no source for equipment")
                     return (None,None)
@@ -165,8 +176,8 @@ Swords can range from 10 to 25 damage per hit.
                 command = "Jw"
             elif sourceSlots[0][0] == (characterPos[0],characterPos[1]+1,characterPos[2]):
                 command = "Js"
-            elif sourceSlots[0][0] == (characterPos[0],characterPos[1]-1,characterPos[2]):
-                command = "Js"
+            elif sourceSlots[0][0] == (characterPos[0]+1,characterPos[1],characterPos[2]):
+                command = "Jd"
 
             if command:
                 return (None,(command,"equip the weapon"))

@@ -87,10 +87,10 @@ If you don't find a %s blueprint, research it.
                 else:
                     container = character.container
 
-                if character.container.isRoom:
-                    items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
+                if container.isRoom:
+                    items = container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
                 else:
-                    items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+                    items = container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
 
                 if items and items[-1].type == "Machine" and items[-1].toProduce == self.itemType:
                     itemPlaced = items[-1]
@@ -99,7 +99,7 @@ If you don't find a %s blueprint, research it.
                 if itemPlaced.bolted:
                     return (None,None)
                 if not itemPlaced.container == character.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine is placed")
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine is to be placed")
                     return ([quest],None)
                 if character.getDistance(itemPlaced.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="go to machine")
@@ -201,7 +201,7 @@ If you don't find a %s blueprint, research it.
                         bluePrint = item
                         continue
 
-            if not machineMachine:
+            if not machineMachine or (src.gamestate.gamestate.tick < machineMachine.coolDownTimer + machineMachine.coolDown):
 
                 newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
                 return ([newQuest],None)

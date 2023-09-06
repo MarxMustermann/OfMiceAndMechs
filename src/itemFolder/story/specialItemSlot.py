@@ -44,6 +44,7 @@ class SpecialItemSlot(src.items.Item):
                     break
 
             if foundItem:
+                character.changed("deliveredSpecialItem",{"itemID":self.itemID})
                 character.inventory.remove(foundItem)
 
                 self.hasItem = True

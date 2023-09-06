@@ -114,11 +114,12 @@ Try luring enemies into landmines or detonating some bombs."""
                     if enemies:
                         if not dryRun:
                             self.huntdownCooldown = 100
-                        if random.random() < 1.3:
+                        if random.random() < 0.3:
                             quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
                             return ([quest],None)
-                        quest = src.quests.questMap["Fight"]()
-                        return ([quest],None)
+                        else:
+                            quest = src.quests.questMap["Fight"]()
+                            return ([quest],None)
 
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 

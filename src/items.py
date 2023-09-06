@@ -922,10 +922,10 @@ class Item(src.saveing.Saveable):
 
             # remove self from current position
             container = self.container
-            self.container.remove(self)
+            self.container.removeItem(self)
 
             # destroy everything on target position
-            for item in self.container.getItemByPosition(newPosition):
+            for item in container.getItemByPosition(newPosition):
                 item.destroy()
 
             # place self on new position
@@ -933,7 +933,7 @@ class Item(src.saveing.Saveable):
 
             # destroy yourself if anything is left on target position
             # bad code: this cannot happen since everything on the target position was destroyed already
-            if len(self.container.getItemByPosition(newPosition)) > 1:
+            if len(container.getItemByPosition(newPosition)) > 1:
                 self.destroy()
 
     def getResistance(self):

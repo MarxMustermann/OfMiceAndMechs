@@ -52,4 +52,29 @@ class CoalBurner(src.items.Item):
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             self.container.addAnimation(self.getPosition(),"smoke",8,{})
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the CoalBurner")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the CoalBurner")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
 src.items.addType(CoalBurner)

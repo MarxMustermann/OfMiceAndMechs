@@ -1475,7 +1475,7 @@ We should stop watching and do something about that.
 
             numNPCs = 0
             for char in toCheck:
-                if char.faction == toCheck.faction:
+                if char.faction == character.faction:
                     numNPCs += 1
 
             if numNPCs < 10:

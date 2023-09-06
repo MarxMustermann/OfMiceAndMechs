@@ -345,6 +345,7 @@ class CityPlaner(src.items.Item):
             options.append(("productionRoom","production room"))
             options.append(("gooProcessing","goo processing"))
             options.append(("weaponProduction","weapon production"))
+            options.append(("smokingRoom","smoking room"))
             options.append(("exit","exit menu"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             submenue.tag = "floorplanSelection"
@@ -457,6 +458,27 @@ class CityPlaner(src.items.Item):
             buildSites.append(((7,3,0),"GooProducer",{}))
             buildSites.append(((8,3,0),"GooDispenser",{}))
             buildSites.append(((9,3,0),"VialFiller",{}))
+
+        if floorPlanType == "smokingRoom":
+            buildSites.append(((4,4,0),"CoalBurner",{}))
+            buildSites.append(((5,5,0),"CoalBurner",{}))
+            buildSites.append(((4,8,0),"CoalBurner",{}))
+            buildSites.append(((5,7,0),"CoalBurner",{}))
+            buildSites.append(((8,4,0),"CoalBurner",{}))
+            buildSites.append(((7,5,0),"CoalBurner",{}))
+            buildSites.append(((8,8,0),"CoalBurner",{}))
+            buildSites.append(((7,7,0),"CoalBurner",{}))
+
+            for pos in [(5,2),(4,2),(3,2),(2,2),(2,3),(2,4),(2,5),
+                        (2,7),(2,8),(2,9),(2,10),(3,10),(4,10),(5,10),
+                        (7,10),(8,10),(9,10),(10,10),(10,9),(10,8),(10,7),
+                        (10,5),(10,4),(10,3),(10,2),(9,2),(8,2),(7,2)]:
+                storageSlots.append(((pos[0],pos[1],0),"MoldFeed",{"desiredState":"filled"}))
+
+            for pos in [(5,4),(7,4),(7,8),(5,8)]:
+                inputSlots.append(((pos[0],pos[1],0),"MoldFeed"))
+            for pos in [(4,5),(8,5),(8,7),(4,7)]:
+                inputSlots.append(((pos[0],pos[1],0),"Coal"))
 
         if floorPlanType == "scrapCompactorProduction":
             for y in (1,4,6,8,11,):

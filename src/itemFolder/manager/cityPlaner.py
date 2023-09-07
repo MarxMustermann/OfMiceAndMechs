@@ -871,6 +871,14 @@ class CityPlaner(src.items.Item):
         for room in terrain.rooms:
             del functionMap[(room.xPosition,room.yPosition)]
 
+        for scrapField in terrain.scrapFields:
+            del functionMap[(scrapField[0],scrapField[1])]
+            mapContent[scrapField[1]][scrapField[0]] = "ss"
+
+        for forest in terrain.forests:
+            del functionMap[(forest[0],forest[1])]
+            mapContent[forest[1]][forest[0]] = "ff"
+
         for room in terrain.rooms:
             if not (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
                 mapContent[room.yPosition][room.xPosition] = "EE"

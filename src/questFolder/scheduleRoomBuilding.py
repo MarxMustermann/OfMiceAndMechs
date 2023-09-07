@@ -123,7 +123,12 @@ Use a CityPlaner to do this.
         super().solver(character)
 
     def handleScheduledRoom(self,extraParams):
-        self.triggerCompletionCheck(extraParams["character"])
+        if self.completed:
+            1/0
+        if not self.active:
+            return
+
+        self.postHandler()
 
     def assignToCharacter(self, character):
         if self.character:

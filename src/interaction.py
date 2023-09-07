@@ -4623,7 +4623,10 @@ class CharacterInfoMenu(SubMenu):
         text += "\n"
         text += "lastJobOrder: %s\n" % char.lastJobOrder
         text += "skills: %s\n" % char.skills
-        text += "duties: %s\n" % char.duties
+        if len(char.duties) > 5:
+            text += "duties: %s\n" % ",\n".join(char.duties)
+        else:
+            text += "duties: %s\n" % char.duties
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
         text += "position: %s\n" % (char.getSpacePosition(),)
         text += "big position: %s\n" % (char.getBigPosition(),)

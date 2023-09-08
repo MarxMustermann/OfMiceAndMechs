@@ -111,6 +111,9 @@ Try as hard as you can to achieve this.
 
         return text
 
+    def unhandledSubQuestFail(self,extraParam):
+        self.fail(extraParam["reason"])
+
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
@@ -119,6 +122,7 @@ Try as hard as you can to achieve this.
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
             return
 
         if nextCommand:

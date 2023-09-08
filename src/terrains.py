@@ -1932,6 +1932,34 @@ class Terrain(src.saveing.Saveable):
         for (k,v) in self.minimapOverride.items():
             chars[k[1]][k[0]] = v
 
+        for x in range(1,13):
+            for y in range(1,13):
+                foundEnemy = False
+                otherCharacters = self.charactersByTile.get((x,y,0),[])
+                for otherCharacter in otherCharacters:
+                    if otherCharacter.faction == src.gamestate.gamestate.mainChar.faction:
+                        continue
+                    foundEnemy = True
+                if foundEnemy:
+                    pos = (x,y)
+                    try:
+                        display = chars[pos[1]][pos[0]]
+                    except:
+                        continue
+
+                    if isinstance(display,int):
+                        display = src.canvas.displayChars.indexedMapping[display]
+                    if isinstance(display,str):
+                        display = (src.interaction.urwid.AttrSpec("#fff","black"),display)
+
+                    color = "#722"
+                    if hasattr(display[0],"fg"):
+                        display = (src.interaction.urwid.AttrSpec(display[0].fg,color),display[1])
+                    else:
+                        display = (src.interaction.urwid.AttrSpec(display[0].foreground,color),display[1])
+
+                    chars[pos[1]][pos[0]] = display
+
         quest = src.gamestate.gamestate.mainChar.getActiveQuest()
         if quest:
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):

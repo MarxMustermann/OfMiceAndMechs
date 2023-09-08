@@ -1065,7 +1065,10 @@ class Room(src.saveing.Saveable):
                     chars[character.yPosition]
                 ):
                     if not "city" in character.faction or not character.charType in ("Character","Ghul"):
-                        chars[character.yPosition][character.xPosition] = character.display
+                        #chars[character.yPosition][character.xPosition] = character.display
+                        char = "<-"
+                        bgColor = "#722"
+                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
                     else:
                         if viewChar == "rank":
                             if not isinstance(character,src.characters.Ghul):
@@ -1249,11 +1252,13 @@ class Room(src.saveing.Saveable):
                             if not color:
                                 color = "#3f3"
 
+                        bgColor = "#000"
                         if not character.faction == src.gamestate.gamestate.mainChar.faction:
+                            bgColor = "#722"
                             color = "#f00"
                             char = "EE"
 
-                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, "black"), char)
+                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(color, bgColor), char)
 
                         if character.timeTaken > 2:
                             chars[character.yPosition][character.xPosition][0].bg = "#553"

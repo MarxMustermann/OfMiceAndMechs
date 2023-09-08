@@ -110,7 +110,10 @@ class NPCsOverlay(object):
                 continue
         
             if not "city" in character.faction or not character.charType in ("Character","Ghul",):
-                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
+                #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
+                char = "<-"
+                bgColor = "#722"
+                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
             else:
                 if viewChar == "rank":
                     if not isinstance(character,src.characters.Ghul):
@@ -291,11 +294,13 @@ class NPCsOverlay(object):
                     if not color:
                         color = "#3f3"
 
+                bgColor = "#000"
                 if not character.faction == src.gamestate.gamestate.mainChar.faction:
+                    bgColor = "#722"
                     color = "#f00"
                     char = "EE"
 
-                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec(color, "black"), char)
+                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec(color, bgColor), char)
 
                 if character.showThinking:
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#333"

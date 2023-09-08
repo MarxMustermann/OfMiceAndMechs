@@ -1474,9 +1474,27 @@ We should stop watching and do something about that.
                 toCheck.extend(room.characters)
 
             numNPCs = 0
+            foundEnemies = []
             for char in toCheck:
                 if char.faction == character.faction:
                     numNPCs += 1
+                else:
+                    if not char.dead:
+                        foundEnemies.append(char)
+
+            if numNPCs < 5:
+                return 
+
+            if foundEnemies:
+                print(foundEnemies)
+                enemy = random.choice(foundEnemies)
+                quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.idleCounter = 0
+
+                return True
 
             if numNPCs < 10:
                 return 

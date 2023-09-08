@@ -4772,6 +4772,9 @@ try to remember how you got here ..."""
                 if not candidate.faction == faction:
                     candidates.remove(candidate)
                     continue
+                if candidate == extraParam["character"]:
+                    candidates.remove(candidate)
+                    continue
 
             bestCandidate = None
             for candidate in candidates:

@@ -1932,8 +1932,8 @@ class Terrain(src.saveing.Saveable):
         for (k,v) in self.minimapOverride.items():
             chars[k[1]][k[0]] = v
 
-        for x in range(1,13):
-            for y in range(1,13):
+        for x in range(1,14):
+            for y in range(1,14):
                 foundEnemy = False
                 otherCharacters = self.charactersByTile.get((x,y,0),[])
                 for otherCharacter in otherCharacters:

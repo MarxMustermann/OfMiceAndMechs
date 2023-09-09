@@ -49,6 +49,31 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         else:
             return src.canvas.displayChars.growthTank_unfilled
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the GrowthTank")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the GrowthTank")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
     """
     manually eject character
     """

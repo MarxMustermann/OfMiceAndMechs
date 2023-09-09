@@ -4793,7 +4793,7 @@ try to remember how you got here ..."""
                 text = "%s takes over"%(bestCandidate.name,)
                 src.interaction.showInterruptText(text)
             if bestCandidate == src.gamestate.gamestate.mainChar:
-                text = "you takes over"%(bestCandidate.name,)
+                text = "you take over"
                 src.interaction.showInterruptText(text)
 
             for subordinate in colonyBaseInfo["mainChar"].subordinates:

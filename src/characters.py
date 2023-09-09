@@ -81,6 +81,7 @@ class Character(src.saveing.Saveable):
         self.pathCache = {}
 
         self.skills = []
+        self.grievances = {}
 
         self.movementSpeed = 1
         self.attackSpeed = 1

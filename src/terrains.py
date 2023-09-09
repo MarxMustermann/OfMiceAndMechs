@@ -431,6 +431,11 @@ class Terrain(src.saveing.Saveable):
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
+
+            oldBigPos = char.getBigPosition()
+            while char in self.charactersByTile[oldBigPos]:
+                self.charactersByTile[oldBigPos].remove(char)
+
             if not char.terrain:
                 return
             try:
@@ -1992,7 +1997,6 @@ class Terrain(src.saveing.Saveable):
             displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@s")
             pos = subordinate.getBigPosition()
             chars[pos[1]][pos[0]] = displayChar
-
 
         displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
         if isinstance(src.gamestate.gamestate.mainChar.container,src.rooms.Room):

@@ -4,13 +4,14 @@ import random
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None):
+    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
         self.toCollect = toCollect
         self.reason = reason
+        self.endOnFullInventory = endOnFullInventory
 
         self.targetPosition = targetPosition
 
@@ -37,6 +38,11 @@ This quest will end when the target tile has no items left."""
         if not character:
             return
 
+        if self.endOnFullInventory:
+            if not character.getFreeInventorySpace() > 0:
+                self.postHandler()
+                return
+
         if not self.getLeftoverItems(character):
             self.postHandler()
             return
@@ -57,6 +63,9 @@ This quest will end when the target tile has no items left."""
                 return
 
             if not character.getFreeInventorySpace() > 0:
+                if self.endOnFullInventory:
+                    self.postHandler()
+                    return
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 self.addQuest(quest)
                 return

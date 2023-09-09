@@ -304,6 +304,8 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def addGrievance(self,grievance):
+        self.grievances[grievance] = src.gamestate.gamestate.tick
 
     def weightAttack(self,bigPos):
         enemiesFound = []

@@ -47,11 +47,13 @@ Swords can range from 10 to 25 damage per hit.
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
-    def findBestEquipment(self):
+    def findBestEquipment(self,character):
         bestArmor = None
         bestSword = None
         for room in self.character.getTerrain().rooms:
             for item in room.getItemsByType("Armor"):
+                if not item == room.getItemByPosition(item.getPosition())[0]:
+                    continue
                 if not bestArmor:
                     bestArmor = item
                     continue
@@ -59,19 +61,26 @@ Swords can range from 10 to 25 damage per hit.
                     continue
                 bestArmor = item
             for item in room.getItemsByType("Sword"):
+                if not item == room.getItemByPosition(item.getPosition())[0]:
+                    continue
                 if not bestSword:
                     bestSword = item
                     continue
                 if bestSword.baseDamage > item.baseDamage:
                     continue
                 bestSword = item
+        
+        if character.armor and bestArmor.armorValue <= character.armor.armorValue:
+            bestArmor = None
+        if character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
+            bestSword = None
         return (bestSword,bestArmor)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return 
 
-        (bestSword,bestArmor) = self.findBestEquipment()
+        (bestSword,bestArmor) = self.findBestEquipment(character)
 
         if bestSword and bestSword.baseDamage > character.weapon.baseDamage:
             return
@@ -123,7 +132,7 @@ Swords can range from 10 to 25 damage per hit.
         if self.subQuests:
             return (None,None)
 
-        (bestSword,bestArmor) = self.findBestEquipment()
+        (bestSword,bestArmor) = self.findBestEquipment(character)
         if bestSword and bestSword.baseDamage > character.weapon.baseDamage:
             if not character.container == bestSword.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())

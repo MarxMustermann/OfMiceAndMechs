@@ -20,12 +20,14 @@ class DutyArtwork(src.items.Item):
                 
         self.applyOptions.extend(
                                                 [
+                                                    ("showOverview", "show overview"),
                                                     ("showMatrix", "show matrix based"),
                                                 ]
                                 )
 
         self.applyMap = {
                                     "showMatrix": self.showMatrix,
+                                    "showOverview": self.showOverview,
                                 }
 
         self.description = """
@@ -35,12 +37,6 @@ This will change what work the clones are doing when told to be useful."""
         self.usageInfo = """
 Use it by activating it and selecting in what mode you want to set the duties.
 After changing the duties the clones should change their behaviour after completing their current task."""
-
-    def apply(self,character):
-        if not character.rank < 4:
-            character.addMessage("you need to have rank 3 to use this machine")
-            return
-        super().apply(character)
 
     def changeCharges(self,delta):
         self.charges += delta
@@ -58,6 +54,9 @@ After changing the duties the clones should change their behaviour after complet
         return personnelArtwork.cityLeader
 
     def showMatrix(self, character):
+        if not character.rank < 4:
+            character.addMessage("you need to have rank 3 to do this. You can see the overview though.")
+            return
         self.submenue = src.interaction.JobAsMatrixMenu(self)
         character.macroState["submenue"] = self.submenue
 

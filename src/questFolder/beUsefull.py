@@ -1525,9 +1525,6 @@ We should stop watching and do something about that.
             if numNPCs < 10:
                 return 
 
-            if not character.armor or not character.weapon or character.weapon.baseDamae < 10:
-                return
-
             positions = [(7,6),(7,5),(7,4),(7,3),(7,2),(6,6),(8,6)]
             for pos in positions:
                 if character.registers["HOMETx"] == positions[0] and character.registers["HOMETy"] == positions[1]:
@@ -1546,7 +1543,7 @@ We should stop watching and do something about that.
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
 
-                quest = src.quests.questMap["Equip"]()
+                quest = src.quests.questMap["Equip2"]()
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()

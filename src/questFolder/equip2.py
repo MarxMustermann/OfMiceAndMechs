@@ -143,7 +143,7 @@ Swords can range from 10 to 25 damage per hit.
                 return ([quest],None)
             
             if character.getDistance(bestSword.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition())
+                quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition(),ignoreEndBlocked=True)
                 return ([quest],None)
             
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]

@@ -2758,7 +2758,8 @@ class Monster(Character):
             super().die(reason, addCorpse=False)
         else:
             new = src.items.itemMap["MoldFeed"]()
-            self.container.addItem(new, self.getPosition())
+            if self.container:
+                self.container.addItem(new, self.getPosition())
             super().die(reason, addCorpse=False)
 
     # bad code: very specific and unclear

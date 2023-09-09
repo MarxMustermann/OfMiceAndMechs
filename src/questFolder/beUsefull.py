@@ -1468,36 +1468,66 @@ We should stop watching and do something about that.
 
     def checkTriggerQuesting(self,character,room):
         if character.health == character.maxHealth:
+
             terrain = character.getTerrain()
             toCheck = terrain.characters[:]
             for room in terrain.rooms:
                 toCheck.extend(room.characters)
 
             numNPCs = 0
+            numNPCsWithSameDuties = {}
+            for duty in character.duties:
+                numNPCsWithSameDuties[duty] = 0
             foundEnemies = []
             for char in toCheck:
                 if char.faction == character.faction:
+                    if len(char.duties) > 1:
+                        continue
+                    if char == character:
+                        continue
                     numNPCs += 1
+                    for duty in character.duties:
+                        if duty in char.duties:
+                            numNPCsWithSameDuties[duty] += 1
                 else:
                     if not char.dead:
                         foundEnemies.append(char)
+
+            if not "questing" in character.duties:
+                for duty in character.duties:
+                    if not numNPCsWithSameDuties[duty] > 0:
+                        return
 
             if numNPCs < 5:
                 return 
 
             if foundEnemies:
-                print(foundEnemies)
-                enemy = random.choice(foundEnemies)
-                quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                self.idleCounter = 0
+                random.shuffle(foundEnemies)
+                for enemy in foundEnemies:
+                    weight = character.weightAttack(enemy.getBigPosition())
+                    if weight > 0:
+                        print(weight)
+                        continue
 
-                return True
+                    quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    
+                    quest = src.quests.questMap["Equip"]()
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    self.idleCounter = 0
+                    return True
+
+            if foundEnemies:
+                return
 
             if numNPCs < 10:
                 return 
+
+            if not character.armor or not character.weapon or character.weapon.baseDamae < 10:
+                return
 
             positions = [(7,6),(7,5),(7,4),(7,3),(7,2),(6,6),(8,6)]
             for pos in positions:

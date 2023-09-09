@@ -123,7 +123,7 @@ Pick up and unbolt items that are in the way.
                         directions.append("d")
                     if not (character.yPosition in (13,14,) and not character.container.isRoom):
                         directions.append("s")
-                    return (None,("L"+directions[0],"drop item"))
+                    return (None,("L"+random.choice(directions),"drop item"))
 
                 direction = "."
                 if offset == (-1, 0,0):

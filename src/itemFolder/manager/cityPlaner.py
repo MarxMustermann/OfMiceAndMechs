@@ -458,6 +458,9 @@ class CityPlaner(src.items.Item):
             buildSites.append(((7,3,0),"GooProducer",{}))
             buildSites.append(((8,3,0),"GooDispenser",{}))
             buildSites.append(((9,3,0),"VialFiller",{}))
+            buildSites.append(((9,9,0),"GrowthTank",{}))
+            buildSites.append(((3,9,0),"CorpseAnimator",{}))
+            buildSites.append(((3,10,0),"CorpseShredder",{}))
 
         if floorPlanType == "smokingRoom":
             buildSites.append(((4,4,0),"CoalBurner",{}))

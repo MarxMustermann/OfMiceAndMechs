@@ -325,10 +325,11 @@ If you don't find a %s blueprint, research it.
                 quest = src.quests.questMap["ResearchBluePrint"](itemType=self.itemType,tryHard=self.tryHard,reason="have a blueprint to load into the MachineMachine")
                 self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest], None)
-            newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
-            return ([newQuest],None)
-            #self.fail(reason="no blueprint for "+self.itemType)
-            #return (None,None)
+            if "machining" in character.duties:
+                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
+                return ([newQuest],None)
+            self.fail(reason="no blueprint for "+self.itemType)
+            return (None,None)
         return (None,None)
     
     def triggerCompletionCheck(self,character=None):

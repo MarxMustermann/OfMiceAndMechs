@@ -1466,6 +1466,14 @@ We should stop watching and do something about that.
         1/0
 
     def checkTriggerQuesting(self,character,room):
+        if not character.weapon or not character.armor:
+            quest = src.quests.questMap["Equip2"]()
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            self.idleCounter = 0
+            return True
+
         if character.health == character.maxHealth:
 
             terrain = character.getTerrain()
@@ -1508,11 +1516,15 @@ We should stop watching and do something about that.
                         print(weight)
                         continue
 
+                    quest = src.quests.questMap["ScavengeTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+
                     quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     
-                    quest = src.quests.questMap["Equip"]()
+                    quest = src.quests.questMap["Equip2"]()
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     quest.activate()

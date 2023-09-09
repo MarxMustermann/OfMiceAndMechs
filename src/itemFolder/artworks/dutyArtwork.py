@@ -53,6 +53,33 @@ After changing the duties the clones should change their behaviour after complet
 
         return personnelArtwork.cityLeader
 
+    def showOverview(self, character):
+        text = ""
+
+        terrain = character.getTerrain()
+
+        characters = []
+        characters.extend(terrain.characters)
+        for room in terrain.rooms:
+            characters.extend(room.characters)
+
+        for testChar in characters[:]:
+            if not testChar.faction == character.faction or len(testChar.duties) > 1:
+                characters.remove(testChar)
+        
+        dutyMap = {}
+        for char in characters:
+            for duty in char.duties:
+                if not duty in dutyMap:
+                    dutyMap[duty] = 0
+                dutyMap[duty] += 1
+
+        for (k,v) in dutyMap.items():
+            text += "%s - %s\n"%(k,v,)
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
+
     def showMatrix(self, character):
         if not character.rank < 4:
             character.addMessage("you need to have rank 3 to do this. You can see the overview though.")

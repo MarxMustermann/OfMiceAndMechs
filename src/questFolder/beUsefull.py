@@ -2519,7 +2519,7 @@ Start by using the city builder to order a weapon production line to be built.
                 src.gamestate.gamestate.save()
                 self.showedPlanWeaponProduction = True
 
-                floorPlansToSet = ["weaponProduction"]
+                floorPlansToSet = ["weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction"]
                 for room in terrain.rooms:
                     if room.tag in floorPlansToSet:
                         floorPlansToSet.remove(room.tag)

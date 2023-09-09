@@ -156,6 +156,14 @@ Swords can range from 10 to 25 damage per hit.
 
                 if not source:
                     #character.runCommandString(".14.")
+                    if "metal working" in character.duties:
+                        for itemType in toSearchFor:
+                            quests = []
+                            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                            quests.append(quest)
+                            quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=itemType,produceToInventory=False)
+                            quests.append(quest)
+                            return (quests,None)
                     self.fail(reason="no source for equipment")
                     return (None,None)
 

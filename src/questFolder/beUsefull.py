@@ -1227,6 +1227,11 @@ We should stop watching and do something about that.
                 self.idleCounter = 0
                 return True
         
+    def registerDutyFail(self,extraParam):
+        if isinstance(extraParam["quest"],src.quests.questMap["SetUpMachine"]):
+            grievance = ("SetUpMachine",extraParam["quest"].itemType,"no machine")
+            self.character.addGrievance(grievance)
+
     def checkTriggerMachinePlacing(self,character,room):
         terrain = character.getTerrain()
         rooms = terrain.rooms[:]
@@ -1240,6 +1245,11 @@ We should stop watching and do something about that.
                         continue
                     checkedMaterial.add(buildSite[1])
 
+                    if buildSite[1] == "Machine":
+                        lastCheck = character.grievances.get(("SetUpMachine",buildSite[2]["toProduce"],"no machine"),0)
+                        if lastCheck+10 > src.gamestate.gamestate.tick:
+                            continue
+
                     neededItem = buildSite[1]
                     if buildSite[1] == "Command":
                         neededItem = "Sheet"
@@ -1249,7 +1259,9 @@ We should stop watching and do something about that.
                         hasItem = True
 
                     if buildSite[1] == "Machine":
-                        self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
+                        quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0])
+                        self.addQuest(quest)
+                        self.startWatching(quest,self.registerDutyFail,"failed")
                         self.idleCounter = 0
                         return True
 
@@ -1516,7 +1528,7 @@ We should stop watching and do something about that.
                         print(weight)
                         continue
 
-                    quest = src.quests.questMap["ScavengeTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
+                    quest = src.quests.questMap["ScavengeTile"](targetPosition=enemy.getBigPosition(),endOnFullInventory=True)
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
 

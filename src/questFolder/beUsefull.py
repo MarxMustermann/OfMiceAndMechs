@@ -618,7 +618,6 @@ We should stop watching and do something about that.
                 self.addQuest(quest)
                 return True
 
-        # add meeting hall if there is none
         if cityPlaner and not cityPlaner.generalPurposeRooms:
             for room in terrain.rooms:
                 if room.getPosition() == (7,0,0):
@@ -652,7 +651,7 @@ We should stop watching and do something about that.
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
-            floorPlansToSet = ["gooProcessing","weaponProduction"]
+            floorPlansToSet = ["gooProcessing","weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction"]
             for room in terrain.rooms:
                 if room.tag in floorPlansToSet:
                     floorPlansToSet.remove(room.tag)

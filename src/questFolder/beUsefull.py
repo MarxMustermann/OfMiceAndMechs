@@ -1590,6 +1590,7 @@ We should stop watching and do something about that.
         if not character.container:
             return
 
+        """
         if not character.superior and character.rank == 6 and character.reputation >= 300:
             quest = src.quests.questMap["GetPromotion"](5)
             self.addQuest(quest)
@@ -1610,6 +1611,7 @@ We should stop watching and do something about that.
             quest.activate()
             quest.assignToCharacter(character)
             return
+        """
 
         if (character.rank == 5 and character.getNumSubordinates() < 1) or (character.rank == 4 and character.getNumSubordinates() < 2) or (character.rank == 3 and character.getNumSubordinates() < 3):
             homeRoom = character.getHomeRoom()

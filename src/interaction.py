@@ -4631,6 +4631,7 @@ class CharacterInfoMenu(SubMenu):
         text += "position: %s\n" % (char.getSpacePosition(),)
         text += "big position: %s\n" % (char.getBigPosition(),)
         text += "terrain position: %s\n" % (char.getTerrainPosition(),)
+        text += "grievances: %s\n" % (char.grievances,)
 
         return text
 

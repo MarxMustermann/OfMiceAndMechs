@@ -55,7 +55,7 @@ Use the CityPlaner to designate the room.
 """)
         return out
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         
         if self.subQuests:
             return (None,None)
@@ -76,6 +76,11 @@ Use the CityPlaner to designate the room.
             if self.roomPosition in cityPlaner.plannedRooms:
                 command += "x"
                 return (None,(command,"to remove old construction site marker"))
+
+            if not self.roomPosition in cityPlaner.getAvailableRoomPositions():
+                if not dryRun:
+                    self.fail(reason="room position already taken")
+                return (None,None)
 
             if self.roomType == "generalPurposeRoom":
                 command += "g"
@@ -193,7 +198,7 @@ Use the CityPlaner to designate the room.
         if self.triggerCompletionCheck(character):
             return
 
-        (nextQuests,nextCommand) = self.getNextStep(character)
+        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

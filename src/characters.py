@@ -303,6 +303,40 @@ class Character(src.saveing.Saveable):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+
+    def weightAttack(self,bigPos):
+        enemiesFound = []
+
+        terrain = self.getTerrain()
+        characters = terrain.charactersByTile.get(bigPos,[])
+
+        for otherChar in characters:
+            if otherChar == self:
+                continue
+            if not otherChar.faction == self.faction:
+                enemiesFound.append(otherChar)
+
+        if enemiesFound:
+            challengeRating = 0
+            challengeRating -= self.health
+            armorValue = 0
+            if self.armor:
+                armorValue = self.armor.armorValue
+            completeDamage = 0
+            completeHealth = 0
+            for enemyFound in enemiesFound:
+                completeDamage += max(0,enemyFound.baseDamage-armorValue)
+                completeHealth += enemyFound.health
+            ownDamage = self.baseDamage
+            if self.weapon:
+                ownDamage += self.weapon.baseDamage
+            
+            numTurns = completeHealth//ownDamage+1
+            challengeRating += numTurns*completeDamage
+            return challengeRating
+
+        return -self.health
+
     def learnSkill(self,skill):
         if not skill in self.skills:
             self.skills.append(skill)

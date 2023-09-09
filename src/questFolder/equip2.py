@@ -70,9 +70,9 @@ Swords can range from 10 to 25 damage per hit.
                     continue
                 bestSword = item
         
-        if character.armor and bestArmor.armorValue <= character.armor.armorValue:
+        if bestArmor and character.armor and bestArmor.armorValue <= character.armor.armorValue:
             bestArmor = None
-        if character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
+        if bestSword and character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
             bestSword = None
         return (bestSword,bestArmor)
 
@@ -82,11 +82,15 @@ Swords can range from 10 to 25 damage per hit.
 
         (bestSword,bestArmor) = self.findBestEquipment(character)
 
-        if bestSword and bestSword.baseDamage > character.weapon.baseDamage:
+        if bestSword and character.weapon and bestSword.baseDamage > character.weapon.baseDamage:
             return
 
-        if bestArmor and bestArmor.armorValue > character.armor.armorValue:
+        if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
             return
+
+        if "metal working" in character.duties:
+            if not character.weapon or not character.armor:
+                return
 
         self.postHandler()
         return
@@ -133,7 +137,7 @@ Swords can range from 10 to 25 damage per hit.
             return (None,None)
 
         (bestSword,bestArmor) = self.findBestEquipment(character)
-        if bestSword and bestSword.baseDamage > character.weapon.baseDamage:
+        if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
             if not character.container == bestSword.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())
                 return ([quest],None)
@@ -148,7 +152,7 @@ Swords can range from 10 to 25 damage per hit.
                     return (None,("J"+offset[1],"equip the item"))
             1/0
 
-        if bestArmor and bestArmor.armorValue > character.armor.armorValue:
+        if bestArmor and (not character.armor or bestArmor.armorValue > character.armor.armorValue):
             if not character.container == bestArmor.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition())
                 return ([quest],None)
@@ -162,5 +166,24 @@ Swords can range from 10 to 25 damage per hit.
                 if character.getPosition(offset=offset[0]) == bestArmor.getPosition():
                     return (None,("J"+offset[1],"equip the item"))
             2/0
+
+        if "metal working" in character.duties:
+            if not character.weapon:
+                quests = []
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quests.append(quest)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=False)
+                quests.append(quest)
+                return (quests,None)
+
+            if not character.armor:
+                quests = []
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quests.append(quest)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=False)
+                quests.append(quest)
+                return (quests,None)
+
+        return (None,None)
 
 src.quests.addType(Equip2)

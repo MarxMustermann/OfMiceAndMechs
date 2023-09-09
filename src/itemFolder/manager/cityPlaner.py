@@ -483,6 +483,20 @@ class CityPlaner(src.items.Item):
             for pos in [(4,5),(8,5),(8,7),(4,7)]:
                 inputSlots.append(((pos[0],pos[1],0),"Coal"))
 
+            for y in (1,3,6,9,11):
+                for x in range(1,12):
+                    if y in (3,9) and x in (2,10):
+                        continue
+                    walkingSpaces.append((x,y,0))
+
+            for x in (1,3,6,9,11):
+                for y in range(2,11):
+                    if y in (3,6,9):
+                        continue
+                    if x in (3,9) and y in (2,10):
+                        continue
+                    walkingSpaces.append((x,y,0))
+
         if floorPlanType == "scrapCompactorProduction":
             for y in (1,4,6,8,11,):
                 for x in range(1,12):

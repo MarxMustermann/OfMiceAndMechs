@@ -7122,7 +7122,12 @@ class ActionMeta(object):
         self.payload = payload
         self.content = content
 
-def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
+def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, actionMeta=None, explecitConsole=None):
+    if explecitConsole:
+        tcodConsole_local = explecitConsole
+    else:
+        tcodConsole_local = tcodConsole
+
     if not internalOffset:
         internalOffset = [0,0]
 
@@ -7157,24 +7162,24 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
                 if actionMeta:
                     for i in range(0,len(toPrint)):
                         src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
-                tcodConsole.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
+                tcodConsole_local.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
             internalOffset[0] += len(line)
             counter += 1
 
 
     if isinstance(inData,tuple):
-        printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta)
+        printUrwidToTcod(inData[1],offset,(inData[0].get_rgb_values()[:3],inData[0].get_rgb_values()[3:]),internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     if isinstance(inData,int):
-        printUrwidToTcod(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta)
+        printUrwidToTcod(src.canvas.displayChars.indexedMapping[inData],offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     if isinstance(inData,list):
         for item in inData:
-            printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta)
+            printUrwidToTcod(item,offset,color,internalOffset,size,actionMeta,explecitConsole = tcodConsole_local)
 
     if isinstance(inData, ActionMeta):
-        printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload)
+        printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
     
     #footertext = stringifyUrwid(inData)
 
@@ -7658,6 +7663,11 @@ def showMainMenu(args=None):
         "PrefabDesign",
         "p",
         ),
+        (
+        "Hero",
+        "Hero",
+        "x",
+        ),
         #(
         #"basebuilding",
         #"basebuilding",
@@ -7943,6 +7953,10 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     elif selectedScenario == "Tutorials":
                         terrain = "nothingness"
                         phase = "Tutorials"
+                    elif selectedScenario == "Hero":
+                        terrain = "nothingness"
+                        phase = "Tutorials"
+                        showHeroIntro()
 
                     if terrain and terrain == "scrapField":
                         src.gamestate.gamestate.terrainType = src.terrains.ScrapField
@@ -8344,6 +8358,494 @@ def showInterruptText(text):
                 key = event.sym
                 if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
                     return
+
+def showHeroIntro():
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    def stringifyUrwid(inData):
+        outData = ""
+        for item in inData:
+            if isinstance(item, tuple):
+                outData += stringifyUrwid(item[1])
+            if isinstance(item, list):
+                outData += stringifyUrwid(item)
+            if isinstance(item, str):
+                outData += item
+            if isinstance(item, ActionMeta):
+                outData += item.content
+        return outData
+
+    src.gamestate.setup(None) 
+    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+    src.gamestate.gamestate.mainChar = src.characters.Character()
+
+    emptyRoom = src.rooms.EmptyRoom(None,None,None,None)
+    emptyRoom.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+    emptyRoom.hidden = False
+
+    mainRoom = src.rooms.EmptyRoom(None,None,None,None)
+    mainRoom.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+    mainRoom.hidden = False
+
+    mainChar = src.characters.Character()
+    mainRoom.addCharacter(
+        mainChar, 6, 6
+    )
+    src.gamestate.gamestate.mainChar = mainChar
+
+    anvilPos = (10,2,0)
+    machinemachine = src.items.itemMap["Anvil"]()
+    mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+    mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+    mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+    mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+    mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+    metalWorkBenchPos = (8,3,0)
+    machinemachine = src.items.itemMap["MetalWorkingBench"]()
+    mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+    mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+    mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+    mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+    mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+    anvilPos = (9,5,0)
+    machinemachine = src.items.itemMap["MachiningTable"]()
+    mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+    mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"MetalBars")
+    mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"MetalBars")
+    mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+    mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+    epochArtwork = src.items.itemMap["EpochArtwork"](500,rewardSet="colony")
+    epochArtwork.epochSurvivedRewardAmount = 0
+    epochArtwork.changeCharges(60)
+    mainRoom.addItem(epochArtwork,(3,1,0))
+    """
+    quest = src.quests.questMap["EpochQuest"]()
+    mainChar.assignQuest(quest,active=True)
+
+    #cityBuilder = src.items.itemMap["CityBuilder2"]()
+    #cityBuilder.architect = architect
+    #mainRoom.addItem(cityBuilder,(7,1,0))
+    #cityBuilder.registerRoom(mainRoom)
+    """
+
+    dutyArtwork = src.items.itemMap["DutyArtwork"]()
+    mainRoom.addItem(dutyArtwork,(5,1,0))
+
+    personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+    personnelArtwork.charges = 10
+    mainRoom.addItem(personnelArtwork,(1,8,0))
+
+    item = src.items.itemMap["ProductionArtwork"]()
+    item.bolted = True
+    item.charges = 1
+    mainRoom.addItem(item,(4,3,0))
+
+    item = src.items.itemMap["MachineMachine"]()
+    item.bolted = True
+    mainRoom.addItem(item,(4,5,0))
+
+    item = src.items.itemMap["BluePrinter"]()
+    item.bolted = True
+    mainRoom.addItem(item,(2,4,0))
+
+    item = src.items.itemMap["SpecialItemSlot"]()
+    item.itemID = 1
+    item.hasItem = True
+    mainRoom.addItem(item,(1,1,0))
+    item = src.items.itemMap["SpecialItemSlot"]()
+    item.itemID = 2
+    mainRoom.addItem(item,(2,1,0))
+    for i in range(0,5):
+        item = src.items.itemMap["SpecialItemSlot"]()
+        item.hasItem = False
+        item.itemID = 3+i
+        mainRoom.addItem(item,(7+i,7,0))
+
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,10,0))
+        for x in range(7,12):
+            mainRoom.walkingSpace.add((x,10,0))
+
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,6,0))
+        for x in range(7,12):
+            mainRoom.walkingSpace.add((x,6,0))
+        mainRoom.walkingSpace.add((5,2,0))
+        mainRoom.walkingSpace.add((4,2,0))
+        mainRoom.walkingSpace.add((3,2,0))
+        mainRoom.walkingSpace.add((2,2,0))
+        mainRoom.walkingSpace.add((1,2,0))
+        mainRoom.walkingSpace.add((7,5,0))
+        mainRoom.walkingSpace.add((7,4,0))
+        mainRoom.walkingSpace.add((7,2,0))
+        mainRoom.walkingSpace.add((7,1,0))
+        mainRoom.walkingSpace.add((8,1,0))
+        mainRoom.walkingSpace.add((9,1,0))
+        mainRoom.walkingSpace.add((11,5,0))
+        mainRoom.walkingSpace.add((11,4,0))
+        mainRoom.walkingSpace.add((11,3,0))
+        mainRoom.walkingSpace.add((10,4,0))
+
+        for y in range(1,12):
+            mainRoom.walkingSpace.add((6,y,0))
+
+        for y in (7,9,11):
+            if not y == 7:
+                for x in range(7,12):
+                    mainRoom.addStorageSlot((x,y,0),None)
+            for x in range(1,6):
+                mainRoom.addStorageSlot((x,y,0),None)
+
+    tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
+    console1 = tcod.console.Console(26, 13)
+    console2 = tcod.console.Console(26, 13)
+    sdl_window = tcod.sdl.video.new_window(
+        (console1.width+40) * tileset.tile_width,
+        (console1.height+20) * tileset.tile_height,
+        flags=tcod.lib.SDL_WINDOW_RESIZABLE,
+    )
+    sdl_renderer = tcod.sdl.render.new_renderer(sdl_window, target_textures=True)
+    atlas = tcod.render.SDLTilesetAtlas(sdl_renderer, tileset)
+    stage = -1
+
+    printUrwidToTcod(fixRoomRender(mainRoom.render()),(0,0),explecitConsole=console1)
+    printUrwidToTcod(fixRoomRender(emptyRoom.render()),(0,0),explecitConsole=console2)
+
+    itemStartingPositions = {}
+    itemMovementVectors = {}
+    itemTravelTime = {}
+
+    timeIndex = 0
+    while True:
+        sdl_renderer.clear()
+        console_render = tcod.render.SDLConsoleRender(atlas)
+
+        if stage == 0: # draw floor moving in
+            offsetX = 0
+            if timeIndex*5 < 11*tileset.tile_height: # move down from top
+                offsetX = timeIndex*5
+            elif timeIndex*5 < 11*tileset.tile_height+20: # overshoot
+                offsetX = timeIndex*5
+            elif timeIndex*5 < 11*tileset.tile_height+20+20: # move back up
+                offsetX = 11*tileset.tile_height+20-(timeIndex*5-(11*tileset.tile_height+20))
+            else: # settle into static position
+                offsetX = 11*tileset.tile_height
+
+            if timeIndex > 80:
+                # move on to next stage
+                stage += 1
+                timeIndex = 0
+
+            sdl_renderer.copy(console_render.render(console2),dest=(22*tileset.tile_width,offsetX,(console1.width-4) * tileset.tile_width,(console1.height-2) * tileset.tile_height),source=(2*tileset.tile_width,1 * tileset.tile_height,(console1.width-4) * tileset.tile_width,(console1.height-2) * tileset.tile_height)) # draw floor
+        if stage == 1:
+            # draw floor
+            sdl_renderer.copy(console_render.render(console2),dest=(22*tileset.tile_width,11*tileset.tile_height,(console1.width-4) * tileset.tile_width,(console1.height-2) * tileset.tile_height),source=(2*tileset.tile_width,1 * tileset.tile_height,(console1.width-4) * tileset.tile_width,(console1.height-2) * tileset.tile_height))
+
+            wallspeed = 2
+
+            # draw left walls
+            offsetLeftX = -10 # start offscreen left
+            if (timeIndex*wallspeed)+offsetLeftX < 20*tileset.tile_width: # move to the right
+                offsetLeftX = (timeIndex*wallspeed)+offsetLeftX
+            else: # settle in in final position
+                offsetLeftX = 20*tileset.tile_width
+            angleLeft = (20*tileset.tile_width)-offsetLeftX # rotate to target
+            sdl_renderer.copy(console_render.render(console2),dest=(offsetLeftX,10*tileset.tile_height,2 * tileset.tile_width,console1.height * tileset.tile_height),source=(0*tileset.tile_width,0 * tileset.tile_height,2 * tileset.tile_width,console1.height * tileset.tile_height),angle=angleLeft) # actually draw walls
+
+            # draw right walls
+            offsetRightX = 60 # start offscreen right
+            if offsetRightX-(timeIndex*wallspeed) > 0: # move to the left
+                offsetRightX = offsetRightX-(timeIndex*wallspeed)
+            else: # settle in in final position
+                offsetRightX = 0
+            angleRight = offsetRightX # rotate to target
+            sdl_renderer.copy(console_render.render(console2),dest=(44*tileset.tile_width+offsetRightX,10*tileset.tile_height,2 * tileset.tile_width,console1.height * tileset.tile_height),source=(0*tileset.tile_width,0 * tileset.tile_height,2 * tileset.tile_width,console1.height * tileset.tile_height),angle=angleRight) # actually draw walls
+
+            # draw top walls
+            offsetTopX = -10 # start offscreen top
+            if (timeIndex*wallspeed)+offsetTopX < 10*tileset.tile_height: # move to the bottom
+                offsetTopX = (timeIndex*wallspeed)+offsetTopX
+            else: # settle in in final position
+                offsetTopX = 10*tileset.tile_height
+
+            angleTop = (10*tileset.tile_height)-offsetTopX # rotate to target
+            sdl_renderer.copy(console_render.render(console2),dest=(22*tileset.tile_width,offsetTopX,22 * tileset.tile_width,1 * tileset.tile_height),source=(2*tileset.tile_width,0 * tileset.tile_height,22 * tileset.tile_width,1 * tileset.tile_height),angle=angleTop) # actually draw walls
+
+            # draw bottom walls
+            offsetBottomX = 60 # start offscreen bottom
+            if offsetBottomX-(timeIndex*wallspeed) > 0: # move to the left
+                offsetBottomX = offsetBottomX-(timeIndex*wallspeed)
+            else: # settle in in final position
+                offsetBottomX = 0
+
+            angleBottom = offsetBottomX # rotate to target
+            sdl_renderer.copy(console_render.render(console2),dest=(22*tileset.tile_width,22*tileset.tile_height+offsetBottomX,22 * tileset.tile_width,1 * tileset.tile_height),source=(2*tileset.tile_width,0 * tileset.tile_height,22 * tileset.tile_width,1 * tileset.tile_height),angle=angleBottom) # actually draw walls
+
+            if timeIndex > 100:
+                # move on to next stage
+                stage += 1
+                timeIndex = 0
+
+        if stage == 2:
+            sdl_renderer.copy(console_render.render(console2),dest=(20*tileset.tile_width,10*tileset.tile_height,console1.width * tileset.tile_width,console1.height * tileset.tile_height))
+
+            # draw main char
+            mainCharStartOffset = (16,1) # main char starting position
+            mainCharPosX = mainCharStartOffset[0]*2*tileset.tile_width
+            mainCharPosY = mainCharStartOffset[1]*tileset.tile_height
+            if mainCharPosY+(timeIndex*5) < (mainChar.yPosition+10)*tileset.tile_height: # move character down
+                mainCharPosY = mainCharPosY+(timeIndex*5)
+            else: # settle in in final position
+                mainCharPosY = (mainChar.yPosition+10)*tileset.tile_height
+            angle = mainCharPosY - (mainChar.yPosition+10)*tileset.tile_height # rotate to target
+            sdl_renderer.copy(console_render.render(console1),dest=(mainCharPosX,mainCharPosY,2*tileset.tile_width,1*tileset.tile_height),source=(6*2*tileset.tile_width,6 * tileset.tile_height,2*tileset.tile_width,1*tileset.tile_height),angle=angle) # actually draw main char
+
+            if timeIndex > 50:
+                # move on to next stage
+                stage += 1
+                timeIndex = 0
+
+        if stage == 3:
+            sdl_renderer.copy(console_render.render(console2),dest=(20*tileset.tile_width,10*tileset.tile_height,console1.width * tileset.tile_width,console1.height * tileset.tile_height))
+
+            # set item startingPos
+            arriveInTicks = 100
+            for item in mainRoom.itemsOnFloor:
+                if item.type == "Wall":
+                    continue
+                if item.type == "Door":
+                    continue
+
+                if not item in itemStartingPositions:
+                    arriveInTicks -= 5
+                    side = random.choice(["left","top","right","bottom"])
+                    if side == "left":
+                        startPos = (0,random.randint(0,33*tileset.tile_height))
+                    if side == "top":
+                        startPos = (random.randint(0,33*tileset.tile_height),0)
+                    if side == "right":
+                        startPos = (33*tileset.tile_height,random.randint(0,33*tileset.tile_height))
+                    if side == "bottom":
+                        startPos = (random.randint(0,33*tileset.tile_height),33*2*tileset.tile_width)
+                    itemStartingPositions[item] = startPos
+                    endPos = ((10+item.xPosition)*2*tileset.tile_width,(10+item.yPosition)*tileset.tile_height)
+                    itemMovementVectors[item] = ((endPos[0]-startPos[0])/arriveInTicks,(endPos[1]-startPos[1])/arriveInTicks)
+                    itemTravelTime[item] = arriveInTicks
+
+            # draw items
+            for item in itemStartingPositions.keys():
+                if timeIndex < itemTravelTime[item]:
+                    pos = (int(itemStartingPositions[item][0]+itemMovementVectors[item][0]*timeIndex),int(itemStartingPositions[item][1]+itemMovementVectors[item][1]*timeIndex))
+                else:
+                    pos = ((10+item.xPosition)*2*tileset.tile_width,(10+item.yPosition)*tileset.tile_height)
+                sdl_renderer.copy(console_render.render(console1),dest=(pos[0],pos[1],2*tileset.tile_width,1*tileset.tile_height),source=(item.xPosition*2*tileset.tile_width,item.yPosition * tileset.tile_height,2*tileset.tile_width,1*tileset.tile_height)) # actually draw item
+
+            if timeIndex > 140:
+                # move on to next stage
+                stage += 1
+                timeIndex = 0
+
+            # add mainChar
+            sdl_renderer.copy(console_render.render(console1),dest=((10+mainChar.xPosition)*2*tileset.tile_width,(10+mainChar.yPosition)*tileset.tile_height,2*tileset.tile_width,1*tileset.tile_height),source=(6*2*tileset.tile_width,6 * tileset.tile_height,2*tileset.tile_width,1*tileset.tile_height)) # actually draw main char
+
+        if stage == 4:
+            sdl_renderer.copy(console_render.render(console1),dest=(20*tileset.tile_width,10*tileset.tile_height,console1.width * tileset.tile_width,console1.height * tileset.tile_height))
+
+        sdl_renderer.present()
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.RETURN:
+                    stage += 1
+                    timeIndex = 0
+        time.sleep(0.01)
+        timeIndex += 1
+
+def showHeroIntro2():
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    src.gamestate.setup(None) 
+    src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
+    src.gamestate.gamestate.mainChar = src.characters.Character()
+    
+    stage = 0
+    skip = False
+
+    while 1:
+        if not skip:
+            tcodConsole.clear()
+
+        if stage == 0:
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(62,27))
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+
+        if stage == 1:
+            offset = (16,7)
+            wall = src.items.itemMap["Wall"]()
+            totalOffsetX = 56+26-offset[0]*2
+            totalOffsetY = 15+13-offset[1]
+            for i in range(0,13):
+                if i == 6:
+                    continue
+                printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))
+                printUrwidToTcod(wall.render(),(totalOffsetX,totalOffsetY+i))
+                printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY+12))
+                printUrwidToTcod(wall.render(),(totalOffsetX+12*2,totalOffsetY+i))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(62,27))
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+
+        if stage in (2,3,4,5,6,7,):
+            mainRoom = src.rooms.EmptyRoom(None,None,None,None)
+            mainRoom.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+            mainRoom.hidden = False
+
+            mainChar = src.characters.Character()
+            mainRoom.addCharacter(
+                mainChar, 6, 6
+            )
+            src.gamestate.gamestate.mainChar = mainChar
+
+        if stage in (3,4,5,6,7,):
+            anvilPos = (10,2,0)
+            machinemachine = src.items.itemMap["Anvil"]()
+            mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+            mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+            mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+            mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+            mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+            metalWorkBenchPos = (8,3,0)
+            machinemachine = src.items.itemMap["MetalWorkingBench"]()
+            mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+            mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+            mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+            mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+            mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+            anvilPos = (9,5,0)
+            machinemachine = src.items.itemMap["MachiningTable"]()
+            mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+            mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"MetalBars")
+            mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"MetalBars")
+            mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+            mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        if stage in (4,5,6,7,):
+            epochArtwork = src.items.itemMap["EpochArtwork"](500,rewardSet="colony")
+            epochArtwork.epochSurvivedRewardAmount = 0
+            epochArtwork.changeCharges(60)
+            mainRoom.addItem(epochArtwork,(3,1,0))
+            """
+            quest = src.quests.questMap["EpochQuest"]()
+            mainChar.assignQuest(quest,active=True)
+
+            #cityBuilder = src.items.itemMap["CityBuilder2"]()
+            #cityBuilder.architect = architect
+            #mainRoom.addItem(cityBuilder,(7,1,0))
+            #cityBuilder.registerRoom(mainRoom)
+            """
+
+            dutyArtwork = src.items.itemMap["DutyArtwork"]()
+            mainRoom.addItem(dutyArtwork,(5,1,0))
+
+            personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+            personnelArtwork.charges = 10
+            mainRoom.addItem(personnelArtwork,(1,8,0))
+
+            item = src.items.itemMap["ProductionArtwork"]()
+            item.bolted = True
+            item.charges = 1
+            mainRoom.addItem(item,(4,3,0))
+
+            item = src.items.itemMap["MachineMachine"]()
+            item.bolted = True
+            mainRoom.addItem(item,(4,5,0))
+
+            item = src.items.itemMap["BluePrinter"]()
+            item.bolted = True
+            mainRoom.addItem(item,(2,4,0))
+
+        if stage in (5,6,7,):
+            for x in range(1,6):
+                mainRoom.walkingSpace.add((x,10,0))
+            for x in range(7,12):
+                mainRoom.walkingSpace.add((x,10,0))
+
+            for x in range(1,6):
+                mainRoom.walkingSpace.add((x,6,0))
+            for x in range(7,12):
+                mainRoom.walkingSpace.add((x,6,0))
+            mainRoom.walkingSpace.add((5,2,0))
+            mainRoom.walkingSpace.add((4,2,0))
+            mainRoom.walkingSpace.add((3,2,0))
+            mainRoom.walkingSpace.add((2,2,0))
+            mainRoom.walkingSpace.add((1,2,0))
+            mainRoom.walkingSpace.add((7,5,0))
+            mainRoom.walkingSpace.add((7,4,0))
+            mainRoom.walkingSpace.add((7,2,0))
+            mainRoom.walkingSpace.add((7,1,0))
+            mainRoom.walkingSpace.add((8,1,0))
+            mainRoom.walkingSpace.add((9,1,0))
+            mainRoom.walkingSpace.add((11,5,0))
+            mainRoom.walkingSpace.add((11,4,0))
+            mainRoom.walkingSpace.add((11,3,0))
+            mainRoom.walkingSpace.add((10,4,0))
+
+            for y in range(1,12):
+                mainRoom.walkingSpace.add((6,y,0))
+
+        if stage in (6,7,):
+            for y in (7,9,11):
+                if not y == 7:
+                    for x in range(7,12):
+                        mainRoom.addStorageSlot((x,y,0),None)
+                for x in range(1,6):
+                    mainRoom.addStorageSlot((x,y,0),None)
+
+        if stage in (7,):
+            item = src.items.itemMap["SpecialItemSlot"]()
+            item.itemID = 1
+            item.hasItem = True
+            mainRoom.addItem(item,(1,1,0))
+            item = src.items.itemMap["SpecialItemSlot"]()
+            item.itemID = 2
+            mainRoom.addItem(item,(2,1,0))
+            for i in range(0,5):
+                item = src.items.itemMap["SpecialItemSlot"]()
+                item.hasItem = False
+                item.itemID = 3+i
+                mainRoom.addItem(item,(7+i,7,0))
+
+        if stage in (2,3,4,5,6,7,):
+            printUrwidToTcod(fixRoomRender(mainRoom.render()),(56+26-offset[0]*2,15+13-offset[1]))
+
+            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                if event.type == "WINDOWCLOSE":
+                    raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.RETURN:
+                    stage += 1
 
 def showIntro():
     def fixRoomRender(render):

@@ -32,17 +32,32 @@ class CoalBurner(src.items.Item):
         """
 
         moldFeed = None
-        for item in character.inventory:
-            if not item.type == "MoldFeed":
-                continue
-            moldFeed = item
-            break
+        
+        for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:
+            items = self.container.getItemByPosition(self.getPosition(offset))
+            for item in items:
+                if item.type == "MoldFeed":
+                    moldFeed = item
+                if moldFeed:
+                    break
+            if moldFeed:
+                break
 
         if not moldFeed:
-            character.addMessage("you need to have a MoldFeed in your inventory")
+            for item in character.inventory:
+                if not item.type == "MoldFeed":
+                    continue
+                moldFeed = item
+                break
+
+        if not moldFeed:
+            character.addMessage("you need to have a MoldFeed in your inventory or nearby")
             return
 
-        character.inventory.remove(item)
+        if moldFeed in character.inventory:
+            character.inventory.remove(moldFeed)
+        else:
+            self.container.removeItem(moldFeed)
         character.addMessage("you burn the corpse and inhale the smoke")
         character.heal(30,reason="inhaling the smoke")
         character.timeTaken += 30

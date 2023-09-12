@@ -8666,8 +8666,15 @@ def showHeroIntro():
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.RETURN:
-                    stage += 1
-                    timeIndex = 0
+                    if stage == -1:
+                        stage += 1
+                        timeIndex = 0
+                    if stage == 4:
+                        itemStartingPositions = {}
+                        itemMovementVectors = {}
+                        itemTravelTime = {}
+                        stage = -1
+
         time.sleep(0.01)
         timeIndex += 1
 

@@ -1544,6 +1544,8 @@ We should stop watching and do something about that.
                     return True
 
             if foundEnemies:
+                grievance = ("fighting","bad equipment")
+                self.character.addGrievance(grievance)
                 return
 
             if numNPCs < 10:

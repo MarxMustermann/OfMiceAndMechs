@@ -8502,7 +8502,8 @@ def showHeroIntro():
             for x in range(1,6):
                 mainRoom.addStorageSlot((x,y,0),None)
 
-    tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
+    tileset = tcod.tileset.load_tilesheet("Acorntileset2.png", 16, 16, tcod.tileset.CHARMAP_CP437)
+    #tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
     console1 = tcod.console.Console(26, 13)
     console2 = tcod.console.Console(26, 13)
     sdl_window = tcod.sdl.video.new_window(

@@ -346,6 +346,7 @@ class CityPlaner(src.items.Item):
             options.append(("gooProcessing","goo processing"))
             options.append(("weaponProduction","weapon production"))
             options.append(("smokingRoom","smoking room"))
+            options.append(("temple","temple"))
             options.append(("exit","exit menu"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             submenue.tag = "floorplanSelection"
@@ -598,6 +599,18 @@ class CityPlaner(src.items.Item):
                     storageSlots.append(((x+1,y,0),"MetalBars",{}))
                 walkingSpaces.append((11,y,0))
             walkingSpaces.append((6,11,0))
+
+        if floorPlanType == "temple":
+            buildSites.append( ((6,6,0),"Throne",{}))
+
+            buildSites.append( ((2,2,0),"Statue",{}))
+            buildSites.append( ((4,2,0),"Statue",{}))
+
+            buildSites.append( ((7,2,0),"Statue",{}))
+            buildSites.append( ((10,2,0),"Statue",{}))
+            buildSites.append( ((10,5,0),"Statue",{}))
+            buildSites.append( ((7,4,0),"Statue",{}))
+            buildSites.append( ((8,5,0),"Statue",{}))
 
         if floorPlanType == "wallProduction2":
             for y in range(1,12):

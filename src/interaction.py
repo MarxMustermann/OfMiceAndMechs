@@ -6615,7 +6615,7 @@ def render(char):
 
     # place rendering in screen
     canvas = src.canvas.Canvas(
-        size=(viewsize, viewsize+20),
+        size=(viewsize+1, viewsize+20),
         chars=chars,
         coordinateOffset=(0,0),
         shift=shift,

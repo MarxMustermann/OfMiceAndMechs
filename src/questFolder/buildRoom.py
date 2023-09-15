@@ -72,6 +72,11 @@ Press d to move the cursor and show the subquests description.
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
+            if reason.startswith("full inventory"):
+                newQuest = src.quests.questMap["ClearInventory"]()
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
         self.fail(reason)
 
     def solver(self, character):

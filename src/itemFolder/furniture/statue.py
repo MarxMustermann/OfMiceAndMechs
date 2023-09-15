@@ -13,6 +13,6 @@ class Statue(src.items.Item):
         '''
         set up internal state
         '''
-        super().__init__("88")
+        super().__init__("@@")
 
 src.items.addType(Statue)

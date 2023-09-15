@@ -1553,7 +1553,7 @@ We should stop watching and do something about that.
 
             positions = [(7,6),(7,5),(7,4),(7,3),(7,2),(6,6),(8,6)]
             for pos in positions:
-                if character.registers["HOMETx"] == positions[0] and character.registers["HOMETy"] == positions[1]:
+                if character.registers["HOMETx"] == pos[0] and character.registers["HOMETy"] == pos[1]:
                     continue
 
                 terrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
@@ -1561,8 +1561,14 @@ We should stop watching and do something about that.
                 if not rooms:
                     continue
                 room = rooms[0]
-                specialItemSlot = room.getItemByType("SpecialItemSlot")
-                if not specialItemSlot or not specialItemSlot.hasItem:
+                specialItemSlots = room.getItemsByType("SpecialItemSlot")
+                fullSpot = None
+                for specialItemSlot in specialItemSlots:
+                    if not specialItemSlot.hasItem:
+                        continue
+                    fullSpot = specialItemSlot
+
+                if not fullSpot:
                     continue
 
                 quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)

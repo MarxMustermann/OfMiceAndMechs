@@ -67,15 +67,17 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                 return ([quest],None)
             specialItem = character.container.getItemByType("SpecialItem")
             if not specialItem:
-                specialItemSlot = character.container.getItemByType("SpecialItemSlot")
-                if not specialItemSlot or not specialItemSlot.hasItem:
-                    if not dryRun:
-                        self.fail()
-                    return (None,None)
-                if not character.getPosition() == specialItemSlot.getPosition():
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition())
-                    return ([quest],None)
-                return (None,("j","get special item"))
+                specialItemSlots = character.container.getItemsByType("SpecialItemSlot")
+                for specialItemSlot in specialItemSlots:
+                    if not specialItemSlot.hasItem:
+                        continue
+                    if not character.getPosition() == specialItemSlot.getPosition():
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition())
+                        return ([quest],None)
+                    return (None,("j","get special item"))
+                if not dryRun:
+                    self.fail()
+                return (None,None)
 
             if not character.getPosition() == specialItem.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=specialItem.getPosition())

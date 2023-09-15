@@ -651,7 +651,7 @@ We should stop watching and do something about that.
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
-            floorPlansToSet = ["gooProcessing","weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction"]
+            floorPlansToSet = ["gooProcessing","weaponProduction","smokingRoom","temple","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction"]
             for room in terrain.rooms:
                 if room.tag in floorPlansToSet:
                     floorPlansToSet.remove(room.tag)
@@ -2549,7 +2549,7 @@ Start by using the city builder to order a weapon production line to be built.
                 src.gamestate.gamestate.save()
                 self.showedPlanWeaponProduction = True
 
-                floorPlansToSet = ["weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction"]
+                floorPlansToSet = ["weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction","temple"]
                 for room in terrain.rooms:
                     if room.tag in floorPlansToSet:
                         floorPlansToSet.remove(room.tag)

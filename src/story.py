@@ -4058,6 +4058,8 @@ class MainGame(BasicPhase):
                     characterPool.remove(character)
                 if isinstance(character,src.characters.Ghul):
                     characterPool.remove(character)
+                if not character.rank:
+                    characterPool.remove(character)
 
             if not characterPool:
                 text = """

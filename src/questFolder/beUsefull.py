@@ -1478,6 +1478,23 @@ We should stop watching and do something about that.
         1/0
 
     def checkTriggerQuesting(self,character,room):
+        if character.rank and not character.rank == 1:
+            terrain = src.gamestate.gamestate.terrainMap[character.registers["HOMETy"]][character.registers["HOMETx"]]
+            room = terrain.getRoomByPosition((7,7,0))[0]
+            specialItemSlots = room.getItemsByType("SpecialItemSlot")
+            filledSpecialItemSlots = []
+            for specialItemSlot in specialItemSlots:
+                if not specialItemSlot.hasItem:
+                    continue
+                filledSpecialItemSlots.append(specialItemSlot)
+            if len(filledSpecialItemSlots):
+                quest = src.quests.questMap["Ascend"]()
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                self.idleCounter = 0
+                return True
+
         if not character.weapon or not character.armor:
             quest = src.quests.questMap["Equip2"]()
             self.addQuest(quest)

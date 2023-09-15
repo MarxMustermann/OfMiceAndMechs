@@ -1545,6 +1545,10 @@ We should stop watching and do something about that.
                         print(weight)
                         continue
 
+                    quest = src.quests.questMap["ClearInventory"]()
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+
                     quest = src.quests.questMap["ScavengeTile"](targetPosition=enemy.getBigPosition(),endOnFullInventory=True)
                     self.addQuest(quest)
                     quest.assignToCharacter(character)

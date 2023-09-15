@@ -35,6 +35,7 @@ A throne. Use it to win the game.
             character.addMessage("you need to control all special items")
             return
 
+        character.changed("ascended",{"character":character})
         character.rank = 1
 
         if character == src.gamestate.gamestate.mainChar:

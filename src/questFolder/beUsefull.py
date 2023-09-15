@@ -651,7 +651,7 @@ We should stop watching and do something about that.
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
-            floorPlansToSet = ["gooProcessing","weaponProduction","smokingRoom","temple","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction"]
+            floorPlansToSet = ["gooProcessing","weaponProduction","smokingRoom","temple","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction","basicMaterialsProduction"]
             for room in terrain.rooms:
                 if room.tag in floorPlansToSet:
                     floorPlansToSet.remove(room.tag)

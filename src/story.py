@@ -6341,7 +6341,7 @@ When you rise in rank you will be able to build a way out of here."""
                 "DropQuestMeta",
             ]
 
-            npc.faction = src.gamestate.gamestate.mainChar.faction
+            npc.faction = state["mainChar"].faction
             #npc.rank = 6
             room.addCharacter(npc,6,6)
             npc.flask = src.items.itemMap["GooFlask"]()

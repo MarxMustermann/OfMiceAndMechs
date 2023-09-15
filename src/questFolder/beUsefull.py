@@ -1487,7 +1487,7 @@ We should stop watching and do something about that.
                 if not specialItemSlot.hasItem:
                     continue
                 filledSpecialItemSlots.append(specialItemSlot)
-            if len(filledSpecialItemSlots):
+            if len(filledSpecialItemSlots) > 6:
                 quest = src.quests.questMap["Ascend"]()
                 self.addQuest(quest)
                 quest.assignToCharacter(character)

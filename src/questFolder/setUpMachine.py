@@ -158,6 +158,10 @@ If you don't find a %s blueprint, research it.
                 
                 items = character.container.getItemByPosition(self.targetPosition)
                 if items:
+                    if not character.getFreeInventorySpace():
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to pick up a machine to place")
+                        return ([quest],None)
+
                     quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=character.getBigPosition(),reason="clear the placement spot")
                     return ([quest],None)
 
@@ -186,6 +190,10 @@ If you don't find a %s blueprint, research it.
 
                     if not storedItem:
                         continue
+
+                    if not character.getFreeInventorySpace():
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to pick up a machine to place")
+                        return ([quest],None)
 
                     newQuest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
                     return ([newQuest],None)

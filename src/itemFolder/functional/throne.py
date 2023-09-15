@@ -49,4 +49,30 @@ The game will continue to run, but there is not further content for you to see.
 = press enter to continue =
 """
             src.interaction.showInterruptText(text)
+
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        return options
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the Thone")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the Thone")
+        character.changed("unboltedItem",{"character":character,"item":self})
+
 src.items.addType(Throne)

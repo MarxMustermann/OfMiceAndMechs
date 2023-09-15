@@ -4802,7 +4802,8 @@ try to remember how you got here ..."""
                 subordinate.superior = bestCandidate
                 bestCandidate.subordinates.append(subordinate)
 
-            bestCandidate.rank = 3
+            if not bestCandidate.rank:
+                bestCandidate.rank = 6
             bestCandidate.duties = ["city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
             bestCandidate.addListener(self.createColony_baseLeaderDeath,"died_pre")
             colonyBaseInfo["mainChar"] = bestCandidate

@@ -4339,6 +4339,7 @@ try to remember how you got here ..."""
                 enemy.health = enemy.maxHealth
                 enemy.godMode = True
                 enemy.movementSpeed = 1.3-0.1*multiplier
+                enemy.charType = "Statue"
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True

@@ -1067,8 +1067,12 @@ class Room(src.saveing.Saveable):
                     if not "city" in character.faction or not character.charType in ("Character","Ghul"):
                         #chars[character.yPosition][character.xPosition] = character.display
                         char = "<-"
+                        fgColor = "#fff"
+                        if character.charType == "Statue":
+                            char = "@@"
+                            fgColor = "#aaa"
                         bgColor = "#722"
-                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
+                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
                     else:
                         if viewChar == "rank":
                             if not isinstance(character,src.characters.Ghul):

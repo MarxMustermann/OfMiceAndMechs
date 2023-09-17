@@ -167,7 +167,7 @@ Since this clone is burned in it can not change duties.
     def getEpochRewards(self,character,selected=None):
 
         options = []
-        options.append(("None","(0) None"))
+        options.append(("None","(0) None (exit)"))
         if not self.rewardSet:
             options.append(("autoSpend","(?) auto spend rewards"))
             options.append(("HealingOnce","(1) healing (once)"))
@@ -192,7 +192,6 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn lightning rods","(10) spawn 25 ligthning rods"))
             options.append(("spawn new clone","(15) spawn new clone"))
         else:
-            options.append(("spawn npcs","(?) spawn npcs"))
             options.append(("spawn resource gathering NPC","(10) spawn gatherer"))
             options.append(("spawn resource fetching NPC","(10) spawn fetcher"))
             options.append(("spawn hauling NPC","(10) spawn hauler"))
@@ -204,7 +203,6 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn scavenging NPC","(10) spawn scavenger"))
             options.append(("spawn machine operation NPC","(10) spawn machine operator"))
             options.append(("spawn machine placing NPC","(10) spawn machine placer"))
-            options.append(("spawn storage sorting NPC","(10) spawn storage sorter"))
             options.append(("spawn maggot gathering NPC","(10) spawn maggot gatherer"))
             options.append(("spawn cleaning NPC","(10) spawn cleaner"))
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
@@ -418,9 +416,6 @@ Since this clone is burned in it can not change duties.
         elif extraInfo["rewardType"] == "spawn machining NPC":
             text = "You spawned a clone with the duty machining"
             self.spawnBurnedInNPC(character,"machining")
-        elif extraInfo["rewardType"] == "spawn storage sorting NPC":
-            text = "You spawned a clone with the duty storage sorting"
-            self.spawnBurnedInNPC(character,"storage sorting")
         elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
             text = "You spawned a clone with the duty maggot gathering"
             self.spawnBurnedInNPC(character,"maggot gathering")
@@ -440,10 +435,6 @@ Since this clone is burned in it can not change duties.
         elif extraInfo["rewardType"] == "spawn PerformanceTester":
             text = "spawning PerformanceTester"
             self.spawnArtwork(character,"PerformanceTester",0)
-        elif extraInfo["rewardType"] == "spawn npcs":
-            text = "spawning npcs"
-            while self.charges >= 10:
-                self.spawnBurnedInNPC(character,None)
 
         character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
         character.addMessage(text)

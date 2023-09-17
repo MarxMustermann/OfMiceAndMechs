@@ -7954,9 +7954,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         terrain = "nothingness"
                         phase = "Tutorials"
                     elif selectedScenario == "Hero":
-                        terrain = "nothingness"
-                        phase = "Tutorials"
-                        showHeroIntro()
+                        terrain = "test"
+                        phase = "MainGameArena"
+                        #showHeroIntro()
 
                     if terrain and terrain == "scrapField":
                         src.gamestate.gamestate.terrainType = src.terrains.ScrapField
@@ -8671,6 +8671,7 @@ def showHeroIntro():
                         stage += 1
                         timeIndex = 0
                     if stage == 4:
+                        return
                         itemStartingPositions = {}
                         itemMovementVectors = {}
                         itemTravelTime = {}

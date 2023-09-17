@@ -6718,135 +6718,490 @@ class MainGameArena(BasicPhase):
     def start(self, seed=0, difficulty=None):
         """
         """
-        
-        mainChar = src.characters.Character()
-        # add basic set of abilities in openworld phase
-        mainChar.questsDone = [
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "CollectQuestMeta",
-            "FireFurnaceMeta",
-            "ExamineQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-            "LeaveRoomQuest",
-        ]
-
-        mainChar.solvers = [
-            "SurviveQuest",
-            "Serve",
-            "NaiveMoveQuest",
-            "MoveQuestMeta",
-            "NaiveActivateQuest",
-            "ActivateQuestMeta",
-            "NaivePickupQuest",
-            "PickupQuestMeta",
-            "DrinkQuest",
-            "ExamineQuest",
-            "FireFurnaceMeta",
-            "CollectQuestMeta",
-            "WaitQuest" "NaiveDropQuest",
-            "NaiveDropQuest",
-            "DropQuestMeta",
-        ]
 
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
-        currentTerrain.addCharacter(mainChar,15*7+7,15*7+7)
+        
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
 
+        mainRoom = src.rooms.EmptyRoom(None,None,None,None)
+        mainRoom.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        mainRoom.hidden = False
+        mainRoom.xPosition = 7
+        mainRoom.yPosition = 7
+        mainRoom.offsetX = 1
+        mainRoom.offsetY = 1
+        currentTerrain.addRoom(mainRoom)
+
+        mainChar = src.characters.Character()
+        mainChar.faction = "cityTest"
+        mainRoom.addCharacter(
+            mainChar, 6, 6
+        )
         src.gamestate.gamestate.mainChar = mainChar
 
-        combatMenu = src.interaction.CombatInfoMenu(mainChar)
-        combatMenu.sidebared = True
-        mainChar.rememberedMenu.append(combatMenu)
-        messagesMenu = src.interaction.MessagesMenu(mainChar)
-        mainChar.rememberedMenu2.append(messagesMenu)
+        anvilPos = (10,2,0)
+        machinemachine = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
 
-        for x in range(1,13):
-            for y in range(1,13):
-                if x == 7 and y == 7:
+        metalWorkBenchPos = (8,3,0)
+        machinemachine = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+        mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+        mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+        anvilPos = (9,5,0)
+        machinemachine = src.items.itemMap["MachiningTable"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"MetalBars")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        epochArtwork = src.items.itemMap["EpochArtwork"](500,rewardSet="colony")
+        epochArtwork.epochSurvivedRewardAmount = 0
+        epochArtwork.changeCharges(600)
+        mainRoom.addItem(epochArtwork,(3,1,0))
+        """
+        quest = src.quests.questMap["EpochQuest"]()
+        mainChar.assignQuest(quest,active=True)
+
+        #cityBuilder = src.items.itemMap["CityBuilder2"]()
+        #cityBuilder.architect = architect
+        #mainRoom.addItem(cityBuilder,(7,1,0))
+        #cityBuilder.registerRoom(mainRoom)
+        """
+
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        mainRoom.addItem(dutyArtwork,(5,1,0))
+
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        cityPlaner.bolted = True
+        mainRoom.addItem(cityPlaner,(4,1,0))
+
+        item = src.items.itemMap["ProductionArtwork"]()
+        item.bolted = True
+        item.charges = 1
+        mainRoom.addItem(item,(4,3,0))
+
+        item = src.items.itemMap["MachineMachine"]()
+        item.bolted = True
+        mainRoom.addItem(item,(4,5,0))
+
+        item = src.items.itemMap["BluePrinter"]()
+        item.bolted = True
+        mainRoom.addItem(item,(2,4,0))
+
+        item = src.items.itemMap["SpecialItemSlot"]()
+        item.itemID = 1
+        item.hasItem = True
+        mainRoom.addItem(item,(1,1,0))
+        item = src.items.itemMap["SpecialItemSlot"]()
+        item.itemID = 2
+        mainRoom.addItem(item,(2,1,0))
+        for i in range(0,5):
+            item = src.items.itemMap["SpecialItemSlot"]()
+            item.hasItem = False
+            item.itemID = 3+i
+            mainRoom.addItem(item,(7+i,7,0))
+
+            for x in range(1,6):
+                mainRoom.walkingSpace.add((x,10,0))
+            for x in range(7,12):
+                mainRoom.walkingSpace.add((x,10,0))
+
+            for x in range(1,6):
+                mainRoom.walkingSpace.add((x,6,0))
+            for x in range(7,12):
+                mainRoom.walkingSpace.add((x,6,0))
+            mainRoom.walkingSpace.add((5,2,0))
+            mainRoom.walkingSpace.add((4,2,0))
+            mainRoom.walkingSpace.add((3,2,0))
+            mainRoom.walkingSpace.add((2,2,0))
+            mainRoom.walkingSpace.add((1,2,0))
+            mainRoom.walkingSpace.add((7,5,0))
+            mainRoom.walkingSpace.add((7,4,0))
+            mainRoom.walkingSpace.add((7,2,0))
+            mainRoom.walkingSpace.add((7,1,0))
+            mainRoom.walkingSpace.add((8,1,0))
+            mainRoom.walkingSpace.add((9,1,0))
+            mainRoom.walkingSpace.add((11,5,0))
+            mainRoom.walkingSpace.add((11,4,0))
+            mainRoom.walkingSpace.add((11,3,0))
+            mainRoom.walkingSpace.add((10,4,0))
+
+            for y in range(1,12):
+                mainRoom.walkingSpace.add((6,y,0))
+
+            for y in (7,9,11):
+                if not y == 7:
+                    for x in range(7,12):
+                        mainRoom.addStorageSlot((x,y,0),None)
+                for x in range(1,6):
+                    mainRoom.addStorageSlot((x,y,0),None)
+
+        pos = (8,6,0)
+        architect.doClearField(pos[0], pos[1])
+        tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
+        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
+        currentTerrain.forests.append(pos)
+
+        architect.doAddScrapfield(6, 7, 280, leavePath=True)
+
+        room = src.rooms.EmptyRoom(None,None,None,None)
+        room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        room.hidden = False
+        room.xPosition = 8
+        room.yPosition = 7
+        room.offsetX = 1
+        room.offsetY = 1
+        currentTerrain.addRoom(room)
+        cityPlaner.setFloorplanFromMap({"character":mainChar,"type":"storage","coordinate":(8,7)})
+
+        room = src.rooms.EmptyRoom(None,None,None,None)
+        room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        room.hidden = False
+        room.xPosition = 7
+        room.yPosition = 6
+        room.offsetX = 1
+        room.offsetY = 1
+        currentTerrain.addRoom(room)
+        cityPlaner.setFloorplanFromMap({"character":mainChar,"type":"gooProcessing","coordinate":(7,6)})
+
+        room = src.rooms.EmptyRoom(None,None,None,None)
+        room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        room.hidden = False
+        room.xPosition = 6
+        room.yPosition = 6
+        room.offsetX = 1
+        room.offsetY = 1
+        currentTerrain.addRoom(room)
+        cityPlaner.setFloorplanFromMap({"character":mainChar,"type":"scrapCompactor","coordinate":(6,6)})
+
+        room = src.rooms.EmptyRoom(None,None,None,None)
+        room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        room.hidden = False
+        room.xPosition = 6
+        room.yPosition = 8
+        room.offsetX = 1
+        room.offsetY = 1
+        currentTerrain.addRoom(room)
+        cityPlaner.setFloorplanFromMap({"character":mainChar,"type":"weaponProduction","coordinate":(6,8)})
+
+        room = src.rooms.EmptyRoom(None,None,None,None)
+        room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        room.hidden = False
+        room.xPosition = 7
+        room.yPosition = 8
+        room.offsetX = 1
+        room.offsetY = 1
+        currentTerrain.addRoom(room)
+
+        room = src.rooms.EmptyRoom(None,None,None,None)
+        room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
+        room.hidden = False
+        room.xPosition = 8
+        room.yPosition = 8
+        room.offsetX = 1
+        room.offsetY = 1
+        currentTerrain.addRoom(room)
+        cityPlaner.setFloorplanFromMap({"character":mainChar,"type":"smokingRoom","coordinate":(8,8)})
+
+        for room in currentTerrain.rooms:
+           if not room.floorPlan:
+               continue
+           for walkingSpaceInfo in room.floorPlan.get("walkingSpace",[]):
+                room.walkingSpace.add(walkingSpaceInfo)
+           for storageSlotInfo in room.floorPlan.get("storageSlots",[]):
+                room.addStorageSlot(storageSlotInfo[0],storageSlotInfo[1],storageSlotInfo[2])
+           for inputSlotInfo in room.floorPlan.get("inputSlots",[]):
+                if not len(inputSlotInfo) > 2:
+                    inputSlotInfo = (inputSlotInfo[0],inputSlotInfo[1],{})
+                room.addInputSlot(inputSlotInfo[0],inputSlotInfo[1],inputSlotInfo[2])
+           for outputSlotInfo in room.floorPlan.get("outputSlots",[]):
+                if not len(outputSlotInfo) > 2:
+                    outputSlotInfo = (outputSlotInfo[0],outputSlotInfo[1],{})
+                room.addOutputSlot(outputSlotInfo[0],outputSlotInfo[1],outputSlotInfo[2])
+           for buildSite in room.floorPlan.get("buildSites",[]):
+               print(buildSite)
+               item = src.items.itemMap[buildSite[1]]()
+               room.addItem(item,buildSite[0])
+               if buildSite[1] == "Machine":
+                   item.setToProduce(buildSite[2]["toProduce"])
+           room.floorPlan = None
+
+        cityPlaner.setFloorplanFromMap({"character":mainChar,"type":"basicRoombuildingItemsProduction","coordinate":(7,8)})
+        for room in currentTerrain.rooms:
+            if not room.floorPlan:
+                continue
+            for walkingSpaceInfo in room.floorPlan.get("walkingSpace",[]):
+                room.walkingSpace.add(walkingSpaceInfo)
+            if "walkingSpace" in room.floorPlan:
+                del room.floorPlan["walkingSpace"]
+
+        epochArtwork.leader = mainChar
+
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("resource gathering")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
+
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("resource gathering")
+        quest = src.quests.questMap["BeUsefullOnTile"](targetPosition=(6,6,0))
+        quest.autoSolve = True
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
+
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("resource gathering")
+        quest = src.quests.questMap["BeUsefullOnTile"](targetPosition=(6,8,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
+
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("machine operation")
+        quest = src.quests.questMap["BeUsefullOnTile"](targetPosition=(6,6,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
+
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("machine operation")
+        quest = src.quests.questMap["BeUsefullOnTile"](targetPosition=(6,8,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
+
+        for pos in [(6,6,0),(6,8,0)]:
+            room = currentTerrain.getRoomByPosition(pos)[0]
+            for inputSlot in room.inputSlots:
+                if not inputSlot[1] == "Scrap":
                     continue
+                room.addItem(src.items.itemMap["Scrap"](amount=1),inputSlot[0])
 
-                enemy = src.characters.Monster(4,4)
-                enemy.health = 100
-                enemy.baseDamage = 10
-                enemy.maxHealth = 100
-                enemy.godMode = True
-                enemy.movementSpeed = 0.8
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("resource fetching")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-                quest = src.quests.questMap["SecureTile"](toSecure=(x,y,0))
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("hauling")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-                currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("maggot gathering")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-                for i in range(0,random.randint(0,3)):
-                    for k in range(0,2):
-                        scrap = src.items.itemMap["Scrap"](amount=20)
-                        currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("metal working")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-        """
-        item = src.items.itemMap["ArenaArtwork"]()
-        currentTerrain.addItem(item,(7*15+5,7*15+5,0))
-        """
-        mainChar.personality["autoFlee"] = False
-        mainChar.personality["abortMacrosOnAttack"] = False
-        mainChar.personality["autoCounterAttack"] = False
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("scrap hammering")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-        mainChar.baseDamage = 10
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("machining")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-        self.mainChar = mainChar
-        self.numCharacters = len(currentTerrain.characters)
-        self.startRound()
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("painting")
+        quest = src.quests.questMap["BeUsefullOnTile"](targetPosition=(7,8,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-        self.highScore = None
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("machine placing")
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
+        src.gamestate.gamestate.mainChar = char
 
-        src.interaction.showInterruptText("""
+        char = src.characters.Character()
+        mainRoom.addCharacter( char, 6, 6 )
+        char.faction = mainChar.faction
+        char.duties.append("machine operation")
+        quest = src.quests.questMap["BeUsefullOnTile"](targetPosition=(7,6,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+        char.assignQuest(quest,active=True)
+        char.registers["HOMEx"] = 7
+        char.registers["HOMEy"] = 7
+        char.registers["HOMETx"] = 7
+        char.registers["HOMETy"] = 7
 
-            Welcome to the Arena!
+        room = currentTerrain.getRoomByPosition((8,7,0))[0]
+        room.addItem(src.items.itemMap["MoldFeed"](),(1,1,0))
+        room.addItem(src.items.itemMap["MoldFeed"](),(2,1,0))
+        room.addItem(src.items.itemMap["MoldFeed"](),(3,1,0))
+        room.addItem(src.items.itemMap["MoldFeed"](),(4,1,0))
+        room.addItem(src.items.itemMap["MoldFeed"](),(5,1,0))
+        room.addItem(src.items.itemMap["Stripe"](),(1,3,0))
+        room.addItem(src.items.itemMap["Stripe"](),(2,3,0))
+        room.addItem(src.items.itemMap["Bolt"](),(3,3,0))
+        room.addItem(src.items.itemMap["Bolt"](),(4,3,0))
+        room.addItem(src.items.itemMap["Painter"](),(5,3,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.bolted = False
+        room.addItem(item,(7,1,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.bolted = False
+        room.addItem(item,(8,1,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.bolted = False
+        room.addItem(item,(9,1,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.bolted = False
+        room.addItem(item,(10,1,0))
+        item = src.items.itemMap["ScrapCompactor"]()
+        item.bolted = False
+        room.addItem(item,(11,1,0))
+        
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("RoomBuilder")
+        item.bolted = False
+        room.addItem(item,(11,3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("RoomBuilder")
+        item.bolted = False
+        room.addItem(item,(10,3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Door")
+        item.bolted = False
+        room.addItem(item,(9,3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Door")
+        item.bolted = False
+        room.addItem(item,(8,3,0))
+        item = src.items.itemMap["Machine"]()
+        item.setToProduce("Door")
+        item.bolted = False
+        room.addItem(item,(7,3,0))
 
-  Show your mastery of combat skills by killing enemies.
-  The less health you loose the higher your score.
-
-  After killing an enemy your health will be restored and your score will be shown.
-
-           =    basic  combat    =
-
-  Do normal attacks against enemies by walking into them.
-  For example you need to press d to attack an enemy to your right.
-
-  Every attack hits and both you and the enemies do 10 damage and have 100 HP.
-  Basic combat is fully deterministic.
-
-  So whoever hits first, wins and hits 10 times.
-  The oponent dies and hits 9 times.
-
-           =   special attacks   =
-
-  You can do special attacks to get an advantage over basic combat
-  Press shift while attacking to do a special attack.
-  For example you need to press D to attack an enemy to your right.
-
-  You will presented with a choice of special attacks with different stats.
-  Most special attacks will increase your exhaustion.
-  If you have more than 10 exhaustion damage you only deal half damage.
-  You can reduce your exhaustion by 10 by skipping a turn by pressing .
-
-  Remember that all attack keys are movement keys, too.
-  So don't attack empty spaces or your character will move.
-
-           =    the challenge    =
-
-  My personal best is losing 40 HP to defeat an enemy.
-  See if you can beat that!
-
-""")
+        mainChar.macroState["submenue"] = None
 
     def startRound(self):
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)

@@ -5113,6 +5113,50 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
+        for i in range(0,10):
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+
+            if i < 2:
+                item = src.items.itemMap["Vial"]()
+                item.bolted = False
+                currentTerrain.addItem(item,pos)
+            if i < 4:
+                item = src.items.itemMap["Armor"]()
+                item.bolted = False
+                currentTerrain.addItem(item,pos)
+            if i < 6:
+                item = src.items.itemMap["Sword"]()
+                item.bolted = False
+                currentTerrain.addItem(item,pos)
+            if i < 8:
+                item = src.items.itemMap["GooFlask"]()
+                item.bolted = False
+                currentTerrain.addItem(item,pos)
+
+            item = src.items.itemMap["Corpse"]()
+            item.bolted = False
+            currentTerrain.addItem(item,pos)
+
+        for i in range(0,4):
+            item = src.items.itemMap["Sword"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,4):
+            item = src.items.itemMap["Armor"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,10):
+            item = src.items.itemMap["Vial"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for i in range(0,10):
+            item = src.items.itemMap["GooFlask"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
 
         for i in range(0,20):
             bigPos = None

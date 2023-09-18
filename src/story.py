@@ -6443,6 +6443,16 @@ for controlling at least 1 special item.
 
 """%(npc.name,duty,)
 
+                if len(hasSpecialItems):
+                    numGlassTears = 5*len(hasSpecialItems)
+                    state["epochArtwork"].changeCharges(numGlassTears)
+
+                    text += """
+%s glass tears,
+for controlling %s special items.
+
+"""%(numGlassTears,len(hasSpecialItems),)
+
                 text += """
 press enter to continue"""
                 src.interaction.showInterruptText(text)

@@ -6348,9 +6348,20 @@ When you rise in rank you will be able to build a way out of here."""
 
     def advanceColonyBase2(self,state):
         terrain = state["terrain"]
+
+        hasSpecialItems = []
+        for room in terrain.rooms:
+            specialItemSlots = room.getItemsByType("SpecialItemSlot")
+            for specialItemSlot in specialItemSlots:
+                if not specialItemSlot.hasItem:
+                    continue
+                print("foundSpecialItemSlot")
+                hasSpecialItems.append(specialItemSlot)
+        
         room = random.choice(terrain.rooms)
 
-        if not src.gamestate.gamestate.tick < 100:
+        npc = None
+        if len(hasSpecialItems) and not src.gamestate.gamestate.tick < 100:
             npc = src.characters.Character()
             npc.questsDone = [
                 "NaiveMoveQuest",
@@ -6413,41 +6424,30 @@ When you rise in rank you will be able to build a way out of here."""
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
 
-            '''
-            numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
-            while numNewRooms > 0:
-                itemType = random.choice([("personelArtwork","DutyArtwork","OrderArtwork")])
-                item = itemMap
-                item = src.items.
-                text = """
-    You have build a new room. you are rewarded with an extra item:
-
-    The item will appear in your inventory.
-
-    press enter to continue"""%(npc.name,duty,terrain)
-                src.interaction.showInterruptText(text)
-            '''
-
         if not src.gamestate.gamestate.tick < 100:
             if state["mainChar"] == src.gamestate.gamestate.mainChar:
                 text = """
-An epoch has passed and a new outcast has found a way into your base:
+An epoch has passed. You currently control %s special items.
+You are rewarded with the following:
 
-%s 
----------
-duty: %s
-food: ~100 000 moves
+"""%(len(hasSpecialItems),)
 
-press enter to continue"""%(npc.name,duty,)
+                if not len(hasSpecialItems):
+                    text += """
+no reward.
+
+"""
+                
+                if len(hasSpecialItems):
+                    text += """
+1 burned in clone named %s with duty %s.
+For controlling at least 1 special item.
+
+"""%(npc.name,duty,)
+
+                text += """
+press enter to continue"""
                 src.interaction.showInterruptText(text)
-
-        """
-        for i in range(0,25):
-            item = src.items.itemMap["Cocoon"]()
-            item.bolted = False
-            pos = (random.randint(15,15*14),random.randint(15,15*14),0)
-            terrain.addItem(item,pos)
-        """
 
     def advanceSiegedBase(self,state):
         terrain = state["terrain"]

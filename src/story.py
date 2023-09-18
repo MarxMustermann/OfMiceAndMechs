@@ -6360,70 +6360,6 @@ When you rise in rank you will be able to build a way out of here."""
         
         room = random.choice(terrain.rooms)
 
-        npc = None
-        if len(hasSpecialItems) and not src.gamestate.gamestate.tick < 100:
-            npc = src.characters.Character()
-            npc.questsDone = [
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "CollectQuestMeta",
-                "FireFurnaceMeta",
-                "ExamineQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-                "LeaveRoomQuest",
-            ]
-
-            npc.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest" "NaiveDropQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-            ]
-
-            npc.faction = state["mainChar"].faction
-            #npc.rank = 6
-            room.addCharacter(npc,6,6)
-            npc.flask = src.items.itemMap["GooFlask"]()
-            npc.flask.uses = 100
-
-            npc.duties = []
-            duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","cleaning","machine placing","room building","scavenging"))
-            #duty = random.choice(("maggot gathering",))
-            npc.duties.append(duty)
-            npc.registers["HOMEx"] = 7
-            npc.registers["HOMEy"] = 7
-            npc.registers["HOMETx"] = terrain.xPosition
-            npc.registers["HOMETy"] = terrain.yPosition
-
-            npc.personality["autoFlee"] = False
-            npc.personality["abortMacrosOnAttack"] = False
-            npc.personality["autoCounterAttack"] = False
-
-            quest = src.quests.questMap["BeUsefull"](strict=True)
-            #quest = src.quests.questMap["ExtendBase"]()
-            quest.autoSolve = True
-            quest.assignToCharacter(npc)
-            quest.activate()
-            npc.assignQuest(quest,active=True)
-            npc.foodPerRound = 1
-
         if not src.gamestate.gamestate.tick < 100:
             if state["mainChar"] == src.gamestate.gamestate.mainChar:
                 text = """
@@ -6439,9 +6375,71 @@ no reward.
 """
                 
                 if len(hasSpecialItems):
+                    npc = src.characters.Character()
+                    npc.questsDone = [
+                        "NaiveMoveQuest",
+                        "MoveQuestMeta",
+                        "NaiveActivateQuest",
+                        "ActivateQuestMeta",
+                        "NaivePickupQuest",
+                        "PickupQuestMeta",
+                        "DrinkQuest",
+                        "CollectQuestMeta",
+                        "FireFurnaceMeta",
+                        "ExamineQuest",
+                        "NaiveDropQuest",
+                        "DropQuestMeta",
+                        "LeaveRoomQuest",
+                    ]
+
+                    npc.solvers = [
+                        "SurviveQuest",
+                        "Serve",
+                        "NaiveMoveQuest",
+                        "MoveQuestMeta",
+                        "NaiveActivateQuest",
+                        "ActivateQuestMeta",
+                        "NaivePickupQuest",
+                        "PickupQuestMeta",
+                        "DrinkQuest",
+                        "ExamineQuest",
+                        "FireFurnaceMeta",
+                        "CollectQuestMeta",
+                        "WaitQuest" "NaiveDropQuest",
+                        "NaiveDropQuest",
+                        "DropQuestMeta",
+                    ]
+
+                    npc.faction = state["mainChar"].faction
+                    #npc.rank = 6
+                    room.addCharacter(npc,6,6)
+                    npc.flask = src.items.itemMap["GooFlask"]()
+                    npc.flask.uses = 100
+
+                    npc.duties = []
+                    duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","cleaning","machine placing","room building","scavenging"))
+                    #duty = random.choice(("maggot gathering",))
+                    npc.duties.append(duty)
+                    npc.registers["HOMEx"] = 7
+                    npc.registers["HOMEy"] = 7
+                    npc.registers["HOMETx"] = terrain.xPosition
+                    npc.registers["HOMETy"] = terrain.yPosition
+
+                    npc.personality["autoFlee"] = False
+                    npc.personality["abortMacrosOnAttack"] = False
+                    npc.personality["autoCounterAttack"] = False
+
+                    quest = src.quests.questMap["BeUsefull"](strict=True)
+                    #quest = src.quests.questMap["ExtendBase"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(npc)
+                    quest.activate()
+                    npc.assignQuest(quest,active=True)
+                    npc.foodPerRound = 1
+
                     text += """
-1 burned in clone named %s with duty %s.
-For controlling at least 1 special item.
+1 burned in clone named %s with duty %s,
+for controlling at least 1 special item.
 
 """%(npc.name,duty,)
 

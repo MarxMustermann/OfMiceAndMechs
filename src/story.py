@@ -6470,6 +6470,36 @@ You are cursed with the following:
 no curse.
 
 """
+                if len(hasSpecialItems):
+                    for j in range(0,4):
+                        bigPos = (random.randint(1,13),random.randint(1,13),0)
+                        numEnemies = 3
+
+                        for i in range(0,numEnemies):
+                            enemy = src.characters.Monster(4,4)
+                            enemy.health = 20
+                            enemy.baseDamage = 5
+                            enemy.maxHealth = 20
+                            enemy.godMode = True
+                            enemy.movementSpeed = 0.8
+
+                            quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+                            quest.autoSolve = True
+                            quest.assignToCharacter(enemy)
+                            quest.activate()
+                            enemy.quests.append(quest)
+
+                            rooms = terrain.getRoomByPosition(bigPos)
+                            if rooms:
+                                rooms[0].addCharacter(enemy,6,6)
+                            else:
+                                terrain.addCharacter(enemy,15*bigPos[0]+random.randint(1,13),15*bigPos[1]+random.randint(1,13))
+
+                    text += """
+4 groups of insects appear, waiting for careless victim,
+for controlling at least 1 glass heart.
+
+"""
 
                 text += """
 press enter to continue"""

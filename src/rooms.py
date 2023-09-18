@@ -1256,7 +1256,7 @@ class Room(src.saveing.Saveable):
                             if not color:
                                 color = "#3f3"
 
-                        bgColor = "#000"
+                        bgColor = "#227"
                         if not character.faction == src.gamestate.gamestate.mainChar.faction:
                             bgColor = "#722"
                             color = "#f00"

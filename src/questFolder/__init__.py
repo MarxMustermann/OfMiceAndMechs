@@ -88,3 +88,4 @@ import src.questFolder.flee
 import src.questFolder.supportAttack
 import src.questFolder.delveDungeon
 import src.questFolder.ascend
+import src.questFolder.vanish

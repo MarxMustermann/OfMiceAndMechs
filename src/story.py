@@ -6448,10 +6448,28 @@ for controlling at least 1 special item.
                     state["epochArtwork"].changeCharges(numGlassTears)
 
                     text += """
-%s glass tears,
+%s glass tears credited to your epoch artwork,
 for controlling %s special items.
 
 """%(numGlassTears,len(hasSpecialItems),)
+
+                text += """
+press enter to continue"""
+                src.interaction.showInterruptText(text)
+
+        if not src.gamestate.gamestate.tick < 100:
+            if state["mainChar"] == src.gamestate.gamestate.mainChar:
+                text = """
+An epoch has passed. You currently control %s special items.
+You are cursed with the following:
+
+"""%(len(hasSpecialItems),)
+
+                if not len(hasSpecialItems):
+                    text += """
+no curse.
+
+"""
 
                 text += """
 press enter to continue"""

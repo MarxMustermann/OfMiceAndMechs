@@ -6501,6 +6501,61 @@ for controlling at least 1 glass heart.
 
 """
 
+                numSpectres = 0
+                for specialItemSlot in hasSpecialItems:
+                    if not specialItemSlot.itemID in (3,4,5,6,7,):
+                        continue
+
+                    spectreHome = (7,7+2-specialItemSlot.itemID)
+
+                    numEnemies = (specialItemSlot.itemID-2)**2
+                    numSpectres += numEnemies
+
+                    for i in range(0,numEnemies):
+                        bigPos = (random.randint(1,13),random.randint(1,13),0)
+                        enemy = src.characters.Monster(6,6)
+                        enemy.health = 200
+                        enemy.baseDamage = 10
+                        enemy.faction = "spectre"
+                        enemy.tag = "spectre"
+                        enemy.movementSpeed = 2
+                        enemy.registers["HOMETx"] = spectreHome[0]
+                        enemy.registers["HOMETy"] = spectreHome[1]
+                        enemy.registers["HOMEx"] = 7
+                        enemy.registers["HOMEy"] = 7
+                        rooms = terrain.getRoomByPosition(bigPos)
+                        if rooms:
+                            rooms[0].addCharacter(enemy,6,6)
+                        else:
+                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+
+                        quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=specialItemSlot.itemID)
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
+
+                        quest = src.quests.questMap["GoHome"]()
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
+
+                        quest = src.quests.questMap["Vanish"]()
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
+
+                        #src.gamestate.gamestate.mainChar = enemy
+
+                if numSpectres:
+                    text += """
+%s static spectres apeared, craving to reclaim their glass heart,
+for controlling at least 1 special item.
+
+"""%(numSpectres,)
+
                 text += """
 press enter to continue"""
                 src.interaction.showInterruptText(text)

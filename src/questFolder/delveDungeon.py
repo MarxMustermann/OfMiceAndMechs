@@ -6,12 +6,18 @@ import src
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
         self.targetTerrain = targetTerrain
+        self.itemID = itemID
 
+    def generateTextDescription(self):
+        text = """
+%s
+"""%(self.itemID,)
+        return text
 
     def handleDelivery(self, extraInfo):
         if self.completed:
@@ -71,6 +77,8 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                 for specialItemSlot in specialItemSlots:
                     if not specialItemSlot.hasItem:
                         continue
+                    if self.itemID and not specialItemSlot.itemID == self.itemID:
+                        continue
                     if not character.getPosition() == specialItemSlot.getPosition():
                         quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition())
                         return ([quest],None)
@@ -102,6 +110,10 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition())
                     return ([quest],None)
                 return (None,("j","insert special item"))
+
+        if not dryRun:
+            self.fail()
+        return (None,None)
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

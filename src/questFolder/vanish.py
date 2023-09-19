@@ -13,6 +13,7 @@ class Vanish(src.quests.MetaQuestSequence):
         if character.container:
             character.container.removeCharacter(character)
             self.postHandler()
+            return (None,None)
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

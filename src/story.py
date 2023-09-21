@@ -4056,10 +4056,13 @@ class MainGame(BasicPhase):
             for character in characterPool[:]:
                 if not character.faction == self.activeStory["mainChar"].faction:
                     characterPool.remove(character)
+                    continue
                 if isinstance(character,src.characters.Ghul):
                     characterPool.remove(character)
+                    continue
                 if not character.rank:
                     characterPool.remove(character)
+                    continue
 
             if not characterPool:
                 text = """

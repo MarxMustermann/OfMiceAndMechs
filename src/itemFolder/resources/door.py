@@ -29,6 +29,27 @@ class Door(src.items.Item):
                 ]
             )
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted and self.walkable:
+            options["x"] = ("block door", self.blockDoor)
+        else:
+            options["x"] = ("unblock door", self.unblockDoor)
+        return options
+
+    def blockDoor(self,character):
+        self.walkable = False
+
+    def unblockDoor(self,character):
+        self.walkable = True
+
     def render(self):
         """
         render depending on state

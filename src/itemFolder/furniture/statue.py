@@ -28,7 +28,13 @@ class Statue(src.items.Item):
             options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
+        options["p"] = ("pray", self.pray)
         return options
+
+    def pray(self,character):
+        new = src.items.itemMap["GlassStatue"]()
+        self.container.addItem(new,self.getPosition())
+        self.container.removeItem(self)
 
     def boltAction(self,character):
         self.bolted = True

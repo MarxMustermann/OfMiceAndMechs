@@ -13,4 +13,3 @@ import src.itemFolder.industry.machine
 import src.itemFolder.industry.scrapCompactor
 import src.itemFolder.industry.floorPlan
 import src.itemFolder.industry.collectionBeacon
-

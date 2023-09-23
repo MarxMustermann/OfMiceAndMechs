@@ -3,7 +3,7 @@ the code is a mess right now. Big cause is that i experimented a lot with the st
 In the current form the game is building things, automate building things and fighting the mold.
 
 src/interaction.py
-holds the core of the game. 
+holds the core of the game.
 * most of the relevant action is in processInput. (I do plan to break this function into parts). In the beginning it did things like moving the character when the movement key is pressed and redirecting keystrokes to interaction menues. The first important addition is that this function is called for every npc/monster and not only for the main character. This allows the npcs to do everything what the player can do including saving and quitting the game -_-. The second important addition is kind of a macro language interpreter hooked to the characters CommandKeyQueue. This allows the player to type "10d" wich will be exanded to "dddddddddd" and has conditions, registers and such things. This basically the current core content of the game and the current enemies are automated using this and items.
 * The main loop is at the end, but is somewhat confusing since it collects keystrokes from terminal, pygame and network for multiplayer.
 * The main loops advance() method doesn't do too much. It basically triggers scheduled events and makes the character loose satiation. The quest+solvers are currently not used, but mostly worked.
@@ -41,7 +41,7 @@ src/story.py
 concerns the story mode that basically didn't work out and is unused+broken right now. Basically only the BuildBase Class is important right now. I hope that i will be able to salvage most of this code.
 
 src/canvas.py
-holds the buffer for rendering thing. The hack with the Mapping is an abstraction to allow displaying the rendered map on terminal, pygame or networked client (executeYou.py) 
+holds the buffer for rendering thing. The hack with the Mapping is an abstraction to allow displaying the rendered map on terminal, pygame or networked client (executeYou.py)
 
 src/saveing.py
 The saving system used to work with differential savestates, but that resulted in runtime performance issues. It was changed to more simpler system recently, but remains of the old logic is still everywhere

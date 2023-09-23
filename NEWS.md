@@ -24,13 +24,13 @@ I feel like the code quality gets better with these cleanup rounds, but new bugs
 
 ### commit 1100-1202
 
-The commits were focused on making th save/load system work. 
+The commits were focused on making th save/load system work.
 
 * some fixes for user-reported bugfixes (thanks for reporting the bugs)
 * added submenues tho save system
 * changed registry so no double instantiation happens
 * handled splashscreen when saving
-* added interaction for loading when starting the game 
+* added interaction for loading when starting the game
 * fixed bugs resulting from the save system
 * changed internal code structures to allow for serialization/saving
 * extended use of the Saveable object
@@ -40,7 +40,7 @@ The commits were focused on making th save/load system work.
 
 ### commit 1000-1099
 
-These commits were a bugfix/code enhancement round. 
+These commits were a bugfix/code enhancement round.
 
 * placed game won screen at end of the working story line
 * added Exceptions
@@ -195,7 +195,7 @@ I think i created a feeling of
 * adventure, by allowing the player to progress, to talk to people, learn some lore and be send through the mech the player doesn't fully know the purpose of. Also some mild element of danger and punishment is added to stress the player a bit. This topic is barely scratched, but i think a combination of the feeling of purpose, progress and discovery will likely create a feeling of adventure.
 * discovery, by putting the player into a small room and having the player discover more of the map combined with bits of lore after some progress. Giving the player free movement allows to find some easter egg like functionality that is not bound into the story yet. This should cover both the players that rush for completion and the players who like to look around something to find. I think the way to go is revealing more features/lore/areas as the player progresses combined with experimental stuff that's harder to find.
 
-All in all i think i figuered out a way to make the game feel like a game and hope that continuing this way will make the game feel like a interesting game further down the line. 
+All in all i think i figuered out a way to make the game feel like a game and hope that continuing this way will make the game feel like a interesting game further down the line.
 
 I did not only work on the issues above. Other noteble changes and features that were added are:
 
@@ -204,7 +204,7 @@ I did not only work on the issues above. Other noteble changes and features that
 * added a autocompletion mechanism to the whole story and all quests used in the story. This means basically everything the player does now can be reused to have npcs running around doing these things. Also this is a preperation to give the player the ability to command npcs to complete quests like these as a way to exercise power.
 * rebuild many of the quests in a recursive quest structure, that can get quite complex. This is partially intended, but needs to be scaled to not appear ridiculus. Also this is a preperation to have everybody do only one quest and have the rest as a subquest.
 * added some elements of a economy, by adding the possibility to produce some items from scrap and by added a half working construction site. This is not embedded into the world in a meaningful way, but i think it is notable since it's a small step into the direction of an economy.
-* A reputation system was added to be able to unlock stuff. This only notable since it is not indended to be kept on the long run, so don't get attached to it. 
+* A reputation system was added to be able to unlock stuff. This only notable since it is not indended to be kept on the long run, so don't get attached to it.
 * added npc specific dialog options to test the waters for a propper dynamic chat system.
 * the ability to download and play CC songs to have some background music. This is more a symbolic thing, since it's using mplayer and only plays 2 songs.
 * a half working tile based display mode based on pygame

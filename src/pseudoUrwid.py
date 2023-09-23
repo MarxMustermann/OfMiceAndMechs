@@ -64,4 +64,3 @@ class AttrSpec(object):
             color.append(None)
             color.append(None)
         return tuple(color)
-

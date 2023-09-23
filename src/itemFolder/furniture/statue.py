@@ -32,7 +32,18 @@ class Statue(src.items.Item):
         return options
 
     def pray(self,character):
-        new = src.items.itemMap["GlassStatue"]()
+        itemID = None
+        if self.getPosition() == (7,2,0):
+            itemID = 3
+        if self.getPosition() == (10,2,0):
+            itemID = 4
+        if self.getPosition() == (10,5,0):
+            itemID = 5
+        if self.getPosition() == (8,5,0):
+            itemID = 6
+        if self.getPosition() == (7,4,0):
+            itemID = 7
+        new = src.items.itemMap["GlassStatue"](itemID=itemID)
         self.container.addItem(new,self.getPosition())
         self.container.removeItem(self)
 

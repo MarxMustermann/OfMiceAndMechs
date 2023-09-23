@@ -206,4 +206,3 @@ if not args.urwid:
                 print(exceptionText)
                 raise SystemExit()
     """
-

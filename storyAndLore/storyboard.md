@@ -6,7 +6,7 @@ authoritarian Steampunk adventure
   * russian city names
 * authoritarian:
   * coal centered society
-  * everybody does exactly as told 
+  * everybody does exactly as told
 * values:
   * authority
   * efficiency
@@ -15,7 +15,7 @@ authoritarian Steampunk adventure
     * upranking for surpassing quotas
     * downranking for quotas
     * violating minor orders is tolerated if there is overall surpassing of quotas
-    * names and information is given 
+    * names and information is given
     * failing in case of overwhelming odds is accepted
     * not having to issue commands is a virtue
     * using idle time for productive purposes is encouraged
@@ -160,7 +160,7 @@ the gain and loss of absolute power
   * player is killed despite the brain syncs and transplants because of mad scientists killing everybody and glassing facilities
     * pro: you control everybody and everything for some time
     * pro: execution + permadeath after death with GAME WON screen :-)
-	
+
 
 # save system:
 
@@ -203,27 +203,27 @@ killing invaders -> soldier -> military education
 temporary command -> planning -> logistics
 
 dying or failing -> simulation restart
-	
+
 
 watch
 
 [
 boiler bursts
-temporary 
+temporary
 ]
 ```
 
 ### Vat duty (tutorial2):
 
 ```
-follow orders till 
-		
+follow orders till
+
 good mechanic -> Machine room
 killing mice/blobs -> hunter -> tunnel cleaning
 killing invaders/not really dead invader -> soldier -> military education
 temporary command -> planning -> logistics
 
-items to 
+items to
 
 die -> permadead
 ```
@@ -247,7 +247,7 @@ die -> permadead
   * bad performance -> machine room
   * killing -> soldier
   * helping repair group -> weapon loading
-	
+
 * military education
   * good performance -> soldier
   * emergency repair -> weapon loading
@@ -299,7 +299,7 @@ showGame1Turn()
 #==
 say("""the Furnaces burn coal shown as **. if a furnace is burning Coal it is shown as ϴϴ and shown as ΩΩ if not. The Coal is stored in Piles shown as ӫӫ. the Coalpiles are on the right Side of the Room and are filled through the Pipes when needed.
 
-the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as Ѻ 
+the Piles on the lower End of the Room are Storage for Replacementparts and you can sleep in the Hutches to the left shown as Ѻ
 
 a coal delivery is incoming anyway. please wait and pay attention
 
@@ -355,7 +355,7 @@ say("""there are other items in the room that may or may not be important for yo
  Furace (Ωsay("""Ω): used to generate heat burning Things
  Display (۞ ): a complicated Machine-Maninterface
  Wall (⛝ ): ensures the structural Integrity of basically any Structure
- Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses 
+ Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses
  Coal ( *): a piece of Coal, quite usefull actually
  Boiler (伫 or 伾): generates Steam using Water and and Heat
  Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing
@@ -367,7 +367,7 @@ say("""there are other items in the room that may or may not be important for yo
 #==
 say("""movement can be tricky sometimes so please make yourself comfortable with the controls.
 
-you can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist. 
+you can move in 4 Directions along the x and y Axis. the z Axis is not supported yet. diagonal Movements are not supported since they do not exist.
 
 the basic Movementcommands are:
  w=up
@@ -383,7 +383,7 @@ factor the amount of rounds walked into the score
 say("""thats enough. move back to waiting position""")
 *move back to waiting position*
 #==say("""
-say("""use e to examine items. you can get Descriptions and more detailed Information about your environment than just by looking at things. 
+say("""use e to examine items. you can get Descriptions and more detailed Information about your environment than just by looking at things.
 
 to look at something you have to walk into or over the item and press e. For example if you stand next to a furnace like this:
 
@@ -421,7 +421,7 @@ whenever you bump into an Item that is to big to be walked on, you will promted 
  pressing a and e would result make you examine the Furnace
  pressing d and e would result make you examine the Pile
 
-please grab yourself some Coal from a pile by bumping into it and pressing j afterwards. 
+please grab yourself some Coal from a pile by bumping into it and pressing j afterwards.
 """)
 #==
 if topmost furnace is burning:
@@ -436,7 +436,7 @@ EXTRA1:
 pull the lever: guards come in and are anoyed at the lack of invaders
 	heavy minus points
 EXTRA2:
-leave the room: 
+leave the room:
 	heavy minus points depending on duration of the leave
 
 if complete fuckup
@@ -456,7 +456,7 @@ WORK1:
 	run with X capacity
 	-> get told to fire furnaces in appropiate speed
 WORK2:
-	start engine 
+	start engine
 WORK3:
 	stop engine
 
@@ -476,7 +476,7 @@ SPECIALEVENT1:
 	take over and learn how to do a supervisors/group leaders job
 
 SPECIALEVENT2:
-	exploding boiler / burst pipe 
+	exploding boiler / burst pipe
 	have the option to fix damage
 	risk of death by steam
 	-> fix damage => mechanics positive points

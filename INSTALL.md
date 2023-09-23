@@ -1,6 +1,6 @@
 # installation
 
-## how to install and run the game 
+## how to install and run the game
 
 ### windows
 

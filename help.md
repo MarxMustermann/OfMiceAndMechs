@@ -19,8 +19,5 @@ Save game status	  	^ (save and quit)
 Save game status 		control + x (keeps macro alive)
 
 Record macro			Press (-)then (choose key) then (start action) then close macro (-)
-Start macro command 
-Set loop in macro		example (§_p) 
-
-
-
+Start macro command
+Set loop in macro		example (§_p)

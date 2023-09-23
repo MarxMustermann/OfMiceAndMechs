@@ -55,7 +55,7 @@ class ChangeJob(src.quests.MetaQuestSequence):
 Retrain for a different duty.
 
 Use the basic trainer to learn a new skill.
-Reset your duties at the assimilator aftwerward.
+Reset your duties at the assimilator afterward.
 """
 
     def solver(self,character):

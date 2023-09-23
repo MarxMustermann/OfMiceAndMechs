@@ -938,10 +938,10 @@ class Item(src.saveing.Saveable):
 
     def getResistance(self):
         """
-        get the physical resistance to beeing moved
+        get the physical resistance to being moved
 
         Returns:
-            int: a indicator of the resistance against beeing moved
+            int: a indicator of the resistance against being moved
         """
 
         if self.walkable:

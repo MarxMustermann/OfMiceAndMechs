@@ -420,7 +420,7 @@ class GameState(src.saveing.Saveable):
 
 def setup(gameIndex):
     """
-    initialises the game state 
+    initialise the game state 
     """
 
     global gamestate

@@ -126,7 +126,7 @@ To see your items open the your inventory by pressing i."""%(reason,)
                       characterPos[1]%15 in (1,7,13) or
                       character.container.getItemByPosition(characterPos)):
                     pos = (random.randint(2,12),random.randint(2,12))
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="go to a drop off poition")
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="go to a drop off position")
                     return ([quest],None)
                 return (None,("l","drop item"))
 

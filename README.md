@@ -10,7 +10,7 @@ mail: marxmustermann@riseup.net
 
 ## the aim of this game
 
-OfMiceAndMechs aims to be about adventures exploring hierachies in a living complex world.
+OfMiceAndMechs aims to be about adventures exploring hierarchies in a living complex world.
 
 This means you should be able to walk around and kill enemies and do quests. On your quests you should explore a vast map and have companions that walk, fight and die with you.
 
@@ -22,7 +22,7 @@ These quests should usually not be player focused, but generated from the world 
 
 A lot of work has been sunk into this project. Currently i'd estimate the game to be 25% done.
 A lot of things are still missing. I did get simple playable version to try out.
-That way i got some player feedback, which resulted in masive changes an lot of ploishing.
+That way i got some player feedback, which resulted in massive changes an lot of polishing.
 I'm pretty proud of it by now and think i may reach demo this year.
 
 Check the website for downloads, more in depth information and texts.

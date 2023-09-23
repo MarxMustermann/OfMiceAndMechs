@@ -37,7 +37,7 @@ class Character(src.saveing.Saveable):
         seed=None,
     ):
         """
-        sets basic info AND adds default behaviour/items
+        sets basic info AND adds default behavior/items
 
         Parameters:
             display: how the character is rendered
@@ -46,8 +46,8 @@ class Character(src.saveing.Saveable):
             quests: obsolete, to be removed
             automated: obsolete, to be removed
             name: the name the character should have
-            creator: osolete, to be removed
-            characterId: osolete, to be removed
+            creator: obsolete, to be removed
+            characterId: obsolete, to be removed
             seed: rng seed
         """
         self.addExhaustionOnHurt = False
@@ -655,11 +655,11 @@ class Character(src.saveing.Saveable):
 
     def searchInventory(self, itemType, extra={}):
         """
-        return a list of items from the characters inventory that statisfy some conditions
+        return a list of items from the characters inventory that satisfy some conditions
 
         Parameters:
             itemType: the item type
-            extra: extra condidtions
+            extra: extra conditions
         """
 
         foundItems = []
@@ -806,7 +806,7 @@ class Character(src.saveing.Saveable):
         hurt the character
 
         Parameters:
-            damage: the amout of damage dealt
+            damage: the amount of damage dealt
             reason: the reason damage was dealt
         """
 
@@ -922,17 +922,17 @@ press b/B for bestial attack
         if "n" in attacksOffered:
             text += """
 press n/N for exhausting attack
--exhaution: +4 -enemy ehaustion: +11 -damage multiplier: 0
+-exhaustion: +4 -enemy exhaustion: +11 -damage multiplier: 0
 """
         if "i" in attacksOffered:
             text += """
 press i/I for quick attack
--exhaution: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
+-exhaustion: +1 -damage multiplier: 0.5 -attack speed multiplier: 0.5
 """
         if "u" in attacksOffered:
             text += """
 press u/U for slow attack
--exhaution: -1 -attack speed multiplier: 1.5
+-exhaustion: -1 -attack speed multiplier: 1.5
 """
 
         text += "\n"
@@ -940,12 +940,12 @@ press u/U for slow attack
         if "h" in attacksOffered:
             text += """
 press h/H for heavy attack
--exhaution: +3 -damage multiplier: 1.5
+-exhaustion: +3 -damage multiplier: 1.5
 """
         if "j" in attacksOffered:
             text += """
 press j/J for ultraheavy attack
--exhaution: +25 -damage multiplier: 3
+-exhaustion: +25 -damage multiplier: 3
 requires: exhaustion < 10
 """
         if "k" in attacksOffered:
@@ -957,13 +957,13 @@ requires: no exhaustion
         if "l" in attacksOffered:
             text += """
 press l/L for light attack
--exhaution: -5 -damage multiplier: 0.5
+-exhaustion: -5 -damage multiplier: 0.5
 """
 
 
         text += """
 
-press any other key to attack normaly"""
+press any other key to attack normally"""
         submenu = src.interaction.OneKeystrokeMenu(text)
 
         self.macroState["submenue"] = submenu
@@ -1021,12 +1021,12 @@ press any other key to attack normaly"""
 
         if initial:
             if self.exhaustion > 0:
-                self.addMessage("you are too ehausted to do an inital attack")
+                self.addMessage("you are too exhausted to do an initial attack")
                 initial = False
 
         if ultraheavy:
             if self.exhaustion >= 10:
-                self.addMessage("you are too ehausted to do an ultraheavy attack")
+                self.addMessage("you are too exhausted to do an ultraheavy attack")
                 ultraheavy = False
 
         speed = self.attackSpeed
@@ -1279,7 +1279,7 @@ press any other key to attack normaly"""
 
         # log impossible state
         if not self.quests:
-            src.logger.debugMessages.append("reacalculate path called without quests")
+            src.logger.debugMessages.append("recalculate path called without quests")
             self.path = []
             return
 
@@ -1347,7 +1347,7 @@ press any other key to attack normaly"""
         used for saving things
 
         Returns:
-            the characters state as json serialisable dictionary
+            the characters state as json serializable dictionary
         """
         # fetch base state
 
@@ -1865,7 +1865,7 @@ press any other key to attack normaly"""
         # log impossible state
         else:
             src.logger.debugMessages.append(
-                "this should not happen, character died without beeing somewhere ("
+                "this should not happen, character died without being somewhere ("
                 + str(self)
                 + ")"
             )

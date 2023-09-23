@@ -9,7 +9,7 @@ class KillPatrolers(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         out = """
-There are groups of enemies patroling around the base.
+There are groups of enemies patrolling around the base.
 They make movement around the base harder and hinder operations outside the base.
 The patrols are shown as white X-
 
@@ -19,7 +19,7 @@ Ambush them in front of the base to break up the second siege ring."""
             out += """
 
 This quest currently has no sub quests.
-Press r to generate subquest and recive detailed instructions
+Press r to generate subquest and receive detailed instructions
 """
         
         return out

@@ -23,7 +23,7 @@ Remove guards from the tiles (7,4,0) and (6,5,0)"""
             out += """
 
 This quest currently has no sub quests.
-Press r to generate subquest and recive detailed instructions
+Press r to generate subquest and receive detailed instructions
 """
         return out
 

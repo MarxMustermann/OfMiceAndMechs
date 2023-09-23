@@ -25,7 +25,7 @@ Spend them to claim the actual reward (%s).
         if self.rewardType == "room building":
             text += """
 Spawn a room builder. A room building clone will build rooms.
-This will allow you to focus on getting more building materails.
+This will allow you to focus on getting more building materials.
 """
         if self.rewardType == "scavenging":
             text += """
@@ -64,7 +64,7 @@ This will allow you to focus on other tasks.
 
         if self.rewardType == "hauling":
             text += """
-Spawn a hauker. A hauling clone will carry items withins rooms.
+Spawn a hauler. A hauling clone will carry items withins rooms.
 This will allow you to focus on other tasks.
 """
 

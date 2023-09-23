@@ -27,7 +27,7 @@ class Mortar(src.items.Item):
     def apply(self, character):
         """
         handle a character trying to use this item
-        by dooing the ranged attack
+        by doing the ranged attack
         """
 
         if not self.loaded:

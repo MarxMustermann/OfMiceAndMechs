@@ -12,7 +12,7 @@ class DestroySpawners(src.quests.MetaQuestSequence):
         hiveText = """Insects near to the hive"""
         text = []
         text.extend(["""
-Hives have developed in the abbandoned farms.
+Hives have developed in the abandoned farms.
 Insect grow there and attack the base.
 Put an end to those attacks by destroying those hives.
 

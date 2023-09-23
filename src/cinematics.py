@@ -135,7 +135,7 @@ class InformationTransfer(BasicCinematic):
         try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
-            src.logger.debugMessages.append("removed non existant alarm")
+            src.logger.debugMessages.append("removed non existent alarm")
 
 # obsolete: only used in old storymode
 # bad code: this should be abstracted to have a zoom in/out for various things like the quest menu
@@ -243,7 +243,7 @@ class MessageZoomCinematic(BasicCinematic):
         try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
-            src.logger.debugMessages.append("removed non existant alarm")
+            src.logger.debugMessages.append("removed non existent alarm")
 
         # trigger follow up functions
         if self.endTrigger:
@@ -375,7 +375,7 @@ class TextCinematic(BasicCinematic):
         try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
-            src.logger.debugMessages.append("removed non existant alarm")
+            src.logger.debugMessages.append("removed non existent alarm")
 
         # trigger follow up actions
         if self.endTrigger:
@@ -432,7 +432,7 @@ class ShowQuestExecution(BasicCinematic):
 
     def setState(self, state):
         """
-        load state from semi serialised state
+        load state from semi serialized state
 
         Parameters:
             state: the state to set
@@ -460,7 +460,7 @@ class ShowQuestExecution(BasicCinematic):
 
     def getState(self):
         """
-        get state in semi serialised form
+        get state in semi serialized form
 
         Returns:
             the state
@@ -671,7 +671,7 @@ class SelectionCinematic(BasicCinematic):
 
         Parameters:
             text: the text shown for the selection
-            options: the options to selet from
+            options: the options to select from
             followUps: the functions to be called depending on the selection
             default: the default selection
         """
@@ -703,7 +703,7 @@ class SelectionCinematic(BasicCinematic):
 
     def setState(self, state):
         """
-        set state from semi serialised form
+        set state from semi serialized form
 
         Parameters:
             state: the state
@@ -721,7 +721,7 @@ class SelectionCinematic(BasicCinematic):
 
     def getState(self):
         """
-        get state in semi serialised form
+        get state in semi serialized form
 
         Returns:
             the state
@@ -740,7 +740,7 @@ class SelectionCinematic(BasicCinematic):
 
     def setUp(self):
         """
-        show the selection menue
+        show the selection menu
         """
 
         self.submenue = src.interaction.SelectionMenu(
@@ -818,10 +818,10 @@ class ShowMessageCinematic(BasicCinematic):
         self.breakCinematic = True
         return True
 
-# bad code: this should be a generalised wrapper for adding cinematics
+# bad code: this should be a generalized wrapper for adding cinematics
 def showCinematic(text, rusty=False, autocontinue=False, scrolling=False):
     """
-    shortcut for adding a textcinematic
+    shortcut for adding a TextCinematic
 
     Parameters:
             rusty: show the text in a rusty style

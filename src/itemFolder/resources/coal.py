@@ -29,7 +29,7 @@ class Coal(src.items.Item):
 
         super().destroy(generateScrap=False)
 
-    # bad code: evolution should be handled by the monster dooing the evolution?
+    # bad code: evolution should be handled by the monster doing the evolution?
     def apply(self,character):
         """
         handle a character trying to use the item

@@ -93,7 +93,7 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
     def configure2(self):
         """
         handle a character having selected what configuration task should be done
-        by dooing the selected task
+        by doing the selected task
         """
         if not self.character.jobOrders:
             return

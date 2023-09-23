@@ -27,8 +27,8 @@ A good story is a lot of work. So it is often skipped or done by people who eat 
 
 This should help coders to know what to code and what to write. It also would enable anybody who can edit a Textfile on github to participate. The idea is to split implementation from story design and have skilled people working on the story, while other people work on the engine and on implementing the story. A well working system of many people writing bits of story in a controlled way should give the project an edge on non open source projects.
 
-The storyboard can be found at ../OfMiceAndMechs/storyboard.md. Some kind of soft ownership on story is likely to be needed to keep the story consistent and relatable. 
-This has time but it's best to never assume you own a story but still take care not to disturb other storylines. 
+The storyboard can be found at ../OfMiceAndMechs/storyboard.md. Some kind of soft ownership on story is likely to be needed to keep the story consistent and relatable.
+This has time but it's best to never assume you own a story but still take care not to disturb other storylines.
 
 A lore file/folder will be created. To define lore in collaborative projects lore threads in a forum are often used and this seems to work well. Anything in the lore file is truth anything else is not until put into the lore file. The lore should be a list of facts and should be more meaningful than the story. So if a story violates the lore file it has to change and not the other way around.
 
@@ -63,7 +63,7 @@ The game lets the player do many mundane tasks. One idea is to try to give tasks
 
 One way to do this would be to give users callanges to complete. For example the tutorial contains a competition of furnace firering the player has to win. The optimal solver is pretty simple, but nothing the AI could do on their own right now. A perfect completion of the task is rewarded with a branch in the storyline that leads to the competitions.
 
-The sequence of action could be recorded and replayed later in the game or even in the games of other players. The challenges could be modified to make them harder and to get better solutions for important scenarios. Some challenges with solutions can be used to stage competitions and populate a research subject storyline. Other options would be placing items in rooms or designing mechs or to design defences or to plan a siege. One players defence could be the target of the next players siege. 
+The sequence of action could be recorded and replayed later in the game or even in the games of other players. The challenges could be modified to make them harder and to get better solutions for important scenarios. Some challenges with solutions can be used to stage competitions and populate a research subject storyline. Other options would be placing items in rooms or designing mechs or to design defences or to plan a siege. One players defence could be the target of the next players siege.
 
 Not all solutions can be recorded directly. So the player has to be put into a position, where useful results are the consequence. For example the player could be first tasked with solving the problem for a specific setting. If the player solves the problem for the specific setting, the next task would be to teach it to a npc. This converts the solution into the quest mechanic. The next reasonable step would be to test the trained npc behaviour against more generalized settings and task somebody with fixing edge cases.
 
@@ -71,11 +71,11 @@ Not all solutions can be recorded directly. So the player has to be put into a p
 
 now to the fun things.
 
-Performance in many games suck because they were running reasonably smooth until a lot of features were added and the map grew. Exponential grows hits hard at some point and one of the *new things* is to make things large. 
+Performance in many games suck because they were running reasonably smooth until a lot of features were added and the map grew. Exponential grows hits hard at some point and one of the *new things* is to make things large.
 
 === self contained units ===
 
-The main idea to combat exponentioal growth is to have self contained units, that don't have to be calculated or can be caculated lazyly. A room is such a self contained unit. 
+The main idea to combat exponentioal growth is to have self contained units, that don't have to be calculated or can be caculated lazyly. A room is such a self contained unit.
 
 It has an internal state like the items and the position of npc in the room. As long there is no need to observe the internal state, calculation can be skipped and hopefully never be done. At first glance this means a room not viewed by the player has to be rendered, but all other rooms can be ignored.
 
@@ -100,7 +100,7 @@ Checking state often is expensive, especially for non local state. A Quest for a
 For example the vat processing contains steamers that require the ressource steam to work. The steam is produced externally in the boiler room by npcs firering multiple furnaces. With events the communication is as follows:
 
 1. the npc activates the furnaces.
-2. the furnaces send a event to the boilers to tell them they are heated now. 
+2. the furnaces send a event to the boilers to tell them they are heated now.
 3. The furnace schedules a event to itelf to stop working in some ticks.
 4. the boiler reacts to being heated to schedule a event to itself, to indicate it will start to boil.
 5. after starting to boil the boiler changes the steam output of the room
@@ -114,10 +114,10 @@ For example the vat processing contains steamers that require the ressource stea
 12. the npcs switches task and starts firing the furnace
 13. the boiler reacts to not beeing heated anymore by sending itself a event for cooling out
 13. the npc activates the furnace
-14. the furnace send the boiler a heat up event 
+14. the furnace send the boiler a heat up event
 15. the boiler cancels the cooling out event
 
-This is somewhat complicated, but allows to treat dynamic behaviour as static behaviour. If we can assume the npc does it job and fires the furnaces reliably, we can assume that the furnaces only go out a short time and the boilers never actually stops boiling. This means that the events do their ping pong within the boiler room, but it stops at the boiler and therefore is contained within the room. 
+This is somewhat complicated, but allows to treat dynamic behaviour as static behaviour. If we can assume the npc does it job and fires the furnaces reliably, we can assume that the furnaces only go out a short time and the boilers never actually stops boiling. This means that the events do their ping pong within the boiler room, but it stops at the boiler and therefore is contained within the room.
 
 If the room is not observed and the npc is working reliably, the furnace operation is implicit and no events are send. The terrain doesn't have to trigger recalculations and the behaviour is fixed. When the npc actually stops to fire the furnaces, events propagate the change in behaviour and the behaviour is static again afterwards.
 
@@ -149,7 +149,7 @@ Like most games this game intends to do some new things:
 
 The game should play in a massive or infinite world. Since you cannout realy grasp the beauty of large structures if you continue to only see small parts of it, the game should run on many resolutions. For eaxmple:
 
-a placeholder for an item is 1x1m big. This is roughly the size of a small machine equipment. 
+a placeholder for an item is 1x1m big. This is roughly the size of a small machine equipment.
 a tile is 15x15m big with room having about 10x10m size (5/3m height)
 a terrain is 225x225m big with a small mech having about 150x150m size (25/15m height)
 a sector is 3375x3375m big with the biggest mech beeing about 2250x2250m size (125/75m height)

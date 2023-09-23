@@ -7,7 +7,7 @@ The tutorial room should be explained enough so the player just has to follow th
 
 Reputation is primary gained by completing a certain quest. The quest giver usually has the quests: "transport" and "move to storage". "move to storage" rewards 1 reputation. If the player is using auto mode, the entire quest can be completed using one keystroke. So in naive calculation the player should need to do some minimal busywork and wins the game.
 
-In practice there are several mechanisms to prevent the player from accumulating reputation. The most important of these is regulary reducing the players reputation, this means the player is forced to optimise the ratio of "move to storage" quest completions vs. time and keep this ratio up for some time. If this does not happen, the player will not win. How to do this is the first (and for now only) main puzzle in the game. 
+In practice there are several mechanisms to prevent the player from accumulating reputation. The most important of these is regulary reducing the players reputation, this means the player is forced to optimise the ratio of "move to storage" quest completions vs. time and keep this ratio up for some time. If this does not happen, the player will not win. How to do this is the first (and for now only) main puzzle in the game.
 
 This is a point where you might want to stop reading.
 

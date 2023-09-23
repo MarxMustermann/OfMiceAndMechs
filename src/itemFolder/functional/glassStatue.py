@@ -9,7 +9,7 @@ class GlassStatue(src.items.Item):
     description = "Used to build rooms."
     name = "glassStatue"
 
-    def __init__(self):
+    def __init__(self,itemID=None):
         '''
         set up internal state
         '''
@@ -28,12 +28,14 @@ class GlassStatue(src.items.Item):
                     "getExtraChallenge": self.getExtraChallenge,
                     "getReward": self.getReward,
                         }
+        self.itemID = itemID
         self.challenges = []
 
     def showChallenges(self,character):
         character.addMessage(str(self.challenges))
 
     def getExtraChallenge(self,character):
+        character.addMessage(self.itemID)
         character.addMessage("bring me corpses")
         self.challenges.append(("corpses",src.gamestate.gamestate.tick))
 
@@ -44,13 +46,45 @@ class GlassStatue(src.items.Item):
                 continue
             corpses.append(item)
 
-        if character.baseDamage >= 5:
-            character.addMessage("you can't improve further")
+        if self.itemID == 4:
+            if not character.weapon:
+                character.addMessage("you don't have a weapon to upgrade")
+                return
 
-        for corpse in corpses:
-            character.baseDamage += 0.1
-            character.addMessage("your base damage is increased by 0.1 to %s"%(character.baseDamage,))
-            character.inventory.remove(corpse)
+            if character.weapon.baseDamage >= 30:
+                character.addMessage("you can't improve your weapon further")
 
+            for corpse in corpses:
+                character.weapon.baseDamage += 1
+                character.addMessage("your weapons base damage is increased by 1 to %s"%(character.weapon.baseDamage,))
+                character.inventory.remove(corpse)
+        elif self.itemID == 5:
+            if not character.armor:
+                character.addMessage("you don't have a armor to upgrade")
+                return
+
+            if character.armor.armorValue >= 8:
+                character.addMessage("you can't improve your armor further")
+
+            for corpse in corpses:
+                character.armor.armorValue += 0.2
+                character.addMessage("your armors armor value is increased by 0.2 to %s"%(character.armor.armorValue,))
+                character.inventory.remove(corpse)
+        elif self.itemID == 6:
+            if character.health >= 500:
+                character.addMessage("you can't improve your armor further")
+
+            for corpse in corpses:
+                character.armor.armorValue += 0.2
+                character.addMessage("your armors armor value is increased by 0.2 to %s"%(character.armor.armorValue,))
+                character.inventory.remove(corpse)
+        else:
+            if character.baseDamage >= 5:
+                character.addMessage("you can't improve further")
+
+            for corpse in corpses:
+                character.baseDamage += 0.1
+                character.addMessage("your base damage is increased by 0.1 to %s"%(character.baseDamage,))
+                character.inventory.remove(corpse)
 
 src.items.addType(GlassStatue)

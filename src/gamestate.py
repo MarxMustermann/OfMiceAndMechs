@@ -42,6 +42,15 @@ class GameState(src.saveing.Saveable):
         self.gameOverText = ""
         self.savedThisTurn = False
         self.waitedForInputThisTurn = False
+        self.gods = {
+                        1:{"name":"god1"},
+                        2:{"name":"god2"},
+                        3:{"name":"god3"},
+                        4:{"name":"god4"},
+                        5:{"name":"god5"},
+                        6:{"name":"god6"},
+                        7:{"name":"god7"},
+                    }
 
         self.multi_chars = set()
         self.header = None

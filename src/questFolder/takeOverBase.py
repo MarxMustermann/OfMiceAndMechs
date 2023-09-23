@@ -20,9 +20,9 @@ class TakeOverBase(src.quests.MetaQuestSequence):
             out += """
 There is no commander. This is a problem.
 
-Insects are growing within the hives in the abbandoned farms.
+Insects are growing within the hives in the abandoned farms.
 Without a commander the hives will continue growing.
-Sooner or later their attacks will break the bases defences.
+Sooner or later their attacks will break the bases defenses.
 
 Also the base is in maintenance mode.
 So leaving is not an option. You are stuck here. 

@@ -23,7 +23,7 @@ class ActivateEpochArtwork(src.quests.MetaQuestSequence):
             out += """
 You reached the base and you are safe for now.
 The farms have been neglected and hives have developed.
-But it has defences.
+But it has defenses.
 
 Find out who is commanding this base.
 Maybe you will be safe for longer here."""

@@ -85,7 +85,7 @@ def calculatePath(startX, startY, endX, endY, walkingPath):
 
 def calculatePathRaw(startX, startY, endX, endY, walkingPath):
     """
-    recusively calcualate a unoptimized path
+    recursively calculate an unoptimized path
 
     Parameters:
         startX: the start x position

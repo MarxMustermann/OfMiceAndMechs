@@ -17,16 +17,16 @@ class PrepareAttack(src.quests.MetaQuestSequence):
 When you destroy the hive the hive guards will become agitated.
 This means they will start to attack everybody on this terrain.
 Likely that means a wave of insects is rushing at the base.
-This can overwhelm the bases defences and cause damage.
+This can overwhelm the bases defenses and cause damage.
 
 Before starting the attack prepare for that wave.
-Ensure the trap rooms are maintaned to kill the incoming guards.
+Ensure the trap rooms are maintained to kill the incoming guards.
 Destroying the hive will agitate hive guards within a distance of 3 tiles.
 Killing those insects before killing the hive will reduce the waves size.
 So you have two ways you can prepare for the wave.
 
 This quest will end when you have prepared enough.
-Your current prepardness score is %s, bring it to below 0.
+Your current preparedness score is %s, bring it to below 0.
 
 
 The formula for the preparedness score is:
@@ -36,8 +36,8 @@ The formula for the preparedness score is:
 
 
 This quest works a bit different to previous quests.
-It can handle mutiple subquests at once.
-The idea is to issue orders to the NPCs to mainain the traps and
+It can handle multiple subquests at once.
+The idea is to issue orders to the NPCs to maintain the traps and
 Attack the hive guards while you are waiting for the work complete.
 """
         return text

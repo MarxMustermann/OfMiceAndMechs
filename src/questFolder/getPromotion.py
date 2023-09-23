@@ -24,7 +24,7 @@ Getting promoted has several advantages:
             text += """
 * You will be able to handle more subordinates.
 
-Use the assimilator to fetch your promottion.
+Use the assimilator to fetch your promotion.
 You need to reach rank %s to complete the quest.
 """%(self.character.rank-1,)
 

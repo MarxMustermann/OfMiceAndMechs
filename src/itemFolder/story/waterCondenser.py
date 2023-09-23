@@ -45,7 +45,7 @@ class WaterCondenser(src.items.Item):
     def apply2(self):
         """
         handle a character selected an action to do
-        by dooing it
+        by doing it
         """
 
         if not self.terrain:

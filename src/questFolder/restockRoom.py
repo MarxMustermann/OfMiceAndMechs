@@ -144,7 +144,7 @@ Place the items in the correct input or storage stockpile.
                     newInputs.append(slot)
                 inputSlots = newInputs
 
-            # find neighboured input fields
+            # find neighbored input fields
             foundDirectDrop = None
             for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
                 neighbour = (character.xPosition+direction[0],character.yPosition+direction[1],character.zPosition)

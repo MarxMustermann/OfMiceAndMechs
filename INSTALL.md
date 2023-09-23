@@ -4,7 +4,7 @@
 
 ### windows
 
-Dowload zip from http://ofmiceandmechs.com/ and double click exceuteMe.exe
+Download zip from http://ofmiceandmechs.com/ and double click exceuteMe.exe
 
 ### Linux
 
@@ -25,7 +25,7 @@ py -m pip install soundfile
 download zip, unpack zip
 double click excuteMe.py
 
-### debian based sytems
+### debian based systems
 
 * install the dependencies
   * sudo apt-get install python3 python3-urwid python3-requests python3-soundfile

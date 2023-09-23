@@ -50,7 +50,7 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
 
             if not self.shownCheatText:
                 text = """
-To get to the neighbour terrain we have to cheat a little.
+To get to the neighbor terrain we have to cheat a little.
 Just move left and ignore the big wall.
 
 This will be done properly at some point.
@@ -61,7 +61,7 @@ The game is pretty bare bones in many places.
 """
                 src.interaction.showInterruptText(text)
                 self.shownCheatText = True
-            return (None,("a","to cheat yourself onto the neighbour terrain"))
+            return (None,("a","to cheat yourself onto the neighbor terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 5):
             if not self.shownEnemyBaseIntro:
@@ -161,7 +161,7 @@ Now get out of there and bring the loot home.
                 if not character.getSpacePosition() == (13,7,0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                     return ([quest],None)
-            return (None,("d","to cheat yourself onto the neighbour terrain"))
+            return (None,("d","to cheat yourself onto the neighbor terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 6):
             if character.inventory:

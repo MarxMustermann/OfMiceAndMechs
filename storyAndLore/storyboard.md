@@ -65,7 +65,7 @@ authoritarian Steampunk adventure
 * the golden times (350 years)
   * creation (30 years):
     * germany stopped to exist as an nation state and grew to a world dictatorship under the imperator
-    * german aristrocacy, rich people and higher lever party members grew to become the leading cast
+    * german aristocracy, rich people and higher lever party members grew to become the leading cast
     * basically everybody else was the lower cast
     * the dictatorship fought internal enemies and did dictatorship things
     * society was streamlined to the imperators goals and unrest was eliminated
@@ -88,7 +88,7 @@ authoritarian Steampunk adventure
     * the whole city and everything within 50km was glassed during the awakening of the imperator
     * most of the facilities and cities in core germany were heavily damaged
     * details are unknown, but it is assumed that the heavily mad science based life chamber had a defect and exploded
-    * the top of the hierachy was killed
+    * the top of the hierarchy was killed
       * imperator and direct replacements
       * the whole leadership of core-germany unto regional level
       * the whole central government
@@ -127,8 +127,8 @@ the gain and loss of absolute power
   * risk: getting permakilled on death with repeated bad performance
   * risk: loss of gamestate on death
   * risk: loss of NPCs
-  * risk: game progress without the player beeing able to watch/influence
-  * -> climb the hierachy and become the faction leader
+  * risk: game progress without the player being able to watch/influence
+  * -> climb the hierarchy and become the faction leader
 * faction leader
   * manage your colony and be efficient at what you do
   * wage war against the other factions and risk loss of position
@@ -141,7 +141,7 @@ the gain and loss of absolute power
 * rise to imperator
   * gain control over other factions and gain factual immortality
   * eliminate the other hierarchies or convince the other faction leaders to vote for you
-  * pro: get a brain transplant to special engineered bodys
+  * pro: get a brain transplant to special engineered bodies
   * pro: get enough brain syncs to use it for fast travel
   * -> get crowned to imperator
 * imperator
@@ -153,7 +153,7 @@ the gain and loss of absolute power
     * unstable facilities burning down by unresponsive leaders
     * mechs failing because of unresponsive base personal
     * lower caste increasingly regain sentience and revolts
-    * pirates and sentient lower caste members unaffected by link rot take over idle ressources
+    * pirates and sentient lower caste members unaffected by link rot take over idle resources
     * mad scientist taking over more and more infrastructure and proceeding to produce dangerous things
   * implant rot triggers faster and faster to kill the player
   * higher destruction rate should result in more aggressive environment
@@ -164,7 +164,7 @@ the gain and loss of absolute power
 
 # save system:
 
-* simulation restart = gamestate is kept, character is ported back to engine room. minor details are discarded, all quests resetted
+* simulation restart = gamestate is kept, character is ported back to engine room. minor details are discarded, all quests reset
   * dying with low status and never having had a high status
 * spawn as officer  = get woken up from sensory deprivation tank, get ceremony for achieving Manhood 8 Birthday. Details of world are discarded
   * dying with having had a high status once
@@ -172,7 +172,7 @@ the gain and loss of absolute power
 * brain recovery = time gets forwarded
   * dying with brain recovery
 * synced brain = restart at last sync station
-  * dying while havin sync implant
+  * dying while having sync implant
 * permadead = the whole world and gamestate gets killed
   * dying while fugitive or vat duty
   * treason
@@ -233,12 +233,12 @@ die -> permadead
 * weapon loading
   * good mechanic -> repair group
   * killing invaders -> soldier
-  * temporary commmand -> planning -> logistics
+  * temporary command -> planning -> logistics
   * bad performance -> machine room
 
 * tunnel cleaning
   * kill big vermin -> soldier
-  * temporary commmand -> planning -> huntgroup
+  * temporary command -> planning -> huntgroup
   * bad performance -> vat
   * helping repair group -> weapon loading
 
@@ -285,14 +285,14 @@ showGame1Turn()
 #===
 say("""you are in the Boilerroom
 
-the Floor is represtented by :: and Walls are shown as ⛝  the Door is represented by ⛒  or ⭘  when closed.
+the Floor is represented by :: and Walls are shown as ⛝  the Door is represented by ⛒  or ⭘  when closed.
 
 the Trainingenvironment will display now. please try to orient yourself.""")
 showGame1Turn()
 #==
 say("""in the Middle of the Room you see the Steamgenerator
 
-it consist of Furnaces marked by ΩΩ or ϴϴ that heat the Water in the Boilers 伫 till it boils. a Boiler with boiling Water will be shown as 伾. the Steam is transfered to the Pipes marked with ✠✠
+it consist of Furnaces marked by ΩΩ or ϴϴ that heat the Water in the Boilers 伫 till it boils. a Boiler with boiling Water will be shown as 伾. the Steam is transferred to the Pipes marked with ✠✠
 
 try to recognize the design""")
 showGame1Turn()
@@ -324,7 +324,7 @@ message("Coaldelivery now")
 startShowGameCutScene()
 	*rumbling*
 	*rumbling*
-	*smoke and dust on cole piles and neighbour fields*
+	*smoke and dust on cole piles and neighbor fields*
 	*a chunk of coal drops onto the floor*
 	*smoke clears*
 endShowGameCutScene()
@@ -348,15 +348,15 @@ endShowGameCutScene()
 *Erwin von Libwig goes back to waiting position*
 #==
 say("""there are other items in the room that may or may not be important for you. Here is the full list for you to review:
- Bin (⛛ ): Used for storing Things indended to be transported further
+ Bin (⛛ ): Used for storing Things intended to be transported further
  Pile (ӫӫ): a Pile of Things
  Door (⭘  or ⛒ ): you can move through it when open
  Lever ( | or  /): a simple Man-Machineinterface
- Furace (Ωsay("""Ω): used to generate heat burning Things
+ Furnace (Ωsay("""Ω): used to generate heat burning Things
  Display (۞ ): a complicated Machine-Maninterface
  Wall (⛝ ): ensures the structural Integrity of basically any Structure
  Pipe (✠✠): transports Liquids, Pseudoliquids and Gasses
- Coal ( *): a piece of Coal, quite usefull actually
+ Coal ( *): a piece of Coal, quite useful actually
  Boiler (伫 or 伾): generates Steam using Water and and Heat
  Chains (⛓ ): some Chains dangling about. sometimes used as Man-Machineinterface or for Climbing
  Comlink (ߐߐ): a pipebased Voicetransportationsystem that allows Communication with other Rooms
@@ -393,7 +393,7 @@ pressing a and then e would result in the Description:
 
 "this is a Furnace"
 
-you have 100 Ticks to familiarise yourself with the Movementcommands. please do.""")
+you have 100 Ticks to familiarize yourself with the Movementcommands. please do.""")
 
 50 Tick warning
 80 Tick warning
@@ -410,9 +410,9 @@ the basic Interationcommands are:
  e=examine
  k=pick up
 
-see this Piles of Coal marked with ӫ on the rigth Side of the Room.
+see this Piles of Coal marked with ӫ on the right Side of the Room.
 
-whenever you bump into an Item that is to big to be walked on, you will promted for giving an extra Interactioncommand. i'll give you an Example:
+whenever you bump into an Item that is to big to be walked on, you will prompted for an extra Interactioncommand. i'll give you an Example:
 
 ΩΩ＠ӫӫ
 
@@ -433,7 +433,7 @@ if coal is not lying around:
 say("""please pick up the Coal on the Floor. \n\nyou won't see a whole year of service leaving burnable material next to the Furnace""")
 #==
 EXTRA1:
-pull the lever: guards come in and are anoyed at the lack of invaders
+pull the lever: guards come in and are annoyed at the lack of invaders
 	heavy minus points
 EXTRA2:
 leave the room:
@@ -454,7 +454,7 @@ run task till dead or exit found through event reactions
 
 WORK1:
 	run with X capacity
-	-> get told to fire furnaces in appropiate speed
+	-> get told to fire furnaces in appropriate speed
 WORK2:
 	start engine
 WORK3:
@@ -483,7 +483,7 @@ SPECIALEVENT2:
 	-> not fixing damage => mechanics negative points
 
 SPECIALEVENT3:
-	broken equiptment
+	broken equipment
 	-> fix damage => mechanics positive points
 	-> not fixing damage => mechanics negative points
 
@@ -493,12 +493,12 @@ SPECIALEVENT4:
 	have the option to pull the invader alarm lever
 	-> pull the lever => mechanics positive points
 	-> not pull the lever => mechanics positive points
-	-> kill the inavder => soldier positive points
-	-> no kill the inavder => soldier negative points
+	-> kill the invader => soldier positive points
+	-> no kill the invader => soldier negative points
 
 SPECIALEVENT5:
 	hull damage/arty hit
-	some stuff is unbolted and pushed arround
+	some stuff is unbolted and pushed around
 
 SPECIALEVENT6:
 	vermin slipping through the pipes
@@ -510,7 +510,7 @@ SPECIALEVENT7:
 
 SPECIALEVENT8:
 	sudden speed change
-	-> everything not bolted will jump arround
+	-> everything not bolted will jump around
 	-> bolted things may get unbolted
 
 -> die => negative points

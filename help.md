@@ -11,7 +11,7 @@ Drink when flask on ground	j
 Show inventory			i
 Show Help			?
 
-Charakter Stats			@
+Character Stats			@
 examine object			e
 
 Save game status		S (regular)

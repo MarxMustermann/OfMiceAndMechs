@@ -3,11 +3,11 @@
 import socket
 
 """
-HOST = "ofmiceandmechs.com" #input("enter server adress")  # The server's hostname or IP address
+HOST = "ofmiceandmechs.com" #input("enter server address")  # The server's hostname or IP address
 PORT = 23  # The port used by the server
 """
 
-HOST = "127.0.0.1" #input("enter server adress")  # The server's hostname or IP address
+HOST = "127.0.0.1" #input("enter server address")  # The server's hostname or IP address
 PORT = 65475  # The port used by the server
 
 import time

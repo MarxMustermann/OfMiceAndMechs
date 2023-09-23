@@ -1,12 +1,12 @@
 class AttrSpec(object):
     """
-    dumy object behaving like an urwid attribute
+    dummy object behaving like an urwid attribute
     this is used to prevent crashes
     """
 
     def __init__(self, fg, bg):
         """
-        store basic attriutes
+        store basic attributes
 
         Parameters:
             fg: foreground color

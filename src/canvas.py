@@ -556,7 +556,7 @@ class Canvas(object):
                         ),
                     )
 
-                # bad code: colour information is lost
+                # bad code: color information is lost
                 if isinstance(char, int):
                     # scale the tile
                     # bad code: rescales each tile individually and on each render

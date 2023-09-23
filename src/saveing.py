@@ -335,7 +335,7 @@ class Saveable(object):
 
                         Parameters:
                             value: the value to set
-                            name: the name of the attriute to set
+                            name: the name of the attribute to set
                         """
 
                         setattr(self, name, value)
@@ -374,7 +374,7 @@ class Saveable(object):
 
                         Parameters:
                             value: the value to set
-                            name: the name of the attriute to set
+                            name: the name of the attribute to set
                         """
 
                         setattr(self, name, value)

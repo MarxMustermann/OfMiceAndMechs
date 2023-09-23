@@ -128,7 +128,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
             if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the marking to delte")
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the marking to delete")
                 return ([quest],None)
 
             if character.getDistance(self.targetPosition) > 1:

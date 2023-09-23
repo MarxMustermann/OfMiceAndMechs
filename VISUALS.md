@@ -10,7 +10,7 @@ tutorial room
 ![screenshot_tutorial room](/screenshots/tutorialRoom_ascii.png)
 
 an ingame introduction
-![screenshot_ngame intro](/screenshots/ingame_intro.png)
+![screenshot_ingame intro](/screenshots/ingame_intro.png)
 
 an ingame chat
 ![screenshot_chat](/screenshots/chat.png)
@@ -21,7 +21,7 @@ the inventory overview
 quest overview
 ![screenshot_quest menu](/screenshots/quest_menue.png)
 
-cuscene
+cutscene
 ![screenshot_cutscene](/screenshots/cutscene.png)
 
 the tutorial mech

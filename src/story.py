@@ -4943,21 +4943,21 @@ try to remember how you got here ..."""
             mainChar, 6, 6
         )
 
-        item = src.items.itemMap["SpecialItemSlot"]()
-        item.itemID = 1
         if mainCharBase:
-            item.hasItem = True
-        mainRoom.addItem(item,(1,1,0))
-        item = src.items.itemMap["SpecialItemSlot"]()
-        if not mainCharBase:
-            item.hasItem = True
-        item.itemID = 2
-        mainRoom.addItem(item,(2,1,0))
-        for i in range(0,5):
             item = src.items.itemMap["SpecialItemSlot"]()
-            item.hasItem = False
-            item.itemID = 3+i
-            mainRoom.addItem(item,(7+i,7,0))
+            item.itemID = 1
+            item.hasItem = True
+            mainRoom.addItem(item,(1,1,0))
+        if not mainCharBase:
+            item = src.items.itemMap["SpecialItemSlot"]()
+            item.hasItem = True
+            item.itemID = 2
+            mainRoom.addItem(item,(2,1,0))
+        #for i in range(0,5):
+        #    item = src.items.itemMap["SpecialItemSlot"]()
+        #    item.hasItem = False
+        #    item.itemID = 3+i
+        #    mainRoom.addItem(item,(7+i,7,0))
 
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
         colonyBaseInfo["epochArtwork"] = epochArtwork

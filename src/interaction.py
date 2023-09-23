@@ -8865,6 +8865,11 @@ def showIntro():
     src.gamestate.setup(None) 
     src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
     src.gamestate.gamestate.mainChar = src.characters.Character()
+    src.gamestate.gamestate.mainChar.registers["HOMEx"] = 7
+    src.gamestate.gamestate.mainChar.registers["HOMEy"] = 7
+    src.gamestate.gamestate.mainChar.registers["HOMETx"] = 7
+    src.gamestate.gamestate.mainChar.registers["HOMETy"] = 7
+    src.gamestate.gamestate.mainChar.faction = "city demo"
 
     stage = 0
     stageState = None
@@ -8927,6 +8932,8 @@ You """+"."*stageState["substep"]+"""
 
             if not room:
                 terrain = src.terrains.Nothingness()
+                terrain.yPosition = 7
+                terrain.xPosition = 7
                 src.gamestate.gamestate.tick = 0
                 room = src.rooms.EmptyRoom()
                 room.reconfigure(sizeX=13,sizeY=13,doorPos=[(0,6),(12,6)])
@@ -9383,6 +9390,11 @@ You """+"."*stageState["substep"]+"""
                 stageState = {"lastChange":time.time(),"substep":0,"endless":False}
 
                 npc = src.characters.Character()
+                npc.faction = "city demo"
+                npc.registers["HOMETx"] = 7
+                npc.registers["HOMETy"] = 7
+                npc.registers["HOMEx"] = 7
+                npc.registers["HOMEy"] = 7
                 npc.runCommandString("4w2dKw")
                 room.addCharacter(npc,6,6)
 

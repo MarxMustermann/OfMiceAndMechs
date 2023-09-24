@@ -92,7 +92,7 @@ class Scrap(src.items.Item):
 
     def getResistance(self):
         """
-        get resistance to beeing moved depending on size
+        get resistance to being moved depending on size
         """
 
         return self.amount * 2

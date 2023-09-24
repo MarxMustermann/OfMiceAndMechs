@@ -129,7 +129,7 @@ class JobBoard(src.items.Item):
         do a maintenance job by running a job order from the todo list
 
         Parameters:
-            character: the character dooing maintenance
+            character: the character doing maintenance
         """
 
         if not self.todo:

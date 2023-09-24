@@ -4,17 +4,17 @@ In the current form the game is building things, automate building things and fi
 
 src/interaction.py
 holds the core of the game.
-* most of the relevant action is in processInput. (I do plan to break this function into parts). In the beginning it did things like moving the character when the movement key is pressed and redirecting keystrokes to interaction menues. The first important addition is that this function is called for every npc/monster and not only for the main character. This allows the npcs to do everything what the player can do including saving and quitting the game -_-. The second important addition is kind of a macro language interpreter hooked to the characters CommandKeyQueue. This allows the player to type "10d" wich will be exanded to "dddddddddd" and has conditions, registers and such things. This basically the current core content of the game and the current enemies are automated using this and items.
+* most of the relevant action is in processInput. (I do plan to break this function into parts). In the beginning it did things like moving the character when the movement key is pressed and redirecting keystrokes to interaction menus. The first important addition is that this function is called for every npc/monster and not only for the main character. This allows the npcs to do everything what the player can do including saving and quitting the game -_-. The second important addition is kind of a macro language interpreter hooked to the characters CommandKeyQueue. This allows the player to type "10d" which will be expanded to "dddddddddd" and has conditions, registers and such things. This basically the current core content of the game and the current enemies are automated using this and items.
 * The main loop is at the end, but is somewhat confusing since it collects keystrokes from terminal, pygame and network for multiplayer.
 * The main loops advance() method doesn't do too much. It basically triggers scheduled events and makes the character loose satiation. The quest+solvers are currently not used, but mostly worked.
-* The interaction menues are used by items and similar stuff
+* The interaction menus are used by items and similar stuff
 
 src/items.py
 There are a lot of in use items. The most important ones are
 * AutoTutor - basically the tutorial
 * production items. MachineMachine Machine ProductionArtwork BluePrinter
-* ressources like Scrap or MetalBars
-* automation items. These items manipulate the characters CommanKeyQueue and basically take over control or reprogram the character (player or npc). Examples are Command CommandBloom AutoFarmer MemoryReset ProductionManager Map HiveMind. The production items Machine can also be programmed by the player to run commands on users on certain triggers
+* resources like Scrap or MetalBars
+* automation items. These items manipulate the characters CommandKeyQueue and basically take over control or reprogram the character (player or npc). Examples are Command CommandBloom AutoFarmer MemoryReset ProductionManager Map HiveMind. The production items Machine can also be programmed by the player to run commands on users on certain triggers
 * mold and related items are basically the enemy right now. The mold grows into stages, spawns creatures, spawns commandBlooms that build networks and send creatures to the player in a somewhat organized fashion. This is probably very hard to read code, sorry.
 * the GrowthTank allows players to spawns npcs
 * the roomBuilder allows the player to build rooms
@@ -23,7 +23,7 @@ src/characters.py
 contains the npc class which is player class and the monster classes. The pathfinding and quest handling and similar is unused now, but is another way of automating things by setting up series of quests that automatically break down to such simple tasks that npcs/the player can solve these quests automatically. Quite a lot of effort went into this and i really need to tie that back into the game.
 
 src/rooms.py
-The rooms are intended to contain activity. This allows the player to conver the room to a vehicle and move it around and to push other rooms around. A npc inside the moving room will continue to work since it is using the local coordinate system.
+The rooms are intended to contain activity. This allows the player to convert the room to a vehicle and move it around and to push other rooms around. A npc inside the moving room will continue to work since it is using the local coordinate system.
 
 src/terrain.py
 contains mostly storymode related code, the terrain currently used is GameplayTest -_-. The terrain is split into tiles, the borders between tiles redirect character movement, which is intended to make automation easier. The player can move between terrains when driving a vehicle. The whole pathfinding is disabled right now because it caused performance issues which need to be solved or the code needs to be deleted.

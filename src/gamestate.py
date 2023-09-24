@@ -226,7 +226,7 @@ class GameState():
 
 def setup(gameIndex):
     """
-    initialises the game state 
+    initialise the game state 
     """
 
     global gamestate

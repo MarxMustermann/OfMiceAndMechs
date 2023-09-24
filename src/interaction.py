@@ -1,5 +1,5 @@
 """
-code for interacation with the user belongs here
+code for user interaction belongs here
 bad pattern: logic should be moved somewhere else
 """
 # load libraries
@@ -345,7 +345,7 @@ def setFooter():
         "** = pipe",
         "is = scrap",
         "is = scrap",
-        "oo / öö = furnce",
+        "oo / öö = furnace",
         "OO / 00 = growth tank",
         "|| / // = lever",
         "@a / @b ... @z = npcs",
@@ -1461,7 +1461,7 @@ press key for the action you want to do on the register
 * + - add to register
 * - - subtract from register
 * / - divide register
-* * - mulitply register
+* * - multiply register
 * % - apply modulo to register
 
 """

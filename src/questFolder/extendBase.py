@@ -20,7 +20,7 @@ class ExtendBase(src.quests.MetaQuestSequence):
             door = src.items.itemMap["Door"]()
             out.extend(["""
 You remember that your task is to set up a base.
-You know you are equiped for it, but you remember nothing more.
+You know you are equipped for it, but you remember nothing more.
 Follow that order and set up a base.
 
 Your base is currently only the city core.
@@ -247,7 +247,7 @@ Press d to move the cursor and show the subquests description.
                             npcDuties[duty] = []
                         npcDuties[duty].append(otherChar)
 
-            # get tile neighbouring the base
+            # get tile neighboring the base
             baseNeighbours = []
             offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
             for room in terrain.rooms:
@@ -363,7 +363,7 @@ Press d to move the cursor and show the subquests description.
 
             # set up city planer
             if not cityPlaner:
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,2,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan the citys expansion")
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,2,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan city expansion")
                 return ([quest],None)
 
             # ensure there is a general purpose room
@@ -378,7 +378,7 @@ Press d to move the cursor and show the subquests description.
                     if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
                         continue
 
-                    quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforseen needs")
+                    quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
                     return ([quest],None)
 
             # add storage room if needed

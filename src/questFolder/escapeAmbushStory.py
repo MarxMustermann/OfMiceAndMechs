@@ -29,7 +29,7 @@ Pass through the door (""",door.render(),""") in the """+self.direction+""".
 
 
 Right now you are looking at the quest menu.
-Detailed instructions and explainations are shown here.
+Detailed instructions are shown here.
 For now ignore the options below and press esc to continue.
 
 """]

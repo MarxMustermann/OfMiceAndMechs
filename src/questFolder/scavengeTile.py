@@ -22,7 +22,7 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         if self.reason:
             reason = ", to %s"%(self.reason,)
         text = """
-Scvange the tile %s"""%(self.targetPosition,)
+Scavenge the tile %s"""%(self.targetPosition,)
         if self.toCollect:
             text += " for %s"%(self.toCollect,)
         text += """%s."""%(reason,)

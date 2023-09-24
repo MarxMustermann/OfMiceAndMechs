@@ -3,7 +3,7 @@ story code and story related code belongs here
 most thing should be abstracted and converted to a game mechanism later
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-most of this code is currenty not in use and needs to be reintegrated
+most of this code is currently not in use and needs to be reintegrated
 """
 
 import src.rooms
@@ -425,7 +425,7 @@ class OpenWorld(BasicPhase):
 
 class Dungeon(BasicPhase):
     """
-    game mode ment to offer dungeon crawling
+    game mode meant to offer dungeon crawling
     """
 
     def __init__(self, seed=0):
@@ -8027,7 +8027,7 @@ The first thing i want to show/explain is the imperative automation component.
 The easyiest and most convienient way for automating things is to create commands.
 
 Commands are ingame items that can be used to run the command stored in that item.
-These commands can be recorded by activating a sheet, dooing something and activating the sheet again.
+These commands can be recorded by activating a sheet, doing something and activating the sheet again.
 The keys pressed by the player inbetween the activations are recorded and stored as command in the item.
 
 This means you can record actions and redo them later. In other words simple imperative automation.
@@ -8071,7 +8071,7 @@ You can record a command by:
     * activating it
     * selecting "create a written commmand"
     * selecting "start recording"
-    * dooing some action
+    * doing some action
     * activating the sheet again
 
 Continue to the east afterwards
@@ -8286,7 +8286,7 @@ For more information on how handle changing conditions continue east
         item = src.items.itemMap["Note"]()
         item.text = """
 There are some tricks that can be used with commands that you can do.
-But be aware of the fact that dooing complex automation only using commands is very hard to impossible.
+But be aware of the fact that doing complex automation only using commands is very hard to impossible.
 
 By activating a command from your inventory you can build commands that doesn't stop where it started.
 This is useful to to build endless loops to have npc do a job forever or for building fast travel system.

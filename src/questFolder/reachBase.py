@@ -36,7 +36,7 @@ You reach out to your implant and in answers:"""
             text += """
 
 There is a base in the north. The base belongs to your faction.
-Enter the base to get into the safety of the bases defences.
+Enter the base to get into the safety of the bases defenses.
 
 
 The entry is on the northern side of the base.
@@ -47,7 +47,7 @@ So you have to be careful."""
         text += """
 
 You have to cross several tiles to find your path to the entry of the base.
-Currently the sugggested next step is to go one tile to the %s.
+Currently the suggested next step is to go one tile to the %s.
 Following the suggestions will guide you into the base.
 It might also steer you into groups of enemies on the way.
 So watch the environment and don't follow all suggestions blindly.

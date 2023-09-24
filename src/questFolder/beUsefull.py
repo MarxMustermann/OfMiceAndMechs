@@ -53,7 +53,7 @@ Reputation is rewarded for filling up stockpiles.\n\n"""
                 elif duty == "trap setting":
                     out += duty+""":
 Search for trap rooms without full charge.
-Recharge them with ligthning rods.
+Recharge them with lightning rods.
 Reputation is rewarded for recharging trap rooms.\n\n"""
                 elif duty == "cleaning":
                     out += duty+""":
@@ -79,7 +79,7 @@ Reputation is rewarded for picking up items from walkways.\n\n"""
 You need %s reputation for a promotion.
 You currently have %s reputation.
 Do your duty to gain more reputation.
-Try to avoid losing reputation due to beeing careless.
+Try to avoid losing reputation due to being careless.
 
 """%(reputationForPromotion,self.character.reputation,)
 
@@ -530,7 +530,7 @@ We should stop watching and do something about that.
             return True
 
         if not cityPlaner:
-            quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan the citys expansion")
+            quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan city expansion")
             self.addQuest(quest)
             return True
 
@@ -596,7 +596,7 @@ We should stop watching and do something about that.
                 if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
                     continue
 
-                quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforseen needs")
+                quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
                 self.addQuest(quest)
                 return True
 
@@ -629,7 +629,7 @@ We should stop watching and do something about that.
                 if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
                     continue
 
-                quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforseen needs")
+                quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
                 self.addQuest(quest)
                 return True
 
@@ -2023,7 +2023,7 @@ When you know what you are doing, press "+" less and act more independently.
 You have seen the first component:
 * You can craft items at workshops.
 
-The second ascpect of the game is planing and building a base.
+The second aspect of the game is planing and building a base.
 You can use the newly crafted CityPlaner to plan your base.
 
 Let me show you how add more rooms to the base.
@@ -2089,7 +2089,7 @@ You wait one turn by pressing the "." key, press and hold "." to pass more time.
             text = """
 Craft a Wall to help building the base.
 
-The workers will do the basic neccesities besides the scheduled tasks.
+The workers will do the basic necessities besides the scheduled tasks.
 So your base will usually work as long as workers and scrap are available.
 But helping you base out with important tasks is part of the game.
 
@@ -2150,7 +2150,7 @@ Collect some of those walls and get to know the environment better.
             else:
                 if not self.showedRestockingQuestText:
                     text = """
-You acucumulated an inventory full of items. Great!
+You accumulated an inventory full of items. Great!
 Now put them into storage.
 
 Your bases storage and logistics system is based on stockpiles.
@@ -2204,7 +2204,7 @@ In that case a NPC will automatically draw new storage stockpiles there.
         if not self.showedKillStuff:
             text = """
 You have seen the basic controls for your base now.
-You might habe noticed that most of the walls are protected by enemies.
+You might have noticed that most of the walls are protected by enemies.
 
 That leads to the fighting component of the game.
 The basic fighting system is pretty simple, just walk into an enemy and you will attack it.
@@ -2348,7 +2348,7 @@ Do you want to get a deep explanation or just be told what you need to know?
 errr... i'm still working on this.
 I'll pretend you chose the other option.
 
-= press enter to contiue =
+= press enter to continue =
 """
                 character.addMessage(text)
                 src.interaction.showInterruptText(text)
@@ -2359,13 +2359,13 @@ I'll pretend you chose the other option.
             '''
             text = """
 You only have workshop made weapons and armor, those are very low quality.
-Equipmant quality matters a lot in a fight.
+Equipment quality matters a lot in a fight.
 To produce quality weapons a different crafting system needs to be used.
 
 This other crafting system is a bit complicated and really understanding it is optional.
 It works similar to a factory builder or automation game.
 
-= press enter to contiue =
+= press enter to continue =
 """
             character.addMessage(text)
             src.interaction.showInterruptText(text)
@@ -2544,7 +2544,7 @@ Supply the materials to build a new room.
             if not self.showedPlanWeaponProduction:
                 if self.selectedMachineTutorial:
                     text = """
-Let's start to make the use of your base and worduce some weapons.
+Let's start to make the use of your base and produce some weapons.
 a weapon production.
 This room will build 
 

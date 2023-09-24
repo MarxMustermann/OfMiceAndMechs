@@ -21,7 +21,7 @@ class Scavenge(src.quests.MetaQuestSequence):
         if self.reason:
             reason = ", to %s"%(self.reason,)
         text = """
-Scvange the outside area"""
+Scavenge the outside area"""
         if self.toCollect:
             text += " for %s"%(self.toCollect,)
         text += """%s."""%(reason,)
@@ -127,7 +127,7 @@ This quest will end when your inventory is full."""
                         continue
 
                     self.lastMoveDirection = offset
-                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavanging spot"))
+                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot"))
                     return
 
             for offset in offsets:

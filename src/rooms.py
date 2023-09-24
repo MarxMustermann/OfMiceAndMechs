@@ -618,7 +618,7 @@ class Room():
     # bad code: should be in extra class
     def addListener(self, listenFunction, tag="default"):
         """
-        register a callbak to be run when something changes about the room
+        register a callback to be run when something changes about the room
 
         Parameters:
             listenFunction: the callback
@@ -701,7 +701,7 @@ class Room():
 
     def getResistance(self):
         """
-        get physical resistance against beeing moved
+        get physical resistance against being moved
 
         Returns:
             the resistance

@@ -1,5 +1,5 @@
 """
-chats and chat realated code belongs here
+chats and chat related code belongs here
 bad pattern: chats should have a parent class
 """
 
@@ -66,7 +66,7 @@ class OneTimeMessage(Chat):
 
     def __init__(self, text=""):
         """
-        conigure super class and initialise own state
+        configure super class and initialise own state
 
         Parameters:
             text: the text shown
@@ -384,7 +384,7 @@ class TutorialSpeechTest(Chat):
         # do all activity on the first run
         if self.firstRun:
             # show fluffed up information
-            self.persistentText = "indeed. There are some things that need to be done.\n\nFirst exmaine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
+            self.persistentText = "indeed. There are some things that need to be done.\n\nFirst examine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
             src.gamestate.gamestate.mainChar.addMessage("press q to see your questlist")
             src.interaction.submenue = None
             self.set_text(self.persistentText)
@@ -422,7 +422,7 @@ class TutorialSpeechTest(Chat):
 # obsolete: needs to be reintegrated
 class FurnaceChat(Chat):
     """
-    dialog to unlock a furnace firering option
+    dialog to unlock a furnace firing option
     """
 
     id = "FurnaceChat"
@@ -551,7 +551,7 @@ class FurnaceChat(Chat):
 # obsolete: needs serious reintegration to work again
 class SternChat(Chat):
     """
-    a monologe explaining automovement
+    a monologue explaining automovement
     bad code: should be abstracted
     """
 
@@ -608,8 +608,8 @@ You can do so by pressing """
                 + config.commandChars.autoAdvance
                 + """
 
-It is of limited practability though. It is mainly useful for stupid manual labor and often does not 
-do things the most efficent way. It will even try to handle conversion, wich does not allways lead to optimal results"""
+It is of limited practicality though. It is mainly useful for stupid manual labor and often does not 
+do things the most efficient way. It will even try to handle conversion, which does not always lead to optimal results"""
             )
             src.gamestate.gamestate.mainChar.addMessage(
                 "press "
@@ -688,9 +688,9 @@ class InfoChat(Chat):
             # show fluffed up information
             self.persistentText = """yes and a lot of it. I will give you two of these things on your way:\n
 1. You will need to pick up most of the Information along the way. Ask around and talk to people.
-Asking questions may hurt your reputation, since you will apear like new growth. 
-You are, so do not heasitate to learn the neccesary Information before you have a reputation to loose.\n
-2. Do not rely on the implant to guide you through dificult tasks. 
+Asking questions may hurt your reputation, since you will appear like new growth. 
+You are, so do not hesitate to learn the necessary Information before you have a reputation to loose.\n
+2. Do not rely on the implant to guide you through difficult tasks. 
 Sterns modifications are doing a good job for repetitive tasks but are no replacement
 for a brain.\n\n"""
             self.set_text(self.persistentText)
@@ -856,7 +856,7 @@ class JobChatFirst(Chat):
                 # do not assign job
                 if self.mainChar.reputation < 10:
                     self.persistentText = (
-                        "I have some work thats needs to be done, but you will have to proof your worth some more untill you can be trusted with this work.\n\nMaybe "
+                        "I have some work thats needs to be done, but you will have to proof your worth some more until you can be trusted with this work.\n\nMaybe "
                         + self.terrain.waitingRoom.secondOfficer.name
                         + " has some work you can do"
                     )
@@ -960,7 +960,7 @@ class JobChatSecond(Chat):
         # refuse to issue new quest if the old one is not done yet
         # bad code: this is because the hopperquest cannot handle multiple sub quests
         if not self.hopperDutyQuest.getQuest:
-            self.persistentText = "please finish what you are dooing first"
+            self.persistentText = "please finish what you are doing first"
             self.set_text(self.persistentText)
             self.done = True
 
@@ -1175,7 +1175,7 @@ class JobChatThird(Chat):
         # refuse to issue new quest if the old one is not done yet
         # bad code: this is because the hopperquest cannot handle multiple sub quests
         if not self.hopperDutyQuest.getQuest:
-            self.persistentText = "please finish what you are dooing first"
+            self.persistentText = "please finish what you are doing first"
             self.set_text(self.persistentText)
             self.done = True
 
@@ -1287,7 +1287,7 @@ class StopChat(Chat):
 # obsolete: needs serious reintegration to work again
 class StartChat(Chat):
     """
-    the chat for making the npc start firering the furnace
+    the chat for making the npc start firing the furnace
     """
 
     id = "StartChat"
@@ -1337,7 +1337,7 @@ class StartChat(Chat):
                 self.partner.basicChatOptions.remove(option)
                 break
             self.partner.basicChatOptions.append(
-                {"dialogName": "stop fireing the furnaces", "chat": StopChat}
+                {"dialogName": "stop firing the furnaces", "chat": StopChat}
             )
 
             self.firstRun = False
@@ -1654,7 +1654,7 @@ class FactionChat1(Chat):
             )
             self.persistentText += "\n\n"
             self.persistentText += "minRep: %s\n" % (self.partner.minRep,)
-            self.persistentText += "maxAliance: %s\n" % (self.partner.maxAliance,)
+            self.persistentText += "maxAlliance: %s\n" % (self.partner.maxAliance,)
             self.persistentText += "repGain: %s\n" % (self.partner.repGain,)
             self.persistentText += "excludes: \n"
             for exclude in self.partner.excludes:
@@ -1724,7 +1724,7 @@ class FactionChat2(Chat):
                 ):
                     self.persistentText += (
                         src.gamestate.gamestate.mainChar.name
-                        + ': "too many aliances."\n'
+                        + ': "too many alliances."\n'
                     )
                 else:
                     found = False
@@ -1734,14 +1734,14 @@ class FactionChat2(Chat):
 
                     if found:
                         self.persistentText += (
-                            src.gamestate.gamestate.mainChar.name + ': "bad aliance."\n'
+                            src.gamestate.gamestate.mainChar.name + ': "bad alliance."\n'
                         )
                     else:
                         self.persistentText += (
                             src.gamestate.gamestate.mainChar.name + ': "OK"\n'
                         )
                         src.gamestate.gamestate.mainChar.awardReputation(
-                            amount=self.partner.repGain, reason="forging an aliance"
+                            amount=self.partner.repGain, reason="forging an alliance"
                         )
                         src.gamestate.gamestate.mainChar.aliances.append(self.partner)
 
@@ -1749,7 +1749,7 @@ class FactionChat2(Chat):
                 # add player text
                 self.persistentText += (
                     src.gamestate.gamestate.mainChar.name
-                    + ': "we are already alianced."\n'
+                    + ': "we are already allied."\n'
                 )
 
             # show dialog
@@ -1888,7 +1888,7 @@ class ChatMenu(Chat):
 
         if not key == "~":
             if self.partner.rank and src.gamestate.gamestate.mainChar.rank > self.partner.rank:
-                src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to adress someone out of rank")
+                src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to address someone out of rank")
                 return True
 
             if src.gamestate.gamestate.mainChar.rank == self.partner.rank:
@@ -1938,7 +1938,7 @@ class ChatMenu(Chat):
                     ("goToChar", "go to my position"),
                     ("activate", "activate item on Floor"),
                     ("pickUp", "pick up items"),
-                    ("dropAll", "drop everyting"),
+                    ("dropAll", "drop everything"),
                     ("stopCommand", "stop"),
                     ("moveWest", "move west"),
                     ("moveNorth", "move north"),
@@ -1950,7 +1950,7 @@ class ChatMenu(Chat):
                 if self.partner in character.subordinates:
                     options.append(("giveInstruction", "give instruction"))
                     options.append(("talkWork", "talk about work"))
-                options.append(("chat", "chat idely"))
+                options.append(("chat", "chat idly"))
 
                 """
                 for option in self.partner.getChatOptions(src.gamestate.gamestate.mainChar):
@@ -1963,7 +1963,7 @@ class ChatMenu(Chat):
 
                 # add default dialog options
                 if not self.partner.silent:
-                    options.append(("showQuests","what are you dooing?"))
+                    options.append(("showQuests","what are you doing?"))
                 """
                 #options.append(("exit", "let us proceed, " + self.partner.name))
 

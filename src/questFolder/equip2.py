@@ -19,7 +19,7 @@ The world is a dangerous place.
 You need to be able to defend yourself.
 Equip yourself with weapons preferably a sword (""",sword.render(),""") and armor (""",armor.render(),""").
 
-You can try to find euqipment in storage.
+You can try to find equipment in storage.
 Alternatively fetch your equipment directly from the production line.
 If you find some other source for equipment, that is fine, too.
 

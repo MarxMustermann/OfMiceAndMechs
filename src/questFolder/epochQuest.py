@@ -22,7 +22,7 @@ class EpochQuest(src.quests.MetaQuestSequence):
             storyText = self.storyText
         else:
             storyText = """
-When you were promoted to commander of this base you recieved the burden of the epoch quest.
+When you were promoted to commander of this base you received the burden of the epoch quest.
 This means you will have to complete the tasks the epoch artwork gives you.
 """
         text = """

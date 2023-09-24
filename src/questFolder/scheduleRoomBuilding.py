@@ -17,7 +17,7 @@ class ScheduleRoomBuilding(src.quests.MetaQuestSequence):
         if self.reason:
             reason = ",\nto %s"%(self.reason,)
         text = """
-Schedule a room to be buid on tile%s.
+Schedule a room to be built on tile%s.
 
 Use a CityPlaner to do this.
 

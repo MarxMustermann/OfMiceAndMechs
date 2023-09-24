@@ -216,7 +216,7 @@ class EndQuestEvent(Event):
             pass
 
 # obsolete: only used in old story mode
-# bad code: should be an abstact event calling a method
+# bad code: should be an abstract event calling a method
 class FurnaceBurnoutEvent(Event):
     """
     the event for stopping to burn after a while
@@ -312,7 +312,7 @@ class StopBoilingEvent(Event):
         self.boiler.room.changed()
 
 # obsolete: only used in old story mode
-# bad code: should be an abstact event calling a method
+# bad code: should be an abstract event calling a method
 class StartBoilingEvent(Event):
     """
     the event for starting to boil

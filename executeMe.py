@@ -201,7 +201,7 @@ if not args.urwid:
                 print("thanks a lot, i hope i'll get to fixing the bug soon")
                 raise SystemExit()
             else:
-                print("ohkay then, here is the trace as text in case you feel better writing me an email")
+                print("okay then, here is the trace as text in case you feel better writing me an email")
                 print(exceptionText)
                 raise SystemExit()
     """

@@ -51,7 +51,7 @@ class RoomManager(src.items.Item):
         configures the superclass and resets
 
         Parameters:
-            character: the character dooing the reset
+            character: the character doing the reset
         """
 
         super().reset(character)

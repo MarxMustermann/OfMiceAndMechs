@@ -168,7 +168,7 @@ class Quest():
 
     def stopWatching(self, target, callback, tag=""):
         """
-        deregister callback from beeing notified if an event occours
+        deregister callback from being notified if an event occurs
 
         Parameters:
             target: the thing that is watching
@@ -2019,7 +2019,7 @@ class delNaiveEnterRoomQuest(Quest):
         # smooth over impossible state
         if not self.character.room:
             src.interaction.debugMessages.append(
-                "postHandler called without beeing in a room"
+                "postHandler called without being in a room"
             )
             return
 

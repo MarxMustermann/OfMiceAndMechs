@@ -14,11 +14,11 @@ class Assimilate(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         if self.character.rank == None:
             return """
-When the base grows or clones are dying, replacement personel is needed.
-The base can create new clones, but they need to be integrated into the bases sytems.
+When the base grows or clones are dying, replacement personnel are needed.
+The base can create new clones, but they need to be integrated into the bases systems.
 Every base should have an assimilator for exactly that purpose.
 
-There is an assimilatior in the command centre.
+There is an assimilator in the command centre.
 Activate the assimilator to get integrated into the base."""
         else:
             return """

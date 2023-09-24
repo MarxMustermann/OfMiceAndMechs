@@ -1,15 +1,9 @@
-# include basic libs
-import json
-import os
 
-# include basic internal libs
+import json
+
+import src.canvas
 import src.characters
 import src.terrains
-import src.terrains
-import src.canvas
-import src.logger
-import src.cinematics
-import config
 
 gamestate = None
 phasesByName = {}

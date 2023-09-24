@@ -2,24 +2,23 @@
 terrains and terrain related code belongs here
 """
 
-# import basic libs
-import json
 import copy
-import array
+import logging
 import random
-import tcod
-import numpy as np
 
-# import basic internal libs
-import src.items
-import src.rooms
-import src.overlays
-import src.gameMath
+import numpy as np
+import tcod
+
 import src.canvas
-import src.logger
-import src.quests
 import src.events
+import src.gameMath
 import src.gamestate
+import src.items
+import src.overlays
+import src.quests
+import src.rooms
+
+logger = logging.getLogger(__name__)
 
 # bad code: is basically used nowhere
 class Coordinate:
@@ -2117,9 +2116,7 @@ class Terrain:
                     ):
                         roomCollisions.add(roomCandidate)
             else:
-                src.logger.debugMessages.append(
-                    "invalid movement direction: " + str(direction)
-                )
+                logger.debug("invalid movement direction: %s", direction)
 
         # get collisions from the pushed rooms recursively
         for roomCollision in roomCollisions:
@@ -2185,9 +2182,7 @@ class Terrain:
                         ]
                     )
         else:
-            src.logger.debugMessages.append(
-                "invalid movement direction: " + str(direction)
-            )
+            logger.debug("invalid movement direction: %s", direction)
 
     def moveRoomDirection(self, direction, room, force=1, movementBlock=[]):
         """

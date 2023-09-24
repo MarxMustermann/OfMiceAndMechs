@@ -1,21 +1,19 @@
 
-# import basic libs
-import json
-import tcod
-import numpy as np
-import copy
+import logging
+import random
 
-# import basic internal libs
-import src.items
-import src.quests
-import src.events
+import numpy as np
+import tcod
+
 import src.canvas
-import src.logger
+import src.characters
 import src.chats
 import src.gameMath
-import src.characters
 import src.gamestate
-import random
+import src.items
+import src.quests
+
+logger = logging.getLogger(__name__)
 
 # bad code: too many attributes
 # obsolete: lots of old code needs a cleanup
@@ -911,7 +909,7 @@ class Room:
                     #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                     chars[item.yPosition][item.xPosition] = display
                 except:
-                    src.logger.debugMessages.append("room drawing failed")
+                    logger.debug("room drawing failed")
 
             # draw characters
             viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
@@ -1176,9 +1174,7 @@ class Room:
 
                                 chars[pos[1]][pos[0]] = newDisplay
                 else:
-                    src.logger.debugMessages.append(
-                        "chracter is rendered outside of room"
-                    )
+                    logger.debug("character is rendered outside of room")
 
             # draw main char
             if src.gamestate.gamestate.mainChar in self.characters:
@@ -1189,9 +1185,7 @@ class Room:
                 ):
                     chars[src.gamestate.gamestate.mainChar.yPosition][src.gamestate.gamestate.mainChar.xPosition] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 else:
-                    src.logger.debugMessages.append(
-                        "chracter is rendered outside of room"
-                    )
+                    logger.debug("character is rendered outside of room")
 
             usedAnimationSlots = set()
             for animation in self.animations[:]:
@@ -1542,7 +1536,7 @@ class Room:
 
             # refuse to move
             if totalResistance > force:
-                src.logger.debugMessages.append("*CLUNK*")
+                logger.debug("*CLUNK*")
                 return
 
             # move affected items
@@ -1552,7 +1546,7 @@ class Room:
 
         # actually move the room
         self.terrain.moveRoomDirection(direction, self)
-        src.logger.debugMessages.append("*RUMBLE*")
+        logger.debug("*RUMBLE*")
 
     def getAffectedByMovementDirection(self, direction, force=1, movementBlock=set()):
         """
@@ -1619,7 +1613,7 @@ class Room:
             elif direction == "east":
                 newPosition[0] += 1
             else:
-                src.logger.debugMessages.append("invalid movement direction")
+                logger.debug("invalid movement direction")
 
 
             for other in self.characters:
@@ -1668,7 +1662,7 @@ class Room:
             newXPos += 1
             character.runCommandString("d")
         else:
-            src.logger.debugMessages.append("invalid movement direction")
+            logger.debug("invalid movement direction")
 
         newPosition = (newXPos, newYPos, 0)
 

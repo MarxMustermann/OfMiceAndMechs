@@ -6,22 +6,24 @@ most thing should be abstracted and converted to a game mechanism later
 most of this code is currently not in use and needs to be reintegrated
 """
 
-import src.rooms
-import src.canvas
-import src.cinematics
-import src.chats
-import src.quests
-import src.items
-import src.interaction
-import src.events
-import config
-import src.gamestate
-
-import random
-import requests
-import json
 import copy
+import json
+import logging
+import random
 
+import requests
+
+import src.canvas
+import src.chats
+import src.cinematics
+import src.events
+import src.gamestate
+import src.interaction
+import src.items
+import src.quests
+import src.rooms
+
+logger = logging.getLogger(__name__)
 phasesByName = None
 
 #####################################
@@ -4710,12 +4712,12 @@ try to remember how you got here ..."""
         if faction == src.gamestate.gamestate.mainChar.faction:
             text = f"The leader of your faction {faction} died"
             src.interaction.showInterruptText(text)
-        print(extraParam)
+        logger.info(extraParam)
 
         for colonyBaseInfo in self.colonyBaseInfos2:
             if not colonyBaseInfo["mainChar"] == extraParam["character"]:
                 continue
-            print(colonyBaseInfo)
+            logger.info(colonyBaseInfo)
 
             candidates = []
             candidates.extend(colonyBaseInfo["terrain"].characters)
@@ -6312,7 +6314,7 @@ When you rise in rank you will be able to build a way out of here."""
             for specialItemSlot in specialItemSlots:
                 if not specialItemSlot.hasItem:
                     continue
-                print("foundSpecialItemSlot")
+                logger.info("foundSpecialItemSlot")
                 hasSpecialItems.append(specialItemSlot)
         
         room = random.choice(terrain.rooms)
@@ -7045,7 +7047,7 @@ class MainGameArena(BasicPhase):
                     outputSlotInfo = (outputSlotInfo[0],outputSlotInfo[1],{})
                 room.addOutputSlot(outputSlotInfo[0],outputSlotInfo[1],outputSlotInfo[2])
            for buildSite in room.floorPlan.get("buildSites",[]):
-               print(buildSite)
+               logger.info(buildSite)
                item = src.items.itemMap[buildSite[1]]()
                room.addItem(item,buildSite[0])
                if buildSite[1] == "Machine":

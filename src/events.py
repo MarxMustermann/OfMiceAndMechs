@@ -3,13 +3,6 @@ Events and event related code belong here
 bad code: not all events are here yet
 """
 
-# import basic libs
-import json
-import random
-import time
-
-
-# import basic internal libs
 import src.canvas
 
 class Event:

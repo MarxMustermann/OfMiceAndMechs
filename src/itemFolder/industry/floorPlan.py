@@ -1,6 +1,9 @@
-import src
-import json
 import copy
+import logging
+
+import src
+
+logger = logging.getLogger(__name__)
 
 class FloorPlan(src.items.Item):
     """
@@ -57,7 +60,7 @@ class FloorPlan(src.items.Item):
             if item.type == "DutyBell":
                 extra = {"duty":item.duty}
             self.buildSites.append((item.getPosition(),item.type,extra))
-        print(self.buildSites)
+        logger.info(self.buildSites)
 
         for walkingSpace in self.walkingSpace:
             self.container.addAnimation(walkingSpace,"showchar",3,{"char":"::"})
@@ -117,7 +120,7 @@ outputSlots:
 {self.outputSlots}
 
 """
-        print(self.buildSites)
+        logger.info(self.buildSites)
         return text
 
 src.items.addType(FloorPlan)

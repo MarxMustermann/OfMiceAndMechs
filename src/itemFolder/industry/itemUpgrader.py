@@ -95,14 +95,13 @@ If the upgrade fails the remains of the item will be placed to the south.
 
         if success:
             inputItem.upgrade()
-            character.addMessage("%s upgraded" % (inputItem.type,))
+            character.addMessage(f"{inputItem.type} upgraded")
             self.charges = 0
             self.container.addItem(inputItem,(self.xPosition + 1,self.yPosition,self.zPosition))
         else:
             self.charges += 1
             character.addMessage(
-                "failed to upgrade %s - has %s charges now"
-                % (inputItem.type, self.charges)
+                f"failed to upgrade {inputItem.type} - has {self.charges} charges now"
             )
             self.container.addItem(inputItem,(self.xPosition,self.yPosition+1,self.zPosition))
             inputItem.destroy()

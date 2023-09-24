@@ -131,7 +131,7 @@ class TradingArtwork(src.items.Item):
             self.availableTrades.append(
                 {
                     "numOffered": 1,
-                    "name": "trade for %s" % (item,),
+                    "name": f"trade for {item}",
                     "give": dependencies,
                     "recieve": [recieve],
                 },
@@ -154,8 +154,7 @@ class TradingArtwork(src.items.Item):
             self.applyOptions.append(
                 (
                     str(counter),
-                    "%s : %sx        %s => %s\n"
-                    % (
+                    "{} : {}x        {} => {}\n".format(
                         trade["name"],
                         trade.get("numOffered"),
                         trade["give"],
@@ -202,7 +201,7 @@ class TradingArtwork(src.items.Item):
                     if len(itemsFound) == giveSpec[1]:
                         break
             if not len(itemsFound) == giveSpec[1]:
-                character.addMessage("not enough %s" % (giveSpec[0],))
+                character.addMessage(f"not enough {giveSpec[0]}")
                 return
             allItemsFound.extend(itemsFound)
         character.removeItemsFromInventory(allItemsFound)
@@ -213,7 +212,7 @@ class TradingArtwork(src.items.Item):
                 if itemSpec[0] == "Machine":
                     item.setToProduce(itemSpec[2])
                 character.addToInventory(item,force=True)
-        character.addMessage("you did the trade %s" % (trade["name"],))
+        character.addMessage("you did the trade {}".format(trade["name"]))
 
         if "numOffered" in trade:
             trade["numOffered"] -= 1
@@ -228,12 +227,10 @@ class TradingArtwork(src.items.Item):
             the description
         """
         text = super().getLongInfo()
-        text += """
+        text += f"""
 tradingHistory:
-%s
-""" % (
-            self.tradingHistory,
-        )
+{self.tradingHistory}
+"""
         return text
 
 

@@ -1653,12 +1653,12 @@ class FactionChat1(Chat):
                 + ': "the requirements for an alliance are:."\n'
             )
             self.persistentText += "\n\n"
-            self.persistentText += "minRep: %s\n" % (self.partner.minRep,)
-            self.persistentText += "maxAlliance: %s\n" % (self.partner.maxAliance,)
-            self.persistentText += "repGain: %s\n" % (self.partner.repGain,)
+            self.persistentText += f"minRep: {self.partner.minRep}\n"
+            self.persistentText += f"maxAlliance: {self.partner.maxAliance}\n"
+            self.persistentText += f"repGain: {self.partner.repGain}\n"
             self.persistentText += "excludes: \n"
             for exclude in self.partner.excludes:
-                self.persistentText += "%s " % (exclude.name,)
+                self.persistentText += f"{exclude.name} "
             self.persistentText += "\n\n"
 
             # show dialog
@@ -1968,7 +1968,7 @@ class ChatMenu(Chat):
                 #options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                self.setOptions("You are about to start a conversation with %s.\n\nWhat kind of conversation do you want to start?\n"%(self.partner.name,), options)
+                self.setOptions("You are about to start a conversation with {}.\n\nWhat kind of conversation do you want to start?\n".format(self.partner.name), options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():

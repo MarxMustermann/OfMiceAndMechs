@@ -237,13 +237,11 @@ class AutoTutor(src.items.Item):
                     self.activateChallenge -= 1
                     if self.activateChallenge == 100:
                         self.submenue = src.interaction.TextMenu(
-                            '\n\nchallenge: repeat challenge\n\nstatus: challenge in progress - Use this menu item a 100 times. The first step is done. Activations remaining %s\n\ncomment: use a command to activate the menu item and multipliers to do this often.\n check "information->automation" on how to do this.'
-                            % (self.activateChallenge,)
+                            '\n\nchallenge: repeat challenge\n\nstatus: challenge in progress - Use this menu item a 100 times. The first step is done. Activations remaining {}\n\ncomment: use a command to activate the menu item and multipliers to do this often.\n check "information->automation" on how to do this.'.format(self.activateChallenge)
                         )
                     else:
                         self.submenue = src.interaction.TextMenu(
-                            "\n\nchallenge: repeat challenge\nstatus: challenge in progress - Use this menu item a 100 times. Activations remaining %s\n\ncomment: use a command to activate the menu item and multipliers to do this often"
-                            % (self.activateChallenge,)
+                            "\n\nchallenge: repeat challenge\nstatus: challenge in progress - Use this menu item a 100 times. Activations remaining {}\n\ncomment: use a command to activate the menu item and multipliers to do this often".format(self.activateChallenge)
                         )
                 else:
                     if len(self.character.inventory):
@@ -286,8 +284,7 @@ class AutoTutor(src.items.Item):
 
                     if not metalBarFound:
                         self.submenue = src.interaction.TextMenu(
-                            "\n\nchallenge: produce 100 metal bars\nstatus: no progress - Try again with metal bars in your inventory\nMetal bars remaining %s\n\n"
-                            % (self.metalbarChallenge,)
+                            "\n\nchallenge: produce 100 metal bars\nstatus: no progress - Try again with metal bars in your inventory\nMetal bars remaining {}\n\n".format(self.metalbarChallenge)
                         )
                         self.character.macroState["submenue"] = self.submenue
                         return
@@ -295,15 +292,13 @@ class AutoTutor(src.items.Item):
                     didAdd = self.addScraps(amount=1)
                     if not didAdd:
                         self.submenue = src.interaction.TextMenu(
-                            "\n\nchallenge: produce 100 metal bars\nstatus: no progress - no space to drop scrap\nMetal bars remaining %s\n\n"
-                            % (self.metalbarChallenge,)
+                            "\n\nchallenge: produce 100 metal bars\nstatus: no progress - no space to drop scrap\nMetal bars remaining {}\n\n".format(self.metalbarChallenge)
                         )
                         self.character.macroState["submenue"] = self.submenue
                         return
 
                     self.submenue = src.interaction.TextMenu(
-                        "\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress.\nMetal bars remaining %s\n\ncomment: \nscrap ejected to the south/below\nuse commands and multipliers to do this.\n\n"
-                        % (self.metalbarChallenge,)
+                        "\n\nchallenge: produce 100 metal bars\nstatus: challenge in progress.\nMetal bars remaining {}\n\ncomment: \nscrap ejected to the south/below\nuse commands and multipliers to do this.\n\n".format(self.metalbarChallenge)
                     )
                     self.character.inventory.remove(metalBarFound)
                     self.metalbarChallenge -= 1
@@ -350,8 +345,7 @@ class AutoTutor(src.items.Item):
 
                     if not wallFound:
                         self.submenue = src.interaction.TextMenu(
-                            "\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - try again with walls in inventory\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"
-                            % (self.wallChallenge,)
+                            "\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - try again with walls in inventory\nWalls remaining: {}\n\ncomment:\nuse commands and multipliers to do this.\n\n".format(self.wallChallenge)
                         )
                         self.character.macroState["submenue"] = self.submenue
                         return
@@ -359,15 +353,13 @@ class AutoTutor(src.items.Item):
                     didAdd = self.addScraps(amount=2)
                     if not didAdd:
                         self.submenue = src.interaction.TextMenu(
-                            "\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - no space to drop scrap\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"
-                            % (self.wallChallenge,)
+                            "\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nno progress - no space to drop scrap\nWalls remaining: {}\n\ncomment:\nuse commands and multipliers to do this.\n\n".format(self.wallChallenge)
                         )
                         self.character.macroState["submenue"] = self.submenue
                         return
 
                     self.submenue = src.interaction.TextMenu(
-                        "\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nWalls remaining: %s\n\ncomment:\nuse commands and multipliers to do this.\n\n"
-                        % (self.wallChallenge,)
+                        "\n\nchallenge: produce 25 walls\nstatus: challenge in progress.\nWalls remaining: {}\n\ncomment:\nuse commands and multipliers to do this.\n\n".format(self.wallChallenge)
                     )
                     self.character.inventory.remove(wallFound)
                     self.wallChallenge -= 1
@@ -438,9 +430,9 @@ class AutoTutor(src.items.Item):
                 else:
                     text = """challenge: run job orders\n\njob orders for Wall or Door or Floor plates will be dropped to the south. Produce the item named on the job order and return with the item.
 
-finish 25 round (%s remaining):
+finish 25 round ({} remaining):
 
-""" % (
+""".format(
                         25 - self.challengeInfo["numSucesses"],
                     )
                     if self.challengeInfo["type"]:

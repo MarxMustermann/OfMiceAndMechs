@@ -25,9 +25,9 @@ class EpochQuest(src.quests.MetaQuestSequence):
 When you were promoted to commander of this base you received the burden of the epoch quest.
 This means you will have to complete the tasks the epoch artwork gives you.
 """
-        text = """
-%s
-"""%(storyText,)
+        text = f"""
+{storyText}
+"""
         out.append(text)
 
         if not self.subQuests:

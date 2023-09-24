@@ -114,12 +114,10 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
 
         text = super().getLongInfo()
 
-        text += """
+        text += f"""
 slotsByItemtype
-%s
-""" % (
-            self.slotsByItemtype,
-        )
+{self.slotsByItemtype}
+"""
         return text
 
     def apply(self, character):

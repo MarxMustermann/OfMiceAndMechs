@@ -7,7 +7,7 @@ bad code: drawstuff is everywhere
 import src.logger
 
 # bad code: this is unintuitive, ugly and unnecessary it should be replaced by a simpler solution
-class Mapping(object):
+class Mapping:
     """
     maps things to abstract representation and back
     """
@@ -249,7 +249,7 @@ class DisplayMapping(Mapping):
         return rawConfig
 
 # bad code: actual rendering beyond the abstracted form (urwid formatting, tiles) is done here
-class Canvas(object):
+class Canvas:
     """
     The canvas is supposed to hold the content of a piece screen.
     It is used to allow for pixel setting and to be able to cache rendered state.

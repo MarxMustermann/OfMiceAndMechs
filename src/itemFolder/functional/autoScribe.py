@@ -56,8 +56,7 @@ The level of the copied command is the minimum level of the input command, sheet
 
         if src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown:
             character.addMessage(
-                "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+                "cooldown not reached. Wait {} ticks".format(self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer))
             )
             return
         self.coolDownTimer = src.gamestate.gamestate.tick

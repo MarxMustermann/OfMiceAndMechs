@@ -15,12 +15,12 @@ class ScrapHammering(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        return """
-Do some scrap hammering%s.
+            reason = f", to {self.reason}"
+        return f"""
+Do some scrap hammering{reason}.
 
-Hammer %s Scrap to MetalBars. %s done.
-"""%(reason,self.amount,self.amountDone)
+Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
+"""
 
     def triggerCompletionCheck(self,character=None):
         if not character:

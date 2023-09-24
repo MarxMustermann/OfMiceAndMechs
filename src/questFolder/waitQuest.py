@@ -20,9 +20,9 @@ class WaitQuest(src.quests.Quest):
         text = """
 Wait."""
         if self.lifetimeEvent:
-            text += """
+            text += f"""
 
-This quest will end in %s ticks"""%(str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick),) 
+This quest will end in {str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)} ticks""" 
         return text
 
     def isPaused(self):

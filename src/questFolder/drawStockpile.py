@@ -25,8 +25,8 @@ class DrawStockpile(src.quests.MetaQuestSequence):
                 stockpileTypeName = "storage"
             itemTypeName = ""
             if itemType:
-                itemTypeName = " for %s"%(itemType,)
-            self.metaDescription = "draw %sstockpile%s"%(stockpileTypeName,itemTypeName,)
+                itemTypeName = f" for {itemType}"
+            self.metaDescription = f"draw {stockpileTypeName}stockpile{itemTypeName}"
 
         if not extraInfo:
             self.extraInfo = {}
@@ -37,7 +37,7 @@ class DrawStockpile(src.quests.MetaQuestSequence):
         if not character:
             return
 
-        room = character.getTerrain().getRoomByPosition((self.targetPositionBig))[0]
+        room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.stockpileType == "i":
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == self.targetPosition and inputSlot[1] == self.itemType:
@@ -57,15 +57,15 @@ class DrawStockpile(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
+            reason = f",\nto {self.reason}"
         mappedNames = {"i":"input stockpile","o":"output stockpile","s":"storage stockpile"}
         itemTypePart = ""
         if self.itemType:
-            itemTypePart = "for %s "%(self.itemType,)
+            itemTypePart = f"for {self.itemType} "
         text = """
-Draw a %s %son position %s on tile %s%s.
+Draw a {} {}on position {} on tile {}{}.
 
-"""%(mappedNames[self.stockpileType],itemTypePart,self.targetPosition,self.targetPositionBig,reason)
+""".format(mappedNames[self.stockpileType],itemTypePart,self.targetPosition,self.targetPositionBig,reason)
 
         if self.stockpileType == "i":
             text += """

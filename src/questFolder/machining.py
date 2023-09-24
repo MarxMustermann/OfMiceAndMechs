@@ -16,13 +16,13 @@ class Machining(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        out = """
-Do some machining and produce a machine%s.
+            reason = f", to {self.reason}"
+        out = f"""
+Do some machining and produce a machine{reason}.
 
-Produce %s Machine for %s. %s done.
+Produce {self.amount} Machine for {self.toProduce}. {self.amountDone} done.
 
-"""%(reason,self.amount,self.toProduce,self.amountDone,)
+"""
 
         out = [out]
         if not self.subQuests:

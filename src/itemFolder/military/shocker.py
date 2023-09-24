@@ -34,7 +34,7 @@ class Shocker(src.items.Item):
                 if hasattr(self.container,"electricalCharges"):
                     if self.container.electricalCharges < self.container.maxElectricalCharges:
                         self.container.electricalCharges += 1
-                        character.addMessage("you activate the shocker and increase the rooms charges to %s"%(self.container.electricalCharges,))
+                        character.addMessage("you activate the shocker and increase the rooms charges to {}".format(self.container.electricalCharges))
                         character.inventory.remove(compressorFound)
 
                         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"~*"})

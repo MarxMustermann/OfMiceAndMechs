@@ -13,7 +13,7 @@ class SetUpProductionLine(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
 
     def getProductionLineDescription(self,itemType,depth=0):
-        text = "  "*depth+"- %s\n"%(itemType,)
+        text = "  "*depth+f"- {itemType}\n"
         neededItems = src.items.rawMaterialLookup.get(itemType,[])[:]
         if itemType == "MetalBars":
             neededItems = ["Scrap"]
@@ -22,16 +22,16 @@ class SetUpProductionLine(src.quests.MetaQuestSequence):
         return text
 
     def generateTextDescription(self):
-        text = """
-set up a production line for %s.
-set the production line up on tile %s
+        text = f"""
+set up a production line for {self.itemType}.
+set the production line up on tile {self.targetPositionBig}
 
 The full production line looks like this:
 
-"""%(self.itemType,self.targetPositionBig)
-        text += """
-%s
-"""%(self.getProductionLineDescription(self.itemType),)
+"""
+        text += f"""
+{self.getProductionLineDescription(self.itemType)}
+"""
         
         if self.tryHard:
             text += """

@@ -35,13 +35,11 @@ class Rod(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 baseDamage:
-%s
+{self.baseDamage}
 
-""" % (
-            self.baseDamage,
-        )
+"""
         return text
 
     # bad code: very hacky way of equiping things
@@ -54,7 +52,7 @@ baseDamage:
             character: the character trying to use the iten
         """
 
-        character.addMessage("you equip the rod and wield a %s weapon now"%(self.baseDamage,))
+        character.addMessage(f"you equip the rod and wield a {self.baseDamage} weapon now")
 
         if character.weapon:
             oldWeapon = character.weapon

@@ -49,7 +49,7 @@ class SpecialItemSlot(src.items.Item):
                 character.awardReputation(1000,carryOver=False)
                 character.movementSpeed = character.movementSpeed/2
             else:
-                character.addMessage("you need to have special item #%s in your inventory"%(self.itemID,))
+                character.addMessage(f"you need to have special item #{self.itemID} in your inventory")
         else:
             if character.faction == self.faction:
                 character.die(reason="stealing from your own faction")

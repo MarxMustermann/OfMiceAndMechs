@@ -16,10 +16,10 @@ class RunCommand(src.quests.MetaQuestSequence):
             self.setParameters({"command":command})
 
     def generateTextDescription(self):
-        return """
+        return f"""
 This quest wants you to press the following keys:
 
-%s
+{self.command}
 
 To be honest:
 This quest is deprecated and should be removed.
@@ -28,7 +28,7 @@ This stuff does not work very well, so just do exactly that.
 Do nothing else like moving around.
 
 good luck!
-"""%(self.command,)
+"""
 
     def setParameters(self,parameters):
         if "command" in parameters:

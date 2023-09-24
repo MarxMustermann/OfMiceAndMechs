@@ -45,8 +45,7 @@ Place an item to the west and activate the scrapper to shred an item.
             and not self.charges
         ):
             character.addMessage(
-                "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+                "cooldown not reached. Wait {} ticks".format(self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer))
             )
             return
 

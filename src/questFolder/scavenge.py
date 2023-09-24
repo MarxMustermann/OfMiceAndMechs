@@ -19,12 +19,12 @@ class Scavenge(src.quests.MetaQuestSequence):
 
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
         text = """
 Scavenge the outside area"""
         if self.toCollect:
-            text += " for %s"%(self.toCollect,)
-        text += """%s."""%(reason,)
+            text += f" for {self.toCollect}"
+        text += f"""{reason}."""
         text += """
 
 This quest will end when your inventory is full."""

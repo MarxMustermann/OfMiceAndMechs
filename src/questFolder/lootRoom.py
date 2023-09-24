@@ -6,16 +6,16 @@ class LootRoom(src.quests.MetaQuestSequence):
     def __init__(self, description="loot room", roomPos = None):
         super().__init__()
         self.baseDescription = description
-        self.metaDescription = self.baseDescription+" %s"%(roomPos,)
+        self.metaDescription = self.baseDescription+f" {roomPos}"
         self.roomPos = roomPos
 
     def generateTextDescription(self):
-        return """
+        return f"""
 Loot a room. Take everything that is valuable and bring it home.
 
 
-Go to the room on tile %s and take everything not bolted and valuable.
-Clear your inventory afterwards to complete the quest."""%(self.roomPos,)
+Go to the room on tile {self.roomPos} and take everything not bolted and valuable.
+Clear your inventory afterwards to complete the quest."""
 
     def triggerCompletionCheck(self,character=None):
         if not character:

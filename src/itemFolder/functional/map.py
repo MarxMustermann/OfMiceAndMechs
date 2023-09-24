@@ -87,11 +87,7 @@ You can select the routes and run the stored route.
             text = "routes:\n"
             for (startNode, routePart) in self.routes.items():
                 for (endNode, route) in routePart.items():
-                    text += "%s => %s (%s)\n" % (
-                        startNode,
-                        endNode,
-                        route,
-                    )
+                    text += f"{startNode} => {endNode} ({route})\n"
             self.submenue = src.interaction.TextMenu(text)
             self.character.macroState["submenue"] = self.submenue
         elif self.submenue.selection == "addMarker":
@@ -154,7 +150,7 @@ You can select the routes and run the stored route.
             self.routes[self.recordingStart][recordingEnd] = self.macroBackup[:-counter]
             del self.character.macroState["macros"]["a"]
             self.character.addMessage(
-                "added path from %s to %s" % (self.recordingStart, recordingEnd)
+                f"added path from {self.recordingStart} to {recordingEnd}"
             )
             self.recordingStart = None
 

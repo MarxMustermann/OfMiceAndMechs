@@ -4,7 +4,7 @@ graphical overlays for decoration on top of renderings
 """
 
 # obsolete: not currently in use and probably broken
-class PathsOverlay(object):
+class PathsOverlay:
     """
     Overlay showing the precalculated paths
     """
@@ -48,7 +48,7 @@ class PathsOverlay(object):
                 chars[coordinate[1]][coordinate[0]] = (ltyellow, "::")
 
 # obsolete: not currently in use and probably broken
-class QuestMarkerOverlay(object):
+class QuestMarkerOverlay:
     """
     Overlay showing quest marker
     """
@@ -84,7 +84,7 @@ class QuestMarkerOverlay(object):
                     display[1],
                 )
 
-class NPCsOverlay(object):
+class NPCsOverlay:
     """
     overlay showing npcs
     """
@@ -312,7 +312,7 @@ class NPCsOverlay(object):
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]][0].bg = "#855"
                     character.showGaveCommand = False
 
-class MainCharOverlay(object):
+class MainCharOverlay:
     """
     overly showing the main character
     """

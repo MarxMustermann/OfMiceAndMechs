@@ -48,16 +48,14 @@ class Armor(src.items.Item):
 
         text = super().getLongInfo()
 
-        text += """
+        text += f"""
 armorvalue:
-%s
+{self.armorValue}
 
 description:
 protects you in combat
 
-""" % (
-            self.armorValue,
-        )
+"""
         return text
 
     def apply(self, character):
@@ -66,7 +64,7 @@ protects you in combat
         by equiping it
         """
 
-        character.addMessage("you equip the armor and wear a %s armor now"%(self.armorValue,))
+        character.addMessage(f"you equip the armor and wear a {self.armorValue} armor now")
 
         charSequence = []
         for i in range(1,self.armorValue+1):

@@ -87,7 +87,7 @@ Place item to upgrade to the west and the downgraded item will be placed to the 
         self.container.removeItem(inputItem)
 
         inputItem.level -= 1
-        character.addMessage("%s downgraded" % (inputItem.type,))
+        character.addMessage(f"{inputItem.type} downgraded")
         inputItem.xPosition = self.xPosition + 1
         inputItem.yPosition = self.yPosition
         self.container.addItems([inputItem])

@@ -14,10 +14,10 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         self.strict = strict
 
     def generateTextDescription(self):
-        text  = """
-Secure the tile %s.
+        text  = f"""
+Secure the tile {self.targetPosition}.
 
-This means you should go to the tile and kill all enemies you find."""%(self.targetPosition,)
+This means you should go to the tile and kill all enemies you find."""
         if not self.endWhenCleared:
             text = "\n"+text+"\n\nStay there and kill all enemies arriving"
         else:

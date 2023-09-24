@@ -17,7 +17,7 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
         if not character:
             return
 
-        room = character.getTerrain().getRoomByPosition((self.targetPositionBig))[0]
+        room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.targetPosition in room.walkingSpace:
             self.postHandler()
             return True
@@ -25,11 +25,11 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-draw a walkingspace on position %s on tile %s%s.
+            reason = f", to {self.reason}"
+        text = f"""
+draw a walkingspace on position {self.targetPosition} on tile {self.targetPositionBig}{reason}.
 
-"""%(self.targetPosition,self.targetPositionBig,reason)
+"""
 
         text += """
 Walkingspaces are drawn using a Painter (xw).

@@ -158,7 +158,7 @@ Since this clone is burned in it can not change duties.
             self.shadowCharges -= delta
 
         self.charges += delta
-        self.applyOptions[1] = ("getEpochRewards", "get epoch rewards (%s)"%(self.charges,))
+        self.applyOptions[1] = ("getEpochRewards", f"get epoch rewards ({self.charges})")
 
     def getEpochEvaluation(self,character):
         self.recalculateGlasstears(character)
@@ -176,7 +176,7 @@ Since this clone is burned in it can not change duties.
             cost = amount//10
             if amount%10:
                 cost += 1
-            options.append(("Healing","(%s) healing"%(cost,)))
+            options.append(("Healing",f"({cost}) healing"))
             options.append(("weaponUpgradeOnce","(1) weapon upgrade (once)"))
             options.append(("weaponUpgrade","(?) weapon upgrade"))
             options.append(("armorUpgradeOnce","(5) armor upgrade (once)"))
@@ -208,7 +208,7 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
             options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
             options.append(("spawn scrap","(20) respawn scrap field"))
-        submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have %s glass tears"%(self.charges,),options,targetParamName="rewardType",extraDescriptions=self.descriptions)
+        submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have {} glass tears".format(self.charges),options,targetParamName="rewardType",extraDescriptions=self.descriptions)
 
         counter = 0
         for option in options:
@@ -255,7 +255,7 @@ Since this clone is burned in it can not change duties.
                 text = "you cant upgrade your weapon further"
             else:
                 character.weapon.baseDamage += 1
-                text = "weapon upgraded to %s"%(character.weapon.baseDamage,)
+                text = f"weapon upgraded to {character.weapon.baseDamage}"
                 self.changeCharges(-1)
         elif extraInfo["rewardType"] == "weaponUpgrade":
             self.weaponUpgrade(character)
@@ -268,7 +268,7 @@ Since this clone is burned in it can not change duties.
                 text = "you cant upgrade your armor further"
             else:
                 character.armor.armorValue += 1
-                text = "armor upgraded to %s"%(character.armor.armorValue,)
+                text = f"armor upgraded to {character.armor.armorValue}"
                 self.changeCharges(-5)
         elif extraInfo["rewardType"] == "armorUpgrade":
             self.armorUpgrade(character)
@@ -576,7 +576,7 @@ The item will appear in your inventory.
 press enter to continue"""%(npc.name,duty,terrain)
                 src.interaction.showInterruptText(text)
             '''
-            text = "spawning burned in NPC (%s)"%(duty,)
+            text = f"spawning burned in NPC ({duty})"
 
         if character:
             character.addMessage(text)
@@ -598,7 +598,7 @@ press enter to continue"""%(npc.name,duty,terrain)
 
                     self.changeCharges(-10*amount)
                     room.changeCharges(10*amount)
-                    text += "\ntrap room %s recharged"%(room.getPosition(),)
+                    text += f"\ntrap room {room.getPosition()} recharged"
                     break
                 text = "no trap room to charge"
                 break
@@ -617,7 +617,7 @@ press enter to continue"""%(npc.name,duty,terrain)
             amount = min(amount,self.charges//5)
 
             character.armor.armorValue += amount
-            text = "armor upgraded to %s"%(character.armor.armorValue,)
+            text = f"armor upgraded to {character.armor.armorValue}"
             self.changeCharges(-amount*5)
         if character:
             character.addMessage(text)
@@ -634,7 +634,7 @@ press enter to continue"""%(npc.name,duty,terrain)
             amount = min(amount,self.charges*1)
 
             character.weapon.baseDamage += amount
-            text = "weapon upgraded to %s"%(character.weapon.baseDamage,)
+            text = f"weapon upgraded to {character.weapon.baseDamage}"
             self.changeCharges(-amount*1)
         if character:
             character.addMessage(text)
@@ -653,7 +653,7 @@ press enter to continue"""%(npc.name,duty,terrain)
             if amount%10:
                 cost += 1
 
-            text = "you got healed for %s health for the cost of %s glass tears"%(amount,cost,)
+            text = f"you got healed for {amount} health for the cost of {cost} glass tears"
             self.changeCharges(-cost)
         if character:
             character.addMessage(text)
@@ -979,7 +979,7 @@ You will recieve your duties and instructions later.
                 self.lastRoomReward = len(self.container.container.rooms)
 
             if character and not dryRun:
-                character.addMessage("you got %s glass tears for building %s rooms"%(stepAmount,newRooms,))
+                character.addMessage(f"you got {stepAmount} glass tears for building {newRooms} rooms")
                 printedMessage = True
 
         epochsSurvived = ((src.gamestate.gamestate.tick//self.epochLength)-self.lastEpochSurvivedReward)
@@ -989,7 +989,7 @@ You will recieve your duties and instructions later.
         amount += stepAmount
 
         if character and epochsSurvived and not dryRun:
-            character.addMessage("you got %s glass tears for surviving %s epochs"%(stepAmount,epochsSurvived,))
+            character.addMessage(f"you got {stepAmount} glass tears for surviving {epochsSurvived} epochs")
             printedMessage = True
 
         numSpawners = 0
@@ -1010,7 +1010,7 @@ You will recieve your duties and instructions later.
         amount += stepAmount
 
         if character and numSpawnersDestroyed and not dryRun:
-            character.addMessage("you got %s glass tears for destroying %s hives"%(stepAmount,numSpawnersDestroyed,))
+            character.addMessage(f"you got {stepAmount} glass tears for destroying {numSpawnersDestroyed} hives")
             printedMessage = True
 
         if character and not dryRun:

@@ -37,13 +37,11 @@ class ProductionManager(src.items.Item):
         for (itemType, command) in self.commands.items():
             commandsString += "* " + itemType + " " + str(command) + "\n"
 
-        text += """
+        text += f"""
 
 commands:
 
-""" % (
-            commandsString,
-        )
+"""
         return text
 
     def apply(self, character):
@@ -118,7 +116,7 @@ commands:
             self.character.runCommandString(command)
 
             self.character.addMessage(
-                "running command to produce %s - %s" % (itemType, command)
+                f"running command to produce {itemType} - {command}"
             )
 
         elif self.submenue.selection == "recordCommand":
@@ -190,7 +188,7 @@ commands:
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
+            f"added command for {itemType} - {commandItem.command}"
         )
         return
 
@@ -207,7 +205,7 @@ commands:
         self.commands[itemType] = self.macroSafe[:-2]
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, self.commands[itemType])
+            f"added command for {itemType} - {self.commands[itemType]}"
         )
 
     def runCommand(self):
@@ -221,7 +219,7 @@ commands:
         self.character.runCommandString(command)
 
         self.character.addMessage(
-            "running command to produce %s - %s" % (itemType, command)
+            f"running command to produce {itemType} - {command}"
         )
 
 src.items.addType(ProductionManager)

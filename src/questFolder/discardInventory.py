@@ -19,13 +19,13 @@ class DiscardInventory(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason += ", to %s"%(self.reason,)
-        text = """
-Discard your inventory%s.
+            reason += f", to {self.reason}"
+        text = f"""
+Discard your inventory{reason}.
 
 Just drop the content of your inventory somewhere, preferably outside.
 
-To see your items open the your inventory by pressing i."""%(reason,)
+To see your items open the your inventory by pressing i."""
         return text
 
     def droppedItem(self,extraInfo):

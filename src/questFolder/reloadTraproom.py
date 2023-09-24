@@ -7,7 +7,7 @@ class ReloadTraproom(src.quests.MetaQuestSequence):
     def __init__(self, description="reload traproom", creator=None, command=None, lifetime=None, targetPosition=None, noDelegate=False):
         super().__init__(creator=creator, lifetime=lifetime)
         self.baseDescription = description
-        self.metaDescription = self.baseDescription+" %s"%(targetPosition,)
+        self.metaDescription = self.baseDescription+f" {targetPosition}"
         self.shortCode = "R"
 
         if targetPosition:
@@ -20,8 +20,8 @@ class ReloadTraproom(src.quests.MetaQuestSequence):
         text = """
 Reload the trap room on tile %s."""
         if self.character.rank == 3:
-            text = """
-Ensure that the trap room on %s is reloaded.
+            text = f"""
+Ensure that the trap room on {self.targetPosition} is reloaded.
 
 Since you are the commander of the base you can make other people do it.
 Send the rank 5-6 NPCs and proceed to do something else in the meantime.
@@ -38,16 +38,16 @@ It work like this:
 After you do this the NPCs should stop what they are doing and start working on the new order.
 If the task is not completed after some time, reload the trap room yourself.
 Use the shockers in the trap room for this.
-"""%(self.targetPosition,)
+"""
         else:
-            text = """
-Reload the trap room on %s.
+            text = f"""
+Reload the trap room on {self.targetPosition}.
 
 Do this by using the shockers in the trap rooms.
 Activate the shockers with lightning rods in your inventory.
 
 This will reload the trap room and consume the lightning rods.
-"""%(self.targetPosition,)
+"""
         return text
 
     def triggerCompletionCheck(self,character=None):
@@ -63,7 +63,7 @@ This will reload the trap room and consume the lightning rods.
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
-            self.metaDescription = self.baseDescription+" %s"%(self.targetPosition,)
+            self.metaDescription = self.baseDescription+f" {self.targetPosition}"
         return super().setParameters(parameters)
 
     def solver(self, character):

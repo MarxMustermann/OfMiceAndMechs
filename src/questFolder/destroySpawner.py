@@ -5,17 +5,17 @@ class DestroySpawner(src.quests.MetaQuestSequence):
 
     def __init__(self, description="destroy hive",targetPosition=None):
         super().__init__()
-        self.metaDescription = description+" %s"%(targetPosition,)
+        self.metaDescription = description+f" {targetPosition}"
         self.targetPosition = targetPosition
         self.spawnedPrepared = False
 
     def generateTextDescription(self):
-        text = """
-Destroy the hive on tile %s.
+        text = f"""
+Destroy the hive on tile {self.targetPosition}.
 
 
 To destroy the hive, go to the monster spawner (MS) in the middle of the hive and activate it.
-You may want to plan an escape route."""%(self.targetPosition,)
+You may want to plan an escape route."""
         return text
 
     def handleSpawnerKill(self):

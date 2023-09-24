@@ -141,7 +141,7 @@ class TradingArtwork2(src.items.Item):
             self.availableTrades.append(
                 {
                     "numOffered": 1,
-                    "name": "trade for %s" % (item,),
+                    "name": f"trade for {item}",
                     "give": dependencies,
                     "recieve": [recieve],
                     "autoTrade":True
@@ -175,7 +175,7 @@ class TradingArtwork2(src.items.Item):
         options = [
         ]
         for trade in self.availableTrades:
-            options.append((trade, "%s\n        %s"%(trade["name"],trade)))
+            options.append((trade, "{}\n        {}".format(trade["name"],trade)))
 
         applyOptions = {
                 "default":{"description":"do trade manually","callback":{"container":self,"method":"tradeManually","params":{"character":character}}},
@@ -313,7 +313,7 @@ class TradingArtwork2(src.items.Item):
             character.removeItemsFromInventory(inventoryItemsFound)
 
         if character:
-            character.addMessage("you did the trade %s" % (trade["name"],))
+            character.addMessage("you did the trade {}".format(trade["name"]))
 
         if "numOffered" in trade:
             trade["numOffered"] -= 1
@@ -330,12 +330,10 @@ class TradingArtwork2(src.items.Item):
             the description
         """
         text = super().getLongInfo()
-        text += """
+        text += f"""
 tradingHistory:
-%s
-""" % (
-            self.tradingHistory,
-        )
+{self.tradingHistory}
+"""
         return text
 
     def autoTrade(self):

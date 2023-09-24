@@ -9,7 +9,7 @@ class RestockRoom(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         if targetPositionBig:
-            self.metaDescription += " %s"%(targetPositionBig,)
+            self.metaDescription += f" {targetPositionBig}"
         self.toRestock = None
         self.allowAny = allowAny
         self.reason = reason
@@ -29,13 +29,13 @@ class RestockRoom(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        return """
-Restock the room with items from your inventory%s.
+            reason = f",\nto {self.reason}"
+        return f"""
+Restock the room with items from your inventory{reason}.
 
 Place the items in the correct input or storage stockpile.
 
-%s"""%(reason,self.targetPositionBig,)
+{self.targetPositionBig}"""
 
     def setParameters(self,parameters):
         if "targetPositionBig" in parameters and "targetPositionBig" in parameters:

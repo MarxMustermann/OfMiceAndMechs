@@ -14,9 +14,9 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.itemID = itemID
 
     def generateTextDescription(self):
-        text = """
-%s
-"""%(self.itemID,)
+        text = f"""
+{self.itemID}
+"""
         return text
 
     def handleDelivery(self, extraInfo):

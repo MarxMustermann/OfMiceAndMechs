@@ -7,7 +7,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
     def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = "%s %s on position %s on tile %s"%(description,itemType,targetPosition,targetPositionBig,)
+        self.metaDescription = f"{description} {itemType} on position {targetPosition} on tile {targetPositionBig}"
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.itemType = itemType
@@ -18,22 +18,22 @@ class PlaceItem(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-Place item %s on position %s on tile %s%s."""%(self.itemType,self.targetPosition,self.targetPositionBig,reason,)
+            reason = f",\nto {self.reason}"
+        text = f"""
+Place item {self.itemType} on position {self.targetPosition} on tile {self.targetPositionBig}{reason}."""
         if self.boltDown:
             text += """
 
 Bolt down the item after placing it."""
 
         if not self.character.inventory or not self.character.inventory[-1].type == self.itemType:
-            text += """
+            text += f"""
 
-You do not have a %s in your inventory."""%(self.itemType,)
+You do not have a {self.itemType} in your inventory."""
         else:
-            text += """
+            text += f"""
 
-You have a %s in your inventory."""%(self.itemType,)
+You have a {self.itemType} in your inventory."""
 
         if self.character.getBigPosition() == self.targetPositionBig:
             text += """
@@ -44,18 +44,18 @@ You are on the target tile.
             direction = ""
             diffXBig = self.targetPositionBig[0] - self.character.getBigPosition()[0]
             if diffXBig < 0:
-                direction += " and %s tiles to the west"%(-diffXBig,)
+                direction += f" and {-diffXBig} tiles to the west"
             if diffXBig > 0:
-                direction += " and %s tiles to the east"%(diffXBig,)
+                direction += f" and {diffXBig} tiles to the east"
             diffYBig = self.targetPositionBig[1] - self.character.getBigPosition()[1]
             if diffYBig < 0:
-                direction += " and %s tiles to the north"%(-diffYBig,)
+                direction += f" and {-diffYBig} tiles to the north"
             if diffYBig > 0:
-                direction += " and %s tiles to the south"%(diffYBig,)
-            text += """
+                direction += f" and {diffYBig} tiles to the south"
+            text += f"""
 
-The target tile is %s
-"""%(direction[5:],)
+The target tile is {direction[5:]}
+"""
         
         if self.tryHard:
             text += """
@@ -167,7 +167,7 @@ Press d to move the cursor and show the subquests description.
                     return (None,(["esc"],"exit the menu"))
 
             if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the {}".format(self.itemType))
                 return ([quest],None)
 
             itemFound = None
@@ -206,7 +206,7 @@ Press d to move the cursor and show the subquests description.
                     return ([quest],None)
 
                 if not character.getBigPosition() == self.targetPositionBig:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the {}".format(self.itemType))
                     return ([quest],None)
 
                 if not itemFound.walkable:
@@ -219,7 +219,7 @@ Press d to move the cursor and show the subquests description.
                         return ([quest],None)
 
                 if not character.getSpacePosition() == self.targetPosition:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,))
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the {}".format(self.itemType))
                     return ([quest],None)
 
                 if not itemPlaced:
@@ -231,11 +231,11 @@ Press d to move the cursor and show the subquests description.
                     return (None,(dropCommand,"drop the item"))
 
             if self.targetPositionBig and not self.targetPositionBig == character.getBigPosition():
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the %s"%(self.itemType,))
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the {}".format(self.itemType))
                 return ([quest],None)
 
             if character.getDistance(itemPlaced.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the %s"%(self.itemType,),ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the {}".format(self.itemType),ignoreEndBlocked=True)
                 return ([quest],None)
 
             pos = character.getPosition()

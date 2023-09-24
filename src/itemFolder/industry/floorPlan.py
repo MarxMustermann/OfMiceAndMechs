@@ -100,28 +100,23 @@ class FloorPlan(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
 information:
 
 buildSites:
-%s
+{self.buildSites}
 
 walkingspace:
-%s
+{self.walkingSpace}
 
 inputSlots:
-%s
+{self.inputSlots}
 
 outputSlots:
-%s
+{self.outputSlots}
 
-""" %(
-        self.buildSites,
-        self.walkingSpace,
-        self.inputSlots,
-        self.outputSlots
-     )
+"""
         print(self.buildSites)
         return text
 

@@ -22,7 +22,7 @@ import src.events
 import src.gamestate
 
 # bad code: is basically used nowhere
-class Coordinate(object):
+class Coordinate:
     """
     a abstracted coordinate.
     """
@@ -39,7 +39,7 @@ class Coordinate(object):
         self.x = x
         self.y = y
 
-class Terrain():
+class Terrain:
     """
     the base class for terrains
     """
@@ -797,7 +797,7 @@ class Terrain():
                     except:
                         return
 
-                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]-1,))
+                    char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]-1}")
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,15*15-2)
@@ -822,7 +822,7 @@ class Terrain():
                     except:
                         return
 
-                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0],pos[1]+1,))
+                    char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]+1}")
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,2)
@@ -847,7 +847,7 @@ class Terrain():
                     except:
                         return
 
-                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]-1,pos[1],))
+                    char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]-1}/{pos[1]}")
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,15*15-2,char.yPosition)
@@ -872,7 +872,7 @@ class Terrain():
                     except:
                         return
 
-                    char.addMessage("you moved from terrain %s/%s to terrain %s/%s"%(pos[0],pos[1],pos[0]+1,pos[1],))
+                    char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]+1}/{pos[1]}")
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,2,char.yPosition)
@@ -1601,9 +1601,9 @@ class Terrain():
                     continue
 
                 for y in range(0, 16):
-                    if not ((y < coordinateOffset[0] or y > coordinateOffset[0]+size[0])):
+                    if not (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
-                    if not ((y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0])):
+                    if not (y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0]):
                         chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
 
             for y in range(0, 225):
@@ -1615,7 +1615,7 @@ class Terrain():
                         try:
                             chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
                         except:
-                            raise Exception("%s %s"%(coordinateOffset[0],coordinateOffset[1]))
+                            raise Exception(f"{coordinateOffset[0]} {coordinateOffset[1]}")
                     if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
 
@@ -2400,9 +2400,9 @@ class Nothingness(Terrain):
 
         displayChar = self.floordisplay
         if src.gamestate.gamestate.mainChar.zPosition < 0:
-            displayChar = "%s" % (src.gamestate.gamestate.mainChar.zPosition,)
+            displayChar = f"{src.gamestate.gamestate.mainChar.zPosition}"
         if src.gamestate.gamestate.mainChar.zPosition > 0:
-            displayChar = "+%s" % (src.gamestate.gamestate.mainChar.zPosition,)
+            displayChar = f"+{src.gamestate.gamestate.mainChar.zPosition}"
 
         chars = []
         for i in range(0,-coordinateOffset[0]):

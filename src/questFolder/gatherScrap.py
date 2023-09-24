@@ -20,7 +20,7 @@ class GatherScrap(src.quests.MetaQuestSequence):
         scrap3 = src.items.itemMap["Scrap"](amount=20)
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
         return ["""
 Fill your inventory with scrap""",reason,""".
 Scrap can be found in scrapfields and

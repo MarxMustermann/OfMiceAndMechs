@@ -52,7 +52,7 @@ class ArenaArtwork(src.items.Item):
     def changeArenaSetting(self,character):
 
         text = """
-"""%(
+""".format(
     )
 
 
@@ -86,17 +86,17 @@ class ArenaArtwork(src.items.Item):
         text = """
 current settings:
 
-addExhaustionOnHurt               = %s  self.exhaustion += damage//10+1
-removeExhaustionOnHeal            = %s  self.exhaustion = 0
-reduceExhaustionOnHeal            = %s  self.exhaustion = max(0,self.exhaustion-(amount//10+1))
-doubleDamageOnZeroExhaustion      = %s  damage = damage * 2
-bonusDamageOnLowerExhaustion      = %s  damage = damage + damage//2
-reduceDamageOnAttackerExhausted   = %s  damage = damage//(self.exhaustion//10+1)
-increaseDamageOnTargetExhausted   = %s  damage = damage * (target.exhaustion//10+1)
-addRandomExhaustionOnAttack       = %s  self.exhaustion += random.randint(1,4)
+addExhaustionOnHurt               = {}  self.exhaustion += damage//10+1
+removeExhaustionOnHeal            = {}  self.exhaustion = 0
+reduceExhaustionOnHeal            = {}  self.exhaustion = max(0,self.exhaustion-(amount//10+1))
+doubleDamageOnZeroExhaustion      = {}  damage = damage * 2
+bonusDamageOnLowerExhaustion      = {}  damage = damage + damage//2
+reduceDamageOnAttackerExhausted   = {}  damage = damage//(self.exhaustion//10+1)
+increaseDamageOnTargetExhausted   = {}  damage = damage * (target.exhaustion//10+1)
+addRandomExhaustionOnAttack       = {}  self.exhaustion += random.randint(1,4)
 flatExhaustionAttackCost          = s  self.exhaustion += self.flatExhaustionAttackCost
 
-"""%(
+""".format(
         self.addExhaustionOnHurt,
         self.removeExhaustionOnHeal,
         self.reduceExhaustionOnHeal,
@@ -124,31 +124,21 @@ flatExhaustionAttackCost          = s  self.exhaustion += self.flatExhaustionAtt
 
     def changeBasicStats(self,character):
 
-        text = """
+        text = f"""
 current settings:
 
-enemyAttackSpeed     = %s
-enemyMovementSpeed   = %s
-enemyHP              = %s
-enemyDamage          = %s
+enemyAttackSpeed     = {self.enemyAttackSpeed}
+enemyMovementSpeed   = {self.enemyMovementSpeed}
+enemyHP              = {self.enemyHP}
+enemyDamage          = {self.enemyDamage}
 
-playerAttackSpeed    = %s
-playerMovementSpeed  = %s
-playerHP             = %s
-playerDamage         = %s
+playerAttackSpeed    = {self.playerAttackSpeed}
+playerMovementSpeed  = {self.playerMovementSpeed}
+playerHP             = {self.playerHP}
+playerDamage         = {self.playerDamage}
 
 
-"""%(
-        self.enemyAttackSpeed,
-        self.enemyMovementSpeed,
-        self.enemyHP,
-        self.enemyDamage,
-
-        self.playerAttackSpeed,
-        self.playerMovementSpeed,
-        self.playerHP,
-        self.playerDamage,
-    )
+"""
 
 
         options = []

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
-import socket
-
 """
 HOST = "ofmiceandmechs.com" #input("enter server address")  # The server's hostname or IP address
 PORT = 23  # The port used by the server
 """
 
-HOST = "127.0.0.1" #input("enter server address")  # The server's hostname or IP address
-PORT = 65475  # The port used by the server
-
-import time
+import gzip
 import json
+import socket
+import time
 
 import tcod
+
+HOST = "127.0.0.1" #input("enter server address")  # The server's hostname or IP address
+PORT = 65475  # The port used by the server
 
 screen_width = 200
 screen_height = 51
@@ -38,7 +38,7 @@ def draw(raw):
     for line in raw:
         x = 0
         for char in line:
-            if char == None:
+            if char is None:
                 continue
             if char == "\n":
                 1/0
@@ -60,7 +60,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
 s.setblocking(False)
 
-import gzip
 dataString = b""
 def getData():
         global dataString
@@ -75,14 +74,13 @@ def getData():
 
             dataString += part
 
-        if not b"\n-*_*-\n" in dataString:
-            return
+        if b"\n-*_*-\n" not in dataString:
+            return None
         valuepart = dataString.split(b"\n-*_*-\n")[0]
         dataString = dataString.split(b"\n-*_*-\n")[-1]
 
         valuepart = gzip.decompress(valuepart)
-        valuepart = valuepart.decode("utf-8")
-        return valuepart
+        return valuepart.decode("utf-8")
 
 commands = ["~"]
 
@@ -342,18 +340,17 @@ def getTcodEvents():
                     else:
                         translatedKey = "z"
 
-                if translatedKey == None:
+                if translatedKey is None:
                     print(event)
                     continue
 
                 commands.append(translatedKey)
                 lastcheck = time.time()
 
-import time
 
 while 1:
     data = getData()
-    if not data in [None,""]:
+    if data not in [None,""]:
         raw = json.loads(data)
         if "pseudoDisplay" in raw:
             draw(raw["pseudoDisplay"])

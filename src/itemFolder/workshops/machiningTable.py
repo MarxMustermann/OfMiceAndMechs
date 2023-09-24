@@ -62,6 +62,11 @@ class MachiningTable(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
         
+        if not params.get("type") in src.items.itemMap:
+            if params.get("type"):
+                character.addMessage("Item type unknown.")
+            return
+
         metalBarsFound = []
         for item in character.inventory+self.getInputItems():
             if item.type == "MetalBars":

@@ -891,7 +891,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.toBuildRoomClone.spawnPlaned()
         self.toBuildRoomClone.spawnPlaned()
         self.toBuildRoomClone.addRandomItems()
-        self.toBuildRoomClone.spawnGhuls(src.gamestate.gamestate.mainChar)
+        self.toBuildRoomClone.spawnGhouls(src.gamestate.gamestate.mainChar)
 
         return
 
@@ -916,7 +916,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.toBuildRoomClone4.floorPlan = copy.deepcopy(floorPlan)
         self.toBuildRoomClone4.spawnPlaned()
         self.toBuildRoomClone4.spawnPlaned()
-        self.toBuildRoomClone4.spawnGhuls(src.gamestate.gamestate.mainChar)
+        self.toBuildRoomClone4.spawnGhouls(src.gamestate.gamestate.mainChar)
 
         self.spawnMaintanenceNPCs(self.toBuildRoomClone4)
 
@@ -942,7 +942,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.toBuildRoomClone6.spawnPlaned()
         self.toBuildRoomClone6.spawnPlaned()
         self.toBuildRoomClone6.addRandomItems()
-        self.toBuildRoomClone6.spawnGhuls(src.gamestate.gamestate.mainChar)
+        self.toBuildRoomClone6.spawnGhouls(src.gamestate.gamestate.mainChar)
 
         self.spawnMaintanenceNPCs(self.toBuildRoomClone6)
 
@@ -982,7 +982,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.toBuildRoomClone5.floorPlan = copy.deepcopy(floorPlan)
         self.toBuildRoomClone5.spawnPlaned()
         self.toBuildRoomClone5.spawnPlaned()
-        self.toBuildRoomClone5.spawnGhuls(src.gamestate.gamestate.mainChar)
+        self.toBuildRoomClone5.spawnGhouls(src.gamestate.gamestate.mainChar)
         
         self.spawnMaintanenceNPCs()
         self.maintananceLoop()
@@ -999,7 +999,7 @@ your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
 
         charCount = 0
         for character in room.characters:
-            if isinstance(character,src.characters.Ghul):
+            if isinstance(character,src.characters.Ghoul):
                 continue
             charCount += 1
 
@@ -1092,7 +1092,7 @@ your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
             room = self.toBuildRoomClone5
 
         for npc in room.characters[:]:
-            if isinstance(npc,src.characters.Ghul):
+            if isinstance(npc,src.characters.Ghoul):
                 continue
             if len(npc.quests) > 1:
                 continue
@@ -2692,7 +2692,7 @@ class Tutorials(BasicPhase):
             basic usage: movement + basic UI + item management
             fighting: some explanaition on fighting + arena?
             industry: how things are produced
-            ghuls: how to use ghuls and commands
+            ghouls: how to use ghouls and commands
         """
         options = [("BasicUsageTutorial", "basic usage"), ("FightingTutorial", "fighting"),("MainGame","start main game")]
         submenu = src.interaction.SelectionMenu(
@@ -4011,7 +4011,7 @@ class MainGame(BasicPhase):
                 if not character.faction == self.activeStory["mainChar"].faction:
                     characterPool.remove(character)
                     continue
-                if isinstance(character,src.characters.Ghul):
+                if isinstance(character,src.characters.Ghoul):
                     characterPool.remove(character)
                     continue
                 if not character.rank:

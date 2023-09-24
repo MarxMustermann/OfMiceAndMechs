@@ -924,7 +924,7 @@ class Room():
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if not "city" in character.faction or not character.charType in ("Character","Ghul"):
+                    if not "city" in character.faction or not character.charType in ("Character","Ghoul"):
                         #chars[character.yPosition][character.xPosition] = character.display
                         char = "<-"
                         fgColor = "#fff"
@@ -935,7 +935,7 @@ class Room():
                         chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
                     else:
                         if viewChar == "rank":
-                            if not isinstance(character,src.characters.Ghul):
+                            if not isinstance(character,src.characters.Ghoul):
                                 if character.superior:
                                     char = "@s"
                                 else:
@@ -951,14 +951,14 @@ class Room():
                                 health = "|"
                             char = "@"+health
                         elif viewChar == "name":
-                            if not isinstance(character,src.characters.Ghul):
+                            if not isinstance(character,src.characters.Ghoul):
                                 char = character.name[0]+character.name.split(" ")[1][0]
                             else:
                                 char = "Gu"
                         elif viewChar == "faction":
                             char = "@"+character.faction[-1]
                         elif viewChar == "activity":
-                            if not isinstance(character,src.characters.Ghul):
+                            if not isinstance(character,src.characters.Ghoul):
                                 postfix = " "
 
                                 if character.isStaff:
@@ -990,7 +990,7 @@ class Room():
 
                         color = "#fff"
                         if viewColour == "activity":
-                            if not isinstance(character,src.characters.Ghul):
+                            if not isinstance(character,src.characters.Ghoul):
                                 if character.isStaff:
                                     color = "#0f0"
                                 elif not character.quests:
@@ -2067,7 +2067,7 @@ XXX
                 self.addItem(item,buildSite[0])
             return
 
-    def spawnGhuls(self,character):
+    def spawnGhouls(self,character):
         for item in self.itemsOnFloor:
             if item.bolted and item.type == "CorpseAnimator":
                 item.filled = True
@@ -2202,7 +2202,7 @@ class WorkshopRoom(EmptyRoom):
     def doBasicSetup(self):
         super().doBasicSetup()
 
-    def addGhulSquare(self,offset,corpseInInventory=True):
+    def addGhoulSquare(self,offset,corpseInInventory=True):
         if not "walkingSpace" in self.floorPlan:
             self.floorPlan["walkingSpace"] = set()
         if not "buildSites" in self.floorPlan:
@@ -2222,7 +2222,7 @@ class WorkshopRoom(EmptyRoom):
             command = "d"+10*"Kd"+"j"
         else:
             command = "d"+"j"
-        self.floorPlan["buildSites"].append(((3+offset[0],4+offset[1],0),"Command",{"extraName":"initialise ghul","command":command}))
+        self.floorPlan["buildSites"].append(((3+offset[0],4+offset[1],0),"Command",{"extraName":"initialise ghoul","command":command}))
 
         if corpseInInventory:
             command = ""

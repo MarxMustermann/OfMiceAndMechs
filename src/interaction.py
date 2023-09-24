@@ -5657,7 +5657,7 @@ class JobAsMatrixMenu(SubMenu):
             for npc in npcs:
                 if not npc.faction == character.faction:
                     continue
-                if isinstance(npc,src.characters.Ghul):
+                if isinstance(npc,src.characters.Ghoul):
                     continue
 
                 if rowCounter == self.index[0]:
@@ -5708,7 +5708,7 @@ class JobAsMatrixMenu(SubMenu):
         for npc in npcs:
             if not npc.faction == character.faction:
                 continue
-            if isinstance(npc,src.characters.Ghul):
+            if isinstance(npc,src.characters.Ghoul):
                 continue
             text.append("\n")
             if lineCounter == self.index[0]:

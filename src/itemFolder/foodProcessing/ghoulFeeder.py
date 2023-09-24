@@ -1,12 +1,12 @@
 import src
 import random
 
-class GhulFeeder(src.items.Item):
+class GhoulFeeder(src.items.Item):
     """
     ingame item for filling up goo flasks
     """
 
-    type = "GhulFeeder"
+    type = "GhoulFeeder"
 
     def __init__(self):
         """
@@ -17,7 +17,7 @@ class GhulFeeder(src.items.Item):
 
         self.display = src.canvas.displayChars.gooDispenser
 
-        self.name = "ghul feeder"
+        self.name = "ghoul feeder"
 
         self.activated = False
         self.baseName = self.name
@@ -61,7 +61,7 @@ class GhulFeeder(src.items.Item):
 
     def apply(self, character):
         """
-        handle a ghul trying to eat
+        handle a ghoul trying to eat
 
         Parameters:
             character: the character trying to use this item
@@ -69,7 +69,7 @@ class GhulFeeder(src.items.Item):
 
         while character.satiation < 1000:
             #if not self.charges:
-            #    character.addMessage("the ghul feeder has no charges")
+            #    character.addMessage("the ghoul feeder has no charges")
             #    return
 
             character.satiation += 15
@@ -99,10 +99,10 @@ class GhulFeeder(src.items.Item):
         """
 
         text = """
-This ghul feeder currently has %s charges
+This ghoul feeder currently has %s charges
 """ % (
             self.charges
         )
         return text
 
-src.items.addType(GhulFeeder)
+src.items.addType(GhoulFeeder)

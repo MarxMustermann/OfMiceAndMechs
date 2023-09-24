@@ -2980,7 +2980,7 @@ class CollectorSpider(Spider):
     def render(self):
         return "SS"
 
-class Ghul(Character):
+class Ghoul(Character):
 
     def __init__(
         self,
@@ -2989,7 +2989,7 @@ class Ghul(Character):
         yPosition=0,
         quests=[],
         automated=True,
-        name="Ghul",
+        name="Ghoul",
         creator=None,
         characterId=None,
     ):
@@ -3019,14 +3019,14 @@ class Ghul(Character):
         self.solvers.append("NaiveActivateQuest")
         self.solvers.append("NaiveMurderQuest")
 
-        self.charType = "Ghul"
+        self.charType = "Ghoul"
 
     def getOwnAction(self):
         self.hasOwnAction = 0
         return "."
 
     def heal(self, amount, reason=None):
-        self.addMessage("ghuls don't heal")
+        self.addMessage("ghouls don't heal")
         return
 
     def hurt(self, damage, reason=None, actor=None):
@@ -3132,6 +3132,6 @@ characterMap = {
     "Mouse": Mouse,
     "Spider": Spider,
     "CollectorSpider": CollectorSpider,
-    "Ghul": Ghul,
+    "Ghoul": Ghoul,
     "Maggot": Maggot,
 }

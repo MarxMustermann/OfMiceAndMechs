@@ -13,4 +13,4 @@ import src.itemFolder.foodProcessing.corpseShredder
 import src.itemFolder.foodProcessing.gooflask
 import src.itemFolder.foodProcessing.moldFeed
 import src.itemFolder.foodProcessing.sporeExtractor
-import src.itemFolder.foodProcessing.ghulFeeder
+import src.itemFolder.foodProcessing.ghoulFeeder

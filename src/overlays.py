@@ -109,14 +109,14 @@ class NPCsOverlay(object):
                   character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
                 continue
         
-            if not "city" in character.faction or not character.charType in ("Character","Ghul",):
+            if not "city" in character.faction or not character.charType in ("Character","Ghoul",):
                 #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
                 char = "<-"
                 bgColor = "#722"
                 chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
             else:
                 if viewChar == "rank":
-                    if not isinstance(character,src.characters.Ghul):
+                    if not isinstance(character,src.characters.Ghoul):
                         if character.superior:
                             char = "@s"
                         else:
@@ -129,14 +129,14 @@ class NPCsOverlay(object):
                         health = "|"
                     char = "@"+health
                 elif viewChar == "name":
-                    if not isinstance(character,src.characters.Ghul):
+                    if not isinstance(character,src.characters.Ghoul):
                         char = character.name[0]+character.name.split(" ")[1][0]
                     else:
                         char = "Gu"
                 elif viewChar == "faction":
                     char = "@"+character.faction[-1]
                 elif viewChar == "activity":
-                    if not isinstance(character,src.characters.Ghul):
+                    if not isinstance(character,src.characters.Ghoul):
                         postfix = " "
 
                         if character.isStaff:
@@ -168,7 +168,7 @@ class NPCsOverlay(object):
 
                 color = "#fff"
                 if viewColour == "activity":
-                    if not isinstance(character,src.characters.Ghul):
+                    if not isinstance(character,src.characters.Ghoul):
                         if character.isStaff:
                             color = "#0f0"
                         elif not character.quests:

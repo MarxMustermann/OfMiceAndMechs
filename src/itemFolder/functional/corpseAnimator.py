@@ -20,7 +20,7 @@ class CorpseAnimator(src.items.Item):
 Put a corpse into the corpse animator to prepare for animating a corpse.
 You can fill it by activating it with a corpse in your inventory.
 
-Activate a filled corpse animator to spawn a ghul
+Activate a filled corpse animator to spawn a ghoul
 """
 
         self.runsCommands = True
@@ -28,7 +28,7 @@ Activate a filled corpse animator to spawn a ghul
         self.commands = {"born":"j"}
 
         self.commandOptions = [
-                ("born", "set command for newly animated ghuls"),
+                ("born", "set command for newly animated ghouls"),
             ]
 
     def getConfigurationOptions(self, character):
@@ -159,7 +159,7 @@ Activate a filled corpse animator to spawn a ghul
                 self.xPosition + self.container.timeIndex,
                 self.yPosition + self.container.timeIndex,
             )
-            character = src.characters.Ghul()
+            character = src.characters.Ghoul()
             if originalActor:
                 character.faction = originalActor.faction
 

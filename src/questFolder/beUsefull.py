@@ -2778,7 +2778,7 @@ That should give you enough health to kill them all.
             return True
 
 
-        # ghul tutorial
+        # ghoul tutorial
         # introduce full clones
         # get top equipment
         # go to throne

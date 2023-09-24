@@ -426,7 +426,7 @@ After assimilation you will serve on this base.
 
 You are not the only worker working in this base.
 The base commander has rank 3, you will have rank 6.
-Besides the clones, ghuls are working on the base.
+Besides the clones, ghouls are working on the base.
 
 ---
 
@@ -437,7 +437,7 @@ Try to work with them.
         elif step == 2:
             text = """
 Industry requires machines to produce actual goods.
-Operating simple machines is done by ghuls, not by clones.
+Operating simple machines is done by ghouls, not by clones.
 
 The ghuls don't have implants and can only execute simple commands.
 Usually each production room has its own reanimator and
@@ -451,7 +451,7 @@ The machines turn raw resources into usable goods.
 
 ---
 
-Ghuls are shown as @x.
+Ghouls are shown as @x.
 They are important for production.
 You don't have to understand what they are doing,
 but try to not to disturb them.
@@ -459,7 +459,7 @@ but try to not to disturb them.
 """
         elif step == 3:
             text = """
-If left alone the ghuls and machines will produce goods,
+If left alone the ghouls and machines will produce goods,
 but the raw resources will run out and produced goods will pile up.
 Clones are used to prevent that and to make use of the produced goods.
 

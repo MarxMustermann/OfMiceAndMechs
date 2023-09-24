@@ -70,7 +70,7 @@ class CityPlaner(src.items.Item):
             room.spawnPlaned()
             room.spawnPlaned()
             room.addRandomItems()
-            room.spawnGhuls(character)
+            room.spawnGhouls(character)
 
         #self.container.sources.append((room.getPosition(),"MetalBars"))
 
@@ -178,8 +178,8 @@ class CityPlaner(src.items.Item):
             item = src.items.itemMap["Corpse"]()
             room.addItem(item,(3,6,0))
 
-        ghulFeeder = src.items.itemMap["GhulFeeder"]()
-        room.addItem(ghulFeeder,(2,6,0))
+        ghoulFeeder = src.items.itemMap["GhoulFeeder"]()
+        room.addItem(ghoulFeeder,(2,6,0))
 
         room.floorPlan = floorPlan
 
@@ -1060,7 +1060,7 @@ class CityPlaner(src.items.Item):
         if not smallMachinesToAdd and not bigMachinesToAdd:
             return
 
-        room.addGhulSquare((6,6,0))
+        room.addGhoulSquare((6,6,0))
 
         newOutputs = []
 

@@ -16,7 +16,7 @@ It whispers, but you understand clearly:
 
 You are safe. You are in a farming complex.
 Something is not right, though.
-It looks freshly seeded, but the ghul is not active.
+It looks freshly seeded, but the ghoul is not active.
 
 You can not stay here forever, so start moving and leave this room.
 Use the wasd movement keys to move.

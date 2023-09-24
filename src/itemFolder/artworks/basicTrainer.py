@@ -125,8 +125,8 @@ Items cluttering the base can have several negative consequences:
 This is because the enemies need to step on the electrified floor.
 Items lying on the floor prevent that.
 
-* the ghul automation might break.
-This is because the ghuls can collide with items and get disoriented.
+* the ghoul automation might break.
+This is because the ghouls can collide with items and get disoriented.
 
 * entry to and passage through rooms might not be possible
 This happens rarely but can interrupt a base.

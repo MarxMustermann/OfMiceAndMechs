@@ -22,8 +22,6 @@ class Mortar(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.mortar)
 
-        self.attributesToStore.extend(["loaded", "precision"])
-
     def apply(self, character):
         """
         handle a character trying to use this item

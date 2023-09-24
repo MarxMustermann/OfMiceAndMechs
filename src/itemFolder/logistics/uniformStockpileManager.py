@@ -33,19 +33,6 @@ class UniformStockpileManager(src.items.Item):
         self.numItemsStored = 0
         self.lastAction = ""
 
-        self.attributesToStore.extend(
-                [
-                    "commands",
-                    "numItemsStored",
-                    "storedItemType",
-                    "storedItemWalkable",
-                    "restrictStoredItemType",
-                    "restrictStoredItemWalkable",
-                ]
-            )
-
-        self.objectsToStore.extend(["submenue", "character"])
-
         self.commands = {}
         self.submenue = None
         self.character = None

@@ -30,15 +30,6 @@ You can select the routes and run the stored route.
 
         self.markers = {}
 
-        self.attributesToStore.extend(
-                [
-                    "text",
-                    "recording",
-                    "nodes",
-                    "routes",
-                ]
-            )
-
     def apply(self, character):
         """
         spawn a menue offering a selection of actions to run

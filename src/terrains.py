@@ -15,7 +15,6 @@ import src.items
 import src.rooms
 import src.overlays
 import src.gameMath
-import src.saveing
 import src.canvas
 import src.logger
 import src.quests
@@ -40,7 +39,7 @@ class Coordinate(object):
         self.x = x
         self.y = y
 
-class Terrain(src.saveing.Saveable):
+class Terrain():
     """
     the base class for terrains
     """
@@ -97,36 +96,35 @@ class Terrain(src.saveing.Saveable):
         # bad code: should be abstracted
         roomsOnMap = []
 
-        # set meta information for saving
-        self.attributesToStore.extend(
-            [
-                "yPosition",
-                "xPosition",
-                "biomeInfo",
-                "seed",
-                "hidden"
-            ]
-        )
-        self.tupleDictsToStore.append("microBiomeMap")
-        self.tupleListsToStore.extend([
-            "scrapFields",
-            "noPlacementTiles",
-            ])
-        self.ignoreAttributes.extend([
-            "rooms",
-            "itemsByCoordinate",
-            "characters",
-            "events",
-            "roomByCoordinates",
-            "initialSeed",
-            "floordisplay",
-            "listeners"
-            ])
         self.xPosition = None
         self.yPosition = None
         self.zPosition = None
 
         self.lastRender = None
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
     def getPosition(self):
         return (self.xPosition,self.yPosition,0)
@@ -2348,116 +2346,6 @@ class Terrain(src.saveing.Saveable):
         room.xPosition = newPosition[0]
         room.yPosition = newPosition[1]
 
-    # bad code: should be in saveable
-    def setState(self, state):
-        """
-        set state from dict
-
-        Parameters:
-            state: the state to set
-            tick: obsolete, ignore
-        """
-        super().setState(state)
-
-        for roomId in state["roomIds"]:
-            room = src.rooms.getRoomFromState(state["roomStates"][roomId], terrain=self)
-            self.addRoom(room)
-
-        for eventId in state["eventIds"]:
-            eventState = state["eventStates"][eventId]
-            event = src.events.getEventFromState(eventState)
-            self.addEvent(event)
-
-        for charId in state["characterIds"]:
-            charState = state["characterStates"][charId]
-            char = src.characters.getCharacterFromState(charState)
-            char.terrain = self
-            char.room = None
-            self.addCharacter(char, charState["xPosition"], charState["yPosition"])
-
-        addItems = []
-        for itemId in state["itemIds"]:
-            itemState = state["itemStates"][itemId]
-            item = src.items.getItemFromState(itemState)
-            addItems.append((item, item.getPosition()))
-
-        if "listeners" in state:
-            convertedListeners = {}
-            if self.listeners:
-                for (key,value) in self.listeners.items():
-                    if value:
-                        1/0
-                    else:
-                        convertedListeners[key] = value
-            self.listeners = convertedListeners
-        self.addItems(addItems)
-
-    # bad code: should be in saveable
-    def getState(self):
-        """
-        get state as dict
-
-        Returns:
-            semi serialised state
-        """
-
-        roomIds = []
-        roomStates = {}
-        for room in self.rooms:
-            roomIds.append(room.id)
-            roomStates[room.id] = room.getState()
-
-        itemsOnFloor = []
-        for entry in self.itemsByCoordinate.values():
-            itemsOnFloor.extend(reversed(entry))
-        itemIds = []
-        itemStates = {}
-        for item in itemsOnFloor:
-            itemIds.append(item.id)
-            itemStates[item.id] = item.getState()
-
-        exclude = []
-        if src.gamestate.gamestate.mainChar:
-            exclude.append(src.gamestate.gamestate.mainChar.id)
-        characterIds = []
-        characterStates = {}
-        for character in self.characters:
-            if character == src.gamestate.gamestate.mainChar:
-                continue
-            characterIds.append(character.id)
-            characterStates[character.id] = character.getState()
-
-        eventIds = []
-        eventStates = {}
-        for event in self.events:
-            eventIds.append(event.id)
-            eventStates[event.id] = event.getState()
-
-        convertedListeners = {}
-        if self.listeners:
-            for (key,value) in self.listeners.items():
-                if value:
-                    1/0
-                else:
-                    convertedListeners[key] = value
-        
-        # generate state
-        result = super().getState()
-        result.update({
-            "objType": self.objType,
-            "roomIds": roomIds,
-            "roomStates": roomStates,
-            "itemIds": itemIds,
-            "itemStates": itemStates,
-            "characterIds": characterIds,
-            "characterStates": characterStates,
-            "initialSeed": self.initialSeed,
-            "eventIds": eventIds,
-            "eventStates": eventStates,
-            "listeners" : convertedListeners,
-        })
-        return result
-
     # bad code: should be in extra class
     def addEvent(self, event):
         """
@@ -3000,9 +2888,6 @@ class Desert(Terrain):
         # add base of operations
         self.miniBase = src.rooms.MiniBase2(3, 7, 2, 2, seed=seed)
         self.addRooms([self.miniBase])
-
-        # save internal state
-        self.initialState = self.getState()
 
         self.doSandStorm()
         self.randomizeHeatmap()
@@ -3607,21 +3492,3 @@ terrainMap = {
     "Base": Base,
     "Base2": Base2,
 }
-
-def getTerrainFromState(state):
-    """
-    get item instances from dict state
-
-    Parameters:
-        state: the state to set
-    Returns:
-        the generated terrain
-    """
-
-    terrain = terrainMap[state["objType"]](
-        seed=state["initialSeed"], noContent=True
-    )
-    terrain.setState(state)
-    terrain.id = state["id"]
-    src.saveing.loadingRegistry.register(terrain)
-    return terrain

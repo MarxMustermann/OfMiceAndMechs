@@ -35,16 +35,6 @@ class StockpileMetaManager(src.items.Item):
         # settings
         self.autoExpand = True
 
-        self.attributesToStore.extend(
-                [
-                    "stockPiles",
-                    "stockPileInfo",
-                    "assignedPlots",
-                    "assignedPlotsInfo",
-                    "roomManagerName",
-                ]
-            )
-
         self.applyOptions.extend(
                 [
                     ("clearInventory", "clear inventory"),
@@ -987,38 +977,6 @@ class StockpileMetaManager(src.items.Item):
         command = self.commands[trigger]
 
         character.runCommandString(command)
-
-    def getState(self):
-        """
-        get this items state in semi-serialised state
-        ensures job orders are stored in full form
-
-        Returns:
-            the state
-        """
-
-        state = super().getState()
-        jobOrderStates = []
-        for item in self.jobOrders:
-            jobOrderStates.append(item.getState())
-        state["jobOrders"] = jobOrderStates
-        return state
-
-    def setState(self, state):
-        """
-        load state from semi serialised form
-
-        Parameters:
-            state: the state to load
-        """
-
-        super().setState(state)
-        if "commands" in state:
-            self.commands = state["commands"]
-
-        if "jobOrders" in state:
-            for jobOrderState in state["jobOrders"]:
-                self.jobOrders.append(getItemFromState(jobOrderState))
 
     def getLongInfo(self):
         """

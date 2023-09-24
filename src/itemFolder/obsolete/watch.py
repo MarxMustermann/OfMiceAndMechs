@@ -19,8 +19,6 @@ class Watch(src.items.Item):
 
         self.name = "watch"
 
-        self.attributesToStore.extend(["creationTime"])
-
         self.bolted = False
         self.walkable = True
         try:

@@ -22,8 +22,6 @@ You can eat it to die.
 
         super().__init__(display=src.canvas.displayChars.poisonBloom)
 
-        self.attributesToStore.extend(["dead"])
-
     def apply(self, character):
         """
         handle a character trying to use this item

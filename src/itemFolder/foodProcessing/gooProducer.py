@@ -23,9 +23,6 @@ Activate the maggot fermenter to add a charge to the goo dispenser.
         self.activated = False
         self.level = 1
 
-        # bad code: repetitive and easy to forget
-        self.attributesToStore.extend(["level"])
-
     def getConfigurationOptions(self, character):
         """
         register the configuration options with superclass

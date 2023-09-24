@@ -25,9 +25,6 @@ You can fire the furnace by activating it with coal in your inventory.
 Place the furnace next to a boiler to be able to heat up the boiler with this furnace.
 """
 
-        # set metadata for saving
-        self.attributesToStore.extend(["activated"])
-
     def apply(self, character):
         """
         handle a character trying to fire the furnace

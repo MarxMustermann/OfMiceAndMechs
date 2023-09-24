@@ -26,8 +26,6 @@ class Command(src.items.Item):
         self.level = 1
         self.repeat = False
 
-        self.attributesToStore.extend(["command", "extraName", "level", "description"])
-
     def configure(self, character):
         self.repeat = not self.repeat
         character.addMessage("you set the command to repeat: %s"%(self.repeat,))

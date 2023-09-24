@@ -29,8 +29,6 @@ After loading the blueprint the machine machine is able to produce a machine tha
         self.baseName = self.name
         self.level = 1
 
-        self.attributesToStore.extend(["endProduct", "level"])
-
         self.setDescription()
 
     def setDescription(self):
@@ -64,17 +62,6 @@ After loading the blueprint the machine machine is able to produce a machine tha
         """
 
         character.addMessage("a blueprint for " + str(self.endProduct))
-
-    def setState(self, state):
-        """
-        set state from semi-serialised state
-
-        Parameters:
-            state: the semi-serialised state to load
-        """
-        super().setState(state)
-
-        self.setDescription()
 
     def getLongInfo(self):
         """

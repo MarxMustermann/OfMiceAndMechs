@@ -10,10 +10,9 @@ import time
 
 
 # import basic internal libs
-import src.saveing
 import src.canvas
 
-class Event(src.saveing.Saveable):
+class Event():
     """
     base class for events
     """
@@ -30,9 +29,31 @@ class Event(src.saveing.Saveable):
 
         super().__init__()
 
-        self.attributesToStore.extend(["tick", "type"])
-
         self.tick = tick
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
     def handleEvent(self):
         """
@@ -81,9 +102,6 @@ class RunCallbackEvent(Event):
         super().__init__(tick)
         self.type = "RunCallbackEvent"
         self.callback = None
-
-        # set meta information for saving
-        self.callbacksToStore.append("callback")
 
     def setCallback(self, callback):
         """
@@ -187,9 +205,6 @@ class EndQuestEvent(Event):
         super().__init__(tick)
         self.callback = callback
 
-        # set meta information for saving
-        self.callbacksToStore.append("callback")
-
     def handleEvent(self):
         """
         call callback
@@ -206,7 +221,6 @@ class FurnaceBurnoutEvent(Event):
     """
     the event for stopping to burn after a while
     """
-    objectsToStore = []
 
     def __init__(self, tick):
         """
@@ -264,7 +278,6 @@ class StopBoilingEvent(Event):
     """
     the event for stopping to boil
     """
-    objectsToStore = []
 
     def __init__(self, tick):
         """
@@ -279,14 +292,6 @@ class StopBoilingEvent(Event):
         self.type = "StopBoilingEvent"
 
         self.tick = tick
-
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("boiler")
-
-        # self initial state
-        self.initialState = self.getState()
 
     def handleEvent(self):
         """
@@ -312,7 +317,6 @@ class StartBoilingEvent(Event):
     """
     the event for starting to boil
     """
-    objectsToStore = []
 
     def __init__(self, tick):
         """
@@ -359,15 +363,3 @@ eventMap = {
     "StartBoilingEvent": StartBoilingEvent,
     "RunCallbackEvent": RunCallbackEvent,
 }
-
-def getEventFromState(state):
-    """
-    create an event from a semi serialised state
-
-    Parameters:
-        state: the state
-    """
-    event = eventMap[state["type"]](state["tick"])
-    event.setState(state)
-    src.saveing.loadingRegistry.register(event)
-    return event

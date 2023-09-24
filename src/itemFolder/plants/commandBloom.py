@@ -34,22 +34,6 @@ class CommandBloom(src.items.Item):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
-        self.attributesToStore.extend(
-                [
-                    "charges",
-                    "numCoal",
-                    "numSick",
-                    "lastFeeding",
-                    "faction",
-                    "numCommandBlooms",
-                    "masterCommand",
-                    "expectedNext",
-                    "blocked",
-                    "cluttered",
-                    "lastExplosion",
-                ]
-            )
-
     def apply(self, character):
         """
         handle a character trying to use the item

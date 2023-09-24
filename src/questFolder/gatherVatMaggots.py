@@ -12,8 +12,6 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
-        self.tuplesToStore.append("targetPosition")
-
     def generateTextDescription(self):
         return """
 

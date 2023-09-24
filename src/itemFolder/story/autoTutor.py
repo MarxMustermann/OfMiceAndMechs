@@ -42,31 +42,6 @@ class AutoTutor(src.items.Item):
         self.initialChallengeDone = False
         self.challengeInfo = {}
 
-        self.attributesToStore.extend(
-                [
-                    "gooChallengeDone",
-                    "metalbarChallengeDone",
-                    "sheetChallengeDone",
-                    "machineChallengeDone",
-                    "blueprintChallengeDone",
-                    "energyChallengeDone",
-                    "activateChallengeDone",
-                    "commandChallengeDone",
-                    "challengeRun2Done",
-                    "challengeRun3Done",
-                    "challengeRun4Done",
-                    "challengeRun5Done",
-                    "initialChallengeDone",
-                    "activateChallenge",
-                    "wallChallenge",
-                    "autoScribeChallenge",
-                    "knownBlueprints",
-                    "availableChallenges",
-                    "knownInfos",
-                    "challengeInfo",
-                ]
-            )
-
     def addScraps(self, amount=1):
         """
         add scrap to the environment
@@ -2528,26 +2503,6 @@ comment:
             self.character.macroState["submenue"] = self.submenue
         else:
             self.character.addMessage("unknown selection: " + selection)
-
-    def getState(self):
-        state = super().getState()
-        state["availableChallenges"] = self.availableChallenges
-        state["knownBlueprints"] = self.knownBlueprints
-        state["knownInfos"] = self.knownInfos
-        return state
-
-    def setState(self, state):
-        """
-        load from semi serialised state
-
-        Parameters:
-            state: the state to load
-        """
-
-        super().setState(state)
-        self.availableChallenges = state["availableChallenges"]
-        self.knownBlueprints = state["knownBlueprints"]
-        self.knownInfos = state["knownInfos"]
 
     def getLongInfo(self):
         """

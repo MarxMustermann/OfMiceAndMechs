@@ -96,41 +96,4 @@ The ejected character will be placed to the south of the stasis tank and will st
         if src.gamestate.gamestate.tick > self.characterTimeEntered + 100:
             self.eject()
 
-    def getState(self):
-        """
-        returns a semi serialised state containing the character in full form
-
-        Returns:
-            the state in semi serialised form
-        """
-
-        state = super().getState()
-
-        if self.character:
-            state["character"] = self.character.getState()
-        else:
-            state["character"] = None
-
-        return state
-
-    def setState(self, state):
-        """
-        sets its state to the semi serialised state given
-        ensures the contained character is created
-
-        Parameters:
-            state: the semi serialised state
-        """
-
-        super().setState(state)
-
-        if "character" in state and state["character"]:
-            char = characters.Character()
-            char.setState(state["character"])
-            src.saveing.loadingRegistry.register(char)
-
-            self.character = char
-        else:
-            state["character"] = None
-
 src.items.addType(StasisTank)

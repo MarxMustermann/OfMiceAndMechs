@@ -29,7 +29,6 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         self.runsCommands = True
         self.filled = filled
         self.commands = {}
-        self.attributesToStore.extend(["filled", "commands"])
 
         self.commandOptions = [
                 ("born", "set command for newly born npcs"),

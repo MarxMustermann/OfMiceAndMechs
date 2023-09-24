@@ -14,9 +14,6 @@ class Hutch(src.items.Item):
 
         self.name = "Hutch"
 
-        # bad code: set metadata for saving
-        self.attributesToStore.extend(["activated"])
-
     def render(self):
         """
         render the hutch
@@ -38,13 +35,6 @@ class Hutch(src.items.Item):
             self.activated = True
         else:
             self.activated = False
-
-    """
-    set state from dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
 
     def getLongInfo(self):
         text = """

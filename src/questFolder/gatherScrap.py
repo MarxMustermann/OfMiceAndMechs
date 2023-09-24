@@ -14,8 +14,6 @@ class GatherScrap(src.quests.MetaQuestSequence):
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
-        self.tuplesToStore.append("targetPosition")
-
     def generateTextDescription(self):
         scrap1 = src.items.itemMap["Scrap"](amount=1)
         scrap2 = src.items.itemMap["Scrap"](amount=6)

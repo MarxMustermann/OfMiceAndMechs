@@ -19,7 +19,6 @@ class Commlink(src.items.Item):
         self.name = "commlink"
 
         self.scrapToDeliver = 100
-        self.attributesToStore.extend(["scrapToDeliver"])
 
     """
     get tributes and trades

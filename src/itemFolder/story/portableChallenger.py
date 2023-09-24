@@ -23,8 +23,6 @@ class PortableChallenger(src.items.Item):
         self.bolted = False
         self.secret = ""
 
-        self.attributesToStore.extend(["challenges", "done", "secret"])
-
     def apply(self, character):
         """
         handle a character tryin to use the item

@@ -28,8 +28,6 @@ Matching items will be moved to the south and non matching items will be moved t
         self.coolDown = 10
         self.coolDownTimer = -self.coolDown
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer"])
-
     def apply(self, character):
         """
         handle a character trying to use the item to sort other items

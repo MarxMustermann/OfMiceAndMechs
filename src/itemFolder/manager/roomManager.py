@@ -43,29 +43,6 @@ class RoomManager(src.items.Item):
             "clearTasks": self.clearTasks,
         }
 
-        # set up saving information
-        self.attributesToStore.extend(
-                [
-                    "cityBuilderPos",
-                    "machineMachinePos",
-                    "bluePrintingArtworkPos",
-                    "tasks",
-                    "managerName",
-                    "resourceTerminalPositions",
-                    "stuck",
-                    "stuckReason",
-                    "machinePositions",
-                    "freeItemSlots",
-                    "itemPositions",
-                ]
-            )
-        self.tupleDictsToStore.extend(
-                [
-                    "itemSlotUsage",
-                    "dependencies",
-                ]
-            )
-
         # set state by resetting
         self.reset()
 

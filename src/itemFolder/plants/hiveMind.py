@@ -38,10 +38,6 @@ class HiveMind(src.items.Item):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
-        self.attributesToStore.extend(
-                ["lastMoldClear", "charges", "lastExpansion", "createdAt", "faction"]
-            )
-
     def apply(self, character):
         """
         handle a character trying to use this item
@@ -590,76 +586,5 @@ paths:
         for path, value in self.paths.items():
             text += " * %s - %s\n" % (path, value)
         return text
-
-    def getState(self):
-        """
-        get state in semi serialised form
-
-        Returns:
-            the state
-        """
-
-        state = super().getState()
-        state["paths"] = []
-        for (key, value) in self.paths.items():
-            step = {}
-            step["key"] = key
-            step["value"] = value
-            state["paths"].append(step)
-        state["territory"] = self.territory
-
-        state["toCheck"] = self.toCheck
-        state["cluttered"] = self.cluttered
-        state["blocked"] = self.blocked
-        state["needSick"] = self.needSick
-        state["needCoal"] = self.needCoal
-        state["lastCluttered"] = self.lastCluttered
-        state["lastBlocked"] = self.lastBlocked
-
-        return state
-
-    def setState(self, state):
-        """
-        set state from semi serialised from
-
-        Parameters:
-            state: the state to set
-        """
-
-        super().setState(state)
-        if "paths" in state:
-            self.paths = {}
-            for path in state["paths"]:
-                self.paths[tuple(path["key"])] = []
-                for value in path["value"]:
-                    self.paths[tuple(path["key"])].append(tuple(value))
-        if "territory" in state:
-            self.territory = []
-            for item in state["territory"]:
-                self.territory.append(tuple(item))
-        if "toCheck" in state:
-            self.toCheck = []
-            for item in state["toCheck"]:
-                self.toCheck.append(tuple(item))
-        if "cluttered" in state:
-            self.cluttered = []
-            for item in state["cluttered"]:
-                self.cluttered.append(tuple(item))
-        if "blocked" in state:
-            self.blocked = []
-            for item in state["blocked"]:
-                self.blocked.append(tuple(item))
-        if "needSick" in state:
-            self.needSick = []
-            for item in state["needSick"]:
-                self.needSick.append(tuple(item))
-        if "needCoal" in state:
-            self.needCoal = []
-            for item in state["needCoal"]:
-                self.needCoal.append(tuple(item))
-        if "lastCluttered" in state:
-            self.lastCluttered = tuple(state["lastCluttered"])
-        if "lastBlocked" in state:
-            self.lastBlocked = tuple(state["lastBlocked"])
 
 src.items.addType(HiveMind)

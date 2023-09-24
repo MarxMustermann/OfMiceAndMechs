@@ -1,9 +1,5 @@
 import src
 
-"""
-"""
-
-
 class MemoryStack(src.items.Item):
     type = "MemoryStack"
 
@@ -18,8 +14,6 @@ class MemoryStack(src.items.Item):
         super().__init__(display=src.canvas.displayChars.memoryStack)
 
         self.name = "memory stack"
-
-        self.attributesToStore.extend(["macros"])
 
     """
     trigger production of a player selected item

@@ -22,10 +22,6 @@ class Drill(src.items.Item):
         self.name = "drill"
         self.baseName = self.name
 
-        self.attributesToStore.extend(
-                ["coolDown", "coolDownTimer", "isBroken", "isCleaned"]
-            )
-
         self.setDescription()
 
     def setDescription(self):
@@ -186,15 +182,6 @@ class Drill(src.items.Item):
 
         self.isBroken = True
         self.isCleaned = False
-
-        self.setDescription()
-
-    """
-    set state from dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
 
         self.setDescription()
 

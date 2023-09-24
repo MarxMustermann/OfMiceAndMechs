@@ -25,11 +25,6 @@ class Rod(src.items.Item):
             self.baseDamage = 4
         else:
             self.baseDamage = int(random.triangular(4,21,10))
-        self.attributesToStore.extend(
-                [
-                    "baseDamage",
-                ]
-            )
 
     def getLongInfo(self):
         """

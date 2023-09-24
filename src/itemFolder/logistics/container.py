@@ -32,8 +32,6 @@ Activate the container and select the option "unload items" to unload the items.
         self.maxItems = 10
         self.level = 1
 
-        self.attributesToStore.extend(["charges", "maxCharges", "level"])
-
     def getLongInfo(self):
         """
         returns a longer than normal description text
@@ -73,36 +71,6 @@ actions:
 
 """
         return text
-
-    def getState(self):
-        """
-        return the items state in a semi-serialised form
-        and ensures the contained items are saved
-
-        Returns:
-            the state in semi-serialised form
-        """
-
-        state = super().getState()
-        state["contained"] = []
-        for item in self.contained:
-            state["contained"].append(item.getState())
-        return state
-
-    def setState(self, state):
-        """
-        loads state from semi-serialised form
-        ensure the contained items are created
-
-        Parameters:
-            state: the state to load
-        """
-
-        super().setState(state)
-
-        if "contained" in state:
-            for item in state["contained"]:
-                self.contained.append(getItemFromState(item))
 
     # bad code: should use super class functionality
     def apply(self, character):

@@ -17,8 +17,6 @@ class MemoryDump(src.items.Item):
         self.name = "memory dump"
         self.baseName = self.name
 
-        self.attributesToStore.extend(["macros"])
-
         self.setDescription()
 
     def setDescription(self):
@@ -50,15 +48,5 @@ class MemoryDump(src.items.Item):
             self.macros = copy.deepcopy(character.macroState["macros"])
 
         self.setDescription()
-
-    """
-    set state from dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        self.setDescription()
-
 
 src.items.addType(MemoryDump)

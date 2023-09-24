@@ -19,16 +19,4 @@ class CommandBook(src.items.Item):
 
         self.contents = []
 
-        self.attributesToStore.extend(["contents"])
-
-    def getState(self):
-        state = super().getState()
-        try:
-            state["contents"] = self.availableChallenges
-            state["knownBlueprints"] = self.knownBlueprints
-        except:
-            pass
-        return state
-
-
 src.items.addType(CommandBook)

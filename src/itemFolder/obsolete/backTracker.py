@@ -16,8 +16,6 @@ class BackTracker(src.items.Item):
 
         self.name = "back tracker"
 
-        self.attributesToStore.extend(["command"])
-
         self.tracking = False
         self.tracked = None
         self.walkable = True

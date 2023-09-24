@@ -1,9 +1,5 @@
 import src
 
-"""
-"""
-
-
 class MemoryReset(src.items.Item):
     type = "MemoryReset"
 

@@ -20,7 +20,6 @@ class ArchitectArtwork(src.items.Item):
         self.name = "architect artwork"
         self.runsJobOrders = True
         self.godMode = False
-        self.attributesToStore.extend(["godMode"])
 
     def getJobOrderTriggers(self):
         """

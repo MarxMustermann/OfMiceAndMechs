@@ -148,12 +148,6 @@ class TradingArtwork2(src.items.Item):
                 },
             )
 
-        self.attributesToStore.extend([
-                "tradingHistory",
-                "availableTrades",
-                "doAutoTrade",
-            ])
-                
         self.applyOptions.extend(
                                                 [
                                                     ("setAutoTrade", "trade"),

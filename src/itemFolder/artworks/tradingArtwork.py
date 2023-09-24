@@ -137,11 +137,6 @@ class TradingArtwork(src.items.Item):
                 },
             )
 
-        self.attributesToStore.extend([
-                "tradingHistory",
-                "availableTrades",
-            ])
-
         self.setApplyOptions()
 
     def setApplyOptions(self):

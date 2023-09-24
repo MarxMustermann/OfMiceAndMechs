@@ -13,8 +13,6 @@ class ReloadTraproom(src.quests.MetaQuestSequence):
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
-        self.tuplesToStore.append("targetPosition")
-
         self.timesDelegated = 0
         self.noDelegate = noDelegate
 

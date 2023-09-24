@@ -32,11 +32,7 @@ Prepare for production by placing the input materials to the west/left/noth/top 
 Activate the machine to produce.
 """
 
-        self.attributesToStore.extend(["toProduce", "level", "productionLevel"])
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges","commands"])
-
         self.baseName = self.name
-
 
         self.setDescription()
         self.resetDisplay()
@@ -386,18 +382,6 @@ Currently the machine has no charges
         character.addMessage(
             "running command to handle trigger %s - %s" % (trigger, command)
         )
-
-    def setState(self, state):
-        """
-        load state from semi-serialised state
-
-        Parameters:
-            state: the state to load
-        """
-
-        super().setState(state)
-        self.setDescription()
-        self.resetDisplay()
 
     def checkCoolDownEnded(self):
         if (

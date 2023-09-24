@@ -370,46 +370,4 @@ slotsByItemtype
         result["max amount"] = maxAmount
         return result
 
-    # bad code: should use super class functionality
-    def getState(self):
-        """
-        get the items state in semi-serialised form
-
-        Returns:
-            the state in semi-serialised form
-        """
-        
-        state = super().getState()
-        state["slotsByItemtype"] = self.slotsByItemtype
-
-        convertedFreeItemSlots = {}
-        for (key, value) in self.freeItemSlots.items():
-            convertedFreeItemSlots[key] = []
-            for value2 in value:
-                convertedFreeItemSlots[key].append(list(value2))
-        state["freeItemSlots"] = convertedFreeItemSlots
-
-        return state
-
-    # bad code: should use super class functionality
-    def setState(self, state):
-        """
-        set state from state in semi-serialised form
-
-        Parameters:
-            state: the state to set
-        """
-
-        super().setState(state)
-        if "slotsByItemtype" in state:
-            self.slotsByItemtype = state["slotsByItemtype"]
-
-        if "freeItemSlots" in state:
-            self.freeItemSlots = {}
-            for (key, value) in state["freeItemSlots"].items():
-                self.freeItemSlots[key] = []
-                for value2 in value:
-                    self.freeItemSlots[key].append(tuple(value2))
-
-
 src.items.addType(TypedStockpileManager)

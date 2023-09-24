@@ -21,7 +21,6 @@ You can use it to loose 100 satiation.
         """
 
         super().__init__(display=src.canvas.displayChars.poisonBush)
-        self.attributesToStore.extend(["charges"])
 
     def apply(self, character):
         """

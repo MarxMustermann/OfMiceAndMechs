@@ -19,8 +19,6 @@ class FunctionTrigger(src.items.Item):
         self.name = "story "
         self.function = None
 
-        self.callbacksToStore.extend(["function"])
-
     def apply(self, character):
         """
         handle a character tryin to use the item

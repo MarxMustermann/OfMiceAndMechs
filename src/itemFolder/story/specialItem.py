@@ -20,6 +20,4 @@ class SpecialItem(src.items.Item):
         self.bolted = False
         self.itemID = None
 
-        self.attributesToStore.append("itemID")
-
 src.items.addType(SpecialItem)

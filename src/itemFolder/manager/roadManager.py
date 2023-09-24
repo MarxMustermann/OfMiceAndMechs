@@ -28,24 +28,6 @@ class RoadManager(src.items.Item):
         self.pathsToCenter = {}
         self.pathsFromCenter = {}
 
-        self.attributesToStore.extend(
-                [
-                    "center",
-                    "connections",
-                    "pathingNodes",
-                ]
-            )
-
-        self.tupleDictsToStore.extend(
-                [
-                    "roadNetwork",
-                    "centerDirection",
-                    "pathsToCenter",
-                    "pathsFromCenter",
-                    "pathingNodes",
-                ]
-            )
-
     def generatePaths(self, character):
         """
         calculate and store paths on the road network

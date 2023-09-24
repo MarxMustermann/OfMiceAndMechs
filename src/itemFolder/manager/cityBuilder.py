@@ -47,29 +47,6 @@ class CityBuilder(src.items.Item):
 
         self.error = {}
 
-        self.attributesToStore.extend(
-                [
-                    "tasks",
-                    "runningTasks",
-                    "error",
-                    "commands",
-                    "error",
-                    "scrapFields",
-                    "resources",
-                ]
-            )
-
-        self.tupleListsToStore.extend(
-                [
-                    "unfinishedRoadTiles",
-                    "usedPlots",
-                    "plotPool",
-                    "reseredPlots",
-                    "roadTiles",
-                    "unusedRoadTiles",
-                ]
-            )
-
         self.applyOptions.extend(
                 [
                     ("showMap", "show map"),

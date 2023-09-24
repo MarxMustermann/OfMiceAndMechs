@@ -90,16 +90,4 @@ a boiler can be heated by a furnace to produce steam. Steam is the basis for ene
 """
         return text
 
-    # bad code: should be replaced with render()
-    def setState(self, state):
-        """
-        set state from semi serilised form
-        """
-
-        super().setState(state)
-
-        if self.isBoiling:
-            self.display = src.canvas.displayChars.boiler_active
-
-
 src.items.addType(Boiler)

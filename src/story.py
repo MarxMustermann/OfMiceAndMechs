@@ -6,7 +6,6 @@ most thing should be abstracted and converted to a game mechanism later
 most of this code is currenty not in use and needs to be reintegrated
 """
 
-import src.saveing
 import src.rooms
 import src.canvas
 import src.cinematics
@@ -118,7 +117,7 @@ def say(text, speaker=None, trigger=None):
     # add message
     showMessage(prefix + '"' + text + '"', trigger=trigger)
 
-class WorldBuildingPhase(src.saveing.Saveable):
+class WorldBuildingPhase():
     """
     Phase for a new world building phase
     """
@@ -137,11 +136,6 @@ class WorldBuildingPhase(src.saveing.Saveable):
         self.name = name
         self.seed = seed
 
-        # register with dummy id
-        self.id = name
-
-        self.attributesToStore.append("name")
-
     def start(self, seed=0, difficulty=None):
         newRoom = src.rooms.DungeonRoom()
         newRoom.addCharacter(src.gamestate.gamestate.mainChar,7,7)
@@ -157,7 +151,7 @@ class WorldBuildingPhase(src.saveing.Saveable):
 #
 #########################################################################
 
-class BasicPhase(src.saveing.Saveable):
+class BasicPhase():
     """
     the base class for the all phases
     """
@@ -171,21 +165,9 @@ class BasicPhase(src.saveing.Saveable):
             name: the name of the phase
             seed: rng seed
         """
-        self.callbacksToStore = []
-        self.objectsToStore = []
-        self.tupleDictsToStore = []
-        self.tupleListsToStore = []
-
-
         super().__init__()
         self.name = name
         self.seed = seed
-
-        # register with dummy id
-        self.id = name
-
-        self.attributesToStore.append("name")
-        self.attributesToStore.append("seed")
 
     def start(self, seed=0, difficulty=None):
         """
@@ -203,6 +185,30 @@ class BasicPhase(src.saveing.Saveable):
         """
 
         pass
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
 #########################################################################
 #
@@ -1321,13 +1327,6 @@ class BackToTheRoots(BasicPhase):
         self.npcCounter = 0
         self.gatherTime = 300
 
-        self.attributesToStore.extend([
-            "startDelay","epochLength","firstEpoch","npcCounter","gatherTime"
-            ])
-        self.tupleListsToStore.extend([
-            "specialItemSlotPositions","citylocations"])
-        self.tupleDictsToStore.extend(["cityIds","cityNPCCounters","scoreTracker"])
-
     def genNPC(self, cityCounter, citylocation, flaskUses=10, spawnArmor=False, spawnWeapon=False):
         self.npcCounter += 1
 
@@ -1378,51 +1377,6 @@ class BackToTheRoots(BasicPhase):
         npc.personality["abortMacrosOnAttack"] = False
         npc.personality["doIdleAction"] = False
         return npc
-
-    def getState(self):
-        state = super().getState()
-
-        #self.leaderQuests = {} # to save
-        #self.leaders = {} # to save
-
-        convertedLeaderMap = []
-        for (key,value) in self.leaders.items():
-            if value:
-                value = value.id
-            convertedLeaderMap.append([list(key),value])
-        state["leaders"] = convertedLeaderMap
-
-        convertedLeaderQuestsMap = []
-        for (key,value) in self.leaderQuests.items():
-            if value:
-                value = value.id
-            convertedLeaderQuestsMap.append([list(key),value])
-        state["leaderQuests"] = convertedLeaderQuestsMap
-
-        return state
-
-    def setState(self,state):
-        super().setState(state)
-
-        if "leaders" in state:
-            self.leaders = {}
-            for entry in state["leaders"]:
-                def setValue(value, key):
-                    self.leaders[key] = value
-
-                newKey = tuple(entry[0])
-                src.saveing.loadingRegistry.callWhenAvailable(entry[1], setValue, newKey)
-                self.leaders[newKey] = None
-
-        if "leaderQuests" in state:
-            self.leaderQuests = {}
-            for entry in state["leaderQuests"]:
-                def setValue(value, key):
-                    self.leaderQuests[key] = value
-
-                newKey = tuple(entry[0])
-                src.saveing.loadingRegistry.callWhenAvailable(entry[1], setValue, newKey)
-                self.leaderQuests[newKey] = None
 
     def start(self, seed=0, difficulty=None):
         """
@@ -7431,47 +7385,6 @@ class Siege(BasicPhase):
         )
 
         self.miniBase = currentTerrain.rooms[0]
-
-        """
-        import json
-        if seed%2==0:
-            with open("states/theftBase1.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        if seed%3==1:
-            with open("states/theftBase2.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        if seed%2==1:
-            with open("states/caseStorage.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        else:
-            with open("states/emptyRoom1.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-            src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        if seed%4:
-            with open("states/emptyRoom2.json","r") as stateFile:
-                room = json.loads(stateFile.read())
-        else:
-            wallRooms = ["states/wallRoom_1.json"]
-            wallRoom = wallRooms[seed%5%len(wallRooms)]
-            with open(wallRoom,"r") as stateFile:
-                room = json.loads(stateFile.read())
-        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        with open("states/miniMech.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        #room = src.rooms.EmptyRoom(1,1,2,2,creator=self)
-        #room.reconfigure(sizeX=seed%12+3,sizeY=(seed+seed%236)%12+3,doorPos=(0,1))
-        #src.gamestate.gamestate.terrain.addRoom(room)
-        #room = src.rooms.EmptyRoom(4,9,-1,0,creator=self)
-        #room.reconfigure(sizeX=14,sizeY=14,doorPos=(13,6))
-        #src.gamestate.gamestate.terrain.addRoom(room)
-        with open("states/globalMacroStorage.json","r") as stateFile:
-            room = json.loads(stateFile.read())
-        src.gamestate.gamestate.terrain.addRoom(src.rooms.getRoomFromState(room,src.gamestate.gamestate.terrain))
-        """
 
         molds = []
         for bigX in range(1, 14):

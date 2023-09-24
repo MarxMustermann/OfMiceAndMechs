@@ -13,12 +13,11 @@ import random
 import time
 
 # load basic internal libs
-import src.saveing
 import src.events
 import config
 
 
-class Item(src.saveing.Saveable):
+class Item():
     """
     This is the base class for ingame items. It is intended to hold the common behaviour of items.
 
@@ -104,34 +103,29 @@ class Item(src.saveing.Saveable):
         # properties for traits
         self.commands = {}
 
-        self.attributesToStore.extend(
-                [
-                    "seed",
-                    "xPosition",
-                    "yPosition",
-                    "zPosition",
-                    "name",
-                    "type",
-                    "walkable",
-                    "bolted",
-                    "description",
-                    "commands",
-                    "isStepOnActive",
-                    "settings",
-                    "charges",
-                ]
-            )
-        self.objectsToStore.extend([
-            "container",
-            ])
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
 
-        self.tupleListsToStore.extend([
-            "commandOptions",
-            ])
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
 
-        self.ignoreAttributes.extend([
-            "listeners",
-            ])
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
     def doStepOnAction(self, character):
         pass
@@ -445,32 +439,6 @@ class Item(src.saveing.Saveable):
                 )
             text += "\n"
         return text
-
-    def getState(self):
-        state = super().getState()
-        convertedListeners = {}
-        if self.listeners:
-            for (key,value) in self.listeners.items():
-                if value:
-                    1/0
-                else:
-                    convertedListeners[key] = value
-        state["listeners"] = convertedListeners
-        return state
-
-    def setState(self,state):
-        super().setState(state)
-
-        if "listeners" in state:
-            convertedListeners = {}
-            if self.listeners:
-                for (key,value) in self.listeners.items():
-                    if value:
-                        1/0
-                    else:
-                        convertedListeners[key] = value
-            self.listeners = convertedListeners
-        return state
 
     def render(self):
         """
@@ -987,13 +955,6 @@ class Item(src.saveing.Saveable):
             # place scrap
             container.addItems([(newItem,pos)])
     
-    def setState(self,state):
-        super().setState(state)
-
-        if self.xPosition and not self.zPosition:
-            self.zPosition = 0
-
-
 commons = [
     "MarkerBean",
     "MetalBars",
@@ -1137,29 +1098,3 @@ rawMaterialLookup = {
     "TypedStockpileManager": ["Case", "MemoryCell", "Connector"],
     "Sword": ["Rod"],
 }
-
-
-def getItemFromState(state):
-    """
-    get item instances from dict state
-
-    Parameters:
-        state: the state to build the item from
-    Returns:
-        the create the item
-    """
-
-    # create blank item
-    item = itemMap[state["type"]]()
-
-    # load state into item
-    item.setState(state)
-
-    # set id
-    if "id" in state:
-        item.id = state["id"]
-
-    # register the item
-    src.saveing.loadingRegistry.register(item)
-
-    return item

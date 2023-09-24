@@ -22,9 +22,6 @@ class Spray(src.items.Item):
         super().__init__(display=src.canvas.displayChars.spray_left_inactive)
         self.name = "spray"
 
-        # set up meta information for saving
-        self.attributesToStore.extend(["direction"])
-
     def render(self):
         """
         set appearance depending on energy supply

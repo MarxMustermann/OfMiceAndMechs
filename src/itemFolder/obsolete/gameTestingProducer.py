@@ -20,8 +20,6 @@ class GameTestingProducer(src.items.Item):
         self.possibleSources = possibleSources
         # self.change_apply_2(force=True)
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer"])
-
     def apply(self, character, resultType=None):
 
         token = None

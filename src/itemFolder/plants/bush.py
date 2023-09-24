@@ -20,8 +20,6 @@ class Bush(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.bush)
 
-        self.attributesToStore.extend(["charges"])
-
     def apply(self, character):
         """
         handle a character trying to use the bush

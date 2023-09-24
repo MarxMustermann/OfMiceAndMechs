@@ -41,8 +41,6 @@ Sheets are also needed as resource to create a blueprint in the blueprinter mach
 
         super().__init__(display=src.canvas.displayChars.sheet)
 
-        self.attributesToStore.extend(["recording", "level"])
-
     def getLongInfo(self):
         """
         returns a longer than normal description text

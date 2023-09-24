@@ -20,8 +20,6 @@ class Bloom(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.bloom)
 
-        self.attributesToStore.extend(["dead"])
-
     def apply(self, character):
         """
         handle a character trying to use this item

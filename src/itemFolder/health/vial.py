@@ -22,9 +22,6 @@ class Vial(src.items.Item):
         self.uses = 0
         self.level = 1
 
-        # set up meta information for saving
-        self.attributesToStore.extend(["uses", "level", "maxUses"])
-
     def apply(self, character):
         """
         handle a character trying to drink from the flask

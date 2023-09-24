@@ -30,8 +30,6 @@ The original command will be outputted to the south.
 The level of the copied command is the minimum level of the input command, sheet and the auto scribe itself.
 """
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "level"])
-
     def apply(self, character):
         """
         handle a character trying touse this item to copy another item

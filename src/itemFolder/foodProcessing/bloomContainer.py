@@ -32,8 +32,6 @@ Activate the bloom container and select the option "unload bloom" to unload the 
         self.maxCharges = 15
         self.level = 1
 
-        self.attributesToStore.extend(["charges", "maxCharges", "level"])
-
     def getLongInfo(self):
         """
         returns a log text description of the item

@@ -13,8 +13,6 @@ class MacroRunner(src.items.Item):
         self.command = None
         self.name = "macro runner"
 
-        self.attributesToStore.extend(["command"])
-
     def apply(self, character):
         super().apply(character)
 

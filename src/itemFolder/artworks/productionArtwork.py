@@ -29,10 +29,6 @@ Prepare for production by placing metal bars to the west/left of this machine.
 Activate the machine to start producing. You will be shown a list of things to produce.
 Select the thing to produce and confirm."""
 
-        self.attributesToStore.extend(
-                ["coolDown", "coolDownTimer", "charges", "godMode"]
-            )
-
     def apply(self, character):
         """
         trigger production of a player selected item

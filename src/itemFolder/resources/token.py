@@ -7,7 +7,6 @@ class Token(src.items.Item):
     """
 
     type = "Token"
-    attributesToStore = []
     name = "token"
     description = """
 A token. Only has value in the eyes of the beholder.
@@ -28,9 +27,5 @@ A token. Only has value in the eyes of the beholder.
 
         self.tokenType = tokenType
         self.payload = payload
-
-        if not self.attributesToStore:
-            self.attributesToStore.extend(super().attributesToStore)
-            self.attributesToStore.extend(["tokenType", "payload"])
 
 src.items.addType(Token)

@@ -27,9 +27,6 @@ class Pile(src.items.Item):
 
         self.name = "pile"
 
-        # set metadata for saving
-        self.attributesToStore.extend(["numContained"])
-
     """
     take from the pile
     """

@@ -22,12 +22,6 @@ class PathingNode(src.items.Item):
         self.walkable = True
         self.nodeName = ""
 
-        self.attributesToStore.extend(
-                [
-                    "nodeName",
-                ]
-            )
-
     def apply(self, character):
         """
         handle a character trying to use this item

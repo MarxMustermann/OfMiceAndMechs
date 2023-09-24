@@ -20,8 +20,6 @@ class SickBloom(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.sickBloom)
 
-        self.attributesToStore.extend(["charges", "dead"])
-
     def apply(self, character):
         """
         handle a character trying to use this item

@@ -26,8 +26,6 @@ class Tree(src.items.Item):
         except:
             self.lastUse = -100000
 
-        self.attributesToStore.extend(["maggot", "maxMaggot", "lastUse"])
-
     def regenerateMaggots(self):
         """
         regenerate maggots to account for passed time

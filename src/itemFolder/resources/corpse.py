@@ -25,7 +25,6 @@ can be processed in a corpse shredder
 
         super().__init__(display=src.canvas.displayChars.corpse)
 
-        self.attributesToStore.extend(["activated", "charges"])
         self.charges = 1000
 
     def getLongInfo(self):

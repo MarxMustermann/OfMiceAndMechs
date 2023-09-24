@@ -17,7 +17,6 @@ import src.rooms
 import src.items
 import src.quests
 import src.canvas
-import src.saveing
 import src.chats
 import src.terrains
 import config.commandChars as commandChars
@@ -2887,7 +2886,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
 # bad code: there is redundant code from the specific submenus that should be put here
 # bad code: there is spcific code from the selection submenu that should NOT be here
-class SubMenu(src.saveing.Saveable):
+class SubMenu():
     """
     The base class for submenus offering selections
     """
@@ -2919,81 +2918,35 @@ class SubMenu(src.saveing.Saveable):
         self.targetParamName = targetParamName
         self.extraDescriptions = {}
         super().__init__()
-        self.attributesToStore.extend(
-            [
-                "state",
-                "selectionIndex",
-                "persistentText",
-                "footerText",
-                "type",
-                "query",
-                "lockOptions",
-                "selection",
-            ]
-        )
-        self.callbacksToStore.extend(["followUp"])
-        self.id = str(random.random())
 
         self.escape = False
 
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
+
     def getQuestMarkersTile(self, character):
         return []
-
-    def setState(self, state):
-        """
-        set internal state from state dictionary
-        
-        Parameters:
-            state: the state to set
-        """
-
-        super().setState(state)
-
-        # load options
-        if "options" in state:
-            if state["options"] is None:
-                self.options = None
-            else:
-                newOptions = collections.OrderedDict()
-                for option in state["options"]:
-                    newOptions[option[0]] = option[1]
-                self.options = newOptions
-        if "niceOptions" in state:
-            if state["niceOptions"] is None:
-                self.niceOptions = None
-            else:
-                newNiceOptions = collections.OrderedDict()
-                for option in state["niceOptions"]:
-                    newNiceOptions[option[0]] = option[1]
-                self.niceOptions = newNiceOptions
-
-    def getState(self):
-        """
-        get state in semi-serialised form
-
-        Returns:
-            the state
-        """
-
-        state = super().getState()
-
-        # store options
-        if self.options is None:
-            serialisedOptions = None
-        else:
-            serialisedOptions = []
-            for k, v in self.options.items():
-                serialisedOptions.append((k, str(v)))
-        state["options"] = serialisedOptions
-        if self.niceOptions is None:
-            serialisedOptions = None
-        else:
-            serialisedOptions = []
-            for k, v in self.niceOptions.items():
-                serialisedOptions.append((k, str(v)))
-        state["niceOptions"] = serialisedOptions
-
-        return state
 
     def setOptions(self, query, options):
         """
@@ -3801,38 +3754,6 @@ class ChatPartnerselection(SubMenu):
         self.type = "ChatPartnerselection"
         self.subMenu = None
         super().__init__()
-
-    def getState(self):
-        """
-        get state in semi serialised form
-
-        Returns:
-            the state
-        """
-
-        state = super().getState()
-        if self.subMenu:
-            state["subMenu"] = self.subMenu.getState()
-        else:
-            state["subMenu"] = None
-
-        return state
-
-    def setState(self, state):
-        """
-        set internal state from state in semi-serialised form
-
-        Parameters:
-            state: the state to set
-        """
-
-        super().setState(state)
-
-        if "subMenu" in state:
-            if state["subMenu"]:
-                self.subMenu = getSubmenuFromState(state["subMenu"])
-            else:
-                self.subMenu = None
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -4681,13 +4602,6 @@ class CreateQuestMenu(SubMenu):
         self.parameterValue = None
         self.activeChar = activeChar
 
-        self.attributesToStore.extend(
-                [ "requiredParams","questParams","questType","stealAllKeys","parameterName","parameterValue"])
-        self.objectsToStore.append("activeChar")
-        self.objectsToStore.append("quest")
-        self.objectsToStore.append("submenu")
-        self.objectListsToStore.append("assignTo")
-
     def handleKey(self, key, noRender=False, character = None):
         # exit submenu
         if key == "esc":
@@ -4807,7 +4721,6 @@ class AdvancedQuestMenu(SubMenu):
         self.questParams = {}
         self.activeChar = activeChar
         super().__init__()
-        self.objectsToStore.append("activeChar")
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -10572,18 +10485,3 @@ subMenuMap = {
     "StaffAsMatrixMenu": StaffAsMatrixMenu,
     "RoomMenu": RoomMenu,
 }
-
-def getSubmenuFromState(state):
-    """
-    load a submenu from a serialised state
-
-    Parameters:
-        state: the state to load from
-    Returns:
-        the submenu
-    """
-
-    subMenu = subMenuMap[state["type"]]()
-    subMenu.setState(state)
-    src.saveing.loadingRegistry.register(subMenu)
-    return subMenu

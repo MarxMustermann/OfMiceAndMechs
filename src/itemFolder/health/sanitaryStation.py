@@ -26,14 +26,6 @@ class SanitaryStation(src.items.Item):
         self.satiationThreshold = 100
         self.frustrationThreshold = 10000
 
-        self.attributesToStore.extend(
-                [
-                    "commands",
-                    "healthThreshold",
-                    "satiationThreshold",
-                ]
-            )
-
     def apply(self, character):
         """
         run commands on an character depending on its health

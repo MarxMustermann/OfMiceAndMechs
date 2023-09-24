@@ -23,8 +23,6 @@ activate the note to read it.
         self.walkable = True
         self.text = ""
 
-        self.attributesToStore.extend(["text"])
-
     def getLongInfo(self):
         """
         return a longer than normal description text

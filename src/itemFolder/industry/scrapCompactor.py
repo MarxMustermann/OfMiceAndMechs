@@ -24,8 +24,6 @@ class ScrapCompactor(src.items.Item):
         self.level = 1
         self.commands = {}
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level","commands"])
-
     def readyToUse(self):
         if not self.container:
             return False

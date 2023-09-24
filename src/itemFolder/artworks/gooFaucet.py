@@ -23,15 +23,6 @@ class GooFaucet(src.items.Item):
         self.balance = 0
         self.character = None
 
-        self.attributesToStore.extend(
-                [
-                    "balance",
-                    "commands",
-                ]
-            )
-
-        self.objectsToStore.append("character")
-
         # set up interaction menu
         self.applyOptions.extend(
                 [

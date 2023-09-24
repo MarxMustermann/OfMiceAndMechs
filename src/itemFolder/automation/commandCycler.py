@@ -16,8 +16,6 @@ class CommandCycler(src.items.Item):
         self.commands = []
         self.commandIndex = 0
 
-        self.attributesToStore.extend(["command","commandIndex"])
-
     def apply(self, character):
         super().apply(character)
 

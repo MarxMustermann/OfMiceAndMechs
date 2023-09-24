@@ -27,7 +27,6 @@ import src.interaction as interaction
 import src.gamestate as gamestate
 import src.events as events
 import src.chats as chats
-import src.saveing as saveing
 import src.canvas as canvas
 import src.logger as logger
 

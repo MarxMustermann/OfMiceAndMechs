@@ -31,9 +31,6 @@ Filling a flask will use up a charge from your goo dispenser.
         self.baseName = self.name
         self.level = 1
 
-        # set up meta information for saving
-        self.attributesToStore.extend(["activated", "charges"])
-
         self.charges = 0
         self.maxCharges = 100
 
@@ -140,15 +137,6 @@ Filling a flask will use up a charge from your goo dispenser.
 
         self.charges += 1
         self.description = self.baseName + " (%s charges)" % (self.charges)
-
-    def setState(self, state):
-        """
-        set state from dict and ensure own description is set
-        """
-
-        super().setState(state)
-
-        self.setDescription()
 
     def getLongInfo(self):
         """

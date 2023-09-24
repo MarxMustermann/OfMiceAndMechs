@@ -8,7 +8,6 @@ import copy
 # import basic internal libs
 import src.items
 import src.quests
-import src.saveing
 import src.events
 import src.canvas
 import src.logger
@@ -20,7 +19,7 @@ import random
 
 # bad code: too many attributes
 # obsolete: lots of old code needs a cleanup
-class Room(src.saveing.Saveable):
+class Room():
     """
     the base class for all rooms
     """
@@ -103,6 +102,30 @@ class Room(src.saveing.Saveable):
         self.itemByCoordinates = {}
 
         self.cachedPathfinder = None
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
     def getItemsByType(self,itemType, needsBolted = False):
         result = []
@@ -655,169 +678,6 @@ class Room(src.saveing.Saveable):
             listenFunction()
 
         self.engineStrength = 250 * self.steamGeneration
-
-    def getState(self):
-        """
-        get semi serialised room state
-
-        Returns:
-            the semi serialised state
-        """
-
-        state = super().getState()
-
-        # get states from lists
-        eventIds = []
-        eventStates = {}
-        for event in self.events:
-            eventIds.append(event.id)
-            eventStates[event.id] = event.getState()
-        itemIds = []
-        itemStates = {}
-        for item in self.itemsOnFloor:
-            itemIds.append(item.id)
-            itemStates[item.id] = item.getState()
-        charIds = []
-        charStates = {}
-        for character in self.characters:
-            charIds.append(character.id)
-            charStates[character.id] = character.getState()
-
-        try:
-            toRemove = None
-            for charId in charIds:
-                if charId == src.gamestate.gamestate.mainChar.id:
-                    toRemove = charId
-            if toRemove:
-                charIds.remove(toRemove)
-        except:
-            pass
-
-        state["walkingSpace"] = list(self.walkingSpace)
-        state["inputSlots"] = []
-        for inputSlot in self.inputSlots:
-            state["inputSlots"].append([list(inputSlot[0]),inputSlot[1],inputSlot[2]])
-        state["outputSlots"] = []
-        for outputSlot in self.outputSlots:
-            state["outputSlots"].append([list(outputSlot[0]),outputSlot[1],outputSlot[2]])
-        state["storageSlots"] = []
-        for storageSlot in self.storageSlots:
-            state["storageSlots"].append([list(storageSlot[0]),storageSlot[1],storageSlot[2]])
-        state["buildSites"] = []
-        for buildSite in self.buildSites:
-            state["buildSites"].append([list(buildSite[0]),buildSite[1]])
-        state["sources"] = []
-        for source in self.sources:
-            state["sources"].append([list(source[0]),source[1]])
-
-        # store the substates
-        state["objType"] = self.objType
-
-        state["walkingAccess"] = self.walkingAccess
-
-        state["eventIds"] = eventIds
-        state["eventStates"] = eventStates
-        state["itemIds"] = itemIds
-        state["itemStates"] = itemStates
-        state["characterIds"] = charIds
-        state["characterStates"] = charStates
-
-        convertedListeners = {}
-        if self.listeners:
-            for (key,value) in self.listeners.items():
-                if value:
-                    1/0
-                else:
-                    convertedListeners[key] = value
-        state["listeners"] = convertedListeners
-
-        return state
-
-    # bad code: incomplete
-    def setState(self, state):
-        """
-        construct state from semi serialised form
-        
-        Parameters:
-            state: the semi serialised state
-        """
-
-        if "timeIndex" in state:
-            self.timeIndex = state["timeIndex"]
-
-        # move room to correct position
-        xPosition = None
-        yPosition = None
-        if "xPosition" in state and "yPosition" not in state:
-            xPosition = state["xPosition"]
-            yPosition = self.yPosition
-        if "xPosition" in state and "yPosition" not in state:
-            xPosition = self.xPosition
-            yPosition = state["yPosition"]
-        if "xPosition" in state and "yPosition" in state:
-            xPosition = state["xPosition"]
-            yPosition = state["yPosition"]
-
-        if not xPosition is None and not yPosition is None:
-            self.terrain.teleportRoom(self, (xPosition, yPosition))
-
-        super().setState(state)
-
-        self.walkingSpace = set()
-        for walkingSpace in state["walkingSpace"]:
-            self.walkingSpace.add(tuple(walkingSpace))
-        self.inputSlots = []
-        for inputSlot in state["inputSlots"]:
-            self.inputSlots.append((tuple(inputSlot[0]),inputSlot[1],inputSlot[2]))
-        self.outputSlots = []
-        for outputSlot in state["outputSlots"]:
-            self.outputSlots.append((tuple(outputSlot[0]),outputSlot[1],outputSlot[2]))
-        self.storageSlots = []
-        for storageSlot in state["storageSlots"]:
-            self.storageSlots.append((tuple(storageSlot[0]),storageSlot[1],storageSlot[2]))
-        self.buildSites = []
-        for buildSites in state["buildSites"]:
-            self.buildSites.append((tuple(buildSites[0]),buildSites[1]))
-        self.sources = []
-        for sources in state["sources"]:
-            self.sources.append((tuple(sources[0]),sources[1]))
-
-
-        self.walkingAccess = []
-        for item in state["walkingAccess"]:
-            self.walkingAccess.append((item[0], item[1]))
-
-        if "itemIds" in state:
-            for item in self.itemsOnFloor[:]:
-                self.removeItem(item)
-            for itemId in state["itemIds"]:
-                itemState = state["itemStates"][itemId]
-                item = src.items.getItemFromState(itemState)
-                self.addItem(item, item.getPosition())
-
-        if "eventIds" in state:
-            for eventId in state["eventIds"]:
-                eventState = state["eventStates"][eventId]
-                event = src.events.getEventFromState(eventState)
-                self.addEvent(event)
-
-        if "characterIds" in state:
-            for charId in state["characterIds"]:
-                charState = state["characterStates"][charId]
-                if "xPosition" not in charState or "yPosition" not in charState:
-                    continue
-                char = src.characters.getCharacterFromState(charState)
-                self.characters.append(char)
-
-        if "listeners" in state:
-            convertedListeners = {}
-            if self.listeners:
-                for (key,value) in self.listeners.items():
-                    if value:
-                        1/0
-                    else:
-                        convertedListeners[key] = value
-            self.listeners = convertedListeners
 
     def getCharactersOnPosition(self,position):
         out = []
@@ -2158,8 +2018,6 @@ XXX
 
         self.name = "room"
 
-        self.attributesToStore.extend(["bio"])
-
         self.staff = []
         self.duties = ["resource fetching","hauling","clearing","scratch checking","resource gathering","guarding","painting","machine placing"]
 
@@ -2287,24 +2145,6 @@ XXX
             if item.type == "Door" or item.type == "Chute":
                 self.walkingAccess.append((item.xPosition, item.yPosition))
                 self.walkingSpace.add((item.xPosition,item.yPosition,0))
-
-    def setState(self, state):
-        """
-        load state from semi-serialised state
-        also ensure the walking access is loaded
-
-        Parameters:
-            state: the state to load
-        """
-
-        super().setState(state)
-
-        try:
-            self.walkingAccess = []
-            for access in state["walkingAccess"]:
-                self.walkingAccess.append((access[0], access[1]))
-        except:
-            self.walkingAccess = []
 
 """
 class GrowRoom(EmptyRoom):
@@ -2512,8 +2352,6 @@ class ComandCenter(EmptyRoom):
         self.walkingSpace = set()
         self.objType = "ComandCenter"
 
-        self.objectListsToStore.append("rooms")
-
 class TeleporterRoom(EmptyRoom):
     def __init__(
         self,
@@ -2579,7 +2417,6 @@ class TrapRoom(EmptyRoom):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
         self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "/\\")
 
-        self.attributesToStore.extend(["faction","chargeStrength","maxElectricalCharges","electricalCharges"])
         self.staff = []
         self.duties = ["clearing","trap setting","guarding","painting"]
 
@@ -3082,8 +2919,6 @@ XXXXXXXXXXXXX
         """
 
         self.addItems(itemList)
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
 
 """
@@ -3335,21 +3170,3 @@ roomMap = {
     "WorkshopRoom": WorkshopRoom,
     "ComandCenter": ComandCenter,
 }
-
-
-def getRoomFromState(state, terrain=None):
-    """
-    get item instances from semiserialised state
-
-    Parameters:
-        state: the state to set
-        terrain: a terrain to place the room on
-    """
-
-    room = roomMap[state["objType"]](
-        state["xPosition"], state["yPosition"], state["offsetX"], state["offsetY"]
-    )
-    room.terrain = terrain
-    room.setState(state)
-    src.saveing.loadingRegistry.register(room)
-    return room

@@ -15,11 +15,6 @@ class GoHome(src.quests.MetaQuestSequence):
         self.cityLocation = None
         self.reason = reason
 
-        self.attributesToStore.extend([
-            "hasListener","addedSubQuests","paranoid"])
-
-        self.tuplesToStore.append("cityLocation")
-
     def generateTextDescription(self):
         reason = ""
         if self.reason:

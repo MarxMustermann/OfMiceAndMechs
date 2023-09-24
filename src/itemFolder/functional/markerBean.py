@@ -24,9 +24,6 @@ A marker been. It can be used to mark things.
 use the marker bean to activate it
 """
 
-        # set up meta information for saving
-        self.attributesToStore.extend(["activated"])
-
     def render(self):
         """
         render the marker as animation if active

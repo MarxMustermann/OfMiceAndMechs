@@ -23,8 +23,6 @@ class Scraper(src.items.Item):
 Place an item to the west and activate the scrapper to shred an item.
 """
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges"])
-
     # bug: should destroy the item instead of placing scrap
     def apply(self, character):
         """

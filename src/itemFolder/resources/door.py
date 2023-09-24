@@ -22,13 +22,6 @@ class Door(src.items.Item):
         super().__init__()
         self.bio = bio
 
-        # set metadata for saving
-        self.attributesToStore.extend(
-                [
-                    "bio",
-                ]
-            )
-
     def getConfigurationOptions(self, character):
         """
         register the configuration options with superclass

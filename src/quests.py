@@ -10,7 +10,6 @@ import time
 
 # import basic internal libs
 import src.items
-import src.saveing
 import src.chats
 import src.events
 import src.interaction
@@ -24,7 +23,7 @@ mainChar = None
 """
 the base class for all quests
 """
-class Quest(src.saveing.Saveable):
+class Quest():
     type = "Quest"
     hasParams = False
 
@@ -59,20 +58,6 @@ class Quest(src.saveing.Saveable):
         self.autoSolve = False
         self.selfAssigned = False
 
-        # set up saving
-        # bad code: extend would be better
-        self.attributesToStore.append("type")
-        self.attributesToStore.append("active")
-        self.attributesToStore.append("completed")
-        self.attributesToStore.append("reputationReward")
-        self.attributesToStore.append("lifetime")
-        self.attributesToStore.append("description")
-        self.attributesToStore.extend(["dstX", "dstY"])
-        self.callbacksToStore.append("endTrigger")
-        self.objectsToStore.append("character")
-        self.objectsToStore.append("target")
-        self.objectsToStore.append("lifetimeEvent")
-
         self.lifetime = lifetime
         self.lifetimeEvent = None
         self.startTick = src.gamestate.gamestate.tick
@@ -82,6 +67,54 @@ class Quest(src.saveing.Saveable):
         self.reroll()
 
         self.shortCode = "?"
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
     def generateTextDescription(self):
         return "missing description for "+str(self)
@@ -530,22 +563,6 @@ class Quest(src.saveing.Saveable):
             self.lifetimeEvent = None
         self.changed()
 
-    """
-    get the current state
-    """
-
-    def getState(self):
-        state = super().getState()
-        if self.endTrigger:
-            if not isinstance(self.endTrigger, dict):
-                state["endTrigger"] = str(self.endTrigger)
-            else:
-                state["endTrigger"] = {
-                    "container": self.endTrigger["container"].id,
-                    "method": self.endTrigger["method"],
-                }
-        return state
-
     def getSolvingCommandString(self,character,dryRun=True):
         return None
 
@@ -581,13 +598,6 @@ class MetaQuestSequence(Quest):
         # listen to subquests
         if len(self.subQuests):
             self.startWatching(self.subQuests[0], self.recalculate)
-
-        # set meta information for saving
-        self.attributesToStore.append("metaDescription")
-        while "dstX" in self.attributesToStore:
-            self.attributesToStore.remove("dstX")
-        while "dstY" in self.attributesToStore:
-            self.attributesToStore.remove("dstY")
 
         # save state and register
         self.type = "MetaQuestSequence"
@@ -662,47 +672,6 @@ class MetaQuestSequence(Quest):
         for quest in self.subQuests:
             quest.fail()
         self.subQuests = []
-
-    """
-    get state as dict
-    """
-
-    def getState(self):
-        state = super().getState()
-
-        # store sub quests
-        state["subQuests"] = {}
-        state["subQuests"]["ids"] = []
-        state["subQuests"]["states"] = {}
-        for quest in self.subQuests:
-            if quest:
-                state["subQuests"]["ids"].append(quest.id)
-                state["subQuests"]["states"][quest.id] = quest.getState()
-
-        return state
-
-    """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        # load sub quests
-        if "subQuests" in state:
-            # load static quest list
-            if "ids" in state["subQuests"]:
-                self.subQuests = []
-                for thingId in state["subQuests"]["ids"]:
-                    # create and add quest
-                    thingState = state["subQuests"]["states"][thingId]
-                    thing = getQuestFromState(thingState)
-                    self.subQuests.append(thing)
-                    self.startWatching(self.subQuests[-1], self.recalculate)
-
-        # listen to subquests
-        if len(self.subQuests):
-            self.startWatching(self.subQuests[0], self.recalculate)
 
     """
     get target position from first subquest
@@ -1624,14 +1593,6 @@ class delMetaQuestParralel(Quest):
         for quest in self.subQuests:
             self.startWatching(quest, self.recalculate)
 
-        # set metadata for saving
-        self.attributesToStore.append("metaDescription")
-        while "dstX" in self.attributesToStore:
-            self.attributesToStore.remove("dstX")
-        while "dstY" in self.attributesToStore:
-            self.attributesToStore.remove("dstY")
-        self.objectsToStore.append("lastActive")
-
         # store initial state and register
         self.type = "MetaQuestParralel"
 
@@ -1644,70 +1605,6 @@ class delMetaQuestParralel(Quest):
         if self.subQuests:
             return self.subQuests[0].getActiveQuests()+[self]
         return [self]
-
-    """
-    get state as dict
-    """
-
-    def getState(self):
-        state = super().getState()
-
-        # store subquests
-        state["subQuests"] = {}
-        state["subQuests"]["ids"] = []
-        state["subQuests"]["states"] = {}
-        for quest in self.subQuests:
-            state["subQuests"]["ids"].append(quest.id)
-            state["subQuests"]["states"][quest.id] = quest.getState()
-
-        return state
-
-    """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        # load quests
-        if "subQuests" in state:
-
-            # load static quest list
-            if "ids" in state["subQuests"]:
-                # remove old quests
-                for quest in self.subQuests[:]:
-                    quest.deactivate()
-                    quest.completed = False
-                    self.subQuests.remove(quest)
-
-                # load quest
-                for thingId in state["subQuests"]["ids"]:
-                    # create and add quest
-                    thingState = state["subQuests"]["states"][thingId]
-                    thing = getQuestFromState(thingState)
-                    self.subQuests.append(thing)
-                    self.startWatching(self.subQuests[-1], self.recalculate)
-
-            # update changed quests
-            if "changed" in state["subQuests"]:
-                for thing in self.quests:
-                    if thing.id in state["subQuests"]["states"]:
-                        thing.setState(state["subQuests"]["states"][thing.id])
-
-            # remove quests
-            if "removed" in state["subQuests"]:
-                for thing in self.quests:
-                    if thing.id in state["subQuests"]["removed"]:
-                        self.quests.remove(thing)
-
-            # add new quests
-            if "new" in state["subQuests"]:
-                for thingId in state["subQuests"]["new"]:
-                    thingState = state["subQuests"]["states"][thingId]
-                    thing = getQuestFromState(thingState)
-                    thing.setState(thingState)
-                    self.subQuests.append(thing)
-                    self.startWatching(self.subQuests[-1], self.recalculate)
 
     """
     forward position from last active quest
@@ -1989,10 +1886,6 @@ class delNaiveMoveQuest(Quest):
         )
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
 
-        # set metadata for saving
-        self.attributesToStore.extend(["description", "sloppy"])
-        self.objectsToStore.append("room")
-
         # save initial state and register
         self.type = "NaiveMoveQuest"
 
@@ -2066,27 +1959,6 @@ class delNaiveMoveQuest(Quest):
         super().assignToCharacter(character)
         self.startWatching(character, self.recalculate)
 
-    """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        # set character
-        if "character" in state and state["character"]:
-            """
-            set value
-            """
-
-            def watchCharacter(character):
-                self.startWatching(character, self.recalculate)
-
-            src.saveing.loadingRegistry.callWhenAvailable(
-                state["character"], watchCharacter
-            )
-
-
 """
 quest to enter a room. It assumes nothing goes wrong. 
 You probably want to use EnterRoomQuestMeta instead
@@ -2115,13 +1987,8 @@ class delNaiveEnterRoomQuest(Quest):
         # set door as target
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
 
-        self.objectsToStore.append("room")
-        self.attributesToStore.extend(["dstX", "dstY", "description"])
-
         # save initial state and register
         self.type = "NaiveEnterRoomQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
         if room:
             self.description = (
@@ -2182,23 +2049,6 @@ class delNaiveEnterRoomQuest(Quest):
         if self.character.room == self.room:
             self.postHandler()
 
-    def setState(self, state):
-        super().setState(state)
-
-        # set character
-        if "character" in state and state["character"]:
-            """
-            set value
-            """
-
-            def watchCharacter(character):
-                self.startWatching(character, self.recalculate)
-
-            src.saveing.loadingRegistry.callWhenAvailable(
-                state["character"], watchCharacter
-            )
-
-
 """
 The naive pickup quest. It assumes nothing goes wrong. 
 You probably want to use PickupQuest instead
@@ -2209,7 +2059,6 @@ class delNaivePickupQuest(Quest):
     """
     straightforward state initialization
     """
-    objectsToStore = []
 
     def __init__(
         self, toPickup=None, followUp=None, startCinematics=None, creator=None
@@ -2225,11 +2074,6 @@ class delNaivePickupQuest(Quest):
             self.dstX = 0
             self.dstY = 0
         self.description = "naive pickup"
-
-        # set metadata for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("toPickup")
 
         # save initial state and register
         self.type = "NaivePickupQuest"
@@ -2266,25 +2110,6 @@ class delNaivePickupQuest(Quest):
         self.toPickup.pickUp(character)
         return True
 
-    """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        if "toPickup" in state and state["toPickup"]:
-            """
-            set value
-            """
-
-            def watchThing(thing):
-                self.startWatching(thing, self.recalculate)
-                self.startWatching(thing, self.triggerCompletionCheck)
-
-            src.saveing.loadingRegistry.callWhenAvailable(state["toPickup"], watchThing)
-
-
 """
 The naive quest to get a quest from somebody. It assumes nothing goes wrong. 
 You probably want to use GetQuest instead
@@ -2309,10 +2134,6 @@ class delNaiveGetQuest(Quest):
         self.assign = assign
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
         self.description = "naive get quest"
-
-        # set metadata for saving
-        self.objectsToStore.append("questDispenser")
-        self.attributesToStore.append("assign")
 
         # save initial state and register
         self.type = "NaiveGetQuest"
@@ -2358,7 +2179,6 @@ class delNaiveGetReward(Quest):
     """
     straightforward state initialization
     """
-    objectsToStore = []
 
     def __init__(self, quest=None, followUp=None, startCinematics=None, creator=None):
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
@@ -2366,15 +2186,8 @@ class delNaiveGetReward(Quest):
         self.description = "naive get reward"
         self.done = False
 
-        # set metadata for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("quest")
-
         # save initial state and register
         self.type = "NaiveGetReward"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check for a done flag
@@ -2424,8 +2237,6 @@ class delNaiveMurderQuest(Quest):
 
         # save initial state and register
         self.type = "NaiveMurderQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
         self.startWatching(self.toKill,self.triggerCompletionCheck, "died")
 
@@ -2467,8 +2278,6 @@ class delNaiveKnockOutQuest(Quest):
 
         # save initial state and register
         self.type = "NaiveKnockOutQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check whether target is dead
@@ -2507,8 +2316,6 @@ class delNaiveWakeUpQuest(Quest):
 
         # save initial state and register
         self.type = "NaiveWakeUpQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check whether target is dead
@@ -2557,14 +2364,8 @@ class delNaiveActivateQuest(Quest):
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
         self.activated = False
 
-        # set metadata for saving
-        self.objectsToStore.append("toActivate")
-        self.attributesToStore.append("description")
-
         # save initial state and register
         self.type = "NaiveActivateQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
         if self.toActivate:
             self.description = "naive activate " + str(self.toActivate.name)
@@ -2603,17 +2404,6 @@ class delNaiveActivateQuest(Quest):
                 self.postHandler()
 
     """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        # add listener
-        if self.active and self.character:
-            self.startWatching(self.character,self.registerActivation, "activate")
-
-    """
     activate the target
     bad code: activate event should be sent from character
     """
@@ -2635,7 +2425,6 @@ class delNaiveDropQuest(Quest):
     """
     straightforward state initialization
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -2658,16 +2447,8 @@ class delNaiveDropQuest(Quest):
         self.description = "naive drop"
         self.dropped = False
 
-        # set metadata for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("toDrop")
-            self.objectsToStore.append("room")
-
         # save initial state and register
         self.type = "NaiveDropQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check whether item was dropped
@@ -2728,8 +2509,6 @@ class delNaiveDelegateQuest(Quest):
 
         # save initial state and register
         self.type = "NaiveDelegateQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check if the quest has a character assigned
@@ -2797,8 +2576,6 @@ class delWaitForDeactivationQuest(Quest):
 
         # save initial state and register
         self.type = "WaitForDeactivationQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check if item is inactive
@@ -2834,8 +2611,6 @@ class delWaitForQuestCompletion(Quest):
 
         # save initial state and register
         self.type = "WaitForQuestCompletion"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check if the quest was completed
@@ -2876,8 +2651,6 @@ class delDrinkQuest(Quest):
 
         # save initial state and register
         self.type = "DrinkQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     assign to character and listen to character
@@ -2912,17 +2685,6 @@ class delDrinkQuest(Quest):
 
         super().triggerCompletionCheck()
 
-    """
-    start watching
-    """
-
-    def setState(self, state):
-        super().setState(state)
-        if state["character"]:
-            if self.character:
-                self.startWatching(self.character, self.recalculate)
-
-
 """
 ensure own survival
 """
@@ -2941,8 +2703,6 @@ class delSurviveQuest(Quest):
 
         # save initial state and register
         self.type = "SurviveQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     assign to character and listen to the character
@@ -3010,7 +2770,6 @@ class delEnterRoomQuestMeta(MetaQuestSequence):
     """
     basic state initialization
     """
-    objectsToStore = []
 
     def __init__(self, room=None, followUp=None, startCinematics=None, creator=None):
         super().__init__([], creator=creator)
@@ -3021,16 +2780,8 @@ class delEnterRoomQuestMeta(MetaQuestSequence):
         self.metaDescription = "enterroom Meta"
         self.leaveRoomQuest = None
 
-        # set metadata for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("room")
-            self.objectsToStore.append("leaveRoomQuest")
-
         # save initial state and register
         self.type = "EnterRoomQuestMeta"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     add quest to leave room if needed
@@ -3070,24 +2821,6 @@ class delEnterRoomQuestMeta(MetaQuestSequence):
         self.startWatching(character, self.recalculate)
         super().assignToCharacter(character)
 
-    """
-    """
-
-    def setState(self, state):
-        super().setState(state)
-        if "character" in state and state["character"]:
-            """
-            set value
-            """
-
-            def watchCharacter(character):
-                self.startWatching(character, self.recalculate)
-
-            src.saveing.loadingRegistry.callWhenAvailable(
-                state["character"], watchCharacter
-            )
-
-
 """
 move to a position
 """
@@ -3120,11 +2853,6 @@ class delMoveQuestMeta(MetaQuestSequence):
         for quest in reversed(questList):
             self.addQuest(quest)
         self.metaDescription = "move meta"
-
-        # set metadata for saving
-        self.attributesToStore.append("sloppy")
-        self.objectsToStore.append("room")
-        self.objectsToStore.extend(["enterRoomQuest", "leaveRoomQuest"])
 
         # save initial state and register
         self.type = "MoveQuestMeta"
@@ -3173,26 +2901,6 @@ class delMoveQuestMeta(MetaQuestSequence):
         self.startWatching(character, self.recalculate)
         super().assignToCharacter(character)
 
-    """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        if "character" in state and state["character"]:
-            """
-            set value
-            """
-
-            def watchCharacter(character):
-                self.startWatching(character, self.recalculate)
-
-            src.saveing.loadingRegistry.callWhenAvailable(
-                state["character"], watchCharacter
-            )
-
-
 """
 drop a item somewhere
 """
@@ -3230,16 +2938,8 @@ class delDropQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "drop Meta"
 
-        # set metadata for saving
-        self.objectsToStore.append("toDrop")
-        self.objectsToStore.append("moveQuest")
-        self.objectsToStore.append("room")
-        self.attributesToStore.extend(["xPosition", "yPosition"])
-
         # save initial state and register
         self.type = "DropQuestMeta"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     re-add the movement quest if neccessary
@@ -3314,11 +3014,6 @@ class delPickupQuestMeta(MetaQuestSequence):
         for quest in reversed(questList):
             self.addQuest(quest)
         self.metaDescription = "pickup Meta"
-
-        # set metadata for saving
-        self.attributesToStore.append("sloppy")
-        self.objectsToStore.append("toPickup")
-        self.objectsToStore.append("moveQuest")
 
         # save initial state and register
         self.type = "PickupQuestMeta"
@@ -3401,26 +3096,6 @@ class delPickupQuestMeta(MetaQuestSequence):
         self.startWatching(character, self.recalculate)
         super().assignToCharacter(character)
 
-    """
-    set state as dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        if "character" in state and state["character"]:
-            """
-            set value
-            """
-
-            def watchCharacter(character):
-                self.startWatching(character, self.recalculate)
-
-            src.saveing.loadingRegistry.callWhenAvailable(
-                state["character"], watchCharacter
-            )
-
-
 """
 activate an item
 """
@@ -3459,15 +3134,8 @@ class delActivateQuestMeta(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "activate Quest"
 
-        # set metadata for saving
-        self.attributesToStore.append("sloppy")
-        self.objectsToStore.append("moveQuest")
-        self.objectsToStore.append("toActivate")
-
         # save initial state and register
         self.type = "ActivateQuestMeta"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     re-add the movement quest if neccessary
@@ -3545,16 +3213,6 @@ class delActivateQuestMeta(MetaQuestSequence):
         self.startWatching(self.character, self.recalculate)
         super().activate()
 
-    """
-    set state from dictionary
-    """
-
-    def setState(self, state):
-        super().setState(state)
-        if self.active:
-            self.startWatching(self.character, self.recalculate)
-
-
 """
 quest to refill the goo flask
 """
@@ -3575,8 +3233,6 @@ class delRefillDrinkQuest(delActivateQuestMeta):
 
         # save initial state and register
         self.type = "RefillDrinkQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check whether the character has a filled goo flask
@@ -3612,8 +3268,6 @@ class delCollectQuestMeta(MetaQuestSequence):
 
         # save initial state and register
         self.type = "CollectQuestMeta"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     assign to character and add the quest to fetch from a pile
@@ -3665,7 +3319,6 @@ class delGetQuest(MetaQuestSequence):
     """
     generate quests to move to the quest dispenser and get the quest
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -3694,11 +3347,6 @@ class delGetQuest(MetaQuestSequence):
         for quest in reversed(questList):
             self.addQuest(quest)
         self.metaDescription = "get Quest"
-
-        # set metainformation for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("questDispenser")
 
         # save initial state and register
         self.type = "GetQuest"
@@ -3768,14 +3416,8 @@ class delGetReward(MetaQuestSequence):
 
         self.metaDescription = "get Reward"
 
-        # set metainformation for saving
-        self.objectsToStore.append("questDispenser")
-        self.attributesToStore.append("addedRewardChat")
-
         # save initial state and register
         self.type = "GetReward"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     assign to character and spawn a chat option to collect reward
@@ -3889,8 +3531,6 @@ class delMurderQuest(MetaQuestSequence):
 
         # save initial state and register
         self.type = "MurderQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     adjust movement to follow target
@@ -3962,8 +3602,6 @@ class delKnockOutQuest(MetaQuestSequence):
 
         # save initial state and register
         self.type = "KnockOutQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     adjust movement to follow target
@@ -4034,8 +3672,6 @@ class delWakeUpQuest(MetaQuestSequence):
 
         # save initial state and register
         self.type = "WakeUpQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     adjust movement to follow target
@@ -4091,8 +3727,6 @@ class delFillPocketsQuest(MetaQuestSequence):
 
         # save initial state and register
         self.type = "FillPocketsQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     add collect quest till inventory is full
@@ -4138,7 +3772,6 @@ quest to leave the room
 
 
 class delLeaveRoomQuest(Quest):
-    objectsToStore = []
     def __init__(self, room=None, followUp=None, startCinematics=None, creator=None):
         self.room = room
         self.description = "please leave the room."
@@ -4151,14 +3784,8 @@ class delLeaveRoomQuest(Quest):
             self.dstY = 0
         super().__init__(followUp, startCinematics=startCinematics, creator=creator)
 
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("room")
-
         # save initial state and register
         self.type = "LeaveRoomQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     move to door and step out of the room
@@ -4248,12 +3875,9 @@ class delExamineQuest(Quest):
         self.description = "please examine your environment"
         self.examinedItems = []
         super().__init__(startCinematics=startCinematics, creator=creator)
-        self.attributesToStore.append("completionThreshold")
 
         # save initial state and register
         self.type = "ExamineQuest"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     check if some items were observed
@@ -4287,21 +3911,6 @@ class delExamineQuest(Quest):
 
         self.examinedItems.append(itemType)
         self.triggerCompletionCheck()
-
-    """
-    set up listener
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        # smooth over impossible state
-        if not self.active:
-            return
-        if not self.character:
-            return
-
-        self.startWatching(self.character,self.registerExaminination, "examine")
 
     def solver(self, character):
         # bad code: only pretends to solve the quest
@@ -4398,8 +4007,6 @@ class delFetchFurniture(delMetaQuestParralel):
 
         # save initial state and register
         self.type = "FetchFurniture"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
 
 """
@@ -4452,8 +4059,6 @@ class delPlaceFurniture(delMetaQuestParralel):
 
         # save initial state and register
         self.type = "PlaceFurniture"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
 
 """
@@ -4492,8 +4097,6 @@ class delConstructRoom(delMetaQuestParralel):
 
         # save initial state and register
         self.type = "ConstructRoom"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
 
     """
     add quests to fetch and place furniture
@@ -4552,7 +4155,6 @@ class delTransportQuest(MetaQuestSequence):
     """
     generate quest for picking up the item
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -4574,11 +4176,6 @@ class delTransportQuest(MetaQuestSequence):
             self.addQuest(quest)
         self.metaDescription = "transport"
 
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("toTransport")
-
         # save initial state and register
         self.type = "TransportQuest"
 
@@ -4599,43 +4196,6 @@ class delTransportQuest(MetaQuestSequence):
                 creator=self,
             )
         )
-
-    """
-    set internal state from dictionary
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        self.dropOff = []
-        self.dropOff.append(None)
-        self.dropOff.append(state["dropOff"][1])
-        self.dropOff.append(state["dropOff"][2])
-
-        """
-        set value
-        """
-
-        def addRoom(room):
-            self.dropOff[0] = room
-
-        src.saveing.loadingRegistry.callWhenAvailable(state["dropOff"][0], addRoom)
-
-    """
-    get state as dictionary
-    """
-
-    def getState(self):
-        state = super().getState()
-
-        if self.dropOff and self.dropOff[0]:
-            state["dropOff"] = []
-            state["dropOff"].append(self.dropOff[0].id)
-            state["dropOff"].append(self.dropOff[1])
-            state["dropOff"].append(self.dropOff[2])
-
-        return state
-
 
 """
 move items from permanent storage to accesible storage
@@ -4688,9 +4248,6 @@ class delStoreCargo(MetaQuestSequence):
 
         # save initial state and register
         self.type = "StoreCargo"
-        self.initialState = self.getState()
-        src.saveing.loadingRegistry.register(self)
-
 
 """
 move items to accessible storage
@@ -4855,7 +4412,6 @@ class delKeepFurnaceFiredMeta(MetaQuestSequence):
     """
     basic state initialization
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -4879,10 +4435,6 @@ class delKeepFurnaceFiredMeta(MetaQuestSequence):
             failTrigger=failTrigger,
         )
         self.metaDescription = "KeepFurnaceFiredMeta"
-
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("furnace")
 
         # listen to furnace
         self.startWatching(self.furnace, self.recalculate)
@@ -4941,7 +4493,6 @@ class delFireFurnaceMeta(MetaQuestSequence):
     """
     state initialization
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -4957,11 +4508,6 @@ class delFireFurnaceMeta(MetaQuestSequence):
         self.furnace = furnace
         super().__init__([], creator=creator)
         self.metaDescription = "FireFurnaceMeta"
-
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("furnace")
 
         # save initial state and register
         self.type = "FireFurnaceMeta"
@@ -5035,23 +4581,6 @@ class delFireFurnaceMeta(MetaQuestSequence):
         super().recalculate()
 
     """
-    set internal state from dictionary
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        if "furnace" in state and state["furnace"]:
-            """
-            set value
-            """
-
-            def watch(thing):
-                self.startWatching(thing, self.triggerCompletionCheck)
-
-            src.saveing.loadingRegistry.callWhenAvailable(state["furnace"], watch)
-
-    """
     assign to character and listen to character
     """
 
@@ -5082,7 +4611,6 @@ class delFillGrowthTankMeta(MetaQuestSequence):
     """
     state initialization
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -5098,11 +4626,6 @@ class delFillGrowthTankMeta(MetaQuestSequence):
         self.growthTank = growthTank
         super().__init__([], creator=creator)
         self.metaDescription = "FillGrowthTankMeta"
-
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("growthTank")
 
         # save initial state and register
         self.type = "FillGrowthTankMeta"
@@ -5148,23 +4671,6 @@ class delFillGrowthTankMeta(MetaQuestSequence):
         super().recalculate()
 
     """
-    set internal state from dictionary
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        if "growthTank" in state and state["growthTank"]:
-            """
-            set value
-            """
-
-            def watch(thing):
-                self.startWatching(thing, self.triggerCompletionCheck)
-
-            src.saveing.loadingRegistry.callWhenAvailable(state["growthTank"], watch)
-
-    """
     assign to character and listen to character
     """
 
@@ -5201,7 +4707,6 @@ class delHopperDuty(MetaQuestSequence):
     """
     straightforward state initialization
     """
-    objectsToStore = []
 
     def __init__(
         self,
@@ -5225,14 +4730,6 @@ class delHopperDuty(MetaQuestSequence):
         self.actualQuest = None
         self.rewardQuest = None
         self.waitingRoom = waitingRoom
-
-        # set meta information for saving
-        if not self.objectsToStore:
-            self.objectsToStore.extend(super().objectsToStore)
-            self.objectsToStore.append("actualQuest")
-            self.objectsToStore.append("rewardQuest")
-            self.objectsToStore.append("getQuest")
-            self.objectsToStore.append("waitingRoom")
 
         # save initial state and register
         self.type = "HopperDuty"
@@ -5363,15 +4860,10 @@ class delServe(delMetaQuestParralel):
     state initialization
     """
     def __init__(self, superior=None, creator=None):
-        self.objectsToStore = []
         questList = []
         self.superior = superior
         super().__init__(questList, creator=creator)
         self.metaDescription = "serve"
-
-
-        # set meta information for saving
-        self.objectsToStore.append("superior")
 
         # save initial state and register
         self.type = "Serve"
@@ -5398,9 +4890,6 @@ class delServe(delMetaQuestParralel):
             character.runCommandString(".gg.")
             return
         super().solver(character)
-
-    def setState(self,state):
-        super().setState(state)
 
 class delDeliverSpecialItem(Quest):
     def __init__(self, description="deliverSpecialItem", creator=None):
@@ -5547,9 +5036,6 @@ class delGrabSpecialItem(Quest):
         self.type = "GrabSpecialItem"
         self.itemID = None
 
-        self.attributesToStore.extend([
-            "itemID","hasListener"])
-
     def triggerCompletionCheck(self, character=None):
         if not character:
             return
@@ -5624,10 +5110,6 @@ class delEnterEnemyCity(MetaQuestSequence):
         self.cityLocation = None
         self.centerFailCounter = 0
         self.rewardedNearby = False
-
-        self.attributesToStore.extend([
-            "rewardedNearby","centerFailCounter","hasListener"])
-        self.tuplesToStore.extend(["cityLocation"])
 
     def triggerCompletionCheck(self, character=None, direction=None):
         if not character:
@@ -5811,11 +5293,6 @@ class delObtainSpecialItem(MetaQuestSequence):
         # save initial state and register
         self.type = "ObtainSpecialItem"
     
-        self.attributesToStore.extend([
-            "itemID","didDelegate","didItemCheck","addedSubQuests",
-            "resetDelegations","initialLifetime","paranoid","strategy"])
-        self.tuplesToStore.append("itemLocation")
-
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()
         parameters.append({"name":"itemLocation","type":"coordinate"})
@@ -6091,19 +5568,3 @@ def addType(toRegister):
     Each item needs to actively register here or it will not be available.
     """
     questMap[toRegister.type] = toRegister
-
-
-def getQuestFromState(state):
-    """
-    get quest instance from state dict
-
-    Parameters:
-        state: the state to load
-    Returns:
-        the quest
-    """
-
-    quest = questMap[state["type"]]()
-    quest.setState(state)
-    src.saveing.loadingRegistry.register(quest)
-    return quest

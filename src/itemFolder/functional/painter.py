@@ -30,11 +30,6 @@ A painter. it can be used to draw markers on the floor
 
         self.offset = (0,0,0)
 
-        # set up meta information for saving
-        self.attributesToStore.extend(["activated"])
-        self.objectsToStore.append("character")
-        self.objectsToStore.append("submenue")
-
     def getUsageInformation(self):
         return """
 Place the Painter on the floor and activate it to draw.

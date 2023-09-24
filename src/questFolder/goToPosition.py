@@ -18,8 +18,6 @@ class GoToPosition(src.quests.MetaQuestSequence):
             self.setParameters({"ignoreEndBlocked":ignoreEndBlocked})
         self.reason = reason
 
-        self.tuplesToStore.append("targetPosition")
-        
         self.shortCode = "g"
         self.smallPath = []
         self.path = []

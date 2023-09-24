@@ -7,7 +7,6 @@ import json
 
 # import basic internal libs
 import src.chats
-import src.saveing
 import src.logger
 import src.interaction
 import src.gamestate
@@ -15,7 +14,7 @@ import src.urwidSpecials
 
 cinematicQueue = []
 
-class BasicCinematic(src.saveing.Saveable):
+class BasicCinematic():
     """
     the base class for all Cinamatics
     """
@@ -36,12 +35,6 @@ class BasicCinematic(src.saveing.Saveable):
         self.endTrigger = None
         self.type = "BasicCinematic"
         self.aborted = False
-
-        # add save information
-        self.attributesToStore.extend(
-            ["background", "overwriteFooter", "footerText", "type", "skipable"]
-        )
-        self.callbacksToStore.append("endTrigger")
 
     def advance(self):
         """
@@ -88,9 +81,6 @@ class InformationTransfer(BasicCinematic):
 
         self.triggered = False
         self.type = "InformationTransfer"
-
-        self.attributesToStore.extend(["information"])
-
 
     def advance(self):
         """
@@ -291,11 +281,6 @@ class TextCinematic(BasicCinematic):
         if not scrolling:
             self.position = self.endPosition
 
-        # add meta information for saving
-        self.attributesToStore.extend(
-            ["text", "endPosition", "position", "rusty", "autocontinue"]
-        )
-
     def advance(self):
         """
         render and advance the state
@@ -409,11 +394,6 @@ class ShowQuestExecution(BasicCinematic):
 
         super().__init__()
 
-        # set meta information for saving
-        self.objectsToStore.append("assignTo")
-        self.objectsToStore.append("container")
-        self.attributesToStore.append("wasSetup")
-
         self.quest = quest
         self.endTrigger = None
         self.tickSpan = tickSpan
@@ -429,53 +409,6 @@ class ShowQuestExecution(BasicCinematic):
         self.overwriteFooter = False
         self.container = container
         self.type = "ShowQuestExecution"
-
-    def setState(self, state):
-        """
-        load state from semi serialised state
-
-        Parameters:
-            state: the state to set
-        """
-
-        super().setState(state)
-
-        # set quest related attributes
-        if "quest" in state and state["quest"]:
-            if isinstance(state["quest"], str):
-                """
-                set value
-                """
-
-                def setQuest(quest):
-                    self.quest = quest
-
-                loadingRegistry.callWhenAvailable(state["quest"], setQuest)
-            else:
-                import src.quest
-
-                self.quest = src.quests.getQuestFromState(state["quest"])
-        else:
-            self.quest = None
-
-    def getState(self):
-        """
-        get state in semi serialised form
-
-        Returns:
-            the state
-        """
-
-        state = super().getState()
-
-        # get quest related attributes
-        if self.quest.character:
-            # store reference
-            state["quest"] = self.quest.id
-        else:
-            # store state
-            state["quest"] = self.quest.getState()
-        return state
 
     def setup(self):
         """
@@ -686,10 +619,6 @@ class SelectionCinematic(BasicCinematic):
         self.submenue = None
         self.type = "SelectionCinematic"
 
-        # add meta information for saving
-        self.attributesToStore.append("text")
-
-
     #bad code: this is the core function. It should do something
     def advance(self):
         """
@@ -700,43 +629,6 @@ class SelectionCinematic(BasicCinematic):
 
         self.setUp()
         return True
-
-    def setState(self, state):
-        """
-        set state from semi serialised form
-
-        Parameters:
-            state: the state
-        """
-
-        super().setState(state)
-
-        # set quest related attributes
-        if "options" in state and state["options"]:
-            self.options = state["options"]
-        if "followUps" in state and state["followUps"]:
-            self.followUps = state["followUps"]
-            for (key, value) in state["followUps"].items():
-                state["followUps"][key] = self.deserializeCallback(value)
-
-    def getState(self):
-        """
-        get state in semi serialised form
-
-        Returns:
-            the state
-        """
-
-        state = super().getState()
-
-        # get quest related attributes
-        followUps = {}
-        for (key, value) in self.followUps.items():
-            followUps[key] = self.serializeCallback(value)
-
-        state["followUps"] = followUps
-        state["options"] = self.options
-        return state
 
     def setUp(self):
         """
@@ -844,15 +736,3 @@ cinematicMap = {
     "SelectionCinematic": SelectionCinematic,
     "ShowMessageCinematic": ShowMessageCinematic,
 }
-
-def getCinematicFromState(state):
-    """
-    spawner for cinematics from dicts
-
-    Parameters:
-        state: the state to set
-    """
-
-    cinematic = cinematicMap[state["type"]]()
-    cinematic.setState(state)
-    return cinematic

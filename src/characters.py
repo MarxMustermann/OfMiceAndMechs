@@ -7,7 +7,6 @@ urwid = None
 
 # import the other internal libs
 import src.items
-import src.saveing
 import src.quests
 import src.chats
 import src.events
@@ -19,7 +18,7 @@ import src.logger
 import src.gamestate
 
 
-class Character(src.saveing.Saveable):
+class Character():
     """
     this is the class for characters meaning both npc and pcs.
     """
@@ -207,71 +206,6 @@ class Character(src.saveing.Saveable):
         self.huntkilling = False
         self.guarding = 0
 
-        # mark attributes for saving
-        self.attributesToStore.extend(
-                [
-                    "gotBasicSchooling",
-                    "gotMovementSchooling",
-                    "gotInteractionSchooling",
-                    "gotExamineSchooling",
-                    "xPosition",
-                    "yPosition",
-                    "zPosition",
-                    "name",
-                    "satiation",
-                    "unconcious",
-                    "reputation",
-                    "tutorialStart",
-                    "isMilitary",
-                    "hasFloorPermit",
-                    "dead",
-                    "deathReason",
-                    "automated",
-                    "watched",
-                    "solvers",
-                    "questsDone",
-                    "stasis",
-                    "registers",
-                    "doStackPop",
-                    "doStackPush",
-                    "timeTaken",
-                    "personality",
-                    "health",
-                    "heatResistance",
-                    "godMode",
-                    "frustration",
-                    "combatMode",
-                    "numAttackedWithoutResponse",
-                    "baseDamage",
-                    "randomBonus",
-                    "bonusMultiplier",
-                    "staggered",
-                    "staggerResistant",
-                    "lastJobOrder",
-                    "maxInventorySpace",
-                    "huntkilling",
-                    "guarding",
-                    "faction",
-                    "rank",
-                    "messages",
-                    "showThinking",
-                    "showGotCommand",
-                    "showGaveCommand",
-                    "duties",
-                    "movementSpeed",
-                    "hasOwnAction",
-                    "doesOwnAction",
-                    "aggro",
-                    "charType",
-                    "disabled",
-                ]
-            )
-
-        self.objectsToStore.append("serveQuest")
-        self.objectsToStore.append("room")
-        self.objectsToStore.append("superior")
-        self.objectListsToStore.append("subordinates")
-
         # bad code: story specific state
         self.serveQuest = None
         self.tutorialStart = 0
@@ -303,6 +237,30 @@ class Character(src.saveing.Saveable):
 
         self.xPosition = xPosition
         self.yPosition = yPosition
+
+    def callIndirect(self, callback, extraParams={}):
+        """
+        call a callback that is stored in a savable format
+
+        Parameters:
+            callback: the callback to call
+            extraParams: some additional parameters
+        """
+
+        if not isinstance(callback, dict):
+            # bad code: direct function calls are deprecated, but not completely removed
+            callback()
+        else:
+            if "container" not in callback:
+                return
+            container = callback["container"]
+            function = getattr(container, callback["method"])
+
+            if "params" in callback:
+                callback["params"].update(extraParams)
+                function(callback["params"])
+            else:
+                function()
 
     def addGrievance(self,grievance):
         self.grievances[grievance] = src.gamestate.gamestate.tick
@@ -1340,260 +1298,6 @@ press any other key to attack normaly"""
                 )
 
         return chatOptions
-
-    def getState(self):
-        """
-        returns the characters state
-        used for saving things
-
-        Returns:
-            the characters state as json serialisable dictionary
-        """
-        # fetch base state
-
-        state = super().getState()
-
-        import copy
-
-        state["macroState"] = copy.deepcopy(self.macroState)
-        if not state["macroState"]["itemMarkedLast"] is None and not isinstance(
-            state["macroState"]["itemMarkedLast"], str
-        ):
-            state["macroState"]["itemMarkedLast"] = state["macroState"][
-                "itemMarkedLast"
-            ].id
-        if "submenue" in state["macroState"] and state["macroState"]["submenue"]:
-            state["macroState"]["submenue"] = state["macroState"]["submenue"].getState()
-
-        state["registers"] = self.registers
-
-        # add simple structures
-        state.update(
-            {
-                "inventory": {},
-                "quests": {},
-                "path": self.path,
-            }
-        )
-
-        # store equipment
-        if self.weapon:
-            state["weapon"] = self.weapon.getState()
-        if self.armor:
-            state["armor"] = self.armor.getState()
-
-        # store inventory
-        inventoryIds = []
-        inventoryStates = {}
-        for item in self.inventory:
-            inventoryIds.append(item.id)
-            inventoryStates[item.id] = item.getState()
-        state["inventory"]["inventoryIds"] = inventoryIds
-        state["inventory"]["states"] = inventoryStates
-
-        # store quests
-        questIds = []
-        questStates = {}
-        for quest in self.quests:
-            questIds.append(quest.id)
-            questStates[quest.id] = quest.getState()
-        state["quests"]["questIds"] = questIds
-        state["quests"]["states"] = questStates
-
-        # store events
-        eventIds = []
-        eventStates = {}
-        for event in self.events:
-            eventIds.append(event.id)
-            eventStates[event.id] = event.getState()
-        state["eventIds"] = eventIds
-        state["eventStates"] = eventStates
-
-        # store serve quest
-        # bad code: storing the Chat options as class instead of object complicates things
-        # bad code: probably broken
-        chatOptions = []
-        for chat in self.basicChatOptions:
-            if not isinstance(chat, dict):
-                chatOptions.append(chat.id)
-            else:
-                option = {
-                    "chat": chat["chat"].id,
-                    "dialogName": chat["dialogName"],
-                    "params": {},
-                }
-                if "params" in chat:
-                    chatOptions.append(option)
-        state["chatOptions"] = chatOptions
-
-        state["type"] = self.charType
-
-        # store submenu
-        if self.submenue is None:
-            state["submenue"] = self.submenue
-        else:
-            state["submenue"] = self.submenue.getState()
-
-        jobOrderState = []
-        for jobOrder in self.jobOrders:
-            jobOrderState.append(jobOrder.getState())
-        state["jobOrders"] = jobOrderState
-
-        return state
-
-    def setState(self, state):
-        """
-        setter for the players state
-        used for loading the game
-
-        Parameters:
-            state: a dictionary containing the state that should be loaded
-        """
-
-        # set basic state
-        super().setState(state)
-
-        if "personality" in state:
-            personality = state["personality"]
-            if "idleWaitTime" not in personality:
-                self.personality["idleWaitTime"] = 10
-            if "idleWaitChance" not in personality:
-                self.personality["idleWaitChance"] = 3
-            if "frustrationTolerance" not in personality:
-                self.personality["frustrationTolerance"] = 0
-            if "autoCounterAttack" not in personality:
-                self.personality["autoCounterAttack"] = True
-            if "autoFlee" not in personality:
-                self.personality["autoFlee"] = True
-            if "abortMacrosOnAttack" not in personality:
-                self.personality["abortMacrosOnAttack"] = True
-            if "annoyenceByNpcCollisions" not in personality:
-                self.personality["annoyenceByNpcCollisions"] = True
-            if "autoAttackOnCombatSuccess" not in personality:
-                self.personality["autoAttackOnCombatSuccess"] = 0
-            if "attacksEnemiesOnContact" not in personality:
-                self.personality["attacksEnemiesOnContact"] = True
-
-        # store equipment
-        if state.get("weapon"):
-            self.weapon = src.items.getItemFromState(state["weapon"])
-        if state.get("armor"):
-            self.armor = src.items.getItemFromState(state["armor"])
-
-        if "loop" not in state["macroState"]:
-            state["macroState"]["loop"] = []
-
-        self.macroState = state["macroState"]
-
-        if not self.macroState["itemMarkedLast"] is None:
-
-            def setParam(instance):
-                self.macroState["itemMarkedLast"] = instance
-
-            src.saveing.loadingRegistry.callWhenAvailable(
-                self.macroState["itemMarkedLast"], setParam
-            )
-        if "submenue" in self.macroState and self.macroState["submenue"]:
-            self.macroState["submenue"] = src.interaction.getSubmenuFromState(
-                self.macroState["submenue"]
-            )
-
-        if "registers" in state:
-            self.registers = state["registers"]
-
-        # set unconscious state
-        if "unconcious" in state:
-            if self.unconcious:
-                self.fallUnconcious()
-
-        # set path
-        if "path" in state:
-            self.path = state["path"]
-
-        # set inventory
-        if "inventory" in state:
-            if "inventoryIds" in state["inventory"]:
-                for inventoryId in state["inventory"]["inventoryIds"]:
-                    item = src.items.getItemFromState(
-                        state["inventory"]["states"][inventoryId]
-                    )
-                    self.inventory.append(item)
-
-        # set quests
-        if "quests" in state:
-
-            # deactivate the quest that will be removed later
-            if "removed" in state["quests"]:
-                for quest in self.quests[:]:
-                    if quest.id in state["quests"]["removed"]:
-                        quest.deactivate()
-                        quest.completed = True
-
-            # load a fixed set of quests
-            if "questIds" in state["quests"]:
-
-                # tear down current quests
-                for quest in self.quests[:]:
-                    quest.deactivate()
-                    quest.completed = True
-                    self.quests.remove(quest)
-
-                # add new quests
-                for questId in state["quests"]["questIds"]:
-                    quest = src.quests.getQuestFromState(
-                        state["quests"]["states"][questId]
-                    )
-                    self.quests.append(quest)
-
-        # set chat options
-        # bad code: storing the Chat options as class instead of object complicates things
-        # bad code: probably broken
-        if "chatOptions" in state:
-            chatOptions = []
-            for chatType in state["chatOptions"]:
-                if not isinstance(chatType, dict):
-                    chatOptions.append(src.chats.chatMap[chatType])
-                else:
-                    option = {
-                        "chat": src.chats.chatMap[chatType["chat"]],
-                        "dialogName": chatType["dialogName"],
-                    }
-                    if "params" in chatType:
-                        params = {}
-                        for (key, value) in chatType["params"].items():
-                            """
-                            set value
-                            """
-
-                            def setParam(instance):
-                                params[key] = instance
-
-                            loadingRegistry.callWhenAvailable(value, setParam)
-                        option["params"] = params
-                    chatOptions.append(option)
-            self.basicChatOptions = chatOptions
-
-        if "eventIds" in state:
-            for eventId in state["eventIds"]:
-                eventState = state["eventStates"][eventId]
-                event = src.events.getEventFromState(eventState)
-                self.addEvent(event)
-
-        if "submenue" in state:
-            if state["submenue"] is None:
-                self.submenue = state["submenue"]
-            else:
-                self.submenue = src.interaction.getSubmenuFromState(state["submenue"])
-
-        self.jobOrders = []
-        if "jobOrders" in state:
-            for jobOrder in state["jobOrders"]:
-                self.jobOrders.append(src.items.getItemFromState(jobOrder))
-
-        if "frustrationTolerance" not in self.personality:
-            self.personality["frustrationTolerance"] = 0
-
-        return state
 
     def awardReputation(self, amount=0, fraction=0, reason=None, carryOver=False):
         """
@@ -2640,11 +2344,6 @@ class Mouse(Character):
         )
         self.charType = "Mouse"
         self.vanished = False
-        self.attributesToStore.extend(
-            [
-                "vanished",
-            ]
-        )
 
         self.personality["autoAttackOnCombatSuccess"] = 1
         self.personality["abortMacrosOnAttack"] = True
@@ -2710,11 +2409,6 @@ class Monster(Character):
         self.charType = "Monster"
 
         self.phase = 1
-        self.attributesToStore.extend(
-            [
-                "phase",
-            ]
-        )
 
         self.faction = "monster"
         self.stepsOnMines = True
@@ -3147,7 +2841,6 @@ class Exploder(Monster):
         self.charType = "Exploder"
 
         self.explode = True
-        self.attributesToStore.extend(["explode"])
 
     def render(self):
         """
@@ -3442,15 +3135,3 @@ characterMap = {
     "Ghul": Ghul,
     "Maggot": Maggot,
 }
-
-
-def getCharacterFromState(state):
-    """
-    get item instances from dict state
-    """
-
-    character = characterMap[state["type"]](characterId=state["id"])
-    src.saveing.loadingRegistry.register(character)
-    src.interaction.multi_chars.add(character)
-    character.setState(state)
-    return character

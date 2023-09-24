@@ -19,8 +19,6 @@ class Scrap(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.scrap_light)
 
-        self.attributesToStore.extend(["amount"])
-
         # how many scraps this pile consists of
         self.amount = amount
 

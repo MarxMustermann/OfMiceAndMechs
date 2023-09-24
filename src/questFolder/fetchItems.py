@@ -24,11 +24,6 @@ class FetchItems(src.quests.MetaQuestSequence):
         if returnToTile:
             self.setParameters({"returnToTile":returnToTile})
 
-        self.attributesToStore.append("toCollect")
-        self.attributesToStore.append("amount")
-        self.attributesToStore.append("returnToTile")
-        self.tuplesToStore.append("tileToReturnTo")
-
         self.shortCode = "f"
 
     def generateTextDescription(self):

@@ -1863,37 +1863,6 @@ class ChatMenu(Chat):
         self.skipTurn = False
         self.macro = None
         super().__init__()
-        self.objectsToStore.extend(["partner", "macro"])
-
-    def getState(self):
-        """
-        get state as semi serialised state
-
-        Returns:
-            the semi serialised state
-        """
-        state = super().getState()
-        if self.subMenu:
-            state["subMenu"] = self.subMenu.getState()
-        else:
-            state["subMenu"] = None
-
-        return state
-
-    def setState(self, state):
-        """
-        set internal state from semi serialised state
-
-        Parameters:
-            the state to set
-        """
-        super().setState(state)
-
-        if "subMenu" in state:
-            if state["subMenu"]:
-                self.subMenu = getSubmenuFromState(state["subMenu"])
-            else:
-                self.subMenu = None
 
     # bad code: showing the messages should be handled in __init__ or a setup method
     # bad code: the dialog should be generated within the characters

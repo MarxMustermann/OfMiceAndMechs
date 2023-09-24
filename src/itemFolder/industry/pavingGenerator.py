@@ -24,8 +24,6 @@ class PavingGenerator(src.items.Item):
         self.name = "paving generator"
         self.description = "This machine converts scrap into paving"
 
-        self.attributesToStore.extend(["coolDown", "coolDownTimer", "charges", "level", "commands"])
-
     def apply(self, character):
         """
         handle a character trying to use the machine

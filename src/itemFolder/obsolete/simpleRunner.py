@@ -15,8 +15,6 @@ class SimpleRunner(src.items.Item):
         self.name = "simple runner"
         self.command = None
 
-        self.attributesToStore.extend(["command"])
-
     def apply(self, character):
         super().apply(character)
 

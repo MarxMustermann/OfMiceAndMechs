@@ -22,9 +22,6 @@ class Lever(src.items.Item):
         self.walkable = True
         self.bolted = True
 
-        # set metadata for saving
-        self.attributesToStore.extend(["activated"])
-
     """
     pull the lever!
     bad code: activate/deactive methods would be nice

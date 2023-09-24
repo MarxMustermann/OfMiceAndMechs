@@ -17,7 +17,6 @@ class ResourceTerminal(src.items.Item):
 
         self.balance = 0
         self.resource = "Scrap"
-        self.attributesToStore.extend(["balance", "resource"])
 
     def setResource(self, resource):
         """

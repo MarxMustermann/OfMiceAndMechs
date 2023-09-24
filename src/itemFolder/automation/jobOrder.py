@@ -30,16 +30,6 @@ class JobOrder(src.items.Item):
         self.error = {}
         self.taskName = ""
 
-        self.attributesToStore.extend(
-                [
-                    "done",
-                    "information",
-                    "taskName",
-                    "autoRun",
-                    "tasks",
-                ]
-            )
-
         # set up interaction menu
         self.applyOptions.extend(
                 [

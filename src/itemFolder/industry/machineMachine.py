@@ -37,11 +37,6 @@ Activate the machine to start producing. You will be shown a list of things to p
 Select the thing to produce and confirm.
 """
 
-        self.attributesToStore.extend(
-                ["coolDown", "coolDownTimer", "endProducts", "charges", "level"]
-            )
-
-        
     # abstraction: should use super class fuctionality
     def apply(self, character):
         """

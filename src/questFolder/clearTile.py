@@ -15,7 +15,6 @@ class ClearTile(src.quests.MetaQuestSequence):
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
-        self.tuplesToStore.append("targetPosition")
         self.noDelegate = noDelegate
 
     def generateTextDescription(self):

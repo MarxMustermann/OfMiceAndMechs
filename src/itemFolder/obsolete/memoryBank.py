@@ -20,8 +20,6 @@ class MemoryBank(src.items.Item):
         self.name = "memory bank"
         self.baseName = self.name
 
-        self.attributesToStore.extend(["macros"])
-
         self.setDescription()
 
     def setDescription(self):
@@ -49,15 +47,5 @@ class MemoryBank(src.items.Item):
             self.macros = copy.deepcopy(character.macroState["macros"])
 
         self.setDescription()
-
-    """
-    set state from dict
-    """
-
-    def setState(self, state):
-        super().setState(state)
-
-        self.setDescription()
-
 
 src.items.addType(MemoryBank)

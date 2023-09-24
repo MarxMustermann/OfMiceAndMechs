@@ -29,12 +29,6 @@ class QuestArtwork(src.items.Item):
         }
         self.numQuestsGiven = 0
 
-        self.attributesToStore.extend(
-                [
-                    "numQuestsGiven",
-                ]
-            )
-
         self.description = """
 This is a one of its kind machine. It cannot be reproduced and was created by an artisan.
 This artwork generates and can assign quests."""

@@ -23,7 +23,7 @@ mainChar = None
 """
 the base class for all quests
 """
-class Quest():
+class Quest:
     type = "Quest"
     hasParams = False
 
@@ -305,7 +305,7 @@ class Quest():
     def fail(self,reason=None):
         self.changed("failed",{"reason":reason,"quest":self})
         if reason and self.character:
-            self.character.addMessage("failed quest %s because of %s"%(self.description,reason,))
+            self.character.addMessage(f"failed quest {self.description} because of {reason}")
         if self.failTrigger:
             self.failTrigger()
         if self.reputationReward:

@@ -56,8 +56,7 @@ class WaterPump(src.items.Item):
 
             amount = 100 + self.rods * 10
             self.character.addMessage(
-                "you drink from the water condenser. You gain %s satiation, but are poisoned"
-                % (amount,)
+                f"you drink from the water condenser. You gain {amount} satiation, but are poisoned"
             )
             self.character.satiation += amount
             if self.character.satiation > 1000:

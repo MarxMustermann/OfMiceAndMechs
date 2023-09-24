@@ -17,7 +17,7 @@ import src.events
 import config
 
 
-class Item():
+class Item:
     """
     This is the base class for ingame items. It is intended to hold the common behaviour of items.
 
@@ -415,17 +415,14 @@ class Item():
         if self.description:
             text += "description: \n" + self.description + "\n\n"
         if self.usageInfo:
-            text += "usage: \n%s\n" % (self.getUsageInformation(),)
+            text += f"usage: \n{self.getUsageInformation()}\n"
         if self.commands:
             text += "commands: \n"
             for (
                 key,
                 value,
             ) in self.commands.items():
-                text += "%s: %s\n" % (
-                    key,
-                    value,
-                )
+                text += f"{key}: {value}\n"
             text += "\n"
         if self.settings:
             text += "settings: \n"
@@ -433,10 +430,7 @@ class Item():
                 key,
                 value,
             ) in self.settings.items():
-                text += "%s: %s\n" % (
-                    key,
-                    value,
-                )
+                text += f"{key}: {value}\n"
             text += "\n"
         return text
 
@@ -503,7 +497,7 @@ class Item():
             character: the character eating the item
         """
 
-        character.addMessage("you eat the %s" % (self.name,))
+        character.addMessage(f"you eat the {self.name}")
         character.addSatiation(self.nutrition)
         self.destroy(generateScrap=False)
 
@@ -527,7 +521,7 @@ class Item():
             text += "this machine cannot be configured, press any key to continue"
         else:
             for (key, value) in options.items():
-                text += "%s: %s\n" % (key, value[0])
+                text += f"{key}: {value[0]}\n"
 
         # spawn menu
         submenu = src.interaction.OneKeystrokeMenu(text)
@@ -744,11 +738,7 @@ class Item():
         triggers = triggerMap.get(task["task"])
         if not triggers:
             character.addMessage(
-                "unknown trigger: %s %s"
-                % (
-                    self,
-                    task,
-                )
+                f"unknown trigger: {self} {task}"
             )
             return
 
@@ -772,7 +762,7 @@ class Item():
         # run the selected command on the character
         character.runCommandString(command)
         character.addMessage(
-            "running command for trigger: %s - %s" % (commandName, command)
+            f"running command for trigger: {commandName} - {command}"
         )
 
     def upgrade(self):

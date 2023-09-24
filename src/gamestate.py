@@ -15,7 +15,7 @@ gamestate = None
 phasesByName = {}
 
 
-class GameState():
+class GameState:
     """
     the container for all of the gamestate
     """
@@ -97,7 +97,7 @@ class GameState():
         self.macros = {}
 
         try:
-            with open("gamestate/successSeed.json", "r") as successSeedFile:
+            with open("gamestate/successSeed.json") as successSeedFile:
                 rawState = json.loads(successSeedFile.read())
                 self.successSeed = int(rawState["successSeed"])
         except:
@@ -167,11 +167,11 @@ class GameState():
             os.makedirs("gamestate/")
 
         try:
-            shutil.copyfile("gamestate/gamestate_%s"%(self.gameIndex,), "gamestate/gamestate_%s_backup"%(self.gameIndex,))
+            shutil.copyfile(f"gamestate/gamestate_{self.gameIndex}", f"gamestate/gamestate_{self.gameIndex}_backup")
         except:
             pass
 
-        file = open("gamestate/gamestate_%s"%(self.gameIndex,), 'wb')
+        file = open(f"gamestate/gamestate_{self.gameIndex}", 'wb')
 
         # dump information to that file
         pickle.dump(self, file)
@@ -181,7 +181,7 @@ class GameState():
 
         try:
             # register the save
-            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+            with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
@@ -204,7 +204,7 @@ class GameState():
 
         try:
             # register the save
-            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+            with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
@@ -215,7 +215,7 @@ class GameState():
 
 
         import pickle
-        file = open("gamestate/gamestate_%s"%(gameIndex,), 'rb')
+        file = open(f"gamestate/gamestate_{gameIndex}", 'rb')
         # dump information to that file
         newSelf = pickle.load(file)
 

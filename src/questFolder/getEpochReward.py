@@ -14,13 +14,13 @@ class GetEpochReward(src.quests.MetaQuestSequence):
         out = []
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-Claim a reward for completing the epoch challenge%s.
+            reason = f",\nto {self.reason}"
+        text = f"""
+Claim a reward for completing the epoch challenge{reason}.
 
 You accumulated some glass tears.
-Spend them to claim the actual reward (%s).
-"""%(reason,self.rewardType,)
+Spend them to claim the actual reward ({self.rewardType}).
+"""
 
         if self.rewardType == "room building":
             text += """

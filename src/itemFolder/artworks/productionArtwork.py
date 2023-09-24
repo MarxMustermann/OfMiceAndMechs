@@ -55,8 +55,7 @@ Select the thing to produce and confirm."""
                 and not self.charges
             ):
                 character.addMessage(
-                    "cooldown not reached. Wait %s ticks"
-                    % (
+                    "cooldown not reached. Wait {} ticks".format(
                         self.coolDown
                         - (src.gamestate.gamestate.tick - self.coolDownTimer),
                     )
@@ -210,7 +209,7 @@ Select the thing to produce and confirm."""
             else:
                 self.coolDownTimer = src.gamestate.gamestate.tick
 
-            self.character.addMessage("you produce a %s" % (itemType.type,))
+            self.character.addMessage(f"you produce a {itemType.type}")
 
             # remove resources
             self.container.removeItem(item)
@@ -254,20 +253,16 @@ Select the thing to produce and confirm."""
 
         text = super().getLongInfo()
 
-        text += """
-After using this machine you need to wait %s ticks till you can use this machine again.
-""" % (
-            self.coolDown,
-        )
+        text += f"""
+After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.
+"""
 
         coolDownLeft = self.getRemainingCooldown()
         if coolDownLeft > 0:
-            text += """
-Currently you need to wait %s ticks to use this machine again.
+            text += f"""
+Currently you need to wait {coolDownLeft} ticks to use this machine again.
 
-""" % (
-                coolDownLeft,
-            )
+"""
         else:
             text += """
 Currently you do not have to wait to use this machine.

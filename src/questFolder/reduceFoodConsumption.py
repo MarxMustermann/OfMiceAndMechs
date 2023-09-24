@@ -13,11 +13,11 @@ class ReduceFoodConsumption(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = ["""
-reduce the food consumption on the base%s.
+            reason = f", to {self.reason}"
+        text = [f"""
+reduce the food consumption on the base{reason}.
 
-"""%(reason,)]
+"""]
         return text
 
     def solver(self, character):
@@ -66,14 +66,14 @@ reduce the food consumption on the base%s.
                 if not character.container == npc.container:
                     if character.getBigPosition() == npc.getBigPosition():
                         return (None,(".","wait"))
-                    quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition(),reason="to get near %s"%(npc.name,))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition(),reason=f"to get near {npc.name}")
                     return ([quest],None)
 
                 if character.getDistance(npc.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition(),reason="to get in reach of %s"%(npc.name,))
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition(),reason=f"to get in reach of {npc.name}")
                     return ([quest],None)
 
-                return (None,("M","attack %s"%(npc.name,)))
+                return (None,("M",f"attack {npc.name}"))
 
             self.postHandler()
             return (None,None)

@@ -137,12 +137,10 @@ class Scrap(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
-There is %s in this pile
-""" % (
-            self.amount,
-        )
+There is {self.amount} in this pile
+"""
 
         return text
 
@@ -168,7 +166,7 @@ There is %s in this pile
         # remove a singe piece of scrap
         self.amount -= 1
         character.addMessage(
-            "you pick up a piece of scrap, there is %s left" % (self.amount,)
+            f"you pick up a piece of scrap, there is {self.amount} left"
         )
         self.setWalkable()
 
@@ -197,8 +195,7 @@ There is %s in this pile
             if self.amount < 20:
                 self.amount += item.amount
                 character.addMessage(
-                    "you add a piece of scrap there pile contains %s scrap now."
-                    % (self.amount,)
+                    f"you add a piece of scrap there pile contains {self.amount} scrap now."
                 )
                 character.inventory.remove(item)
                 character.changed("dropped",(character,self))

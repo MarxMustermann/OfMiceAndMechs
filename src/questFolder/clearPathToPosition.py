@@ -7,7 +7,7 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
     def __init__(self, description="clear path to position", creator=None, targetPosition=None, tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
-        self.metaDescription = description+" %s"%(targetPosition,)
+        self.metaDescription = description+f" {targetPosition}"
         self.targetPosition = targetPosition
         self.tryHard = tryHard
         self.reason = reason
@@ -16,12 +16,12 @@ class ClearPathToPosition(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-Clear path to position %s%s.
+            reason = f",\nto {self.reason}"
+        text = f"""
+Clear path to position {self.targetPosition}{reason}.
 
 Pick up and unbolt items that are in the way.
-"""%(self.targetPosition,reason,)
+"""
         
         return text
 

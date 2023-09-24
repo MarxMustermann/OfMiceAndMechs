@@ -1031,29 +1031,22 @@ class RoomManager(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
 itemPositions:
-%s
+{self.itemPositions}
 
 dependencies:
-%s
+{self.dependencies}
 
 itemSlotUsage:
-%s
+{self.itemSlotUsage}
 
 machines:
 
-""" % (
-            self.itemPositions,
-            self.dependencies,
-            self.itemSlotUsage,
-        )
+"""
         for (key, value) in self.machinePositions.items():
-            text += "\n%s: %s" % (
-                key,
-                value,
-            )
+            text += f"\n{key}: {value}"
 
         text += """
 
@@ -1061,15 +1054,13 @@ tasks:
 """
 
         for task in self.tasks:
-            text += "%s \n" % (task,)
-        text += """
+            text += f"{task} \n"
+        text += f"""
 
 commands:
-%s
+{self.commands}
 
-""" % (
-            self.commands,
-        )
+"""
         return text
 
 

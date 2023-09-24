@@ -39,7 +39,7 @@ After loading the blueprint the machine machine is able to produce a machine tha
         if not self.endProduct:
             self.description = self.baseName
         else:
-            self.description = self.baseName + " for %s" % (self.endProduct,)
+            self.description = self.baseName + f" for {self.endProduct}"
 
     def setToProduce(self, toProduce):
         """
@@ -72,16 +72,13 @@ After loading the blueprint the machine machine is able to produce a machine tha
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
-this blueprint is for %s
+this blueprint is for {self.endProduct}
 
-This is a level %s item
+This is a level {self.level} item
 
-""" % (
-            self.endProduct,
-            self.level,
-        )
+"""
         return text
 
 src.items.addType(BluePrint)

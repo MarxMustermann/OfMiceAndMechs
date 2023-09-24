@@ -29,9 +29,9 @@ class BuildRoom(src.quests.MetaQuestSequence):
         roombuilder = src.items.itemMap["RoomBuilder"]()
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        out = ["""
-Build a room on the tile %s%s."""%(self.targetPosition,reason,),"""
+            reason = f", to {self.reason}"
+        out = [f"""
+Build a room on the tile {self.targetPosition}{reason}.""","""
 
 """]
 

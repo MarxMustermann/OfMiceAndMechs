@@ -67,8 +67,7 @@ class PavingGenerator(src.items.Item):
             and not self.charges
         ):
             character.addMessage(
-                "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+                "cooldown not reached. Wait {} ticks".format(self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer))
             )
             self.runCommand("cooldown", character)
             return
@@ -132,26 +131,21 @@ class PavingGenerator(src.items.Item):
             directions += "/south"
         if self.level > 2:
             directions += "/north"
-        text = """
+        text = f"""
 
-Place scrap to the %s of the machine and activate it 
+Place scrap to the {directions} of the machine and activate it 
 
-After using this machine you need to wait %s ticks till you can use this machine again.
-""" % (
-            directions,
-            self.coolDown,
-        )
+After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.
+"""
 
         coolDownLeft = self.coolDown - (
             src.gamestate.gamestate.tick - self.coolDownTimer
         )
         if coolDownLeft > 0:
-            text += """
-Currently you need to wait %s ticks to use this machine again.
+            text += f"""
+Currently you need to wait {coolDownLeft} ticks to use this machine again.
 
-""" % (
-                coolDownLeft,
-            )
+"""
         else:
             text += """
 Currently you do not have to wait to use this machine.
@@ -248,7 +242,7 @@ thie is a level %s item
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
+            f"added command for {itemType} - {commandItem.command}"
         )
         return
 
@@ -270,7 +264,7 @@ thie is a level %s item
         character.runCommandString(command)
 
         character.addMessage(
-            "running command to handle trigger %s - %s" % (trigger, command)
+            f"running command to handle trigger {trigger} - {command}"
         )
 
 src.items.addType(PavingGenerator)

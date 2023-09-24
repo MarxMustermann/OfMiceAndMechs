@@ -440,13 +440,11 @@ class MiningManager(src.items.Item):
             the description text
         """
 
-        text = """
+        text = f"""
 commands:
-%s
+{self.commands}
 
-""" % (
-            self.commands,
-        )
+"""
         return text
 
 

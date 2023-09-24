@@ -28,11 +28,7 @@ class PositioningDevice(src.items.Item):
         character.registers["y"][-1] = character.yPosition
 
         character.addMessage(
-            "your position is %s/%s"
-            % (
-                character.xPosition,
-                character.yPosition,
-            )
+            f"your position is {character.xPosition}/{character.yPosition}"
         )
 
     def getLongInfo(self):

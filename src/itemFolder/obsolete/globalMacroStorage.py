@@ -30,7 +30,7 @@ class GlobalMacroStorage(src.items.Item):
         selection = self.submenue.getSelection()
         if selection == "load":
             try:
-                with open("globalStorage.json", "r") as globalStorageFile:
+                with open("globalStorage.json") as globalStorageFile:
                     globalStorage = json.loads(globalStorageFile.read())
             except:
                 globalStorage = []
@@ -56,7 +56,7 @@ class GlobalMacroStorage(src.items.Item):
 
     def load(self):
         try:
-            with open("globalStorage.json", "r") as globalStorageFile:
+            with open("globalStorage.json") as globalStorageFile:
                 globalStorage = json.loads(globalStorageFile.read())
         except:
             globalStorage = []
@@ -90,7 +90,7 @@ class GlobalMacroStorage(src.items.Item):
 
     def store(self):
         try:
-            with open("globalStorage.json", "r") as globalStorageFile:
+            with open("globalStorage.json") as globalStorageFile:
                 globalStorage = json.loads(globalStorageFile.read())
         except:
             globalStorage = []

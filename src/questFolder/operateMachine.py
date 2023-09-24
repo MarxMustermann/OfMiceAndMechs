@@ -32,10 +32,10 @@ class OperateMachine(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        return """
-operate the machine on %s%s.
-"""%(self.targetPosition,reason,)
+            reason = f", to {self.reason}"
+        return f"""
+operate the machine on {self.targetPosition}{reason}.
+"""
 
     def triggerCompletionCheck(self,character=None):
         if not character:

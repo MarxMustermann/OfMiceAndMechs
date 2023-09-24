@@ -436,7 +436,7 @@ class ArchitectArtwork(src.items.Item):
 
         roomsPositions = []
 
-        with open("states/abandondedCityCore.json","r") as stateFile:
+        with open("states/abandondedCityCore.json") as stateFile:
             roomData = json.loads(stateFile.read())
         room = src.rooms.getRoomFromState(roomData,src.gamestate.gamestate.terrain)
         terrain.addRoom(room)
@@ -454,7 +454,7 @@ class ArchitectArtwork(src.items.Item):
             if (xPosition,yPosition) in roomsPositions:
                 continue
 
-            with open("states/emptyRoom.json","r") as stateFile:
+            with open("states/emptyRoom.json") as stateFile:
                 roomData = json.loads(stateFile.read())
             room = src.rooms.getRoomFromState(roomData,src.gamestate.gamestate.terrain)
             room.xPosition = xPosition
@@ -512,8 +512,8 @@ class ArchitectArtwork(src.items.Item):
 
 
         character.addMessage("added empty rooms")
-        character.addMessage("%s"%(roomsPositions,))
-        character.addMessage("%s"%(streets,))
+        character.addMessage(f"{roomsPositions}")
+        character.addMessage(f"{streets}")
             
         for street in streets:
             xPosition = street[0]
@@ -688,10 +688,10 @@ class ArchitectArtwork(src.items.Item):
                 if (x,y) in roomSlots:
                     note = src.items.itemMap["Note"]()
                     note.text = random.choice([
-                        "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
-                        "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
-                        "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
-                        "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
+                        f"The the reserve city core is on coordinate {targetRoomSlot[0]}/{targetRoomSlot[1]}",
+                        f"The the reserve city core is on coordinate {targetRoomSlot[0]}/{targetRoomSlot[1]}",
+                        f"The memorycell production is on coordinate {memoryCellRoom[0]}/{memoryCellRoom[1]}",
+                        f"The pocketframe production is on coordinate {pocketFrameRoom[0]}/{pocketFrameRoom[1]}",
                         ])
                     terrain.addItem(note,(x*15+7,y*15+7,0))
                     break
@@ -913,10 +913,10 @@ class ArchitectArtwork(src.items.Item):
             if not terrain.getItemByPosition((roomSlot[0]*15+7,roomSlot[1]*15+7,0)):
                 note = src.items.itemMap["Note"]()
                 note.text = random.choice([
-                    "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
-                    "The the reserve city core is on coordinate %s/%s"%(targetRoomSlot[0],targetRoomSlot[1],),
-                    "The memorycell production is on coordinate %s/%s"%(memoryCellRoom[0],memoryCellRoom[1],),
-                    "The pocketframe production is on coordinate %s/%s"%(pocketFrameRoom[0],pocketFrameRoom[1],),
+                    f"The the reserve city core is on coordinate {targetRoomSlot[0]}/{targetRoomSlot[1]}",
+                    f"The the reserve city core is on coordinate {targetRoomSlot[0]}/{targetRoomSlot[1]}",
+                    f"The memorycell production is on coordinate {memoryCellRoom[0]}/{memoryCellRoom[1]}",
+                    f"The pocketframe production is on coordinate {pocketFrameRoom[0]}/{pocketFrameRoom[1]}",
                     ])
                 terrain.addItem(note,(roomSlot[0]*15+7,roomSlot[1]*15+7,0))
 
@@ -1146,8 +1146,7 @@ class ArchitectArtwork(src.items.Item):
 
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
-                "enter the coordinate ( x,y ) current: %s,%s"
-                % (self.character.xPosition // 15, self.character.yPosition // 15)
+                f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.clearField
@@ -1200,8 +1199,7 @@ class ArchitectArtwork(src.items.Item):
 
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
-                "enter the coordinate ( x,y ) current: %s,%s"
-                % (self.character.xPosition // 15, self.character.yPosition // 15)
+                f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.addScrapField
@@ -1349,8 +1347,7 @@ class ArchitectArtwork(src.items.Item):
 
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
-                "enter the coordinate ( x,y ) current: %s,%s"
-                % (self.character.xPosition // 15, self.character.yPosition // 15)
+                f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.addRoom

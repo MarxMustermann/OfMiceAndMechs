@@ -42,7 +42,7 @@ Activate the machine to produce.
         recalculate the machines description
         """
 
-        self.description = self.baseName + " MetalBar -> %s" % (self.toProduce,)
+        self.description = self.baseName + f" MetalBar -> {self.toProduce}"
 
     def resetDisplay(self):
         """
@@ -135,8 +135,7 @@ Activate the machine to produce.
 
         if not self.checkCoolDownEnded():
             character.addMessage(
-                "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+                "cooldown not reached. Wait {} ticks".format(self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer))
             )
             self.runCommand("cooldown", character)
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
@@ -188,7 +187,7 @@ Activate the machine to produce.
         # spawn new item
         new = src.items.itemMap[self.toProduce]()
         new.bolted = False
-        character.addMessage("you produce a %s" % (self.toProduce,))
+        character.addMessage(f"you produce a {self.toProduce}")
 
         if hasattr(new, "coolDown"):
             new.coolDown = round(
@@ -221,27 +220,20 @@ Activate the machine to produce.
             src.gamestate.gamestate.tick - self.coolDownTimer
         )
 
-        text = """
-This machine produces items of the type: %s
+        text = f"""
+This machine produces items of the type: {self.toProduce}
 
-After using this machine you need to wait %s ticks till you can use this machine again.
+After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.
 
-this is a level %s item and will produce level %s items.
+this is a level {self.level} item and will produce level {self.level} items.
 
-""" % (
-            self.toProduce,
-            self.coolDown,
-            self.level,
-            self.level,
-        )
+"""
 
         if coolDownLeft > 0:
-            text += """
-Currently you need to wait %s ticks to use this machine again.
+            text += f"""
+Currently you need to wait {coolDownLeft} ticks to use this machine again.
 
-""" % (
-                coolDownLeft,
-            )
+"""
         else:
             text += """
 Currently you do not have to wait to use this machine.
@@ -325,8 +317,8 @@ Currently the machine has no charges
             for itemType in resourcesNeeded:
                 options.append(
                     (
-                        "material %s" % (itemType,),
-                        "set %s fetching command" % (itemType,),
+                        f"material {itemType}",
+                        f"set {itemType} fetching command",
                     )
                 )
             self.submenue = src.interaction.SelectionMenu(
@@ -358,7 +350,7 @@ Currently the machine has no charges
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
+            f"added command for {itemType} - {commandItem.command}"
         )
         return
 
@@ -380,7 +372,7 @@ Currently the machine has no charges
         character.runCommandString(command)
         
         character.addMessage(
-            "running command to handle trigger %s - %s" % (trigger, command)
+            f"running command to handle trigger {trigger} - {command}"
         )
 
     def checkCoolDownEnded(self):

@@ -344,37 +344,29 @@ class RoadManager(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 roadNetwork:
-%s
+{self.roadNetwork}
 
 centerDirection:
-%s
+{self.centerDirection}
 
 pathingNodes:
-%s
+{self.pathingNodes}
 
 center:
-%s
+{self.center}
 
 pathsFromCenter:
-%s
+{self.pathsFromCenter}
 
 pathsToCenter:
-%s
+{self.pathsToCenter}
 
 connections:
-%s
+{self.connections}
 
-""" % (
-            self.roadNetwork,
-            self.centerDirection,
-            self.pathingNodes,
-            self.center,
-            self.pathsFromCenter,
-            self.pathsToCenter,
-            self.connections,
-        )
+"""
         return text
 
 

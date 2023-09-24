@@ -55,9 +55,9 @@ class ReserveCityBuilder(src.items.Item):
         self.nonUrgentClear = []
 
     def showRessources(self, character):
-        character.addMessage("%s Scrap in storage"%(self.numScrap,))
-        character.addMessage("%s Food in storage"%(self.numFood,))
-        character.addMessage("%s Goo in storage"%(self.numGoo,))
+        character.addMessage(f"{self.numScrap} Scrap in storage")
+        character.addMessage(f"{self.numFood} Food in storage")
+        character.addMessage(f"{self.numGoo} Goo in storage")
         pass
 
     def spawnNPC(self, character):
@@ -65,7 +65,7 @@ class ReserveCityBuilder(src.items.Item):
             character.addMessage("not enough goo")
             return
         self.workerCount += 1
-        worker = src.characters.Character(name="worker #%s"%(self.workerCount,))
+        worker = src.characters.Character(name=f"worker #{self.workerCount}")
         self.container.addCharacter(worker, self.xPosition, self.yPosition - 1)
         worker.macroState["macros"] = {
             "a": ["J", "s", "j","j","_","a"],
@@ -584,7 +584,7 @@ class ReserveCityBuilder(src.items.Item):
         if self.broken:
             if self.firstUsage:
                 item = src.items.itemMap["Note"]()
-                item.text = "%s"%(self.neededRepairItems,)
+                item.text = f"{self.neededRepairItems}"
                 character.addMessage("The prints a list of needed items")
                 pos = (self.xPosition-1,self.yPosition,self.zPosition)
                 self.container.addItem(item,pos)
@@ -599,7 +599,7 @@ class ReserveCityBuilder(src.items.Item):
 
             if neededItems:
                 character.addMessage("This machine is broken")
-                character.addMessage("you need to have %s in you inventory to repair the machine"%(neededItems,))
+                character.addMessage(f"you need to have {neededItems} in you inventory to repair the machine")
             else:
                 character.addMessage("you repair the machine")
                 character.addMessage("you won the roguelike part of the game.")
@@ -623,7 +623,7 @@ class ReserveCityBuilder(src.items.Item):
 
         if neededItems:
             character.addMessage("activate the machine and win the game")
-            character.addMessage("you need to have %s in your inventory to activate the machine"%(neededItems,))
+            character.addMessage(f"you need to have {neededItems} in your inventory to activate the machine")
         else:
             pass
 
@@ -635,8 +635,8 @@ class ReserveCityBuilder(src.items.Item):
 
     def getLongInfo(self):
         test = super().getLongInfo()
-        test += "\nfreeItemSlots: %s\nusedItemSlots: %s"%(self.freeItemSlots,self.usedItemSlots)
-        test += "\nclearedScrap: %s\nurgentClear: %s\nnonUrgentClear: %s"%(self.clearedScrap,self.urgentClear,self.nonUrgentClear)
+        test += f"\nfreeItemSlots: {self.freeItemSlots}\nusedItemSlots: {self.usedItemSlots}"
+        test += f"\nclearedScrap: {self.clearedScrap}\nurgentClear: {self.urgentClear}\nnonUrgentClear: {self.nonUrgentClear}"
         return test
 
 

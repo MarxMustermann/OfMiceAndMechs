@@ -13,13 +13,13 @@ class DoEpochChallenge(src.quests.MetaQuestSequence):
         out = []
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-Complete a task for the epoch artwork%s.
+            reason = f", to {self.reason}"
+        text = f"""
+Complete a task for the epoch artwork{reason}.
 
 Use the epoch artwork to fetch a task and complete it.
 
-"""%(reason,)
+"""
         out.append(text)
         if not self.subQuests:
             out.append((src.interaction.urwid.AttrSpec("#f00", "black"),"""

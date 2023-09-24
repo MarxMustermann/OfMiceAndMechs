@@ -15,10 +15,10 @@ class ScheduleMetalWorking(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        return """
+            reason = f", to {self.reason}"
+        return f"""
 do some metal working
-"""%(reason,)
+"""
 
     def triggerCompletionCheck(self,character=None):
         if not character:

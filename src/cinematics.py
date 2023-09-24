@@ -14,7 +14,7 @@ import src.urwidSpecials
 
 cinematicQueue = []
 
-class BasicCinematic():
+class BasicCinematic:
     """
     the base class for all Cinamatics
     """

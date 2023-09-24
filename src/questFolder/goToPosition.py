@@ -25,7 +25,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
+            reason = f",\nto {self.reason}"
         extraText = ""
         if self.ignoreEndBlocked:
             extraText = """
@@ -39,10 +39,10 @@ So it is enough to go next to the target position to end this quest.
         else:
             containerString = "tile"
 
-        text = """
-Go to position %s in the same %s you are in%s.
+        text = f"""
+Go to position {self.targetPosition} in the same {containerString} you are in{reason}.
 
-This quest ends after you do this.%s"""%(self.targetPosition,containerString,reason,extraText,) 
+This quest ends after you do this.{extraText}""" 
 
         text += """
 
@@ -216,13 +216,13 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             #if character.room.isRoom:
             #    character.room.cachedPathfinder = None
             if not dryRun:
-                character.addMessage("moving failed - no path found to %s"%(self.targetPosition,))
+                character.addMessage(f"moving failed - no path found to {self.targetPosition}")
                 self.fail("no path found")
 
     def setParameters(self,parameters):
         if "targetPosition" in parameters and "targetPosition" in parameters:
             self.targetPosition = parameters["targetPosition"]
-            self.metaDescription = self.baseDescription+" %s"%(self.targetPosition,)
+            self.metaDescription = self.baseDescription+f" {self.targetPosition}"
         if "ignoreEndBlocked" in parameters and "ignoreEndBlocked" in parameters:
             self.ignoreEndBlocked = parameters["ignoreEndBlocked"]
         return super().setParameters(parameters)

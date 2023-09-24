@@ -199,13 +199,13 @@ Go there and fetch the weapons and armor.
                     character.quests[0].addQuest(quest)
                 else:
                     character.quests.insert(0,quest)
-                text = """
+                text = f"""
 Secure goo flasks
 
 The ruined farms still have useful items in them.
-Secure the farms on the position %s and loot the items there.
+Secure the farms on the position {room.getPosition()} and loot the items there.
 
-"""%(room.getPosition(),)
+"""
                 character.addMessage("----------------"+text+"-----------------")
 
                 submenue = src.interaction.TextMenu(text)

@@ -51,7 +51,7 @@ class EncrustedBush(src.items.Item):
         command = ""
         directions = ["w", "a", "s", "d"]
         while counter < 8:
-            command += "j%s_%sk" % (
+            command += "j{}_{}k".format(
                 random.randint(1, counter * 4),
                 directions[random.randint(0, 3)],
             )

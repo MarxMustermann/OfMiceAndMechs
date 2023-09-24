@@ -16,11 +16,11 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         out = []
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-Draw a floor plan assigned to a room%s.
+            reason = f",\nto {self.reason}"
+        text = f"""
+Draw a floor plan assigned to a room{reason}.
 
-"""%(reason,)
+"""
         return out
 
     def triggerCompletionCheck(self,character=None):

@@ -15,13 +15,13 @@ class ScheduleRoomBuilding(src.quests.MetaQuestSequence):
 
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-Schedule a room to be built on tile%s.
+            reason = f",\nto {self.reason}"
+        text = f"""
+Schedule a room to be built on tile{reason}.
 
 Use a CityPlaner to do this.
 
-"""%(reason,)
+"""
 
         out.append(text)
         return out

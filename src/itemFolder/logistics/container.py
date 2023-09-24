@@ -42,24 +42,18 @@ Activate the container and select the option "unload items" to unload the items.
 
         text = super().getLongInfo()
 
-        text += """
-it holds the items. It can hold a maximum of %s items.
+        text += f"""
+it holds the items. It can hold a maximum of {self.maxItems} items.
 
-This is a level %s item.
+This is a level {self.level} item.
 
-""" % (
-            self.maxItems,
-            self.level,
-        )
+"""
 
         if self.contained:
             for item in self.contained:
-                text += """
-* %s
-%s""" % (
-                    item.name,
-                    item.description,
-                )
+                text += f"""
+* {item.name}
+{item.description}"""
         else:
             text += """
 the container is empty

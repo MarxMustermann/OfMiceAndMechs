@@ -15,14 +15,14 @@ class AssignFloorPlan(src.quests.MetaQuestSequence):
         out = []
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-Assign a floor plan to room %s%s.
+            reason = f", to {self.reason}"
+        text = f"""
+Assign a floor plan to room {self.roomPosition}{reason}.
 
-Set the floor plan: %s
+Set the floor plan: {self.floorPlanType}
 
 (setting the wrong floor plan may break the tutorial, but is FUN)
-"""%(self.roomPosition,reason,self.floorPlanType,)
+"""
         out = [text]
         return out
 

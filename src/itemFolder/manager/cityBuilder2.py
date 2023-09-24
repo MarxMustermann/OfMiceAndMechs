@@ -137,15 +137,15 @@ class CityBuilder2(src.items.Item):
                 floorPlan["walkingSpace"].add((x+1,y+1,0))
                 floorPlan["walkingSpace"].add((x+2,y+1,0))
 
-            floorPlan["buildSites"].append((((x,11,0),"CorpseAnimator",{})))
+            floorPlan["buildSites"].append(((x,11,0),"CorpseAnimator",{}))
 
             if not x==1:
                 command = 4*"Jwaawwdd"+"Jw"+"2a8s2d"+"j"
             else:
                 command = 4*"Jwddwwaa"+"Jw"+"2d8s2a"+"j"
-            floorPlan["buildSites"].append((((x+1,10,0),"Command",{"command":command})))
+            floorPlan["buildSites"].append(((x+1,10,0),"Command",{"command":command}))
 
-            floorPlan["buildSites"].append((((x+1,11,0),"Command",{"command":"Kdwj"})))
+            floorPlan["buildSites"].append(((x+1,11,0),"Command",{"command":"Kdwj"}))
 
             floorPlan["inputSlots"].append(((x+2,11,0),"Corpse",{"maxAmount":2}))
 
@@ -183,7 +183,7 @@ class CityBuilder2(src.items.Item):
         self.prefabs["storage"].append(floorPlan)
 
         try:
-            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+            with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
@@ -494,7 +494,7 @@ class CityBuilder2(src.items.Item):
             index = 0
             for item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
-                options.append((index,"prefab%s"%(index,)))
+                options.append((index,f"prefab{index}"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}
@@ -950,7 +950,7 @@ class CityBuilder2(src.items.Item):
 
         extraText = "\n\n"
         for task in reversed(self.tasks):
-            extraText += "%s\n"%(task,)
+            extraText += f"{task}\n"
 
         self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
         character.macroState["submenue"] = self.submenue

@@ -71,7 +71,7 @@ class CityBuilder(src.items.Item):
         super().apply()
 
     def getLongINfo(self):
-        return "plan your city with this item. %s"%(self.autoExtensionThreashold,)
+        return f"plan your city with this item. {self.autoExtensionThreashold}"
 
     def addTasksToLocalRoom(self, tasks, character):
         """
@@ -124,15 +124,11 @@ class CityBuilder(src.items.Item):
             availableAmount = self.resources.get(resourceType)
 
             if availableAmount is None:
-                character.addMessage("need resource %s" % (resourceType,))
+                character.addMessage(f"need resource {resourceType}")
                 return False
             elif availableAmount < amount:
                 character.addMessage(
-                    "need %s more %s"
-                    % (
-                        amount - availableAmount,
-                        resourceType,
-                    )
+                    f"need {amount - availableAmount} more {resourceType}"
                 )
                 return False
 
@@ -385,7 +381,7 @@ class CityBuilder(src.items.Item):
             self.runningTasks = []
             return
 
-        task["stockPileName"] = "storage_%s_%s" % (
+        task["stockPileName"] = "storage_{}_{}".format(
             task["stockPileCoordinate"][0],
             task["stockPileCoordinate"][1],
         )
@@ -498,12 +494,7 @@ class CityBuilder(src.items.Item):
                         ):
                             continue
                         character.addMessage(
-                            "building site %s blocked on %s/%s"
-                            % (
-                                plot,
-                                x,
-                                y,
-                            )
+                            f"building site {plot} blocked on {x}/{y}"
                         )
                         self.abortTask()
                         return
@@ -816,7 +807,7 @@ class CityBuilder(src.items.Item):
             if neighbourRoad:
                 self.tasks.append(task)
                 task["metalBarStorageCoordinate"] = neighbourRoad
-                task["metalBarStorageName"] = "bardropoff %s" % (
+                task["metalBarStorageName"] = "bardropoff {}".format(
                     task["metalBarStorageCoordinate"],
                 )
                 self.unusedRoadTiles.remove(neighbourRoad)
@@ -854,13 +845,13 @@ class CityBuilder(src.items.Item):
                 return
 
         if not task.get("didBasicSetup"):
-            task["stockPileName"] = "miningStockPile_%s_%s" % (
+            task["stockPileName"] = "miningStockPile_{}_{}".format(
                 task["stockPileCoordinate"][0],
                 task["stockPileCoordinate"][1],
             )
 
             if not "metalBarStorageName" in task:
-                task["metalBarStorageName"] = "bardropoff %s" % (
+                task["metalBarStorageName"] = "bardropoff {}".format(
                     task["metalBarStorageCoordinate"],
                 )
 
@@ -1146,7 +1137,7 @@ class CityBuilder(src.items.Item):
 
         extraText = "\n\n"
         for task in reversed(self.tasks):
-            extraText += "%s\n"%(task,)
+            extraText += f"{task}\n"
 
         self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
         character.macroState["submenue"] = self.submenue
@@ -1495,56 +1486,43 @@ class CityBuilder(src.items.Item):
             the description text
         """
 
-        text = """
+        text = f"""
 resources:
-%s
+{self.resources}
 
 commands:
-%s
+{self.commands}
 
 error:
-%s
+{self.error}
 
 runningTasks:
-%s
+{self.runningTasks}
 
 tasks:
-%s
+{self.tasks}
 
 reservedPlots:
-%s
+{self.reservedPlots}
 
 usedPlots:
-%s
+{self.usedPlots}
 
 roadTiles:
-%s
+{self.roadTiles}
 
 unfinishedRoadTiles:
-%s
+{self.unfinishedRoadTiles}
 
 plotPool:
-%s
+{self.plotPool}
 
 unusedRoadTiles:
-%s
+{self.unusedRoadTiles}
 
 scrapFields:
-%s
-""" % (
-            self.resources,
-            self.commands,
-            self.error,
-            self.runningTasks,
-            self.tasks,
-            self.reservedPlots,
-            self.usedPlots,
-            self.roadTiles,
-            self.unfinishedRoadTiles,
-            self.plotPool,
-            self.unusedRoadTiles,
-            self.scrapFields,
-        )
+{self.scrapFields}
+"""
         return text
 
 src.items.addType(CityBuilder)

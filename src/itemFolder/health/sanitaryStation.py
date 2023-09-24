@@ -98,11 +98,7 @@ class SanitaryStation(src.items.Item):
             self.settingName = None
         if self.submenue.selection == "showSettings":
             self.submenue = src.interaction.TextMenu(
-                "health threshold: %s\nsatiation threshold: %s"
-                % (
-                    self.healthThreshold,
-                    self.satiationThreshold,
-                )
+                f"health threshold: {self.healthThreshold}\nsatiation threshold: {self.satiationThreshold}"
             )
             self.character.macroState["submenue"] = self.submenue
 
@@ -148,7 +144,7 @@ class SanitaryStation(src.items.Item):
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
+            f"added command for {itemType} - {commandItem.command}"
         )
         return
 
@@ -171,7 +167,7 @@ class SanitaryStation(src.items.Item):
         character.runCommandString(command)
 
         character.addMessage(
-            "running command to handle trigger %s - %s" % (trigger, command)
+            f"running command to handle trigger {trigger} - {command}"
         )
 
     def fetchSpecialRegisterInformation(self):

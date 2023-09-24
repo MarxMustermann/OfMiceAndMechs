@@ -380,22 +380,17 @@ class RipInReality(src.items.Item):
 
         text = super().getLongInfo()
 
-        text += """
+        text += f"""
 
 depth:
-%s
+{self.depth}
 
 stable:
-%s
+{self.stable}
 
-%s
-%s
-""" % (
-            self.depth,
-            self.stable,
-            self.target,
-            self.targetPos,
-        )
+{self.target}
+{self.targetPos}
+"""
         
         return text
 

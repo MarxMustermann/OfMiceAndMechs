@@ -28,7 +28,7 @@ class Command(src.items.Item):
 
     def configure(self, character):
         self.repeat = not self.repeat
-        character.addMessage("you set the command to repeat: %s"%(self.repeat,))
+        character.addMessage(f"you set the command to repeat: {self.repeat}")
 
     def apply(self, character):
         """

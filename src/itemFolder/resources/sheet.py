@@ -50,14 +50,12 @@ Sheets are also needed as resource to create a blueprint in the blueprinter mach
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 Sheets can be produced from metal bars.
 
-This is a level %s item
+This is a level {self.level} item
 
-""" % (
-            self.level,
-        )
+"""
         return text
 
     def apply(self, character):

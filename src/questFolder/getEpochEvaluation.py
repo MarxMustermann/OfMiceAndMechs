@@ -13,9 +13,9 @@ class GetEpochEvaluation(src.quests.MetaQuestSequence):
         out = []
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-Get your epoch evaluation%s.
+            reason = f", to {self.reason}"
+        text = f"""
+Get your epoch evaluation{reason}.
 
 You completed a part of the epoch challenge.
 You will get a reward for that.
@@ -23,7 +23,7 @@ You will get a reward for that.
 Claim the glass tears you have earned.
 You can spend them later to get an actual reward.
 
-"""%(reason,)
+"""
         out.append(text)
         return out
 

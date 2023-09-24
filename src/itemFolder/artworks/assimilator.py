@@ -163,12 +163,12 @@ Choose your tertiary duty:\n"""
         
         if character.rank == 6:
             if character.reputation < self.requiredReputationForRank5:
-                text = """
+                text = f"""
 
-you need %s reputation to be promoted.
+you need {self.requiredReputationForRank5} reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
-"""%(self.requiredReputationForRank5,)
+"""
 
                 params = {"character":character}
                 character.addMessage("----------------"+text+"-----------------")
@@ -183,12 +183,12 @@ gain reputation by completing quests and killing enemies.
 
         if character.rank == 5:
             if character.reputation < self.requiredReputationForRank4:
-                text = """
+                text = f"""
 
-you need %s reputation to be promoted.
+you need {self.requiredReputationForRank4} reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
-"""%(self.requiredReputationForRank4,)
+"""
 
                 params = {"character":character}
                 character.addMessage("----------------"+text+"-----------------")
@@ -213,11 +213,11 @@ Additionally you recieve 2 health vials.
                 character.reputation = 0
 
                 character.baseDamage += self.baseDamageEffect
-                character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+                character.addMessage(f"your base damage increased by {self.baseDamageEffect}")
                 character.maxHealth += self.healthIncrease
                 character.heal(self.healingEffect)
                 character.movementSpeed *= 0.9
-                character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+                character.addMessage(f"your max heath increased by {self.healingEffect}")
 
             item = src.items.itemMap["Vial"]()
             item.uses = item.maxUses
@@ -256,12 +256,12 @@ Reapply after this changes.
                 return
             else:
                 if character.reputation < self.requiredReputationForRank3:
-                    text = """
+                    text = f"""
 
-you need %s reputation to be promoted.
+you need {self.requiredReputationForRank3} reputation to be promoted.
 
 gain reputation by completing quests and killing enemies.
-"""%(self.requiredReputationForRank3,)
+"""
                     params = {"character":character}
                     character.addMessage("----------------"+text+"-----------------")
                     submenue = src.interaction.TextMenu(text)
@@ -286,11 +286,11 @@ Additionally you recieve 2 health vials.
                     character.reputation = 0
 
                     character.baseDamage += self.baseDamageEffect
-                    character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+                    character.addMessage(f"your base damage increased by {self.baseDamageEffect}")
                     character.maxHealth += self.healthIncrease
                     character.heal(self.healingEffect)
                     character.movementSpeed *= 0.9
-                    character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+                    character.addMessage(f"your max heath increased by {self.healingEffect}")
 
                     item = src.items.itemMap["Vial"]()
                     item.uses = item.maxUses
@@ -368,7 +368,7 @@ You now unlocked the personnel artwork (PA).
             return
 
         elif extraParams["step"] == 1:
-            text = """
+            text = f"""
 
 you are hereby rank 5.
 
@@ -377,7 +377,7 @@ Continue to be useful.
 To help you with that you got the following:
 
 * the universal leaders blessing.
-(base damage +%s max health +%s, health +%s)
+(base damage +{self.baseDamageEffect} max health +{self.healthIncrease}, health +{self.healingEffect})
 * 2 health vials
 
 ---
@@ -385,16 +385,16 @@ To help you with that you got the following:
 You can heal using the vials. The vials are consumables so it is limited healing.
 Use the vial or press Jh to heal once or JH to fully heal.
 
-"""%(self.baseDamageEffect,self.healthIncrease,self.healingEffect)
+"""
             character.rank = 5
             character.reputation = 0
 
             character.baseDamage += self.baseDamageEffect
-            character.addMessage("your base damage increased by %s"%(self.baseDamageEffect,))
+            character.addMessage(f"your base damage increased by {self.baseDamageEffect}")
             character.maxHealth += self.healthIncrease
             character.heal(self.healingEffect)
             character.movementSpeed *= 0.9
-            character.addMessage("your max heath increased by %s"%(self.healingEffect,))
+            character.addMessage(f"your max heath increased by {self.healingEffect}")
 
             item = src.items.itemMap["Vial"]()
             item.uses = item.maxUses
@@ -420,8 +420,8 @@ You have no records on this base.
 Showing full introduction.
 """
         elif step == 1:
-            text = """
-You are a clone and serve in faction %s.
+            text = f"""
+You are a clone and serve in faction {character.faction}.
 After assimilation you will serve on this base.
 
 You are not the only worker working in this base.
@@ -433,7 +433,7 @@ Besides the clones, ghuls are working on the base.
 The green @3, @4, @5, @6, @N and @x are your allies.
 Try to work with them.
 
-"""%(character.faction,)
+"""
         elif step == 2:
             text = """
 Industry requires machines to produce actual goods.
@@ -558,14 +558,14 @@ Train a skill and return to integrate into the bases systems
             if "hauling" in character.skills:
                 duty = "hauling"
                 dutytext = "carry items within rooms"
-            text = """
+            text = f"""
 You hereby have a rank of 6.
 You can request promotions here.
 
 Your duties are:
 
-%s:
-%s
+{duty}:
+{dutytext}
 
 To help you with that you got the universal leaders blessing.
 (base damage +2 max health +20, health +50)
@@ -575,7 +575,7 @@ To help you with that you got the universal leaders blessing.
 your stats were increased and you got healing.
 This happens when you complete a story section.
 
-"""%(duty, dutytext,)
+"""
             character.rank = 6
             character.reputation = 0
 

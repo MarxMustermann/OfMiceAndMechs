@@ -18,10 +18,10 @@ class CleanSpace(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-Remove all items from the space %s on tile %s%s.
-"""%(self.targetPosition,self.targetPositionBig,reason,)
+            reason = f",\nto {self.reason}"
+        text = f"""
+Remove all items from the space {self.targetPosition} on tile {self.targetPositionBig}{reason}.
+"""
         return text
 
     def unhandledSubQuestFail(self,extraParam):

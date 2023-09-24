@@ -48,21 +48,14 @@ class UniformStockpileManager(src.items.Item):
 
         text = super().getLongInfo()
 
-        text += """
-lastAction: %s
-commands: %s
-storedItemType: %s
-storedItemWalkable: %s
-restrictStoredItemType: %s
-restrictStoredItemWalkable: %s
-""" % (
-            self.lastAction,
-            self.commands,
-            self.storedItemType,
-            self.storedItemWalkable,
-            self.restrictStoredItemType,
-            self.restrictStoredItemWalkable,
-        )
+        text += f"""
+lastAction: {self.lastAction}
+commands: {self.commands}
+storedItemType: {self.storedItemType}
+storedItemWalkable: {self.storedItemWalkable}
+restrictStoredItemType: {self.restrictStoredItemType}
+restrictStoredItemWalkable: {self.restrictStoredItemWalkable}
+"""
         return text
 
     # bug: this form of using interaction menus causes mixups when used by multiple characters at once
@@ -244,7 +237,7 @@ r: reset
         self.character.runCommandString(command)
 
         self.character.addMessage(
-            "running command for trigger: %s - %s" % (commandName, command)
+            f"running command for trigger: {commandName} - {command}"
         )
 
     # bad code: should use superclass ability
@@ -272,7 +265,7 @@ r: reset
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (trigger, commandItem.command)
+            f"added command for {trigger} - {commandItem.command}"
         )
         self.blocked = False
         return

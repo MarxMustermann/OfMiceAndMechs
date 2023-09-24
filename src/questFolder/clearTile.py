@@ -19,8 +19,8 @@ class ClearTile(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         if self.character.rank == 3:
-            text = """
-Ensure that the trap room on %s is cleaned.
+            text = f"""
+Ensure that the trap room on {self.targetPosition} is cleaned.
 
 Since you are the commander of the base you can make other people do it.
 Send the rank 5-6 NPCs and proceed to do something else in the meantime.
@@ -35,12 +35,12 @@ It work like this:
 
 After you do this the NPCs should stop what they are doing and start working on the new order.
 If the task is not completed after some time, reload the trap room yourself.
-Use the shockers in the trap room for this."""%(self.targetPosition,)
+Use the shockers in the trap room for this."""
         else:
-            text = """
-Clean the room on tile %s.
+            text = f"""
+Clean the room on tile {self.targetPosition}.
 
-Remove all items from the walkways."""%(self.targetPosition,)
+Remove all items from the walkways."""
         return text
 
     def triggerCompletionCheck(self,character=None):

@@ -56,7 +56,7 @@ class GlassStatue(src.items.Item):
 
             for corpse in corpses:
                 character.weapon.baseDamage += 1
-                character.addMessage("your weapons base damage is increased by 1 to %s"%(character.weapon.baseDamage,))
+                character.addMessage(f"your weapons base damage is increased by 1 to {character.weapon.baseDamage}")
                 character.inventory.remove(corpse)
         elif self.itemID == 5:
             if not character.armor:
@@ -68,7 +68,7 @@ class GlassStatue(src.items.Item):
 
             for corpse in corpses:
                 character.armor.armorValue += 0.2
-                character.addMessage("your armors armor value is increased by 0.2 to %s"%(character.armor.armorValue,))
+                character.addMessage(f"your armors armor value is increased by 0.2 to {character.armor.armorValue}")
                 character.inventory.remove(corpse)
         elif self.itemID == 6:
             if character.health >= 500:
@@ -76,7 +76,7 @@ class GlassStatue(src.items.Item):
 
             for corpse in corpses:
                 character.armor.armorValue += 0.2
-                character.addMessage("your armors armor value is increased by 0.2 to %s"%(character.armor.armorValue,))
+                character.addMessage(f"your armors armor value is increased by 0.2 to {character.armor.armorValue}")
                 character.inventory.remove(corpse)
         else:
             if character.baseDamage >= 5:
@@ -84,7 +84,7 @@ class GlassStatue(src.items.Item):
 
             for corpse in corpses:
                 character.baseDamage += 0.1
-                character.addMessage("your base damage is increased by 0.1 to %s"%(character.baseDamage,))
+                character.addMessage(f"your base damage is increased by 0.1 to {character.baseDamage}")
                 character.inventory.remove(corpse)
 
 src.items.addType(GlassStatue)

@@ -958,7 +958,7 @@ class StockpileMetaManager(src.items.Item):
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
+            f"added command for {itemType} - {commandItem.command}"
         )
         self.blocked = False
         return
@@ -989,48 +989,39 @@ class StockpileMetaManager(src.items.Item):
         text = super().getLongInfo()
         stockPileInfo = ""
         for (stockpile, info) in self.stockPileInfo.items():
-            stockPileInfo += "\n  %s: " % (stockpile,)
+            stockPileInfo += f"\n  {stockpile}: "
             for (key, value) in info.items():
                 if key in ("pathTo", "pathFrom"):
                     continue
-                stockPileInfo += "  %s: %s " % (key, value)
-        text += """
+                stockPileInfo += f"  {key}: {value} "
+        text += f"""
 tasks:
-%s
+{self.tasks}
 
 stockpiles:
-%s
+{self.stockPiles}
 
 stockPileInfo:
-%s
+{stockPileInfo}
 
 assignedPlots:
-%s
+{self.assignedPlots}
 
 assignedPlotsInfo:
-%s
+{self.assignedPlotsInfo}
 
 lastAction:
-%s
+{self.lastAction}
 
 commands:
-%s
+{self.commands}
 
 roomManagerName:
-%s
+{self.roomManagerName}
 
 description:
 
-""" % (
-            self.tasks,
-            self.stockPiles,
-            stockPileInfo,
-            self.assignedPlots,
-            self.assignedPlotsInfo,
-            self.lastAction,
-            self.commands,
-            self.roomManagerName,
-        )
+"""
         return text
 
 src.items.addType(StockpileMetaManager)

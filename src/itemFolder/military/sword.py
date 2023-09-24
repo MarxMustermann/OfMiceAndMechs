@@ -35,13 +35,11 @@ class Sword(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 baseDamage:
-%s
+{self.baseDamage}
 
-""" % (
-            self.baseDamage,
-        )
+"""
         return text
 
     # bad code: very hacky way of equiping things
@@ -54,7 +52,7 @@ baseDamage:
             character: the character trying to use the iten
         """
 
-        character.addMessage("you equip the sword and wield a %s weapon now"%(self.baseDamage,))
+        character.addMessage(f"you equip the sword and wield a {self.baseDamage} weapon now")
         charSequence = []
         for i in range(2,self.baseDamage+1):
             char = str(i)

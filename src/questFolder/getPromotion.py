@@ -21,12 +21,12 @@ Getting promoted has several advantages:
             text += """
 * You will be able to get subordinates."""
         else:
-            text += """
+            text += f"""
 * You will be able to handle more subordinates.
 
 Use the assimilator to fetch your promotion.
-You need to reach rank %s to complete the quest.
-"""%(self.character.rank-1,)
+You need to reach rank {self.character.rank-1} to complete the quest.
+"""
 
         return text
 

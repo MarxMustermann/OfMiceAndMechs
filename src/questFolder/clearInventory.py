@@ -18,14 +18,14 @@ class ClearInventory(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason += ", to %s"%(self.reason,)
-        text = """
-Clear your inventory%s.
+            reason += f", to {self.reason}"
+        text = f"""
+Clear your inventory{reason}.
 
 The storage room is a good place to put your items.
 Put the items into the stockpiles to make then accessible to the base.
 
-To see your items open the your inventory by pressing i."""%(reason,)
+To see your items open the your inventory by pressing i."""
         return text
 
     def droppedItem(self,extraInfo):

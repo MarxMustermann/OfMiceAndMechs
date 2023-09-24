@@ -174,7 +174,7 @@ This should be used in cases where you can not place the Painter on the position
         if mode == "d":
             offset = (1,0,0)
         self.offset = offset
-        extraInfo["character"].addMessage("you set the offset to %s"%(self.offset,))
+        extraInfo["character"].addMessage(f"you set the offset to {self.offset}")
 
     def setMode(self,extraInfo):
         character = extraInfo["character"]
@@ -194,14 +194,14 @@ This should be used in cases where you can not place the Painter on the position
             mode = "delete"
         self.paintMode = mode
 
-        character.addMessage("you set the mode to %s"%(self.paintMode,))
+        character.addMessage(f"you set the mode to {self.paintMode}")
 
     def setType(self,extraInfo):
         if extraInfo.get("text") in ("","None",None):
             self.paintType = None
         else:
             self.paintType = extraInfo["text"]
-        extraInfo["character"].addMessage("you set the type to %s"%(self.paintType,))
+        extraInfo["character"].addMessage(f"you set the type to {self.paintType}")
 
     def apply(self, character):
         """
@@ -298,15 +298,13 @@ This should be used in cases where you can not place the Painter on the position
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
-mode: %s
-type: %s
-extraInfo: %s
-offset: %s
-""" % (
-            self.paintMode,self.paintType,self.paintExtraInfo,self.offset
-        )
+mode: {self.paintMode}
+type: {self.paintType}
+extraInfo: {self.paintExtraInfo}
+offset: {self.offset}
+"""
 
         return text
 

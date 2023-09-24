@@ -22,7 +22,7 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
         if not character:
             return
 
-        room = character.getTerrain().getRoomByPosition((self.targetPositionBig))[0]
+        room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         for buildSite in room.buildSites:
             if buildSite[0] == self.targetPosition:
                 self.postHandler()
@@ -31,7 +31,7 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
         text = """
 draw buildsite
 

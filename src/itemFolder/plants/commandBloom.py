@@ -843,25 +843,16 @@ class CommandBloom(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
-charges: %s
-numCoal: %s
-numSick: %s
-masterCommand: %s
-numCommandBlooms: %s
-blocked: %s
-cluttered: %s
-faction: %s
-""" % (
-            self.charges,
-            self.numCoal,
-            self.numSick,
-            self.masterCommand,
-            self.numCommandBlooms,
-            self.blocked,
-            self.cluttered,
-            self.faction,
-        )
+charges: {self.charges}
+numCoal: {self.numCoal}
+numSick: {self.numSick}
+masterCommand: {self.masterCommand}
+numCommandBlooms: {self.numCommandBlooms}
+blocked: {self.blocked}
+cluttered: {self.cluttered}
+faction: {self.faction}
+"""
 
 src.items.addType(CommandBloom)

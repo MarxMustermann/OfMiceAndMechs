@@ -7,7 +7,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
-        self.metaDescription = "%s %s"%(description,targetPosition,)
+        self.metaDescription = f"{description} {targetPosition}"
         if len(targetPosition) < 3:
             targetPosition = (targetPosition[0],targetPosition[1],0)
         self.targetPosition = targetPosition
@@ -95,11 +95,11 @@ class GoToTile(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
 
-        text = """
-Go to tile %s%s.
-"""%(self.targetPosition,reason,)
+        text = f"""
+Go to tile {self.targetPosition}{reason}.
+"""
 
         if self.character.getBigPosition() == self.targetPosition:
             text += """
@@ -110,18 +110,18 @@ You are on the target tile.
             direction = ""
             diffXBig = self.targetPosition[0] - self.character.getBigPosition()[0]
             if diffXBig < 0:
-                direction = "and %s tiles to the west"%(-diffXBig,)
+                direction = f"and {-diffXBig} tiles to the west"
             if diffXBig > 0:
-                direction = "and %s tiles to the east"%(diffXBig,)
+                direction = f"and {diffXBig} tiles to the east"
             diffYBig = self.targetPosition[1] - self.character.getBigPosition()[1]
             if diffYBig < 0:
-                direction = "and %s tiles to the north"%(-diffYBig,)
+                direction = f"and {-diffYBig} tiles to the north"
             if diffYBig > 0:
-                direction = "and %s tiles to the south"%(diffYBig,)
-            text += """
+                direction = f"and {diffYBig} tiles to the south"
+            text += f"""
 
-The target tile is %s
-"""%(direction[4:],)
+The target tile is {direction[4:]}
+"""
         return text
 
     def triggerCompletionCheck(self, character=None):

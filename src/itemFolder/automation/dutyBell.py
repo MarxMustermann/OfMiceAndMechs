@@ -40,7 +40,7 @@ class DutyBell(src.items.Item):
         dutySignals = {"machine operation":"MO","resource fetching":"RF","resource gathering":"RG","painting":"PT","machine placing":"MP"}
         dutySignal = dutySignals.get(self.duty,"##")
 
-        character.addMessage("you ring the duty bell to signal %s is needed"%(self.duty,))
+        character.addMessage(f"you ring the duty bell to signal {self.duty} is needed")
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), dutySignal)})
         self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
         self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
@@ -90,7 +90,7 @@ class DutyBell(src.items.Item):
 
         character = extraParams["character"]
         self.duty = extraParams["selection"]
-        character.addMessage("you set the duty to %s"%(self.duty,))
+        character.addMessage(f"you set the duty to {self.duty}")
 
     def boltAction(self,character):
         self.bolted = True
@@ -110,7 +110,7 @@ class DutyBell(src.items.Item):
 
         text = super().getLongInfo()
 
-        text += "this bell signals the duty:\n%s"%(self.duty,)
+        text += f"this bell signals the duty:\n{self.duty}"
 
         return text
 

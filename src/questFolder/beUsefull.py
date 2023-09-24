@@ -23,18 +23,18 @@ class BeUsefull(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
         out = """
-Be useful%s.
+Be useful{}.
 
 Try fulfill your duties on this base with the skills you have.
 
 Your duties are:
 
-%s
+{}
 
     
-"""%(reason,"\n".join(self.character.duties),)
+""".format(reason,"\n".join(self.character.duties),)
         if not self.character.duties:
             out += "You have no duties, something has gone wrong."
 
@@ -61,7 +61,7 @@ Search for rooms with items cluttering the floor.
 Remove those items.
 Reputation is rewarded for picking up items from walkways.\n\n"""
                 else:
-                    out += "%s\n\n"%(duty,)
+                    out += f"{duty}\n\n"
 
         if not self.character.rank == 3:
             reputationForPromotion = "???"
@@ -72,16 +72,16 @@ Reputation is rewarded for picking up items from walkways.\n\n"""
             if self.character.rank == 4:
                 reputationForPromotion = 750
 
-            out += "%s"%(self.idleCounter,)
+            out += f"{self.idleCounter}"
 
-            out += """
+            out += f"""
 
-You need %s reputation for a promotion.
-You currently have %s reputation.
+You need {reputationForPromotion} reputation for a promotion.
+You currently have {self.character.reputation} reputation.
 Do your duty to gain more reputation.
 Try to avoid losing reputation due to being careless.
 
-"""%(reputationForPromotion,self.character.reputation,)
+"""
 
         out = [out]
         if not self.subQuests:
@@ -1933,7 +1933,7 @@ We should stop watching and do something about that.
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     quest.activate()
-                    character.runCommandString("%s."%(self.idleCounter,))
+                    character.runCommandString(f"{self.idleCounter}.")
                     return
 
             for room in terrain.rooms:
@@ -1945,7 +1945,7 @@ We should stop watching and do something about that.
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
                 quest.activate()
-                character.runCommandString("%s."%(self.idleCounter,))
+                character.runCommandString(f"{self.idleCounter}.")
                 return
 
             self.checkedRoomPositions = []

@@ -212,8 +212,7 @@ Select the thing to produce and confirm.
             and not self.charges
         ):
             character.addMessage(
-                "cooldown not reached. Wait %s ticks"
-                % (self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer),)
+                "cooldown not reached. Wait {} ticks".format(self.coolDown - (src.gamestate.gamestate.tick - self.coolDownTimer))
             )
             return
 
@@ -290,7 +289,7 @@ Select the thing to produce and confirm.
         self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"--")})
         self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"++")})
         character.addMessage(
-            "you produce a machine that produces %s" % (itemType,)
+            f"you produce a machine that produces {itemType}"
         )
 
         # remove resources
@@ -318,22 +317,18 @@ Select the thing to produce and confirm.
 
         text = super().getLongInfo()
 
-        text += """
-After using this machine you need to wait %s ticks till you can use this machine again.
-""" % (
-            self.coolDown,
-        )
+        text += f"""
+After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.
+"""
 
         coolDownLeft = self.coolDown - (
             src.gamestate.gamestate.tick - self.coolDownTimer
         )
         if coolDownLeft > 0:
-            text += """
-Currently you need to wait %s ticks to use this machine again.
+            text += f"""
+Currently you need to wait {coolDownLeft} ticks to use this machine again.
 
-""" % (
-                coolDownLeft,
-            )
+"""
         else:
             text += """
 Currently you do not have to wait to use this machine.

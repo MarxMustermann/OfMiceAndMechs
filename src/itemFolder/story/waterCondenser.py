@@ -67,8 +67,7 @@ class WaterCondenser(src.items.Item):
                 * (self.rods + 1 + 5)
             )
             self.character.addMessage(
-                "you drink from the water condenser. You gain %s satiation, but are poisoned"
-                % (amount,)
+                f"you drink from the water condenser. You gain {amount} satiation, but are poisoned"
             )
             self.character.satiation += amount
             if self.character.satiation > 1000:
@@ -86,8 +85,7 @@ class WaterCondenser(src.items.Item):
                 if isinstance(item, src.items.Rod):
 
                     self.character.addMessage(
-                        "you insert a rod into the water condenser increasing its output to %s per 100 ticks"
-                        % (self.rods + 1 + 5,)
+                        f"you insert a rod into the water condenser increasing its output to {self.rods + 1 + 5} per 100 ticks"
                     )
                     self.rods += 1
                     self.character.inventory.remove(item)
@@ -104,13 +102,11 @@ class WaterCondenser(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
-it generates %s satiation for every 100 ticks left alone
+it generates {self.rods + 1 + 5} satiation for every 100 ticks left alone
 
-""" % (
-            self.rods + 1 + 5,
-        )
+"""
         return text
 
 src.items.addType(WaterCondenser)

@@ -18,7 +18,7 @@ import src.logger
 import src.gamestate
 
 
-class Character():
+class Character:
     """
     this is the class for characters meaning both npc and pcs.
     """
@@ -100,7 +100,7 @@ class Character():
             lastName = config.names.characterLastNames[
                     (seed * 10) % len(config.names.characterLastNames)
                 ]
-            name = "%s %s"%(firstName,lastName,)
+            name = f"{firstName} {lastName}"
 
         if display is None and name is not None:
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
@@ -530,7 +530,7 @@ class Character():
 
             for item in self.container.getItemByPosition(tuple(newPos)):
                 if not item.walkable:
-                    self.addMessage("the bolt hits %s"%(item.type,))
+                    self.addMessage(f"the bolt hits {item.type}")
                     item.destroy()
                     return
 
@@ -794,7 +794,7 @@ class Character():
                 damageAbsorbtion += 2
                 self.addMessage("passive combat bonus")
 
-            self.addMessage("your armor absorbs %s damage" % (damageAbsorbtion,))
+            self.addMessage(f"your armor absorbs {damageAbsorbtion} damage")
             damage -= damageAbsorbtion
 
             self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
@@ -811,7 +811,7 @@ class Character():
 
             self.health -= damage
             self.frustration += 10 * damage
-            self.addMessage("you took " + str(damage) + " damage. You have %s/%s health left"%(self.health,self.maxHealth))
+            self.addMessage("you took " + str(damage) + f" damage. You have {self.health}/{self.maxHealth} health left")
 
             if self.combatMode == "defensive":
                 staggerThreshold *= 2
@@ -820,7 +820,7 @@ class Character():
                 self.staggered += damage // staggerThreshold
 
             if reason:
-                self.addMessage("reason: %s" % (reason,))
+                self.addMessage(f"reason: {reason}")
 
             """
             if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):
@@ -1063,8 +1063,7 @@ press any other key to attack normally"""
 
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
-            "you attack the enemy for %s damage, the enemy has %s/%s health left"
-            % (damage, target.health, target.maxHealth)
+            f"you attack the enemy for {damage} damage, the enemy has {target.health}/{target.maxHealth} health left"
         )
 
         if self.addRandomExhaustionOnAttack:
@@ -1101,7 +1100,7 @@ press any other key to attack normally"""
             )
             self.addMessage("auto attack")
 
-        self.addMessage("exhaustion: you %s enemy %s"%(self.exhaustion,target.exhaustion,))
+        self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
     def heal(self, amount, reason=None):
         """
@@ -1121,7 +1120,7 @@ press any other key to attack normally"""
             amount = self.maxHealth - self.health
 
         self.health += amount
-        self.addMessage("you heal for %s and have %s health" % (amount, self.health))
+        self.addMessage(f"you heal for {amount} and have {self.health} health")
 
     # bad code: only works in a certain room type
     def collidedWith(self, other, actor=None):
@@ -1581,7 +1580,7 @@ press any other key to attack normally"""
         self.dead = True
         if reason:
             self.deathReason = reason
-            self.addMessage("cause of death: %s" % (reason,))
+            self.addMessage(f"cause of death: {reason}")
         self.path = []
 
         # notify listeners
@@ -1861,7 +1860,7 @@ press any other key to attack normally"""
         self.changed("dropped",(self,item))
 
     def examinePosition(self, pos):
-        text = "you are examining the position: %s\n\n"%(pos,)
+        text = f"you are examining the position: {pos}\n\n"
 
         if isinstance(self.container,src.rooms.Room):
             room = self.container
@@ -1874,19 +1873,19 @@ press any other key to attack normally"""
             for inputSlot in room.inputSlots:
                 if pos == inputSlot[0]:
                     found = True
-                    text += "is input slot for %s (%s)\n"%(inputSlot[1],inputSlot[2],)
+                    text += f"is input slot for {inputSlot[1]} ({inputSlot[2]})\n"
             for outputSlot in room.outputSlots:
                 if pos == outputSlot[0]:
                     found = True
-                    text += "is output slot for %s (%s)\n"%(outputSlot[1],outputSlot[2],)
+                    text += f"is output slot for {outputSlot[1]} ({outputSlot[2]})\n"
             for storageSlot in room.storageSlots:
                 if pos[0] == storageSlot[0][0] and pos[1] == storageSlot[0][1]:
                     found = True
-                    text += "is storage slot for %s (%s)\n"%(storageSlot[1],storageSlot[2],)
+                    text += f"is storage slot for {storageSlot[1]} ({storageSlot[2]})\n"
             for buildSite in room.buildSites:
                 if pos == buildSite[0]:
                     found = True
-                    text += "is build site for %s (%s)\n"%(buildSite[1],buildSite[2],)
+                    text += f"is build site for {buildSite[1]} ({buildSite[2]})\n"
             if not found:
                 text += "this field is not special\n"
             text += "\n"
@@ -1899,7 +1898,7 @@ press any other key to attack normally"""
             else:
                 text += "there are some items:\n"
                 for item in items:
-                    text += "* %s\n"%(item.name,)
+                    text += f"* {item.name}\n"
                 text += "\nOn the top is:\n\n"
             mainItem = items[0]
         else:
@@ -1909,10 +1908,7 @@ press any other key to attack normally"""
             registerInfo = ""
             for (key, value) in mainItem.fetchSpecialRegisterInformation().items():
                 self.setRegisterValue(key, value)
-                registerInfo += "%s: %s\n" % (
-                    key,
-                    value,
-                )
+                registerInfo += f"{key}: {value}\n"
 
             # print info
             info = mainItem.getLongInfo()
@@ -1937,10 +1933,7 @@ press any other key to attack normally"""
         registerInfo = ""
         for (key, value) in item.fetchSpecialRegisterInformation().items():
             self.setRegisterValue(key, value)
-            registerInfo += "%s: %s\n" % (
-                key,
-                value,
-            )
+            registerInfo += f"{key}: {value}\n"
 
         # print info
         info = item.getLongInfo()
@@ -2274,7 +2267,7 @@ press any other key to attack normally"""
             amount: how less the character should be hungryier
         """
 
-        self.addMessage("you gain %s satiation because you %s"%(amount,reason))
+        self.addMessage(f"you gain {amount} satiation because you {reason}")
 
         self.satiation += amount
         if self.satiation > 1000:

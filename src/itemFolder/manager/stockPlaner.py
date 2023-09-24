@@ -43,7 +43,7 @@ class StockPlaner(src.items.Item):
             index = 0
             for item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
-                options.append((index,"prefab%s"%(index,)))
+                options.append((index,f"prefab{index}"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}

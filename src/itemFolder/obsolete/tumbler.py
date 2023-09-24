@@ -29,7 +29,7 @@ class Tumbler(src.items.Item):
 
         character.runCommandString(command)
 
-        character.addMessage("tumbling %s %s "%(direction,strength))
+        character.addMessage(f"tumbling {direction} {strength} ")
         self.tracking = True
 
     def getLongInfo(self):

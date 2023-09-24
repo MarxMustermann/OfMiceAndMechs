@@ -19,7 +19,7 @@ import random
 
 # bad code: too many attributes
 # obsolete: lots of old code needs a cleanup
-class Room():
+class Room:
     """
     the base class for all rooms
     """

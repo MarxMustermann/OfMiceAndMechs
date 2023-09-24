@@ -95,17 +95,15 @@ class Tree(src.items.Item):
         self.lastUse = src.gamestate.gamestate.tick
 
         text = super().getLongInfo()
-        text += """
-numMaggots: %s
+        text += f"""
+numMaggots: {self.numMaggots}
 
 description:
 A tree can be used as a source for vat maggots.
 
 Activate the tree to harvest a vat maggot.
 
-""" % (
-            self.numMaggots,
-        )
+"""
         return text
 
 src.items.addType(Tree)

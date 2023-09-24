@@ -18,29 +18,29 @@ class SetUpMachine(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
+            reason = f",\nto {self.reason}"
 
-        text = """
-set up a machine to produce %s%s.
+        text = f"""
+set up a machine to produce {self.itemType}{reason}.
 
-"""%(self.itemType,reason)
+"""
 
-        text += """
-Set the machine up on position %s on tile %s
-"""%(self.targetPosition,self.targetPositionBig,)
+        text += f"""
+Set the machine up on position {self.targetPosition} on tile {self.targetPositionBig}
+"""
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
-        text += """
-%s machines are produced by a machine machine.
-A blueprint for %s is required in the machine machine.
+        text += f"""
+{self.itemType} machines are produced by a machine machine.
+A blueprint for {self.itemType} is required in the machine machine.
 Examine the machine machine for more details.
-"""%(self.itemType,self.itemType,)
+"""
 
         if self.tryHard:
-            text += """
+            text += f"""
 Try as hard as you can to achieve this.
-If you don't find a %s blueprint, research it.
-"""%(self.itemType,)
+If you don't find a {self.itemType} blueprint, research it.
+"""
 
         return text
 
@@ -211,7 +211,7 @@ If you don't find a %s blueprint, research it.
 
             if not machineMachine or (src.gamestate.gamestate.tick < machineMachine.coolDownTimer + machineMachine.coolDown):
 
-                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
+                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                 return ([newQuest],None)
                 #if not dryRun:
                 #    self.fail(reason="no machine machine found")
@@ -334,7 +334,7 @@ If you don't find a %s blueprint, research it.
                 self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest], None)
             if "machining" in character.duties:
-                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces %s"%(self.itemType,),produceToInventory=True)
+                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                 return ([newQuest],None)
             self.fail(reason="no blueprint for "+self.itemType)
             return (None,None)

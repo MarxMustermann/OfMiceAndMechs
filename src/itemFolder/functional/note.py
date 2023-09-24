@@ -33,11 +33,11 @@ activate the note to read it.
 
         text = super().getLongInfo()
 
-        text += """
+        text += f"""
 it holds the text:
 
-%s
-"""%(self.text,)
+{self.text}
+"""
         return text
 
     def apply(self, character):
@@ -49,7 +49,7 @@ it holds the text:
         """
         
         submenue = src.interaction.OneKeystrokeMenu(
-            "the note has the text: \n\n\n%s" % (self.text,)
+            f"the note has the text: \n\n\n{self.text}"
         )
         character.macroState["submenue"] = submenue
 

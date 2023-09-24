@@ -88,15 +88,12 @@ class Vial(src.items.Item):
 
         text = super().getLongInfo()
 
-        text += """
-A goo flask can be refilled at a health station and can hold a maximum of %s charges.
+        text += f"""
+A goo flask can be refilled at a health station and can hold a maximum of {self.maxUses} charges.
 
-this is a level %s item.
+this is a level {self.level} item.
 
-""" % (
-            self.maxUses,
-            self.level,
-        )
+"""
         return text
 
     def upgrade(self):

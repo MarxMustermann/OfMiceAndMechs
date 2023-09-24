@@ -339,7 +339,7 @@ class HiveMind(src.items.Item):
                     neighbourPos[index] -= 1
                 elif neighbourPos[index] - anchor[index] < 0:
                     neighbourPos[index] += 1
-            character.addMessage("%s => %s" % (neighbourPos, targetPos))
+            character.addMessage(f"{neighbourPos} => {targetPos}")
 
             (movementCommand, lastNode) = self.calculateMovementUsingPaths(
                 tuple(neighbourPos)
@@ -544,47 +544,29 @@ class HiveMind(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
-charges: %s
-createdAt: %s
-territory: %s
-len(territory): %s
-lastMoldClear: %s
-blocked: %s
-lastBlocked: %s
-lastCluttered: %s
-lastExpansion: %s
-cluttered: %s
-needCoal: %s
-needSick: %s
-len(needSick): %s
-toCheck: %s
-len(toCheck): %s
-colonizeIndex: %s
-faction: %s
+        text += f"""
+charges: {self.charges}
+createdAt: {self.createdAt}
+territory: {self.territory}
+len(territory): {len(self.territory)}
+lastMoldClear: {self.lastMoldClear}
+blocked: {self.blocked}
+lastBlocked: {self.lastBlocked}
+lastCluttered: {self.lastCluttered}
+lastExpansion: {self.lastExpansion}
+cluttered: {self.cluttered}
+needCoal: {self.needCoal}
+needSick: {self.needSick}
+len(needSick): {len(self.needSick)}
+toCheck: {self.toCheck}
+len(toCheck): {len(self.toCheck)}
+colonizeIndex: {self.colonizeIndex}
+faction: {self.faction}
 paths: 
-""" % (
-            self.charges,
-            self.createdAt,
-            self.territory,
-            len(self.territory),
-            self.lastMoldClear,
-            self.blocked,
-            self.lastBlocked,
-            self.lastCluttered,
-            self.lastExpansion,
-            self.cluttered,
-            self.needCoal,
-            self.needSick,
-            len(self.needSick),
-            self.toCheck,
-            len(self.toCheck),
-            self.colonizeIndex,
-            self.faction,
-        )
+"""
 
         for path, value in self.paths.items():
-            text += " * %s - %s\n" % (path, value)
+            text += f" * {path} - {value}\n"
         return text
 
 src.items.addType(HiveMind)

@@ -75,7 +75,7 @@ After changing the duties the clones should change their behaviour after complet
                 dutyMap[duty] += 1
 
         for (k,v) in dutyMap.items():
-            text += "%s - %s\n"%(k,v,)
+            text += f"{k} - {v}\n"
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue

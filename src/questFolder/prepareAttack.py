@@ -26,11 +26,11 @@ Killing those insects before killing the hive will reduce the waves size.
 So you have two ways you can prepare for the wave.
 
 This quest will end when you have prepared enough.
-Your current preparedness score is %s, bring it to below 0.
+Your current preparedness score is {}, bring it to below 0.
 
 
 The formula for the preparedness score is:
-    10*numGuards-numCharges+numItemsOnFloor*20 = 10*%s-%s+%s*20 = %s"""%(self.getPreparednessScore(self.character),numGuards,numCharges,numItemsOnFloor,self.getPreparednessScore(self.character),)
+    10*numGuards-numCharges+numItemsOnFloor*20 = 10*{}-{}+{}*20 = {}""".format(self.getPreparednessScore(self.character),numGuards,numCharges,numItemsOnFloor,self.getPreparednessScore(self.character),)
         text += """
 
 

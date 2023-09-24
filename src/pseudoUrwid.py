@@ -1,4 +1,4 @@
-class AttrSpec(object):
+class AttrSpec:
     """
     dummy object behaving like an urwid attribute
     this is used to prevent crashes

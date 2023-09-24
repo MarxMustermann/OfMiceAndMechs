@@ -73,12 +73,12 @@ class StaffArtwork(src.items.Item):
             description += "staff: \n"
             for staffCharacter in room.staff:
                 try:
-                    description += staffCharacter.name+" %s \n"%(staffCharacter.quests[0].subQuests[0],)
+                    description += staffCharacter.name+f" {staffCharacter.quests[0].subQuests[0]} \n"
                 except:
                     description += staffCharacter.name+" \n"
             description += "\n"
             for duty in room.duties:
-                description += "%s: "%(duty,)
+                description += f"{duty}: "
                 for staffCharacter in room.staff:
                     if duty in staffCharacter.duties:
                         description += "%s   "%(staffCharacter.name)

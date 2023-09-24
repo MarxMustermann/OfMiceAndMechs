@@ -101,7 +101,7 @@ def advanceGame_disabled():
     #if src.gamestate.gamestate.tick%100 == 15:
     #    src.gamestate.gamestate.save()
 
-class AbstractedDisplay(object):
+class AbstractedDisplay:
     """
     an abstraction that allows to not only use urwid for texts
     """
@@ -244,9 +244,9 @@ def setUpUrwid():
     import urwid
 
     # the containers for the shown text
-    urwidHeader = urwid.Text(u"")
-    urwidMain = urwid.Text(u"")
-    urwidFooter = urwid.Text(u"", align="right")
+    urwidHeader = urwid.Text("")
+    urwidMain = urwid.Text("")
+    urwidFooter = urwid.Text("", align="right")
 
     global footer
     global main
@@ -482,11 +482,8 @@ current macros:
                 else:
                     compressedMacro += "/" + keystroke + "/"
 
-            text += """
-%s - %s""" % (
-                key,
-                compressedMacro,
-            )
+            text += f"""
+{key} - {compressedMacro}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "record macro"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -537,11 +534,8 @@ def handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
                             else:
                                 compressedMacro += "/" + keystroke + "/"
 
-                        text += """
-    %s - %s""" % (
-                            macroName,
-                            compressedMacro,
-                        )
+                        text += f"""
+    {macroName} - {compressedMacro}"""
 
                     header.set_text(
                         (urwid.AttrSpec("default", "default"), "record macro")
@@ -553,8 +547,7 @@ def handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
 
             if charState["replay"][-1] in charState["macros"]:
                 char.addMessage(
-                    "replaying %s: %s"
-                    % (
+                    "replaying {}: {}".format(
                         charState["replay"][-1],
                         "".join(charState["macros"][charState["replay"][-1]]),
                     )
@@ -658,11 +651,8 @@ type the macro name you want to record to
                             else:
                                 compressedMacro += "/" + keystroke + "/"
 
-                        text += """
-%s - %s""" % (
-                            key,
-                            compressedMacro,
-                        )
+                        text += f"""
+{key} - {compressedMacro}"""
 
                     header.set_text(
                         (urwid.AttrSpec("default", "default"), "record macro")
@@ -1122,8 +1112,7 @@ get position for what thing
             char.registers["a"][-1] = -char.registers["d"][-1]
             char.registers["w"][-1] = -char.registers["s"][-1]
             char.addMessage(
-                "found in direction %sa %ss %sd %sw"
-                % (
+                "found in direction {}a {}s {}d {}w".format(
                     char.registers["a"][-1],
                     char.registers["s"][-1],
                     char.registers["d"][-1],
@@ -1287,8 +1276,7 @@ get position for what thing
 
         char.addMessage(
             ",".join(char.interactionState["enumerateState"][-1]["target"])
-            + " found in direction %sa %ss %sd %sw"
-            % (
+            + " found in direction {}a {}s {}d {}w".format(
                 char.registers["a"][-1],
                 char.registers["s"][-1],
                 char.registers["d"][-1],
@@ -1313,11 +1301,7 @@ current registers:
             convertedValues = []
             for item in reversed(value):
                 convertedValues.append(str(item))
-            text += """
-%s - %s""" % (
-                itemKey,
-                ",".join(convertedValues),
-            )
+            text += f"""\n{itemKey} - {",".join(convertedValues)}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "registers"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -1371,11 +1355,7 @@ current registers (%s):
                     convertedValues = []
                     for item in reversed(value):
                         convertedValues.append(str(item))
-                    text += """
-%s - %s""" % (
-                        key,
-                        ",".join(convertedValues),
-                    )
+                    text += f"""\n{key} - {",".join(convertedValues)}"""
 
                 header.set_text(
                     (urwid.AttrSpec("default", "default"), "reading registers")
@@ -1391,7 +1371,7 @@ current registers (%s):
 
             def getValue():
                 if key not in char.registers:
-                    char.addMessage("no value in register using %s" % (key,))
+                    char.addMessage(f"no value in register using {key}")
                     return 0
 
                 if isinstance(char.registers[key][-1], str):
@@ -1432,11 +1412,7 @@ current registers (%s):
                         convertedValues = []
                         for item in reversed(value):
                             convertedValues.append(str(item))
-                        text += """
-%s - %s""" % (
-                            key,
-                            ",".join(convertedValues),
-                        )
+                        text += f"""\n{key} - {",".join(convertedValues)}"""
 
                     header.set_text(
                         (urwid.AttrSpec("default", "default"), "registers")
@@ -1477,16 +1453,13 @@ press key for the action you want to do on the register
             lastVarAction["action"] = key
 
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+                text = f"""
 
-input value for this operation ($%s%s)
+input value for this operation (${register}{action})
 
 type number or load value from register
 
-""" % (
-                    register,
-                    action,
-                )
+"""
                 header.set_text(
                     (urwid.AttrSpec("default", "default"), "reading registers")
                 )
@@ -1498,19 +1471,15 @@ type number or load value from register
             lastVarAction["number"] += key
 
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+                text = f"""
 
-input value for this operation ($%s%s%s)
+input value for this operation (${register}{action}{lastVarAction["number"]})
 
 type number
 
 press any other key to finish
 
-""" % (
-                    register,
-                    action,
-                    lastVarAction["number"],
-                )
+"""
                 header.set_text(
                     (urwid.AttrSpec("default", "default"), "reading registers")
                 )
@@ -1635,11 +1604,8 @@ type the macro that should be run in case the condition is true
                         else:
                             compressedMacro += "/" + keystroke + "/"
 
-                        text += """
-%s - %s""" % (
-                            key,
-                            compressedMacro,
-                        )
+                        text += f"""
+{key} - {compressedMacro}"""
 
             else:
                 text = """
@@ -1692,11 +1658,8 @@ type the macro that should be run in case the condition is false
                     else:
                         compressedMacro += "/" + keystroke + "/"
 
-                    text += """
-%s - %s""" % (
-                        key,
-                        compressedMacro,
-                    )
+                    text += f"""
+{key} - {compressedMacro}"""
 
             header.set_text(
                 (urwid.AttrSpec("default", "default"), "conditional action")
@@ -1911,11 +1874,8 @@ current macros:
                     else:
                         compressedMacro += "/" + keystroke + "/"
 
-                text += """
-%s - %s""" % (
-                    key,
-                    compressedMacro,
-                )
+                text += f"""
+{key} - {compressedMacro}"""
 
             header.set_text((urwid.AttrSpec("default", "default"), "record macro"))
             main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -1930,8 +1890,7 @@ current macros:
             if charState["recordingTo"] in charState["macros"]:
                 if charState["macros"][charState["recordingTo"]]:
                     char.addMessage(
-                        "recorded: %s to %s"
-                        % (
+                        "recorded: {} to {}".format(
                             "".join(charState["macros"][charState["recordingTo"]]),
                             charState["recordingTo"],
                         )
@@ -1957,11 +1916,7 @@ current registers
             convertedValues = []
             for item in reversed(value):
                 convertedValues.append(str(item))
-            text += """
-%s - %s""" % (
-                key,
-                ",".join(convertedValues),
-            )
+            text += f"""\n{key} - {",".join(convertedValues)}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "popping registers"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -1983,11 +1938,7 @@ current registers
             convertedValues = []
             for item in reversed(value):
                 convertedValues.append(str(item))
-            text += """
-%s - %s""" % (
-                key,
-                ",".join(convertedValues),
-            )
+            text += f"""\n{key} - {",".join(convertedValues)}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "pushing registers"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -2154,7 +2105,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
 
             options = []
             for (key, value) in char.personality.items():
-                options.append((key, "%s: %s" % (key, value)))
+                options.append((key, f"{key}: {value}"))
             submenu2 = SelectionMenu("select personality setting", options)
             char.macroState["submenue"] = submenu2
             char.macroState["submenue"].followUp = getValue
@@ -2886,7 +2837,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
 
 # bad code: there is redundant code from the specific submenus that should be put here
 # bad code: there is spcific code from the selection submenu that should NOT be here
-class SubMenu():
+class SubMenu:
     """
     The base class for submenus offering selections
     """
@@ -4388,7 +4339,7 @@ class MessagesMenu(SubMenu):
 
         char = self.char
 
-        text = "press a/d to scroll\noldest message on top - skipping %s messages\n\n"%(self.scrollIndex,)+self.render(char)
+        text = f"press a/d to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render(char)
 
         # show info
         header.set_text((urwid.AttrSpec("default", "default"), "messages"))
@@ -4435,7 +4386,7 @@ nearby enemies:
             timeTaken = enemy.timeTaken
             if timeTaken > 1:
                 timeTaken -= 1
-            text += "timeTaken:   %f\n" % (timeTaken,)
+            text += f"timeTaken:   {timeTaken:f}\n"
 
         text += """
 
@@ -4450,7 +4401,7 @@ subordinates:
             timeTaken = ally.timeTaken
             if timeTaken > 1:
                 timeTaken -= 1
-            text += "timeTaken:   %f\n" % (timeTaken,)
+            text += f"timeTaken:   {timeTaken:f}\n"
 
         return text
 
@@ -4532,11 +4483,11 @@ class CharacterInfoMenu(SubMenu):
         flaskInfo = "-"
         if char.flask:
             flaskInfo = str(char.flask.uses)+" flask charges"
-        text += "satiation:  %s (%s)\n" % (char.satiation,flaskInfo,)
+        text += f"satiation:  {char.satiation} ({flaskInfo})\n"
 
         text += "\n"
-        text += "movementSpeed:  %s\n" % (char.movementSpeed,)
-        text += "attackSpeed:    %s\n" % (char.attackSpeed,)
+        text += f"movementSpeed:  {char.movementSpeed}\n"
+        text += f"attackSpeed:    {char.attackSpeed}\n"
         text += "\n"
         for jobOrder in char.jobOrders:
             text += str(jobOrder.taskName)
@@ -4549,10 +4500,10 @@ class CharacterInfoMenu(SubMenu):
         else:
             text += "duties: %s\n" % char.duties
         text += "numAttackedWithoutResponse: %s\n" % char.numAttackedWithoutResponse
-        text += "position: %s\n" % (char.getSpacePosition(),)
-        text += "big position: %s\n" % (char.getBigPosition(),)
-        text += "terrain position: %s\n" % (char.getTerrainPosition(),)
-        text += "grievances: %s\n" % (char.grievances,)
+        text += f"position: {char.getSpacePosition()}\n"
+        text += f"big position: {char.getBigPosition()}\n"
+        text += f"terrain position: {char.getTerrainPosition()}\n"
+        text += f"grievances: {char.grievances}\n"
 
         return text
 
@@ -4635,7 +4586,7 @@ class CreateQuestMenu(SubMenu):
             description = "set param: "
             if param["type"] == "coordinate":
                 description += str(character.getBigPosition())
-            self.submenu = src.interaction.InputMenu("%s%s"%(description,param,))
+            self.submenu = src.interaction.InputMenu(f"{description}{param}")
             self.submenu.handleKey("~", noRender=noRender, character=character)
             self.stealAllKeys = True
             return False
@@ -4701,7 +4652,7 @@ class CreateQuestMenu(SubMenu):
         if not noRender:
             header.set_text((urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
             # show rendered text via urwid
-            main.set_text((urwid.AttrSpec("default", "default"), "type: %s\n\nparameters: \n\n%s\n\ncurrent parameter: \n\n%s : %s\n\noptional parameters: \n\n%s\n\npress space to confirm"%(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
+            main.set_text((urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
         return False
 
 class AdvancedQuestMenu(SubMenu):
@@ -5216,7 +5167,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
                         solvingCommangString = solvingCommangString.replace("\n","\\n")
 
                 if solvingCommangString:
-                    nextstep = "suggested action: \npress %s \nto %s\n\n"%(solvingCommangString,reason,)
+                    nextstep = f"suggested action: \npress {solvingCommangString} \nto {reason}\n\n"
                 else:
                     nextstep = "suggested action: \npress + \nto generate subquests\n\n"
                 txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
@@ -5394,7 +5345,7 @@ class ViewNPCsMenu(SubMenu):
                 self.index = 0
             self.lastSelectedCharacter = None
 
-        self.persistentText.append("%s of %s\n\n"%(self.index+1,len(characters),))
+        self.persistentText.append(f"{self.index+1} of {len(characters)}\n\n")
 
         if self.lastSelectedCharacter:
             counter = 0
@@ -5421,10 +5372,10 @@ class ViewNPCsMenu(SubMenu):
 
             selectedCharacter.timeTaken = 0
 
-        self.persistentText.append("\nname: %s (marked by %s)"%(selectedCharacter.name,"XX"))
-        part1 = "position: %s "%(selectedCharacter.getPosition(),)
-        part2 = "big position: %s "%(selectedCharacter.getBigPosition(),)
-        self.persistentText.append("\n%s%s"%(part1,part2,))
+        self.persistentText.append("\nname: {} (marked by {})".format(selectedCharacter.name,"XX"))
+        part1 = f"position: {selectedCharacter.getPosition()} "
+        part2 = f"big position: {selectedCharacter.getBigPosition()} "
+        self.persistentText.append(f"\n{part1}{part2}")
 
         self.persistentText.append(" "*40+"\n")
         self.persistentText.append("\n")
@@ -5494,7 +5445,7 @@ class ViewNPCsMenu(SubMenu):
         for item in selectedCharacter.inventory:
             self.persistentText.append(item.render())
             self.persistentText.append(" ")
-        self.persistentText.append("(%s)"%(len(selectedCharacter.inventory),))
+        self.persistentText.append(f"({len(selectedCharacter.inventory)})")
 
         if selectedCharacter.weapon:
             self.persistentText.append("\nweapon: %s"%(selectedCharacter.weapon.baseDamage))
@@ -5505,10 +5456,10 @@ class ViewNPCsMenu(SubMenu):
         else:
             self.persistentText.append("\narmor: None")
         self.persistentText.append("\nstaff: %s"%(selectedCharacter.isStaff))
-        self.persistentText.append("\nduties: %s"%(", ".join(selectedCharacter.duties),))
+        self.persistentText.append("\nduties: {}".format(", ".join(selectedCharacter.duties)))
         quest = selectedCharacter.getActiveQuest()
         if quest:
-            self.persistentText.append("\nactive quest: %s"%(quest.description,))
+            self.persistentText.append(f"\nactive quest: {quest.description}")
         else:
             self.persistentText.append("\nactive quest: None")
 
@@ -5573,7 +5524,7 @@ class StaffAsMatrixMenu(SubMenu):
             color = "#fff"
             if counter == self.index[1] and self.index[0] == 0:
                 color = "#f00"
-            text.append((urwid.AttrSpec(color, "default"),"%s"%(roomType,)))
+            text.append((urwid.AttrSpec(color, "default"),f"{roomType}"))
             roomCounter = 1
             for room in self.staffArtwork.container.container.rooms:
                 if room.objType == roomType:
@@ -5715,7 +5666,7 @@ class JobAsMatrixMenu(SubMenu):
                 color = "#333"
             else:
                 color = "default"
-            text.append((urwid.AttrSpec("default", color),"%s: "%(convertName(npc.name),)))
+            text.append((urwid.AttrSpec("default", color),f"{convertName(npc.name)}: "))
             rowCounter = 0
             for duty in duties:
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
@@ -5852,11 +5803,11 @@ class MapMenu(SubMenu):
                     mapText[-1].append(self.mapContent[y][x])
             mapText[-1].append("\n")
 
-        mapText.append("\n press wasd to move cursor %s"%(self.cursor,))
+        mapText.append(f"\n press wasd to move cursor {self.cursor}")
 
         mappedFunctions = self.functionMap.get(self.cursor, {})
         for (key,item) in mappedFunctions.items():
-            mapText.append("\n press %s to %s"%(key,item["description"],))
+            mapText.append("\n press {} to {}".format(key,item["description"],))
 
         mapText.append(self.extraText)
 
@@ -5981,7 +5932,7 @@ class ImplantConnection(SubMenu):
     def handleKey(self, key, noRender=False, character = None):
         if not noRender:
             header.set_text((urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = "implant connection to %s"%(self.connectionTarget.type,)
+            self.persistentText = f"implant connection to {self.connectionTarget.type}"
             self.persistentText += "\n\n"
             self.persistentText += "press j to use connection\n"
             self.persistentText += "press x to close connection\n"
@@ -6012,7 +5963,7 @@ class ImplantConnection(SubMenu):
         return False
 
     def render(self, char):
-        return "implant connection to %s"%(self.connectionTarget.type,)
+        return f"implant connection to {self.connectionTarget.type}"
 
 class ChangeViewsMenu(SubMenu):
     type = "ChangeViewsMenu"
@@ -6101,7 +6052,7 @@ class RoomMenu(SubMenu):
         self.persistentText = "room menu \n\n"
 
         self.persistentText = [self.persistentText]
-        self.persistentText.append("%s - %s\n"%(self.room.objType,self.room.tag,))
+        self.persistentText.append(f"{self.room.objType} - {self.room.tag}\n")
         try:
             self.persistentText.append("chargeStrength: " + str(self.room.chargeStrength)+"\n")
         except:
@@ -6128,7 +6079,7 @@ class RoomMenu(SubMenu):
                         questText += staffNpc.quests[0].description.split("\n")[1]
                     except:
                         pass
-                self.persistentText.append("%s%s - %s\n"%(staffNpc.name,deadText,questText,))
+                self.persistentText.append(f"{staffNpc.name}{deadText} - {questText}\n")
         else:
                 self.persistentText.append("There is no staff assigned.\nassign staff by using the staff artwork (SA)")
 
@@ -6223,12 +6174,12 @@ class RoomSourceMenu(SubMenu):
 
         self.persistentText = "sources to fetch resources from:\n\n"
         for source in self.room.sources:
-            self.persistentText += "%s: %s\n"%(source[1],source[0],)
+            self.persistentText += f"{source[1]}: {source[0]}\n"
         self.persistentText += "\n\npresss c to add source"
         main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         if key == "c":
-            self.submenu = InputMenu("input source.\nCurrent tile is %s.\nFormat to input source is \nresourceType: tilecoordinate"%(character.container.getTilePosition(),))
+            self.submenu = InputMenu("input source.\nCurrent tile is {}.\nFormat to input source is \nresourceType: tilecoordinate".format(character.container.getTilePosition()))
             self.submenu.handleKey("~", noRender, character)
             return False
         
@@ -6299,7 +6250,7 @@ press j or enter to select
 
 """
             self.persistentText = [self.persistentText]
-            self.persistentText.append("%s - %s\n"%(self.room.objType,self.room.name,))
+            self.persistentText.append(f"{self.room.objType} - {self.room.name}\n")
             try:
                 self.persistentText.append( "electricalCharges: " + str(self.room.electricalCharges)+"\n")
             except:
@@ -6322,7 +6273,7 @@ press j or enter to select
                             questText += staffNpc.quests[0].description.split("\n")[1]
                         except:
                             pass
-                    self.persistentText.append("%s%s - %s\n"%(staffNpc.name,deadText,questText,))
+                    self.persistentText.append(f"{staffNpc.name}{deadText} - {questText}\n")
             else:
                     self.persistentText.append("There is no staff assigned assign staff by using the staff artwork (SA)")
 
@@ -6623,7 +6574,7 @@ def keyboardListener(key, targetCharacter=None):
         raise urwid.ExitMainLoop()
 
     elif key == "ctrl o":
-        with open("macros.json", "r") as macroFile:
+        with open("macros.json") as macroFile:
             import json
 
             rawMacros = json.loads(macroFile.read())
@@ -7026,11 +6977,11 @@ def getTcodEvents():
         lastcheck = time.time()
         return foundEvent
 
-class UiAnchor(object):
+class UiAnchor:
     def __init__(self,tag=""):
         pass
 
-class ActionMeta(object):
+class ActionMeta:
     def __init__(self, payload=None,content=None):
         self.payload = payload
         self.content = content
@@ -7336,13 +7287,13 @@ def renderGameDisplay(renderChar=None):
                             flaskInfo = str(char.flask.uses)
 
                         if char.satiation == 0:
-                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved (%s/%s)"%(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),f"starved ({char.satiation}/{flaskInfo})")
                         elif char.satiation < 200:
-                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving (%s/%s)"%(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),f"starving ({char.satiation}/{flaskInfo})")
                         elif char.satiation < 300:
-                            satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry (%s/%s)"%(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#f60", "default"),f"hungry ({char.satiation}/{flaskInfo})")
                         else:
-                            satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated (%s/%s)"%(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#0f0", "default"),f"satiated ({char.satiation}/{flaskInfo})")
 
                         text = [
                             "health: " , healthDisplay ,
@@ -7527,7 +7478,7 @@ def renderGameDisplay(renderChar=None):
 def showMainMenu(args=None):
 
     try:
-        with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+        with open("gamestate/globalInfo.json") as globalInfoFile:
             rawState = json.loads(globalInfoFile.read())
             saves = rawState["saves"]
             gameIndex = rawState["lastGameIndex"]
@@ -7778,7 +7729,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         try:
             # register the save
-            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+            with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
@@ -7967,21 +7918,21 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"d: difficulty - %s"%(difficulty,)),(offsetX+3,offsetY+23))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"d: difficulty - {difficulty}"),(offsetX+3,offsetY+23))
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),"s: scenario   - %s"%(selectedScenario,)),(offsetX+3,offsetY+24))
-        printUrwidToTcod("g: gameslot   - %s"%(gameIndex,),(offsetX+3,offsetY+25))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"s: scenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
+        printUrwidToTcod(f"g: gameslot   - {gameIndex}",(offsetX+3,offsetY+25))
 
         if submenu == "gameslot":
             printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
             printUrwidToTcod("| choose the gameslot: |",(offsetX+3+16,offsetY+24))
             for i in range(0,10):
                 if saves[i]:
-                    printUrwidToTcod("| %s: load game         |"%(i,),(offsetX+3+16,offsetY+25+i))
+                    printUrwidToTcod(f"| {i}: load game         |",(offsetX+3+16,offsetY+25+i))
                 else:
-                    printUrwidToTcod("| %s: new game          |"%(i,),(offsetX+3+16,offsetY+25+i))
+                    printUrwidToTcod(f"| {i}: new game          |",(offsetX+3+16,offsetY+25+i))
             printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+35))
 
         if submenu == "scenario":
@@ -8160,7 +8111,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if key == tcod.event.KeySym.y:
                         try:
                             # register the save
-                            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+                            with open("gamestate/globalInfo.json") as globalInfoFile:
                                 rawState = json.loads(globalInfoFile.read())
                         except:
                             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}

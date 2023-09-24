@@ -31,7 +31,7 @@ class PathingNode(src.items.Item):
             character: the character trying to use the item
         """
 
-        character.addMessage("This is the pathingnode: %s" % (self.nodeName,))
+        character.addMessage(f"This is the pathingnode: {self.nodeName}")
         self.bolted = True
 
     # abstraction: should use super class functionality
@@ -74,13 +74,11 @@ class PathingNode(src.items.Item):
     def getLongInfo(self):
         text = super().getLongInfo()
 
-        text += """
+        text += f"""
 name:
-%s
+{self.nodeName}
 
-""" % (
-            self.nodeName,
-        )
+"""
 
 
 src.items.addType(PathingNode)

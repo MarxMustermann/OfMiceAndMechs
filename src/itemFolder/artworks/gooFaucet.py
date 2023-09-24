@@ -112,6 +112,6 @@ Use it to either to manage your goo token balance or get some goo."""
             character: the character trying to drink
         """
 
-        self.character.addMessage("your balance is %s" % (self.balance,))
+        self.character.addMessage(f"your balance is {self.balance}")
 
 src.items.addType(GooFaucet)

@@ -308,7 +308,7 @@ Use the complex interaction to recharge the personel artwork
 
         amount = len(foundFlasks)
         self.changeCharges(amount)
-        character.addMessage("you use your flasks to recharge the personell artwork for %s charges"%(amount,))
+        character.addMessage(f"you use your flasks to recharge the personell artwork for {amount} charges")
 
     def spawnRank(self,rank,actor,isMilitary=False):
         cityLeader = self.fetchCityleader()

@@ -11,9 +11,9 @@ class ObtainSpecialItem(src.quests.MetaQuestSequence):
         self.itemId = itemId
 
     def generateTextDescription(self):
-        return """
-obtain the special item #%s from the base on %s
-"""%(self.itemId,self.targetTerrain,)
+        return f"""
+obtain the special item #{self.itemId} from the base on {self.targetTerrain}
+"""
 
     def triggerCompletionCheck(self,character=None):
         return False

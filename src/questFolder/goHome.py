@@ -18,10 +18,10 @@ class GoHome(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
 
-        text = """
-Go home%s.
+        text = f"""
+Go home{reason}.
 
 You consider the command centre of the base your home.
 That command centre holds the assimilator and
@@ -36,7 +36,7 @@ Quests like this can be pretty boring.
 Press c now to use auto move to complete this quest.
 Be careful with auto move, while danger is nearby. 
 Press control-d to stop your character from moving.
-"""%(reason,)
+"""
         return text
 
     def triggerCompletionCheck(self, character=None):
@@ -70,7 +70,7 @@ Press control-d to stop your character from moving.
     def setHomeLocation(self,character):
         self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"],0)
         self.terrainLocation = (character.registers["HOMETx"],character.registers["HOMETy"],0)
-        self.metaDescription = self.baseDescription+" %s/%s on %s/%s"%(self.cityLocation[0],self.cityLocation[1],self.terrainLocation[0],self.terrainLocation[1],)
+        self.metaDescription = self.baseDescription+" {}/{} on {}/{}".format(self.cityLocation[0],self.cityLocation[1],self.terrainLocation[0],self.terrainLocation[1],)
 
     def generateSubquests(self,character):
         if self.subQuests:

@@ -14,7 +14,7 @@ def setup(debug):
 
     if debug:
 
-        class debugToFile(object):
+        class debugToFile:
             """
             logger object for logging to file
             """
@@ -43,7 +43,7 @@ def setup(debug):
         debugMessages = debugToFile()
     else:
 
-        class FakeLogger(object):
+        class FakeLogger:
             """
             dummy logger
             """

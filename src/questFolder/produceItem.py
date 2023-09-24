@@ -16,25 +16,25 @@ class ProduceItem(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-produce %s%s.
+            reason = f", to {self.reason}"
+        text = f"""
+produce {self.itemType}{reason}.
 
-"""%(self.itemType,reason,)
+"""
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
-        text += """
-%s are produced by a %s machine (X\\).
-%s are needed as raw material.
-Examine the %s machine to get detailed information.
-"""%(self.itemType,self.itemType,", ".join(neededItems),self.itemType,)
+        text += f"""
+{self.itemType} are produced by a {self.itemType} machine (X\\).
+{", ".join(neededItems)} are needed as raw material.
+Examine the {self.itemType} machine to get detailed information.
+"""
 
         if self.tryHard:
-            text += """
+            text += f"""
 Try as hard as you can to achieve this.
 If you don't find the raw materials, produce them.
-If you don't find a %s machine needed, build it.
-"""%(self.itemType,)
+If you don't find a {self.itemType} machine needed, build it.
+"""
 
         return text
 

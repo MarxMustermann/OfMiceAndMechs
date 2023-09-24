@@ -117,7 +117,7 @@ def say(text, speaker=None, trigger=None):
     # add message
     showMessage(prefix + '"' + text + '"', trigger=trigger)
 
-class WorldBuildingPhase():
+class WorldBuildingPhase:
     """
     Phase for a new world building phase
     """
@@ -151,7 +151,7 @@ class WorldBuildingPhase():
 #
 #########################################################################
 
-class BasicPhase():
+class BasicPhase:
     """
     the base class for the all phases
     """
@@ -519,7 +519,7 @@ class PrefabDesign(BasicPhase):
 
         try:
             # register the save
-            with open("gamestate/globalInfo.json", "r") as globalInfoFile:
+            with open("gamestate/globalInfo.json") as globalInfoFile:
                 rawState = json.loads(globalInfoFile.read())
         except:
             rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[]}
@@ -809,7 +809,7 @@ the floorplan is available in basebuilder mode and main game now""")
                             command += moveComand+"Jw"
                             lastPos = newPos
                         else:
-                            src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on %s"%(compactorPos,))
+                            src.gamestate.gamestate.mainChar.addMessage(f"could not generate path to Scrap compactor on {compactorPos}")
 
                 feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
                 scratchPlatePos = (scratchPlatePositions[0][0],scratchPlatePositions[0][1],scratchPlatePositions[0][2])
@@ -988,8 +988,8 @@ the floorplan is available in basebuilder mode and main game now""")
         self.maintananceLoop()
 
         ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
-        submenu = src.interaction.TextMenu("""
-your room produces a MetalBar every %s ticks on average."""%(ticksPerBar,))
+        submenu = src.interaction.TextMenu(f"""
+your room produces a MetalBar every {ticksPerBar} ticks on average.""")
 
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
 
@@ -1337,7 +1337,7 @@ class BackToTheRoots(BasicPhase):
         npc.inventory.append(item)
         npc.runCommandString("10.10*")
         npc.macroState["macros"]["j"] = ["J", "f"]
-        npc.faction = "city #%s"%(cityCounter,)
+        npc.faction = f"city #{cityCounter}"
         npc.registers["HOMEx"] = citylocation[0]
         npc.registers["HOMEy"] = citylocation[1]
         npc.registers["HOMETx"] = 7
@@ -1704,7 +1704,7 @@ class BackToTheRoots(BasicPhase):
                 {
                     "coordinate": citylocation,
                     "roomType": "ComandCenter",
-                    "faction": "city #%s"%(cityCounter,),
+                    "faction": f"city #{cityCounter}",
                     "doors": "6,12",
                     "offset": [1,1],
                     "size": [13, 13],
@@ -1718,7 +1718,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom.addCharacter(leader,7,3)
             leader.rank = 3
             leader.inventory.insert(0,src.items.itemMap["GooFlask"](uses = 100))
-            leader.faction = "city #%s"%(cityCounter,)
+            leader.faction = f"city #{cityCounter}"
             self.leaders[citylocation] = leader
 
 
@@ -2538,7 +2538,7 @@ press space to continue"""%(reputationTree))
                     oldSubordintes = character.subordinates
                     oldRank = character.rank
 
-                    forcePromoted.append("%s (%s) => %s (%s) "%(character.name,character.rank,oldBoss.name,oldBoss.rank))
+                    forcePromoted.append(f"{character.name} ({character.rank}) => {oldBoss.name} ({oldBoss.rank}) ")
 
                     character.superior = oldBoss.superior
                     character.subordinates = oldBoss.subordinates
@@ -2568,13 +2568,13 @@ press space to continue"""%(reputationTree))
                     character.subordinates.append(oldBoss)
 
             if cityLeader.faction == src.gamestate.gamestate.mainChar.faction:
-                showText("""
+                showText(f"""
 promotions this round:
 
-forcePromoted: %s
-toKill: %s
+forcePromoted: {forcePromoted}
+toKill: {toKill}
 
-press space to continue"""%(forcePromoted,toKill))
+press space to continue""")
 
             if toKill or forcePromoted:
                     cityLeader = self.leaders[cityLocation]
@@ -3982,21 +3982,21 @@ class MainGame(BasicPhase):
 
     def mainCharacterDeath(self,extraParam):
         if self.activeStory["type"] == "colonyBase":
-            text = """
+            text = f"""
     You died.
 
-    you were playing the scenario: %s
+    you were playing the scenario: {self.activeStory["type"]}
 
     - press enter to continue -
-"""%(self.activeStory["type"],)
+"""
         else:
-            text = """
+            text = f"""
     You died.
 
-    you were playing the scenario: %s
+    you were playing the scenario: {self.activeStory["type"]}
 
     - press enter to continue -
-"""%(self.activeStory["type"],)
+"""
         src.interaction.showInterruptText(text)
 
         if self.activeStory["type"] == "colonyBase":
@@ -4389,7 +4389,7 @@ try to remember how you got here ..."""
             mainChar.foodPerRound = 1
 
         thisFactionId = self.factionCounter
-        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.faction = f"city #{thisFactionId}"
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -4708,7 +4708,7 @@ try to remember how you got here ..."""
     def createColony_baseLeaderDeath(self,extraParam):
         faction = extraParam["character"].faction
         if faction == src.gamestate.gamestate.mainChar.faction:
-            text = "The leader of your faction %s died"%(faction,)
+            text = f"The leader of your faction {faction} died"
             src.interaction.showInterruptText(text)
         print(extraParam)
 
@@ -4750,7 +4750,7 @@ try to remember how you got here ..."""
                 return
 
             if faction == src.gamestate.gamestate.mainChar.faction:
-                text = "%s takes over"%(bestCandidate.name,)
+                text = f"{bestCandidate.name} takes over"
                 src.interaction.showInterruptText(text)
             if bestCandidate == src.gamestate.gamestate.mainChar:
                 text = "you take over"
@@ -4829,7 +4829,7 @@ try to remember how you got here ..."""
             mainChar.foodPerRound = 1
 
         thisFactionId = self.factionCounter
-        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.faction = f"city #{thisFactionId}"
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -5246,7 +5246,7 @@ try to remember how you got here ..."""
             "DropQuestMeta",
         ]
         thisFactionId = self.factionCounter
-        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.faction = f"city #{thisFactionId}"
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -5380,7 +5380,7 @@ try to remember how you got here ..."""
             "DropQuestMeta",
         ]
         thisFactionId = self.factionCounter
-        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.faction = f"city #{thisFactionId}"
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -5447,7 +5447,7 @@ try to remember how you got here ..."""
 
         mainChar = src.characters.Character()
         thisFactionId = self.factionCounter
-        mainChar.faction = "city #%s"%(thisFactionId,)
+        mainChar.faction = f"city #{thisFactionId}"
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -6264,14 +6264,14 @@ When you rise in rank you will be able to build a way out of here."""
 
     def checkDead(self):
 
-        text = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
-        self.wavecounterUI["text"] = "epoch: %s tick: %s"%(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
+        text = "epoch: {} tick: {}".format(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
+        self.wavecounterUI["text"] = "epoch: {} tick: {}".format(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
         self.wavecounterUI["offset"] = (82-len(text)//2,5)
 
         if src.gamestate.gamestate.mainChar.dead:
             src.gamestate.gamestate.uiElements = [
                     {"type":"text","offset":(15,10), "text":"you were killed while holding against the siege"},
-                    {"type":"text","offset":(15,12), "text":"you suvived %s ticks. That means wave no %s got you"%(src.gamestate.gamestate.tick,src.gamestate.gamestate.tick//1000+1,)},
+                    {"type":"text","offset":(15,12), "text":"you suvived {} ticks. That means wave no {} got you".format(src.gamestate.gamestate.tick,src.gamestate.gamestate.tick//1000+1,)},
                     ]
         else:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
@@ -6319,11 +6319,11 @@ When you rise in rank you will be able to build a way out of here."""
 
         if not src.gamestate.gamestate.tick < 100:
             if state["mainChar"] == src.gamestate.gamestate.mainChar:
-                text = """
-An epoch has passed. You currently control %s special items.
+                text = f"""
+An epoch has passed. You currently control {len(hasSpecialItems)} special items.
 You are rewarded with the following:
 
-"""%(len(hasSpecialItems),)
+"""
 
                 if not len(hasSpecialItems):
                     text += """
@@ -6394,21 +6394,21 @@ no reward.
                     npc.assignQuest(quest,active=True)
                     npc.foodPerRound = 1
 
-                    text += """
-1 burned in clone named %s with duty %s,
+                    text += f"""
+1 burned in clone named {npc.name} with duty {duty},
 for controlling at least 1 special item.
 
-"""%(npc.name,duty,)
+"""
 
                 if len(hasSpecialItems):
                     numGlassTears = 5*len(hasSpecialItems)
                     state["epochArtwork"].changeCharges(numGlassTears)
 
-                    text += """
-%s glass tears credited to your epoch artwork,
-for controlling %s special items.
+                    text += f"""
+{numGlassTears} glass tears credited to your epoch artwork,
+for controlling {len(hasSpecialItems)} special items.
 
-"""%(numGlassTears,len(hasSpecialItems),)
+"""
 
                 text += """
 press enter to continue"""
@@ -6416,11 +6416,11 @@ press enter to continue"""
 
         if not src.gamestate.gamestate.tick < 100:
             if state["mainChar"] == src.gamestate.gamestate.mainChar:
-                text = """
-An epoch has passed. You currently control %s special items.
+                text = f"""
+An epoch has passed. You currently control {len(hasSpecialItems)} special items.
 You are cursed with the following:
 
-"""%(len(hasSpecialItems),)
+"""
 
                 if not len(hasSpecialItems):
                     text += """
@@ -6507,11 +6507,11 @@ for controlling at least 1 glass heart.
                         #src.gamestate.gamestate.mainChar = enemy
 
                 if numSpectres:
-                    text += """
-%s static spectres apeared, craving to reclaim their glass heart,
+                    text += f"""
+{numSpectres} static spectres apeared, craving to reclaim their glass heart,
 for controlling at least 1 special item.
 
-"""%(numSpectres,)
+"""
 
                 text += """
 press enter to continue"""
@@ -6807,17 +6807,17 @@ class MainGameArena2(BasicPhase):
                 newHighScore = True
                 self.highScore = self.mainChar.maxHealth-self.mainChar.health
 
-            text = """
-you killed an enemy. You lost %s health doing this.
-"""%(self.mainChar.maxHealth-self.mainChar.health,)
+            text = f"""
+you killed an enemy. You lost {self.mainChar.maxHealth-self.mainChar.health} health doing this.
+"""
             if newHighScore:
                 text += """
 This is your new best.
 """
             else:
-                text += """
-you best is losing %s health.
-"""%(self.highScore,)
+                text += f"""
+you best is losing {self.highScore} health.
+"""
 
             src.interaction.showInterruptText(text)
             self.mainChar.heal(100,reason="killing an enemy")
@@ -7331,17 +7331,17 @@ class MainGameArena(BasicPhase):
                 newHighScore = True
                 self.highScore = self.mainChar.maxHealth-self.mainChar.health
 
-            text = """
-you killed an enemy. You lost %s health doing this.
-"""%(self.mainChar.maxHealth-self.mainChar.health,)
+            text = f"""
+you killed an enemy. You lost {self.mainChar.maxHealth-self.mainChar.health} health doing this.
+"""
             if newHighScore:
                 text += """
 This is your new best.
 """
             else:
-                text += """
-you best is losing %s health.
-"""%(self.highScore,)
+                text += f"""
+you best is losing {self.highScore} health.
+"""
 
             src.interaction.showInterruptText(text)
             self.mainChar.heal(100,reason="killing an enemy")

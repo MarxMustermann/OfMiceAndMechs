@@ -82,29 +82,23 @@ class JobOrder(src.items.Item):
         # format the tasks
         taskStr = ""
         for task in self.tasks:
-            taskStr += "%s \n" % (task,)
+            taskStr += f"{task} \n"
 
         # spawn the submenu showing the information
         submenue = src.interaction.TextMenu(
-            """
+            f"""
 taskName:
-%s
+{self.taskName}
 
 information:
-%s
+{self.information}
 
 error:
-%s
+{self.error}
 
 tasks:
-%s
+{taskStr}
 """
-            % (
-                self.taskName,
-                self.information,
-                self.error,
-                taskStr,
-            )
         )
         character.macroState["submenue"] = submenue
 
@@ -186,21 +180,17 @@ tasks:
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
 information:
-%s
+{self.information}
 
 the order is:
 
-tasks: %s
-done: %s
+tasks: {json.dumps(list(reversed(self.tasks)), indent=4)}
+done: {self.done}
 
-""" % (
-            self.information,
-            json.dumps(list(reversed(self.tasks)), indent=4),
-            self.done,
-        )
+"""
         return text
 
     def addTasks(self,tasks):

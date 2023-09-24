@@ -115,7 +115,7 @@ class VialFiller(src.items.Item):
                 break
         if filled:
             character.addMessage("you fill vials in your inventory")
-            character.addMessage("you used %s charges"%(chargesUsed,))
+            character.addMessage(f"you used {chargesUsed} charges")
             if not dispenser.charges > 0:
                 character.addMessage("the GooDispenser is empty now")
             return

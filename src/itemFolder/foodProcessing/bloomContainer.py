@@ -42,15 +42,11 @@ Activate the bloom container and select the option "unload bloom" to unload the 
 
         text = super().getLongInfo()
 
-        text += """
-it has %s blooms (charges) in it. It can hold a maximum of %s blooms.
+        text += f"""
+it has {self.charges} blooms (charges) in it. It can hold a maximum of {self.maxCharges} blooms.
 
-This is a level %s item.
-""" % (
-            self.charges,
-            self.maxCharges,
-            self.level,
-        )
+This is a level {self.level} item.
+"""
 
     def apply(self, character):
         """

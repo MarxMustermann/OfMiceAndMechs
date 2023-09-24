@@ -6,37 +6,10 @@ basically nothing to see here
 if you are a first time visitor, interaction.py, story.py and gamestate.py are probably better files to start with
 """
 
-# import basic libs
-import sys
-import json
-import time
-import traceback
-
-# import basic internal libs
-import src.items as items
+import argparse
 
 import src.itemFolder
-import src.quests as quests
-import src.rooms as rooms
-import src.characters as characters
-import src.terrains as terrains
-import src.cinematics as cinematics
-import src.story as story
-import src.gameMath as gameMath
-import src.interaction as interaction
-import src.gamestate as gamestate
-import src.events as events
-import src.chats as chats
-import src.canvas as canvas
-import src.logger as logger
-
-
-# import configs
-import config.commandChars as commandChars
-import config.names as names
-
-# parse arguments
-import argparse
+from src import canvas, characters, interaction, logger, story
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
@@ -55,9 +28,7 @@ parser.add_argument("-s", "--seed", type=str, help="select the seed of a new gam
 parser.add_argument("--multiplayer", action="store_true", help="activate multiplayer")
 parser.add_argument("--load", action="store_true", help="load")
 parser.add_argument("--noload", action="store_true", help="do not load saves")
-parser.add_argument(
-    "-S", "--speed", type=int, help="set the speed of the game to a fixed speed"
-)
+parser.add_argument("-S", "--speed", type=int, help="set the speed of the game to a fixed speed")
 parser.add_argument("-sc", "--scenario", type=str, help="set the scenario to run")
 parser.add_argument("-notcod", "--notcod", action="store_true", help="do not use tcod renderer")
 parser.add_argument("-df", "--difficulty", type=str, help="set the difficulty for this run")
@@ -71,16 +42,8 @@ args = parser.parse_args()
 ################################################################################
 
 # set rendering mode
-if args.urwid:
-    if args.unicode:
-        displayChars = canvas.DisplayMapping("unicode")
-    else:
-        displayChars = canvas.DisplayMapping("pureASCII")
-elif not args.notcod:
-    if args.unicode:
-        displayChars = canvas.DisplayMapping("unicode")
-    else:
-        displayChars = canvas.DisplayMapping("pureASCII")
+if args.urwid or not args.notcod:
+    displayChars = canvas.DisplayMapping("unicode") if args.unicode else canvas.DisplayMapping("pureASCII")
 else:
     displayChars = canvas.TileMapping("testTiles")
 
@@ -184,7 +147,7 @@ if args.urwid:
 if not args.urwid:
     interaction.showIntro()
     interaction.showMainMenu(args)
-    interaction.gameLoop(None,None)
+    interaction.gameLoop(None, None)
     """
     while 1:
         try:

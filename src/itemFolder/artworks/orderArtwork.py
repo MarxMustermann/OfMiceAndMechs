@@ -405,7 +405,7 @@ That should usually be around 10-20 ticks."""
 
         text = "current active quest:\n"
         for (key,value) in questsCount.items():
-            text += "%s: %s\n"%(key,value)
+            text += f"{key}: {value}\n"
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
 

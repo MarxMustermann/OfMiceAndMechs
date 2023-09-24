@@ -20,12 +20,12 @@ class ScavengeTile(src.quests.MetaQuestSequence):
 
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
-        text = """
-Scavenge the tile %s"""%(self.targetPosition,)
+            reason = f", to {self.reason}"
+        text = f"""
+Scavenge the tile {self.targetPosition}"""
         if self.toCollect:
-            text += " for %s"%(self.toCollect,)
-        text += """%s."""%(reason,)
+            text += f" for {self.toCollect}"
+        text += f"""{reason}."""
         text += """
 
 This quest will end when the target tile has no items left."""

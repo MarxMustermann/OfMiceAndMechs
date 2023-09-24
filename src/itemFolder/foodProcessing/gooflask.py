@@ -39,7 +39,7 @@ class GooFlask(src.items.Item):
             amount = min(character.flask.maxUses-character.flask.uses,self.uses)
             character.flask.uses += amount
             self.uses -= amount
-            character.addMessage("you fill your flask with %s uses. %s uses remain."%(amount,self.uses,))
+            character.addMessage(f"you fill your flask with {amount} uses. {self.uses} uses remain.")
             return
 
         # print feedback
@@ -93,20 +93,16 @@ class GooFlask(src.items.Item):
         """
 
         text = super().getLongInfo()
-        text += """
+        text += f"""
 
 If you do not drink from the flask every 1000 ticks you will starve.
 
-A goo flask can be refilled at a goo dispenser and can hold a maximum of %s charges.
-The flask has %s charges.
+A goo flask can be refilled at a goo dispenser and can hold a maximum of {self.maxUses} charges.
+The flask has {self.uses} charges.
 
-this is a level %s item.
+this is a level {self.level} item.
 
-""" % (
-            self.maxUses,
-            self.uses,
-            self.level,
-        )
+"""
         return text
 
     def upgrade(self):

@@ -12,7 +12,7 @@ import time
 # import basic internal libs
 import src.canvas
 
-class Event():
+class Event:
     """
     base class for events
     """

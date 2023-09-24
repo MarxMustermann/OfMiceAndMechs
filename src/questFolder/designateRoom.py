@@ -16,16 +16,16 @@ class DesignateRoom(src.quests.MetaQuestSequence):
         out = []
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
+            reason = f",\nto {self.reason}"
 
         if self.roomType == "undesignate":
-            out.append("""
-Undesignate the room on coordinate %s%s.
-"""%(self.roomPosition,reason))
+            out.append(f"""
+Undesignate the room on coordinate {self.roomPosition}{reason}.
+""")
         else:
-            out.append("""
-Designate the room on coordinate %s as %s%s.
-"""%(self.roomPosition,self.roomType,reason))
+            out.append(f"""
+Designate the room on coordinate {self.roomPosition} as {self.roomType}{reason}.
+""")
 
             if self.roomType == "generalPurposeRoom":
                 out.append("""
@@ -37,13 +37,13 @@ so do not use it for permanent constructions.
 
 """)
             if self.roomType == "specialPurposeRoom":
-                out.append("""
+                out.append(f"""
 This signals that this room is reserved for some kind of purpose.
 This means no clone not involved should not change the room.
 
 The rooms tag indicates the rooms purpose.
-Set the rooms tag to: %s
-"""%(self.roomTag,))
+Set the rooms tag to: {self.roomTag}
+""")
 
         out.append("""
 Use the CityPlaner to designate the room.

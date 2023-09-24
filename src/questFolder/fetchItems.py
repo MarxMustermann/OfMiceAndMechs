@@ -29,19 +29,19 @@ class FetchItems(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ", to %s"%(self.reason,)
+            reason = f", to {self.reason}"
 
         if not self.amount:
-            text = """
-Fetch an inventory full of %ss%s.
-"""%(self.toCollect,reason,)
+            text = f"""
+Fetch an inventory full of {self.toCollect}s{reason}.
+"""
         else:
             extraS = "s"
             if self.amount == 1:
                 extraS = ""
-            text = """
-Fetch %s %s%s%s.
-"""%(self.amount,self.toCollect,extraS,reason,)
+            text = f"""
+Fetch {self.amount} {self.toCollect}{extraS}{reason}.
+"""
 
         if self.takeAnyUnbolted:
             text += """
@@ -56,9 +56,9 @@ Only take items from stockpiles.
             tile = self.tileToReturnTo
             if not tile:
                 tile = "this tile"
-            text += """
-Return to %s after to complete this quest.
-"""%(tile,)
+            text += f"""
+Return to {tile} after to complete this quest.
+"""
 
         if self.tryHard:
             text += """
@@ -239,7 +239,7 @@ Press d to move the cursor and show the subquests description.
                         return (None,("Kw","pick up item"))
 
                 outputSlot = random.choice(outputSlots)
-                quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason="be able to pick up the %s"%(self.toCollect,))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
                 return ([quest],None)
 
             elif self.takeAnyUnbolted:
@@ -281,14 +281,14 @@ Press d to move the cursor and show the subquests description.
 
                     item = random.choice(candidates)
                     quests = []
-                    quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason="be able to pick up the %s"%(self.toCollect,)))
+                    quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}"))
                     if not character.container == item.container:
-                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason="reach a source for %s"%(self.toCollect,)))
+                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect}"))
                     return (quests,None)
             else:
                 source = self.getSource()
                 if source:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason="reach a source for %s"%(self.toCollect,))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect}")
                     if self.returnToTile:
                         self.tileToReturnTo = (room.xPosition,room.yPosition,0)
                     return ([quest],None)
@@ -308,7 +308,7 @@ Press d to move the cursor and show the subquests description.
                         return ([quest],None)
 
                 if not dryRun:
-                    self.fail(reason="no source for item %s"%(self.toCollect,))
+                    self.fail(reason=f"no source for item {self.toCollect}")
                 return (None,None)
         return (None,None)
 

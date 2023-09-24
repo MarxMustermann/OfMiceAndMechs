@@ -215,7 +215,7 @@ class ItemCollector(src.items.Item):
         self.container.removeItem(commandItem)
 
         self.character.addMessage(
-            "added command for %s - %s" % (itemType, commandItem.command)
+            f"added command for {itemType} - {commandItem.command}"
         )
         return
 

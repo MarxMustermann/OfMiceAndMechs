@@ -16,19 +16,19 @@ class ResearchBluePrint(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         reason = ""
         if self.reason:
-            reason = ",\nto %s"%(self.reason,)
-        text = """
-research a blueprint for %s%s.
+            reason = f",\nto {self.reason}"
+        text = f"""
+research a blueprint for {self.itemType}{reason}.
 
-"""%(self.itemType,reason,)
+"""
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
-        text += """
+        text += f"""
 Blueprints are produced by a blueprinter (sX).
-%s is needed to research a blueprint for %s.
+{", ".join(self.getNeededResources())} is needed to research a blueprint for {self.itemType}.
 You also need a sheet to print the blueprint on.
 Examine the blueprinter for more details.
-"""%(", ".join(self.getNeededResources()),self.itemType,)
+"""
 
         if self.tryHard:
             text += """

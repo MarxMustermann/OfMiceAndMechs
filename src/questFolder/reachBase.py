@@ -30,8 +30,8 @@ class ReachBase(src.quests.MetaQuestSequence):
         text = """
 You reach out to your implant and in answers:"""
         if self.storyText:
-            text += """
-%s"""%(self.storyText,)
+            text += f"""
+{self.storyText}"""
         else:
             text += """
 
@@ -44,10 +44,10 @@ You need to go around the base to actually enter it.
 You are likely getting chased and the area is overrun with insects.
 So you have to be careful."""
 
-        text += """
+        text += f"""
 
 You have to cross several tiles to find your path to the entry of the base.
-Currently the suggested next step is to go one tile to the %s.
+Currently the suggested next step is to go one tile to the {self.lastDirection}.
 Following the suggestions will guide you into the base.
 It might also steer you into groups of enemies on the way.
 So watch the environment and don't follow all suggestions blindly.
@@ -56,7 +56,7 @@ So watch the environment and don't follow all suggestions blindly.
 
 You can see description for sub quests.
 Press d now to move the quest cursor to select the sub quest.
-"""%(self.lastDirection,)
+"""
         return text
 
     def generateSubquests(self,character):

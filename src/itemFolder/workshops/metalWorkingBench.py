@@ -77,7 +77,8 @@ class MetalWorkingBench(src.items.Item):
             return
 
         if not params.get("type") in src.items.itemMap:
-            character.addMessage("Item type unknown.")
+            if params.get("type"):
+                character.addMessage("Item type unknown.")
             return
 
         metalBarsFound = []

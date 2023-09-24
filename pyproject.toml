@@ -1,0 +1,39 @@
+[tool.black] # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#configuration-via-a-file
+target-version = ["py310"]
+line-length = 120
+
+[tool.isort] # https://pycqa.github.io/isort/docs/configuration/options.html
+py_version = "310"
+line_length = 120
+profile = "black"
+skip_gitignore = true
+
+[tool.ruff]
+# https://beta.ruff.rs/docs/rules/
+select = [
+    "C90", # mccabe
+    "E",   # pycodestyle
+    "W",   # pycodestyle
+    "F",   # Pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "YTT", # flake8-2020
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "EXE", # flake8-executable
+    "RET", # flake8-return
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "SIM", # flake8-simplify
+    "PTH", # flake8-use-pathlib
+    "PL",  # Pylint
+    "RUF", # NumPy-specific rules
+]
+ignore = [
+    "E501",   # line-too-long
+    "ANN101", # missing-type-self
+    "ANN102", # missing-type-cls
+]
+line-length = 120
+target-version = "py310"

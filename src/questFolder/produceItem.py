@@ -23,11 +23,11 @@ produce {self.itemType}{reason}.
 """
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
-        text += """
-{} are produced by a {} machine (X\\).
-{} are needed as raw material.
-Examine the {} machine to get detailed information.
-""".format(self.itemType,self.itemType,", ".join(neededItems),self.itemType,)
+        text += f"""
+{self.itemType} are produced by a {self.itemType} machine (X\\).
+{", ".join(neededItems)} are needed as raw material.
+Examine the {self.itemType} machine to get detailed information.
+"""
 
         if self.tryHard:
             text += f"""

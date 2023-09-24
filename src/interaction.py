@@ -1301,11 +1301,7 @@ current registers:
             convertedValues = []
             for item in reversed(value):
                 convertedValues.append(str(item))
-            text += """
-{} - {}""".format(
-                itemKey,
-                ",".join(convertedValues),
-            )
+            text += f"""\n{itemKey} - {",".join(convertedValues)}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "registers"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -1359,11 +1355,7 @@ current registers (%s):
                     convertedValues = []
                     for item in reversed(value):
                         convertedValues.append(str(item))
-                    text += """
-{} - {}""".format(
-                        key,
-                        ",".join(convertedValues),
-                    )
+                    text += f"""\n{key} - {",".join(convertedValues)}"""
 
                 header.set_text(
                     (urwid.AttrSpec("default", "default"), "reading registers")
@@ -1420,11 +1412,7 @@ current registers (%s):
                         convertedValues = []
                         for item in reversed(value):
                             convertedValues.append(str(item))
-                        text += """
-{} - {}""".format(
-                            key,
-                            ",".join(convertedValues),
-                        )
+                        text += f"""\n{key} - {",".join(convertedValues)}"""
 
                     header.set_text(
                         (urwid.AttrSpec("default", "default"), "registers")
@@ -1483,19 +1471,15 @@ type number or load value from register
             lastVarAction["number"] += key
 
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
-                text = """
+                text = f"""
 
-input value for this operation (${}{}{})
+input value for this operation (${register}{action}{lastVarAction["number"]})
 
 type number
 
 press any other key to finish
 
-""".format(
-                    register,
-                    action,
-                    lastVarAction["number"],
-                )
+"""
                 header.set_text(
                     (urwid.AttrSpec("default", "default"), "reading registers")
                 )
@@ -1932,11 +1916,7 @@ current registers
             convertedValues = []
             for item in reversed(value):
                 convertedValues.append(str(item))
-            text += """
-{} - {}""".format(
-                key,
-                ",".join(convertedValues),
-            )
+            text += f"""\n{key} - {",".join(convertedValues)}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "popping registers"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -1958,11 +1938,7 @@ current registers
             convertedValues = []
             for item in reversed(value):
                 convertedValues.append(str(item))
-            text += """
-{} - {}""".format(
-                key,
-                ",".join(convertedValues),
-            )
+            text += f"""\n{key} - {",".join(convertedValues)}"""
 
         header.set_text((urwid.AttrSpec("default", "default"), "pushing registers"))
         main.set_text((urwid.AttrSpec("default", "default"), text))
@@ -7311,13 +7287,13 @@ def renderGameDisplay(renderChar=None):
                             flaskInfo = str(char.flask.uses)
 
                         if char.satiation == 0:
-                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starved ({}/{})".format(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),f"starved ({char.satiation}/{flaskInfo})")
                         elif char.satiation < 200:
-                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),"starving ({}/{})".format(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),f"starving ({char.satiation}/{flaskInfo})")
                         elif char.satiation < 300:
-                            satiationDisplay = (urwid.AttrSpec("#f60", "default"),"hungry ({}/{})".format(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#f60", "default"),f"hungry ({char.satiation}/{flaskInfo})")
                         else:
-                            satiationDisplay = (urwid.AttrSpec("#0f0", "default"),"satiated ({}/{})".format(char.satiation,flaskInfo,))
+                            satiationDisplay = (urwid.AttrSpec("#0f0", "default"),f"satiated ({char.satiation}/{flaskInfo})")
 
                         text = [
                             "health: " , healthDisplay ,

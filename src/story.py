@@ -809,7 +809,7 @@ the floorplan is available in basebuilder mode and main game now""")
                             command += moveComand+"Jw"
                             lastPos = newPos
                         else:
-                            src.gamestate.gamestate.mainChar.addMessage("could not generate path to Scrap compactor on {}".format(compactorPos))
+                            src.gamestate.gamestate.mainChar.addMessage(f"could not generate path to Scrap compactor on {compactorPos}")
 
                 feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
                 scratchPlatePos = (scratchPlatePositions[0][0],scratchPlatePositions[0][1],scratchPlatePositions[0][2])
@@ -3982,21 +3982,21 @@ class MainGame(BasicPhase):
 
     def mainCharacterDeath(self,extraParam):
         if self.activeStory["type"] == "colonyBase":
-            text = """
+            text = f"""
     You died.
 
-    you were playing the scenario: {}
+    you were playing the scenario: {self.activeStory["type"]}
 
     - press enter to continue -
-""".format(self.activeStory["type"])
+"""
         else:
-            text = """
+            text = f"""
     You died.
 
-    you were playing the scenario: {}
+    you were playing the scenario: {self.activeStory["type"]}
 
     - press enter to continue -
-""".format(self.activeStory["type"])
+"""
         src.interaction.showInterruptText(text)
 
         if self.activeStory["type"] == "colonyBase":

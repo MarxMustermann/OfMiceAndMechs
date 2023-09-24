@@ -85,7 +85,7 @@ class WaterCondenser(src.items.Item):
                 if isinstance(item, src.items.Rod):
 
                     self.character.addMessage(
-                        "you insert a rod into the water condenser increasing its output to {} per 100 ticks".format(self.rods + 1 + 5)
+                        f"you insert a rod into the water condenser increasing its output to {self.rods + 1 + 5} per 100 ticks"
                     )
                     self.rods += 1
                     self.character.inventory.remove(item)

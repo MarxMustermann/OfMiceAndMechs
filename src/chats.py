@@ -1968,7 +1968,7 @@ class ChatMenu(Chat):
                 #options.append(("exit", "let us proceed, " + self.partner.name))
 
                 # set the options
-                self.setOptions("You are about to start a conversation with {}.\n\nWhat kind of conversation do you want to start?\n".format(self.partner.name), options)
+                self.setOptions(f"You are about to start a conversation with {self.partner.name}.\n\nWhat kind of conversation do you want to start?\n", options)
 
             # let the superclass handle the actual selection
             if not self.getSelection():

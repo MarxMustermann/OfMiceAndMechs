@@ -167,7 +167,7 @@ Press d to move the cursor and show the subquests description.
                     return (None,(["esc"],"exit the menu"))
 
             if not character.getBigPosition() == self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the {}".format(self.itemType))
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
                 return ([quest],None)
 
             itemFound = None
@@ -206,7 +206,7 @@ Press d to move the cursor and show the subquests description.
                     return ([quest],None)
 
                 if not character.getBigPosition() == self.targetPositionBig:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the {}".format(self.itemType))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
                     return ([quest],None)
 
                 if not itemFound.walkable:
@@ -219,7 +219,7 @@ Press d to move the cursor and show the subquests description.
                         return ([quest],None)
 
                 if not character.getSpacePosition() == self.targetPosition:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the {}".format(self.itemType))
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason=f"be able to place the {self.itemType}")
                     return ([quest],None)
 
                 if not itemPlaced:
@@ -231,11 +231,11 @@ Press d to move the cursor and show the subquests description.
                     return (None,(dropCommand,"drop the item"))
 
             if self.targetPositionBig and not self.targetPositionBig == character.getBigPosition():
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason="be able to place the {}".format(self.itemType))
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
                 return ([quest],None)
 
             if character.getDistance(itemPlaced.getPosition()) > 1:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason="be able to place the {}".format(self.itemType),ignoreEndBlocked=True)
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason=f"be able to place the {self.itemType}",ignoreEndBlocked=True)
                 return ([quest],None)
 
             pos = character.getPosition()

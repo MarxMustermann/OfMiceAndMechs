@@ -66,11 +66,11 @@ reduce the food consumption on the base{reason}.
                 if not character.container == npc.container:
                     if character.getBigPosition() == npc.getBigPosition():
                         return (None,(".","wait"))
-                    quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition(),reason="to get near {}".format(npc.name))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition(),reason=f"to get near {npc.name}")
                     return ([quest],None)
 
                 if character.getDistance(npc.getPosition()) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition(),reason="to get in reach of {}".format(npc.name))
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=npc.getPosition(),reason=f"to get in reach of {npc.name}")
                     return ([quest],None)
 
                 return (None,("M",f"attack {npc.name}"))

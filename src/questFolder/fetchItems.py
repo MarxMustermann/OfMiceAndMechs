@@ -239,7 +239,7 @@ Press d to move the cursor and show the subquests description.
                         return (None,("Kw","pick up item"))
 
                 outputSlot = random.choice(outputSlots)
-                quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason="be able to pick up the {}".format(self.toCollect))
+                quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
                 return ([quest],None)
 
             elif self.takeAnyUnbolted:
@@ -281,14 +281,14 @@ Press d to move the cursor and show the subquests description.
 
                     item = random.choice(candidates)
                     quests = []
-                    quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason="be able to pick up the {}".format(self.toCollect)))
+                    quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}"))
                     if not character.container == item.container:
-                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason="reach a source for {}".format(self.toCollect)))
+                        quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect}"))
                     return (quests,None)
             else:
                 source = self.getSource()
                 if source:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason="reach a source for {}".format(self.toCollect))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=source[0],reason=f"reach a source for {self.toCollect}")
                     if self.returnToTile:
                         self.tileToReturnTo = (room.xPosition,room.yPosition,0)
                     return ([quest],None)

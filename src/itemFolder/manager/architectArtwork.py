@@ -1146,7 +1146,7 @@ class ArchitectArtwork(src.items.Item):
 
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
-                "enter the coordinate ( x,y ) current: {},{}".format(self.character.xPosition // 15, self.character.yPosition // 15)
+                f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.clearField
@@ -1199,7 +1199,7 @@ class ArchitectArtwork(src.items.Item):
 
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
-                "enter the coordinate ( x,y ) current: {},{}".format(self.character.xPosition // 15, self.character.yPosition // 15)
+                f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.addScrapField
@@ -1347,7 +1347,7 @@ class ArchitectArtwork(src.items.Item):
 
         if not self.submenue:
             self.submenue = src.interaction.InputMenu(
-                "enter the coordinate ( x,y ) current: {},{}".format(self.character.xPosition // 15, self.character.yPosition // 15)
+                f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.addRoom

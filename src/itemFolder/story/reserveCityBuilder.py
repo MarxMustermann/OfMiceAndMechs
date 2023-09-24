@@ -636,7 +636,7 @@ class ReserveCityBuilder(src.items.Item):
     def getLongInfo(self):
         test = super().getLongInfo()
         test += f"\nfreeItemSlots: {self.freeItemSlots}\nusedItemSlots: {self.usedItemSlots}"
-        test += "\nclearedScrap: {}\nurgentClear: {}\nnonUrgentClear: {}".format(self.clearedScrap,self.urgentClear,self.nonUrgentClear)
+        test += f"\nclearedScrap: {self.clearedScrap}\nurgentClear: {self.urgentClear}\nnonUrgentClear: {self.nonUrgentClear}"
         return test
 
 

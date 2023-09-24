@@ -428,13 +428,11 @@ class AutoTutor(src.items.Item):
                             "text": "gather sick bloom"
                         }
                 else:
-                    text = """challenge: run job orders\n\njob orders for Wall or Door or Floor plates will be dropped to the south. Produce the item named on the job order and return with the item.
+                    text = f"""challenge: run job orders\n\njob orders for Wall or Door or Floor plates will be dropped to the south. Produce the item named on the job order and return with the item.
 
-finish 25 round ({} remaining):
+finish 25 round ({25 - self.challengeInfo["numSucesses"]} remaining):
 
-""".format(
-                        25 - self.challengeInfo["numSucesses"],
-                    )
+"""
                     if self.challengeInfo["type"]:
                         jobOrder = None
                         itemDelivered = None

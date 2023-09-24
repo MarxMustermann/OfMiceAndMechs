@@ -208,7 +208,7 @@ Since this clone is burned in it can not change duties.
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
             options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
             options.append(("spawn scrap","(20) respawn scrap field"))
-        submenue = src.interaction.SelectionMenu("what reward do you desire? You currently have {} glass tears".format(self.charges),options,targetParamName="rewardType",extraDescriptions=self.descriptions)
+        submenue = src.interaction.SelectionMenu(f"what reward do you desire? You currently have {self.charges} glass tears",options,targetParamName="rewardType",extraDescriptions=self.descriptions)
 
         counter = 0
         for option in options:

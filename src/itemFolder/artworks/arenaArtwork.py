@@ -52,8 +52,7 @@ class ArenaArtwork(src.items.Item):
     def changeArenaSetting(self,character):
 
         text = """
-""".format(
-    )
+"""
 
 
         options = []
@@ -83,29 +82,20 @@ class ArenaArtwork(src.items.Item):
             return
 
     def changeCombatSettings(self,character):
-        text = """
+        text = f"""
 current settings:
 
-addExhaustionOnHurt               = {}  self.exhaustion += damage//10+1
-removeExhaustionOnHeal            = {}  self.exhaustion = 0
-reduceExhaustionOnHeal            = {}  self.exhaustion = max(0,self.exhaustion-(amount//10+1))
-doubleDamageOnZeroExhaustion      = {}  damage = damage * 2
-bonusDamageOnLowerExhaustion      = {}  damage = damage + damage//2
-reduceDamageOnAttackerExhausted   = {}  damage = damage//(self.exhaustion//10+1)
-increaseDamageOnTargetExhausted   = {}  damage = damage * (target.exhaustion//10+1)
-addRandomExhaustionOnAttack       = {}  self.exhaustion += random.randint(1,4)
+addExhaustionOnHurt               = {self.addExhaustionOnHurt}  self.exhaustion += damage//10+1
+removeExhaustionOnHeal            = {self.removeExhaustionOnHeal}  self.exhaustion = 0
+reduceExhaustionOnHeal            = {self.reduceExhaustionOnHeal}  self.exhaustion = max(0,self.exhaustion-(amount//10+1))
+doubleDamageOnZeroExhaustion      = {self.doubleDamageOnZeroExhaustion}  damage = damage * 2
+bonusDamageOnLowerExhaustion      = {self.bonusDamageOnLowerExhaustion}  damage = damage + damage//2
+reduceDamageOnAttackerExhausted   = {self.reduceDamageOnAttackerExhausted}  damage = damage//(self.exhaustion//10+1)
+increaseDamageOnTargetExhausted   = {self.increaseDamageOnTargetExhausted}  damage = damage * (target.exhaustion//10+1)
+addRandomExhaustionOnAttack       = {self.addRandomExhaustionOnAttack}  self.exhaustion += random.randint(1,4)
 flatExhaustionAttackCost          = s  self.exhaustion += self.flatExhaustionAttackCost
 
-""".format(
-        self.addExhaustionOnHurt,
-        self.removeExhaustionOnHeal,
-        self.reduceExhaustionOnHeal,
-        self.doubleDamageOnZeroExhaustion,
-        self.bonusDamageOnLowerExhaustion,
-        self.reduceDamageOnAttackerExhausted,
-        self.increaseDamageOnTargetExhausted,
-        self.addRandomExhaustionOnAttack,
-    )
+"""
 
         options = []
         options.append(("None","back"))

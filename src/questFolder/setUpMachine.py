@@ -211,7 +211,7 @@ If you don't find a {self.itemType} blueprint, research it.
 
             if not machineMachine or (src.gamestate.gamestate.tick < machineMachine.coolDownTimer + machineMachine.coolDown):
 
-                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces {}".format(self.itemType),produceToInventory=True)
+                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                 return ([newQuest],None)
                 #if not dryRun:
                 #    self.fail(reason="no machine machine found")
@@ -334,7 +334,7 @@ If you don't find a {self.itemType} blueprint, research it.
                 self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest], None)
             if "machining" in character.duties:
-                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason="construct a machine that produces {}".format(self.itemType),produceToInventory=True)
+                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                 return ([newQuest],None)
             self.fail(reason="no blueprint for "+self.itemType)
             return (None,None)

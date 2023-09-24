@@ -23,12 +23,12 @@ research a blueprint for {self.itemType}{reason}.
 """
         
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
-        text += """
+        text += f"""
 Blueprints are produced by a blueprinter (sX).
-{} is needed to research a blueprint for {}.
+{", ".join(self.getNeededResources())} is needed to research a blueprint for {self.itemType}.
 You also need a sheet to print the blueprint on.
 Examine the blueprinter for more details.
-""".format(", ".join(self.getNeededResources()),self.itemType,)
+"""
 
         if self.tryHard:
             text += """

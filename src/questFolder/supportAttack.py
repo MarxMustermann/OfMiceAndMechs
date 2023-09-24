@@ -24,7 +24,6 @@ class SupportAttack(src.quests.MetaQuestSequence):
             return
 
         if not self.lastSuperiorPos == self.getSuperiorsTileCoordinate(character):
-            print("clear subquests")
             self.clearSubQuests()
             self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
 
@@ -75,7 +74,6 @@ class SupportAttack(src.quests.MetaQuestSequence):
                     self.addQuest(src.quests.questMap["Fight"]())
                     return
 
-            print(character.superior.getSpacePosition())
             if character.container.isRoom:
                 pos = character.getBigPosition()
                 if character.superior.getSpacePosition() == (6,12,0):

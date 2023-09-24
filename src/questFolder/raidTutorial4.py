@@ -20,8 +20,6 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
             return (None,None)
 
         terrain = character.getTerrain()
-        print(terrain.yPosition)
-        print(terrain.xPosition)
 
         try:
             self.shownPickedUpSpecialItemSlot

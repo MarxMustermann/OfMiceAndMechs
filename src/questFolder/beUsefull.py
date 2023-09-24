@@ -294,9 +294,6 @@ We should stop watching and do something about that.
         return super().setParameters(parameters)
 
     def solver(self, character):
-        if character == src.gamestate.gamestate.mainChar:
-            print("solver beuseful")
-
         if character.health > character.maxHealth//5:
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()
@@ -447,7 +444,6 @@ We should stop watching and do something about that.
 
         for room in character.getTerrain().rooms:
             for buildSite in room.buildSites:
-                print(buildSite)
                 if not buildSite[1] == "Machine":
                     continue
                 if buildSite[2]["toProduce"] in machinesInStorage:
@@ -1542,7 +1538,6 @@ We should stop watching and do something about that.
                 for enemy in foundEnemies:
                     weight = character.weightAttack(enemy.getBigPosition())
                     if weight > 0:
-                        print(weight)
                         continue
 
                     quest = src.quests.questMap["ClearInventory"]()
@@ -1631,9 +1626,6 @@ We should stop watching and do something about that.
             quest.activate()
             quest.assignToCharacter(character)
             return
-        print(character.name)
-        print(terrain.xPosition)
-        print(terrain.yPosition)
 
         try:
             self.checkedRoomPositions
@@ -2663,7 +2655,6 @@ Let's go on a adventure to fetch them.
             toSpawn = ["Rod","Rod","Rod","Rod","Sword","Sword","Sword","Sword","Armor","Armor"]
             generalPurposeRoom = None
             for room in otherTerrain.rooms:
-                print(room.tag)
                 if not room.tag == "generalPurposeRoom":
                     continue
                 for itemType in toSpawn:

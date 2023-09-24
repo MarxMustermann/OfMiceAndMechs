@@ -8,7 +8,6 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.targetTerrain = targetTerrain
         self.metaDescription = description + " " + str(self.targetTerrain)
-        print("new go to terrain")
 
     def triggerCompletionCheck(self,character=None):
         if character == None:

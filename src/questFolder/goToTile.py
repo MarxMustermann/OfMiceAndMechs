@@ -280,8 +280,6 @@ The target tile is {direction[4:]}
                 return ([quest],None)
     
     def generateSubquests(self, character=None):
-        if character == src.gamestate.gamestate.mainChar:
-            print("gototile generateSubquests")
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)
         if nextQuests:
             for quest in nextQuests:
@@ -298,8 +296,6 @@ The target tile is {direction[4:]}
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character)
 
     def solver(self, character):
-        if character == src.gamestate.gamestate.mainChar:
-            print("gototile solver")
         if not self.path:
             self.generatePath(character)
 
@@ -316,7 +312,6 @@ The target tile is {direction[4:]}
         super().solver(character)
 
     def unhandledSubQuestFail(self,extraParam):
-        print("gototile unhandled")
         if not extraParam["quest"] in self.subQuests:
             return
 

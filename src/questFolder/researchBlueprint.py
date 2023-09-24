@@ -56,8 +56,7 @@ If you miss resources, produce them.
                     "Painter"         :["Tank", "Heater"],
                   }
         if not self.itemType in itemMap:
-            print(self.itemType)
-            8/0
+            raise Exception("no known base ressources for {self.itemType}")
         return itemMap.get(self.itemType)
 
     def solver(self, character):

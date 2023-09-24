@@ -40,11 +40,8 @@ class FloorPlan(src.items.Item):
     def readFloorPlanFromRoom(self):
         room = self.container
 
-        #print(room.walkingSpace)
         self.walkingSpace = copy.copy(room.walkingSpace)
-        #print(room.inputSlots)
         self.inputSlots = copy.copy(room.inputSlots)
-        #print(room.outputSlots)
         self.outputSlots = copy.copy(room.outputSlots)
 
         self.buildSites = []
@@ -57,7 +54,6 @@ class FloorPlan(src.items.Item):
             if item.type == "DutyBell":
                 extra = {"duty":item.duty}
             self.buildSites.append((item.getPosition(),item.type,extra))
-        print(self.buildSites)
 
         for walkingSpace in self.walkingSpace:
             self.container.addAnimation(walkingSpace,"showchar",3,{"char":"::"})
@@ -117,7 +113,6 @@ outputSlots:
 {self.outputSlots}
 
 """
-        print(self.buildSites)
         return text
 
 src.items.addType(FloorPlan)

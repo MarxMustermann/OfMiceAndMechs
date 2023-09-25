@@ -7,7 +7,6 @@ special non standard math belongs here
 import src.interaction
 
 
-
 # bad pattern: path should be generated in such a way this is not needed
 def removeLoops(path):
     """

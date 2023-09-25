@@ -2,19 +2,8 @@
 items and item related code belongs here
 """
 
-import config
-import src.logger
 import src.gamestate
 import src.interaction
-
-# load basic libs
-import json
-import random
-import time
-
-# load basic internal libs
-import src.events
-import config
 
 
 class Item:

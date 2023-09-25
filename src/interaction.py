@@ -2,26 +2,22 @@
 code for user interaction belongs here
 bad pattern: logic should be moved somewhere else
 """
-# load libraries
-import time
-import uuid
-import json
-import random
-import cProfile
 import collections
+import json
+import logging
 import os
-import asyncio
+import random
+import time
 
-# load internal libraries
-import src.rooms
-import src.items
-import src.quests
 import src.canvas
 import src.chats
-import src.terrains
-import config.commandChars as commandChars
-import src.cinematics as cinematics
 import src.gamestate
+import src.items
+import src.quests
+import src.rooms
+import src.terrains
+from config import commandChars
+from src import cinematics
 
 ################################################################################
 #
@@ -30,6 +26,7 @@ import src.gamestate
 #
 ################################################################################
 
+logger = logging.getLogger(__name__)
 continousOperation = 0
 main = None
 frame = None
@@ -61,7 +58,7 @@ def advanceGame():
 
     src.gamestate.gamestate.multi_chars = multi_chars
     src.gamestate.gamestate.tick += 1
-    print(src.gamestate.gamestate.tick)
+    logger.info("Tick %d", src.gamestate.gamestate.tick)
 
     for character in multi_chars:
         character.timeTaken -= 1
@@ -6086,14 +6083,14 @@ class RoomMenu(SubMenu):
         if self.room.floorPlan:
             self.persistentText.append("\n\nThis room has a floor plan.")
             if "walkingSpaces" in self.room.floorPlan:
-                print("walkingSpaces")
-                print(self.room.floorPlan["walkingSpaces"])
+                logger.info("walkingSpaces")
+                logger.info(self.room.floorPlan["walkingSpaces"])
             if "buildSites" in self.room.floorPlan:
-                print("buildSites")
-                print(self.room.floorPlan["buildSites"])
+                logger.info("buildSites")
+                logger.info(self.room.floorPlan["buildSites"])
             if "storageSlots" in self.room.floorPlan:
-                print("storageSlots")
-                print(self.room.floorPlan["storageSlots"])
+                logger.info("storageSlots")
+                logger.info(self.room.floorPlan["storageSlots"])
 
         try:
             self.room.requiredDuties

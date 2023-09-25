@@ -5,6 +5,10 @@ a vending machine basically
 bad code: currently only dispenses goo flasks
 """
 
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 class ObjectDispenser(src.items.Item):
     type = "ObjectDispenser"
@@ -31,7 +35,7 @@ class ObjectDispenser(src.items.Item):
             new = self.storage.pop()
             self.container.addItem(new,(self.xPosition,self.yPosition+1,self.zPosition))
         else:
-            src.logger.debugMessages.append("the object dispenser is empty")
+            logger.debug("the object dispenser is empty")
 
     def getLongInfo(self):
         text = """

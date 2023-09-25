@@ -1,6 +1,9 @@
-import src
-import json
 import copy
+import logging
+
+import src
+
+logger = logging.getLogger(__name__)
 
 class FloorPlan(src.items.Item):
     """

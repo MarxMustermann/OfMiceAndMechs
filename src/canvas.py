@@ -3,8 +3,12 @@ drawing and related code should be here
 bad code: drawstuff is everywhere
 """
 
-# import basic libs
-import src.logger
+import logging
+
+import src.gamestate
+import src.interaction
+
+logger = logging.getLogger(__name__)
 
 # bad code: this is unintuitive, ugly and unnecessary it should be replaced by a simpler solution
 class Mapping:
@@ -490,13 +494,11 @@ class Canvas:
                 # render the character via the abstraction layer
                 if isinstance(char, int):
                     if self.displayChars.indexedMapping[char] is None:
-                        src.logger.debugMessages.append(
-                            "failed rendering "
-                            + str(char)
-                            + " "
-                            + str(self.displayChars.indexedMapping[char - 10])
-                            + " "
-                            + str(self.displayChars.indexedMapping[char + 10])
+                        logger.debug(
+                            "failed rendering %s %s %s",
+                            char,
+                            self.displayChars.indexedMapping[char - 10],
+                            self.displayChars.indexedMapping[char + 10],
                         )
                     else:
                         out.append(self.displayChars.indexedMapping[char])

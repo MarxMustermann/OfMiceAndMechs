@@ -3,18 +3,13 @@ quests and quest related code
 
 """
 
-# import basic libs
-import json
 import random
 import time
 
-# import basic internal libs
-import src.items
-import src.chats
-import src.events
-import src.interaction
 import src.cinematics
+import src.events
 import src.gamestate
+import src.interaction
 
 # HACK: common variables with modules
 mainChar = None

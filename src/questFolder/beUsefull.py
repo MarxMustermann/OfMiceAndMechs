@@ -1,5 +1,9 @@
-import src
+import logging
 import random
+
+import src
+
+logger = logging.getLogger(__name__)
 
 class BeUsefull(src.quests.MetaQuestSequence):
     type = "BeUsefull"
@@ -294,6 +298,7 @@ We should stop watching and do something about that.
         return super().setParameters(parameters)
 
     def solver(self, character):
+
         if character.health > character.maxHealth//5:
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()

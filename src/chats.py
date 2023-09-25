@@ -2,14 +2,15 @@
 chats and chat related code belongs here
 bad pattern: chats should have a parent class
 """
+import logging
 
-# import the other internal libs
-import src.interaction
-import src.canvas
-import src.logger
-import src.quests
 import config
+import src.canvas
 import src.gamestate
+import src.interaction
+import src.quests
+
+logger = logging.getLogger(__name__)
 
 class Chat(src.interaction.SubMenu):
     """
@@ -44,7 +45,7 @@ class Chat(src.interaction.SubMenu):
         if toRemove:
             character.basicChatOptions.remove(toRemove)
         else:
-            src.logger.debugMessages.append("removed chat option that wasn't there")
+            logger.debug("removed chat option that wasn't there")
 
     def setUp(self, state):
         """
@@ -1877,7 +1878,7 @@ class ChatMenu(Chat):
 
         # smooth over impossible state
         if self.partner is None:
-            src.logger.debugMessages.append("chatmenu spawned without partner")
+            logger.debug("chatmenu spawned without partner")
             return False
 
         # wake up character instead of speaking

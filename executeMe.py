@@ -7,9 +7,10 @@ if you are a first time visitor, interaction.py, story.py and gamestate.py are p
 """
 
 import argparse
+import logging
 
 import src.itemFolder
-from src import canvas, characters, interaction, logger, story
+from src import canvas, characters, interaction, story
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--phase", type=str, help="the phase to start in")
@@ -70,7 +71,12 @@ story.registerPhases()
 
 
 interaction.debug = args.debug
-logger.setup(interaction.debug)
+logging.basicConfig(
+    encoding="utf-8",
+    level=logging.DEBUG if interaction.debug else logging.INFO,
+    handlers=[logging.StreamHandler()]
+    + ([logging.FileHandler("debug.log", "w", "utf-8")] if interaction.debug else []),
+)
 
 if not args.urwid:
     interaction.nourwid = True

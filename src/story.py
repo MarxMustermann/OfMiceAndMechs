@@ -6,22 +6,24 @@ most thing should be abstracted and converted to a game mechanism later
 most of this code is currently not in use and needs to be reintegrated
 """
 
-import src.rooms
-import src.canvas
-import src.cinematics
-import src.chats
-import src.quests
-import src.items
-import src.interaction
-import src.events
-import config
-import src.gamestate
-
-import random
-import requests
-import json
 import copy
+import json
+import logging
+import random
 
+import requests
+
+import src.canvas
+import src.chats
+import src.cinematics
+import src.events
+import src.gamestate
+import src.interaction
+import src.items
+import src.quests
+import src.rooms
+
+logger = logging.getLogger(__name__)
 phasesByName = None
 
 #####################################

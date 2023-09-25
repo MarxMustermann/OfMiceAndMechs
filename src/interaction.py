@@ -9480,14 +9480,14 @@ You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
 ""","You remember ",".",".",".",""" nothing
-""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     
-You remember how tendrils of pain grew from from your implant.     
-They played your thoughts and burried them.                           
-They dug up your memories and ripped them apart.     
-You know that something is wrong within your implant.     
+""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     \n\
+You remember how tendrils of pain grew from from your implant.     \n\
+They played your thoughts and burried them.                           \n\
+They dug up your memories and ripped them apart.     \n\
+You know that something is wrong within your implant.     \n\
 
-The pain ate your mind and           
-starts to burn your flesh.                                                
+The pain ate your mind and           \n\
+starts to burn your flesh.                                                \n\
 """]
             if not noFlicker and not subStep < len(textBase)-1:
                 tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
@@ -9520,26 +9520,26 @@ starts to burn your flesh.
                 tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.01)
             text = """
-                                                                                   
-    |                                                                         |    
-  --+-------------------------------------------------------------------------+--  
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-  --+-------------------------------------------------------------------------+--  
-    |                                                                         |    
-                                                                                   
+                                                                                   \n\
+    |                                                                         |    \n\
+  --+-------------------------------------------------------------------------+--  \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+  --+-------------------------------------------------------------------------+--  \n\
+    |                                                                         |    \n\
+                                                                                   \n\
 """
             printUrwidToTcod(text,(38,13))
             if not noFlicker:
@@ -9704,26 +9704,26 @@ grows and grows and grows and grows
                     y += 2
                     x = -offset
             text = """
-                                                                                       
-      |                                                                         |      
-    --+-------------------------------------------------------------------------+--    
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-    --+-------------------------------------------------------------------------+--    
-      |                                                                         |      
-                                                                                       
+                                                                                       \n\
+      |                                                                         |      \n\
+    --+-------------------------------------------------------------------------+--    \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+    --+-------------------------------------------------------------------------+--    \n\
+      |                                                                         |      \n\
+                                                                                       \n\
 """
             printUrwidToTcod(text,(36,13))
             text = ""

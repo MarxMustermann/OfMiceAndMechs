@@ -4712,12 +4712,10 @@ try to remember how you got here ..."""
         if faction == src.gamestate.gamestate.mainChar.faction:
             text = f"The leader of your faction {faction} died"
             src.interaction.showInterruptText(text)
-        logger.info(extraParam)
 
         for colonyBaseInfo in self.colonyBaseInfos2:
             if not colonyBaseInfo["mainChar"] == extraParam["character"]:
                 continue
-            logger.info(colonyBaseInfo)
 
             candidates = []
             candidates.extend(colonyBaseInfo["terrain"].characters)
@@ -6314,7 +6312,6 @@ When you rise in rank you will be able to build a way out of here."""
             for specialItemSlot in specialItemSlots:
                 if not specialItemSlot.hasItem:
                     continue
-                logger.info("foundSpecialItemSlot")
                 hasSpecialItems.append(specialItemSlot)
         
         room = random.choice(terrain.rooms)
@@ -7047,7 +7044,6 @@ class MainGameArena(BasicPhase):
                     outputSlotInfo = (outputSlotInfo[0],outputSlotInfo[1],{})
                 room.addOutputSlot(outputSlotInfo[0],outputSlotInfo[1],outputSlotInfo[2])
            for buildSite in room.floorPlan.get("buildSites",[]):
-               logger.info(buildSite)
                item = src.items.itemMap[buildSite[1]]()
                room.addItem(item,buildSite[0])
                if buildSite[1] == "Machine":

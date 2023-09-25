@@ -129,9 +129,6 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             return
 
     def solver(self, character):
-        if character == src.gamestate.gamestate.mainChar:
-            print("solver delve")
-
         (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:
             for quest in nextQuests:

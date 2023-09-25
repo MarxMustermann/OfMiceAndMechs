@@ -58,7 +58,6 @@ class VialFiller(src.items.Item):
         for inOffset in self.ins:
             items = self.container.getItemByPosition(self.getPosition(offset=inOffset))
             for item in items:
-                print(item)
                 if not item.bolted:
                     continue
                 if not item.type == "GooDispenser":

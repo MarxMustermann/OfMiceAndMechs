@@ -85,19 +85,6 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if self.completed:
             1/0
 
-        if extraInfo[0] == src.gamestate.gamestate.mainChar:
-
-            questIsAnchored = False
-            for quest in extraInfo[0].quests:
-                if self.recCheck(quest):
-                    questIsAnchored = True
-
-            #if not questIsAnchored:
-            #    print("dangling quest:")
-            #    print("handle moved")
-            #    print(self.description)
-            #    print(self)
-
         convertedDirection = None
         if extraInfo[1] == "west":
             convertedDirection = (-1,0)

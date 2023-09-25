@@ -73,7 +73,7 @@ class SickBloom(src.items.Item):
         """
         schedule spawning a monster
         """
-        
+
         event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick
             + (2 * self.xPosition + 3 * self.yPosition + src.gamestate.gamestate.tick) % 2500

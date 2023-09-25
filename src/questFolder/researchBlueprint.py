@@ -21,7 +21,7 @@ class ResearchBluePrint(src.quests.MetaQuestSequence):
 research a blueprint for {self.itemType}{reason}.
 
 """
-        
+
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
         text += f"""
 Blueprints are produced by a blueprinter (sX).
@@ -108,10 +108,10 @@ If you miss resources, produce them.
             for direction in directions:
                 if character.getPosition(offset=direction[0]) == (9,8,0):
                     return (None,("J"+direction[1],"research blueprint"))
-            1/0 
+            1/0
 
         return (None,None)
-    
+
     def triggerCompletionCheck(self,character=None):
         return False
 

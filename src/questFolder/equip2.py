@@ -69,7 +69,7 @@ Swords can range from 10 to 25 damage per hit.
                 if bestSword.baseDamage > item.baseDamage:
                     continue
                 bestSword = item
-        
+
         if bestArmor and character.armor and bestArmor.armorValue <= character.armor.armorValue:
             bestArmor = None
         if bestSword and character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
@@ -78,7 +78,7 @@ Swords can range from 10 to 25 damage per hit.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return 
+            return
 
         (bestSword,bestArmor) = self.findBestEquipment(character)
 
@@ -100,7 +100,7 @@ Swords can range from 10 to 25 damage per hit.
             self.subQuests.remove(self.subQuests[0])
 
     def subQuestCompleted(self,extraInfo=None):
-        self.clearCompletedSubquest() 
+        self.clearCompletedSubquest()
         if not self.subQuests:
             self.generateSubquests(self.character)
 
@@ -141,11 +141,11 @@ Swords can range from 10 to 25 damage per hit.
             if not character.container == bestSword.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())
                 return ([quest],None)
-            
+
             if character.getDistance(bestSword.getPosition()) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition(),ignoreEndBlocked=True)
                 return ([quest],None)
-            
+
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestSword.getPosition():
@@ -156,11 +156,11 @@ Swords can range from 10 to 25 damage per hit.
             if not character.container == bestArmor.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition())
                 return ([quest],None)
-            
+
             if character.getDistance(bestArmor.getPosition()) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=bestArmor.getPosition(),ignoreEndBlocked=True)
                 return ([quest],None)
-            
+
             offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == bestArmor.getPosition():

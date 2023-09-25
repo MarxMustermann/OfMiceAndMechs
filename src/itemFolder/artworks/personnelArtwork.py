@@ -88,7 +88,7 @@ Use the complex interaction to recharge the personel artwork
 
                     personel.append(worker)
         return personel
-        
+
     def fetchCityleader(self):
         if self.cityLeader and self.cityLeader.dead:
             self.cityLeader = None
@@ -164,7 +164,7 @@ Use the complex interaction to recharge the personel artwork
             "NaiveMurderQuest",
             "DropQuestMeta",
             "DeliverSpecialItem",
-        ] 
+        ]
 
         self.container.addCharacter(char,5,6)
         char.automated = True
@@ -221,7 +221,7 @@ Use the complex interaction to recharge the personel artwork
             "NaiveMurderQuest",
             "DropQuestMeta",
             "DeliverSpecialItem",
-        ] 
+        ]
 
         self.container.addCharacter(char,5,6)
         char.runCommandString("********")
@@ -234,19 +234,19 @@ Use the complex interaction to recharge the personel artwork
                 character.subordinates.remove(subordinate)
 
         if character.rank == None or character.rank > 5:
-            character.addMessage("you need to be rank 5 or higher to spawn a bodyguard") 
+            character.addMessage("you need to be rank 5 or higher to spawn a bodyguard")
             return None
         if character.rank == 5:
             if character.getNumSubordinates() > 0:
-                character.addMessage("you can only have one bodyguard with rank 5") 
+                character.addMessage("you can only have one bodyguard with rank 5")
                 return
         if character.rank == 4:
             if character.getNumSubordinates() > 1:
-                character.addMessage("you can only have two bodyguards with rank 4") 
+                character.addMessage("you can only have two bodyguards with rank 4")
                 return
         if character.rank == 3:
             if character.getNumSubordinates() > 2:
-                character.addMessage("you can only have three bodyguards with rank 3") 
+                character.addMessage("you can only have three bodyguards with rank 3")
                 return
 
         if not self.charges:

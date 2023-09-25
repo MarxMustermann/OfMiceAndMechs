@@ -44,7 +44,7 @@ To see your items open the your inventory by pressing i."""
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.droppedItem, "dropped")
         self.startWatching(character,self.handleTileChange, "changedTile")
 
@@ -97,7 +97,7 @@ To see your items open the your inventory by pressing i."""
                     return (None,("a","enter tile"))
                 if character.xPosition%15 == 0:
                     return (None,("d","enter tile"))
-                
+
                 if "HOMEx" in character.registers:
                     quest = src.quests.questMap["GoHome"]()
                     return ([quest],None)

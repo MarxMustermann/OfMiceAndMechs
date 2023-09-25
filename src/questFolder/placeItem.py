@@ -56,7 +56,7 @@ You are on the target tile.
 
 The target tile is {direction[5:]}
 """
-        
+
         if self.tryHard:
             text += """
 
@@ -250,10 +250,10 @@ Press d to move the cursor and show the subquests description.
                 return (None,("wcb","bolt sown item"))
             if (pos[0],pos[1]+1,pos[2]) == targetPosition:
                 return (None,("scb","bolt down item"))
-                    
+
             67/0
         return (None,None)
-    
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False

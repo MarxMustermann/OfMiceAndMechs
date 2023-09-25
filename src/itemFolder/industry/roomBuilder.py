@@ -236,7 +236,7 @@ The room has to be a rectangle.
             self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",12,{"char":src.canvas.displayChars.dirt})
             self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#fff", "black"),"::")})
             self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",9,{"char":src.canvas.displayChars.floor})
-        
+
         ring5 = [(5,0,0),(5,1,0),(5,2,0),(5,3,0),(5,4,0),(5,5,0),(4,5,0),(3,5,0),(2,5,0),(1,5,0),(0,5,0),(-1,5,0),(-2,5,0),(-3,5,0),(-4,5,0),(-5,5,0),(-5,4,0),(-5,3,0),(-5,2,0),(-5,1,0),(-5,0,0),(-5,-1,0),(-5,-2,0),(-5,-3,0),(-5,-4,0),(-5,-5,0),(-4,-5,0),(-3,-5,0),(-2,-5,0),(-1,-5,0),(0,-5,0),(1,-5,0),(2,-5,0),(3,-5,0),(4,-5,0),(5,-5,0),(5,-4,0),(5,-3,0),(5,-2,0),(5,-1,0)]
         for pos in ring5:
             self.container.addAnimation((basePos[0]*15+7+pos[0],basePos[1]*15+7+pos[1],0),"showchar",15,{"char":src.canvas.displayChars.dirt})

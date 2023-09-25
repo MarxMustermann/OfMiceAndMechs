@@ -125,14 +125,14 @@ class Quest:
 
     def getRequiredParameters(self):
         return []
-    
+
     def getOptionalParameters(self):
         return [{"name":"lifetime","type":"int","default":None}]
 
     def setParameters(self,parameters):
         if "lifetime" in parameters:
             self.lifetime = parameters["lifetime"]
-    
+
     def reroll(self):
         self.randomSeed = random.random()
 
@@ -604,7 +604,7 @@ class MetaQuestSequence(Quest):
 
     def render(self,depth=0,cursor=None,sidebared=False):
         description = [self.description]
-        
+
         #if not depth == 0 and sidebared:
         #    description = ["..."]
 

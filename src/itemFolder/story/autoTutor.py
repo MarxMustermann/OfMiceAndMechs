@@ -49,7 +49,7 @@ class AutoTutor(src.items.Item):
         Parameters:
             amount: how much scrap to add
         Returns:
-            flag indicating wheter or not the scrap was added 
+            flag indicating wheter or not the scrap was added
         """
 
         targetFull = False

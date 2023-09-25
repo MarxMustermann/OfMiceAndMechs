@@ -24,7 +24,7 @@ class EncrustedPoisonBush(src.items.Item):
         Parameters:
             character: the character trying to us the item
         """
-        
+
         if 100 > character.satiation:
             character.satiation = 0
         else:
@@ -41,7 +41,7 @@ class EncrustedPoisonBush(src.items.Item):
         Parameters:
             the description text
         """
-        
+
         text = super().getLongInfo()
 
         text += """

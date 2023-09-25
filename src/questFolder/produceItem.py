@@ -21,7 +21,7 @@ class ProduceItem(src.quests.MetaQuestSequence):
 produce {self.itemType}{reason}.
 
 """
-        
+
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
         text += f"""
 {self.itemType} are produced by a {self.itemType} machine (X\\).
@@ -163,7 +163,7 @@ If you don't find a {self.itemType} machine needed, build it.
                             continue
                         foundItem = True
                         break
-                    
+
                     if foundItem:
                         continue
 
@@ -175,7 +175,7 @@ If you don't find a {self.itemType} machine needed, build it.
                         if items and len(items) < 25:
                             continue
                         enptyInputOffsets.append(inputOffset)
-                    
+
                     preferedOffset = None
                     for inputOffset in enptyInputOffsets:
                         newPos = foundMachine.getPosition(offset=inputOffset)
@@ -187,7 +187,7 @@ If you don't find a {self.itemType} machine needed, build it.
 
                             quest = src.quests.questMap["PlaceItem"](targetPosition=foundMachine.getPosition(offset=inputOffset),targetPositionBig=foundMachine.container.getPosition(),itemType=neededItem,tryHard=self.tryHard)
                             return ([quest], None)
-                            
+
 
                     if enptyInputOffsets:
                         inputOffset = enptyInputOffsets[0]
@@ -224,7 +224,7 @@ If you don't find a {self.itemType} machine needed, build it.
             self.fail("no machine for "+self.itemType)
             return (None,None)
         return (None,None)
-    
+
     def triggerCompletionCheck(self,character=None):
         return False
 

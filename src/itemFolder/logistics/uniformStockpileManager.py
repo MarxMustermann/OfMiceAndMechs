@@ -193,7 +193,7 @@ r: reset
     # abstraction: should use generalised code
     def setMachineSettings(self):
         """
-        set the settings for the machine 
+        set the settings for the machine
         """
 
         if self.settingType is None:

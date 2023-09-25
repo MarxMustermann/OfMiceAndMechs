@@ -156,11 +156,11 @@ Choose your tertiary duty:\n"""
             character.registers["HOMETx"] = terrainPosition[0]
             character.registers["HOMETy"] = terrainPosition[1]
             return
-        
+
         if character.rank == None:
             self.shortIntroduction({"character":character})
             return
-        
+
         if character.rank == 6:
             if character.reputation < self.requiredReputationForRank5:
                 text = f"""
@@ -317,7 +317,7 @@ Additionally you recieve 2 health vials.
             submenue.tag = "assimilation"
             character.macroState["submenue"] = submenue
             return
-        
+
         if character.rank == 3:
                 text = """
 
@@ -445,7 +445,7 @@ a set of commands in the room for ghuls to execute.
 
 The reanimator creates a ghul by reanmating a corpse.
 The ghul starts to execute the commands.
-The commands directs the ghul to use the machine. 
+The commands directs the ghul to use the machine.
 
 The machines turn raw resources into usable goods.
 
@@ -518,7 +518,7 @@ To find tasks to complete just walk around until you find somewhere to be useful
 
     def basicIntegration2(self,extraParams):
         character = extraParams["character"]
-        if not character.skills: 
+        if not character.skills:
             text = """
 
 You have no skill. This means you are useless to the base.

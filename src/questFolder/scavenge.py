@@ -52,7 +52,7 @@ This quest will end when your inventory is full."""
         if not self.subQuests:
             terrain = character.getTerrain()
 
-            
+
             for item in terrain.getNearbyItems(character):
                 if self.toCollect and not item.type == self.toCollect:
                     continue
@@ -71,10 +71,10 @@ This quest will end when your inventory is full."""
                     continue
                 if terrain.getRoomByPosition(target):
                     continue
-                
+
                 hasIdleSubordinate = False
                 for subordinate in character.subordinates:
-                    if len(subordinate.quests) < 2: 
+                    if len(subordinate.quests) < 2:
                         hasIdleSubordinate = True
 
                 if hasIdleSubordinate:
@@ -98,7 +98,7 @@ This quest will end when your inventory is full."""
             for offset in offsets:
 
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
-                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:   
+                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
 
                 if not (not target in terrain.scrapFields and not target in terrain.forests and not terrain.getRoomByPosition(target)):
@@ -108,7 +108,7 @@ This quest will end when your inventory is full."""
 
                 foundEnemy = False
                 for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction: 
+                    if otherCharacter.faction == character.faction:
                         continue
                     foundEnemy = True
                 if foundEnemy:
@@ -133,7 +133,7 @@ This quest will end when your inventory is full."""
             for offset in offsets:
 
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
-                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:   
+                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
                 if not (not target in terrain.scrapFields and not target in terrain.forests and not terrain.getRoomByPosition(target)):
                     continue
@@ -142,7 +142,7 @@ This quest will end when your inventory is full."""
 
                 foundEnemy = False
                 for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction: 
+                    if otherCharacter.faction == character.faction:
                         continue
                     foundEnemy = True
                 if foundEnemy:
@@ -160,7 +160,7 @@ This quest will end when your inventory is full."""
 
                 foundEnemy = False
                 for otherCharacter in terrain.charactersByTile.get(target,[]):
-                    if otherCharacter.faction == character.faction: 
+                    if otherCharacter.faction == character.faction:
                         continue
                     foundEnemy = True
                 if foundEnemy:

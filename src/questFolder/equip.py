@@ -49,7 +49,7 @@ Swords can range from 10 to 25 damage per hit.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return 
+            return
 
         if (character.armor or self.weaponOnly) and character.weapon:
             self.postHandler()
@@ -62,7 +62,7 @@ Swords can range from 10 to 25 damage per hit.
             self.subQuests.remove(self.subQuests[0])
 
     def subQuestCompleted(self,extraInfo=None):
-        self.clearCompletedSubquest() 
+        self.clearCompletedSubquest()
         if not self.subQuests:
             self.generateSubquests(self.character)
 
@@ -113,7 +113,7 @@ Swords can range from 10 to 25 damage per hit.
                 if character.yPosition%15 == 14 or character.yPosition%15 == 0 or character.xPosition%15 == 14 or character.xPosition%15 == 0:
                     quest = src.quests.questMap["EnterRoom"]()
                     return ([quest],None)
-                    
+
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
             room = character.container

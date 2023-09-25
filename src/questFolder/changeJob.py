@@ -34,7 +34,7 @@ class ChangeJob(src.quests.MetaQuestSequence):
         if duties:
             duty = random.choice(duties)
         self.addQuest(src.quests.questMap["Assimilate"](description="set new duties",preferedDuty=duty))
-        
+
         skill = None
         if duty == "resource gathering":
             skill = "gathering"

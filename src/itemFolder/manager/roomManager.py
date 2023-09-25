@@ -291,7 +291,7 @@ class RoomManager(src.items.Item):
         if "selection" not in params:
             return
 
-        character = params["character"] 
+        character = params["character"]
         selection = params["selection"]
 
         if selection == "startJoborderLoop":
@@ -951,7 +951,7 @@ class RoomManager(src.items.Item):
 
         import random
         itemSlot = random.choice(self.itemPositions[itemType])
-        
+
         command = self.generatePathFromTo((character.xPosition,character.yPosition), (itemSlot[0],itemSlot[1]-1))
 
         character.runCommandString(command)

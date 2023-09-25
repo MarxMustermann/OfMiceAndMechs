@@ -37,7 +37,7 @@ Your duties are:
 
 {}
 
-    
+
 """.format(reason,"\n".join(self.character.duties),)
         if not self.character.duties:
             out += "You have no duties, something has gone wrong."
@@ -150,7 +150,7 @@ Leave the enemies alone. You have been warned.
                     border = True
                 if character.xPosition%15 == 13 and character.yPosition%15 == 7:
                     border = True
-                
+
                 if not border:
                     self.showedEnemyWarning = False
 
@@ -199,7 +199,7 @@ We should stop watching and do something about that.
             if extraInfo["deadChar"].rank == 6:
                 amount = 50
             self.character.revokeReputation(amount,reason="an ally dying nearby")
-    
+
     def handleMovement(self, extraInfo):
         toRemove = []
         for quest in self.subQuests:
@@ -244,7 +244,7 @@ We should stop watching and do something about that.
                                 self.character.awardReputation(5, reason="delivering an item into an input stockpile")
                     else:
                         self.character.revokeReputation(50, reason="delivering a wrong item into an input stockpile")
-            
+
             for outputSlot in room.outputSlots:
                 if outputSlot[0] == itemPos:
                     if outputSlot[1] == item.type:
@@ -262,7 +262,7 @@ We should stop watching and do something about that.
     def pickedUpItem(self,extraInfo):
         if not self.character == src.gamestate.gamestate.mainChar:
             return
-        
+
         if isinstance(self.character.container,src.terrains.Terrain):
             if "resource gathering" in self.character.duties:
                 self.character.awardReputation(1, reason="gathering an item")
@@ -275,7 +275,7 @@ We should stop watching and do something about that.
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == extraInfo[2]:
                     self.character.revokeReputation(50, reason="taking an item out of an input stockpile")
-            
+
     def assignToCharacter(self, character):
         if self.character:
             return
@@ -421,7 +421,7 @@ We should stop watching and do something about that.
                     newQuest = src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False)
                     self.addQuest(newQuest)
                     return True
-            
+
             checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Vial",1,1),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
@@ -456,7 +456,7 @@ We should stop watching and do something about that.
                 newQuest = src.quests.questMap["Machining"](toProduce=buildSite[2]["toProduce"],amount=1,produceToInventory=False)
                 self.addQuest(newQuest)
                 return True
-        
+
         itemsToCheck = ["Wall","Case","Frame","Rod","Door","RoomBuilder","ScrapCompactor","Sword","Armor"]
         for itemType in itemsToCheck:
             if not itemType in machinesInStorage:
@@ -789,7 +789,7 @@ We should stop watching and do something about that.
                         if inputSlot[1] == None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
-                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2]) 
+                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
                         if inputSlot[1] in checkedTypes:
                             continue
                         checkedTypes.add(inputSlot[1])
@@ -836,7 +836,7 @@ We should stop watching and do something about that.
                         if inputSlot[1] == None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
-                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2]) 
+                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
                         if inputSlot[1] in checkedTypes:
                             continue
                         checkedTypes.add(inputSlot[1])
@@ -858,7 +858,7 @@ We should stop watching and do something about that.
                                 self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason))
                                 self.idleCounter = 0
                                 return True
-                                
+
 
                         if not hasItem:
                             if trueInput:
@@ -905,7 +905,7 @@ We should stop watching and do something about that.
                         if inputSlot[1] == None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
-                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2]) 
+                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
                         if inputSlot[1] in checkedTypes:
                             continue
                         checkedTypes.add(inputSlot[1])
@@ -962,7 +962,7 @@ We should stop watching and do something about that.
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                                 self.idleCounter = 0
                                 return True
-                        
+
                         if not hasItem:
                             if trueInput:
                                 amountToFetch = None
@@ -1125,7 +1125,7 @@ We should stop watching and do something about that.
         for checkDesireFilledStorageSlot in checkDesireFilledStorageSlots:
             if desireFilledStorageSlots.get(checkDesireFilledStorageSlot[0],0) >= checkDesireFilledStorageSlot[1]:
                 continue
-            
+
             for room in character.getTerrain().rooms:
                 if not room.tag == "storage":
                     continue
@@ -1227,7 +1227,7 @@ We should stop watching and do something about that.
                 self.addQuest(quest)
                 self.idleCounter = 0
                 return True
-        
+
     def registerDutyFail(self,extraParam):
         if isinstance(extraParam["quest"],src.quests.questMap["SetUpMachine"]):
             grievance = ("SetUpMachine",extraParam["quest"].itemType,"no machine")
@@ -1352,7 +1352,7 @@ We should stop watching and do something about that.
                         freeStorage += 1
                     for item in items:
                         itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
-            
+
             if itemsInStorage.get("CityPlaner") or "metal working" in character.duties:
                 quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to have it to plan the city with")
                 self.addQuest(quest)
@@ -1536,7 +1536,7 @@ We should stop watching and do something about that.
                         return
 
             if numNPCs < 5:
-                return 
+                return
 
             if foundEnemies:
                 random.shuffle(foundEnemies)
@@ -1556,7 +1556,7 @@ We should stop watching and do something about that.
                     quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
-                    
+
                     quest = src.quests.questMap["Equip2"]()
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
@@ -1570,7 +1570,7 @@ We should stop watching and do something about that.
                 return
 
             if numNPCs < 10:
-                return 
+                return
 
             positions = [(7,6),(7,5),(7,4),(7,3),(7,2),(6,6),(8,6)]
             for pos in positions:
@@ -1990,7 +1990,7 @@ Let's produce and set up a CityPlaner first. That requires you to do several act
 I'll use the quest system to steer you through that.
 
 The quest system will guide you by
-* generating sub quests when pressing "+". 
+* generating sub quests when pressing "+".
   This means that your task will be split into simple sub tasks.
 * showing you quest markers.
   The quest markers from the current active quest are shown as grey background.
@@ -2081,7 +2081,7 @@ You wait one turn by pressing the "." key, press and hold "." to pass more time.
                     continue
                 if item.type == "Wall":
                     return True
-            
+
         if not self.showedHelpCraftingText:
             text = """
 Craft a Wall to help building the base.
@@ -2098,7 +2098,7 @@ But helping you base out with important tasks is part of the game.
             self.showedHelpCraftingText = True
             self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True,reason="help out the NPCs with production"))
             return True
-            
+
         if not self.showedHelpCraftingText2:
             text = """
 Each wall takes 100 turns to be produced at the workshop.
@@ -2285,7 +2285,7 @@ Let's produce some better weapons.
             #self.addQuest(quest)
             return True
 
-        try: 
+        try:
             self.showedBuildRoomInfo
         except:
             self.showedBuildRoomInfo = False
@@ -2312,12 +2312,12 @@ With some experience you will mostly disregard the quest system.
                 return True
             return
 
-        try: 
+        try:
             self.showedBuildMachines
         except:
             self.showedBuildMachines = False
 
-        try: 
+        try:
             self.selectedMachineTutorial
         except:
             self.selectedMachineTutorial = None
@@ -2385,7 +2385,7 @@ A Machine only produces one specific thing.
 The Machine goes into a cool down and cannot be used for x turns after producing something.
 A workshop is expensive to produce and cheap to use.
 
-The anvil you used to produce MetalBars from Scrap is a workshop. 
+The anvil you used to produce MetalBars from Scrap is a workshop.
 A ScrapCompactor also produces MetalBars from Scrap, but is a machine.
 
 Let's set a ScrapCompactor up so you can try it out.
@@ -2400,7 +2400,7 @@ Let's set a ScrapCompactor up so you can try it out.
             self.addQuest(src.quests.questMap["PlaceItem"](itemType="ScrapCompactor",targetPositionBig=(6,7,0),targetPosition=(2,2,0),boltDown=True))
             return True
 
-        try: 
+        try:
             self.showedBuildMachines2
         except:
             self.showedBuildMachines2 = False
@@ -2423,7 +2423,7 @@ Produce a Rod-Machine to try it out.
             self.addQuest(newQuest)
             return True
 
-        try: 
+        try:
             self.showedBuildMachines3
         except:
             self.showedBuildMachines3 = False
@@ -2492,7 +2492,7 @@ Set up a production chain for walls.
             self.showedBuildMachines3 = True
             return True
 
-        try: 
+        try:
             self.showedBuildMachines4
         except:
             self.showedBuildMachines4 = False
@@ -2536,14 +2536,14 @@ Supply the materials to build a new room.
                     src.interaction.showInterruptText(text)
                     self.showedBuildWeaponPrductionRoom = True
                 return
-                
+
         if cityPlaner and cityPlaner.getAvailableRooms():
             if not self.showedPlanWeaponProduction:
                 if self.selectedMachineTutorial:
                     text = """
 Let's start to make the use of your base and produce some weapons.
 a weapon production.
-This room will build 
+This room will build
 
 = press enter to continue playing =
 """
@@ -2651,7 +2651,7 @@ You need 10 machines, so you'd have to wait for 10 000 turns.
 Usually you'd go adventuring while you wait.
 
 I know a place where you can find the machines you need.
-Let's go on a adventure to fetch them. 
+Let's go on a adventure to fetch them.
 (i healed you)
 
 == press space to continue =

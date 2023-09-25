@@ -17,7 +17,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
             if command:
                 character.runCommandString(command[0])
                 return
-            
+
         super().solver(character)
 
     def triggerCompletionCheck(self,character=None):

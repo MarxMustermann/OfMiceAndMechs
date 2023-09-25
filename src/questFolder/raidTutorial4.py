@@ -53,7 +53,7 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
             if not character.container == throne.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition())
                 return ([quest],None)
-            
+
             if character.getDistance(throne.getPosition()) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=throne.getPosition(),ignoreEndBlocked=True)
                 return ([quest],None)

@@ -84,7 +84,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                 for checkOffset in offsets:
                     if item.getPosition(offset=checkOffset) == self.targetPosition:
                         painterOffset = checkOffset
-                    
+
                 if painterOffset == (0,0,0):
                     if not (painterOffset == item.offset):
                         return (None,(["c","d",".","enter"],"to configure painter direction"))
@@ -153,7 +153,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDeletedMarking, "deleted marking")
 
         return super().assignToCharacter(character)

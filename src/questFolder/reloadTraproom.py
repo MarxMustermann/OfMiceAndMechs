@@ -52,7 +52,7 @@ This will reload the trap room and consume the lightning rods.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return 
+            return
 
         if self.getRoomCharged(character):
             super().triggerCompletionCheck()
@@ -174,7 +174,7 @@ This will reload the trap room and consume the lightning rods.
                 source = None
                 for sourceCandidate in random.sample(list(room.sources),len(room.sources)):
                     if not sourceCandidate[1] == "LightningRod":
-                       continue 
+                       continue
 
                     sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])
                     if not sourceRoom:
@@ -195,7 +195,7 @@ This will reload the trap room and consume the lightning rods.
         super().solver(character)
 
     def getRoomCharged(self,character):
-        
+
         terrain = character.getTerrain()
 
         rooms = terrain.getRoomByPosition(self.targetPosition)

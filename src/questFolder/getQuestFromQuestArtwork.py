@@ -77,7 +77,7 @@ Activate the quest artwork to fetch a quest."""
                         direction = "w"
                     if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                         direction = "s"
-                    
+
                     if direction:
                         return "J"+direction
         return super().getSolvingCommandString(character,dryRun=dryRun)
@@ -108,9 +108,9 @@ Activate the quest artwork to fetch a quest."""
                     direction = "w"
                 if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                     direction = "s"
-                
+
                 if direction:
-                    return 
+                    return
 
                 quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to quest artwork ")
                 quest.active = True

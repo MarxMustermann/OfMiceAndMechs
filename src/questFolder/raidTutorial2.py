@@ -132,7 +132,7 @@ Right now, their base contains nothing worth stealing besides the machines you s
 Except one thing. Do you see the item shown as \\/ ?
 
 There is only two of these special items in the world and they cannot be crafted.
-You need two of those items to win the game. 
+You need two of those items to win the game.
 Their base is too busy to steal that item.
 
 So go home and build better weapons

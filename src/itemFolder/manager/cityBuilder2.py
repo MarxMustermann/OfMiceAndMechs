@@ -155,7 +155,7 @@ class CityBuilder2(src.items.Item):
         scrapToMetalBarsPrefabPaths = ["scrapToMetalbars1.json","scrapToMetalbars2.json","scrapToMetalbars3.json"]
         for path in scrapToMetalBarsPrefabPaths:
             with open("data/floorPlans/"+path) as fileHandle:
-                rawFloorplan = json.load(fileHandle)    
+                rawFloorplan = json.load(fileHandle)
             floorPlan = self.getFloorPlanFromDict(rawFloorplan)
             self.prefabs["ScrapToMetalBars"].append(floorPlan)
 
@@ -216,7 +216,7 @@ class CityBuilder2(src.items.Item):
                     "addProductionLine7": self.addProductionLine7,
                     "spawnCity": self.spawnCity,
                         }
-        
+
     def registerRoom(self,room):
         self.rooms.append(room)
 
@@ -224,7 +224,7 @@ class CityBuilder2(src.items.Item):
 
         if self.container.container.getRoomByPosition(position):
             return
-        
+
         offsets = ((-1,0),(1,0),(0,-1),(0,1))
         foundNeighbours = []
         for offset in offsets:
@@ -364,7 +364,7 @@ class CityBuilder2(src.items.Item):
 
         citylocation = self.container.getPosition()
         temple = self.addTempleRoomFromMap({"coordinate":(citylocation[0],citylocation[1]+1),"character":character})
-        
+
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         #guardRoom = self.addTrapRoomFromMap({"coordinate":(citylocation[0],citylocation[1]-1),"character":character})
         #guardRoom.chargeStrength = 20
@@ -420,7 +420,7 @@ class CityBuilder2(src.items.Item):
             generalStorage.addItem(src.items.itemMap["Sheet"](),(10,1,0))
 
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]+1),"character":character})
-        
+
         self.addScrapCompactorFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+1),"character":character,"type":"random"},instaSpawn=True)
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]-1,citylocation[1]+2),"character":character})
 
@@ -509,7 +509,7 @@ class CityBuilder2(src.items.Item):
 
         floorPlan = copy.deepcopy(self.prefabs["ScrapToMetalBars"][params["type"]-1])
         room.resetDirect()
-        room.floorPlan = floorPlan 
+        room.floorPlan = floorPlan
 
         if instaSpawn:
             room.spawnPlaned()
@@ -725,7 +725,7 @@ class CityBuilder2(src.items.Item):
 
         floorPlan = copy.deepcopy(random.choice(self.prefabs["storage"]))
         room.resetDirect()
-        room.floorPlan = floorPlan 
+        room.floorPlan = floorPlan
 
         self.container.storageRooms.append(room)
 
@@ -932,7 +932,7 @@ class CityBuilder2(src.items.Item):
 
         for plot in self.reservedPlots:
             mapContent[plot[1]][plot[0]] = "RR"
-                
+
             if plot not in functionMap:
                 functionMap[plot] = {}
 

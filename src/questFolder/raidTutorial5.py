@@ -53,7 +53,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                 if not character.container == specialItemSlot.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=specialItemSlot.container.getPosition())
                     return ([quest],None)
-                
+
                 if character.getDistance(specialItemSlot.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition(),ignoreEndBlocked=True)
                     return ([quest],None)
@@ -63,7 +63,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                     if character.getPosition(offset=offset[0]) == specialItemSlot.getPosition():
                         return (None,("J"+offset[1],"eject the special item"))
                 7/0
-                    
+
             specialItem = None
             for room in terrain.rooms:
                 for item in room.getItemsByType("SpecialItem"):
@@ -74,7 +74,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                 if not character.container == specialItem.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=specialItem.container.getPosition())
                     return ([quest],None)
-                
+
                 if character.getDistance(specialItem.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=specialItem.getPosition(),ignoreEndBlocked=True)
                     return ([quest],None)
@@ -84,10 +84,10 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                     if character.getPosition(offset=offset[0]) == specialItem.getPosition():
                         return (None,("K"+offset[1],"pick up the special item"))
                 7/0
-                    
+
             if not self.shownPickedUpSpecialItemSlot:
                 text = """
-Great! you picked up the special item. 
+Great! you picked up the special item.
 Now return it to your base.
 
 = press space to continue =
@@ -117,7 +117,7 @@ Now return it to your base.
                 if not character.container == specialItemSlot.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=specialItemSlot.container.getPosition())
                     return ([quest],None)
-                
+
                 if character.getDistance(specialItemSlot.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition(),ignoreEndBlocked=True)
                     return ([quest],None)

@@ -21,7 +21,7 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
     def getSolvingCommandString(self,character=None,dryRun=True):
         if character == None:
             return
-    
+
         if len(self.targetTerrain) < 3:
             self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
         if not character.getTerrainPosition() == self.targetTerrain:
@@ -50,12 +50,12 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
 
         for item in character.container.itemsOnFloor:
             if isinstance(item,src.items.itemMap["SpecialItem"]):
-                if not item.getPosition() == character.getPosition(): 
+                if not item.getPosition() == character.getPosition():
                     return
                 return "k"
             if isinstance(item,src.items.itemMap["SpecialItemSlot"]):
                 if item.itemID == self.itemId and item.hasItem:
-                    if not item.getPosition() == character.getPosition(): 
+                    if not item.getPosition() == character.getPosition():
                         return
                     return "j"
         return super().getSolvingCommandString(character,dryRun=dryRun)
@@ -71,7 +71,7 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
             if not item.itemID == self.itemId:
                 continue
             foundSpecialItem = True
-    
+
         if not foundSpecialItem:
             if len(self.targetTerrain) < 3:
                 self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
@@ -95,13 +95,13 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
 
             for item in character.container.itemsOnFloor:
                 if isinstance(item,src.items.itemMap["SpecialItem"]):
-                    if not item.getPosition() == character.getPosition(): 
+                    if not item.getPosition() == character.getPosition():
                         self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
                         return
                     return
                 if isinstance(item,src.items.itemMap["SpecialItemSlot"]):
                     if item.itemID == self.itemId and item.hasItem:
-                        if not item.getPosition() == character.getPosition(): 
+                        if not item.getPosition() == character.getPosition():
                             self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
                             return
                         return

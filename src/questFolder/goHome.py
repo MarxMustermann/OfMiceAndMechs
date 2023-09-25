@@ -34,7 +34,7 @@ Go there and be ready for action.
 
 Quests like this can be pretty boring.
 Press c now to use auto move to complete this quest.
-Be careful with auto move, while danger is nearby. 
+Be careful with auto move, while danger is nearby.
 Press control-d to stop your character from moving.
 """
         return text

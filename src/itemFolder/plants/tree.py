@@ -40,7 +40,7 @@ class Tree(src.items.Item):
         by dropping some food
 
         Parameters:
-            character: the character 
+            character: the character
         """
 
         if not self.container:

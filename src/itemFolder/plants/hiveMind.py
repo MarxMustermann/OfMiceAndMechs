@@ -562,7 +562,7 @@ toCheck: {self.toCheck}
 len(toCheck): {len(self.toCheck)}
 colonizeIndex: {self.colonizeIndex}
 faction: {self.faction}
-paths: 
+paths:
 """
 
         for path, value in self.paths.items():

@@ -40,7 +40,7 @@ class Room:
         Parameters:
             layout: the room layout
             xPosition: the x position of the room in big coordinates
-            yPosition: the y position of the 
+            yPosition: the y position of the
             offsetX: the x offset from the position in big coordinates
             offsetY: the y offset from the position in big coordinates
             desiredPosition: the desired position for the room
@@ -169,7 +169,7 @@ class Room:
                 item.bolted = False
                 self.addItem(item,inputSlot[0])
                 continue
-            
+
             item = src.items.itemMap[inputSlot[1]]()
             item.bolted = False
             self.addItem(item,inputSlot[0])
@@ -177,7 +177,7 @@ class Room:
         for outputSlot in self.outputSlots:
             if not outputSlot[1]:
                 continue
-            
+
             for i in range(1,5):
                 item = src.items.itemMap[outputSlot[1]]()
                 item.bolted = False
@@ -403,7 +403,7 @@ class Room:
         self.pathfindingIgnoreEndBlocked = None
         self.pathfindingTargetPos = None
         return moves
-        
+
     def getPathTile_test2(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
 
         """
@@ -425,16 +425,16 @@ class Room:
         if not self.cachedPathfinder or ignoreEndBlocked or clearing:
             roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character,clearing=clearing)
             cost = self.convertRoomMap(roomMap)
-        
+
             pathfinder = tcod.path.AStar(cost,diagonal = 0)
         else:
             pathfinder = self.cachedPathfinder
 
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
-        
+
         if not (ignoreEndBlocked or clearing):
             self.cachedPathfinder = pathfinder
-        
+
         moves = self.convertPath(path,startPos)
 
         """
@@ -463,10 +463,10 @@ class Room:
 
         roomMap = self.getRoomMap(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked,character)
         cost = self.convertRoomMap(roomMap)
-        
+
         pathfinder = tcod.path.AStar(cost,diagonal = 0)
         path = pathfinder.get_path(startPos[0],startPos[1],targetPos[0],targetPos[1])
-        
+
         moves = self.convertPath(path,startPos)
 
         """
@@ -491,7 +491,7 @@ class Room:
         counter = 0
         while counter < 200:
             counter += 1
-            
+
             if not nextPos:
                 if not toCheck:
                     return []
@@ -1312,7 +1312,7 @@ class Room:
                     direction = random.choice([(1,0,0),(0,1,0),(-1,0,0),(1,0,0),])
 
                     animation[2] -= 1
-                    
+
 
                     self.animations.remove(animation)
                     if duration > 0:
@@ -1806,7 +1806,7 @@ class MiniBase(Room):
         Parameters:
             layout: the room layout
             xPosition: the x position of the room in big coordinates
-            yPosition: the y position of the 
+            yPosition: the y position of the
             offsetX: the x offset from the position in big coordinates
             offsetY: the y offset from the position in big coordinates
             desiredPosition: the desired position for the room
@@ -1926,7 +1926,7 @@ class MiniBase2(Room):
         Parameters:
             layout: the room layout
             xPosition: the x position of the room in big coordinates
-            yPosition: the y position of the 
+            yPosition: the y position of the
             offsetX: the x offset from the position in big coordinates
             offsetY: the y offset from the position in big coordinates
             desiredPosition: the desired position for the room
@@ -1983,7 +1983,7 @@ class EmptyRoom(Room):
         Parameters:
             layout: the room layout
             xPosition: the x position of the room in big coordinates
-            yPosition: the y position of the 
+            yPosition: the y position of the
             offsetX: the x offset from the position in big coordinates
             offsetY: the y offset from the position in big coordinates
             desiredPosition: the desired position for the room
@@ -2538,7 +2538,7 @@ class StaticRoom(EmptyRoom):
 
         Parameters:
             xPosition: the x position of the room in big coordinates
-            yPosition: the y position of the 
+            yPosition: the y position of the
             offsetX: the x offset from the position in big coordinates
             offsetY: the y offset from the position in big coordinates
             desiredPosition: the desired position for the room
@@ -2567,7 +2567,7 @@ class StaticRoom(EmptyRoom):
         """
         move a character into a direction
         also do collusion detecion between chars
-        also advance the room 
+        also advance the room
 
         Parameters:
             character: the character to move

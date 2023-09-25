@@ -102,7 +102,7 @@ Use it to either to manage your goo token balance or get some goo."""
         """
 
         pass
-    
+
     # bad code: should be viewable with examine
     def showBalance(self, character):
         """

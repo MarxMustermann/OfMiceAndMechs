@@ -37,7 +37,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
 
     def render(self):
         """
-        render the growth tank depending on the fill state 
+        render the growth tank depending on the fill state
 
         Returns:
             how the growth tank should be shown
@@ -152,7 +152,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             name = "%s %s"%(firstName,lastName,)
             """
             name = "worker"
-                
+
             return name
 
         # add character

@@ -242,14 +242,14 @@ Currently you do not have to wait to use this machine.
 
         if self.charges:
             text += """
-Currently the machine has %s charges 
+Currently the machine has %s charges
 
 """ % (
                 self.charges
             )
         else:
             text += """
-Currently the machine has no charges 
+Currently the machine has no charges
 
 """
 
@@ -370,7 +370,7 @@ Currently the machine has no charges
         command = self.commands[trigger]
 
         character.runCommandString(command)
-        
+
         character.addMessage(
             f"running command to handle trigger {trigger} - {command}"
         )

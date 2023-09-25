@@ -4,7 +4,7 @@ class SanitaryStation(src.items.Item):
     """
     ingame item to check the health status and run actions depending on the result
     this is inteded to be used as way for the player to automate the game
-    it is also intended to be used to automate the game 
+    it is also intended to be used to automate the game
     """
 
     type = "SanitaryStation"
@@ -54,7 +54,7 @@ class SanitaryStation(src.items.Item):
     def configure(self, character):
         """
         offer an character a selection of actions to run
-        
+
         Parameters:
             character: the character trying to use the item
         """
@@ -153,7 +153,7 @@ class SanitaryStation(src.items.Item):
         run a command
 
         Parameters:
-            
+
         """
 
         if character is None:

@@ -103,7 +103,7 @@ class Character:
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
 
         if name is None:
-            
+
             firstName = random.choice([
                 "Siegfried","Ernst","Alfred","Herrmann","Friedrich","Helmut","Karl","Gunnar","Berthold","Dietrich",
                 "Friedhelm","Horst","Edmund","Wilhelm","Albert","Johann","Herbert","Bertram","Hans","Jochen","Ludwig",
@@ -288,7 +288,7 @@ class Character:
             ownDamage = self.baseDamage
             if self.weapon:
                 ownDamage += self.weapon.baseDamage
-            
+
             numTurns = completeHealth//ownDamage+1
             challengeRating += numTurns*completeDamage
             return challengeRating
@@ -339,7 +339,7 @@ class Character:
 
         homeRoom = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))[0]
         return homeRoom
-        
+
     def getRoom(self):
         room = None
         if isinstance(self.container,src.rooms.Room):
@@ -1309,7 +1309,7 @@ press any other key to attack normally"""
         if fraction and self.reputation:
             totalAmount += self.reputation // fraction
         self.reputation += totalAmount
-        
+
         text = "you were rewarded %i reputation" % totalAmount
         if reason:
             text += " for " + reason
@@ -1477,7 +1477,7 @@ press any other key to attack normally"""
         """
 
         if self.disableCommandsOnPlus:
-            
+
             hasComand = False
             quest = self.getActiveQuest()
             try:
@@ -2561,7 +2561,7 @@ class Monster(Character):
         render = src.canvas.displayChars.monster_spore
         if self.phase == 2:
             render = src.canvas.displayChars.monster_feeder
-            
+
             if self.health > 150:
                 colorHealth = "#f80"
             elif self.health > 140:
@@ -2706,7 +2706,7 @@ class Guardian(Character):
         """
 
         render = src.canvas.displayChars.monster_feeder
-        
+
         if self.health > 1500:
             colorHealth = "#f80"
         elif self.health > 1400:

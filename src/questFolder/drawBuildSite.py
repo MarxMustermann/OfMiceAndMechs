@@ -93,13 +93,13 @@ Try as hard as you can to achieve this.
 
                     if itemType == submenue.text:
                         return (None,(["enter"],"to configure the item type"))
-                    
+
                     correctIndex = 0
                     while correctIndex < len(itemType) and correctIndex < len(submenue.text):
                         if not itemType[correctIndex] == submenue.text[correctIndex]:
                             break
                         correctIndex += 1
-                    
+
                     if correctIndex < len(submenue.text):
                         return (None,(["backspace"],"to delete input"))
 
@@ -110,13 +110,13 @@ Try as hard as you can to achieve this.
 
                     if nameToSet == submenue.text:
                         return (None,(["enter"],"to set the name of the extra parameter"))
-                    
+
                     correctIndex = 0
                     while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
                         if not nameToSet[correctIndex] == submenue.text[correctIndex]:
                             break
                         correctIndex += 1
-                    
+
                     if correctIndex < len(submenue.text):
                         return (None,(["backspace"],"to delete input"))
 
@@ -127,13 +127,13 @@ Try as hard as you can to achieve this.
 
                     if valueToSet == submenue.text:
                         return (None,(["enter"],"to set the value of the extra parameter"))
-                    
+
                     correctIndex = 0
                     while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
                         if not valueToSet[correctIndex] == submenue.text[correctIndex]:
                             break
                         correctIndex += 1
-                    
+
                     if correctIndex < len(submenue.text):
                         return (None,(["backspace"],"to delete input"))
 
@@ -171,7 +171,7 @@ Try as hard as you can to achieve this.
 
                 if not (self.itemType == item.paintType):
                     return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the build site"))
-                    
+
                 for (key,value) in item.paintExtraInfo.items():
                     if not key in self.extraInfo:
                         return (None,(["c","c"],"to clear the painters extra info"))
@@ -235,7 +235,7 @@ Try as hard as you can to achieve this.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDrewMarking, "drew marking")
 
         return super().assignToCharacter(character)

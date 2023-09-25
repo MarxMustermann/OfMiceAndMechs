@@ -32,7 +32,7 @@ The full production line looks like this:
         text += f"""
 {self.getProductionLineDescription(self.itemType)}
 """
-        
+
         if self.tryHard:
             text += """
 Try as hard as you can to achieve this.
@@ -160,7 +160,7 @@ Try as hard as you can to achieve this.
                 if character.getDistance(self.targetPosition) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True)
                     return ([quest],None)
-                
+
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:
@@ -188,7 +188,7 @@ Try as hard as you can to achieve this.
                 if character.getDistance(items[-1].getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=items[-1].getPosition(),ignoreEndBlocked=True)
                     return ([quest],None)
-                
+
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:
@@ -314,7 +314,7 @@ Try as hard as you can to achieve this.
             return (None,None)
         return (None,None)
     """
-    
+
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
 

@@ -220,7 +220,7 @@ class GameState:
 
 def setup(gameIndex):
     """
-    initialise the game state 
+    initialise the game state
     """
 
     global gamestate

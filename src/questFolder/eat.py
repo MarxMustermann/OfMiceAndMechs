@@ -29,7 +29,7 @@ class Eat(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return 
+            return
 
         if character.satiation > 800:
             self.postHandler()
@@ -41,7 +41,7 @@ class Eat(src.quests.MetaQuestSequence):
             self.subQuests.remove(self.subQuests[0])
 
     def subQuestCompleted(self,extraInfo=None):
-        self.clearCompletedSubquest() 
+        self.clearCompletedSubquest()
         if not self.subQuests:
             self.generateSubquests(self.character)
 
@@ -95,10 +95,10 @@ class Eat(src.quests.MetaQuestSequence):
                 self.startWatching(quest,self.subQuestCompleted,"completed")
                 return
             """
-                
+
             self.addQuest(src.quests.questMap["GoHome"]())
             return
-        
+
         room = character.container
 
         for itemType in toSearchFor:
@@ -196,7 +196,7 @@ class Eat(src.quests.MetaQuestSequence):
             if command:
                 character.runCommandString(command)
                 return
-            
+
         return super().solver(character)
 
 src.quests.addType(Eat)

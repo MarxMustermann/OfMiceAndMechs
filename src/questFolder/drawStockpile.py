@@ -180,13 +180,13 @@ Try as hard as you can to achieve this.
                             return (None,(["enter"],"to configure the painter to output stockpile"))
                         if self.stockpileType == "s":
                             return (None,(["enter"],"to configure the painter to storage stockpile"))
-                    
+
                     correctIndex = 0
                     while correctIndex < len(itemType) and correctIndex < len(submenue.text):
                         if not itemType[correctIndex] == submenue.text[correctIndex]:
                             break
                         correctIndex += 1
-                    
+
                     if correctIndex < len(submenue.text):
                         return (None,(["backspace"],"to delete input"))
 
@@ -200,13 +200,13 @@ Try as hard as you can to achieve this.
 
                     if nameToSet == submenue.text:
                         return (None,(["enter"],"to set the name of the extra parameter"))
-                    
+
                     correctIndex = 0
                     while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
                         if not nameToSet[correctIndex] == submenue.text[correctIndex]:
                             break
                         correctIndex += 1
-                    
+
                     if correctIndex < len(submenue.text):
                         return (None,(["backspace"],"to delete input"))
 
@@ -221,13 +221,13 @@ Try as hard as you can to achieve this.
 
                     if valueToSet == submenue.text:
                         return (None,(["enter"],"to set the value of the extra parameter"))
-                    
+
                     correctIndex = 0
                     while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
                         if not valueToSet[correctIndex] == submenue.text[correctIndex]:
                             break
                         correctIndex += 1
-                    
+
                     if correctIndex < len(submenue.text):
                         return (None,(["backspace"],"to delete input"))
 
@@ -300,7 +300,7 @@ Try as hard as you can to achieve this.
 
             if not (item.offset == (0,0,0)):
                 return (None,(["C","i","d","."] + ["enter"],"to remove the offset from the painter"))
-                
+
             return (None,("Ji","draw to stockpile"))
 
         return (None,None)
@@ -337,7 +337,7 @@ Try as hard as you can to achieve this.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDrewMarking, "drew marking")
 
         return super().assignToCharacter(character)

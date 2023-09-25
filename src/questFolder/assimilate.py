@@ -126,7 +126,7 @@ The assimilator is in the command centre.
             if command:
                 character.runCommandString(command)
                 return
-            
+
         super().solver(character)
 
     def handleMovement(self, extraInfo):

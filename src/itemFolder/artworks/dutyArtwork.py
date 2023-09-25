@@ -17,7 +17,7 @@ class DutyArtwork(src.items.Item):
         super().__init__(display="DA")
 
         self.name = "duty artwork"
-                
+
         self.applyOptions.extend(
                                                 [
                                                     ("showOverview", "show overview"),
@@ -66,7 +66,7 @@ After changing the duties the clones should change their behaviour after complet
         for testChar in characters[:]:
             if not testChar.faction == character.faction or len(testChar.duties) > 1:
                 characters.remove(testChar)
-        
+
         dutyMap = {}
         for char in characters:
             for duty in char.duties:

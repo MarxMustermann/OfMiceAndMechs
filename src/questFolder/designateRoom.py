@@ -56,7 +56,7 @@ Use the CityPlaner to designate the room.
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        
+
         if self.subQuests:
             return (None,None)
 
@@ -122,7 +122,7 @@ Use the CityPlaner to designate the room.
         if not pos == (7,7,0):
             quest = src.quests.questMap["GoHome"](description="go to command centre")
             return ([quest],None)
-        
+
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))
@@ -220,7 +220,7 @@ Use the CityPlaner to designate the room.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDesignatedRoom, "designated room")
 
         return super().assignToCharacter(character)

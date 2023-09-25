@@ -49,13 +49,13 @@ Press d to move the cursor and show the subquests description.
             submenue = character.macroState["submenue"]
             if self.toProduce == submenue.text:
                 return (None,(["enter"],"to set the name of the machine should produce"))
-            
+
             correctIndex = 0
             while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
                 if not self.toProduce[correctIndex] == submenue.text[correctIndex]:
                     break
                 correctIndex += 1
-            
+
             if correctIndex < len(submenue.text):
                 return (None,(["backspace"],"to delete input"))
 
@@ -105,7 +105,7 @@ Press d to move the cursor and show the subquests description.
         benches = []
         if character.container.isRoom:
             benches.extend(character.container.getItemsByType("MachiningTable"))
-        
+
         benchNearBy = None
         for bench in benches:
             if not character.getDistance(bench.getPosition()) > 1:
@@ -196,7 +196,7 @@ Press d to move the cursor and show the subquests description.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleConstructedMachine, "constructed machine")
         self.startWatching(character,self.handleInventoryFull, "inventory full error")
         self.startWatching(character,self.handleNoMetalBars, "no metalBars error")

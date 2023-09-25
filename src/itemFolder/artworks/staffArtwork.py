@@ -17,7 +17,7 @@ class StaffArtwork(src.items.Item):
         super().__init__(display="SA")
 
         self.name = "staff artwork"
-                
+
         self.applyOptions.extend(
                                                 [
                                                     ("showMap", "show map"),
@@ -177,7 +177,7 @@ class StaffArtwork(src.items.Item):
         quest.activate()
         quest.assignToCharacter(foundWorker)
         foundWorker.quests.insert(0,quest)
-        
+
         room = self.container.container.getRoomByPosition(extraInfo["coordinate"])[0]
         room.staff.append(foundWorker)
         foundWorker.isStaff = True
@@ -188,7 +188,7 @@ class StaffArtwork(src.items.Item):
         for staffCharacter in room.staff:
             staffCharacter.duties = room.duties[numDuties*counter:numDuties*(counter+1)]
             counter += 1
-        
+
         cutOff = numDuties*(counter)
         if cutOff < 0:
             cutOff = 0
@@ -226,7 +226,7 @@ class StaffArtwork(src.items.Item):
         for staffCharacter in room.staff:
             staffCharacter.duties = room.duties[numDuties*counter:numDuties*(counter+1)]
             counter += 1
-        
+
         cutOff = numDuties*(counter)
         if cutOff < 0:
             cutOff = 0

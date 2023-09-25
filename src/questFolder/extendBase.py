@@ -2,7 +2,7 @@ import src
 import random
 
 
-class ExtendBase(src.quests.MetaQuestSequence): 
+class ExtendBase(src.quests.MetaQuestSequence):
     type = "ExtendBase"
 
     def __init__(self, description="set up base", creator=None, command=None, lifetime=None):
@@ -62,7 +62,7 @@ Start building Walls instead of just scavenging them.
 """)
         elif len(self.character.getTerrain().rooms) == 4:
             out.append("""
-Your base has 3 additional rooms now. 
+Your base has 3 additional rooms now.
 This is enough space to set up production lines.
 
 If you followed the instructions you should have a operator.
@@ -135,7 +135,7 @@ Press d to move the cursor and show the subquests description.
                 self.startWatching(quest,self.handleQuestFailure,"failed")
                 self.addQuest(quest)
                 return
-            
+
         if extraParam["reason"] == "no storage available":
             terrain = self.character.getTerrain()
             cityPlaner = terrain.getRoomByPosition((7,7,0))[0].getItemByPosition((5,2,0))
@@ -302,7 +302,7 @@ Press d to move the cursor and show the subquests description.
                         continue
                     numFreeStorage += 1
 
-            # do storage inventory 
+            # do storage inventory
             storedItems = {}
             for room in terrain.rooms:
                 for storageSlot in room.storageSlots:
@@ -386,7 +386,7 @@ Press d to move the cursor and show the subquests description.
                 if numFreeStorage < 20:
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=cityPlaner.getAvailableRooms()[0].getPosition(),floorPlanType="storage",reason="increase storage")
                     return ([quest],None)
-                    
+
             # assign basic floor plans
             if cityPlaner and cityPlaner.getAvailableRooms():
                 floorPlansToSet = ["storage","wallProduction","caseProduction","basicMaterialsProduction","scrapCompactor","scrapCompactorProduction","basicRoombuildingItemsProduction",]
@@ -548,7 +548,7 @@ Press d to move the cursor and show the subquests description.
                     quests.append(quest)
             if quests:
                 return (quests,None)
-            
+
             # remove items that are in wrong places (cleaning)
             quests = []
             for room in terrain.rooms:
@@ -565,7 +565,7 @@ Press d to move the cursor and show the subquests description.
                     quests.append(quest)
             if quests:
                 return (quests,None)
-            
+
             # remove items that are in wrong places (cleaning)
             quests = []
             for room in terrain.rooms:
@@ -582,7 +582,7 @@ Press d to move the cursor and show the subquests description.
                     quests.append(quest)
             if quests:
                 return (quests,None)
-            
+
             # remove items that are in wrong places (cleaning)
             quests = []
             for room in terrain.rooms:
@@ -1109,7 +1109,7 @@ Press d to move the cursor and show the subquests description.
                 quests.append(quest)
             if quests:
                 return (quests,None)
-            
+
             # operate scrap compactors in general
             quests = []
             firstMachine = None
@@ -1146,19 +1146,19 @@ Press d to move the cursor and show the subquests description.
                 for item in machineMap.get("Wall",[]):
                     if item.checkCoolDownEnded():
                         wallmachineWithoutCoolDown = item
-                
+
                 quest = src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True)
                 return ([quest],None)
 
             1337/0
-        
+
         return (None,None)
 
     def gotThirsty(self,extraParam=None):
         quest = src.quests.questMap["Eat"]()
         self.addQuest(quest)
         return
-    
+
     def assignToCharacter(self, character):
         if self.character:
             return
@@ -1168,5 +1168,5 @@ Press d to move the cursor and show the subquests description.
 
     def triggerCompletionCheck(self,character=None):
         return False
-    
+
 src.quests.addType(ExtendBase)

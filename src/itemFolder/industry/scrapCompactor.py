@@ -224,7 +224,7 @@ class ScrapCompactor(src.items.Item):
         returns a longer than normal description text
 
         Returns:
-           a longer than normal description text 
+           a longer than normal description text
         """
 
         text = super().getLongInfo()
@@ -235,7 +235,7 @@ class ScrapCompactor(src.items.Item):
         if self.level > 2:
             directions += "/north"
         text += f"""
-Place scrap to the {directions} of the machine and activate it 
+Place scrap to the {directions} of the machine and activate it
 
 After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.
 """

@@ -49,7 +49,7 @@ Just clear the whole terrain tile for tile.
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):
-            return 
+            return
 
         (nextQuests,nextCommand) = self.getNextStep(character)
         if nextQuests:

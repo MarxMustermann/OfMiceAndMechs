@@ -43,7 +43,7 @@ class SupportAttack(src.quests.MetaQuestSequence):
         if not (character.superior or character.superior.dead):
             self.fail()
             return True
-        
+
         """
         if self.delegatedTask == False and character.rank < 6:
             command = ".QSNProtectSuperior\n ."
@@ -148,7 +148,7 @@ class SupportAttack(src.quests.MetaQuestSequence):
                     ownDamage = character.baseDamage
                     if character.weapon:
                         ownDamage += character.weapon.baseDamage
-                    
+
                     numTurns = completeHealth//ownDamage+1
                     challengeRating += numTurns*completeDamage
 
@@ -162,7 +162,7 @@ class SupportAttack(src.quests.MetaQuestSequence):
                 for moldFeed in moldFeeds:
                     self.addQuest(src.quests.questMap["CleanSpace"](targetPosition=moldFeed.getPosition(),targetPositionBig=moldFeed.getBigPosition()))
                     return
-            
+
             if character.health < character.maxHealth-30 and character.container.isRoom:
                 coalBurner = character.container.getItemByType("CoalBurner")
                 if coalBurner:
@@ -184,7 +184,7 @@ class SupportAttack(src.quests.MetaQuestSequence):
 
             character.runCommandString(".....")
             return
-        
+
         self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
         if not self.lastSuperiorPos[0] in (0,14,) and not self.lastSuperiorPos[1] in (0,14,):
             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))

@@ -9,7 +9,7 @@ class Winch(src.items.Item):
     type = "Winch"
 
     """
-    call superclass constructor with modified paramters 
+    call superclass constructor with modified paramters
     """
 
     def __init__(self):

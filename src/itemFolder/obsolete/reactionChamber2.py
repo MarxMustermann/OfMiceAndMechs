@@ -40,7 +40,7 @@ class ReactionChamber_2(src.items.Item):
         byProduct.bolted = False
 
         self.container.addItems([
-                        (byProduct,(self.xPosition + 1,self.yPosition,self.zPosition)), 
+                        (byProduct,(self.xPosition + 1,self.yPosition,self.zPosition)),
                         (explosive,(self.xPosition,self.yPosition + 1,self.zPosition)),
                         ])
 

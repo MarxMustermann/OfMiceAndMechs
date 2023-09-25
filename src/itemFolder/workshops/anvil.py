@@ -7,13 +7,13 @@ class Anvil(src.items.Item):
 
     type = "Anvil"
     name = "anvil"
-    description = "Use it to hammer things" 
+    description = "Use it to hammer things"
     walkable = False
     bolted = True
 
     def __init__(self):
         """
-        set up internal state 
+        set up internal state
         """
 
         super().__init__(display = "WA")
@@ -91,7 +91,7 @@ class Anvil(src.items.Item):
                 for item in itemList:
                     if item.walkable == False:
                         targetFull = True
-                
+
                 if not targetFull:
                     self.container.addItem(new,targetPos)
 

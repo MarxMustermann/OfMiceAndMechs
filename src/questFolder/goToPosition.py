@@ -33,7 +33,7 @@ class GoToPosition(src.quests.MetaQuestSequence):
 The position you should go might be blocked.
 So it is enough to go next to the target position to end this quest.
 """
-        
+
         if self.character.container.isRoom:
             containerString = "room"
         else:
@@ -42,12 +42,12 @@ So it is enough to go next to the target position to end this quest.
         text = f"""
 Go to position {self.targetPosition} in the same {containerString} you are in{reason}.
 
-This quest ends after you do this.{extraText}""" 
+This quest ends after you do this.{extraText}"""
 
         text += """
 
 
-This quest will not resolve further into subQuests. 
+This quest will not resolve further into subQuests.
 Close this menu by pressing esc and follow the instructions on the left hand menu.
 """
         return text
@@ -169,7 +169,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         for step in self.path:
             pos[0] += step[0]
             pos[1] += step[1]
-            
+
             items = character.container.getItemByPosition(tuple(pos))
             if items and items[0].type == "Bush":
                 command += "J"+movementMap[step]
@@ -257,7 +257,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
         if tuple(pos) == self.targetPosition:
             return True
-        
+
         return False
 
 

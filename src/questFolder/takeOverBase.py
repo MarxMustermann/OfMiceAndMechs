@@ -25,7 +25,7 @@ Without a commander the hives will continue growing.
 Sooner or later their attacks will break the bases defenses.
 
 Also the base is in maintenance mode.
-So leaving is not an option. You are stuck here. 
+So leaving is not an option. You are stuck here.
 It is not safe here, but it is safer in the base than outside.
 
 So stay here until those issues are resolved.
@@ -39,7 +39,7 @@ The harder you work the safer you will be."""
 press d to get a description on how to join the base
 """
         return out
-    
+
 
     def generateSubquests(self,character=None):
         if not self.subQuests:

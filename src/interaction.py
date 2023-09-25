@@ -440,7 +440,7 @@ def handleCollision(char,charState):
     char.changed("itemCollision")
     char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
 
-            
+
 def handleActivityKeypress(char, header, main, footer, flags):
     if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
         text = """
@@ -2651,7 +2651,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     handle a keystroke
 
     Parameters:
-        charState: the state of the character the input belongs to 
+        charState: the state of the character the input belongs to
                    this can probably be deduced from char
         noAdvanceGame: flag indication whether the game should be advanced
                        always True in practice
@@ -3172,7 +3172,7 @@ class ListActionMenu(SubMenu):
         # select the marked option
         if key in ["enter", "j", "k", "right"]:
             key = "default"
-        
+
         if key in self.actions:
             option = list(self.options.items())[self.selectionIndex - 1][1]
             callback = self.actions[key]["callback"]
@@ -3411,7 +3411,7 @@ class InstructSubordinatesMenu(SubMenu):
                 self.subMenu = None
 
             if self.commandType== "stop":
-                self.npc.runCommandString("",clear=True) 
+                self.npc.runCommandString("",clear=True)
                 self.npc.macroState["loop"] = []
                 self.npc.macroState["replay"].clear()
                 if "ifCondition" in self.npc.interactionState:
@@ -3422,7 +3422,7 @@ class InstructSubordinatesMenu(SubMenu):
                     quest.fail()
                 return True
             if self.commandType== "continue":
-                self.npc.runCommandString("*",clear=True) 
+                self.npc.runCommandString("*",clear=True)
                 return True
             if self.commandType == "beUseful":
                 for npc in character.subordinates:
@@ -3611,7 +3611,7 @@ class InstructNPCMenu(SubMenu):
                 self.subMenu = None
 
             if self.commandType== "stop":
-                self.npc.runCommandString("",clear=True) 
+                self.npc.runCommandString("",clear=True)
                 self.npc.macroState["loop"] = []
                 self.npc.macroState["replay"].clear()
                 if "ifCondition" in self.npc.interactionState:
@@ -3622,7 +3622,7 @@ class InstructNPCMenu(SubMenu):
                     quest.fail()
                 return True
             if self.commandType== "continue":
-                self.npc.runCommandString("*",clear=True) 
+                self.npc.runCommandString("*",clear=True)
                 return True
             if self.commandType == "beUseful":
                 quest = src.quests.questMap["BeUsefull"]()
@@ -3705,7 +3705,7 @@ class ChatPartnerselection(SubMenu):
 
     def handleKey(self, key, noRender=False, character = None):
         """
-        set up the selection and spawn the chat 
+        set up the selection and spawn the chat
         keystrokes after the setup will be delegated
 
         Parameters:
@@ -3864,7 +3864,7 @@ class QuestMenu(SubMenu):
         self.questCursor = [0]
         self.sidebared = False
         super().__init__()
-    
+
     def render(self, char):
         return renderQuests(char=self.char, asList=True, questCursor=self.questCursor,sidebared=self.sidebared)
 
@@ -4562,7 +4562,7 @@ class CreateQuestMenu(SubMenu):
             if not self.submenu.handleKey(key, noRender=noRender, character=character):
                 return False
             param = self.requiredParams.pop()
-            
+
             rawParameter = self.submenu.text
             if param["type"] == "int":
                 self.questParams[param["name"]] = int(rawParameter)
@@ -4570,9 +4570,9 @@ class CreateQuestMenu(SubMenu):
                 self.questParams[param["name"]] = rawParameter
             elif param["type"] == "coordinate":
                 if rawParameter == ".":
-                    self.questParams[param["name"]] = character.getBigPosition() 
+                    self.questParams[param["name"]] = character.getBigPosition()
                 else:
-                    self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0) 
+                    self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0)
             self.submenu = None
 
         if self.requiredParams == None:
@@ -4994,7 +4994,7 @@ class AdvancedQuestMenu(SubMenu):
                         questInstance = self.quest()
 
                     # assign the quest
-                    
+
                     self.character.assignQuest(questInstance, active=True)
 
                     self.state = "done"
@@ -5172,7 +5172,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
                 pass
 
         if not sidebared:
-            try: 
+            try:
                 baseList = char.quests
                 for index in questCursor:
                     quest = baseList[index]
@@ -5559,7 +5559,7 @@ class JobAsMatrixMenu(SubMenu):
 
     def __init__(self,dutyArtwork):
         super().__init__()
-        self.dutyArtwork = dutyArtwork 
+        self.dutyArtwork = dutyArtwork
         self.index = [0,0]
 
     def handleKey(self, key, noRender=False, character = None):
@@ -5691,12 +5691,12 @@ class JobAsMatrixMenu(SubMenu):
         main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
-        
+
 class MapMenu(SubMenu):
     """
     a menu for triggering actions from a map
     """
-    
+
     type = "MapMenu"
 
     def __init__(self, mapContent=None,functionMap=None, extraText = "", cursor = None):
@@ -5821,7 +5821,7 @@ class TextMenu(SubMenu):
     """
     a menu showing a text
     """
-    
+
     type = "TextMenu"
 
     def __init__(self, text=""):
@@ -5970,7 +5970,7 @@ class ChangeViewsMenu(SubMenu):
         self.firstKey = True
 
     def handleKey(self, key, noRender=False, character = None):
-        
+
         if character and key in ("a",):
             character.personality["viewChar"] = "activity"
         if character and key in ("A",):
@@ -6133,7 +6133,7 @@ class RoomMenu(SubMenu):
 class RoomSourceMenu(SubMenu):
     """
     """
-    
+
     type = "RoomSourceMenu"
     def __init__(self, room):
         """
@@ -6179,7 +6179,7 @@ class RoomSourceMenu(SubMenu):
             self.submenu = InputMenu("input source.\nCurrent tile is {}.\nFormat to input source is \nresourceType: tilecoordinate".format(character.container.getTilePosition()))
             self.submenu.handleKey("~", noRender, character)
             return False
-        
+
         # exit the submenu
         if key in ("esc",):
             self.done = True
@@ -7016,7 +7016,7 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
                 if not skipPrint:
                     toPrint = line[:size[0]-internalOffset[0]]
-            
+
             if not skipPrint:
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
@@ -7041,7 +7041,7 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
 
     if isinstance(inData, ActionMeta):
         printUrwidToTcod(inData.content,offset,color,internalOffset,size,inData.payload,explecitConsole = tcodConsole_local)
-    
+
     #footertext = stringifyUrwid(inData)
 
 def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=None, actionMeta=None):
@@ -7072,7 +7072,7 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
 
                 if not skipPrint:
                     toPrint = line[:size[0]-internalOffset[0]]
-            
+
             if not skipPrint:
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
@@ -7105,12 +7105,12 @@ def printUrwidToDummy(dummy,inData,offset,color=None,internalOffset=None,size=No
 
     if isinstance(inData, ActionMeta):
         printUrwidToDummy(dummy,inData.content,offset,color,internalOffset,size,inData.payload)
-    
+
     #footertext = stringifyUrwid(inData)
 
 def renderGameDisplay(renderChar=None):
     pseudoDisplay = []
-    
+
     src.gamestate.gamestate.clickMap = {}
 
     text = ""
@@ -7579,10 +7579,10 @@ def showMainMenu(args=None):
             row.append("\n")
         return render
 
-    src.gamestate.setup(None) 
+    src.gamestate.setup(None)
     src.gamestate.gamestate.terrainType = src.terrains.Nothingness
     src.gamestate.gamestate.mainChar = src.characters.Character()
-    
+
     terrain = src.terrains.Nothingness()
     mainChar = src.gamestate.gamestate.mainChar
 
@@ -7624,7 +7624,7 @@ def showMainMenu(args=None):
 
     dutyArtwork = src.items.itemMap["DutyArtwork"]()
     mainRoom.addItem(dutyArtwork,(5,1,0))
-    
+
     orderArtwork = src.items.itemMap["OrderArtwork"]()
     mainRoom.addItem(orderArtwork,(3,1,0))
 
@@ -7689,7 +7689,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 for i in range(1,2+random.randint(1,5)):
                     offsetX = random.randint(1,13)
                     offsetY = random.randint(1,13)
-                    
+
                     xPos = 15*x+offsetX
                     yPos = 15*y+offsetY
 
@@ -7757,7 +7757,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     src.gamestate.gamestate.mainChar.runCommandString("~")
                 else:
                     seed = 0
-                    src.gamestate.setup(gameIndex) 
+                    src.gamestate.setup(gameIndex)
                     setUpNoUrwid()
 
                     if selectedScenario == "siege":
@@ -7859,7 +7859,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             if loadingControl["needsStart"] == True:
                 src.gamestate.gamestate.currentPhase.start(seed=None,difficulty=difficulty)
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
-                
+
                 src.gamestate.gamestate.mainChar.runCommandString("~")
 
                 global lastTerrain
@@ -7943,7 +7943,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 printUrwidToTcod(("| %s: %s "+" "*(maxLength-len(scenario[1]))+"|")%(scenario[2],scenario[1],),(offsetX+3+16,offsetY+23+i))
                 i += 1
             printUrwidToTcod("+"+"-"*(maxLength+5)+"+",(offsetX+3+16,offsetY+23+i))
-                
+
 
         if submenu == "difficulty":
             printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+21))
@@ -8239,7 +8239,7 @@ def showHeroIntro():
                 outData += item.content
         return outData
 
-    src.gamestate.setup(None) 
+    src.gamestate.setup(None)
     src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
     src.gamestate.gamestate.mainChar = src.characters.Character()
 
@@ -8547,10 +8547,10 @@ def showHeroIntro2():
             row.append("\n")
         return render
 
-    src.gamestate.setup(None) 
+    src.gamestate.setup(None)
     src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
     src.gamestate.gamestate.mainChar = src.characters.Character()
-    
+
     stage = 0
     skip = False
 
@@ -8723,7 +8723,7 @@ def showIntro():
             row.append("\n")
         return render
 
-    src.gamestate.setup(None) 
+    src.gamestate.setup(None)
     src.gamestate.gamestate.terrainType = src.terrains.GameplayTest
     src.gamestate.gamestate.mainChar = src.characters.Character()
     src.gamestate.gamestate.mainChar.registers["HOMEx"] = 7
@@ -8859,7 +8859,7 @@ You """+"."*stageState["substep"]+"""
                 stageState["animationStep"] += 1
                 stageState["lastChange"] = time.time()
 
-            if (time.time()-stageState["lastChange"] > 1 or 
+            if (time.time()-stageState["lastChange"] > 1 or
                      (skip and stageState["substep"] == 6 and not stageState["scrapToAdd"]) or
                      (skip and stageState["substep"] == 8 and not src.gamestate.gamestate.tick < 10000) or
                      (skip and not stageState["substep"] in [6,8])):
@@ -9010,7 +9010,7 @@ You """+"."*stageState["substep"]+"""
                     (src.items.itemMap["Corpse"](),(11,4,0)),
                     (src.items.itemMap["Corpse"](),(11,4,0)),
                 ])
-                
+
                 commandGooProduction = src.items.itemMap["Command"]()
                 commandGooProduction.command = "d"+10*"Ls"+"d"+10*"10.Js"+"aassd"+10*"Kd"+"aww"+"7a"+10*"Lw"+"d"+10*"Jw"+"ddJwddJwdd"
                 commandGooProduction.bolted = True
@@ -9043,7 +9043,7 @@ You """+"."*stageState["substep"]+"""
                     (src.items.itemMap["Scraper"](),(2,4,0)),
                     (src.items.itemMap["ScrapCompactor"](),(2,5,0)),
                 ])
-                
+
                 def generatePaving():
                     item = src.items.itemMap["Paving"]()
                     item.bolted = True
@@ -9188,7 +9188,7 @@ You """+"."*stageState["substep"]+"""
                     items = terrain.getItemByPosition((x,15*8+7,0))
                     if items:
                         terrain.removeItems(items)
-                    
+
                 for y in range(15*6+7,15*8+7+1):
                     items = terrain.getItemByPosition((15*6+7,y,0))
                     if items:
@@ -9234,7 +9234,7 @@ You """+"."*stageState["substep"]+"""
                 printUrwidToTcod(text1,(38,2))
                 printUrwidToTcod(text2,(42,3))
                 printUrwidToTcod(terrainRender,(19,5))
-            
+
                 tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 2 or skip:
@@ -9297,7 +9297,7 @@ You """+"."*stageState["substep"]+"""
             printUrwidToTcod(text1,(38,2))
             printUrwidToTcod(text2,(42,3))
             printUrwidToTcod(terrainRender,(19,5))
-            
+
             if src.gamestate.gamestate.tick > 10400:
                 if stageState["endless"]:
                     printUrwidToTcod("press space to stop watching",(47,4))
@@ -9465,7 +9465,7 @@ def showRunIntro():
   |                                                                         |
   |                                                                         |
   |                                                                         |
-  |                                                                         | 
+  |                                                                         |
   |                                                                         |
   |                                                                         |
   |                                                                         |
@@ -9480,14 +9480,14 @@ You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
 ""","You know ",".",".",".",""" nothing
 ""","You remember ",".",".",".",""" nothing
-""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     
-You remember how tendrils of pain grew from from your implant.     
-They played your thoughts and burried them.                           
-They dug up your memories and ripped them apart.     
-You know that something is wrong within your implant.     
+""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     \n\
+You remember how tendrils of pain grew from from your implant.     \n\
+They played your thoughts and burried them.                           \n\
+They dug up your memories and ripped them apart.     \n\
+You know that something is wrong within your implant.     \n\
 
-The pain ate your mind and           
-starts to burn your flesh.                                                
+The pain ate your mind and           \n\
+starts to burn your flesh.                                                \n\
 """]
             if not noFlicker and not subStep < len(textBase)-1:
                 tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
@@ -9509,8 +9509,8 @@ starts to burn your flesh.
                 subStep2 = 0
         elif stage == 1:
             tcodConsole.clear()
-            painChars = ["#","%","&","*","+","`"] 
-            painColors = ["#fff","#55f","#f5f","#aaf","#a9f","#9af"] 
+            painChars = ["#","%","&","*","+","`"]
+            painColors = ["#fff","#55f","#f5f","#aaf","#a9f","#9af"]
             for painPos in painPositions:
                 painChar = random.choice(painChars)
                 painColor = random.choice(painColors)
@@ -9520,26 +9520,26 @@ starts to burn your flesh.
                 tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.01)
             text = """
-                                                                                   
-    |                                                                         |    
-  --+-------------------------------------------------------------------------+--  
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-    |                                                                         |    
-  --+-------------------------------------------------------------------------+--  
-    |                                                                         |    
-                                                                                   
+                                                                                   \n\
+    |                                                                         |    \n\
+  --+-------------------------------------------------------------------------+--  \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+    |                                                                         |    \n\
+  --+-------------------------------------------------------------------------+--  \n\
+    |                                                                         |    \n\
+                                                                                   \n\
 """
             printUrwidToTcod(text,(38,13))
             if not noFlicker:
@@ -9550,7 +9550,7 @@ The pain grows and grows and grows and grows and grows and grows and
 grows and grows and grows and grows and grows and grows and grows and
 grows and grows and grows and grows and grows and grows and grows and
 grows and grows and grows and grows and grows and grows and grows and
-grows and grows and grows and grows 
+grows and grows and grows and grows
 """.split(" ")
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text,(45,17))
@@ -9561,7 +9561,7 @@ grows and grows and grows and grows
                     continue
                 if not pos in painPositions:
                     painPositions.append(pos)
-            
+
             if subStep < len(textBase)-1:
                 time.sleep(sleepAmountGrow)
                 sleepAmountGrow -= 0.00075
@@ -9643,12 +9643,12 @@ grows and grows and grows and grows
                 color = "#ff2"
                 color2 = "#ff2"
             """
-            
+
             """
             convertedBackgroundText = []
             counter = 0
             for char in backgroundText:
-                if counter < 
+                if counter <
                     convertedBackgroundText.append((src.interaction.urwid.AttrSpec(color2, "black"), char))
                 else:
                     convertedBackgroundText.append((src.interaction.urwid.AttrSpec(color, "black"), char))
@@ -9704,26 +9704,26 @@ grows and grows and grows and grows
                     y += 2
                     x = -offset
             text = """
-                                                                                       
-      |                                                                         |      
-    --+-------------------------------------------------------------------------+--    
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-      |                                                                         |      
-    --+-------------------------------------------------------------------------+--    
-      |                                                                         |      
-                                                                                       
+                                                                                       \n\
+      |                                                                         |      \n\
+    --+-------------------------------------------------------------------------+--    \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+      |                                                                         |      \n\
+    --+-------------------------------------------------------------------------+--    \n\
+      |                                                                         |      \n\
+                                                                                       \n\
 """
             printUrwidToTcod(text,(36,13))
             text = ""
@@ -9795,7 +9795,7 @@ to look around"""
 suggested action:
 press enter
 to remember"""
-            
+
             printUrwidToTcod(text,(2,19))
             if subStep == 1:
                 wall = src.items.itemMap["Wall"]()
@@ -9814,11 +9814,11 @@ to remember"""
                 room.hidden = False
                 printUrwidToTcod(fixRoomRender(room.render()),(56+26-offset[0]*2,15+13-offset[1]))
             if subStep == 3:
-                offset = src.gamestate.gamestate.mainChar.getPosition() 
+                offset = src.gamestate.gamestate.mainChar.getPosition()
                 printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(56+26-offset[0]*2,15+13-offset[1]))
             if subStep == 4:
-                offset = src.gamestate.gamestate.mainChar.getPosition() 
-                roomPos = src.gamestate.gamestate.mainChar.container.getPosition() 
+                offset = src.gamestate.gamestate.mainChar.getPosition()
+                roomPos = src.gamestate.gamestate.mainChar.container.getPosition()
                 terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
                 printUrwidToTcod(terrainRender,(38,6))
@@ -9827,7 +9827,7 @@ to remember"""
                 miniMapChars = fixRoomRender(miniMapChars)
                 printUrwidToTcod(miniMapChars,(4,2))
 
-            offset = src.gamestate.gamestate.mainChar.getPosition() 
+            offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+6,22+6))
             tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
             time.sleep(0.1)
@@ -10323,7 +10323,7 @@ def sendNetworkDraw(pseudoDisplay):
         loop: the main loop (urwids main loop)
         user_data: parameter that needs to be there but is not used
     """
-    
+
     global s
     global conn
 
@@ -10354,7 +10354,7 @@ def sendNetworkDraw(pseudoDisplay):
     data = info.encode("utf-8")
     data = gzip.compress(data)
     seperator = b"\n-*_*-\n"
-    
+
     if seperator in data:
         raise Exception("seperator in data => hard fuckup")
     conn.sendall(data+seperator)

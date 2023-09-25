@@ -31,7 +31,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDelivery, "deliveredSpecialItem")
 
         return super().assignToCharacter(character)
@@ -48,7 +48,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             if not item.type == "SpecialItem":
                 continue
             hasSpecialItem = item
-        
+
         terrain = character.getTerrain()
 
         if not hasSpecialItem:

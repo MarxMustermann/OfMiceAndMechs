@@ -244,7 +244,7 @@ This is a level {self.level} item
         """
         either load a command from macro or record a new one
         """
-        
+
         if self.submenue.selection == "record":
             self.recordAndstore()
         elif self.submenue.selection == "store":

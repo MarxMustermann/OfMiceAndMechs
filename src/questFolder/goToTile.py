@@ -86,7 +86,7 @@ class GoToTile(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleChangedTile, "changedTile")
         self.startWatching(character,self.handleMoved, "moved")
 
@@ -151,7 +151,7 @@ The target tile is {direction[4:]}
 
         if tuple(bigPos) == self.targetPosition:
             return True
-        
+
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
@@ -278,7 +278,7 @@ The target tile is {direction[4:]}
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
-    
+
     def generateSubquests(self, character=None):
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)
         if nextQuests:

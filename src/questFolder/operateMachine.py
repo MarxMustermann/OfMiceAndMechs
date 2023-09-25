@@ -24,7 +24,7 @@ class OperateMachine(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleOperatedMachine, "operated machine")
 
         return super().assignToCharacter(character)

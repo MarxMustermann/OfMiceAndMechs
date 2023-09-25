@@ -20,7 +20,7 @@ class Ascend(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleAscended, "ascended")
 
         return super().assignToCharacter(character)

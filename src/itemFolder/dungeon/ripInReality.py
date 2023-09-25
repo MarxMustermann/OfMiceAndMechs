@@ -12,7 +12,7 @@ class RipInReality(src.items.Item):
         """
         configuration of the superclass
         """
-        
+
         super().__init__(display=src.canvas.displayChars.ripInReality)
         self.name = "rip in reality"
         self.description = "You can enter it"
@@ -329,7 +329,7 @@ class RipInReality(src.items.Item):
         Parameters:
                 character: the character the selection is offered to
         """
-        
+
         options = [("destabilize", "destabilize"), ("stablize", "stablize")]
         self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
@@ -391,7 +391,7 @@ stable:
 {self.target}
 {self.targetPos}
 """
-        
+
         return text
 
 src.items.addType(RipInReality)

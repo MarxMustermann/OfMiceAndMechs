@@ -271,14 +271,14 @@ Currently you do not have to wait to use this machine.
 
         if self.charges:
             text += """
-Currently the machine has %s charges 
+Currently the machine has %s charges
 
 """ % (
                 self.charges
             )
         else:
             text += """
-Currently the machine has no charges 
+Currently the machine has no charges
 
 """
 

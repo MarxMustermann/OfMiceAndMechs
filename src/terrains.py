@@ -25,7 +25,7 @@ class Coordinate:
     """
     a abstracted coordinate.
     """
-    
+
     def __init__(self, x, y):
         """
         set up internal state
@@ -226,7 +226,7 @@ class Terrain:
 
             while (pos[0]//15,pos[1]//15) in self.noPlacementTiles:
                 pos = (random.randint(15,210),random.randint(15,210),0)
-                
+
             self.addItem(item, pos)
 
     def damage(self):
@@ -352,7 +352,7 @@ class Terrain:
 
     def changed(self, tag="default", info=None):
         """
-        sending notifications to thing listening 
+        sending notifications to thing listening
 
         Parameters:
             tag: filter to only listen for some changes
@@ -917,7 +917,7 @@ class Terrain:
         counter = 0
         while counter < 100:
             counter += 1
-            
+
             if not nextPos:
                 if not toCheck:
                     return []
@@ -1226,7 +1226,7 @@ class Terrain:
         counter = 0
         while counter < 200:
             counter += 1
-            
+
             if not nextPos:
                 if not toCheck:
                     return []
@@ -1302,7 +1302,7 @@ class Terrain:
 
             if nextPos == targetPos:
                 break
-        
+
         self.pathCache[(tilePos,startPos,targetPos)] = paths.get(targetPos)
 
         return paths.get(targetPos)
@@ -1458,7 +1458,7 @@ class Terrain:
                 self.itemsByBigCoordinate[bigPos].append(item)
             else:
                 self.itemsByBigCoordinate[bigPos] = [item]
-            
+
             if position in self.itemsByCoordinate:
                 self.itemsByCoordinate[position].insert(0, item)
             else:
@@ -1506,7 +1506,7 @@ class Terrain:
         Returns:
             a list of nearby rooms
         """
-        
+
         roomCandidates = []
         possiblePositions = set()
         for i in range(-1, 2):
@@ -1885,7 +1885,7 @@ class Terrain:
             elif animationType in ("charsequence",):
                 display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
-                try: 
+                try:
                     if display:
                         chars[pos[1]][pos[0]] = display
                 except:
@@ -2474,30 +2474,29 @@ class GameplayTest(Terrain):
     def __init__(self, seed=0, noContent=False):
         """
         state initialization
-        
+
         Parameters:
             seed: rng seed
             noContent: flag to generate no content
         """
 
         # add only a few scattered intact rooms
-        layout = """
-             
-             
-             
-             
-             
-             
-             
-             
-     .       
-    C.       
-             
-             
-             
-             
-             
-        """
+        layout = """\
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____________
+_____._______
+____C._______
+_____________
+_____________
+_____________
+_____________
+_____________"""
 
         super().__init__(
             seed=seed, noContent=noContent
@@ -2792,7 +2791,7 @@ class Desert(Terrain):
     def __init__(self, seed=0, noContent=False):
         """
         state initialization
-        
+
         Parameters:
             seed: rng seed
             noContent: flag to generate no content
@@ -3353,7 +3352,7 @@ class ScrapField(Terrain):
     def __init__(self, seed=0, noContent=False):
         """
         state initialization
-        
+
         Parameters:
             seed: rng seed
             noContent: flag to generate no content

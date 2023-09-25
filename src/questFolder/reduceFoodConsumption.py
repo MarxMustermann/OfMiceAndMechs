@@ -79,7 +79,7 @@ reduce the food consumption on the base{reason}.
             return (None,None)
 
         return (None,None)
-    
+
     def triggerCompletionCheck(self,character=None):
         return False
 

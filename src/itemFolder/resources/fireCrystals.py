@@ -62,7 +62,7 @@ class FireCrystals(src.items.Item):
     def destroy(self, generateScrap=False):
         """
         destroy the item
-        
+
         Parameters:
             generateScrap: flag to toggle leaving residue
         """

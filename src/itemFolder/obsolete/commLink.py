@@ -52,7 +52,7 @@ class Commlink(src.items.Item):
 item: CommLink
 
 description:
-A comlink. 
+A comlink.
 
 """
 

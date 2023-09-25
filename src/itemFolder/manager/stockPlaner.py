@@ -25,7 +25,7 @@ class StockPlaner(src.items.Item):
         self.plannedRooms = []
         self.specialPurposeRooms = []
         self.generalPurposeRooms = []
-        
+
     def addScrapCompactorFromMap(self,params,instaSpawn=False):
         """
         handle a character having selected building a room
@@ -58,7 +58,7 @@ class StockPlaner(src.items.Item):
 
         floorPlan = copy.deepcopy(self.prefabs["ScrapToMetalBars"][params["type"]-1])
         room.resetDirect()
-        room.floorPlan = floorPlan 
+        room.floorPlan = floorPlan
 
         if instaSpawn:
             room.spawnPlaned()
@@ -291,7 +291,7 @@ class StockPlaner(src.items.Item):
 
         floorPlan = copy.deepcopy(random.choice(self.prefabs["storage"]))
         room.resetDirect()
-        room.floorPlan = floorPlan 
+        room.floorPlan = floorPlan
 
         self.container.storageRooms.append(room)
 
@@ -345,7 +345,7 @@ class StockPlaner(src.items.Item):
 
         if floorPlanType == "exit":
             return
-        
+
         walkingSpaces = []
         outputSlots = []
         inputSlots = []
@@ -565,7 +565,7 @@ class StockPlaner(src.items.Item):
                 inputSlots.append(((basePosition[0]+2,basePosition[1],0),"MetalBars",{}))
                 inputSlots.append(((basePosition[0]+3,basePosition[1]+1,0),"Case",{}))
                 buildSites.append(((basePosition[0]+3,basePosition[1],0),"Machine",{"toProduce":"Wall"}))
-            
+
             walkingSpaces.append((5,11,0))
             walkingSpaces.append((7,11,0))
             walkingSpaces.append((8,11,0))
@@ -748,7 +748,7 @@ class StockPlaner(src.items.Item):
                     },
                     "description":"schedule building a room",
                 }
-        
+
         for room in terrain.rooms:
             del functionMap[(room.xPosition,room.yPosition)]
 
@@ -843,7 +843,7 @@ class StockPlaner(src.items.Item):
 
         for plot in self.reservedPlots:
             mapContent[plot[1]][plot[0]] = "RR"
-                
+
             if plot not in functionMap:
                 functionMap[plot] = {}
 

@@ -46,7 +46,7 @@ Activate it to trigger a exlosion.
     def destroy(self, generateScrap=True):
         """
         destroy the item
-        
+
         Parameters:
             generateScrap: flag to toggle leaving residue
         """

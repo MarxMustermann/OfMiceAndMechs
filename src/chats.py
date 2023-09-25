@@ -289,7 +289,7 @@ class GrowthTankRefillChat(Chat):
             # show fluffed up information
             self.persistentText = [
                 """
-    please refill your flask and use it to refill the growthtanks. 
+    please refill your flask and use it to refill the growthtanks.
 
     Empty growthtanks look like this: """,
                 src.canvas.displayChars.indexedMapping[
@@ -300,7 +300,7 @@ class GrowthTankRefillChat(Chat):
                     src.canvas.displayChars.growthTank_filled
                 ],
                 """
-    
+
 Activate these, while having a full bottle in your inventory, but leave the full ones alone""",
             ]
             src.gamestate.gamestate.mainChar.addMessage(
@@ -351,7 +351,7 @@ class TutorialSpeechTest(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chatpartner
         """
@@ -432,7 +432,7 @@ class FurnaceChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chatpartner
         """
@@ -566,7 +566,7 @@ class SternChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -609,7 +609,7 @@ You can do so by pressing """
                 + config.commandChars.autoAdvance
                 + """
 
-It is of limited practicality though. It is mainly useful for stupid manual labor and often does not 
+It is of limited practicality though. It is mainly useful for stupid manual labor and often does not
 do things the most efficient way. It will even try to handle conversion, which does not always lead to optimal results"""
             )
             src.gamestate.gamestate.mainChar.addMessage(
@@ -654,7 +654,7 @@ class InfoChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -689,9 +689,9 @@ class InfoChat(Chat):
             # show fluffed up information
             self.persistentText = """yes and a lot of it. I will give you two of these things on your way:\n
 1. You will need to pick up most of the Information along the way. Ask around and talk to people.
-Asking questions may hurt your reputation, since you will appear like new growth. 
+Asking questions may hurt your reputation, since you will appear like new growth.
 You are, so do not hesitate to learn the necessary Information before you have a reputation to loose.\n
-2. Do not rely on the implant to guide you through difficult tasks. 
+2. Do not rely on the implant to guide you through difficult tasks.
 Sterns modifications are doing a good job for repetitive tasks but are no replacement
 for a brain.\n\n"""
             self.set_text(self.persistentText)
@@ -744,7 +744,7 @@ class ReReport(src.interaction.SubMenu):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -821,7 +821,7 @@ class JobChatFirst(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -907,7 +907,7 @@ class JobChatSecond(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -936,7 +936,7 @@ class JobChatSecond(Chat):
 
     def handleKey(self, key, noRender=False):
         """
-        show dialog and assign quest 
+        show dialog and assign quest
 
         Parameters:
             key: the keystroke
@@ -1020,7 +1020,7 @@ class RoomDutyChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1072,7 +1072,7 @@ class RoomDutyChat2(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1122,7 +1122,7 @@ class JobChatThird(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1151,7 +1151,7 @@ class JobChatThird(Chat):
 
     def handleKey(self, key, noRender=False):
         """
-        show dialog and assign quest 
+        show dialog and assign quest
 
         Parameters:
             key: the keystroke
@@ -1238,7 +1238,7 @@ class StopChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1297,7 +1297,7 @@ class StartChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1361,7 +1361,7 @@ class RecruitChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1473,7 +1473,7 @@ class JoinMilitaryChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1543,7 +1543,7 @@ class CaptainChat(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1618,7 +1618,7 @@ class FactionChat1(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1684,7 +1684,7 @@ class FactionChat2(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1776,7 +1776,7 @@ class CaptainChat2(Chat):
     def __init__(self, partner):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1846,13 +1846,13 @@ class CaptainChat2(Chat):
 
 class ChatMenu(Chat):
     """
-    a chat with a character, partially hardcoded partially dynamically generated 
+    a chat with a character, partially hardcoded partially dynamically generated
     """
 
     def __init__(self, partner=None):
         """
         initialise the internal state
-        
+
         Parameters:
             partner: the chat partner
         """
@@ -1869,7 +1869,7 @@ class ChatMenu(Chat):
     # bad code: the dialog should be generated within the characters
     def handleKey(self, key, noRender=False,character=None):
         """
-        show the dialog options and wrap around the corresponding submenus 
+        show the dialog options and wrap around the corresponding submenus
 
         Parameters:
             key: the keystroke

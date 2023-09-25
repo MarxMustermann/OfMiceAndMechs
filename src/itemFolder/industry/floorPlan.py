@@ -39,7 +39,7 @@ class FloorPlan(src.items.Item):
             "addBreakPoint": self.addBreakPoint,
         }
         """
-    
+
     def readFloorPlanFromRoom(self):
         room = self.container
 

@@ -103,7 +103,7 @@ class HealingStation(src.items.Item):
         """
 
         text = super().getLongInfo()
-        
+
         text +="""
 charges:
 %s

@@ -4,7 +4,7 @@ import src
 class SimpleRunner(src.items.Item):
     type = "SimpleRunner"
 
-    """  
+    """
     call superclass constructor with modified parameters
     """
 

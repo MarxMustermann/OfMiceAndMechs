@@ -213,7 +213,7 @@ class ReserveCityBuilder(src.items.Item):
                 break
 
             numSteps += 1
-        
+
         if scrapFound:
             if numSteps == 0:
                 character.runCommandString("k"*10)
@@ -228,7 +228,7 @@ class ReserveCityBuilder(src.items.Item):
                 character.runCommandString(movementPath[0:numSteps-1])
 
             return
-        
+
         targetItem = None
         for item in self.container.itemsOnFloor[:]:
             if item == self:
@@ -299,7 +299,7 @@ class ReserveCityBuilder(src.items.Item):
                         foundScrap = item
 
                 if foundScrap:
-                   break 
+                   break
 
             command = walkToCommand1+walkToCommand2[:pathLen-1]+("K"+walkToCommand2[pathLen-1])*10+walkBackCommand2[-(pathLen-1):]+walkBackCommand1
             character.runCommandString(command)

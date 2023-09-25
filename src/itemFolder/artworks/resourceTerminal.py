@@ -23,7 +23,7 @@ class ResourceTerminal(src.items.Item):
         set the ressource to hande
 
         Parameters:
-            ressource (string): the ressource to handle 
+            ressource (string): the ressource to handle
         """
         self.resource = resource
 

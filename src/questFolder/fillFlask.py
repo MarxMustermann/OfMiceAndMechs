@@ -29,7 +29,7 @@ class FillFlask(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return 
+            return
 
         if character.flask and character.flask.uses > 80:
             self.postHandler()
@@ -41,7 +41,7 @@ class FillFlask(src.quests.MetaQuestSequence):
             self.subQuests.remove(self.subQuests[0])
 
     def subQuestCompleted(self,extraInfo=None):
-        self.clearCompletedSubquest() 
+        self.clearCompletedSubquest()
         if not self.subQuests:
             self.generateSubquests(self.character)
 
@@ -149,7 +149,7 @@ class FillFlask(src.quests.MetaQuestSequence):
             if command:
                 character.runCommandString(command)
                 return
-            
+
         return super().solver(character)
 
 src.quests.addType(FillFlask)

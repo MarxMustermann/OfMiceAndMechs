@@ -176,7 +176,7 @@ class TileMapping(Mapping):
         add missing tiles by loading data from the tile based mode
 
         Parameters:
-            rawConfig: the unmodified config 
+            rawConfig: the unmodified config
         """
 
         # load the fallback chars
@@ -189,7 +189,7 @@ class TileMapping(Mapping):
             # ignore internal state
             if item[0].startswith("__"):
                 continue
-        
+
             # skip non missing tiles
             if hasattr(rawConfig,item[0]):
                 continue
@@ -317,8 +317,8 @@ class Canvas:
         sets a pseudo pixel on the canvas
         Parameters:
             x: the x coordinate
-            y: the y coordinate 
-            char: 
+            y: the y coordinate
+            char:
         """
 
         # shift coordinates
@@ -515,7 +515,7 @@ class Canvas:
     def setPygameDisplay(self, pydisplay, pygame, tileSize):
         """
         draw the display onto a pygame display
-        
+
         Parameters:
             pydisplay: the display from pygame
             pygame: the pygame itself

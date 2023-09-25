@@ -5,7 +5,7 @@ class ItemUpgrader(src.items.Item):
     """
     ingame item that can be used to upgrade other items
     """
-    
+
     type = "ItemUpgrader"
 
     def __init__(self):

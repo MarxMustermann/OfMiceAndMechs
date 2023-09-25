@@ -13,7 +13,7 @@ class SwarmIntegrator(src.items.Item):
 
     def __init__(self):
         """
-        set up initial state 
+        set up initial state
         """
 
         super().__init__(display=src.canvas.displayChars.floor_node)
@@ -21,7 +21,7 @@ class SwarmIntegrator(src.items.Item):
     def apply(self, character):
         """
         handle a character trying to use this item
-        
+
         Parameters:
             character: the character trying to use this item
         """

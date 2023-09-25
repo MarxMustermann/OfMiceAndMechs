@@ -33,13 +33,13 @@ You can spend them later to get an actual reward.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.gotEpochEvaluation, "got epoch evaluation")
 
         return super().assignToCharacter(character)
 
     def getNextStep(self,character=None,ignoreCommands=False):
-        
+
         while self.subQuests:
             if not self.subQuests[-1].completed:
                 break
@@ -57,7 +57,7 @@ You can spend them later to get an actual reward.
                 return (None,("a","enter tile"))
             if character.xPosition%15 == 0:
                 return (None,("d","enter tile"))
-                    
+
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             counter = 3

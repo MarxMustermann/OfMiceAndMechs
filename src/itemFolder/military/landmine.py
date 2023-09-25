@@ -44,7 +44,7 @@ class LandMine(src.items.Item):
     def destroy(self, generateScrap=True):
         """
         destroy the item
-        
+
         Parameters:
             generateScrap: flag to toggle leaving residue
         """

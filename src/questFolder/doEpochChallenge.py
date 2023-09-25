@@ -33,7 +33,7 @@ Press d to the show the description for the subQuest.
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False):
-        
+
         while self.subQuests:
             if not self.subQuests[-1].completed:
                 break

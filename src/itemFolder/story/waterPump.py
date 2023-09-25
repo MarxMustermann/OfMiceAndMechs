@@ -40,7 +40,7 @@ class WaterPump(src.items.Item):
         handle a character having selected an action
         by running it
         """
-        
+
         if not self.terrain:
             self.character.addMessage(
                 "the water condenser needs to be placed outside to work"

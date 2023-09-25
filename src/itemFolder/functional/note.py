@@ -47,7 +47,7 @@ it holds the text:
         Parameters:
             character: the character that tries to read the note
         """
-        
+
         submenue = src.interaction.OneKeystrokeMenu(
             f"the note has the text: \n\n\n{self.text}"
         )

@@ -27,7 +27,7 @@ class Vial(src.items.Item):
         handle a character trying to drink from the flask
 
         Parameters:
-            character: the character trying to use the item    
+            character: the character trying to use the item
         """
 
         # handle edge case

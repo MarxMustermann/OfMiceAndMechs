@@ -119,7 +119,7 @@ Remove all items from the walkways."""
                 return
 
             charPos = character.getPosition()
-            
+
             offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
             foundOffset = None
             foundItems = None
@@ -164,7 +164,7 @@ Remove all items from the walkways."""
         super().solver(character)
 
     def getLeftoverItems(self,character):
-        
+
         if isinstance(character.container,src.rooms.Room):
             terrain = character.container.container
         else:

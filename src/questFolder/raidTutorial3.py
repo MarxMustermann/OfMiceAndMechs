@@ -82,7 +82,7 @@ Since the actual game is not ready yet, i'll crash the game now.
 """
                 src.interaction.showInterruptText(text)
                 1/0
-            
+
                 self.postHandler()
             return (None,None)
 

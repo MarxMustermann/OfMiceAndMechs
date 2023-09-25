@@ -50,7 +50,7 @@ It generates missions and hands out rewards."""
 Use it by activating it. You will recieve further instructions."""
 
         self.lastRoomReward = 1
-        
+
         self.descriptions = {
                 "spawn resource gathering NPC":"""
 This clone will fetch scrap.
@@ -225,7 +225,7 @@ Since this clone is burned in it can not change duties.
 
         if not "rewardType" in extraInfo:
             return
-        
+
         if extraInfo["rewardType"] == None:
             return
         if extraInfo["rewardType"] == "None":
@@ -441,7 +441,7 @@ Since this clone is burned in it can not change duties.
 
         self.getEpochRewards(character,selected=extraInfo["rewardType"])
 
-    
+
     def spawnArtwork(self, character,itemType, cost):
         text = ""
         if not self.charges >= cost:
@@ -887,7 +887,7 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
         return enemies
 
     def apply(self,character):
-        
+
         self.changed("epoch artwork used",(character,))
         character.registers["baseCommander"] = "No"
         #if character.rank == None:
@@ -897,7 +897,7 @@ The quest you get will try to guide you, but that is WIP and may require guesswo
         #if character.rank > 3:
         #    self.showLocked(character)
         #    return
-            
+
         if not self.leader or self.leader.dead:
             self.leader = character
 
@@ -923,7 +923,7 @@ To help you with that you got the universal leaders blessing.
 (base damage +2 max health +20)
 ---
 
-You were assiged the quest "be useful". 
+You were assiged the quest "be useful".
 You can decide freely how to be useful.
 
 It is recommendet to press the "+" key to break down the quest into steps.

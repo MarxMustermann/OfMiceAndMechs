@@ -34,7 +34,7 @@ This is a one of its kind machine. It cannot be reproduced and was created by an
 This artwork generates and can assign quests."""
         self.usageInfo = """
 Use it to generate a quest and assign it to you."""
-        
+
     def getEnemiesWithTag(self,tag):
         enemies = []
         currentTerrain = self.container.container
@@ -179,7 +179,7 @@ Go there and fetch the weapons and armor.
                         continue
                     if item.bolted:
                         continue
-                    
+
                     distance = abs(room.xPosition-7)+abs(room.yPosition-7)
                     if nearestDistance == None or distance < nearestDistance:
                         candidates = []
@@ -352,7 +352,7 @@ kill all remaining enemies
             character.macroState["submenue"] = submenue
             character.changed("got quest assigned")
             return
-        
+
         """
         for room in self.container.container.rooms:
             for target in room.characters:

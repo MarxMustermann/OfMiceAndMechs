@@ -88,7 +88,7 @@ Right now, their base contains nothing worth stealing.
 Except one thing. Do you see the item shown as \\/ ?
 
 There is only two of these special items in the world and they cannot be crafted.
-You need two of those items to win the game. 
+You need two of those items to win the game.
 Their base is too busy to steal that item.
 
 So go home and prepare for a bigger raid.
@@ -117,7 +117,7 @@ So let's recap:
 * Your base and an enemy base
 * The enemy base has something you want
 
-So they have to die. 
+So they have to die.
 Return to your base and let's see how we do that.
 
 (I healed you again)

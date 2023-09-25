@@ -7,13 +7,13 @@ class MetalWorkingBench(src.items.Item):
 
     type = "MetalWorkingBench"
     name = "MetalWorkingBench"
-    description = "Use it to build simple things" 
+    description = "Use it to build simple things"
     walkable = False
     bolted = True
 
     def __init__(self):
         """
-        set up internal state 
+        set up internal state
         """
 
         super().__init__(display = "WM")
@@ -39,7 +39,7 @@ class MetalWorkingBench(src.items.Item):
         self.produceItem({"character":character})
 
     def produceItem(self,params):
-        character = params["character"]           
+        character = params["character"]
 
         print(params)
         if not "type" in params:
@@ -97,7 +97,7 @@ class MetalWorkingBench(src.items.Item):
         if not character.getFreeInventorySpace() > 0 and not metalBar in character.inventory and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
-            return 
+            return
 
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
@@ -113,7 +113,7 @@ class MetalWorkingBench(src.items.Item):
         character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
 
     def produceItem_wait(self,params):
-        character = params["character"]           
+        character = params["character"]
         ticksLeft = params["productionTime"]-params["doneProductionTime"]
 
         progressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
@@ -133,7 +133,7 @@ class MetalWorkingBench(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
 
     def produceItem_done(self,params):
-        character = params["character"]           
+        character = params["character"]
         character.addMessage("You produce a wall")
         character.addMessage("It took you 100 turns to do that")
 
@@ -166,7 +166,7 @@ class MetalWorkingBench(src.items.Item):
                 for item in itemList:
                     if item.walkable == False:
                         targetFull = True
-                
+
                 if not targetFull:
                     self.container.addItem(new,targetPos)
                     break
@@ -210,7 +210,7 @@ class MetalWorkingBench(src.items.Item):
 
     def scheduleProduction(self,params):
 
-        character = params["character"]           
+        character = params["character"]
 
         if not "type" in params:
             options = []

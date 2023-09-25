@@ -425,7 +425,7 @@ class ShowQuestExecution(BasicCinematic):
         """
         advance and show game
         """
-        
+
         super().advance()
 
         # do setup on the first run
@@ -669,7 +669,7 @@ class SelectionCinematic(BasicCinematic):
 # obsolete: only used in old storymode
 class ShowMessageCinematic(BasicCinematic):
     """
-    this cutscenes shows some message 
+    this cutscenes shows some message
     """
 
     def __init__(self, message=""):

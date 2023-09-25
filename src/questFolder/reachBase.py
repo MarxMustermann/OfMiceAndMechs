@@ -22,7 +22,7 @@ class ReachBase(src.quests.MetaQuestSequence):
             if command:
                 character.runCommandString(command)
                 return
-            
+
         super().solver(character)
 
     def generateTextDescription(self):

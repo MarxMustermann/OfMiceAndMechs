@@ -55,7 +55,7 @@ This quest will end when the target tile has no items left."""
         if not self.subQuests:
             hasIdleSubordinate = False
             for subordinate in character.subordinates:
-                if len(subordinate.quests) < 2: 
+                if len(subordinate.quests) < 2:
                     hasIdleSubordinate = True
 
             if hasIdleSubordinate:

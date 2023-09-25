@@ -62,7 +62,7 @@ Remember to press ctrl-d if you lose control over your character.
             if command:
                 character.runCommandString(command)
                 return
-            
+
         super().solver(character)
 
     def getSolvingCommandString(self,character,dryRun=True):
@@ -101,7 +101,7 @@ Remember to press ctrl-d if you lose control over your character.
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character,silent=False):
-        
+
         if not self.active:
             return
         if self.completed:

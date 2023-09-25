@@ -72,7 +72,7 @@ class EncrustedBush(src.items.Item):
         Parameters:
             spawnPoint: the plant that is the core of the room
         """
-        
+
         if not self.container:
             return
 

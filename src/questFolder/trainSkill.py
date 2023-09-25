@@ -124,7 +124,7 @@ Activate the basic trainer in the command centre to start training a skill"""
             if command:
                 character.runCommandString(command)
                 return
-            
+
         super().solver(character)
 
     def handleMovement(self, extraInfo):

@@ -10,7 +10,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
 
-        self.targetPosition = targetPosition 
+        self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.reason = reason
         self.abortOnfullInventory = abortOnfullInventory
@@ -118,7 +118,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)
-    
+
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)
         if nextStep == (None,None):

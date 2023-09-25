@@ -21,7 +21,7 @@ Ambush them in front of the base to break up the second siege ring."""
 This quest currently has no sub quests.
 Press r to generate subquest and receive detailed instructions
 """
-        
+
         return out
 
     def postHandler(self):

@@ -514,7 +514,7 @@ class ArchitectArtwork(src.items.Item):
         character.addMessage("added empty rooms")
         character.addMessage(f"{roomsPositions}")
         character.addMessage(f"{streets}")
-            
+
         for street in streets:
             xPosition = street[0]
             yPosition = street[1]
@@ -545,7 +545,7 @@ class ArchitectArtwork(src.items.Item):
         self.fillMap()
         self.doClearField(self.xPosition//15,self.xPosition//15)
 
-        terrain = self.getTerrain() 
+        terrain = self.getTerrain()
         center = (self.xPosition//15,self.xPosition//15)
 
         # generate room slots
@@ -562,7 +562,7 @@ class ArchitectArtwork(src.items.Item):
 
             if abs(x-7) < 2 and abs(y-7) < 2:
                 continue
-            
+
             if not (x,y) in roomSlots:
                 roomSlots.append((x,y))
 
@@ -586,7 +586,7 @@ class ArchitectArtwork(src.items.Item):
         while pocketFrameRoom in freeRoomSlots:
             freeRoomSlots.remove(pocketFrameRoom)
             roomMap[pocketFrameRoom[1]][pocketFrameRoom[0]] = "pf"
-        
+
         pathSlots = []
         crossroads = []
 
@@ -700,7 +700,7 @@ class ArchitectArtwork(src.items.Item):
                         crossroads.append((x,y))
                     else:
                         break
-                    
+
                     if not (abs(x-7) > 2 or abs(y-7) > 2):
                         break
 
@@ -737,7 +737,7 @@ class ArchitectArtwork(src.items.Item):
             pos = (random.randint(1,11),random.randint(1,11),0)
             if pos == (6,6,0):
                 continue
-            
+
             if targetRoom.getItemByPosition(pos):
                 continue
 
@@ -808,7 +808,7 @@ class ArchitectArtwork(src.items.Item):
             if numRuns == 5:
                 theme = "food"
 
-            
+
             if theme == "machine":
                 """
                 room = self.doAddRoom(
@@ -968,7 +968,7 @@ class ArchitectArtwork(src.items.Item):
                     loot.armorValue = distance//3+random.randint(0,1)+1
                 if loot.type == "GooFlask":
                     loot.uses = min(distance+random.randint(0,100),100)
-                
+
             numScrap = random.randint(0,50)
             #numScrap += random.choice((0,0,10,40,100))
             for i in range(0,numScrap):
@@ -1448,7 +1448,7 @@ class ArchitectArtwork(src.items.Item):
             room.reconfigure(task["size"][0], task["size"][1], doorPos=entryPoints)
 
         faction = task.get("faction")
-        if faction: 
+        if faction:
             room.faction = faction
 
         terrain = self.getTerrain()

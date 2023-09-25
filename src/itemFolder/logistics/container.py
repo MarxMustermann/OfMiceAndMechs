@@ -59,7 +59,7 @@ This is a level {self.level} item.
 the container is empty
 """
 
-        text += """ 
+        text += """
 
 actions:
 
@@ -69,7 +69,7 @@ actions:
     # bad code: should use super class functionality
     def apply(self, character):
         """
-        handle a character trying to use this item 
+        handle a character trying to use this item
         by offering a selection of possible actions
         Parameters:
             character: the character trying to use the machine

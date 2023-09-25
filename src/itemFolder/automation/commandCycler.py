@@ -4,7 +4,7 @@ import src
 class CommandCycler(src.items.Item):
     type = "CommandCycler"
 
-    """  
+    """
     call superclass constructor with modified parameters
     """
 

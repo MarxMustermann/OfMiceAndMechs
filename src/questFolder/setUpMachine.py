@@ -28,7 +28,7 @@ set up a machine to produce {self.itemType}{reason}.
         text += f"""
 Set the machine up on position {self.targetPosition} on tile {self.targetPositionBig}
 """
-        
+
         neededItems = src.items.rawMaterialLookup.get(self.itemType,[])[:]
         text += f"""
 {self.itemType} machines are produced by a machine machine.
@@ -104,7 +104,7 @@ If you don't find a {self.itemType} blueprint, research it.
                 if character.getDistance(itemPlaced.getPosition()) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="go to machine")
                     return ([quest],None)
-                
+
                 directions = [((0,0,0),""),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:
@@ -155,7 +155,7 @@ If you don't find a {self.itemType} blueprint, research it.
                 if character.getDistance(self.targetPosition) > 1:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="go to the placement spot")
                     return ([quest],None)
-                
+
                 items = character.container.getItemByPosition(self.targetPosition)
                 if items:
                     if not character.getFreeInventorySpace():
@@ -222,7 +222,7 @@ If you don't find a {self.itemType} blueprint, research it.
                 if not character.getFreeInventorySpace():
                     quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to pick up a machine to place")
                     return ([quest],None)
-                
+
                 if not character.getBigPosition() == (7,7,0):
                     quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to the tile the Machine to pick up is on")
                     return ([quest],None)
@@ -339,7 +339,7 @@ If you don't find a {self.itemType} blueprint, research it.
             self.fail(reason="no blueprint for "+self.itemType)
             return (None,None)
         return (None,None)
-    
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
@@ -363,7 +363,7 @@ If you don't find a {self.itemType} blueprint, research it.
         if items[-1].type == "Machine" and items[-1].toProduce == self.itemType and items[-1].bolted:
             self.postHandler()
             return True
-         
+
         return False
 
     def unhandledSubQuestFail(self,extraParam):

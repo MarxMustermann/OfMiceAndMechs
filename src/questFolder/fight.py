@@ -19,7 +19,7 @@ kill,kill,kill!
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return 
+            return
 
         if not character.getNearbyEnemies():
             self.postHandler()

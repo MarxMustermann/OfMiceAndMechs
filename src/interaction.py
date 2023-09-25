@@ -72,6 +72,12 @@ def advanceGame():
     if src.gamestate.gamestate.mainChar.dead:
         showDeathScreen()
 
+    if src.gamestate.gamestate.tick%(15*15*15) == 0:
+        for god in src.gamestate.gamestate.gods.values():
+            if not "mana" in god:
+                god["mana"] = 0
+            god["mana"] += 100
+
     #if src.gamestate.gamestate.tick%100 == 15:
     #    src.gamestate.gamestate.save()
 

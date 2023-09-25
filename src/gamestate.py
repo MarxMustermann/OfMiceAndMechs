@@ -42,13 +42,13 @@ class GameState:
         self.savedThisTurn = False
         self.waitedForInputThisTurn = False
         self.gods = {
-                        1:{"name":"god1"},
-                        2:{"name":"god2"},
-                        3:{"name":"god3"},
-                        4:{"name":"god4"},
-                        5:{"name":"god5"},
-                        6:{"name":"god6"},
-                        7:{"name":"god7"},
+                1:{"name":"god1","mana":0},
+                2:{"name":"god2","mana":0},
+                3:{"name":"god3","mana":0},
+                4:{"name":"god4","mana":0},
+                5:{"name":"god5","mana":0},
+                6:{"name":"god6","mana":0},
+                7:{"name":"god7","mana":0},
                     }
 
         self.multi_chars = set()

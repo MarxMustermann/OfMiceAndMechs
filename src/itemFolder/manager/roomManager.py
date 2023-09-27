@@ -709,15 +709,9 @@ class RoomManager(src.items.Item):
 
             for resource in needResources:
                 if resource == "MetalBars":
-                    if self.resourceTerminalPositions.get(resource):
-                        candidateList = self.resourceTerminalPositions[resource]
-                    else:
-                        candidateList = []
+                    candidateList = self.resourceTerminalPositions.get(resource, [])
                 else:
-                    if resource in self.machinePositions:
-                        candidateList = self.machinePositions[resource]
-                    else:
-                        candidateList = []
+                    candidateList = self.machinePositions.get(resource, [])
 
                 for candidate in candidateList:
                     desiredPos = candidate[:]

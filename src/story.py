@@ -1098,12 +1098,12 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
                 continue
             if len(npc.quests) > 1:
                 continue
-            if not npc.xPosition == 0 or not npc.yPosition == 6:
+            if npc.xPosition != 0 or npc.yPosition != 6:
                 continue
 
             if room == self.toBuildRoomClone4:
                 for item in npc.inventory:
-                    if not item.type == "MetalBars":
+                    if item.type != "MetalBars":
                         continue
                     try:
                         self.stats["current"]["1500"]["produced"] += 1
@@ -1111,7 +1111,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
                         pass
             if room == self.toBuildRoomClone6:
                 for item in npc.inventory:
-                    if not item.type == "MetalBars":
+                    if item.type != "MetalBars":
                         continue
                     try:
                         self.stats["current"]["15000"]["produced"] += 1
@@ -1954,7 +1954,7 @@ class BackToTheRoots(BasicPhase):
             room = src.gamestate.gamestate.mainChar.container
             if room.container == src.gamestate.gamestate.terrainMap[6][7]:
                 for citylocation in self.citylocations:
-                    if not self.leaders[citylocation].faction == src.gamestate.gamestate.mainChar.faction:
+                    if self.leaders[citylocation].faction != src.gamestate.gamestate.mainChar.faction:
                         continue
 
                     if (room.xPosition,room.yPosition) == citylocation:
@@ -2066,7 +2066,7 @@ class BackToTheRoots(BasicPhase):
             foundItems = []
             for pos in self.specialItemSlotPositions:
                 for item in foundRoom.getItemByPosition((pos[0],pos[1],0)):
-                    if not item.type == "SpecialItemSlot":
+                    if item.type != "SpecialItemSlot":
                         continue
                     if not item.hasItem:
                         missingItems.append(item.itemID)
@@ -2153,7 +2153,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom = foundRoom
 
             for item in mainRoom.itemsOnFloor[:]:
-                if not item.type == "Corpse":
+                if item.type != "Corpse":
                     continue
                 mainRoom.removeItem(item)
 
@@ -2869,7 +2869,7 @@ reminder:
         self.tutorialCheckHeal()
 
     def tutorialCheckHeal(self):
-        if not src.gamestate.gamestate.mainChar.health == 100:
+        if src.gamestate.gamestate.mainChar.health != 100:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "tutorialCheckHeal"})
             src.gamestate.gamestate.mainChar.container.addEvent(event)
@@ -3342,7 +3342,7 @@ press space when you are ready
     def tutorialCheckMovement(self,extraInfo=None):
         mainChar = src.gamestate.gamestate.mainChar
 
-        if not tuple(extraInfo["lastPos"]) == mainChar.getPosition():
+        if tuple(extraInfo["lastPos"]) != mainChar.getPosition():
             extraInfo["count"] += 1
         extraInfo["lastPos"] = list(mainChar.getPosition())
 
@@ -3517,7 +3517,7 @@ examine it and activate it.
             }
 
     def checkActivateCode(self, extraInfo):
-        if not "text" in extraInfo or not extraInfo["text"] == "3798":
+        if not "text" in extraInfo or extraInfo["text"] != "3798":
             submenu = src.interaction.TextMenu("wrong code - examine the combination lock for instructions. press z to view keybindings")
             src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
             return
@@ -4010,7 +4010,7 @@ class MainGame(BasicPhase):
                 characterPool.extend(room.characters)
 
             for character in characterPool[:]:
-                if not character.faction == self.activeStory["mainChar"].faction:
+                if character.faction != self.activeStory["mainChar"].faction:
                     characterPool.remove(character)
                     continue
                 if isinstance(character,src.characters.Ghoul):
@@ -4071,14 +4071,14 @@ try to remember how you got here ..."""
         self.activeStory["mainChar"].messages.insert(0,("""but see nothing that could directly harm you."""))
 
         for character in self.activeStory["terrain"].characters[:]:
-            if not character == self.activeStory["mainChar"]:
+            if character != self.activeStory["mainChar"]:
                 character.die(reason="sudden death")
 
         for room in self.activeStory["terrain"].rooms:
             if isinstance(room, src.rooms.TrapRoom):
                 room.electricalCharges = 0
             for character in room.characters[:]:
-                if not character == self.activeStory["mainChar"]:
+                if character != self.activeStory["mainChar"]:
                     character.die(reason="sudden death")
             for item in room.itemsOnFloor[:]:
                 if item.bolted:
@@ -4714,7 +4714,7 @@ try to remember how you got here ..."""
             src.interaction.showInterruptText(text)
 
         for colonyBaseInfo in self.colonyBaseInfos2:
-            if not colonyBaseInfo["mainChar"] == extraParam["character"]:
+            if colonyBaseInfo["mainChar"] != extraParam["character"]:
                 continue
 
             candidates = []
@@ -4729,7 +4729,7 @@ try to remember how you got here ..."""
                 if candidate.health == 0:
                     candidates.remove(candidate)
                     continue
-                if not candidate.faction == faction:
+                if candidate.faction != faction:
                     candidates.remove(candidate)
                     continue
                 if candidate == extraParam["character"]:
@@ -4962,7 +4962,7 @@ try to remember how you got here ..."""
         mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
 
         for y in (7,9,11):
-            if not y == 7:
+            if y != 7:
                 for x in range(7,12):
                     mainRoom.addStorageSlot((x,y,0),None)
             for x in range(1,6):
@@ -5333,7 +5333,7 @@ try to remember how you got here ..."""
         temple = cityInfo["temple"]
 
         for item in temple.itemsOnFloor:
-            if not item.type == "SpecialItemSlot":
+            if item.type != "SpecialItemSlot":
                 continue
             if item.itemID == thisFactionId:
                 item.hasItem = True
@@ -5428,7 +5428,7 @@ try to remember how you got here ..."""
         temple = cityData["temple"]
 
         for item in temple.itemsOnFloor:
-            if not item.type == "SpecialItemSlot":
+            if item.type != "SpecialItemSlot":
                 continue
             if item.itemID == thisFactionId:
                 item.hasItem = True
@@ -5685,7 +5685,7 @@ try to remember how you got here ..."""
         temple = cityData["temple"]
 
         for item in temple.itemsOnFloor:
-            if not item.type == "SpecialItemSlot":
+            if item.type != "SpecialItemSlot":
                 continue
             if item.itemID == thisFactionId:
                 item.hasItem = True
@@ -5959,7 +5959,7 @@ try to remember how you got here ..."""
                     if currentTerrain.getItemByPosition((xPos,yPos,0)):
                         continue
 
-                    if not self.difficulty == "easy":
+                    if self.difficulty != "easy":
                         if placedMines:
                             landmine = src.items.itemMap["LandMine"]()
                             currentTerrain.addItem(landmine,(xPos,yPos,0))
@@ -6038,7 +6038,7 @@ try to remember how you got here ..."""
                         currentTerrain.removeItems(currentTerrain.getItemByPosition((bigX*15+x,bigY*15+y,0)))
 
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
-        if not self.difficulty == "easy":
+        if self.difficulty != "easy":
             for i in range(1,10):
                 waypoints = waypoints[1:]+[waypoints[0]]
 
@@ -6521,13 +6521,13 @@ press enter to continue"""
 
         remainingEnemyCounter = 0
         for character in terrain.characters:
-            if not character.tag == "wave":
+            if character.tag != "wave":
                 continue
             remainingEnemyCounter += 1
 
         for room in terrain.rooms:
             for character in room.characters:
-                if not character.tag == "wave":
+                if character.tag != "wave":
                     continue
                 remainingEnemyCounter += 1
 
@@ -6547,7 +6547,7 @@ press enter to continue"""
             npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
         """
 
-        if not src.gamestate.gamestate.mainChar.rank == 3:
+        if src.gamestate.gamestate.mainChar.rank != 3:
             if not state["epochArtwork"].leader or state["pochArtwork"].leader.dead:
                 state["epochArtwork"].dispenseEpochRewards({"rewardType":"autoSpend"})
 
@@ -6608,9 +6608,9 @@ press enter to continue"""
             enemy.quests.append(quest)
 
         numLurkers = 10
-        if not self.difficulty == "easy":
+        if self.difficulty != "easy":
             numLurkers = 5
-        if not self.difficulty == "difficult":
+        if self.difficulty != "difficult":
             numLurkers = 20
 
         numLurkers = int(numLurkers*random.random()*2)
@@ -6954,7 +6954,7 @@ class MainGameArena(BasicPhase):
                 mainRoom.walkingSpace.add((6,y,0))
 
             for y in (7,9,11):
-                if not y == 7:
+                if y != 7:
                     for x in range(7,12):
                         mainRoom.addStorageSlot((x,y,0),None)
                 for x in range(1,6):
@@ -7133,7 +7133,7 @@ class MainGameArena(BasicPhase):
         for pos in [(6,6,0),(6,8,0)]:
             room = currentTerrain.getRoomByPosition(pos)[0]
             for inputSlot in room.inputSlots:
-                if not inputSlot[1] == "Scrap":
+                if inputSlot[1] != "Scrap":
                     continue
                 room.addItem(src.items.itemMap["Scrap"](amount=1),inputSlot[0])
 
@@ -8591,7 +8591,7 @@ class Tutorial(BasicPhase):
         numProducts = 0
         while (
             len(self.helper_getFilteredProducables()) not in (1,)
-            or not numProducts == 3
+            or numProducts != 3
         ):
             seed += seed % 42
             src.gamestate.gamestate.terrain.removeRoom(self.miniBase)
@@ -8939,7 +8939,7 @@ class Tutorial(BasicPhase):
             for x in range(0,10):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             """
-            if not self.fastProductionStart == 0:
+            if self.fastProductionStart != 0:
                 if src.gamestate.gamestate.tick - self.fastProductionStart > 100:
                     showText("it took you %s ticks to complete the order.")
                 else:
@@ -9148,7 +9148,7 @@ class Testing_1(BasicPhase):
         numProducts = 0
         while (
             len(self.helper_getFilteredProducables()) not in (1,)
-            or not numProducts == 3
+            or numProducts != 3
         ):
             seed += seed % 42
             src.gamestate.gamestate.terrain.removeRoom(self.miniBase)
@@ -9496,7 +9496,7 @@ class Testing_1(BasicPhase):
             for x in range(0,10):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             """
-            if not self.fastProductionStart == 0:
+            if self.fastProductionStart != 0:
                 if src.gamestate.gamestate.tick - self.fastProductionStart > 100:
                     showText("it took you %s ticks to complete the order.")
                 else:

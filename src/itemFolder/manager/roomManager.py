@@ -983,7 +983,7 @@ class RoomManager(src.items.Item):
 
         if (
             task["ItemType"] not in self.itemPositions
-            and not task["ItemType"] == "CityBuilder"
+            and task["ItemType"] != "CityBuilder"
         ):
             jobOrder.error = {
                 "message": "tried to relay task, but item %s was not found"

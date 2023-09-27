@@ -250,19 +250,19 @@ class CommandBloom(src.items.Item):
 
                     if not foundItem:
                         directions = []
-                        if not self.xPosition // 15 == 0:
+                        if self.xPosition // 15 != 0:
                             directions.append("a")
                             if self.xPosition // 15 > 7:
                                 directions.append("a")
-                        if not self.xPosition // 15 == 14:
+                        if self.xPosition // 15 != 14:
                             directions.append("d")
                             if self.xPosition // 15 < 7:
                                 directions.append("d")
-                        if not self.yPosition // 15 == 0:
+                        if self.yPosition // 15 != 0:
                             directions.append("w")
                             if self.yPosition // 15 > 7:
                                 directions.append("w")
-                        if not self.yPosition // 15 == 14:
+                        if self.yPosition // 15 != 14:
                             directions.append("s")
                             if self.yPosition // 15 > 7:
                                 directions.append("s")
@@ -289,19 +289,19 @@ class CommandBloom(src.items.Item):
                         command = self.masterCommand
                     else:
                         directions = []
-                        if not self.xPosition // 15 == 0:
+                        if self.xPosition // 15 != 0:
                             directions.append("a")
                             if self.xPosition // 15 > 7:
                                 directions.append("a")
-                        if not self.xPosition // 15 == 14:
+                        if self.xPosition // 15 != 14:
                             directions.append("d")
                             if self.xPosition // 15 < 7:
                                 directions.append("d")
-                        if not self.yPosition // 15 == 0:
+                        if self.yPosition // 15 != 0:
                             directions.append("w")
                             if self.yPosition // 15 > 7:
                                 directions.append("w")
-                        if not self.yPosition // 15 == 14:
+                        if self.yPosition // 15 != 14:
                             directions.append("s")
                             if self.yPosition // 15 > 7:
                                 directions.append("s")
@@ -313,7 +313,7 @@ class CommandBloom(src.items.Item):
                 and self.expectedNext > src.gamestate.gamestate.tick
                 and not self.cluttered
             ):
-                if self.masterCommand and not random.randint(1, 3) == 1:
+                if self.masterCommand and random.randint(1, 3) != 1:
                     command = self.masterCommand
                 else:
                     command = 13 * random.choice(["w", "a", "s", "d"]) + "9kkj"
@@ -408,7 +408,7 @@ class CommandBloom(src.items.Item):
                             continue
                         if (
                             not bloomsSkipped > 1
-                            and (not pos[0] % 15 == 7 and not pos[1] % 15 == 7)
+                            and (pos[0] % 15 != 7 and pos[1] % 15 != 7)
                             and items[0].type == "Bloom"
                             and self.masterCommand
                             and self.charges > 5
@@ -417,7 +417,7 @@ class CommandBloom(src.items.Item):
                             continue
                         if (
                             not bloomsSkipped > 1
-                            and (not pos[0] % 15 == 7 and not pos[1] % 15 == 7)
+                            and (pos[0] % 15 != 7 and pos[1] % 15 != 7)
                             and items[0].type == "SickBloom"
                             and self.masterCommand
                             and self.numSick > 4
@@ -716,7 +716,7 @@ class CommandBloom(src.items.Item):
                 new = CommandBloom()
 
                 directions = []
-                if not self.xPosition // 15 == 0:
+                if self.xPosition // 15 != 0:
                     directions.append("a")
                     if self.xPosition // 15 > 7:
                         directions.append("a")
@@ -724,7 +724,7 @@ class CommandBloom(src.items.Item):
                             directions.append("a")
                             directions.append("a")
                             directions.append("a")
-                if not self.xPosition // 15 == 14:
+                if self.xPosition // 15 != 14:
                     directions.append("d")
                     if self.xPosition // 15 < 7:
                         directions.append("d")
@@ -732,7 +732,7 @@ class CommandBloom(src.items.Item):
                             directions.append("d")
                             directions.append("d")
                             directions.append("d")
-                if not self.yPosition // 15 == 0:
+                if self.yPosition // 15 != 0:
                     directions.append("w")
                     if self.yPosition // 15 > 7:
                         directions.append("w")
@@ -740,7 +740,7 @@ class CommandBloom(src.items.Item):
                             directions.append("w")
                             directions.append("w")
                             directions.append("w")
-                if not self.yPosition // 15 == 14:
+                if self.yPosition // 15 != 14:
                     directions.append("s")
                     if self.yPosition // 15 > 7:
                         directions.append("s")

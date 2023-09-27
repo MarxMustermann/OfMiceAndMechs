@@ -118,7 +118,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
     # bad code: this code doesn't actually do anything
     # bug: this code should select whether or not the path is looped
     circlePath = True
-    if startY > 11 and not startX == endX:
+    if startY > 11 and startX != endX:
         circlePath = True
     elif startY < 11:
         circlePath = True
@@ -270,7 +270,7 @@ def calculatePathRaw(startX, startY, endX, endY, walkingPath):
     diffY = startY - endY
 
     # walk the distance vector
-    while (not diffX == 0) or (not diffY == 0):
+    while (diffX != 0) or (diffY != 0):
         if diffX < 0:
             startX += 1
             diffX += 1

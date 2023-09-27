@@ -19,10 +19,10 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
             self.fail()
             return
 
-        if not character.getTerrain() == character.superior.getTerrain():
+        if character.getTerrain() != character.superior.getTerrain():
             return
 
-        if not self.lastSuperiorPos == self.getSuperiorsTileCoordinate(character):
+        if self.lastSuperiorPos != self.getSuperiorsTileCoordinate(character):
             self.clearSubQuests()
 
     def getQuestMarkersTile(self,character):
@@ -52,7 +52,7 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
         if self.subQuests:
             return super().solver(character)
 
-        if not character.getTerrain() == character.superior.getTerrain():
+        if character.getTerrain() != character.superior.getTerrain():
             targetTerrain = character.superior.getTerrain()
             if not targetTerrain:
                 character.timeTaken += 0.5

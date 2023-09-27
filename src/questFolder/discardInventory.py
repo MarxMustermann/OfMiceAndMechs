@@ -59,7 +59,7 @@ To see your items open the your inventory by pressing i."""
             return
 
         if not character.inventory:
-            if self.returnToTile and not character.getBigPosition() == self.tileToReturnTo:
+            if self.returnToTile and character.getBigPosition() != self.tileToReturnTo:
                 return
             self.postHandler()
             return
@@ -130,7 +130,7 @@ To see your items open the your inventory by pressing i."""
                     return ([quest],None)
                 return (None,("l","drop item"))
 
-            if self.returnToTile and not character.getBigPosition() == self.returnToTile:
+            if self.returnToTile and character.getBigPosition() != self.returnToTile:
                 quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="return to the tile this quest started on")
                 return ([quest],None)
 

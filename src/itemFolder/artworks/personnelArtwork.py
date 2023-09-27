@@ -293,9 +293,9 @@ Use the complex interaction to recharge the personel artwork
     def configure(self,character):
         foundFlasks = []
         for item in character.inventory:
-            if not item.type == "GooFlask":
+            if item.type != "GooFlask":
                 continue
-            if not item.uses == 100:
+            if item.uses != 100:
                 continue
             foundFlasks.append(item)
 

@@ -141,7 +141,7 @@ You can select the routes and run the stored route.
                 counter = 2
             else:
                 counter = 1
-                while not self.macroBackup[-counter] == "i":
+                while self.macroBackup[-counter] != "i":
                     counter += 1
             if node:
                 recordingEnd = node

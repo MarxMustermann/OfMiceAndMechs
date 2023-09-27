@@ -66,7 +66,7 @@ Remove all items from the walkways."""
 
         if not self.subQuests:
             if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:
-                if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
+                if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
                     quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                     self.addQuest(quest)
                     return
@@ -113,7 +113,7 @@ Remove all items from the walkways."""
                     character.runCommandString("d")
                     return
 
-            if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
+            if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 return

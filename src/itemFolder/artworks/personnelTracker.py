@@ -36,13 +36,13 @@ class PersonnelTracker(src.items.Item):
 
         terrain = self.getTerrain()
         for character in terrain.characters:
-            if not character.faction == self.faction:
+            if character.faction != self.faction:
                 continue
             personnel.append(character)
 
         for room in terrain.rooms:
             for character in room.characters:
-                if not character.faction == self.faction:
+                if character.faction != self.faction:
                     continue
                 personnel.append(character)
 
@@ -253,9 +253,9 @@ class PersonnelTracker(src.items.Item):
     def configure(self,character):
         foundFlasks = []
         for item in character.inventory:
-            if not item.type == "GooFlask":
+            if item.type != "GooFlask":
                 continue
-            if not item.uses == 100:
+            if item.uses != 100:
                 continue
             foundFlasks.append(item)
 

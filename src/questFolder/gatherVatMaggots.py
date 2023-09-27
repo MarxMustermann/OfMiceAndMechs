@@ -50,7 +50,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
         if not character.getFreeInventorySpace() < 1:
             return
 
-        if not character.inventory[-1].type == "VatMaggot":
+        if character.inventory[-1].type != "VatMaggot":
             return
 
         self.postHandler()
@@ -63,7 +63,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             return super().solver(character)
 
         if character.getFreeInventorySpace() < 1:
-            if not character.inventory[-1].type == "VatMaggot":
+            if character.inventory[-1].type != "VatMaggot":
                 self.addQuest(src.quests.questMap["ClearInventory"]())
                 return
 

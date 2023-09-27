@@ -618,7 +618,7 @@ class ArchitectArtwork(src.items.Item):
                 #continue
 
             last = None
-            while not x == 7 or not y == 7:
+            while x != 7 or y != 7:
 
                 items = []
                 if x > 7:
@@ -631,13 +631,13 @@ class ArchitectArtwork(src.items.Item):
                     direction = "south"
 
                 # bug: does not work as intended
-                if (x-1,y) in pathSlots and not last == (x-1,y) and x > 7:
+                if (x-1,y) in pathSlots and last != (x - 1, y) and x > 7:
                     direction = "west"
-                if (x+1,y) in pathSlots and not last == (x+1,y) and x < 7:
+                if (x+1,y) in pathSlots and last != (x + 1, y) and x < 7:
                     direction = "east"
-                if (x,y-1) in pathSlots and not last == (x,y-1) and y > 7:
+                if (x,y-1) in pathSlots and last != (x, y - 1) and y > 7:
                     direction = "north"
-                if (x,y+1) in pathSlots and not last == (x,y+1) and y < 7:
+                if (x,y+1) in pathSlots and last != (x, y + 1) and y < 7:
                     direction = "south"
 
                 if x > 7 and (x-1,y) in roomSlots:
@@ -1107,7 +1107,7 @@ class ArchitectArtwork(src.items.Item):
                 for y in range(0, 15):
                     if x not in (0, 14) and y not in (0, 14):
                         char = "  "
-                    elif not x == 7 and not y == 7:
+                    elif x != 7 and y != 7:
                         char = "##"
                     else:
                         char = "  "
@@ -1307,10 +1307,10 @@ class ArchitectArtwork(src.items.Item):
             if (leavePath and (xPos%15 == 7 or yPos%15 == 7)):
                 continue
 
-            if not random.randint(1, 15) == 10:
+            if random.randint(1, 15) != 10:
                 itemPair = (src.items.itemMap["Scrap"](amount=random.randint(1, 20)), pos, )
             else:
-                if not random.randint(1, 10) == 2:
+                if random.randint(1, 10) != 2:
                     itemPair = (src.items.itemMap[random.choice(src.items.commons)](), pos, )
                 else:
                     itemPair = (src.items.itemMap[random.choice(src.items.semiCommons)](), pos, )
@@ -1318,7 +1318,7 @@ class ArchitectArtwork(src.items.Item):
                 item = itemPair[0]
                 item.bolted = False
                 if item.type == "Machine":
-                    if not random.randint(1, 10) == 2:
+                    if random.randint(1, 10) != 2:
                         item.setToProduce(random.choice(src.items.commons))
                     else:
                         item.setToProduce(random.choice(src.items.semiCommons))

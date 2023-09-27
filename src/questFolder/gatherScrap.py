@@ -65,7 +65,7 @@ Scrapfields are shown on the minimap as white ss"""]
         if not character.getFreeInventorySpace() < 1:
             return
 
-        if not character.inventory[-1].type == "Scrap":
+        if character.inventory[-1].type != "Scrap":
             return
 
         self.postHandler()
@@ -97,7 +97,7 @@ Scrapfields are shown on the minimap as white ss"""]
             return (None,None)
 
         if character.getFreeInventorySpace() < 1:
-            if not character.inventory[-1].type == "Scrap":
+            if character.inventory[-1].type != "Scrap":
                 quest = src.quests.questMap["ClearInventory"]()
                 return ([quest],None)
 

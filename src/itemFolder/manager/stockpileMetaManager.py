@@ -494,7 +494,7 @@ class StockpileMetaManager(src.items.Item):
         for stockPile in self.stockPiles:
             stockPileInfo = self.stockPileInfo[stockPile]
 
-            if not stockPileInfo["active"] == True:
+            if stockPileInfo["active"] != True:
                 continue
 
             if stockPileInfo.get("source") == True:

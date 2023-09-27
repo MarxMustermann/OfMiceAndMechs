@@ -110,7 +110,7 @@ class TradingArtwork(src.items.Item):
             rawMaterials = src.items.rawMaterialLookup.get(item)
 
             if not rawMaterials:
-                if not item == "MetalBars":
+                if item != "MetalBars":
                     rawMaterials = ["MetalBars"]
                 else:
                     rawMaterials = ["Scrap"]
@@ -120,7 +120,7 @@ class TradingArtwork(src.items.Item):
 
             recieve = [item, 1]
             if item == "Machine":
-                if not random.randint(1, 10) == 5:
+                if random.randint(1, 10) != 5:
                     recieve = [item, 1, random.choice(src.items.commons)]
                     # bad code: information about what can be produced in a machine should be stored and fetched
                     if recieve[2] == "MetalBars":
@@ -200,7 +200,7 @@ class TradingArtwork(src.items.Item):
                     itemsFound.append(item)
                     if len(itemsFound) == giveSpec[1]:
                         break
-            if not len(itemsFound) == giveSpec[1]:
+            if len(itemsFound) != giveSpec[1]:
                 character.addMessage(f"not enough {giveSpec[0]}")
                 return
             allItemsFound.extend(itemsFound)

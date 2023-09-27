@@ -146,7 +146,7 @@ class ScrapCompactor(src.items.Item):
             )
             self.runCommand("targetFull", character)
             color = "#740"
-            if not itemList[0].type == "MetalBars":
+            if itemList[0].type != "MetalBars":
                 color = "#f00"
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})

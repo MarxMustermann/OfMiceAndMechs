@@ -42,7 +42,7 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
             if not character.getBigPosition() in ((0,7,0),):
-                if not character.getSpacePosition() == (1,7,0):
+                if character.getSpacePosition() != (1, 7, 0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                     return ([quest],None)
 
@@ -88,7 +88,7 @@ I healed you again, just in case.
                     pos = (8,8,0)
                 if targetRoom.getPosition() == (6,7,0):
                     pos = (6,8,0)
-                if not character.getBigPosition() == pos:
+                if character.getBigPosition() != pos:
                     quest = src.quests.questMap["GoToTile"](targetPosition=pos)
                     return ([quest],None)
                 text = """
@@ -115,7 +115,7 @@ Collect the machines
                 machinesToSteal.append(item)
 
             if machinesToSteal:
-                if not character.container == targetRoom:
+                if character.container != targetRoom:
                     quest = src.quests.questMap["GoToTile"](targetPosition=targetRoom.getPosition())
                     return ([quest],None)
 
@@ -156,7 +156,7 @@ Now get out of there and bring the loot home.
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
             if not character.getBigPosition() in ((14,7,0),):
-                if not character.getSpacePosition() == (13,7,0):
+                if character.getSpacePosition() != (13, 7, 0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                     return ([quest],None)
             return (None,("d","to cheat yourself onto the neighbor terrain"))

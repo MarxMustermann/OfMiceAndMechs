@@ -145,7 +145,7 @@ Press d to move the cursor and show the subquests description.
                 self.addQuest(quest)
                 return
             cityPlaner = cityPlaner[0]
-            if not cityPlaner.type == "CityPlaner":
+            if cityPlaner.type != "CityPlaner":
                 quest = src.quests.questMap["DiscardInventory"](reason="be able to act again")
                 self.startWatching(quest,self.handleQuestFailure,"failed")
                 self.addQuest(quest)
@@ -295,7 +295,7 @@ Press d to move the cursor and show the subquests description.
             numFreeStorage = 0
             for room in terrain.rooms:
                 for storageSlot in room.storageSlots:
-                    if not storageSlot[1] == None:
+                    if storageSlot[1] != None:
                         continue
                     items = room.getItemByPosition(storageSlot[0])
                     if items:
@@ -631,7 +631,7 @@ Press d to move the cursor and show the subquests description.
                     while counter < len(buildSites):
                         buildSite = buildSites[counter]
                         counter += 1
-                        if not buildSite[1] == "Machine":
+                        if buildSite[1] != "Machine":
                             continue
 
                         if counter2 > 4:
@@ -701,7 +701,7 @@ Press d to move the cursor and show the subquests description.
                     if not firstMachine:
                         firstMachine = item
 
-                    if not item.container == firstMachine.container:
+                    if item.container != firstMachine.container:
                         continue
 
                     quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
@@ -716,7 +716,7 @@ Press d to move the cursor and show the subquests description.
                     if not firstMachine:
                         firstMachine = item
 
-                    if not item.container == firstMachine.container:
+                    if item.container != firstMachine.container:
                         continue
 
                     quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
@@ -829,7 +829,7 @@ Press d to move the cursor and show the subquests description.
                 if not firstMachine:
                     firstMachine = item
 
-                if not item.container == firstMachine.container:
+                if item.container != firstMachine.container:
                     continue
 
                 quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
@@ -849,7 +849,7 @@ Press d to move the cursor and show the subquests description.
                 while counter < len(buildSites):
                     buildSite = buildSites[counter]
                     counter += 1
-                    if not buildSite[1] == "Machine":
+                    if buildSite[1] != "Machine":
                         continue
 
                     if counter2 > 4:
@@ -1050,7 +1050,7 @@ Press d to move the cursor and show the subquests description.
                 if not firstMachine:
                     firstMachine = item
 
-                if not item.container == firstMachine.container:
+                if item.container != firstMachine.container:
                     continue
 
                 quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
@@ -1102,7 +1102,7 @@ Press d to move the cursor and show the subquests description.
                 if not firstMachine:
                     firstMachine = item
 
-                if not item.container == firstMachine.container:
+                if item.container != firstMachine.container:
                     continue
 
                 quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")
@@ -1117,7 +1117,7 @@ Press d to move the cursor and show the subquests description.
                 if not firstMachine:
                     firstMachine = item
 
-                if not item.container == firstMachine.container:
+                if item.container != firstMachine.container:
                     continue
 
                 quest = src.quests.questMap["OperateMachine"](targetPositionBig=item.container.getPosition(),targetPosition=item.getPosition(),reason="help with item production")

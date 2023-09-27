@@ -30,7 +30,7 @@ do some metal working
         if self.subQuests:
             return (None,None)
 
-        if not character.getBigPosition() == (7,7,0):
+        if character.getBigPosition() != (7, 7, 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")
             return ([quest],None)
 
@@ -116,7 +116,7 @@ do some metal working
             return
 
         self.amountDone += 1
-        if not self.amount == None:
+        if self.amount != None:
             if self.amountDone >= self.amount:
                 self.postHandler()
 

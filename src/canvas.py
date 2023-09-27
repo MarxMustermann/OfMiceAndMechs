@@ -573,7 +573,7 @@ class Canvas:
                             image = self.tileMapping.indexedMapping[char]
 
                             # scale image
-                            if not tileSize == 10:
+                            if tileSize != 10:
                                 image = pygame.transform.scale(
                                     image,
                                     (

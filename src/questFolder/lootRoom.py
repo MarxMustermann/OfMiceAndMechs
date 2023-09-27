@@ -41,7 +41,7 @@ Clear your inventory afterwards to complete the quest."""
                 quest.assignToCharacter(character)
                 quest.activate()
                 return
-            if not character.getBigPosition() == self.roomPos:
+            if character.getBigPosition() != self.roomPos:
                 if len(character.inventory) > 0:
                     quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                     self.addQuest(quest)

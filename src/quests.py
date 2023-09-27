@@ -729,7 +729,7 @@ class MetaQuestSequence(Quest):
             if not subQuest.active:
                 subQuest.activate()
                 return
-            if not (subQuest.character == self.character):
+            if subQuest.character != self.character:
                 subQuest.assignToCharacter(self.character)
                 return
 
@@ -833,7 +833,7 @@ class MetaQuestSequence(Quest):
             if not subQuest.active:
                 subQuest.activate()
                 return
-            if not (subQuest.character == character):
+            if subQuest.character != character:
                 subQuest.assignToCharacter(character)
                 return
             self.subQuests[0].solver(character)

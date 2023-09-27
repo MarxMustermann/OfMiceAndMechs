@@ -120,7 +120,7 @@ class TradingArtwork2(src.items.Item):
             rawMaterials = src.items.rawMaterialLookup.get(item)
 
             if not rawMaterials:
-                if not item == "MetalBars":
+                if item != "MetalBars":
                     rawMaterials = ["MetalBars"]
                 else:
                     rawMaterials = ["Scrap"]
@@ -130,7 +130,7 @@ class TradingArtwork2(src.items.Item):
 
             recieve = [item, 1]
             if item == "Machine":
-                if not random.randint(1, 10) == 5:
+                if random.randint(1, 10) != 5:
                     recieve = [item, 1, random.choice(src.items.commons)]
                     # bad code: information about what can be produced in a machine should be stored and fetched
                     if recieve[2] == "MetalBars":
@@ -231,7 +231,7 @@ class TradingArtwork2(src.items.Item):
                         if not inputSlot[0] in slotMap:
                             slotMap[inputSlot[0]] = []
 
-                        if not giveSpec[0] == "Scrap":
+                        if giveSpec[0] != "Scrap":
                             self.container.removeItem(item)
                             giveSpec[1] -= 1
                             slotMap[inputSlot[0]].append(item)
@@ -281,7 +281,7 @@ class TradingArtwork2(src.items.Item):
                 addedItem = False
 
                 for outputSlot in self.container.outputSlots:
-                    if not outputSlot[1] == itemSpec[0]:
+                    if outputSlot[1] != itemSpec[0]:
                         continue
                     items = self.container.getItemByPosition(outputSlot[0])
                     if items and items[-1].walkable == False:

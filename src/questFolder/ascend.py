@@ -46,7 +46,7 @@ class Ascend(src.quests.MetaQuestSequence):
                 self.fail("no throne")
             return (None,None)
 
-        if not character.container == room:
+        if character.container != room:
             quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the temple")
             return ([quest],None)
 

@@ -964,7 +964,7 @@ def doHandleMenu(key,char,charState,main,header,footer,urwid,flags):
         noRender = False
     done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
-    if not lastSubmenu == charState["submenue"]:
+    if lastSubmenu != charState["submenue"]:
         charState["submenue"].handleKey("~", noRender=noRender, character=char)
         done = False
 
@@ -1747,7 +1747,7 @@ type the macro that should be run in case the condition is false
                         if (
                             abs(character.xPosition - char.xPosition) < 20
                             and abs(character.yPosition - char.yPosition) < 20
-                            and not character.faction == char.faction
+                            and character.faction != char.faction
                         ):
                             conditionTrue = True
                             break
@@ -2309,7 +2309,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if enemy == char:
                     continue
                 if (
-                    not key == "M"
+                    key != "M"
                     and enemy.faction == char.faction
                 ):
                     continue
@@ -2807,7 +2807,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         lastSubmenu = charState["submenue"]
         done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
-        if not lastSubmenu == charState["submenue"] and charState["submenue"]:
+        if lastSubmenu != charState["submenue"] and charState["submenue"]:
             charState["submenue"].handleKey("~", noRender=noRender, character=char)
             done = False
 
@@ -3446,7 +3446,7 @@ class InstructSubordinatesMenu(SubMenu):
                 self.subMenu = None
                 self.npc.assignQuest(quest,active=True)
 
-                if not character.container == self.npc.container:
+                if character.container != self.npc.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=character.getBigPosition())
                     quest.autoSolve = True
                     self.subMenu = None
@@ -3645,7 +3645,7 @@ class InstructNPCMenu(SubMenu):
                 self.subMenu = None
                 self.npc.assignQuest(quest,active=True)
 
-                if not character.container == self.npc.container:
+                if character.container != self.npc.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=character.getBigPosition())
                     quest.autoSolve = True
                     self.subMenu = None
@@ -3738,7 +3738,7 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if char in src.gamestate.gamestate.mainChar.subordinates:
                         continue
-                    if not char.faction == src.gamestate.gamestate.mainChar.faction:
+                    if char.faction != src.gamestate.gamestate.mainChar.faction:
                         continue
                     if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
                         continue
@@ -3751,7 +3751,7 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if char in src.gamestate.gamestate.mainChar.subordinates:
                         continue
-                    if not char.faction == src.gamestate.gamestate.mainChar.faction:
+                    if char.faction != src.gamestate.gamestate.mainChar.faction:
                         continue
                     if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
                         continue
@@ -5546,7 +5546,7 @@ class StaffAsMatrixMenu(SubMenu):
         roomType = self.roomTypes[self.index[1]]
         roomCounter = 1
         for room in self.staffArtwork.container.container.rooms:
-            if not room.objType == roomType:
+            if room.objType != roomType:
                 continue
             if self.index[0] == 0 or self.index[0] == roomCounter:
                 out.append((room.getPosition(),"selected"))
@@ -5603,7 +5603,7 @@ class JobAsMatrixMenu(SubMenu):
         if key in ("j","k","l"):
             rowCounter = 0
             for npc in npcs:
-                if not npc.faction == character.faction:
+                if npc.faction != character.faction:
                     continue
                 if isinstance(npc,src.characters.Ghoul):
                     continue
@@ -5654,7 +5654,7 @@ class JobAsMatrixMenu(SubMenu):
 
         lineCounter = 0
         for npc in npcs:
-            if not npc.faction == character.faction:
+            if npc.faction != character.faction:
                 continue
             if isinstance(npc,src.characters.Ghoul):
                 continue
@@ -8357,7 +8357,7 @@ def showHeroIntro():
             mainRoom.walkingSpace.add((6,y,0))
 
         for y in (7,9,11):
-            if not y == 7:
+            if y != 7:
                 for x in range(7,12):
                     mainRoom.addStorageSlot((x,y,0),None)
             for x in range(1,6):
@@ -8679,7 +8679,7 @@ def showHeroIntro2():
 
         if stage in (6,7,):
             for y in (7,9,11):
-                if not y == 7:
+                if y != 7:
                     for x in range(7,12):
                         mainRoom.addStorageSlot((x,y,0),None)
                 for x in range(1,6):
@@ -9854,7 +9854,7 @@ to remember"""
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
-                    if not stage == 3:
+                    if stage != 3:
                         stage += 1
                         subStep = 0
                     else:
@@ -10157,7 +10157,7 @@ def advanceChar_disabled(char):
 
     if (
         len(cinematics.cinematicQueue)
-        and not char == src.gamestate.gamestate.mainChar
+        and char != src.gamestate.gamestate.mainChar
     ):
         return
 

@@ -138,19 +138,19 @@ class ReserveCityBuilder(src.items.Item):
             for (pos,info) in self.storageSlots.items():
                 if info["type"] == foundOther.type and info["amount"] < 15:
                     if foundOther.type == "Armor":
-                        if not (foundOther.armorValue == info["armorValue"]):
+                        if foundOther.armorValue != info["armorValue"]:
                             continue
                     if foundOther.type == "Vial":
-                        if not (bool(foundOther.uses) == info["hasCharges"]):
+                        if bool(foundOther.uses) != info["hasCharges"]:
                             continue
                     if foundOther.type == "GooFlask":
-                        if not (bool(foundOther.uses) == info["hasCharges"]):
+                        if bool(foundOther.uses) != info["hasCharges"]:
                             continue
                     if foundOther.type == "GooFlask":
-                        if not ((foundOther.uses == 100) == info["full"]):
+                        if (foundOther.uses == 100) != info["full"]:
                             continue
                     if foundOther.type == "Rod":
-                        if not (foundOther.baseDamage == info["baseDamage"]):
+                        if foundOther.baseDamage != info["baseDamage"]:
                             continue
                     target = pos
 
@@ -330,7 +330,7 @@ class ReserveCityBuilder(src.items.Item):
                         else:
                             self.nonUrgentClear.append((x,y,0))
 
-                    if not (x,y+1,0) == (5,5,0):
+                    if (x, y + 1, 0) != (5, 5, 0):
                         if not self.container.getItemByPosition((x,y+1,0)):
                             itemSlots.append((x,y+1,0))
                         else:
@@ -351,7 +351,7 @@ class ReserveCityBuilder(src.items.Item):
                         else:
                             self.nonUrgentClear.append((x,y,0))
 
-                    if not (x,y+1,0) == (7,5,0):
+                    if (x, y + 1, 0) != (7, 5, 0):
                         if not self.container.getItemByPosition((x,y+1,0)):
                             itemSlots.append((x,y+1,0))
                         else:
@@ -402,7 +402,7 @@ class ReserveCityBuilder(src.items.Item):
                                 if not (x,y+1,0) in self.usedItemSlots:
                                     self.urgentClear.append((x,y+1,0))
 
-                        if not (x,y-1,0) == (5,7,0):
+                        if (x, y - 1, 0) != (5, 7, 0):
                             if not self.container.getItemByPosition((x,y-1,0)):
                                 itemSlots.append((x,y-1,0))
                             else:
@@ -423,7 +423,7 @@ class ReserveCityBuilder(src.items.Item):
                                 if not (x,y+1,0) in self.usedItemSlots:
                                     self.urgentClear.append((x,y+1,0))
 
-                        if not (x,y-1,0) == (7,7,0):
+                        if (x, y - 1, 0) != (7, 7, 0):
                             if not self.container.getItemByPosition((x,y-1,0)):
                                 itemSlots.append((x,y-1,0))
                             else:

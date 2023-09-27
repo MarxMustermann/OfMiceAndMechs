@@ -70,7 +70,7 @@ This quest will end when the target tile has no items left."""
                 self.addQuest(quest)
                 return
 
-            if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
+            if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="go to target tile")
                 self.addQuest(quest)
                 return
@@ -93,7 +93,7 @@ This quest will end when the target tile has no items left."""
         for item in items:
             #if item.type == "Scrap":
             #    continue
-            if self.toCollect and not item.type == self.toCollect:
+            if self.toCollect and item.type != self.toCollect:
                 continue
             if item.bolted:
                 continue
@@ -129,7 +129,7 @@ This quest will end when the target tile has no items left."""
         if renderForTile:
             if character.getBigPosition() == self.targetPosition:
                 for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPosition,[]):
-                    if self.toCollect and not item.type == self.toCollect:
+                    if self.toCollect and item.type != self.toCollect:
                         continue
                     result.append((item.getPosition(),"target"))
 

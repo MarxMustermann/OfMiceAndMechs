@@ -295,7 +295,7 @@ r: reset
                 if self.storedItemType is None:
                     self.storedItemType = self.character.inventory[-1].type
                 else:
-                    if not self.storedItemType == self.character.inventory[-1].type:
+                    if self.storedItemType != self.character.inventory[-1].type:
                         self.character.addMessage("wrong item type")
                         self.runCommand("wrong")
                         self.runCommand("wrongType")
@@ -305,9 +305,7 @@ r: reset
                 if self.storedItemWalkable is None:
                     self.storedItemWalkable = self.character.inventory[-1].walkable
                 else:
-                    if not (
-                        self.storedItemWalkable == self.character.inventory[-1].walkable
-                    ):
+                    if self.storedItemWalkable != self.character.inventory[-1].walkable:
                         self.character.addMessage("wrong size")
                         self.runCommand("wrong")
                         self.runCommand("wrong size")

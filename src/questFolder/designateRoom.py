@@ -101,7 +101,7 @@ Use the CityPlaner to designate the room.
 
             correctIndex = 0
             while correctIndex < len(submenue.text) and correctIndex < len(self.roomTag):
-                if not submenue.text[correctIndex] == self.roomTag[correctIndex]:
+                if submenue.text[correctIndex] != self.roomTag[correctIndex]:
                     break
                 correctIndex += 1
 
@@ -119,7 +119,7 @@ Use the CityPlaner to designate the room.
 
         pos = character.getBigPosition()
 
-        if not pos == (7,7,0):
+        if pos != (7, 7, 0):
             quest = src.quests.questMap["GoHome"](description="go to command centre")
             return ([quest],None)
 

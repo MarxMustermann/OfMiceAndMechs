@@ -54,7 +54,7 @@ class HiveMind(src.items.Item):
         done = False
         selfDestroy = False
 
-        if not ((self.xPosition % 15, self.yPosition % 15) == (7, 7)):
+        if (self.xPosition % 15, self.yPosition % 15) != (7, 7):
             selfDestroy = True
 
         # get the path from the creature
@@ -273,9 +273,7 @@ class HiveMind(src.items.Item):
                 targetPos = random.choice([self.territory[0], [7, 7]])
                 while targetPos in self.territory:
                     targetPos = [random.randint(1, 12), random.randint(1, 12)]
-            elif random.randint(1, 2) and not (
-                (self.xPosition // 15, self.yPosition // 15) == (7, 7)
-            ):
+            elif random.randint(1, 2) and (self.xPosition // 15, self.yPosition // 15) != (7, 7):
                 targetPos = [7, 7]
                 anchor = (self.xPosition // 15, self.yPosition // 15)
             else:

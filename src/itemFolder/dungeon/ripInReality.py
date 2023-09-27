@@ -19,7 +19,7 @@ class RipInReality(src.items.Item):
         self.target = None
         self.targetPos = None
 
-        if not rootRip == None:
+        if rootRip != None:
             self.rootRip = rootRip
             self.treasureRoom = None
         else:
@@ -243,7 +243,7 @@ class RipInReality(src.items.Item):
                     wall.energy = self.depth * 2
                     newRoom.addItem(wall,newPos)
 
-                while not random.randint(1, 4) == 3:
+                while random.randint(1, 4) != 3:
                     if random.random() > 0.3:
                         if random.random() > 0.3:
                             spark = src.items.itemMap["StaticSpark"]()
@@ -277,7 +277,7 @@ class RipInReality(src.items.Item):
                     if sparkPos:
                         newRoom.addItem(spark,sparkPos)
 
-                    while not random.randint(1, self.depth + 1) == 1:
+                    while random.randint(1, self.depth + 1) != 1:
                         wall = src.items.itemMap["StaticWall"]()
                         wall.strength = self.depth + 2
                         newPos = (
@@ -294,7 +294,7 @@ class RipInReality(src.items.Item):
                 self.target = newRoom
                 self.targetPos = startPosition
 
-                while not random.randint(1, self.depth) == 1:
+                while random.randint(1, self.depth) != 1:
                     wall = src.items.itemMap["StaticWall"]()
                     wall.strength = self.depth + 2
                     newPos = (

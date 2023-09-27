@@ -60,7 +60,7 @@ class VialFiller(src.items.Item):
             for item in items:
                 if not item.bolted:
                     continue
-                if not item.type == "GooDispenser":
+                if item.type != "GooDispenser":
                     continue
                 fallBackItem = item
                 if not item.charges:

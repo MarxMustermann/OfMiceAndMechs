@@ -139,7 +139,7 @@ class CityBuilder2(src.items.Item):
 
             floorPlan["buildSites"].append(((x,11,0),"CorpseAnimator",{}))
 
-            if not x==1:
+            if x != 1:
                 command = 4*"Jwaawwdd"+"Jw"+"2a8s2d"+"j"
             else:
                 command = 4*"Jwddwwaa"+"Jw"+"2d8s2a"+"j"
@@ -778,7 +778,7 @@ class CityBuilder2(src.items.Item):
             for y in range(0, 15):
                 if x not in (0, 14) and y not in (0, 14):
                     char = "  "
-                elif not x == 7 and not y == 7:
+                elif x != 7 and y != 7:
                     char = "##"
                 else:
                     char = "  "

@@ -98,7 +98,7 @@ If you don't find a {self.itemType} blueprint, research it.
             if itemPlaced:
                 if itemPlaced.bolted:
                     return (None,None)
-                if not itemPlaced.container == character.container:
+                if itemPlaced.container != character.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine is to be placed")
                     return ([quest],None)
                 if character.getDistance(itemPlaced.getPosition()) > 1:
@@ -148,7 +148,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     self.targetPosition = targetPosition
                     self.targetPositionBig = room.getPosition()
 
-                if not character.getBigPosition() == self.targetPositionBig:
+                if character.getBigPosition() != self.targetPositionBig:
                     quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the Machine should be placed")
                     return ([quest],None)
 
@@ -176,7 +176,7 @@ If you don't find a {self.itemType} blueprint, research it.
                 for item in items:
                     if item.bolted:
                         continue
-                    if not item.toProduce == self.itemType:
+                    if item.toProduce != self.itemType:
                         continue
 
                     storedItem = False
@@ -223,7 +223,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to pick up a machine to place")
                     return ([quest],None)
 
-                if not character.getBigPosition() == (7,7,0):
+                if character.getBigPosition() != (7, 7, 0):
                     quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to the tile the Machine to pick up is on")
                     return ([quest],None)
 
@@ -243,7 +243,7 @@ If you don't find a {self.itemType} blueprint, research it.
 
 
             if self.itemType in machineMachine.endProducts:
-                if not character.container == machineMachine.container:
+                if character.container != machineMachine.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition(),reason="go to the tile the MachineMachine is on")
                     return ([quest],None)
                 if character.getDistance(machineMachine.getPosition()) > 1:
@@ -251,7 +251,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     return ([quest],None)
 
                 items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(-1,0,0)))
-                if not items or not items[-1].type == "MetalBars":
+                if not items or items[-1].type != "MetalBars":
                     quest = src.quests.questMap["PlaceItem"](targetPosition=machineMachine.getPosition(offset=(-1,0,0)),targetPositionBig=machineMachine.container.getPosition(),itemType="MetalBars",tryHard=self.tryHard,reason="supply the MachineMachine with MetalBars")
                     return ([quest], None)
 
@@ -294,7 +294,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     break
 
             if placedBlueprintFound:
-                if not character.container == machineMachine.container:
+                if character.container != machineMachine.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition(),reason="go to the tile the MachineMachine is on")
                     return ([quest],None)
                 if character.getDistance(machineMachine.getPosition()) > 1:
@@ -307,7 +307,7 @@ If you don't find a {self.itemType} blueprint, research it.
                         return (None,("J"+direction[1]+"j","load the blueprint"))
 
             if character.inventory and character.inventory[-1].type == "BluePrint" and character.inventory[-1].endProduct == self.itemType:
-                if not character.container == machineMachine.container:
+                if character.container != machineMachine.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=machineMachine.container.getPosition(),reason="go to the tile the MachineMachine is on")
                     return ([quest],None)
                 if character.getDistance(machineMachine.getPosition(offset=(0,-1,0))) > 1:
@@ -321,10 +321,10 @@ If you don't find a {self.itemType} blueprint, research it.
                 15/0
 
             if bluePrint:
-                if not character.container == bluePrint.container:
+                if character.container != bluePrint.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=bluePrint.container.getPosition(),reason="go to the tile the blueprint is on")
                     return ([quest],None)
-                if not character.getPosition() == bluePrint.getPosition():
+                if character.getPosition() != bluePrint.getPosition():
                     quest = src.quests.questMap["GoToPosition"](targetPosition=bluePrint.getPosition(),reason="go to the BluePrint")
                     return ([quest],None)
                 return (None,("k","pick up blueprint"))

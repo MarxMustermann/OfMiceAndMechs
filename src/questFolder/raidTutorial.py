@@ -37,7 +37,7 @@ class RaidTutorial(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
             if not character.getBigPosition() in ((0,7,0),):
-                if not character.getSpacePosition() == (1,7,0):
+                if character.getSpacePosition() != (1, 7, 0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                     return ([quest],None)
             if not self.shownCheatText:
@@ -77,7 +77,7 @@ I healed you again, just in case.
                 self.specialItemText = False
 
             if not self.specialItemText:
-                if not character.getBigPosition() == (6,8,0):
+                if character.getBigPosition() != (6, 8, 0):
                     quest = src.quests.questMap["GoToTile"](targetPosition=(6,8,0))
                     return ([quest],None)
                 text = """
@@ -104,7 +104,7 @@ So go home and prepare for a bigger raid.
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
             if not character.getBigPosition() in ((14,7,0),):
-                if not character.getSpacePosition() == (13,7,0):
+                if character.getSpacePosition() != (13, 7, 0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                     return ([quest],None)
             return (None,("d","to cheat yourself onto the neighbor terrain"))

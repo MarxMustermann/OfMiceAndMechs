@@ -35,7 +35,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
             if not character.getBigPosition() in ((0,7,0),):
-                if not character.getSpacePosition() == (1,7,0):
+                if character.getSpacePosition() != (1, 7, 0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                     return ([quest],None)
             return (None,("a","to cheat yourself onto the neighbor terrain"))
@@ -50,7 +50,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                     break
 
             if specialItemSlot:
-                if not character.container == specialItemSlot.container:
+                if character.container != specialItemSlot.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=specialItemSlot.container.getPosition())
                     return ([quest],None)
 
@@ -71,7 +71,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
                     break
 
             if specialItem:
-                if not character.container == specialItem.container:
+                if character.container != specialItem.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=specialItem.container.getPosition())
                     return ([quest],None)
 
@@ -99,7 +99,7 @@ Now return it to your base.
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
             if not character.getBigPosition() in ((14,7,0),):
-                if not character.getSpacePosition() == (13,7,0):
+                if character.getSpacePosition() != (13, 7, 0):
                     quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                     return ([quest],None)
             return (None,("d","to cheat yourself onto the neighbor terrain"))
@@ -114,7 +114,7 @@ Now return it to your base.
                     break
 
             if specialItemSlot:
-                if not character.container == specialItemSlot.container:
+                if character.container != specialItemSlot.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=specialItemSlot.container.getPosition())
                     return ([quest],None)
 

@@ -50,7 +50,7 @@ Place the items in the correct input or storage stockpile.
         if not character:
             return
 
-        if self.targetPositionBig and not character.getBigPosition() == self.targetPositionBig:
+        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             return
 
         if isinstance(character.container,src.rooms.Room):
@@ -64,7 +64,7 @@ Place the items in the correct input or storage stockpile.
 
             for slot in inputSlots:
                 if self.targetPosition:
-                    if not self.targetPosition == slot[0]:
+                    if self.targetPosition != slot[0]:
                         continue
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     if len(slot[0]) < 3:
@@ -94,7 +94,7 @@ Place the items in the correct input or storage stockpile.
     def getNumDrops(self,character):
         numDrops = 0
         for item in reversed(character.inventory):
-            if not item.type == self.toRestock:
+            if item.type != self.toRestock:
                 break
             numDrops += 1
         return numDrops
@@ -119,7 +119,7 @@ Place the items in the correct input or storage stockpile.
         if self.subQuests:
             return (None,None)
 
-        if self.targetPositionBig and not character.getBigPosition() == self.targetPositionBig:
+        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig)
             return ([quest],None)
 
@@ -139,7 +139,7 @@ Place the items in the correct input or storage stockpile.
             if self.targetPosition:
                 newInputs = []
                 for slot in inputSlots:
-                    if not self.targetPosition == slot[0]:
+                    if self.targetPosition != slot[0]:
                         continue
                     newInputs.append(slot)
                 inputSlots = newInputs
@@ -155,7 +155,7 @@ Place the items in the correct input or storage stockpile.
 
             if character.inventory and foundDirectDrop:
                 dropContent = room.getItemByPosition(foundDirectDrop[0])
-                if not dropContent or not dropContent[0].type == "Scrap":
+                if not dropContent or dropContent[0].type != "Scrap":
                     maxSpace = foundDirectDrop[2][2].get("maxAmount")
                     if not maxSpace:
                         maxSpace = 25

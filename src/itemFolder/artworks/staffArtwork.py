@@ -49,7 +49,7 @@ class StaffArtwork(src.items.Item):
             for y in range(0, 15):
                 if x not in (0, 14) and y not in (0, 14):
                     char = "  "
-                elif not x == 7 and not y == 7:
+                elif x != 7 and y != 7:
                     char = "##"
                 else:
                     char = "  "
@@ -129,7 +129,7 @@ class StaffArtwork(src.items.Item):
     def fetchCityleader(self):
         personnelArtwork = None
         for item in self.container.itemsOnFloor:
-            if not item.type == "PersonnelArtwork":
+            if item.type != "PersonnelArtwork":
                 continue
             personnelArtwork = item
 

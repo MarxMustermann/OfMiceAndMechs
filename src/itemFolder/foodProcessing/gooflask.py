@@ -35,7 +35,7 @@ class GooFlask(src.items.Item):
                 character.addMessage("you drink from your flask, but it is empty")
             return
 
-        if character.flask and not character.flask == self:
+        if character.flask and character.flask != self:
             amount = min(character.flask.maxUses-character.flask.uses,self.uses)
             character.flask.uses += amount
             self.uses -= amount
@@ -44,7 +44,7 @@ class GooFlask(src.items.Item):
 
         # print feedback
         if character.watched:
-            if not self.uses == 1:
+            if self.uses != 1:
                 character.addMessage("you drink from your flask")
             else:
                 character.addMessage("you drink from your flask and empty it")

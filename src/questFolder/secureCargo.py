@@ -60,7 +60,7 @@ Clear your inventory afterwards to complete this quest.
             if not targetRooms:
                 return
             targetRoom = targetRooms[0]
-            if not character.container == targetRoom:
+            if character.container != targetRoom:
                 quest = src.quests.questMap["SecureTile"](toSecure=targetRoom.getPosition(),endWhenCleared=True)
                 self.addQuest(quest)
                 quest.assignToCharacter(character)

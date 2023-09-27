@@ -87,7 +87,7 @@ Try as hard as you can to achieve this.
             foundOffset = None
             for offset in offsets:
                 items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-                if not items or not items[0].type == "Painter":
+                if not items or items[0].type != "Painter":
                     continue
 
                 foundOffset = (offset,items[0])
@@ -97,19 +97,19 @@ Try as hard as you can to achieve this.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
                     return ([quest],None)
 
-                if not item.paintMode == "walkingSpace":
+                if item.paintMode != "walkingSpace":
                     return (None,(["c","m","w","enter"],"to configure the painter to walking space"))
-                if not (item.offset == (0,0,0)):
+                if item.offset != (0, 0, 0):
                     return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
                 return (None,("jk","draw the walkingspace"))
 
             if not self.painterPos:
-                if not character.inventory or not character.inventory[-1].type == "Painter":
+                if not character.inventory or character.inventory[-1].type != "Painter":
                     quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                     return ([quest],None)
                 painter = character.inventory[-1]
 
-            if not character.getBigPosition() == self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
                 return ([quest],None)
 

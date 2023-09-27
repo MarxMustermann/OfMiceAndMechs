@@ -271,7 +271,7 @@ class Character:
         for otherChar in characters:
             if otherChar == self:
                 continue
-            if not otherChar.faction == self.faction:
+            if otherChar.faction != self.faction:
                 enemiesFound.append(otherChar)
 
         if enemiesFound:
@@ -363,7 +363,7 @@ class Character:
                 continue
             if character.faction == self.faction:
                 continue
-            if not character.xPosition//15 == self.xPosition//15 or not character.yPosition//15 == self.yPosition//15:
+            if character.xPosition // 15 != self.xPosition // 15 or character.yPosition // 15 != self.yPosition // 15:
                 continue
 
             foundEnemy = character
@@ -461,9 +461,9 @@ class Character:
         for character in self.container.characters:
             if character == self:
                 continue
-            if not character.xPosition//15 == self.xPosition//15:
+            if character.xPosition // 15 != self.xPosition // 15:
                 continue
-            if not character.yPosition//15 == self.yPosition//15:
+            if character.yPosition // 15 != self.yPosition // 15:
                 continue
             if character.faction == self.faction:
                 continue
@@ -619,7 +619,7 @@ class Character:
 
         foundItems = []
         for item in self.inventory:
-            if not item.type == itemType:
+            if item.type != itemType:
                 continue
 
             if extra.get("uses") and not item.uses >= extra.get("uses"):
@@ -1127,7 +1127,7 @@ press any other key to attack normally"""
             other: the other character
         """
 
-        if not other.faction == self.faction:
+        if other.faction != self.faction:
             if self.personality.get("attacksEnemiesOnContact"):
                 if actor == self:
                     self.attack(other)
@@ -1614,7 +1614,7 @@ press any other key to attack normally"""
 
         # move along the predetermined path
         currentPosition = (self.xPosition, self.yPosition)
-        if not (self.path and not self.path == [currentPosition]):
+        if not (self.path and self.path != [currentPosition]):
             return True
 
         # get next step
@@ -1763,7 +1763,7 @@ press any other key to attack normally"""
         # smooth over impossible state
         else:
             if not src.interaction.debug:
-                if not self.path or not nextPosition == self.path[0]:
+                if not self.path or nextPosition != self.path[0]:
                     return False
 
             # remove last step from path
@@ -2150,7 +2150,7 @@ press any other key to attack normally"""
                     continue
                 if character.faction == self.faction:
                     continue
-                if not character.xPosition//15 == self.xPosition//15 or not character.yPosition//15 == self.yPosition//15:
+                if character.xPosition // 15 != self.xPosition // 15 or character.yPosition // 15 != self.yPosition // 15:
                     continue
 
                 if abs(character.xPosition-self.xPosition) < 2 and abs(character.yPosition-self.yPosition) < 2 and ( abs(character.xPosition-self.xPosition) == 0 or abs(character.yPosition-self.yPosition) == 0):
@@ -2172,13 +2172,13 @@ press any other key to attack normally"""
                 command = random.choice(commands)
         elif (
             self.frustration < 1000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # real idle
             command = waitString
             self.frustration -= 1
         elif (
             self.frustration < 4000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # do mainly harmless stuff
             command = random.choice(
                 [
@@ -2193,7 +2193,7 @@ press any other key to attack normally"""
             self.frustration -= 10
         elif (
             self.frustration < 16000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # do not so harmless stuff
             command = random.choice(
                 [
@@ -2216,7 +2216,7 @@ press any other key to attack normally"""
             self.frustration -= 100
         elif (
             self.frustration < 64000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # bad stuff
             command = random.choice(
                 [
@@ -2523,7 +2523,7 @@ class Monster(Character):
         if len(self.inventory) == 10:
             fail = False
             for item in self.inventory:
-                if not item.type == "Corpse":
+                if item.type != "Corpse":
                     fail = True
             if not fail:
                 self.addMessage("do action")
@@ -3062,7 +3062,7 @@ class Maggot(Character):
     def advance(self,advanceMacros=False):
         if self.timeTaken > 1:
             return
-        if not src.gamestate.gamestate.tick%2 == 0:
+        if src.gamestate.gamestate.tick % 2 != 0:
             return
 
         self.satiation -= 1
@@ -3074,7 +3074,7 @@ class Maggot(Character):
         characters = terrain.charactersByTile.get(self.getBigPosition(),[])
         directions = []
         for character in characters:
-            if not character == self:
+            if character != self:
                 if character.xPosition < self.xPosition:
                     directions.append("a")
                     directions.append("a")

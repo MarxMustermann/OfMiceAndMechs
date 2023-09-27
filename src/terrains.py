@@ -129,7 +129,7 @@ class Terrain:
         return (self.xPosition,self.yPosition,0)
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
-        if not self == src.gamestate.gamestate.mainChar.getTerrain():
+        if self != src.gamestate.gamestate.mainChar.getTerrain():
             return
         if src.interaction.noFlicker:
             return
@@ -138,7 +138,7 @@ class Terrain:
     def getRoomsByTag(self,tag):
         result = []
         for room in self.rooms:
-            if not room.tag == tag:
+            if room.tag != tag:
                 continue
             result.append(room)
         return result
@@ -359,7 +359,7 @@ class Terrain:
             info: additional information
         """
 
-        if not tag == "default":
+        if tag != "default":
             if tag not in self.listeners:
                 return
 
@@ -748,7 +748,7 @@ class Terrain:
                 if other == char:
                     continue
 
-                if not destCoord == other.getPosition():
+                if destCoord != other.getPosition():
                     continue
 
                 if char.faction == "player" and other.faction == "player":
@@ -988,13 +988,13 @@ class Terrain:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not costMap.get(newPos) == None:
+                if costMap.get(newPos) != None:
                     continue
 
-                if not newPos == targetPos and newPos in self.scrapFields:
+                if newPos != targetPos and newPos in self.scrapFields:
                     continue
                 items = self.getItemByPosition((newPos[0]*15+7,newPos[1]*15+7,0))
-                if not newPos == targetPos and items and items[0].type == "RoomBuilder":
+                if newPos != targetPos and items and items[0].type == "RoomBuilder":
                     continue
 
                 passable = False
@@ -1272,16 +1272,16 @@ class Terrain:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not costMap.get(newPos) == None:
+                if costMap.get(newPos) != None:
                     continue
 
                 if newPos in blockedPositions:
-                    if (not ignoreEndBlocked or not newPos == targetPos):
+                    if (not ignoreEndBlocked or newPos != targetPos):
                         continue
 
                 if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15),character):
                     blockedPositions.add(newPos)
-                    if (not ignoreEndBlocked or not newPos == targetPos):
+                    if (not ignoreEndBlocked or newPos != targetPos):
                         continue
 
                 if not tryHard:
@@ -1554,7 +1554,7 @@ class Terrain:
                continue
             if otherChar.dead:
                continue
-            if not pos == otherChar.getBigPosition():
+            if pos != otherChar.getBigPosition():
                continue
             out.append(otherChar)
 
@@ -1566,7 +1566,7 @@ class Terrain:
                    continue
                 if otherChar.dead:
                    continue
-                if not pos == otherChar.getBigPosition():
+                if pos != otherChar.getBigPosition():
                    continue
                 out.append(otherChar)
 
@@ -1704,7 +1704,7 @@ class Terrain:
 
                     if not (item.yPosition and item.xPosition):
                         continue
-                    if not (item.zPosition == src.gamestate.gamestate.mainChar.zPosition):
+                    if item.zPosition != src.gamestate.gamestate.mainChar.zPosition:
                         continue
 
                     try:
@@ -1989,7 +1989,7 @@ class Terrain:
             pass
 
         for subordinate in src.gamestate.gamestate.mainChar.subordinates:
-            if not subordinate.getTerrain() == self:
+            if subordinate.getTerrain() != self:
                 continue
             displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@s")
             pos = subordinate.getBigPosition()
@@ -2356,7 +2356,7 @@ class Terrain:
 
         import random
 
-        while not start == end:
+        while start != end:
             pivot = (start + end) // 2
             compareEvent = self.events[pivot]
             if compareEvent.tick < event.tick:
@@ -2543,7 +2543,7 @@ _____________"""
                             continue
                         if key[0] % 15 in (0, 14) or key[1] % 15 in (0, 14):
                             continue
-                        if not counter % (5 * 3) == 0:
+                        if counter % (5 * 3) != 0:
                             l1types = [
                                 src.items.itemMap["Sheet"],
                                 src.items.itemMap["Rod"],

@@ -847,10 +847,7 @@ class Character:
 
     def getIsHome(self):
         charPos = self.getBigPosition()
-        if (self.registers.get("HOMEx"),self.registers.get("HOMEy"),0) == charPos:
-            return True
-        else:
-            return False
+        return (self.registers.get("HOMEx"), self.registers.get("HOMEy"), 0) == charPos
 
     def selectSpecialAttack(self,target):
 

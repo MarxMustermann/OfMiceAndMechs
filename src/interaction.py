@@ -3247,10 +3247,7 @@ class SelectionMenu(SubMenu):
             super().handleKey(key, noRender=noRender, character=character)
 
         # stop when done
-        if self.getSelection():
-            return True
-        else:
-            return False
+        return bool(self.getSelection())
 
 class setNPCDutiesMenu(SubMenu):
     def __init__(self,npc=None):

@@ -2169,9 +2169,8 @@ select what you want to observe
     char.interactionState["enumerateState"].append({"type": None})
 
 def doResetQuit(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
-    saveFile = open("gamestate/gamestate.json", "w")
-    saveFile.write("reset")
-    saveFile.close()
+    with open("gamestate/gamestate.json", "w") as saveFile:
+        saveFile.write("reset")
     raise urwid.ExitMainLoop()
 
 def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):

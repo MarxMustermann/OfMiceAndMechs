@@ -165,13 +165,8 @@ class GameState:
         except:
             pass
 
-        file = open(f"gamestate/gamestate_{self.gameIndex}", 'wb')
-
-        # dump information to that file
-        pickle.dump(self, file)
-
-        # close the file
-        file.close()
+        with open(f"gamestate/gamestate_{self.gameIndex}", 'wb') as file:
+            pickle.dump(self, file)
 
         try:
             # register the save
@@ -209,12 +204,8 @@ class GameState:
 
 
         import pickle
-        file = open(f"gamestate/gamestate_{gameIndex}", 'rb')
-        # dump information to that file
-        newSelf = pickle.load(file)
-
-        # close the file
-        file.close()
+        with open(f"gamestate/gamestate_{gameIndex}", 'rb') as file:
+            newSelf = pickle.load(file)
 
         return newSelf
 

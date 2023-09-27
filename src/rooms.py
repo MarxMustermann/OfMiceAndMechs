@@ -1776,7 +1776,6 @@ class Room:
         """
         dummy to prevent crashes
         """
-        pass
 
     def getDistance(self,position):
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])

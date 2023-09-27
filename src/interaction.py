@@ -7299,7 +7299,6 @@ def renderGameDisplay(renderChar=None):
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                             """
-                            pass
                         indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)

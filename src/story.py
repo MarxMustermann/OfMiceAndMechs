@@ -186,7 +186,6 @@ class BasicPhase:
         do nothing when done
         """
 
-        pass
 
     def callIndirect(self, callback, extraParams={}):
         """
@@ -334,7 +333,6 @@ class Challenge(BasicPhase):
         handle a player loose
         """
 
-        pass
 
 class OpenWorld(BasicPhase):
     """
@@ -4093,7 +4091,6 @@ try to remember how you got here ..."""
         for i in range(0,amountNPCs):
             npc = personnelArtwork.spawnIndependentClone(mainChar)
         """
-        pass
 
     def setUpDungeon(self,pos):
         #set up dungeons

@@ -55,7 +55,6 @@ class Chat(src.interaction.SubMenu):
             state: the state to set
         """
 
-        pass
 
 
 class OneTimeMessage(Chat):
@@ -1088,7 +1087,6 @@ class RoomDutyChat2(Chat):
             state: the state to set
         """
 
-        pass
 
     def handleKey(self, key, noRender=False):
         """

@@ -682,7 +682,6 @@ class Item:
             context: the context of the task
         """
 
-        pass
 
     def jobOrderRunCommand(self, task, context):
         character = context["character"]

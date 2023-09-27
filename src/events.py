@@ -52,7 +52,6 @@ class Event:
         """
         do nothing
         """
-        pass
 
 # bad code: almost identical to RunCallbackEvent
 class RunFunctionEvent(Event):

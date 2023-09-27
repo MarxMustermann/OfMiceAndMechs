@@ -426,7 +426,6 @@ class ArchitectArtwork(src.items.Item):
         show debug info or trigger a test function
         """
 
-        pass
 
     def addRemants(self,character):
         terrain = self.getTerrain()

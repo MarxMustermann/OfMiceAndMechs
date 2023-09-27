@@ -67,13 +67,12 @@ Clear your inventory afterwards to complete this quest.
                 quest.activate()
                 return
             item = self.getLoot(character)
-            if not item:
-                if len(character.inventory) > 0:
-                    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    return
+            if not item and len(character.inventory) > 0:
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                return
 
             self.addQuest(src.quests.questMap["RunCommand"](command="k", description="pick up loot"))
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to loot")

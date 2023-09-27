@@ -96,29 +96,27 @@ Scrapfields are shown on the minimap as white ss"""]
         if self.subQuests:
             return (None,None)
 
-        if character.getFreeInventorySpace() < 1:
-            if character.inventory[-1].type != "Scrap":
-                quest = src.quests.questMap["ClearInventory"]()
-                return ([quest],None)
+        if character.getFreeInventorySpace() < 1 and character.inventory[-1].type != "Scrap":
+            quest = src.quests.questMap["ClearInventory"]()
+            return ([quest],None)
 
         room = character.container
         if not isinstance(room,src.rooms.Room):
             directions = [(0,0,0),(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]
             for direction in directions:
                 items = character.container.getItemByPosition(character.getPosition(offset=direction))
-                if items:
-                    if items[0].type == "Scrap":
-                        command = "k"
-                        if direction == (1,0,0):
-                            command = "Kd"
-                        if direction == (-1,0,0):
-                            command = "Ka"
-                        if direction == (0,1,0):
-                            command = "Ks"
-                        if direction == (0,-1,0):
-                            command = "Kw"
+                if items and items[0].type == "Scrap":
+                    command = "k"
+                    if direction == (1,0,0):
+                        command = "Kd"
+                    if direction == (-1,0,0):
+                        command = "Ka"
+                    if direction == (0,1,0):
+                        command = "Ks"
+                    if direction == (0,-1,0):
+                        command = "Kw"
 
-                        return (None,(command*min(10-len(character.inventory),items[0].amount),"pick up scrap"))
+                    return (None,(command*min(10-len(character.inventory),items[0].amount),"pick up scrap"))
 
         foundScrap = None
         room = character.container
@@ -139,10 +137,9 @@ Scrapfields are shown on the minimap as white ss"""]
                         continue
 
                     items = character.container.getItemByPosition(newPos)
-                    if items:
-                        if items[0].type == "Scrap":
-                            foundScrap = (oldPos,newPos,direction)
-                            break
+                    if items and items[0].type == "Scrap":
+                        foundScrap = (oldPos,newPos,direction)
+                        break
 
                     if character.container.getPositionWalkable(newPos) and not newPos in pathMap:
                         toCheckFrom.append(newPos)

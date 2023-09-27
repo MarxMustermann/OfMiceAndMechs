@@ -75,18 +75,14 @@ class HiveMind(src.items.Item):
                 character.registers["PATHy"].pop(),
             )
 
-            if character.registers["CLUTTERED"].pop():
-                if pos not in self.cluttered:
-                    self.cluttered.append(pos)
-            if character.registers["BLOCKED"].pop():
-                if pos not in self.blocked:
-                    self.blocked.append(pos)
-            if character.registers["NUM SICK"].pop() < 4:
-                if pos not in self.needSick:
-                    self.needSick.append(pos)
-            if character.registers["NUM COAL"].pop() < 4:
-                if pos not in self.needCoal:
-                    self.needCoal.append(pos)
+            if character.registers["CLUTTERED"].pop() and pos not in self.cluttered:
+                self.cluttered.append(pos)
+            if character.registers["BLOCKED"].pop() and pos not in self.blocked:
+                self.blocked.append(pos)
+            if character.registers["NUM SICK"].pop() < 4 and pos not in self.needSick:
+                self.needSick.append(pos)
+            if character.registers["NUM COAL"].pop() < 4 and pos not in self.needCoal:
+                self.needCoal.append(pos)
 
             path.append(pos)
             if pos not in self.territory:

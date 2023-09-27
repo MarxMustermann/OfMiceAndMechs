@@ -74,22 +74,21 @@ Place the furnace next to a boiler to be able to heat up the boiler with this fu
                 # get the boilers affected
                 self.boilers = []
                 for boiler in self.container.itemsOnFloor:
-                    if isinstance(boiler, src.items.itemMap["Boiler"]):
-                        if (
-                            (
-                                boiler.xPosition
-                                in [
-                                    self.xPosition,
-                                    self.xPosition - 1,
-                                    self.xPosition + 1,
-                                ]
-                                and boiler.yPosition == self.yPosition
-                            )
-                            or boiler.yPosition
-                            in [self.yPosition - 1, self.yPosition + 1]
-                            and boiler.xPosition == self.xPosition
-                        ):
-                            self.boilers.append(boiler)
+                    if isinstance(boiler, src.items.itemMap["Boiler"]) and (
+                        (
+                            boiler.xPosition
+                            in [
+                                self.xPosition,
+                                self.xPosition - 1,
+                                self.xPosition + 1,
+                            ]
+                            and boiler.yPosition == self.yPosition
+                        )
+                        or boiler.yPosition
+                        in [self.yPosition - 1, self.yPosition + 1]
+                        and boiler.xPosition == self.xPosition
+                    ):
+                        self.boilers.append(boiler)
 
                 # heat up boilers
                 for boiler in self.boilers:

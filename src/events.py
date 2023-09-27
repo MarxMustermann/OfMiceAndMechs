@@ -241,22 +241,21 @@ class FurnaceBurnoutEvent(Event):
         self.furnace.boilers = []
         # for boiler in self.room.boilers:
         for boiler in self.furnace.room.itemsOnFloor:
-            if isinstance(boiler, src.items.Boiler):
-                if (
-                    (
-                        boiler.xPosition
-                        in [
-                            self.furnace.xPosition,
-                            self.furnace.xPosition - 1,
-                            self.furnace.xPosition + 1,
-                        ]
-                        and boiler.yPosition == self.furnace.yPosition
-                    )
-                    or boiler.yPosition
-                    in [self.furnace.yPosition - 1, self.furnace.yPosition + 1]
-                    and boiler.xPosition == self.furnace.xPosition
-                ):
-                    self.furnace.boilers.append(boiler)
+            if isinstance(boiler, src.items.Boiler) and (
+                (
+                    boiler.xPosition
+                    in [
+                        self.furnace.xPosition,
+                        self.furnace.xPosition - 1,
+                        self.furnace.xPosition + 1,
+                    ]
+                    and boiler.yPosition == self.furnace.yPosition
+                )
+                or boiler.yPosition
+                in [self.furnace.yPosition - 1, self.furnace.yPosition + 1]
+                and boiler.xPosition == self.furnace.xPosition
+            ):
+                self.furnace.boilers.append(boiler)
 
         # stop heating the boilers
         for boiler in self.furnace.boilers:

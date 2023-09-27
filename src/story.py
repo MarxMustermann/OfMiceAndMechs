@@ -856,9 +856,8 @@ the floorplan is available in basebuilder mode and main game now""")
                     for buildSite in floorPlan["buildSites"]:
                         if buildSite[0] == pos:
                             fillIn = False
-                if "walkingSpace" in floorPlan:
-                    if pos in floorPlan["walkingSpace"]:
-                        fillIn = False
+                if "walkingSpace" in floorPlan and pos in floorPlan["walkingSpace"]:
+                    fillIn = False
                 if fillIn:
                     floorPlan["walkingSpace"].add(pos)
 
@@ -1651,9 +1650,8 @@ class BackToTheRoots(BasicPhase):
 
                 for landmine in landmines:
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,3))
-                    if random.choice([True,False]):
-                        if landmine.getPosition()[0]:
-                            terrain.addItem(scrap,landmine.getPosition())
+                    if random.choice([True,False]) and landmine.getPosition()[0]:
+                        terrain.addItem(scrap,landmine.getPosition())
 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
@@ -5959,10 +5957,9 @@ try to remember how you got here ..."""
                     if currentTerrain.getItemByPosition((xPos,yPos,0)):
                         continue
 
-                    if self.difficulty != "easy":
-                        if placedMines:
-                            landmine = src.items.itemMap["LandMine"]()
-                            currentTerrain.addItem(landmine,(xPos,yPos,0))
+                    if self.difficulty != "easy" and placedMines:
+                        landmine = src.items.itemMap["LandMine"]()
+                        currentTerrain.addItem(landmine,(xPos,yPos,0))
 
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
                     currentTerrain.addItem(scrap,(xPos,yPos,0))
@@ -6585,12 +6582,10 @@ press enter to continue"""
         #    numMonsters = self.numRounds-8
         numMonsters = self.numRounds+remainingEnemyCounter
 
-        if self.difficulty == "easy":
-            if self.numRounds < 3:
-                numMonsters = 0
-        if self.difficulty == "medium":
-            if self.numRounds == 1:
-                numMonsters = 0
+        if self.difficulty == "easy" and self.numRounds < 3:
+            numMonsters = 0
+        if self.difficulty == "medium" and self.numRounds == 1:
+            numMonsters = 0
 
         for i in range(0,numMonsters):
             enemy = src.characters.Monster(6,6)
@@ -8601,12 +8596,11 @@ class Tutorial(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.product in desiredProducts
-                        and item.product not in itemsFound
-                    ):
-                        itemsFound.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.product in desiredProducts
+                    and item.product not in itemsFound
+                ):
+                    itemsFound.append(item.product)
 
             numProducts = len(itemsFound)
 
@@ -8657,25 +8651,24 @@ class Tutorial(BasicPhase):
 
         itemCount = 0
         for item in src.gamestate.gamestate.terrain.itemsOnFloor:
-            if isinstance(item, src.items.itemMap["Scrap"]):
-                if (
-                    (item.xPosition - 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition + 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition - 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition + 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                ):
-                    quest = src.quests.PickupQuestMeta(toPickup=item)
-                    if len(mainChar.inventory) < 9:
-                        method = "scrapTest1"
-                    else:
-                        method = "scrapTest2"
-                    quest.endTrigger = {"container": self, "method": method}
-                    self.mainChar.assignQuest(quest, active=True)
-                    break
+            if isinstance(item, src.items.itemMap["Scrap"]) and (
+                (item.xPosition - 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition + 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition - 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition + 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+            ):
+                quest = src.quests.PickupQuestMeta(toPickup=item)
+                if len(mainChar.inventory) < 9:
+                    method = "scrapTest1"
+                else:
+                    method = "scrapTest2"
+                quest.endTrigger = {"container": self, "method": method}
+                self.mainChar.assignQuest(quest, active=True)
+                break
 
         self.dupPrevention = False
 
@@ -8873,12 +8866,11 @@ class Tutorial(BasicPhase):
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.resource in producableStuff
-                        and item.product not in producableStuff
-                    ):
-                        producableStuff.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.resource in producableStuff
+                    and item.product not in producableStuff
+                ):
+                    producableStuff.append(item.product)
         return producableStuff
 
     def productionSection(self):
@@ -9158,12 +9150,11 @@ class Testing_1(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.product in desiredProducts
-                        and item.product not in itemsFound
-                    ):
-                        itemsFound.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.product in desiredProducts
+                    and item.product not in itemsFound
+                ):
+                    itemsFound.append(item.product)
 
             numProducts = len(itemsFound)
 
@@ -9214,25 +9205,24 @@ class Testing_1(BasicPhase):
 
         itemCount = 0
         for item in src.gamestate.gamestate.terrain.itemsOnFloor:
-            if isinstance(item, src.items.itemMap["Scrap"]):
-                if (
-                    (item.xPosition - 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition + 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition - 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition + 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                ):
-                    quest = src.quests.PickupQuestMeta(toPickup=item)
-                    if len(src.gamestate.gamestate.mainChar.inventory) < 9:
-                        method = "scrapTest1"
-                    else:
-                        method = "scrapTest2"
-                    quest.endTrigger = {"container": self, "method": method}
-                    self.mainChar.assignQuest(quest, active=True)
-                    break
+            if isinstance(item, src.items.itemMap["Scrap"]) and (
+                (item.xPosition - 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition + 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition - 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition + 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+            ):
+                quest = src.quests.PickupQuestMeta(toPickup=item)
+                if len(src.gamestate.gamestate.mainChar.inventory) < 9:
+                    method = "scrapTest1"
+                else:
+                    method = "scrapTest2"
+                quest.endTrigger = {"container": self, "method": method}
+                self.mainChar.assignQuest(quest, active=True)
+                break
 
         self.dupPrevention = False
 
@@ -9430,12 +9420,11 @@ class Testing_1(BasicPhase):
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.resource in producableStuff
-                        and item.product not in producableStuff
-                    ):
-                        producableStuff.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.resource in producableStuff
+                    and item.product not in producableStuff
+                ):
+                    producableStuff.append(item.product)
         return producableStuff
 
     def productionSection(self):

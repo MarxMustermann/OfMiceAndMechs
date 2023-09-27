@@ -62,10 +62,9 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
         if self.subQuests:
             return super().solver(character)
 
-        if character.getFreeInventorySpace() < 1:
-            if character.inventory[-1].type != "VatMaggot":
-                self.addQuest(src.quests.questMap["ClearInventory"]())
-                return
+        if character.getFreeInventorySpace() < 1 and character.inventory[-1].type != "VatMaggot":
+            self.addQuest(src.quests.questMap["ClearInventory"]())
+            return
 
         foundDirectPickup = None
         for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):

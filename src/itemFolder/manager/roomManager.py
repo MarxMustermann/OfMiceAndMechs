@@ -263,10 +263,9 @@ class RoomManager(src.items.Item):
             typeParameter = params["selection"]
             self.tasksType = "add item"
 
-        if params["tasksType"] == "add item":
-            if typeParameter not in src.items.itemMap:
-                character.addMessage("item not found")
-                return
+        if params["tasksType"] == "add item" and typeParameter not in src.items.itemMap:
+            character.addMessage("item not found")
+            return
 
         newTask = {
             "task": params["tasksType"],

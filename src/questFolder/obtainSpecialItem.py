@@ -53,11 +53,10 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
                 if item.getPosition() != character.getPosition():
                     return
                 return "k"
-            if isinstance(item,src.items.itemMap["SpecialItemSlot"]):
-                if item.itemID == self.itemId and item.hasItem:
-                    if item.getPosition() != character.getPosition():
-                        return
-                    return "j"
+            if isinstance(item,src.items.itemMap["SpecialItemSlot"]) and item.itemID == self.itemId and item.hasItem:
+                if item.getPosition() != character.getPosition():
+                    return
+                return "j"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character=None):

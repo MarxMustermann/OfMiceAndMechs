@@ -139,46 +139,45 @@ class ArchitectArtwork(src.items.Item):
             del jobOrder.information["pathFrom"]
             del jobOrder.information["pathTo"]
 
-        if task["type"] == "set source":
-            if "sourceCommand" in task:
-                newJobOrder = src.items.itemMap["JobOrder"]()
-                newJobOrder.taskName = "configure stockpile"
+        if task["type"] == "set source" and "sourceCommand" in task:
+            newJobOrder = src.items.itemMap["JobOrder"]()
+            newJobOrder.taskName = "configure stockpile"
 
-                storageCommand = (
-                    jobOrder.information["pathFrom"]
-                    + "Js.sjj"
-                    + jobOrder.information["pathTo"]
-                )
+            storageCommand = (
+                jobOrder.information["pathFrom"]
+                + "Js.sjj"
+                + jobOrder.information["pathTo"]
+            )
 
-                tasks = [
-                    {
-                        "task": "go to room manager",
-                        "command": self.commands["go to room manager"],
-                    },
-                    {
-                        "task": "go to stockPile",
-                        "command": jobOrder.information["pathTo"],
-                    },
-                    {"task": "insert job order", "command": "scj"},
-                    {
-                        "task": "configure machine",
-                        "command": None,
-                        "commands": {"empty": task["sourceCommand"]},
-                    },
-                    {
-                        "task": "return from stockPile",
-                        "command": jobOrder.information["pathFrom"],
-                    },
-                    {
-                        "task": "return from room manager",
-                        "command": self.commands["return from room manager"],
-                    },
-                ]
+            tasks = [
+                {
+                    "task": "go to room manager",
+                    "command": self.commands["go to room manager"],
+                },
+                {
+                    "task": "go to stockPile",
+                    "command": jobOrder.information["pathTo"],
+                },
+                {"task": "insert job order", "command": "scj"},
+                {
+                    "task": "configure machine",
+                    "command": None,
+                    "commands": {"empty": task["sourceCommand"]},
+                },
+                {
+                    "task": "return from stockPile",
+                    "command": jobOrder.information["pathFrom"],
+                },
+                {
+                    "task": "return from room manager",
+                    "command": self.commands["return from room manager"],
+                },
+            ]
 
-                newJobOrder.tasks = list(reversed(tasks))
-                context["character"].addJobOrder(newJobOrder)
-                del jobOrder.information["pathFrom"]
-                del jobOrder.information["pathTo"]
+            newJobOrder.tasks = list(reversed(tasks))
+            context["character"].addJobOrder(newJobOrder)
+            del jobOrder.information["pathFrom"]
+            del jobOrder.information["pathTo"]
 
     def jobOrderAddScrapField(self, task, character):
         """
@@ -390,11 +389,9 @@ class ArchitectArtwork(src.items.Item):
             context: the context for this task
         """
 
-        if context["jobOrder"].error:
-            if not context["jobOrder"].getTask():
-                if len(context["character"].jobOrders) > 1:
-                    jobOrder = context["character"].jobOrders[-2]
-                    jobOrder.error = context["jobOrder"].error
+        if context["jobOrder"].error and not context["jobOrder"].getTask() and len(context["character"].jobOrders) > 1:
+            jobOrder = context["character"].jobOrders[-2]
+            jobOrder.error = context["jobOrder"].error
 
     def apply(self, character):
         """
@@ -1391,18 +1388,16 @@ class ArchitectArtwork(src.items.Item):
                 self.character.macroState["submenue"].followUp = self.addRoom
                 return
 
-        if self.targetRoomType == "EmptyRoom":
+        if self.targetRoomType == "EmptyRoom" and not self.emptyRoomSizeY:
+            self.emptyRoomSizeX = int(self.submenue.text.split(",")[0])
+            self.emptyRoomSizeY = int(self.submenue.text.split(",")[1])
 
-            if not self.emptyRoomSizeY:
-                self.emptyRoomSizeX = int(self.submenue.text.split(",")[0])
-                self.emptyRoomSizeY = int(self.submenue.text.split(",")[1])
-
-                self.submenue = src.interaction.InputMenu(
-                    "enter the doors positions ( x,y x,y x,y )"
-                )
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.addRoom
-                return
+            self.submenue = src.interaction.InputMenu(
+                "enter the doors positions ( x,y x,y x,y )"
+            )
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.addRoom
+            return
 
         self.doAddRoom(
             {

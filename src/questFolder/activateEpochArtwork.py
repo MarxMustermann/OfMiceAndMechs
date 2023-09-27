@@ -95,9 +95,8 @@ Remember to press ctrl-d if you lose control over your character.
             if direction == "east":
                 return "D"
 
-        if not self.subQuests:
-            if character.getPosition() == (6,7,0):
-                return "Jw"
+        if not self.subQuests and character.getPosition() == (6,7,0):
+            return "Jw"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character,silent=False):

@@ -158,13 +158,11 @@ Press d to move the cursor and show the subquests description.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason:
-            if reason.startswith("no source for item "):
-                if "scrap hammering" in self.character.duties:
-                    newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True)
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    return
+        if reason and reason.startswith("no source for item ") and "scrap hammering" in self.character.duties:
+            newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
         self.fail(reason)
 
     def handleWorkedMetal(self, extraInfo):
@@ -177,9 +175,8 @@ Press d to move the cursor and show the subquests description.
             return
 
         self.amountDone += 1
-        if self.amount != None:
-            if self.amountDone >= self.amount:
-                self.postHandler()
+        if self.amount != None and self.amountDone >= self.amount:
+            self.postHandler()
 
     def handleInventoryFull(self, extraInfo):
         if self.completed:

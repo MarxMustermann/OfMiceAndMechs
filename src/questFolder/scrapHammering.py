@@ -93,13 +93,11 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason:
-            if reason.startswith("no source for item "):
-                if "resource gathering" in self.character.duties:
-                    newQuest = src.quests.questMap["GatherScrap"](reason="have some scrap to hammer")
-                    self.addQuest(newQuest)
-                    self.startWatching(quest,self.handleQuestFailure,"failed")
-                    return
+        if reason and reason.startswith("no source for item ") and "resource gathering" in self.character.duties:
+            newQuest = src.quests.questMap["GatherScrap"](reason="have some scrap to hammer")
+            self.addQuest(newQuest)
+            self.startWatching(quest,self.handleQuestFailure,"failed")
+            return
         self.fail(reason)
 
 
@@ -123,9 +121,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             return
 
         self.amountDone += 1
-        if self.amount != None:
-            if self.amountDone >= self.amount:
-                self.postHandler()
+        if self.amount != None and self.amountDone >= self.amount:
+            self.postHandler()
 
     def handleInventoryFull(self, extraInfo):
         if self.completed:

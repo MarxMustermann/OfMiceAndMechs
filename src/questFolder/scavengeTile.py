@@ -38,10 +38,9 @@ This quest will end when the target tile has no items left."""
         if not character:
             return
 
-        if self.endOnFullInventory:
-            if not character.getFreeInventorySpace() > 0:
-                self.postHandler()
-                return
+        if self.endOnFullInventory and not character.getFreeInventorySpace() > 0:
+            self.postHandler()
+            return
 
         if not self.getLeftoverItems(character):
             self.postHandler()
@@ -126,12 +125,11 @@ This quest will end when the target tile has no items left."""
 
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
 
-        if renderForTile:
-            if character.getBigPosition() == self.targetPosition:
-                for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPosition,[]):
-                    if self.toCollect and item.type != self.toCollect:
-                        continue
-                    result.append((item.getPosition(),"target"))
+        if renderForTile and character.getBigPosition() == self.targetPosition:
+            for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPosition,[]):
+                if self.toCollect and item.type != self.toCollect:
+                    continue
+                result.append((item.getPosition(),"target"))
 
         return result
 

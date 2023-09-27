@@ -85,21 +85,16 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                     if item.getPosition(offset=checkOffset) == self.targetPosition:
                         painterOffset = checkOffset
 
-                if painterOffset == (0,0,0):
-                    if painterOffset != item.offset:
-                        return (None,(["c","d",".","enter"],"to configure painter direction"))
-                if painterOffset == (0,1,0):
-                    if painterOffset != item.offset:
-                        return (None,(["c","d","s","enter"],"to configure painter direction"))
-                if painterOffset == (0,-1,0):
-                    if painterOffset != item.offset:
-                        return (None,(["c","d","w","enter"],"to configure painter direction"))
-                if painterOffset == (1,0,0):
-                    if painterOffset != item.offset:
-                        return (None,(["c","d","d","enter"],"to configure painter direction"))
-                if painterOffset == (-1,0,0):
-                    if painterOffset != item.offset:
-                        return (None,(["c","d","a","enter"],"to configure painter direction"))
+                if painterOffset == (0,0,0) and painterOffset != item.offset:
+                    return (None,(["c","d",".","enter"],"to configure painter direction"))
+                if painterOffset == (0,1,0) and painterOffset != item.offset:
+                    return (None,(["c","d","s","enter"],"to configure painter direction"))
+                if painterOffset == (0,-1,0) and painterOffset != item.offset:
+                    return (None,(["c","d","w","enter"],"to configure painter direction"))
+                if painterOffset == (1,0,0) and painterOffset != item.offset:
+                    return (None,(["c","d","d","enter"],"to configure painter direction"))
+                if painterOffset == (-1,0,0) and painterOffset != item.offset:
+                    return (None,(["c","d","a","enter"],"to configure painter direction"))
 
                 if item.paintMode != "delete":
                     return (None,(["c","m","d","enter"],"to configure the painter to input stockpile"))
@@ -109,9 +104,8 @@ class DeleteMarking(src.quests.MetaQuestSequence):
             if not self.painterPos:
                 painter = None
                 painterIndex = -1
-                if character.inventory:
-                    if character.inventory[-1].type == "Painter":
-                        painter = character.inventory[-1]
+                if character.inventory and character.inventory[-1].type == "Painter":
+                    painter = character.inventory[-1]
 
                 if not painter:
                     counter = 0

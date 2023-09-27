@@ -55,10 +55,9 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0))
                 return ([quest],None)
-            if character.health < character.maxHealth//5:
-                if character.getNearbyEnemies():
-                    quest = src.quests.questMap["Flee"]()
-                    return ([quest],None)
+            if character.health < character.maxHealth//5 and character.getNearbyEnemies():
+                quest = src.quests.questMap["Flee"]()
+                return ([quest],None)
             if character.health < character.maxHealth*0.75:
                 if character.getNearbyEnemies():
                     quest = src.quests.questMap["Fight"]()

@@ -185,10 +185,9 @@ class CommandBloom(src.items.Item):
                 and character.inventory[-1].type == "Coal"
                 and hasattr(character, "phase")
                 and character.phase == 1
-            ):
-                if self.numSick > 4:
-                    command = "wal20jsdj"
-                    self.runCommandOnNewCrawler("j",character.faction)
+            ) and self.numSick > 4:
+                command = "wal20jsdj"
+                self.runCommandOnNewCrawler("j",character.faction)
 
             if isinstance(character, src.characters.Exploder):
                 if self.blocked:

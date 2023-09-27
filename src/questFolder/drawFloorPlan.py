@@ -54,9 +54,8 @@ Draw a floor plan assigned to a room{reason}.
 
             if "walkingSpace" in character.container.floorPlan:
                 walkingSpaces = character.container.floorPlan.get("walkingSpace")
-                if walkingSpaces:
-                    if walkingSpaces[-1] in character.container.walkingSpace:
-                        walkingSpaces.pop()
+                if walkingSpaces and walkingSpaces[-1] in character.container.walkingSpace:
+                    walkingSpaces.pop()
 
                 quests = []
                 counter = 0

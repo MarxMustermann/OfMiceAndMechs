@@ -195,18 +195,15 @@ class PersonnelTracker(src.items.Item):
         if character.rank == None or character.rank > 5:
             character.addMessage("you need to be rank 5 or higher to spawn a bodyguard")
             return None
-        if character.rank == 5:
-            if character.getNumSubordinates() > 0:
-                character.addMessage("you can only have one bodyguard with rank 5")
-                return
-        if character.rank == 4:
-            if character.getNumSubordinates() > 1:
-                character.addMessage("you can only have two bodyguards with rank 4")
-                return
-        if character.rank == 3:
-            if character.getNumSubordinates() > 2:
-                character.addMessage("you can only have three bodyguards with rank 3")
-                return
+        if character.rank == 5 and character.getNumSubordinates() > 0:
+            character.addMessage("you can only have one bodyguard with rank 5")
+            return
+        if character.rank == 4 and character.getNumSubordinates() > 1:
+            character.addMessage("you can only have two bodyguards with rank 4")
+            return
+        if character.rank == 3 and character.getNumSubordinates() > 2:
+            character.addMessage("you can only have three bodyguards with rank 3")
+            return
 
         if not self.charges:
             character.addMessage("no charges left. Use the epoch artwork to recharge")
@@ -273,10 +270,9 @@ class PersonnelTracker(src.items.Item):
     def spawnRank(self,rank,actor,isMilitary=False):
         cityLeader = self.fetchCityleader()
 
-        if rank == 3:
-            if cityLeader and not cityLeader.dead:
-                actor.addMessage("only one rank 3 possible")
-                return
+        if rank == 3 and cityLeader and not cityLeader.dead:
+            actor.addMessage("only one rank 3 possible")
+            return
 
         if rank == 4:
             if not cityLeader or self.cityLeader.dead:
@@ -343,9 +339,8 @@ class PersonnelTracker(src.items.Item):
         char.registers["HOMETy"] = terrainPosition[1]
         char.personality["abortMacrosOnAttack"] = False
 
-        if rank == 3:
-            if not cityLeader or cityLeader.dead:
-                self.cityLeader = char
+        if rank == 3 and (not cityLeader or cityLeader.dead):
+            self.cityLeader = char
 
         if rank == 4:
             cityLeader.subordinates.append(char)

@@ -137,21 +137,16 @@ class ReserveCityBuilder(src.items.Item):
         elif foundOther:
             for (pos,info) in self.storageSlots.items():
                 if info["type"] == foundOther.type and info["amount"] < 15:
-                    if foundOther.type == "Armor":
-                        if foundOther.armorValue != info["armorValue"]:
-                            continue
-                    if foundOther.type == "Vial":
-                        if bool(foundOther.uses) != info["hasCharges"]:
-                            continue
-                    if foundOther.type == "GooFlask":
-                        if bool(foundOther.uses) != info["hasCharges"]:
-                            continue
-                    if foundOther.type == "GooFlask":
-                        if (foundOther.uses == 100) != info["full"]:
-                            continue
-                    if foundOther.type == "Rod":
-                        if foundOther.baseDamage != info["baseDamage"]:
-                            continue
+                    if foundOther.type == "Armor" and foundOther.armorValue != info["armorValue"]:
+                        continue
+                    if foundOther.type == "Vial" and bool(foundOther.uses) != info["hasCharges"]:
+                        continue
+                    if foundOther.type == "GooFlask" and bool(foundOther.uses) != info["hasCharges"]:
+                        continue
+                    if foundOther.type == "GooFlask" and (foundOther.uses == 100) != info["full"]:
+                        continue
+                    if foundOther.type == "Rod" and foundOther.baseDamage != info["baseDamage"]:
+                        continue
                     target = pos
 
         if not target:

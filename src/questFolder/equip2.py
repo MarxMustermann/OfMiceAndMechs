@@ -88,9 +88,8 @@ Swords can range from 10 to 25 damage per hit.
         if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
             return
 
-        if "metal working" in character.duties:
-            if not character.weapon or not character.armor:
-                return
+        if "metal working" in character.duties and (not character.weapon or not character.armor):
+            return
 
         self.postHandler()
         return

@@ -41,10 +41,9 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
             if not character.getBigPosition() in ((0,7,0),(1,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
-            if not character.getBigPosition() in ((0,7,0),):
-                if character.getSpacePosition() != (1, 7, 0):
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
-                    return ([quest],None)
+            if not character.getBigPosition() in ((0,7,0),) and character.getSpacePosition() != (1, 7, 0):
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
+                return ([quest],None)
 
             if not self.shownCheatText:
                 text = """
@@ -155,10 +154,9 @@ Now get out of there and bring the loot home.
             if not character.getBigPosition() in ((14,7,0),(13,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
-            if not character.getBigPosition() in ((14,7,0),):
-                if character.getSpacePosition() != (13, 7, 0):
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
-                    return ([quest],None)
+            if not character.getBigPosition() in ((14,7,0),) and character.getSpacePosition() != (13, 7, 0):
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
+                return ([quest],None)
             return (None,("d","to cheat yourself onto the neighbor terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 6):

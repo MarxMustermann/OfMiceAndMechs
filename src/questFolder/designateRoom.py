@@ -163,15 +163,13 @@ Use the CityPlaner to designate the room.
         room = terrain.getRoomByPosition((7,7,0))[0]
         cityPlaner = room.getItemsByType("CityPlaner")[0]
 
-        if self.roomType == "specialPurposeRoom":
-            if self.roomPosition in cityPlaner.specialPurposeRooms:
-                self.postHandler()
-                return True
+        if self.roomType == "specialPurposeRoom" and self.roomPosition in cityPlaner.specialPurposeRooms:
+            self.postHandler()
+            return True
 
-        if self.roomType == "generalPurposeRoom":
-            if self.roomPosition in cityPlaner.generalPurposeRooms:
-                self.postHandler()
-                return True
+        if self.roomType == "generalPurposeRoom" and self.roomPosition in cityPlaner.generalPurposeRooms:
+            self.postHandler()
+            return True
 
         if self.roomType == "undesignate":
             if self.roomPosition in cityPlaner.generalPurposeRooms:

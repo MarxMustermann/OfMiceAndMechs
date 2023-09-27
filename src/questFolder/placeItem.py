@@ -267,10 +267,9 @@ Press d to move the cursor and show the subquests description.
         if not items:
             return False
 
-        if items[-1].type == self.itemType:
-            if not self.boltDown or items[-1].bolted:
-                self.postHandler()
-                return True
+        if items[-1].type == self.itemType and (not self.boltDown or items[-1].bolted):
+            self.postHandler()
+            return True
         return False
 
 src.quests.addType(PlaceItem)

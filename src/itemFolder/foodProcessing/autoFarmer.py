@@ -89,9 +89,8 @@ class AutoFarmer(src.items.Item):
             if item.type in ("Bloom", "SickBloom", "Coal", "Sprout","Sprout2","Mold",):
                 if item.type in ("Mold",):
                     continue
-                if item.type in ("Sprout","Sprout2",):
-                    if pluggedSprouts > 0:
-                        continue
+                if item.type in ("Sprout","Sprout2",) and pluggedSprouts > 0:
+                    continue
                 pluggedSprouts += 1
 
                 if lastCharacterPosition[0] > pos[0]:

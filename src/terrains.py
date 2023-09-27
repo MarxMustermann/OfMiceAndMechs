@@ -625,72 +625,68 @@ class Terrain:
             # check north
             if direction == "north":
                 # check if the character crossed the edge of the room
-                if room.yPosition * 15 + room.offsetY + room.sizeY == char.yPosition:
-                    if (
-                        room.xPosition * 15 + room.offsetX - 1 < char.xPosition
-                        and room.xPosition * 15 + room.offsetX + room.sizeX
-                        > char.xPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            char.xPosition % 15 - room.offsetX,
-                            char.yPosition % 15 - room.offsetY - 1,
-                            0,
-                        )
-                        if localisedEntry[1] == -1:
-                            localisedEntry = (localisedEntry[0], room.sizeY - 1,0)
+                if room.yPosition * 15 + room.offsetY + room.sizeY == char.yPosition and (
+                    room.xPosition * 15 + room.offsetX - 1 < char.xPosition
+                    and room.xPosition * 15 + room.offsetX + room.sizeX
+                    > char.xPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        char.xPosition % 15 - room.offsetX,
+                        char.yPosition % 15 - room.offsetY - 1,
+                        0,
+                    )
+                    if localisedEntry[1] == -1:
+                        localisedEntry = (localisedEntry[0], room.sizeY - 1,0)
 
             # check south
             elif direction == "south":
                 # check if the character crossed the edge of the room
-                if room.yPosition * 15 + room.offsetY == char.yPosition + 1:
-                    if (
-                        room.xPosition * 15 + room.offsetX - 1 < char.xPosition
-                        and room.xPosition * 15 + room.offsetX + room.sizeX
-                        > char.xPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            (char.xPosition - room.offsetX) % 15,
-                            (char.yPosition - room.offsetY + 1) % 15,
-                            0
-                        )
+                if room.yPosition * 15 + room.offsetY == char.yPosition + 1 and (
+                    room.xPosition * 15 + room.offsetX - 1 < char.xPosition
+                    and room.xPosition * 15 + room.offsetX + room.sizeX
+                    > char.xPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        (char.xPosition - room.offsetX) % 15,
+                        (char.yPosition - room.offsetY + 1) % 15,
+                        0
+                    )
 
             # check east
             elif direction == "east":
                 # check if the character crossed the edge of the room
-                if room.xPosition * 15 + room.offsetX == char.xPosition + 1:
-                    if (
-                        room.yPosition * 15 + room.offsetY < char.yPosition + 1
-                        and room.yPosition * 15 + room.offsetY + room.sizeY
-                        > char.yPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            (char.xPosition - room.offsetX + 1) % 15,
-                            (char.yPosition - room.offsetY) % 15,
-                            0
-                        )
+                if room.xPosition * 15 + room.offsetX == char.xPosition + 1 and (
+                    room.yPosition * 15 + room.offsetY < char.yPosition + 1
+                    and room.yPosition * 15 + room.offsetY + room.sizeY
+                    > char.yPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        (char.xPosition - room.offsetX + 1) % 15,
+                        (char.yPosition - room.offsetY) % 15,
+                        0
+                    )
 
             # check west
             elif direction == "west":
                 # check if the character crossed the edge of the room
-                if room.xPosition * 15 + room.offsetX + room.sizeX == char.xPosition:
-                    if (
-                        room.yPosition * 15 + room.offsetY < char.yPosition + 1
-                        and room.yPosition * 15 + room.offsetY + room.sizeY
-                        > char.yPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            (char.xPosition - room.offsetX - 1) % 15,
-                            (char.yPosition - room.offsetY) % 15,
-                            0,
-                        )
+                if room.xPosition * 15 + room.offsetX + room.sizeX == char.xPosition and (
+                    room.yPosition * 15 + room.offsetY < char.yPosition + 1
+                    and room.yPosition * 15 + room.offsetY + room.sizeY
+                    > char.yPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        (char.xPosition - room.offsetX - 1) % 15,
+                        (char.yPosition - room.offsetY) % 15,
+                        0,
+                    )
 
             # move player into the room
             if hadRoomInteraction:
@@ -731,15 +727,14 @@ class Terrain:
 
                 if item.isStepOnActive:
                     stepOnActiveItems.append(item)
-            if not foundItem:
-                if len(foundItems) >= 15:
-                    char.addMessage("the floor is too full to walk there")
-                    # char.addMessage("press "+commandChars.activate+" to apply")
-                    # if noAdvanceGame == False:
-                    #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+            if not foundItem and len(foundItems) >= 15:
+                char.addMessage("the floor is too full to walk there")
+                # char.addMessage("press "+commandChars.activate+" to apply")
+                # if noAdvanceGame == False:
+                #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
-                    # remember the item for interaction and abort
-                    foundItem = foundItems[0]
+                # remember the item for interaction and abort
+                foundItem = foundItems[0]
 
             if foundItem:
                 foundItem = foundItems[0]
@@ -754,9 +749,8 @@ class Terrain:
                 if char.faction == "player" and other.faction == "player":
                     continue
 
-                if char.faction.startswith("city"):
-                    if char.faction == other.faction:
-                        continue
+                if char.faction.startswith("city") and char.faction == other.faction:
+                    continue
 
                 if char.faction == other.faction:
                     continue
@@ -1114,9 +1108,8 @@ class Terrain:
             for y in range(1,14):
                 for x in range(1,14):
                     items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
-                    if items:
-                        if items[0].type == "Bush":
-                            tileMap[x][y] = 127
+                    if items and items[0].type == "Bush":
+                        tileMap[x][y] = 127
             if ignoreEndBlocked or clearing:
                 tileMap[targetPos[0]][targetPos[1]] = 1
 
@@ -1184,9 +1177,8 @@ class Terrain:
         for y in range(1,14):
             for x in range(1,14):
                 items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
-                if items:
-                    if items[0].type == "Bush":
-                        tileMap[x][y] = 127
+                if items and items[0].type == "Bush":
+                    tileMap[x][y] = 127
 
         cost = np.array(tileMap, dtype=np.int8)
         tcod.path.AStar(cost,diagonal = 0)
@@ -1275,9 +1267,8 @@ class Terrain:
                 if costMap.get(newPos) != None:
                     continue
 
-                if newPos in blockedPositions:
-                    if (not ignoreEndBlocked or newPos != targetPos):
-                        continue
+                if newPos in blockedPositions and (not ignoreEndBlocked or newPos != targetPos):
+                    continue
 
                 if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15),character):
                     blockedPositions.add(newPos)
@@ -1918,9 +1909,8 @@ class Terrain:
 
         homePos = (src.gamestate.gamestate.mainChar.registers.get("HOMEx"),src.gamestate.gamestate.mainChar.registers.get("HOMEy"))
         homePosTerrain = (src.gamestate.gamestate.mainChar.registers.get("HOMETx"),src.gamestate.gamestate.mainChar.registers.get("HOMETy"),0)
-        if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition():
-            if homePos[0] and homePos[1]:
-                chars[homePos[1]][homePos[0]] = "HH"
+        if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition() and homePos[0] and homePos[1]:
+            chars[homePos[1]][homePos[0]] = "HH"
 
         for scrapField in self.scrapFields:
             chars[scrapField[1]][scrapField[0]] = "ss"
@@ -2060,61 +2050,57 @@ class Terrain:
                     roomCandidate.yPosition * 15
                     + roomCandidate.offsetY
                     + roomCandidate.sizeY
+                ) and (
+                    room.xPosition * 15 + room.offsetX
+                    < roomCandidate.xPosition * 15
+                    + roomCandidate.offsetX
+                    + roomCandidate.sizeX
+                ) and (
+                    room.xPosition * 15 + room.offsetX + room.sizeX
+                    > roomCandidate.xPosition * 15 + roomCandidate.offsetX
                 ):
-                    if (
-                        room.xPosition * 15 + room.offsetX
-                        < roomCandidate.xPosition * 15
-                        + roomCandidate.offsetX
-                        + roomCandidate.sizeX
-                    ) and (
-                        room.xPosition * 15 + room.offsetX + room.sizeX
-                        > roomCandidate.xPosition * 15 + roomCandidate.offsetX
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             elif direction == "south":
                 if (room.yPosition * 15 + room.offsetY + room.sizeY) == (
                     roomCandidate.yPosition * 15 + roomCandidate.offsetY
+                ) and (
+                    room.xPosition * 15 + room.offsetX
+                    < roomCandidate.xPosition * 15
+                    + roomCandidate.offsetX
+                    + roomCandidate.sizeX
+                ) and (
+                    room.xPosition * 15 + room.offsetX + room.sizeX
+                    > roomCandidate.xPosition * 15 + roomCandidate.offsetX
                 ):
-                    if (
-                        room.xPosition * 15 + room.offsetX
-                        < roomCandidate.xPosition * 15
-                        + roomCandidate.offsetX
-                        + roomCandidate.sizeX
-                    ) and (
-                        room.xPosition * 15 + room.offsetX + room.sizeX
-                        > roomCandidate.xPosition * 15 + roomCandidate.offsetX
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             elif direction == "west":
                 if (room.xPosition * 15 + room.offsetX) == (
                     roomCandidate.xPosition * 15
                     + roomCandidate.offsetX
                     + roomCandidate.sizeX
+                ) and (
+                    room.yPosition * 15 + room.offsetY
+                    < roomCandidate.yPosition * 15
+                    + roomCandidate.offsetY
+                    + roomCandidate.sizeY
+                ) and (
+                    room.yPosition * 15 + room.offsetY + room.sizeY
+                    > roomCandidate.yPosition * 15 + roomCandidate.offsetY
                 ):
-                    if (
-                        room.yPosition * 15 + room.offsetY
-                        < roomCandidate.yPosition * 15
-                        + roomCandidate.offsetY
-                        + roomCandidate.sizeY
-                    ) and (
-                        room.yPosition * 15 + room.offsetY + room.sizeY
-                        > roomCandidate.yPosition * 15 + roomCandidate.offsetY
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             elif direction == "east":
                 if (room.xPosition * 15 + room.offsetX + room.sizeX) == (
                     roomCandidate.xPosition * 15 + roomCandidate.offsetX
+                ) and (
+                    room.yPosition * 15 + room.offsetY
+                    < roomCandidate.yPosition * 15
+                    + roomCandidate.offsetY
+                    + roomCandidate.sizeY
+                ) and (
+                    room.yPosition * 15 + room.offsetY + room.sizeY
+                    > roomCandidate.yPosition * 15 + roomCandidate.offsetY
                 ):
-                    if (
-                        room.yPosition * 15 + room.offsetY
-                        < roomCandidate.yPosition * 15
-                        + roomCandidate.offsetY
-                        + roomCandidate.sizeY
-                    ) and (
-                        room.yPosition * 15 + room.offsetY + room.sizeY
-                        > roomCandidate.yPosition * 15 + roomCandidate.offsetY
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             else:
                 logger.debug("invalid movement direction: %s", direction)
 
@@ -2327,11 +2313,10 @@ class Terrain:
 
         # remove room from old position
         oldPosition = (room.xPosition, room.yPosition)
-        if oldPosition in self.roomByCoordinates:
-            if room in self.roomByCoordinates[oldPosition]:
-                self.roomByCoordinates[oldPosition].remove(room)
-                if not len(self.roomByCoordinates[oldPosition]):
-                    del self.roomByCoordinates[oldPosition]
+        if oldPosition in self.roomByCoordinates and room in self.roomByCoordinates[oldPosition]:
+            self.roomByCoordinates[oldPosition].remove(room)
+            if not len(self.roomByCoordinates[oldPosition]):
+                del self.roomByCoordinates[oldPosition]
 
         # add room to new position
         if newPosition in self.roomByCoordinates:

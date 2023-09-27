@@ -258,11 +258,10 @@ class CityBuilder(src.items.Item):
             character: the character available to do the task
         """
 
-        if self.idleExtend:
-            if len(self.plotPool) < self.numReservedPathPlots + self.numBufferPlots:
-                self.tasks.append({"task": "expand"})
-                character.addMessage("idle extend")
-                return
+        if self.idleExtend and len(self.plotPool) < self.numReservedPathPlots + self.numBufferPlots:
+            self.tasks.append({"task": "expand"})
+            character.addMessage("idle extend")
+            return
         character.addMessage("no tasks left")
 
     def getTaskResolvers(self):
@@ -350,27 +349,26 @@ class CityBuilder(src.items.Item):
                 plot = random.choice(self.unusedRoadTiles)
 
                 # check if the selected plot was reserved
-                if "reservedPlots" in task:
-                    if list(plot) in task["reservedPlots"]:
+                if "reservedPlots" in task and list(plot) in task["reservedPlots"]:
 
-                        # increment failure couner to not get stuck
-                        if not "failCounter" in task:
-                            task["failCounter"] = 1
-                        else:
-                            task["failCounter"] += 1
+                    # increment failure couner to not get stuck
+                    if not "failCounter" in task:
+                        task["failCounter"] = 1
+                    else:
+                        task["failCounter"] += 1
 
-                        # retry task
-                        self.runningTasks = []
-                        self.tasks.append(task)
+                    # retry task
+                    self.runningTasks = []
+                    self.tasks.append(task)
 
-                        # expand the roads when stuck
-                        if task["failCounter"] > 4:
-                            newTask = {"task": "expand"}
-                            self.tasks.append(newTask)
-                            task["failCounter"] = 1
+                    # expand the roads when stuck
+                    if task["failCounter"] > 4:
+                        newTask = {"task": "expand"}
+                        self.tasks.append(newTask)
+                        task["failCounter"] = 1
 
-                        # abort
-                        return
+                    # abort
+                    return
                 task["stockPileCoordinate"] = plot
             else:
                 task["stockPileCoordinate"] = task["coordinate"]
@@ -665,9 +663,8 @@ class CityBuilder(src.items.Item):
                     task["scrapField"][0][0] + direction[0],
                     task["scrapField"][0][1] + direction[1],
                 )
-                if "reservedPlots" in task:
-                    if list(position) in task["reservedPlots"]:
-                        continue
+                if "reservedPlots" in task and list(position) in task["reservedPlots"]:
+                    continue
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
@@ -729,9 +726,8 @@ class CityBuilder(src.items.Item):
                     task["stockPileCoordinate"][0] + direction[0],
                     task["stockPileCoordinate"][1] + direction[1],
                 )
-                if "reservedPlots" in task:
-                    if list(position) in task["reservedPlots"]:
-                        continue
+                if "reservedPlots" in task and list(position) in task["reservedPlots"]:
+                    continue
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
@@ -791,9 +787,8 @@ class CityBuilder(src.items.Item):
                     task["oreProcessingCoordinate"][0] + direction[0],
                     task["oreProcessingCoordinate"][1] + direction[1],
                 )
-                if "reservedPlots" in task:
-                    if list(position) in task["reservedPlots"]:
-                        continue
+                if "reservedPlots" in task and list(position) in task["reservedPlots"]:
+                    continue
                 if position in self.unusedRoadTiles:
                     neighbourRoad = position
                     continue
@@ -1343,19 +1338,18 @@ class CityBuilder(src.items.Item):
             }
             return
 
-        if params["stockPileType"] == "UniformStockpileManager":
-            if "stockPileItemType" not in params:
-                submenu = src.interaction.InputMenu(
-                    "type ItemType",
-                    targetParamName="stockPileItemType"
-                )
-                character.macroState["submenue"] = submenu
-                character.macroState["submenue"].followUp = {
-                    "container":self,
-                    "method":"expandStorageFromMap",
-                    "params":params,
-                }
-                return
+        if params["stockPileType"] == "UniformStockpileManager" and "stockPileItemType" not in params:
+            submenu = src.interaction.InputMenu(
+                "type ItemType",
+                targetParamName="stockPileItemType"
+            )
+            character.macroState["submenue"] = submenu
+            character.macroState["submenue"].followUp = {
+                "container":self,
+                "method":"expandStorageFromMap",
+                "params":params,
+            }
+            return
 
         newTask = {
             "task": "extend storage",

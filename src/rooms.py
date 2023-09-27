@@ -367,9 +367,8 @@ class Room:
 
     def edgeCostCallback(self, startX, startY, endX, endY):
         endPos = (endX,endY,0)
-        if self.pathfindingIgnoreEndBlocked:
-            if endPos == self.pathfindingTargetPos:
-                return 1
+        if self.pathfindingIgnoreEndBlocked and endPos == self.pathfindingTargetPos:
+            return 1
 
         if (endPos in [(0,6,0),(6,0,0),(12,6,0),(6,12,0)]):
             return 1
@@ -540,9 +539,8 @@ class Room:
                 if costMap.get(newPos) != None:
                     continue
 
-                if newPos in blockedPositions:
-                    if (not ignoreEndBlocked or newPos != targetPos):
-                        continue
+                if newPos in blockedPositions and (not ignoreEndBlocked or newPos != targetPos):
+                    continue
 
                 if not self.getPositionWalkable(newPos,character=character):
                     blockedPositions.add(newPos)
@@ -1625,9 +1623,8 @@ class Room:
 
                 if character.faction == "player" and other.faction == "player":
                     continue
-                if character.faction.startswith("city"):
-                    if character.faction == other.faction:
-                        continue
+                if character.faction.startswith("city") and character.faction == other.faction:
+                    continue
                 if character.faction == other.faction:
                     continue
 
@@ -2669,11 +2666,10 @@ class StaticRoom(EmptyRoom):
                             if character.satiation < 1 and not character.godMode:
                                 character.die()
 
-                    if not blocked:
-                        if item.energy:
-                            item.energy -= 2
-                            self.removeItem(item)
-                            self.addItem(item,newPos)
+                    if not blocked and item.energy:
+                        item.energy -= 2
+                        self.removeItem(item)
+                        self.addItem(item,newPos)
 
                 if (
                     character.yPosition == item.yPosition

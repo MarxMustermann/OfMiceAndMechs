@@ -129,12 +129,11 @@ Press d to move the cursor and show the subquests description.
             return
 
         self.subQuests.remove(extraParam["quest"])
-        if extraParam.get("reason"):
-            if "no source" in extraParam["reason"] and "Painter" in extraParam["reason"]:
-                quest = src.quests.questMap["FetchItems"](tryHard=True,toCollect="Painter",amount=1)
-                self.startWatching(quest,self.handleQuestFailure,"failed")
-                self.addQuest(quest)
-                return
+        if extraParam.get("reason") and "no source" in extraParam["reason"] and "Painter" in extraParam["reason"]:
+            quest = src.quests.questMap["FetchItems"](tryHard=True,toCollect="Painter",amount=1)
+            self.startWatching(quest,self.handleQuestFailure,"failed")
+            self.addQuest(quest)
+            return
 
         if extraParam["reason"] == "no storage available":
             terrain = self.character.getTerrain()
@@ -287,9 +286,8 @@ Press d to move the cursor and show the subquests description.
                             machineMap[item.toProduce] = []
                         machineMap[item.toProduce].append(item)
 
-                    if item.type == "ScrapCompactor" and item.bolted:
-                        if item.readyToUse():
-                            readyScrapCompactors.append(item)
+                    if item.type == "ScrapCompactor" and item.bolted and item.readyToUse():
+                        readyScrapCompactors.append(item)
 
             # count empty storage slots
             numFreeStorage = 0
@@ -682,9 +680,8 @@ Press d to move the cursor and show the subquests description.
                     if not room.floorPlan:
                         continue
 
-                    if "storageSlots" in room.floorPlan:
-                        if not room.floorPlan.get("storageSlots"):
-                            del room.floorPlan["storageSlots"]
+                    if "storageSlots" in room.floorPlan and not room.floorPlan.get("storageSlots"):
+                        del room.floorPlan["storageSlots"]
 
                     if not room.floorPlan:
                         continue
@@ -900,9 +897,8 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if "outputSlots" in room.floorPlan:
-                    if not room.floorPlan.get("outputSlots"):
-                        del room.floorPlan["outputSlots"]
+                if "outputSlots" in room.floorPlan and not room.floorPlan.get("outputSlots"):
+                    del room.floorPlan["outputSlots"]
 
                 if not room.floorPlan:
                     continue
@@ -941,9 +937,8 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if "buildSites" in room.floorPlan:
-                    if not room.floorPlan.get("buildSites"):
-                        del room.floorPlan["buildSites"]
+                if "buildSites" in room.floorPlan and not room.floorPlan.get("buildSites"):
+                    del room.floorPlan["buildSites"]
 
                 if not room.floorPlan:
                     continue
@@ -983,9 +978,8 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if "inputSlots" in room.floorPlan:
-                    if not room.floorPlan.get("inputSlots"):
-                        del room.floorPlan["inputSlots"]
+                if "inputSlots" in room.floorPlan and not room.floorPlan.get("inputSlots"):
+                    del room.floorPlan["inputSlots"]
 
                 if not room.floorPlan:
                     continue
@@ -1011,9 +1005,8 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if "storageSlots" in room.floorPlan:
-                    if not room.floorPlan.get("storageSlots"):
-                        del room.floorPlan["storageSlots"]
+                if "storageSlots" in room.floorPlan and not room.floorPlan.get("storageSlots"):
+                    del room.floorPlan["storageSlots"]
 
                 if not room.floorPlan:
                     continue

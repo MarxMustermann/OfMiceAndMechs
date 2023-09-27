@@ -8469,7 +8469,7 @@ def showHeroIntro():
                     itemTravelTime[item] = arriveInTicks
 
             # draw items
-            for item in itemStartingPositions.keys():
+            for item in itemStartingPositions:
                 if timeIndex < itemTravelTime[item]:
                     pos = (int(itemStartingPositions[item][0]+itemMovementVectors[item][0]*timeIndex),int(itemStartingPositions[item][1]+itemMovementVectors[item][1]*timeIndex))
                 else:

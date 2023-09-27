@@ -2503,7 +2503,7 @@ _____________"""
                 while counter < maxItems:
 
                     position = None
-                    while position is None or position in excludes.keys():
+                    while position is None or position in excludes:
                         position = (
                             xRange[0] + seed % maxOffsetX,
                             yRange[0] + seed // (maxItems * 2) % maxOffsetY,

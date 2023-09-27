@@ -376,7 +376,7 @@ class StockpileMetaManager(src.items.Item):
                 sources[itemType].append(stockPile)
 
         stockPileFound = None
-        for itemType in needyStockpiles.keys():
+        for itemType in needyStockpiles:
             if itemType not in sources:
                 continue
             stockPile = sources[itemType][0]

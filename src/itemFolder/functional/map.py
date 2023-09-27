@@ -66,7 +66,7 @@ You can select the routes and run the stored route.
             return []
 
         nodes = []
-        for exitNode in self.routes.keys():
+        for exitNode in self.routes:
             if exitNode == node:
                 continue
             if exitNode in self.routes and node in self.routes[exitNode]:
@@ -181,7 +181,7 @@ You can select the routes and run the stored route.
             return
 
         options = []
-        for target in self.routes[charPos].keys():
+        for target in self.routes[charPos]:
             if target in self.markers:
                 target = self.markers[target]
             options.append((target, str(target)))

@@ -314,9 +314,9 @@ class Room:
     def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
 
         roomMap = []
-        for x in range(0,13):
+        for x in range(13):
             roomMap.append([])
-            for y in range(0,13):
+            for y in range(13):
                 roomMap[x].append(50)
 
         for walkingSpacePos in self.walkingSpace:
@@ -328,16 +328,16 @@ class Room:
             else:
                 roomMap[storageSlot[0][0]][storageSlot[0][1]] = 50
 
-        for y in range(0,13):
-            for x in range(0,13):
+        for y in range(13):
+            for x in range(13):
                 if self.getItemByPosition((x,y,0)):
                     if clearing:
                         roomMap[x][y] = 10
                     else:
                         roomMap[x][y] = 100
 
-        for y in range(0,13):
-            for x in range(0,13):
+        for y in range(13):
+            for x in range(13):
                 if not self.getPositionWalkable((x,y,0),character=character):
                     if clearing and not (y == 0 or y == 12 or x == 0 or x == 12):
                         roomMap[x][y] = 100
@@ -851,9 +851,9 @@ class Room:
             fixedChar = None
             if len(self.floorDisplay) == 1:
                 fixedChar = self.floorDisplay[0]
-            for i in range(0, self.sizeY):
+            for i in range(self.sizeY):
                 subChars = []
-                for j in range(0, self.sizeX):
+                for j in range(self.sizeX):
                     if fixedChar:
                         #subChars.append(src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i,0)}},content=fixedChar))
                         subChars.append(fixedChar)
@@ -1342,9 +1342,9 @@ class Room:
         else:
             # fill the rooms inside with invisibility char
             chars = []
-            for i in range(0, self.sizeY):
+            for i in range(self.sizeY):
                 subChars = []
-                for j in range(0, self.sizeX):
+                for j in range(self.sizeX):
                     subChars.append(src.canvas.displayChars.invisibleRoom)
                 chars.append(subChars)
 
@@ -2108,7 +2108,7 @@ XXX
                 doorPos.append([(sizeX - 1, sizeY // 2)])
 
             for x in (0, sizeX - 1):
-                for y in range(0, sizeY):
+                for y in range(sizeY):
                     if (x, y) in doorPos:
                         item = src.items.itemMap["Door"]()
                         item.walkable = True

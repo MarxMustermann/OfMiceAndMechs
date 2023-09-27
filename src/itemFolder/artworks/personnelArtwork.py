@@ -99,11 +99,11 @@ Use the complex interaction to recharge the personel artwork
 
     def spawnSet(self,character):
         cityleader = self.spawnRank(3,character)
-        for i in range(0,3):
+        for i in range(3):
             self.spawnRank(4,character)
-        for i in range(0,9):
+        for i in range(9):
             self.spawnRank(5,character)
-        for i in range(0,9*3):
+        for i in range(9*3):
             self.spawnRank(6,character)
         return cityleader
 

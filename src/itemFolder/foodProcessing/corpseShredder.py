@@ -89,7 +89,7 @@ Activate the corpse shredder to produce mold feed/seeded mold feed.
         # remove resources
         self.container.removeItem(corpse)
 
-        for i in range(0, corpse.charges // 100):
+        for i in range(corpse.charges // 100):
             if moldSpores:
                 self.container.removeItem(moldSpores.pop())
                 new = src.items.itemMap["SeededMoldFeed"]()

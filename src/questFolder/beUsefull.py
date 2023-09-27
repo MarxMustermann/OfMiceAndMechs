@@ -2736,7 +2736,7 @@ That should give you enough health to kill them all.
             src.gamestate.gamestate.save()
             src.interaction.showInterruptText(text)
 
-            for i in range(0,2):
+            for i in range(2):
                 item = src.items.itemMap["Vial"]()
                 item.uses = 10
                 character.inventory.append(item)

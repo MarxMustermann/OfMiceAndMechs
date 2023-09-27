@@ -5765,9 +5765,9 @@ class MapMenu(SubMenu):
 
         # show rendered map
         mapText = []
-        for y in range(0, 15):
+        for y in range(15):
             mapText.append([])
-            for x in range(0, 15):
+            for x in range(15):
                 if (x,y) == self.cursor:
                     mapText[-1].append("██")
                 else:
@@ -6991,7 +6991,7 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
                 if actionMeta:
-                    for i in range(0,len(toPrint)):
+                    for i in range(len(toPrint)):
                         src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
                 tcodConsole_local.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
@@ -7190,9 +7190,9 @@ def renderGameDisplay(renderChar=None):
                 if not renderChar:
                     tcodConsole.clear()
 
-                for y in range(0,55):
+                for y in range(55):
                     pseudoDisplay.append([])
-                    for x in range(0,210):
+                    for x in range(210):
                         pseudoDisplay[y].append("")
 
                 def addToPseudeDisplay(chars,offsetX,offsetY):
@@ -7892,7 +7892,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if submenu == "gameslot":
             printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
             printUrwidToTcod("| choose the gameslot: |",(offsetX+3+16,offsetY+24))
-            for i in range(0,10):
+            for i in range(10):
                 if saves[i]:
                     printUrwidToTcod(f"| {i}: load game         |",(offsetX+3+16,offsetY+25+i))
                 else:
@@ -8285,7 +8285,7 @@ def showHeroIntro():
     item = src.items.itemMap["SpecialItemSlot"]()
     item.itemID = 2
     mainRoom.addItem(item,(2,1,0))
-    for i in range(0,5):
+    for i in range(5):
         item = src.items.itemMap["SpecialItemSlot"]()
         item.hasItem = False
         item.itemID = 3+i
@@ -8530,7 +8530,7 @@ def showHeroIntro2():
             wall = src.items.itemMap["Wall"]()
             totalOffsetX = 56+26-offset[0]*2
             totalOffsetY = 15+13-offset[1]
-            for i in range(0,13):
+            for i in range(13):
                 if i == 6:
                     continue
                 printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))
@@ -8656,7 +8656,7 @@ def showHeroIntro2():
             item = src.items.itemMap["SpecialItemSlot"]()
             item.itemID = 2
             mainRoom.addItem(item,(2,1,0))
-            for i in range(0,5):
+            for i in range(5):
                 item = src.items.itemMap["SpecialItemSlot"]()
                 item.hasItem = False
                 item.itemID = 3+i
@@ -8776,7 +8776,7 @@ You """+"."*stageState["substep"]+"""
                 if (time.time()-stageState["lastChange"] > 0.001 or skip) and stageState["scrapToAdd"]:
                     stageState["lastChange"] = time.time()
 
-                    for i in range(0,6):
+                    for i in range(6):
                         if not stageState["scrapToAdd"]:
                             continue
                         scrapItem = stageState["scrapToAdd"].pop()
@@ -9164,7 +9164,7 @@ You """+"."*stageState["substep"]+"""
             elif stageState["terrainItems"] and stageState["subStep"] > 2:
                 if time.time()-stageState["lastChange"] > 0.01 or skip:
                     stageState["lastChange"] = time.time()
-                    for i in range(0,4):
+                    for i in range(4):
                         if not stageState["terrainItems"]:
                             continue
                         item = stageState["terrainItems"].pop()
@@ -9515,7 +9515,7 @@ grows and grows and grows and grows
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text,(45,17))
             tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
-            for i in range(0,100):
+            for i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
                     continue
@@ -9654,7 +9654,7 @@ grows and grows and grows and grows
 
             x = 0
             y = 0
-            for i in range(0,150):
+            for i in range(150):
                 printUrwidToTcod((attrSpec,part1),(x,y))
                 printUrwidToTcod((attrSpec3,part2),(x+part1len,y))
                 printUrwidToTcod((attrSpec2,part3),(x+part1len+1,y))
@@ -9761,7 +9761,7 @@ to remember"""
                 wall = src.items.itemMap["Wall"]()
                 totalOffsetX = 56+26-offset[0]*2
                 totalOffsetY = 15+13-offset[1]
-                for i in range(0,13):
+                for i in range(13):
                     if i == 6:
                         continue
                     printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))

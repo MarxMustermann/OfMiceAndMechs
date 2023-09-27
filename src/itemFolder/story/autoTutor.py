@@ -661,7 +661,7 @@ comment:
                 self.knownBlueprints.append("Puller")
                 self.knownInfos.append("food/moldfarming")
                 blooms = []
-                for i in range(0, 4):
+                for i in range(4):
                     new = src.items.itemMap["MoldSpore"]()
                     blooms.append((new,(self.xPosition,self.yPosition+1,self.zPosition)))
                 self.container.addItems(blooms)

@@ -246,7 +246,7 @@ class RoadManager(src.items.Item):
 
         startPos = [7, 7]
         startPos[index] += changePerStep
-        for i in range(0, 12):
+        for i in range(12):
             startPos[index] += changePerStep
             if i in (
                 5,

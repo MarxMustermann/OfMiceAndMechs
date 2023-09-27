@@ -2444,7 +2444,7 @@ class Monster(Character):
             "s": list("opf$=aa$=ss$=ww$=ddj"),
         }
         self.macroState["macros"]["m"] = []
-        for i in range(0, 8):
+        for i in range(8):
             self.macroState["macros"]["m"].extend(["_", "s"])
             self.macroState["macros"]["m"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["m"].append(random.choice(["a", "w", "s", "d"]))
@@ -2463,7 +2463,7 @@ class Monster(Character):
             "w": [],
             "f": list("%c_s_w_f"),
         }
-        for i in range(0, 4):
+        for i in range(4):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
         self.runCommandString("_f")
@@ -2475,7 +2475,7 @@ class Monster(Character):
 
         self.phase = 5
         self.faction = ""
-        for i in range(0, 5):
+        for i in range(5):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
         self.macroState["macros"] = {
             "j": list(70 * "Jf" + "m"),
@@ -2484,7 +2484,7 @@ class Monster(Character):
             "k": list("ope$=aam$=wwm$=ddm$=ssm"),
             "f": list("%c_s_w_k_f"),
         }
-        for i in range(0, 8):
+        for i in range(8):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
             self.macroState["macros"]["w"].append("m")

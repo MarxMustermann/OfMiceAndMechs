@@ -89,7 +89,7 @@ class EncrustedBush(src.items.Item):
             # expand west
             if upperLeftEdge[0] % 15 > 0:
                 rowOk = True
-                for y in range(0, sizeY):
+                for y in range(sizeY):
                     items = self.container.getItemByPosition(
                         (upperLeftEdge[0] - 1, upperLeftEdge[1] + y,0)
                     )
@@ -105,7 +105,7 @@ class EncrustedBush(src.items.Item):
             # expand north
             if upperLeftEdge[1] % 15 > 0:
                 rowOk = True
-                for x in range(0, sizeX):
+                for x in range(sizeX):
                     items = self.container.getItemByPosition(
                         (upperLeftEdge[0] + x, upperLeftEdge[1] - 1,0)
                     )
@@ -121,7 +121,7 @@ class EncrustedBush(src.items.Item):
             # expand south
             if upperLeftEdge[1] % 15 + sizeY < 14:
                 rowOk = True
-                for x in range(0, sizeX):
+                for x in range(sizeX):
                     items = self.container.getItemByPosition(
                         (upperLeftEdge[0] + x, upperLeftEdge[1] + sizeY,0)
                     )
@@ -136,7 +136,7 @@ class EncrustedBush(src.items.Item):
             # expand east
             if upperLeftEdge[0] % 15 + sizeX < 14:
                 rowOk = True
-                for y in range(0, sizeY):
+                for y in range(sizeY):
                     items = self.container.getItemByPosition(
                         (upperLeftEdge[0] + sizeX, upperLeftEdge[1] + y,0)
                     )
@@ -157,8 +157,8 @@ class EncrustedBush(src.items.Item):
 
         keepItems = []
         doorPos = ()
-        for x in range(0, sizeX):
-            for y in range(0, sizeY):
+        for x in range(sizeX):
+            for y in range(sizeY):
                 if x == 0 or y == 0 or x == sizeX - 1 or y == sizeY - 1:
                     if x == 0 and y == 1:
                         item = src.items.itemMap["Door"](bio=True)

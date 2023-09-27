@@ -15,7 +15,7 @@ class ReserveCityBuilder(src.items.Item):
         self.neededRepairItems = []
         repairCandidates = ["Rod","Heater","puller","Stripe","Bolt","Tank"]
         #for i in range(0,random.randint(3,5)):
-        for i in range(0,0):
+        for i in range(0):
             candidate = random.choice(repairCandidates)
             self.neededRepairItems.append(candidate)
             repairCandidates.remove(candidate)

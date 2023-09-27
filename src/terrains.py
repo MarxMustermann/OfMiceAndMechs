@@ -1080,9 +1080,9 @@ class Terrain:
         pathfinder = self.pathfinderCache.get(tilePos)
         if not pathfinder or ignoreEndBlocked or clearing:
             tileMap = []
-            for x in range(0,15):
+            for x in range(15):
                 tileMap.append([])
-                for y in range(0,15):
+                for y in range(15):
                     if x in (0,14,) or y in (0,14):
                         tileMap[x].append(0)
                     else:
@@ -1151,9 +1151,9 @@ class Terrain:
         """
 
         tileMap = []
-        for x in range(0,15):
+        for x in range(15):
             tileMap.append([])
-            for y in range(0,15):
+            for y in range(15):
                 if x in (0,14,) or y in (0,14):
                     tileMap[x].append(0)
                 else:
@@ -1471,19 +1471,19 @@ class Terrain:
         chars = []
 
         if size[0] > coordinateOffset[0]:
-            for i in range(0,coordinateOffset[0]-size[0]):
+            for i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(0, size[1]):
+                for j in range(size[1]):
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 250):
+        for i in range(250):
             line = []
 
             if coordinateOffset[1] < 0:
-                for j in range(0,-coordinateOffset[1]):
+                for j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 250):
+            for j in range(250):
                 line.append(displayChar)
             chars.append(line)
         return chars
@@ -1586,21 +1586,21 @@ class Terrain:
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
-            for x in range(0, 225):
+            for x in range(225):
                 if (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
                     continue
 
-                for y in range(0, 16):
+                for y in range(16):
                     if not (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
                     if not (y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0]):
                         chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
 
-            for y in range(0, 225):
+            for y in range(225):
                 if (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
                     continue
 
-                for x in range(0, 16):
+                for x in range(16):
                     if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
                         try:
                             chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
@@ -1619,16 +1619,16 @@ class Terrain:
                     else:
                         room.hidden = True
 
-            for bigX in range(0, 14):
+            for bigX in range(14):
                 if bigX*15 < coordinateOffset[1]-15 or bigX*15 > coordinateOffset[1]+size[1]+15:
                     continue
 
-                for bigY in range(0, 14):
+                for bigY in range(14):
                     if bigY*15 < coordinateOffset[0]-15 or bigY*15 > coordinateOffset[0]+size[0]+15:
                         continue
 
-                    for x in range(0, 15):
-                        for y in range(0, 15):
+                    for x in range(15):
+                        for y in range(15):
 
                             if x == 7 or y == 7:
                                 continue
@@ -1895,9 +1895,9 @@ class Terrain:
 
     def renderTiles(self):
         chars = []
-        for y in range(0,15):
+        for y in range(15):
             chars.append([])
-            for x in range(0,15):
+            for x in range(15):
                 if y == 0 or x == 0 or y == 14 or x == 14:
                     chars[y].append(src.canvas.displayChars.forceField)
                 else:
@@ -2385,20 +2385,20 @@ class Nothingness(Terrain):
             displayChar = f"+{src.gamestate.gamestate.mainChar.zPosition}"
 
         chars = []
-        for i in range(0,-coordinateOffset[0]):
+        for i in range(-coordinateOffset[0]):
             line = []
             chars.append(line)
 
-        for i in range(0, 15*15):
+        for i in range(15*15):
             line = []
 
             if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
                 continue
 
-            for j in range(0,-coordinateOffset[1]):
+            for j in range(-coordinateOffset[1]):
                 line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 15*15):
+            for j in range(15*15):
 
                 if coordinateOffset: # game runs horrible without this flag
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
@@ -2736,22 +2736,22 @@ _____________"""
         chars = []
 
         if size[0] > coordinateOffset[0]:
-            for i in range(0,coordinateOffset[0]-size[0]):
+            for i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(0, size[1]):
+                for j in range(size[1]):
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                         continue
 
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 250):
+        for i in range(250):
             line = []
 
             if coordinateOffset[1] < 0:
-                for j in range(0,-coordinateOffset[1]):
+                for j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 250):
+            for j in range(250):
                 if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                     continue
 
@@ -2880,9 +2880,9 @@ class Desert(Terrain):
         import random
 
         self.heatmap = []
-        for x in range(0, 15):
+        for x in range(15):
             self.heatmap.append([])
-            for y in range(0, 15):
+            for y in range(15):
                 self.heatmap[x].append(0)
                 self.heatmap[x][y] = random.randint(1, 5)
 
@@ -2951,21 +2951,21 @@ class Desert(Terrain):
 
         chars = []
         if size[0] > coordinateOffset[0]:
-            for i in range(0,coordinateOffset[0]-size[0]):
+            for i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(0, size[1]):
+                for j in range(size[1]):
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 15*15):
+        for i in range(15*15):
             line = []
             if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
                 continue
 
             if coordinateOffset[1] < 0:
-                for j in range(0,-coordinateOffset[1]):
+                for j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 15*15):
+            for j in range(15*15):
                 if coordinateOffset: # game runs horrible without this flag
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                         continue
@@ -2997,9 +2997,9 @@ class Desert(Terrain):
         ]
 
         chars = []
-        for i in range(0, 250):
+        for i in range(250):
             line = []
-            for j in range(0, 250):
+            for j in range(250):
                 if not self.hidden:
                     try:
                         line.append(desertTiles[self.heatmap[j // 15][i // 15]])
@@ -3080,7 +3080,7 @@ class Base(Nothingness):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -3191,7 +3191,7 @@ class Base2(Nothingness):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -3292,7 +3292,7 @@ class Ruin(Base):
             item.destroy()
 
         for room in self.rooms:
-            for i in range(0,4):
+            for i in range(4):
                 room.damage()
 
         for character in self.characters[:]:
@@ -3312,7 +3312,7 @@ class Ruin(Base):
             if level < 0:
                 continue
 
-            for i in range(0,level):
+            for i in range(level):
                 enemy = src.characters.Monster()
                 room.addCharacter(enemy,random.randint(2,13),random.randint(2,13))
                 enemy.macroState["macros"]["g"] = ["g","g","_","g"]
@@ -3320,7 +3320,7 @@ class Ruin(Base):
                 enemy.baseDamage = 10+level
                 enemy.runCommandString("_g")
 
-            for i in range(0,2**level):
+            for i in range(2**level):
                 room.addItem(src.items.itemMap["GlassCrystal"](),(random.randint(2,13),random.randint(2,13),0))
 
 class ScrapField(Terrain):

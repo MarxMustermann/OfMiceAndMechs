@@ -293,9 +293,9 @@ class Canvas:
 
         # fill the canvas with the default char
         self.chars = []
-        for x in range(0, size[0]):
+        for x in range(size[0]):
             line = []
-            for y in range(0, size[1]):
+            for y in range(size[1]):
                 line.append(defaultChar)
             self.chars.append(line)
 
@@ -478,7 +478,7 @@ class Canvas:
 
         # add newlines over the drawing area
         if self.shift[0] > 0:
-            for x in range(0, self.shift[0]):
+            for x in range(self.shift[0]):
                 out.append("\n")
 
         # add rendered content to result
@@ -486,7 +486,7 @@ class Canvas:
 
             # add spaces to the left of the drawing area
             if self.shift[1] > 0:
-                for x in range(0, self.shift[1]):
+                for x in range(self.shift[1]):
                     out.append(blank)
 
             # add this lines content

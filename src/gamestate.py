@@ -116,9 +116,9 @@ class GameState:
         self.openingCinematic = None
 
         self.terrainMap = []
-        for y in range(0, 15):
+        for y in range(15):
             line = []
-            for x in range(0, 15):
+            for x in range(15):
                 if x == 15 and y == 15:
                     thisTerrain = self.terrainType(seed=seed)
                     self.terrain = thisTerrain

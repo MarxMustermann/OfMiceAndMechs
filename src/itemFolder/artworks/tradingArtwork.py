@@ -207,7 +207,7 @@ class TradingArtwork(src.items.Item):
         character.removeItemsFromInventory(allItemsFound)
 
         for itemSpec in trade["recieve"]:
-            for i in range(0, itemSpec[1]):
+            for i in range(itemSpec[1]):
                 item = src.items.itemMap[itemSpec[0]]()
                 if itemSpec[0] == "Machine":
                     item.setToProduce(itemSpec[2])

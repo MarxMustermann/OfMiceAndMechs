@@ -34,7 +34,7 @@ class HiveMind(src.items.Item):
         self.needCoal = []
 
         self.faction = ""
-        for i in range(0, 5):
+        for i in range(5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
@@ -253,7 +253,7 @@ class HiveMind(src.items.Item):
                 command += "kkj"
             else:
                 extraCommand = ""
-                for i in range(0, 2):
+                for i in range(2):
                     direction = random.choice(["w", "a", "s", "d"])
                     extraCommand += 13 * (direction + "k")
 
@@ -278,29 +278,29 @@ class HiveMind(src.items.Item):
                 index = 0
                 while length < 13:
                     if length % 2 == 1:
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[1] -= 1
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[0] += 1
                     else:
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[1] += 1
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[0] -= 1
                     length += 1
-                for i in range(0, length - 1):
+                for i in range(length - 1):
                     if index == self.colonizeIndex:
                         break
                     index += 1

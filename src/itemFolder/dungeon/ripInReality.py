@@ -155,7 +155,7 @@ class RipInReality(src.items.Item):
                 newRoom.addCharacter(character, startPosition[0], startPosition[1])
 
                 numMice = random.randint(1, 5)
-                for i in range(0, numMice):
+                for i in range(numMice):
                     enemy = src.characters.Mouse()
                     enemy.frustration = 100000
                     enemy.aggro = 20

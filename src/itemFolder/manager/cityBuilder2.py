@@ -455,7 +455,7 @@ class CityBuilder2(src.items.Item):
 
         self.enemyRoomCounter += 1
 
-        for i in range(0,self.enemyRoomCounter):
+        for i in range(self.enemyRoomCounter):
             enemy = src.characters.Monster()
             enemy.godMode = True
             enemy.macroState["macros"]["g"] = ["g","g","_","g"]
@@ -468,7 +468,7 @@ class CityBuilder2(src.items.Item):
 
     def addActiveEnemies(self,params):
 
-        for i in range(0,10):
+        for i in range(10):
             enemy = src.characters.Monster()
             enemy.godMode = True
             self.container.container.addCharacter(enemy,params["coordinate"][0]*15+random.randint(2,11),params["coordinate"][1]*15+random.randint(2,11))
@@ -596,7 +596,7 @@ class CityBuilder2(src.items.Item):
         item = src.items.itemMap["GooDispenser"]()
         room.addItem(item,(8,3,0))
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Corpse"]()
             room.addItem(item,(3,6,0))
 
@@ -773,9 +773,9 @@ class CityBuilder2(src.items.Item):
 
         # render empty map
         mapContent = []
-        for x in range(0, 15):
+        for x in range(15):
             mapContent.append([])
-            for y in range(0, 15):
+            for y in range(15):
                 if x not in (0, 14) and y not in (0, 14):
                     char = "  "
                 elif x != 7 and y != 7:

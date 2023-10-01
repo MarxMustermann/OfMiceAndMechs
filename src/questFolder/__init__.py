@@ -89,3 +89,4 @@ import src.questFolder.supportAttack
 import src.questFolder.delveDungeon
 import src.questFolder.ascend
 import src.questFolder.vanish
+import src.questFolder.pray

@@ -26,12 +26,16 @@ A throne. Use it to win the game.
     def apply(self,character):
         hasAllSpecialItems = True
         currentTerrain = character.getTerrain()
-        room = currentTerrain.getRoomByPosition((7,7,0))[0]
-        for item in room.itemsOnFloor:
-            if item.type == "SpecialItemSlot" and not item.hasItem:
-                hasAllSpecialItems = False
 
-        if not hasAllSpecialItems:
+        terrainPos = (currentTerrain.xPosition,currentTerrain.yPosition)
+
+        foundMissingHeart = False
+        for god in src.gamestate.gamestate.gods.values():
+            if god["lastHeartPos"] == terrainPos:
+                continue
+            foundMissingHeart = True
+
+        if foundMissingHeart:
             character.addMessage("you need to control all special items")
             return
 

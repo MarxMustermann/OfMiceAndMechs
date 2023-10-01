@@ -42,13 +42,15 @@ class GameState:
         self.savedThisTurn = False
         self.waitedForInputThisTurn = False
         self.gods = {
-                1:{"name":"god1","mana":0},
-                2:{"name":"god2","mana":0},
-                3:{"name":"god3","mana":0},
-                4:{"name":"god4","mana":0},
-                5:{"name":"god5","mana":0},
-                6:{"name":"god6","mana":0},
-                7:{"name":"god7","mana":0},
+                3:{"name":"god3","mana":200,"home":(7,6),"lastHeartPos":(7,6)},
+                4:{"name":"god4","mana":200,"home":(7,5),"lastHeartPos":(7,5)},
+                5:{"name":"god5","mana":200,"home":(7,4),"lastHeartPos":(7,4)},
+                6:{"name":"god6","mana":200,"home":(7,3),"lastHeartPos":(7,3)},
+                7:{"name":"god7","mana":200,"home":(7,2),"lastHeartPos":(7,2)},
+                2:{"name":"god2","mana":200,"home":(7,7),"lastHeartPos":(7,7)},
+                1:{"name":"god1","mana":200,"home":(7,8),"lastHeartPos":(7,8),
+                      "roomRewardMapByTerrain":{}
+                  },
                     }
 
         self.multi_chars = set()

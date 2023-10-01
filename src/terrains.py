@@ -63,6 +63,9 @@ class Terrain:
         self.collectionSpots = []
         self.ignoreAttributes = []
         self.pathCache = {}
+        self.mana = 0
+        self.manaRegen = 1
+        self.maxMana = 10
 
         super().__init__()
 
@@ -220,6 +223,15 @@ class Terrain:
         self.advanceRoom()
         self.advanceBiomes()
         self.handleEvents()
+
+        if src.gamestate.gamestate.tick%(15*15*15) == 0:
+            try:
+                self.mana
+            except:
+                self.mana = 0
+
+            increaseAmount = min(self.manaRegen,self.maxMana-self.mana)
+            self.mana += increaseAmount
 
     def randomAddItems(self, items):
         for item in items:

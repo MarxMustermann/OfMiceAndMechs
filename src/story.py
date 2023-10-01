@@ -3930,10 +3930,12 @@ class MainGame(BasicPhase):
 
             #self.setUpThroneDungeon((7,7))
             self.setUpGlassHeartDungeon((7,6),3,1)
-            self.setUpGlassHeartDungeon((7,5),4,2)
-            self.setUpGlassHeartDungeon((7,4),5,3)
-            self.setUpGlassHeartDungeon((7,3),6,4)
-            self.setUpGlassHeartDungeon((7,2),7,5)
+            self.setUpGlassHeartDungeon((7,5),4,1)
+            self.setUpGlassHeartDungeon((7,4),5,1)
+            self.setUpGlassHeartDungeon((7,3),6,1)
+            self.setUpGlassHeartDungeon((7,2),7,1)
+            self.setUpGlassHeartDungeon((7,7),2,1)
+            self.setUpGlassHeartDungeon((7,8),1,1)
             self.activeStory = self.colonyBaseInfos2[0]
             """
         else:
@@ -4307,7 +4309,7 @@ try to remember how you got here ..."""
                 room.addCharacter(enemy, pos[0], pos[1])
             counter += 1
 
-        glassHeart = src.items.itemMap["SpecialItemSlot"]()
+        glassHeart = src.items.itemMap["GlassStatue"]()
         glassHeart.hasItem = True
         glassHeart.itemID = itemID
         mainRoom.addItem(glassHeart,(6,6,0))
@@ -4445,13 +4447,13 @@ try to remember how you got here ..."""
         item.itemID = 2
         mainRoom.addItem(item,(2,3,0))
 
-        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
-        colonyBaseInfo["epochArtwork"] = epochArtwork
-        epochArtwork.leader = mainChar
-        epochArtwork.epochSurvivedRewardAmount = 0
-        epochArtwork.changeCharges(60)
+        #epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
+        #colonyBaseInfo["epochArtwork"] = epochArtwork
+        #epochArtwork.leader = mainChar
+        #epochArtwork.epochSurvivedRewardAmount = 0
+        #epochArtwork.changeCharges(60)
+        #mainRoom.addItem(epochArtwork,(3,3,0))
         mainChar.rank = 3
-        mainRoom.addItem(epochArtwork,(3,3,0))
         """
         quest = src.quests.questMap["EpochQuest"]()
         mainChar.assignQuest(quest,active=True)
@@ -4762,7 +4764,7 @@ try to remember how you got here ..."""
 
             if not bestCandidate.rank:
                 bestCandidate.rank = 6
-            bestCandidate.duties = ["city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+            bestCandidate.duties = ["praying","city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
             bestCandidate.addListener(self.createColony_baseLeaderDeath,"died_pre")
             colonyBaseInfo["mainChar"] = bestCandidate
 
@@ -4838,6 +4840,9 @@ try to remember how you got here ..."""
         self.factionCounter += 1
         colonyBaseInfo = {"type":"colonyBase"}
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.maxMana = 100
+        currentTerrain.manaRegen = 5
+        currentTerrain.mana = 60
         colonyBaseInfo["terrain"] = currentTerrain
         colonyBaseInfo["mainChar"] = mainChar
 
@@ -4848,7 +4853,7 @@ try to remember how you got here ..."""
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["city planning","clone spawning","questing","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        mainChar.duties = ["praying","city planning","clone spawning","questing","painting","machine placing","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
 
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
@@ -4895,29 +4900,13 @@ try to remember how you got here ..."""
             mainChar, 6, 6
         )
 
-        if mainCharBase:
-            item = src.items.itemMap["SpecialItemSlot"]()
-            item.itemID = 1
-            item.hasItem = True
-            mainRoom.addItem(item,(1,1,0))
-        if not mainCharBase:
-            item = src.items.itemMap["SpecialItemSlot"]()
-            item.hasItem = True
-            item.itemID = 2
-            mainRoom.addItem(item,(2,1,0))
-        #for i in range(0,5):
-        #    item = src.items.itemMap["SpecialItemSlot"]()
-        #    item.hasItem = False
-        #    item.itemID = 3+i
-        #    mainRoom.addItem(item,(7+i,7,0))
-
-        epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
-        colonyBaseInfo["epochArtwork"] = epochArtwork
-        epochArtwork.leader = mainChar
-        epochArtwork.epochSurvivedRewardAmount = 0
-        epochArtwork.changeCharges(60)
+        #epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
+        #colonyBaseInfo["epochArtwork"] = epochArtwork
+        #epochArtwork.leader = mainChar
+        #epochArtwork.epochSurvivedRewardAmount = 0
+        #epochArtwork.changeCharges(60)
+        #mainRoom.addItem(epochArtwork,(3,1,0))
         mainChar.rank = 6
-        mainRoom.addItem(epochArtwork,(3,1,0))
         """
         quest = src.quests.questMap["EpochQuest"]()
         mainChar.assignQuest(quest,active=True)
@@ -4930,6 +4919,12 @@ try to remember how you got here ..."""
 
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
+
+        shrine = src.items.itemMap["Shrine"](god=1)
+        mainRoom.addItem(shrine,(1,1,0))
+
+        shrine = src.items.itemMap["Shrine"](god=2)
+        mainRoom.addItem(shrine,(2,1,0))
 
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         personnelArtwork.charges = 10
@@ -6314,6 +6309,7 @@ When you rise in rank you will be able to build a way out of here."""
         
         room = random.choice(terrain.rooms)
 
+        '''
         if not src.gamestate.gamestate.tick < 100:
             if state["mainChar"] == src.gamestate.gamestate.mainChar:
                 text = f"""
@@ -6397,20 +6393,12 @@ for controlling at least 1 special item.
 
 """
 
-                if len(hasSpecialItems):
-                    numGlassTears = 5*len(hasSpecialItems)
-                    state["epochArtwork"].changeCharges(numGlassTears)
-
-                    text += f"""
-{numGlassTears} glass tears credited to your epoch artwork,
-for controlling {len(hasSpecialItems)} special items.
-
-"""
-
                 text += """
 press enter to continue"""
                 src.interaction.showInterruptText(text)
+        '''
 
+        '''
         if not src.gamestate.gamestate.tick < 100:
             if state["mainChar"] == src.gamestate.gamestate.mainChar:
                 text = f"""
@@ -6513,6 +6501,7 @@ for controlling at least 1 special item.
                 text += """
 press enter to continue"""
                 src.interaction.showInterruptText(text)
+        '''
 
     def advanceSiegedBase(self,state):
         terrain = state["terrain"]

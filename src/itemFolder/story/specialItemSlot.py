@@ -54,7 +54,7 @@ class SpecialItemSlot(src.items.Item):
             if character.faction == self.faction:
                 character.die(reason="stealing from your own faction")
                 return
-            newItem = src.items.itemMap["SpecialItem"]()
+            newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15))
             newItem.itemID = self.itemID
             if self.yPosition == 1:
                 self.container.addItem(newItem,(self.xPosition,self.yPosition+1,self.zPosition))

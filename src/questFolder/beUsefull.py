@@ -462,12 +462,16 @@ We should stop watching and do something about that.
     def checkTriggerCloneSpawning(self,character,room):
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
-        epochArtwork = cityCore.getItemsByType("EpochArtwork",needsBolted=True)[0]
 
-        if epochArtwork.recalculateGlasstears(character,dryRun=True):
-            quest = src.quests.questMap["GetEpochEvaluation"](reason="collect the glass tears you earned")
-            self.addQuest(quest)
-            return True
+        foundShrine = None
+        for room in terrain.rooms:
+            for checkShrine in room.getItemsByType("Shrine"):
+                if not checkShrine.god == 1:
+                    continue
+                foundShrine = checkShrine
+
+        if not foundShrine:
+            return False
 
         # gather npc duties
         npcDuties = {}
@@ -491,10 +495,12 @@ We should stop watching and do something about that.
         quests = []
         for duty in ["resource gathering","scrap hammering","hauling","metal working","resource fetching","room building","painting","machining","machine placing","machine operation","maggot gathering","cleaning"]:
 
-            if not duty in npcDuties and epochArtwork.charges >= 10+chargesUsed:
+            if not duty in npcDuties and character.getTerrain().mana >= foundShrine.getCharacterSpawningCost(character)+chargesUsed:
                 quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
                 chargesUsed += 10
                 quests.append(quest)
+                break
+
         for quest in reversed(quests):
             self.addQuest(quest)
         if quests:
@@ -504,23 +510,23 @@ We should stop watching and do something about that.
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
-        epochArtwork = cityCore.getItemByType("EpochArtwork",needsBolted=True)
+        #epochArtwork = cityCore.getItemByType("EpochArtwork",needsBolted=True)
 
-        if epochArtwork.recalculateGlasstears(character,dryRun=True):
-            quest = src.quests.questMap["GetEpochEvaluation"](reason="collect the glass tears you earned")
-            self.addQuest(quest)
-            return True
+        #if epochArtwork.recalculateGlasstears(character,dryRun=True):
+        #    quest = src.quests.questMap["GetEpochEvaluation"](reason="collect the glass tears you earned")
+        #    self.addQuest(quest)
+        #    return True
 
         # do inventory of scrap fields
         numItemsScrapfield = 0
         for scrapField in terrain.scrapFields:
             numItemsScrapfield += len(terrain.itemsByBigCoordinate.get(scrapField,[]))
 
-        if numItemsScrapfield < 100 and epochArtwork.charges >= 20:
+        if numItemsScrapfield < 100 and terrain.mana >= 20:
             quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
             self.addQuest(quest)
 
-            if numItemsScrapfield < 50 and epochArtwork.charges >= 40:
+            if numItemsScrapfield < 50 and terrain.mana >= 40:
                 quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
                 self.addQuest(quest)
             return True
@@ -534,7 +540,7 @@ We should stop watching and do something about that.
         for room in terrain.rooms:
             if room.tag:
                 continue
-            if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+            if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
                 continue
             numEmptyRooms += 1
 
@@ -589,7 +595,7 @@ We should stop watching and do something about that.
                     continue
                 if room.getPosition() in cityPlaner.generalPurposeRooms:
                     continue
-                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
                     continue
 
                 quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
@@ -622,13 +628,30 @@ We should stop watching and do something about that.
                     continue
                 if room.getPosition() in cityPlaner.generalPurposeRooms:
                     continue
-                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
                     continue
 
                 quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
                 self.addQuest(quest)
                 return True
 
+        foundEnemies = False
+        for checkCharacter in terrain.characters:
+            if checkCharacter.faction == character.faction:
+                continue
+            foundEnemies = True
+
+        if not foundEnemies:
+            hasTemple = False
+            for room in terrain.rooms:
+                if not room.tag == "temple":
+                    continue
+                hasTemple = True
+            
+            if not hasTemple:
+                quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType="temple",reason="have a temple to place glass hearts")
+                self.addQuest(quest)
+                return True
 
         """
         #set special purpose room
@@ -1174,7 +1197,7 @@ We should stop watching and do something about that.
             for room in terrain.rooms:
                 if room.tag:
                     continue
-                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
                     continue
                 numEmptyRooms += 1
 
@@ -1470,20 +1493,17 @@ We should stop watching and do something about that.
             return True
         return False
 
-    def checkTriggerEpochQuesting(self,character,room):
-        1/0
-
     def checkTriggerQuesting(self,character,room):
         if character.rank and not character.rank == 1:
-            terrain = src.gamestate.gamestate.terrainMap[character.registers["HOMETy"]][character.registers["HOMETx"]]
-            room = terrain.getRoomByPosition((7,7,0))[0]
-            specialItemSlots = room.getItemsByType("SpecialItemSlot")
-            filledSpecialItemSlots = []
-            for specialItemSlot in specialItemSlots:
-                if not specialItemSlot.hasItem:
+            terrainPos = (character.registers["HOMETx"],character.registers["HOMETy"])
+
+            foundMissingHeart = False
+            for god in src.gamestate.gamestate.gods.values():
+                if god["lastHeartPos"] == terrainPos:
                     continue
-                filledSpecialItemSlots.append(specialItemSlot)
-            if len(filledSpecialItemSlots) > 6:
+                foundMissingHeart = True
+
+            if not foundMissingHeart:
                 quest = src.quests.questMap["Ascend"]()
                 self.addQuest(quest)
                 quest.assignToCharacter(character)
@@ -1538,6 +1558,8 @@ We should stop watching and do something about that.
                 for enemy in foundEnemies:
                     weight = character.weightAttack(enemy.getBigPosition())
                     if weight > 0:
+                        print(weight)
+                        input("weight too big")
                         continue
 
                     quest = src.quests.questMap["ClearInventory"]()
@@ -1564,39 +1586,60 @@ We should stop watching and do something about that.
                 self.character.addGrievance(grievance)
                 return
 
-            if numNPCs < 10:
+            if numNPCs < 9:
                 return 
 
-            positions = [(7,6),(7,5),(7,4),(7,3),(7,2),(6,6),(8,6)]
-            for pos in positions:
-                if character.registers["HOMETx"] == pos[0] and character.registers["HOMETy"] == pos[1]:
+            hasTemple = False
+            for room in terrain.rooms:
+                if not room.tag == "temple":
                     continue
+                hasTemple = True
 
-                terrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-                rooms = terrain.getRoomByPosition((7,7,0))
-                if not rooms:
-                    continue
-                room = rooms[0]
-                specialItemSlots = room.getItemsByType("SpecialItemSlot")
-                fullSpot = None
-                for specialItemSlot in specialItemSlots:
-                    if not specialItemSlot.hasItem:
+            if hasTemple:
+                target = None
+                for (godId,god) in src.gamestate.gamestate.gods.items():
+                    if not god["home"] == god["lastHeartPos"]:
                         continue
-                    fullSpot = specialItemSlot
+                    target = (godId,god)
+                    break
 
-                if not fullSpot:
+                if target:
+                    pos = target[1]["lastHeartPos"]
+
+                    if not (character.registers["HOMETx"] == pos[0] and character.registers["HOMETy"] == pos[1]):
+                        quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
+                        self.addQuest(quest)
+                        quest.assignToCharacter(character)
+
+                        quest = src.quests.questMap["Equip2"]()
+                        self.addQuest(quest)
+                        quest.assignToCharacter(character)
+                        quest.activate()
+                        self.idleCounter = 0
+                        return True
+
+    def checkTriggerPraying(self,character,room):
+        terrain = character.getTerrain()
+        rooms = terrain.rooms[:]
+        random.shuffle(rooms)
+        produceQuest = None
+        for room in [room]+rooms:
+            shrines = room.getItemsByType("Shrine")
+            foundShrine = None
+            for checkShrine in shrines:
+                if not checkShrine.isChallengeDone():
                     continue
+                foundShrine = checkShrine
 
-                quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
+            if not foundShrine:
+                continue
 
-                quest = src.quests.questMap["Equip2"]()
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                self.idleCounter = 0
-                return True
+            quest = src.quests.questMap["Pray"](targetPosition=foundShrine.getPosition(),targetPositionBig=foundShrine.getBigPosition())
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            self.idleCounter = 0
+            return True
 
     def generateSubquests(self,character):
 
@@ -1871,14 +1914,18 @@ We should stop watching and do something about that.
                 if self.checkTriggerQuesting(character,room):
                     return
 
+            if duty == "praying":
+                if self.checkTriggerPraying(character,room):
+                    return
+
             if duty == "tutorial" and character == src.gamestate.gamestate.mainChar:
                 if self.specialTutorialLogic(character,room):
                     return
 
         for room in character.getTerrain().rooms:
-            if room.tag == "meetingHall":
+            if room.tag == "temple":
                 if not room == character.container:
-                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to meeting hall")
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to temple")
                     self.idleCounter += 1
                     self.addQuest(quest)
                     return

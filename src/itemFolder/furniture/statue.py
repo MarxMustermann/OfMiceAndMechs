@@ -26,13 +26,17 @@ class Statue(src.items.Item):
         options = super().getConfigurationOptions(character)
         if self.bolted:
             options["b"] = ("unbolt", self.unboltAction)
+            options["p"] = ("pray", self.pray)
         else:
             options["b"] = ("bolt down", self.boltAction)
-        options["p"] = ("pray", self.pray)
         return options
 
     def pray(self,character):
         itemID = None
+        if self.getPosition() == (2,2,0):
+            itemID = 1
+        if self.getPosition() == (4,2,0):
+            itemID = 2
         if self.getPosition() == (7,2,0):
             itemID = 3
         if self.getPosition() == (10,2,0):

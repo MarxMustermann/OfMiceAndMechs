@@ -72,11 +72,88 @@ def advanceGame():
     if src.gamestate.gamestate.mainChar.dead:
         showDeathScreen()
 
-    if src.gamestate.gamestate.tick%(15*15*15) == 0:
+    if src.gamestate.gamestate.tick%(15*15*15*15) == 0:
         for god in src.gamestate.gamestate.gods.values():
             if not "mana" in god:
                 god["mana"] = 0
-            god["mana"] += 100
+            god["mana"] += 10
+
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
+            foundEmptyGlassStatue = None
+            hasItem = False
+            for room in terrain.rooms:
+                glassStatues = room.getItemsByType("GlassStatue")
+                for glassStatue in glassStatues:
+                    if not glassStatue.itemID == godId:
+                        continue
+
+                    if glassStatue.hasItem:
+                        hasItem = True
+                    else:
+                        foundEmptyGlassStatue = glassStatue
+
+            if not hasItem and foundEmptyGlassStatue:
+                foundEmptyGlassStatue.hasItem = True
+
+        for god in src.gamestate.gamestate.gods.values():
+            terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
+            increaseAmount = min(5,terrain.maxMana-terrain.mana)
+            terrain.mana += increaseAmount
+
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            if ( (not god["lastHeartPos"][0] == god["home"][0]) or
+                 (not god["lastHeartPos"][1] == god["home"][1])):
+
+                terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
+
+                spectreHome = (god["home"][0],god["home"][1],0)
+
+                numEnemies = 1
+                numSpectres = 0
+                numSpectres += numEnemies
+
+                numGlassHeartsOnPos = 0
+                for checkGod in src.gamestate.gamestate.gods.values():
+                    if not god["lastHeartPos"] == checkGod["lastHeartPos"]:
+                        numGlassHeartsOnPos += 1
+
+                for i in range(0,numSpectres):
+                    bigPos = (random.randint(1,13),random.randint(1,13),0)
+                    enemy = src.characters.Monster(6,6)
+                    enemy.health = 10*numGlassHeartsOnPos
+                    enemy.baseDamage = numGlassHeartsOnPos
+                    enemy.faction = "spectre"
+                    enemy.tag = "spectre"
+                    enemy.movementSpeed = 2
+                    enemy.registers["HOMETx"] = spectreHome[0]
+                    enemy.registers["HOMETy"] = spectreHome[1]
+                    enemy.registers["HOMEx"] = 7
+                    enemy.registers["HOMEy"] = 7
+                    enemy.personality["moveItemsOnCollision"] = False
+                    rooms = terrain.getRoomByPosition(bigPos)
+                    if rooms:
+                        rooms[0].addCharacter(enemy,6,6)
+                    else:
+                        terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+
+                    quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+                    quest = src.quests.questMap["GoHome"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+                    quest = src.quests.questMap["Vanish"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
 
     #if src.gamestate.gamestate.tick%100 == 15:
     #    src.gamestate.gamestate.save()
@@ -5597,7 +5674,7 @@ class JobAsMatrixMenu(SubMenu):
                 if not char in npcs:
                     npcs.append(char)
 
-        duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing"]))
+        duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","praying"]))
         if key == "w":
             if not self.index[0] < 1:
                 self.index[0] -= 1

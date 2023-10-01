@@ -1557,10 +1557,6 @@ We should stop watching and do something about that.
                 random.shuffle(foundEnemies)
                 for enemy in foundEnemies:
                     weight = character.weightAttack(enemy.getBigPosition())
-                    if weight > 0:
-                        print(weight)
-                        input("weight too big")
-                        continue
 
                     quest = src.quests.questMap["ClearInventory"]()
                     self.addQuest(quest)

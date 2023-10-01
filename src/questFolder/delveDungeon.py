@@ -80,10 +80,8 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                 for room in terrain.rooms:
                     for glassStatue in room.getItemsByType("GlassStatue"):
                         if not glassStatue.hasItem:
-                            print("skipped item filled")
                             continue
                         if self.itemID and not glassStatue.itemID == self.itemID:
-                            print("skipped item id")
                             continue
                         foundGlassStatue = glassStatue
 

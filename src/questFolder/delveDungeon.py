@@ -45,20 +45,19 @@ class DelveDungeon(src.quests.MetaQuestSequence):
 
         hasSpecialItem = None
         for item in character.inventory:
-            if not item.type == "SpecialItem":
+            if item.type != "SpecialItem":
                 continue
             hasSpecialItem = item
 
         terrain = character.getTerrain()
 
         if not hasSpecialItem:
-            if not terrain.xPosition == self.targetTerrain[0] or not terrain.yPosition == self.targetTerrain[1]:
+            if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0))
                 return ([quest],None)
-            if character.health < character.maxHealth//5:
-                if character.getNearbyEnemies():
-                    quest = src.quests.questMap["Flee"]()
-                    return ([quest],None)
+            if character.health < character.maxHealth//5 and character.getNearbyEnemies():
+                quest = src.quests.questMap["Flee"]()
+                return ([quest],None)
             if character.health < character.maxHealth*0.75:
                 if character.getNearbyEnemies():
                     quest = src.quests.questMap["Fight"]()

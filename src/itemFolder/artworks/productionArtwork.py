@@ -187,16 +187,15 @@ Select the thing to produce and confirm."""
                 return
 
             targetFull = False
-            if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates:
-                if (
-                    len(
-                        self.container.itemByCoordinates[
-                            (self.xPosition + 1, self.yPosition)
-                        ]
-                    )
-                    > 0
-                ):
-                    targetFull = True
+            if (self.xPosition + 1, self.yPosition) in self.container.itemByCoordinates and (
+                len(
+                    self.container.itemByCoordinates[
+                        (self.xPosition + 1, self.yPosition)
+                    ]
+                )
+                > 0
+            ):
+                targetFull = True
 
             if targetFull:
                 self.character.addMessage(

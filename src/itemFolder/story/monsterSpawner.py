@@ -35,7 +35,7 @@ class MonsterSpawner(src.items.Item):
         self.destroy()
 
     def spawnMonster(self,mass=1):
-        for i in range(0,mass):
+        for i in range(mass):
             pos = self.getPosition()
             room = self.container
             enemy = src.characters.Monster(pos[0],pos[1])
@@ -67,13 +67,13 @@ class MonsterSpawner(src.items.Item):
 
         terrain = self.getTerrain()
         for character in terrain.characters:
-            if not character.faction == "invader":
+            if character.faction != "invader":
                 continue
             if foundSpawner:
                 distance = character.getBigDistance(self.container.getPosition())
                 if distance > 3:
                     continue
-                if not character.tag == "hiveGuard":
+                if character.tag != "hiveGuard":
                     continue
 
             quest = src.quests.questMap["ClearTerrain"]()
@@ -86,7 +86,7 @@ class MonsterSpawner(src.items.Item):
                     continue
 
             for character in room.characters:
-                if not character.faction == "invader":
+                if character.faction != "invader":
                     continue
                 quest = src.quests.questMap["ClearTerrain"]()
                 quest.autoSolve = True

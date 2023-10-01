@@ -14,7 +14,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
         self.takeAnyUnbolted = takeAnyUnbolted
 
     def builtRoom(self,extraParam):
-        if self.targetPosition and not extraParam["room"].getPosition() == self.targetPosition:
+        if self.targetPosition and extraParam["room"].getPosition() != self.targetPosition:
             return
         self.postHandler()
 
@@ -116,7 +116,7 @@ Press d to move the cursor and show the subquests description.
 
             terrain = character.getTerrain()
             items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
-            if not items or not items[-1].type == "RoomBuilder":
+            if not items or items[-1].type != "RoomBuilder":
                 quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room")
                 return ([quest],None)
 
@@ -137,7 +137,7 @@ Press d to move the cursor and show the subquests description.
                 missingWallPositions.append(wallPos)
 
             if missingWallPositions:
-                if not character.inventory or not character.inventory[-1].type == "Wall":
+                if not character.inventory or character.inventory[-1].type != "Wall":
                     amount = None
                     if len(missingWallPositions) < 10:
                         amount = len(missingWallPositions)

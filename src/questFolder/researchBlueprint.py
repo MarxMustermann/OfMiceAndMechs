@@ -82,7 +82,7 @@ If you miss resources, produce them.
         if not self.subQuests:
             room = character.getTerrain().getRoomByPosition((7,7,0))[0]
             items = room.getItemByPosition((9,7,0))
-            if not items or not items[-1].type == "Sheet":
+            if not items or items[-1].type != "Sheet":
                 quest = src.quests.questMap["PlaceItem"](targetPosition=(9,7,0),targetPositionBig=room.getPosition(),itemType="Sheet",tryHard=self.tryHard)
                 return ([quest],None)
 
@@ -91,12 +91,12 @@ If you miss resources, produce them.
             counter = 0
             for neededResource in neededResources:
                 items = room.getItemByPosition((8,8,0))
-                if (not len(items) > counter) or (not items[-1-counter].type == neededResource):
+                if (not len(items) > counter) or (items[-1 - counter].type != neededResource):
                     quest = src.quests.questMap["PlaceItem"](targetPosition=(8,8,0),targetPositionBig=room.getPosition(),itemType=neededResource,tryHard=self.tryHard)
                     return ([quest],None)
                 counter += 1
 
-            if not character.getBigPosition() == (7,7,0):
+            if character.getBigPosition() != (7, 7, 0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0))
                 return ([quest],None)
             if character.getDistance((9,8,0)) > 1:

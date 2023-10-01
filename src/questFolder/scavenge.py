@@ -54,7 +54,7 @@ This quest will end when your inventory is full."""
 
 
             for item in terrain.getNearbyItems(character):
-                if self.toCollect and not item.type == self.toCollect:
+                if self.toCollect and item.type != self.toCollect:
                     continue
                 #if item.type == "Scrap":
                 #    continue
@@ -119,7 +119,7 @@ This quest will end when your inventory is full."""
                     continue
 
                 for item in terrain.itemsByBigCoordinate.get(target,[]):
-                    if self.toCollect and not item.type == self.toCollect:
+                    if self.toCollect and item.type != self.toCollect:
                         continue
                     #if item.type == "Scrap":
                     #    continue
@@ -215,7 +215,7 @@ This quest will end when your inventory is full."""
                     continue
 
                 for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1],0),[]):
-                    if self.toCollect and not item.type == self.toCollect:
+                    if self.toCollect and item.type != self.toCollect:
                         continue
                     result.append((item.getPosition(),"target"))
 

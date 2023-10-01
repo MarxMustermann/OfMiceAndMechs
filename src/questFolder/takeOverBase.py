@@ -9,9 +9,8 @@ class TakeOverBase(src.quests.MetaQuestSequence):
         self.storyText = storyText
 
     def getSolvingCommandString(self,character,dryRun=True):
-        if not self.subQuests:
-            if character.macroState["submenue"]:
-                return ["esc"]
+        if not self.subQuests and character.macroState["submenue"]:
+            return ["esc"]
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateTextDescription(self):
@@ -42,14 +41,13 @@ press d to get a description on how to join the base
 
 
     def generateSubquests(self,character=None):
-        if not self.subQuests:
-            if self.character.rank == None:
-                quest = src.quests.questMap["Assimilate"]()
-                quest.assignToCharacter(self.character)
-                quest.activate()
-                self.addQuest(quest)
-                quest.generateSubquests(character)
-                return
+        if not self.subQuests and self.character.rank == None:
+            quest = src.quests.questMap["Assimilate"]()
+            quest.assignToCharacter(self.character)
+            quest.activate()
+            self.addQuest(quest)
+            quest.generateSubquests(character)
+            return
         super().generateSubquests()
 
     def solver(self,character):

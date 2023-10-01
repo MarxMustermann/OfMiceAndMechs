@@ -44,7 +44,7 @@ After changing the duties the clones should change their behaviour after complet
     def fetchCityleader(self):
         personnelArtwork = None
         for item in self.container.itemsOnFloor:
-            if not item.type == "PersonnelArtwork":
+            if item.type != "PersonnelArtwork":
                 continue
             personnelArtwork = item
 
@@ -64,7 +64,7 @@ After changing the duties the clones should change their behaviour after complet
             characters.extend(room.characters)
 
         for testChar in characters[:]:
-            if not testChar.faction == character.faction or len(testChar.duties) > 1:
+            if testChar.faction != character.faction or len(testChar.duties) > 1:
                 characters.remove(testChar)
 
         dutyMap = {}

@@ -34,7 +34,7 @@ class HiveMind(src.items.Item):
         self.needCoal = []
 
         self.faction = ""
-        for i in range(0, 5):
+        for i in range(5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
@@ -54,7 +54,7 @@ class HiveMind(src.items.Item):
         done = False
         selfDestroy = False
 
-        if not ((self.xPosition % 15, self.yPosition % 15) == (7, 7)):
+        if (self.xPosition % 15, self.yPosition % 15) != (7, 7):
             selfDestroy = True
 
         # get the path from the creature
@@ -75,18 +75,14 @@ class HiveMind(src.items.Item):
                 character.registers["PATHy"].pop(),
             )
 
-            if character.registers["CLUTTERED"].pop():
-                if pos not in self.cluttered:
-                    self.cluttered.append(pos)
-            if character.registers["BLOCKED"].pop():
-                if pos not in self.blocked:
-                    self.blocked.append(pos)
-            if character.registers["NUM SICK"].pop() < 4:
-                if pos not in self.needSick:
-                    self.needSick.append(pos)
-            if character.registers["NUM COAL"].pop() < 4:
-                if pos not in self.needCoal:
-                    self.needCoal.append(pos)
+            if character.registers["CLUTTERED"].pop() and pos not in self.cluttered:
+                self.cluttered.append(pos)
+            if character.registers["BLOCKED"].pop() and pos not in self.blocked:
+                self.blocked.append(pos)
+            if character.registers["NUM SICK"].pop() < 4 and pos not in self.needSick:
+                self.needSick.append(pos)
+            if character.registers["NUM COAL"].pop() < 4 and pos not in self.needCoal:
+                self.needCoal.append(pos)
 
             path.append(pos)
             if pos not in self.territory:
@@ -257,7 +253,7 @@ class HiveMind(src.items.Item):
                 command += "kkj"
             else:
                 extraCommand = ""
-                for i in range(0, 2):
+                for i in range(2):
                     direction = random.choice(["w", "a", "s", "d"])
                     extraCommand += 13 * (direction + "k")
 
@@ -273,9 +269,7 @@ class HiveMind(src.items.Item):
                 targetPos = random.choice([self.territory[0], [7, 7]])
                 while targetPos in self.territory:
                     targetPos = [random.randint(1, 12), random.randint(1, 12)]
-            elif random.randint(1, 2) and not (
-                (self.xPosition // 15, self.yPosition // 15) == (7, 7)
-            ):
+            elif random.randint(1, 2) and (self.xPosition // 15, self.yPosition // 15) != (7, 7):
                 targetPos = [7, 7]
                 anchor = (self.xPosition // 15, self.yPosition // 15)
             else:
@@ -284,29 +278,29 @@ class HiveMind(src.items.Item):
                 index = 0
                 while length < 13:
                     if length % 2 == 1:
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[1] -= 1
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[0] += 1
                     else:
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[1] += 1
-                        for i in range(0, length):
+                        for i in range(length):
                             if index == self.colonizeIndex:
                                 break
                             index += 1
                             pos[0] -= 1
                     length += 1
-                for i in range(0, length - 1):
+                for i in range(length - 1):
                     if index == self.colonizeIndex:
                         break
                     index += 1

@@ -52,7 +52,7 @@ Press d to move the cursor and show the subquests description.
 
             correctIndex = 0
             while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
-                if not self.toProduce[correctIndex] == submenue.text[correctIndex]:
+                if self.toProduce[correctIndex] != submenue.text[correctIndex]:
                     break
                 correctIndex += 1
 
@@ -98,7 +98,7 @@ Press d to move the cursor and show the subquests description.
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))
 
-        if not character.getBigPosition() == (7,7,0):
+        if character.getBigPosition() != (7, 7, 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")
             return ([quest],None)
 
@@ -153,13 +153,11 @@ Press d to move the cursor and show the subquests description.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason:
-            if reason.startswith("no source for item "):
-                if "scrap hammering" in self.character.duties:
-                    newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True)
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    return
+        if reason and reason.startswith("no source for item ") and "scrap hammering" in self.character.duties:
+            newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
         self.fail(reason)
 
     def handleConstructedMachine(self, extraInfo):
@@ -169,9 +167,8 @@ Press d to move the cursor and show the subquests description.
             return
 
         self.amountDone += 1
-        if not self.amount == None:
-            if self.amountDone >= self.amount:
-                self.postHandler()
+        if self.amount != None and self.amountDone >= self.amount:
+            self.postHandler()
 
     def handleInventoryFull(self, extraInfo):
         if self.completed:

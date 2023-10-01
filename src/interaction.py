@@ -823,10 +823,9 @@ def doAdvancedInteraction(params):
     elif key == "f":
         character = char
         for item in character.inventory:
-            if isinstance(item, src.items.itemMap["GooFlask"]):
-                if item.uses > 0:
-                    item.apply(character)
-                    break
+            if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses > 0:
+                item.apply(character)
+                break
             if (
                 isinstance(item, src.items.itemMap["Bloom"])
                 or isinstance(item, src.items.itemMap["BioMass"])
@@ -842,14 +841,13 @@ def doAdvancedInteraction(params):
     elif key == "h" or key == "H":
         character = char
         for item in character.inventory:
-            if isinstance(item, src.items.itemMap["Vial"]):
-                if item.uses > 0:
-                    if key == "h":
+            if isinstance(item, src.items.itemMap["Vial"]) and item.uses > 0:
+                if key == "h":
+                    item.apply(character)
+                    break
+                else:
+                    while item.uses and character.health < character.maxHealth:
                         item.apply(character)
-                        break
-                    else:
-                        while item.uses and character.health < character.maxHealth:
-                            item.apply(character)
     del char.interactionState["advancedInteraction"]
 
 def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
@@ -891,9 +889,8 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.timeTaken += char.movementSpeed
-    elif key == "i":
-        if char.inventory:
-            char.inventory[-1].configure(char)
+    elif key == "i" and char.inventory:
+        char.inventory[-1].configure(char)
     del char.interactionState["advancedConfigure"]
 
 def doAdvancedPickup(params):
@@ -1047,7 +1044,7 @@ def doHandleMenu(key,char,charState,main,header,footer,urwid,flags):
         noRender = False
     done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
-    if not lastSubmenu == charState["submenue"]:
+    if lastSubmenu != charState["submenue"]:
         charState["submenue"].handleKey("~", noRender=noRender, character=char)
         done = False
 
@@ -1269,10 +1266,9 @@ get position for what thing
                     continue
                 foundItems.append(item)
 
-        if "roomTile" in char.interactionState["enumerateState"][-1]["target"]:
-            if char.terrain:
-                for room in char.terrain.rooms:
-                    foundItems.append(room)
+        if "roomTile" in char.interactionState["enumerateState"][-1]["target"] and char.terrain:
+            for room in char.terrain.rooms:
+                foundItems.append(room)
 
         if "character" in char.interactionState["enumerateState"][-1]["target"]:
             for otherChar in char.container.characters:
@@ -1830,7 +1826,7 @@ type the macro that should be run in case the condition is false
                         if (
                             abs(character.xPosition - char.xPosition) < 20
                             and abs(character.yPosition - char.yPosition) < 20
-                            and not character.faction == char.faction
+                            and character.faction != char.faction
                         ):
                             conditionTrue = True
                             break
@@ -1966,21 +1962,20 @@ current macros:
         return
     else:
         charState["recording"] = False
-        if charState["recordingTo"]:
-            if charState["recordingTo"] in charState["macros"]:
-                if charState["macros"][charState["recordingTo"]]:
-                    char.addMessage(
-                        "recorded: {} to {}".format(
-                            "".join(charState["macros"][charState["recordingTo"]]),
-                            charState["recordingTo"],
-                        )
+        if charState["recordingTo"] and charState["recordingTo"] in charState["macros"]:
+            if charState["macros"][charState["recordingTo"]]:
+                char.addMessage(
+                    "recorded: {} to {}".format(
+                        "".join(charState["macros"][charState["recordingTo"]]),
+                        charState["recordingTo"],
                     )
-                else:
-                    del charState["macros"][charState["recordingTo"]]
-                    char.addMessage(
-                        "deleted: %s because of empty recording"
-                        % (charState["recordingTo"])
-                    )
+                )
+            else:
+                del charState["macros"][charState["recordingTo"]]
+                char.addMessage(
+                    "deleted: %s because of empty recording"
+                    % (charState["recordingTo"])
+                )
         charState["recordingTo"] = None
 
 def doStartStackPop(key,char,charState,main,header,footer,urwid,flags):
@@ -2257,9 +2252,8 @@ select what you want to observe
     char.interactionState["enumerateState"].append({"type": None})
 
 def doResetQuit(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
-    saveFile = open("gamestate/gamestate.json", "w")
-    saveFile.write("reset")
-    saveFile.close()
+    with open("gamestate/gamestate.json", "w") as saveFile:
+        saveFile.write("reset")
     raise urwid.ExitMainLoop()
 
 def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
@@ -2392,7 +2386,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 if enemy == char:
                     continue
                 if (
-                    not key == "M"
+                    key != "M"
                     and enemy.faction == char.faction
                 ):
                     continue
@@ -2654,9 +2648,8 @@ press key for advanced drop
         if key in ("H",):
             charState["submenue"] = InstructSubordinatesMenu()
 
-        if key in ("r",):
-            if char.room:
-                charState["submenue"] = RoomMenu(char.room)
+        if key in ("r",) and char.room:
+            charState["submenue"] = RoomMenu(char.room)
 
         """
         # recalculate the questmarker since it could be tainted
@@ -2843,9 +2836,8 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         commandChars.show_inventory_detailed,
         commandChars.show_characterInfo,
     )
-    if key not in ignoreList:
-        if lastLagDetection < time.time() - 0.4:
-            pass
+    if key not in ignoreList and lastLagDetection < time.time() - 0.4:
+        pass
             # return
 
     # repeat autoadvance keystrokes
@@ -2890,7 +2882,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         lastSubmenu = charState["submenue"]
         done = charState["submenue"].handleKey(key, noRender=noRender, character=char)
 
-        if not lastSubmenu == charState["submenue"] and charState["submenue"]:
+        if lastSubmenu != charState["submenue"] and charState["submenue"]:
             charState["submenue"].handleKey("~", noRender=noRender, character=char)
             done = False
 
@@ -3338,10 +3330,7 @@ class SelectionMenu(SubMenu):
             super().handleKey(key, noRender=noRender, character=character)
 
         # stop when done
-        if self.getSelection():
-            return True
-        else:
-            return False
+        return bool(self.getSelection())
 
 class setNPCDutiesMenu(SubMenu):
     def __init__(self,npc=None):
@@ -3529,7 +3518,7 @@ class InstructSubordinatesMenu(SubMenu):
                 self.subMenu = None
                 self.npc.assignQuest(quest,active=True)
 
-                if not character.container == self.npc.container:
+                if character.container != self.npc.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=character.getBigPosition())
                     quest.autoSolve = True
                     self.subMenu = None
@@ -3728,7 +3717,7 @@ class InstructNPCMenu(SubMenu):
                 self.subMenu = None
                 self.npc.assignQuest(quest,active=True)
 
-                if not character.container == self.npc.container:
+                if character.container != self.npc.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=character.getBigPosition())
                     quest.autoSolve = True
                     self.subMenu = None
@@ -3821,7 +3810,7 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if char in src.gamestate.gamestate.mainChar.subordinates:
                         continue
-                    if not char.faction == src.gamestate.gamestate.mainChar.faction:
+                    if char.faction != src.gamestate.gamestate.mainChar.faction:
                         continue
                     if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
                         continue
@@ -3834,7 +3823,7 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if char in src.gamestate.gamestate.mainChar.subordinates:
                         continue
-                    if not char.faction == src.gamestate.gamestate.mainChar.faction:
+                    if char.faction != src.gamestate.gamestate.mainChar.faction:
                         continue
                     if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
                         continue
@@ -3976,12 +3965,10 @@ class QuestMenu(SubMenu):
             return True
 
         # move the marker that marks the selected quest
-        if key == "w":
-            if self.questCursor[0] > 0:
-                self.questCursor[0] -= 1
-        if key == "s":
-            if self.questCursor[0] < len(character.quests)-1:
-                self.questCursor[0] += 1
+        if key == "w" and self.questCursor[0] > 0:
+            self.questCursor[0] -= 1
+        if key == "s" and self.questCursor[0] < len(character.quests)-1:
+            self.questCursor[0] += 1
         if key == "d":
             baseList = self.char.quests
             failed = False
@@ -3996,19 +3983,17 @@ class QuestMenu(SubMenu):
                     failed = True
             if not failed:
                 self.questCursor.append(0)
-        if key == "a":
-            if len(self.questCursor) > 1:
-                self.questCursor.pop()
+        if key == "a" and len(self.questCursor) > 1:
+            self.questCursor.pop()
 
         # make the selected quest active
-        if key == "j":
-            if self.questCursor[0]:
-                quest = self.char.quests[self.questCursor[0]]
-                self.char.quests.remove(quest)
-                self.char.quests.insert(0, quest)
-                self.char.setPathToQuest(quest)
-                self.questCursor[0] = 0
-                self.char.runCommandString(["esc"])
+        if key == "j" and self.questCursor[0]:
+            quest = self.char.quests[self.questCursor[0]]
+            self.char.quests.remove(quest)
+            self.char.quests.insert(0, quest)
+            self.char.setPathToQuest(quest)
+            self.questCursor[0] = 0
+            self.char.runCommandString(["esc"])
         if key == "K":
             quest = None
             baseList = self.char.quests
@@ -4402,9 +4387,8 @@ class MessagesMenu(SubMenu):
         """
 
         # exit the submenu
-        if key == "a":
-            if self.scrollIndex > 0:
-                self.scrollIndex -= 1
+        if key == "a" and self.scrollIndex > 0:
+            self.scrollIndex -= 1
         if key == "d":
             self.scrollIndex += 1
         if key == "esc":
@@ -5572,15 +5556,12 @@ class StaffAsMatrixMenu(SubMenu):
 
         text = ["press wasd to move cursor\npress j to increase\npress k to decrease\n"]
 
-        if key in ("w",):
-            if self.index[1] > 0:
-                self.index[1] -= 1
-        if key in ("s",):
-            if self.index[1] < len(self.roomTypes)-1:
-                self.index[1] += 1
-        if key in ("a",):
-            if self.index[0] > 0:
-                self.index[0] -= 1
+        if key in ("w",) and self.index[1] > 0:
+            self.index[1] -= 1
+        if key in ("s",) and self.index[1] < len(self.roomTypes)-1:
+            self.index[1] += 1
+        if key in ("a",) and self.index[0] > 0:
+            self.index[0] -= 1
         if key in ("d",):
             self.index[0] += 1
 
@@ -5629,7 +5610,7 @@ class StaffAsMatrixMenu(SubMenu):
         roomType = self.roomTypes[self.index[1]]
         roomCounter = 1
         for room in self.staffArtwork.container.container.rooms:
-            if not room.objType == roomType:
+            if room.objType != roomType:
                 continue
             if self.index[0] == 0 or self.index[0] == roomCounter:
                 out.append((room.getPosition(),"selected"))
@@ -5671,22 +5652,19 @@ class JobAsMatrixMenu(SubMenu):
                 if not char in npcs:
                     npcs.append(char)
 
-        duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","praying"]))
-        if key == "w":
-            if not self.index[0] < 1:
-                self.index[0] -= 1
+        duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing"]))
+        if key == "w" and not self.index[0] < 1:
+            self.index[0] -= 1
         if key == "s":
             self.index[0] += 1
-        if key == "a":
-            if not self.index[1] < 1:
-                self.index[1] -= 1
-        if key == "d":
-            if not self.index[1] > len(duties)-2:
-                self.index[1] += 1
+        if key == "a" and not self.index[1] < 1:
+            self.index[1] -= 1
+        if key == "d" and not self.index[1] > len(duties)-2:
+            self.index[1] += 1
         if key in ("j","k","l"):
             rowCounter = 0
             for npc in npcs:
-                if not npc.faction == character.faction:
+                if npc.faction != character.faction:
                     continue
                 if isinstance(npc,src.characters.Ghoul):
                     continue
@@ -5737,7 +5715,7 @@ class JobAsMatrixMenu(SubMenu):
 
         lineCounter = 0
         for npc in npcs:
-            if not npc.faction == character.faction:
+            if npc.faction != character.faction:
                 continue
             if isinstance(npc,src.characters.Ghoul):
                 continue
@@ -5817,18 +5795,14 @@ class MapMenu(SubMenu):
             self.callIndirect(mappedFunctions[key]["function"],{"coordinate":self.cursor})
 
         # exit the submenu
-        if key in ("w",):
-            if self.cursor[1] > 1:
-                self.cursor = (self.cursor[0],self.cursor[1]-1)
-        if key in ("s",):
-            if self.cursor[1] < 13:
-                self.cursor = (self.cursor[0],self.cursor[1]+1)
-        if key in ("a",):
-            if self.cursor[0] > 1:
-                self.cursor = (self.cursor[0]-1,self.cursor[1])
-        if key in ("d",):
-            if self.cursor[0] < 13:
-                self.cursor = (self.cursor[0]+1,self.cursor[1])
+        if key in ("w",) and self.cursor[1] > 1:
+            self.cursor = (self.cursor[0],self.cursor[1]-1)
+        if key in ("s",) and self.cursor[1] < 13:
+            self.cursor = (self.cursor[0],self.cursor[1]+1)
+        if key in ("a",) and self.cursor[0] > 1:
+            self.cursor = (self.cursor[0]-1,self.cursor[1])
+        if key in ("d",) and self.cursor[0] < 13:
+            self.cursor = (self.cursor[0]+1,self.cursor[1])
 
         if closeMenu or key in (
             "esc",
@@ -5874,9 +5848,9 @@ class MapMenu(SubMenu):
 
         # show rendered map
         mapText = []
-        for y in range(0, 15):
+        for y in range(15):
             mapText.append([])
-            for x in range(0, 15):
+            for x in range(15):
                 if (x,y) == self.cursor:
                     mapText[-1].append("██")
                 else:
@@ -6300,18 +6274,14 @@ class RoomDutyMenu(SubMenu):
         """
 
         # exit the submenu
-        if key in ("w",):
-            if self.index[1] > 0:
-                self.index = (self.index[0],self.index[1]-1)
-        if key in ("s",):
-            if self.index[1] < len(self.room.duties)-1:
-                self.index = (self.index[0],self.index[1]+1)
-        if key in ("a",):
-            if self.index[0] > 0:
-                self.index = (self.index[0]-1,self.index[1])
-        if key in ("d",):
-            if self.index[0] < len(self.room.staff)-1:
-                self.index = (self.index[0]+1,self.index[1])
+        if key in ("w",) and self.index[1] > 0:
+            self.index = (self.index[0],self.index[1]-1)
+        if key in ("s",) and self.index[1] < len(self.room.duties)-1:
+            self.index = (self.index[0],self.index[1]+1)
+        if key in ("a",) and self.index[0] > 0:
+            self.index = (self.index[0]-1,self.index[1])
+        if key in ("d",) and self.index[0] < len(self.room.staff)-1:
+            self.index = (self.index[0]+1,self.index[1])
 
         if key in ("j","enter"):
             duty = self.room.duties[self.index[1]]
@@ -7104,7 +7074,7 @@ def printUrwidToTcod(inData,offset,color=None,internalOffset=None,size=None, act
                 x = offset[0]+internalOffset[0]
                 y = offset[1]+internalOffset[1]
                 if actionMeta:
-                    for i in range(0,len(toPrint)):
+                    for i in range(len(toPrint)):
                         src.gamestate.gamestate.clickMap[(x+i,y)] = actionMeta
                 tcodConsole_local.print(x=x,y=y,string=toPrint,fg=color[0],bg=color[1])
 
@@ -7303,9 +7273,9 @@ def renderGameDisplay(renderChar=None):
                 if not renderChar:
                     tcodConsole.clear()
 
-                for y in range(0,55):
+                for y in range(55):
                     pseudoDisplay.append([])
-                    for x in range(0,210):
+                    for x in range(210):
                         pseudoDisplay[y].append("")
 
                 def addToPseudeDisplay(chars,offsetX,offsetY):
@@ -7412,7 +7382,6 @@ def renderGameDisplay(renderChar=None):
 
                             autoIndicator = ActionMeta(content=(urwid.AttrSpec("#f00", "default"),"*"),payload=test)
                             """
-                            pass
                         indicators = [ActionMeta(content="x",payload="x~")," ",ActionMeta(content="q",payload="q~")," ",ActionMeta(content="v",payload="v~")," ",autoIndicator," ",ActionMeta(content="t",payload="t~")]
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(indicators)//2,0)
@@ -7424,29 +7393,27 @@ def renderGameDisplay(renderChar=None):
                     if uiElement["type"] == "text":
                         printUrwidToTcod(uiElement["text"],uiElement["offset"])
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
-                    if uiElement["type"] == "rememberedMenu":
-                        if char.rememberedMenu:
-                            chars = []
-                            counter = 0
-                            for menu in reversed(char.rememberedMenu):
-                                chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
-                                chars.extend(menu.render(char))
-                                counter += 1
-                            size = uiElement["size"]
-                            offset = uiElement["offset"]
-                            printUrwidToTcod(chars,offset,size=size)
-                            printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
+                    if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
+                        chars = []
+                        counter = 0
+                        for menu in reversed(char.rememberedMenu):
+                            chars.extend(["------------- ",ActionMeta(content=">",payload=["lESC"]),"\n\n"])
+                            chars.extend(menu.render(char))
+                            counter += 1
+                        size = uiElement["size"]
+                        offset = uiElement["offset"]
+                        printUrwidToTcod(chars,offset,size=size)
+                        printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
-                    if uiElement["type"] == "rememberedMenu2":
-                        if char.rememberedMenu2:
-                            chars = []
-                            for menu in reversed(char.rememberedMenu2):
-                                chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
-                                chars.extend(menu.render(char))
-                            size = uiElement["size"]
-                            offset = uiElement["offset"]
-                            printUrwidToTcod(chars,offset,size=size)
-                            printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
+                    if uiElement["type"] == "rememberedMenu2" and char.rememberedMenu2:
+                        chars = []
+                        for menu in reversed(char.rememberedMenu2):
+                            chars.extend(["------------- ",ActionMeta(content="<",payload=["rESC"]),"\n\n"])
+                            chars.extend(menu.render(char))
+                        size = uiElement["size"]
+                        offset = uiElement["offset"]
+                        printUrwidToTcod(chars,offset,size=size)
+                        printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
                 if not char.specialRender:
                     tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
@@ -8008,7 +7975,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         if submenu == "gameslot":
             printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
             printUrwidToTcod("| choose the gameslot: |",(offsetX+3+16,offsetY+24))
-            for i in range(0,10):
+            for i in range(10):
                 if saves[i]:
                     printUrwidToTcod(f"| {i}: load game         |",(offsetX+3+16,offsetY+25+i))
                 else:
@@ -8210,9 +8177,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             else:
                 if isinstance(event, tcod.event.Quit):
                     raise SystemExit()
-                if isinstance(event, tcod.event.WindowEvent):
-                    if event.type == "WINDOWCLOSE":
-                        raise SystemExit()
+                if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                    raise SystemExit()
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
                     if key == tcod.event.KeySym.F11:
@@ -8250,9 +8216,8 @@ def showDeathScreen():
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent):
-                if event.type == "WINDOWCLOSE":
-                    raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
@@ -8270,9 +8235,8 @@ def showInterruptChoice(text,options):
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent):
-                if event.type == "WINDOWCLOSE":
-                    raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                raise SystemExit()
 
             if isinstance(event,tcod.event.TextInput):
                 translatedKey = event.text
@@ -8295,9 +8259,8 @@ def showInterruptText(text):
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent):
-                if event.type == "WINDOWCLOSE":
-                    raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
@@ -8405,7 +8368,7 @@ def showHeroIntro():
     item = src.items.itemMap["SpecialItemSlot"]()
     item.itemID = 2
     mainRoom.addItem(item,(2,1,0))
-    for i in range(0,5):
+    for i in range(5):
         item = src.items.itemMap["SpecialItemSlot"]()
         item.hasItem = False
         item.itemID = 3+i
@@ -8440,7 +8403,7 @@ def showHeroIntro():
             mainRoom.walkingSpace.add((6,y,0))
 
         for y in (7,9,11):
-            if not y == 7:
+            if y != 7:
                 for x in range(7,12):
                     mainRoom.addStorageSlot((x,y,0),None)
             for x in range(1,6):
@@ -8584,7 +8547,7 @@ def showHeroIntro():
                     itemTravelTime[item] = arriveInTicks
 
             # draw items
-            for item in itemStartingPositions.keys():
+            for item in itemStartingPositions:
                 if timeIndex < itemTravelTime[item]:
                     pos = (int(itemStartingPositions[item][0]+itemMovementVectors[item][0]*timeIndex),int(itemStartingPositions[item][1]+itemMovementVectors[item][1]*timeIndex))
                 else:
@@ -8650,7 +8613,7 @@ def showHeroIntro2():
             wall = src.items.itemMap["Wall"]()
             totalOffsetX = 56+26-offset[0]*2
             totalOffsetY = 15+13-offset[1]
-            for i in range(0,13):
+            for i in range(13):
                 if i == 6:
                     continue
                 printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))
@@ -8762,7 +8725,7 @@ def showHeroIntro2():
 
         if stage in (6,7,):
             for y in (7,9,11):
-                if not y == 7:
+                if y != 7:
                     for x in range(7,12):
                         mainRoom.addStorageSlot((x,y,0),None)
                 for x in range(1,6):
@@ -8776,7 +8739,7 @@ def showHeroIntro2():
             item = src.items.itemMap["SpecialItemSlot"]()
             item.itemID = 2
             mainRoom.addItem(item,(2,1,0))
-            for i in range(0,5):
+            for i in range(5):
                 item = src.items.itemMap["SpecialItemSlot"]()
                 item.hasItem = False
                 item.itemID = 3+i
@@ -8792,9 +8755,8 @@ def showHeroIntro2():
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent):
-                if event.type == "WINDOWCLOSE":
-                    raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.RETURN:
@@ -8897,7 +8859,7 @@ You """+"."*stageState["substep"]+"""
                 if (time.time()-stageState["lastChange"] > 0.001 or skip) and stageState["scrapToAdd"]:
                     stageState["lastChange"] = time.time()
 
-                    for i in range(0,6):
+                    for i in range(6):
                         if not stageState["scrapToAdd"]:
                             continue
                         scrapItem = stageState["scrapToAdd"].pop()
@@ -9285,7 +9247,7 @@ You """+"."*stageState["substep"]+"""
             elif stageState["terrainItems"] and stageState["subStep"] > 2:
                 if time.time()-stageState["lastChange"] > 0.01 or skip:
                     stageState["lastChange"] = time.time()
-                    for i in range(0,4):
+                    for i in range(4):
                         if not stageState["terrainItems"]:
                             continue
                         item = stageState["terrainItems"].pop()
@@ -9487,9 +9449,8 @@ FOLLOW YOUR ORDERS
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent):
-                if event.type == "WINDOWCLOSE":
-                    raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
@@ -9502,12 +9463,11 @@ FOLLOW YOUR ORDERS
                     )
                 if key == tcod.event.KeySym.RETURN:
                     skip = True
-                if key == tcod.event.KeySym.SPACE:
-                    if stage == 4:
-                        if not stageState["endless"]:
-                            stageState["endless"] = True
-                        else:
-                            stageState = None
+                if key == tcod.event.KeySym.SPACE and stage == 4:
+                    if not stageState["endless"]:
+                        stageState["endless"] = True
+                    else:
+                        stageState = None
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
 
@@ -9638,7 +9598,7 @@ grows and grows and grows and grows
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text,(45,17))
             tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
-            for i in range(0,100):
+            for i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
                     continue
@@ -9777,7 +9737,7 @@ grows and grows and grows and grows
 
             x = 0
             y = 0
-            for i in range(0,150):
+            for i in range(150):
                 printUrwidToTcod((attrSpec,part1),(x,y))
                 printUrwidToTcod((attrSpec3,part2),(x+part1len,y))
                 printUrwidToTcod((attrSpec2,part3),(x+part1len+1,y))
@@ -9884,7 +9844,7 @@ to remember"""
                 wall = src.items.itemMap["Wall"]()
                 totalOffsetX = 56+26-offset[0]*2
                 totalOffsetY = 15+13-offset[1]
-                for i in range(0,13):
+                for i in range(13):
                     if i == 6:
                         continue
                     printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))
@@ -9921,9 +9881,8 @@ to remember"""
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent):
-                if event.type == "WINDOWCLOSE":
-                    raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.F11:
@@ -9937,7 +9896,7 @@ to remember"""
                 if key == tcod.event.KeySym.ESCAPE:
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
-                    if not stage == 3:
+                    if stage != 3:
                         stage += 1
                         subStep = 0
                     else:
@@ -10046,9 +10005,8 @@ def gameLoop_disabled(loop, user_data=None):
                     key = "enter"
                 keyboardListener(key)
 
-        if not src.gamestate.gamestate.mainChar.timeTaken > 1:
-            if tcod:
-                getTcodEvents()
+        if not src.gamestate.gamestate.mainChar.timeTaken > 1 and tcod:
+            getTcodEvents()
             #    #getNetworkedEvents()
 
         src.gamestate.gamestate.savedThisTurn = False
@@ -10155,15 +10113,14 @@ def advanceChar(char,render=True):
     lastRender = None
     lastLoop = time.time()
     while char.timeTaken < 1:
-        if (char == src.gamestate.gamestate.mainChar) and rerender:
-            if char.getTerrain():
-                #char.getTerrain().animations = []
-                #for room in char.getTerrain().rooms:
-                #    room.animations = []
-                if render:
-                    renderGameDisplay()
-                lastRender = time.time()
-                rerender = False
+        if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
+            #char.getTerrain().animations = []
+            #for room in char.getTerrain().rooms:
+            #    room.animations = []
+            if render:
+                renderGameDisplay()
+            lastRender = time.time()
+            rerender = False
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
@@ -10240,7 +10197,7 @@ def advanceChar_disabled(char):
 
     if (
         len(cinematics.cinematicQueue)
-        and not char == src.gamestate.gamestate.mainChar
+        and char != src.gamestate.gamestate.mainChar
     ):
         return
 

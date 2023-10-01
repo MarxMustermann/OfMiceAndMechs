@@ -32,7 +32,7 @@ You can use it to loose 100 satiation.
         """
 
         self.charges += 1
-        if 100 > character.satiation:
+        if character.satiation < 100:
             character.satiation = 0
         else:
             character.satiation -= 100

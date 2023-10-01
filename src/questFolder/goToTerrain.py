@@ -27,7 +27,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             if not character.getBigPosition() in ((7,1,0),(7,0,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,1,0))
                 return ([quest],None)
-            if not character.getPosition() == (7*15+7,15*1+1,0) and not character.getBigPosition() in ((7,0,0),):
+            if character.getPosition() != (7 * 15 + 7, 15 * 1 + 1, 0) and not character.getBigPosition() in ((7,0,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0))
                 return ([quest],None)
             return (None,"w")
@@ -36,7 +36,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             if not character.getBigPosition() in ((7,13,0),(7,14,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,13,0))
                 return ([quest],None)
-            if not character.getPosition() == (7*15+7,15*13+13,0) and not character.getBigPosition() in ((7,14,0),):
+            if character.getPosition() != (7 * 15 + 7, 15 * 13 + 13, 0) and not character.getBigPosition() in ((7,14,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0))
                 return ([quest],None)
             return (None,"s")
@@ -45,7 +45,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             if not character.getBigPosition() in ((1,7,0),(0,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
-            if not character.getPosition() == (1*15+1,15*7+7,0) and not character.getBigPosition() in ((0,7,0),):
+            if character.getPosition() != (1 * 15 + 1, 15 * 7 + 7, 0) and not character.getBigPosition() in ((0,7,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                 return ([quest],None)
             return (None,"a")
@@ -54,7 +54,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             if not character.getBigPosition() in ((13,7,0),(14,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
-            if not character.getPosition() == (13*15+13,15*7+7,0) and not character.getBigPosition() in ((14,7,0),):
+            if character.getPosition() != (13 * 15 + 13, 15 * 7 + 7, 0) and not character.getBigPosition() in ((14,7,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                 return ([quest],None)
             return (None,"d")

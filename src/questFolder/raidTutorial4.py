@@ -37,10 +37,9 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
             if not character.getBigPosition() in ((14,7,0),(13,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
-            if not character.getBigPosition() in ((14,7,0),):
-                if not character.getSpacePosition() == (13,7,0):
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
-                    return ([quest],None)
+            if not character.getBigPosition() in ((14,7,0),) and character.getSpacePosition() != (13, 7, 0):
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
+                return ([quest],None)
             return (None,("d","to cheat yourself onto the neighbor terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 7):
@@ -50,7 +49,7 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
                     throne = item
                     break
 
-            if not character.container == throne.container:
+            if character.container != throne.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition())
                 return ([quest],None)
 

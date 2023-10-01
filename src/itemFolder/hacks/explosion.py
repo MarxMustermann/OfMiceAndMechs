@@ -23,7 +23,6 @@ class Explosion(src.items.Item):
             the character trying to interact
         """
 
-        pass
 
     # bad code: i don't know why this code exists
     def apply(self, character):
@@ -44,7 +43,6 @@ class Explosion(src.items.Item):
         Parameters:
             the character trying to interact
         """
-        pass
 
     def explode(self):
         """

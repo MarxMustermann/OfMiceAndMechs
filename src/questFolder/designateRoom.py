@@ -101,7 +101,7 @@ Use the CityPlaner to designate the room.
 
             correctIndex = 0
             while correctIndex < len(submenue.text) and correctIndex < len(self.roomTag):
-                if not submenue.text[correctIndex] == self.roomTag[correctIndex]:
+                if submenue.text[correctIndex] != self.roomTag[correctIndex]:
                     break
                 correctIndex += 1
 
@@ -119,7 +119,7 @@ Use the CityPlaner to designate the room.
 
         pos = character.getBigPosition()
 
-        if not pos == (7,7,0):
+        if pos != (7, 7, 0):
             quest = src.quests.questMap["GoHome"](description="go to command centre")
             return ([quest],None)
 
@@ -163,15 +163,13 @@ Use the CityPlaner to designate the room.
         room = terrain.getRoomByPosition((7,7,0))[0]
         cityPlaner = room.getItemsByType("CityPlaner")[0]
 
-        if self.roomType == "specialPurposeRoom":
-            if self.roomPosition in cityPlaner.specialPurposeRooms:
-                self.postHandler()
-                return True
+        if self.roomType == "specialPurposeRoom" and self.roomPosition in cityPlaner.specialPurposeRooms:
+            self.postHandler()
+            return True
 
-        if self.roomType == "generalPurposeRoom":
-            if self.roomPosition in cityPlaner.generalPurposeRooms:
-                self.postHandler()
-                return True
+        if self.roomType == "generalPurposeRoom" and self.roomPosition in cityPlaner.generalPurposeRooms:
+            self.postHandler()
+            return True
 
         if self.roomType == "undesignate":
             if self.roomPosition in cityPlaner.generalPurposeRooms:

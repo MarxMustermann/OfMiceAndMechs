@@ -98,7 +98,7 @@ Activate the basic trainer in the command centre to start training a skill"""
             for item in room.itemsOnFloor:
                 if not item.bolted:
                     continue
-                if not item.type == "BasicTrainer":
+                if item.type != "BasicTrainer":
                     continue
 
                 if item.getPosition() == (character.xPosition-1,character.yPosition,0):

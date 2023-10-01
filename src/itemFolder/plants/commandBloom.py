@@ -30,7 +30,7 @@ class CommandBloom(src.items.Item):
         self.name = "command bloom"
 
         self.faction = ""
-        for i in range(0, 5):
+        for i in range(5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
@@ -173,7 +173,7 @@ class CommandBloom(src.items.Item):
                     command = self.masterCommand
                     if self.numSick:
                         items = []
-                        for i in range(0, 2):
+                        for i in range(2):
                             items.append(character.inventory.pop())
                         crawler = self.runCommandOnNewCrawler("j",character.faction)
                         crawler.inventory.extend(items)
@@ -185,10 +185,9 @@ class CommandBloom(src.items.Item):
                 and character.inventory[-1].type == "Coal"
                 and hasattr(character, "phase")
                 and character.phase == 1
-            ):
-                if self.numSick > 4:
-                    command = "wal20jsdj"
-                    self.runCommandOnNewCrawler("j",character.faction)
+            ) and self.numSick > 4:
+                command = "wal20jsdj"
+                self.runCommandOnNewCrawler("j",character.faction)
 
             if isinstance(character, src.characters.Exploder):
                 if self.blocked:
@@ -199,21 +198,21 @@ class CommandBloom(src.items.Item):
                     path.append((pos[0], pos[1]))
                     while length < 13:
                         if length % 2 == 1:
-                            for i in range(0, length):
+                            for i in range(length):
                                 pos[1] -= 1
                                 path.append((pos[0], pos[1]))
-                            for i in range(0, length):
+                            for i in range(length):
                                 pos[0] -= 1
                                 path.append((pos[0], pos[1]))
                         else:
-                            for i in range(0, length):
+                            for i in range(length):
                                 pos[1] += 1
                                 path.append((pos[0], pos[1]))
-                            for i in range(0, length):
+                            for i in range(length):
                                 pos[0] += 1
                                 path.append((pos[0], pos[1]))
                         length += 1
-                    for i in range(0, length - 1):
+                    for i in range(length - 1):
                         pos[1] -= 1
                         path.append((pos[0], pos[1]))
 
@@ -250,19 +249,19 @@ class CommandBloom(src.items.Item):
 
                     if not foundItem:
                         directions = []
-                        if not self.xPosition // 15 == 0:
+                        if self.xPosition // 15 != 0:
                             directions.append("a")
                             if self.xPosition // 15 > 7:
                                 directions.append("a")
-                        if not self.xPosition // 15 == 14:
+                        if self.xPosition // 15 != 14:
                             directions.append("d")
                             if self.xPosition // 15 < 7:
                                 directions.append("d")
-                        if not self.yPosition // 15 == 0:
+                        if self.yPosition // 15 != 0:
                             directions.append("w")
                             if self.yPosition // 15 > 7:
                                 directions.append("w")
-                        if not self.yPosition // 15 == 14:
+                        if self.yPosition // 15 != 14:
                             directions.append("s")
                             if self.yPosition // 15 > 7:
                                 directions.append("s")
@@ -289,19 +288,19 @@ class CommandBloom(src.items.Item):
                         command = self.masterCommand
                     else:
                         directions = []
-                        if not self.xPosition // 15 == 0:
+                        if self.xPosition // 15 != 0:
                             directions.append("a")
                             if self.xPosition // 15 > 7:
                                 directions.append("a")
-                        if not self.xPosition // 15 == 14:
+                        if self.xPosition // 15 != 14:
                             directions.append("d")
                             if self.xPosition // 15 < 7:
                                 directions.append("d")
-                        if not self.yPosition // 15 == 0:
+                        if self.yPosition // 15 != 0:
                             directions.append("w")
                             if self.yPosition // 15 > 7:
                                 directions.append("w")
-                        if not self.yPosition // 15 == 14:
+                        if self.yPosition // 15 != 14:
                             directions.append("s")
                             if self.yPosition // 15 > 7:
                                 directions.append("s")
@@ -313,7 +312,7 @@ class CommandBloom(src.items.Item):
                 and self.expectedNext > src.gamestate.gamestate.tick
                 and not self.cluttered
             ):
-                if self.masterCommand and not random.randint(1, 3) == 1:
+                if self.masterCommand and random.randint(1, 3) != 1:
                     command = self.masterCommand
                 else:
                     command = 13 * random.choice(["w", "a", "s", "d"]) + "9kkj"
@@ -329,21 +328,21 @@ class CommandBloom(src.items.Item):
 
                 while length < 13:
                     if length % 2 == 1:
-                        for i in range(0, length):
+                        for i in range(length):
                             pos[1] -= 1
                             path.append((pos[0], pos[1], 0))
-                        for i in range(0, length):
+                        for i in range(length):
                             pos[0] -= 1
                             path.append((pos[0], pos[1], 0))
                     else:
-                        for i in range(0, length):
+                        for i in range(length):
                             pos[1] += 1
                             path.append((pos[0], pos[1], 0))
-                        for i in range(0, length):
+                        for i in range(length):
                             pos[0] += 1
                             path.append((pos[0], pos[1], 0))
                     length += 1
-                for i in range(0, length - 1):
+                for i in range(length - 1):
                     pos[1] -= 1
                     path.append((pos[0], pos[1], 0))
 
@@ -408,7 +407,7 @@ class CommandBloom(src.items.Item):
                             continue
                         if (
                             not bloomsSkipped > 1
-                            and (not pos[0] % 15 == 7 and not pos[1] % 15 == 7)
+                            and (pos[0] % 15 != 7 and pos[1] % 15 != 7)
                             and items[0].type == "Bloom"
                             and self.masterCommand
                             and self.charges > 5
@@ -417,7 +416,7 @@ class CommandBloom(src.items.Item):
                             continue
                         if (
                             not bloomsSkipped > 1
-                            and (not pos[0] % 15 == 7 and not pos[1] % 15 == 7)
+                            and (pos[0] % 15 != 7 and pos[1] % 15 != 7)
                             and items[0].type == "SickBloom"
                             and self.masterCommand
                             and self.numSick > 4
@@ -600,7 +599,7 @@ class CommandBloom(src.items.Item):
                             command += str(pos[0] - lastCharacterPosition[0]) + "d"
                             lastDirection = "d"
                         command += "j"
-                        for i in range(0, 11):
+                        for i in range(11):
                             command += "J" + lastDirection
                         command += lastDirection
                         lastCharacterPosition = pos
@@ -716,7 +715,7 @@ class CommandBloom(src.items.Item):
                 new = CommandBloom()
 
                 directions = []
-                if not self.xPosition // 15 == 0:
+                if self.xPosition // 15 != 0:
                     directions.append("a")
                     if self.xPosition // 15 > 7:
                         directions.append("a")
@@ -724,7 +723,7 @@ class CommandBloom(src.items.Item):
                             directions.append("a")
                             directions.append("a")
                             directions.append("a")
-                if not self.xPosition // 15 == 14:
+                if self.xPosition // 15 != 14:
                     directions.append("d")
                     if self.xPosition // 15 < 7:
                         directions.append("d")
@@ -732,7 +731,7 @@ class CommandBloom(src.items.Item):
                             directions.append("d")
                             directions.append("d")
                             directions.append("d")
-                if not self.yPosition // 15 == 0:
+                if self.yPosition // 15 != 0:
                     directions.append("w")
                     if self.yPosition // 15 > 7:
                         directions.append("w")
@@ -740,7 +739,7 @@ class CommandBloom(src.items.Item):
                             directions.append("w")
                             directions.append("w")
                             directions.append("w")
-                if not self.yPosition // 15 == 14:
+                if self.yPosition // 15 != 14:
                     directions.append("s")
                     if self.yPosition // 15 > 7:
                         directions.append("s")

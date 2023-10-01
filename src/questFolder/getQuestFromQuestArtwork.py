@@ -20,11 +20,10 @@ Activate the quest artwork to fetch a quest."""
             return
 
         for quest in character.quests:
-            if quest.type == "BeUsefull":
-                if len(quest.subQuests) > 1:
-                    self.postHandler()
-                    self.completed = True
-                    return True
+            if quest.type == "BeUsefull" and len(quest.subQuests) > 1:
+                self.postHandler()
+                self.completed = True
+                return True
         return False
 
     def handleQuestAssigned(self):

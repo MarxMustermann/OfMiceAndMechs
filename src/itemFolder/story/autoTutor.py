@@ -661,7 +661,7 @@ comment:
                 self.knownBlueprints.append("Puller")
                 self.knownInfos.append("food/moldfarming")
                 blooms = []
-                for i in range(0, 4):
+                for i in range(4):
                     new = src.items.itemMap["MoldSpore"]()
                     blooms.append((new,(self.xPosition,self.yPosition+1,self.zPosition)))
                 self.container.addItems(blooms)
@@ -2021,7 +2021,7 @@ comment:
         return itemTypes
 
     # abstraction: should use character class functionality
-    def checkInInventory(self, itemType):
+    def checkInInventory(self, itemType) -> bool:
         """
         checks whether a characters inventory contains items of a certain type
 
@@ -2031,12 +2031,9 @@ comment:
             flag indication whether or not an item was found
         """
 
-        for item in self.character.inventory:
-            if isinstance(item, itemType):
-                return True
-        return False
+        return any(isinstance(item, itemType) for item in self.character.inventory)
 
-    def checkInInventoryOrInRoom(self, itemType):
+    def checkInInventoryOrInRoom(self, itemType) -> bool:
         """
         checks whether a characters inventory or local room contains items of a certain type
 
@@ -2048,11 +2045,7 @@ comment:
 
         if self.checkInInventory(itemType):
             return True
-        for item in self.container.itemsOnFloor:
-            if isinstance(item, itemType):
-                return True
-
-        return False
+        return any(isinstance(item, itemType) for item in self.container.itemsOnFloor)
 
     def basicInfo(self):
         """

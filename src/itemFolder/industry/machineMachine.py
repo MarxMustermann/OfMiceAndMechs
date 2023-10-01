@@ -140,12 +140,11 @@ Select the thing to produce and confirm.
             return False
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition,0) in self.container.itemByCoordinates:
-            if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition,0)])
-                > 0
-            ):
-                targetFull = True
+        if (self.xPosition + 1, self.yPosition,0) in self.container.itemByCoordinates and (
+            len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition,0)])
+            > 0
+        ):
+            targetFull = True
 
         if targetFull:
             return False
@@ -263,12 +262,11 @@ Select the thing to produce and confirm.
             return
 
         targetFull = False
-        if (self.xPosition + 1, self.yPosition,0) in self.container.itemByCoordinates:
-            if (
-                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition,0)])
-                > 0
-            ):
-                targetFull = True
+        if (self.xPosition + 1, self.yPosition,0) in self.container.itemByCoordinates and (
+            len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition,0)])
+            > 0
+        ):
+            targetFull = True
 
         if targetFull:
             self.container.addAnimation(self.getPosition(offset=(0,0,0)),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})

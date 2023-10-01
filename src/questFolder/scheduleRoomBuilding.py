@@ -52,7 +52,7 @@ Use a CityPlaner to do this.
             return (None,(["esc"],"to exit submenu"))
 
         pos = character.getBigPosition()
-        if not pos == (7,7,0):
+        if pos != (7, 7, 0):
             quest = src.quests.questMap["GoHome"](description="go to command centre",reason="go to command centre")
             return ([quest],None)
 

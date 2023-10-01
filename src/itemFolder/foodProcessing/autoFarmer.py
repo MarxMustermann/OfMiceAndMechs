@@ -59,21 +59,21 @@ class AutoFarmer(src.items.Item):
         path.append((pos[0], pos[1],0))
         while length < 13:
             if length % 2 == 1:
-                for i in range(0, length):
+                for i in range(length):
                     pos[1] -= 1
                     path.append((pos[0], pos[1],0))
-                for i in range(0, length):
+                for i in range(length):
                     pos[0] += 1
                     path.append((pos[0], pos[1],0))
             else:
-                for i in range(0, length):
+                for i in range(length):
                     pos[1] += 1
                     path.append((pos[0], pos[1],0))
-                for i in range(0, length):
+                for i in range(length):
                     pos[0] -= 1
                     path.append((pos[0], pos[1],0))
             length += 1
-        for i in range(0, length - 1):
+        for i in range(length - 1):
             pos[1] -= 1
             path.append((pos[0], pos[1],0))
 
@@ -89,9 +89,8 @@ class AutoFarmer(src.items.Item):
             if item.type in ("Bloom", "SickBloom", "Coal", "Sprout","Sprout2","Mold",):
                 if item.type in ("Mold",):
                     continue
-                if item.type in ("Sprout","Sprout2",):
-                    if pluggedSprouts > 0:
-                        continue
+                if item.type in ("Sprout","Sprout2",) and pluggedSprouts > 0:
+                    continue
                 pluggedSprouts += 1
 
                 if lastCharacterPosition[0] > pos[0]:
@@ -129,7 +128,7 @@ class AutoFarmer(src.items.Item):
                     command += str(pos[1] - lastCharacterPosition[1]) + "s"
                     lastDirection = "s"
                 command += "j"
-                for i in range(0, 11):
+                for i in range(11):
                     command += "J" + lastDirection
                 command += lastDirection + "k"
                 lastCharacterPosition = pos

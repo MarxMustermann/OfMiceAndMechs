@@ -149,7 +149,7 @@ Activate the machine to produce.
             )
             self.runCommand("targetFull", character)
             color = "#740"
-            if not self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.zPosition))[0].type == self.toProduce:
+            if self.container.getItemByPosition((self.xPosition + 1, self.yPosition, self.zPosition))[0].type != self.toProduce:
                 color = "#f00"
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})

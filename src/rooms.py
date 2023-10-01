@@ -130,7 +130,7 @@ class Room:
         for item in self.itemsOnFloor:
             if needsBolted and not item.bolted:
                 continue
-            if not item.type == itemType:
+            if item.type != itemType:
                 continue
             result.append(item)
         return result
@@ -188,14 +188,14 @@ class Room:
         outputSlots = self.outputSlots[:]
         random.shuffle(outputSlots)
         for outputSlot in outputSlots:
-            if itemType and outputSlot[1] and not outputSlot[1] == itemType:
+            if itemType and outputSlot[1] and outputSlot[1] != itemType:
                 continue
 
             items = self.getItemByPosition(outputSlot[0])
             if not items:
                 continue
 
-            if itemType and not items[0].type == itemType:
+            if itemType and items[0].type != itemType:
                 continue
 
             result.append(outputSlot)
@@ -204,14 +204,14 @@ class Room:
             storageSlots = self.storageSlots[:]
             random.shuffle(storageSlots)
             for storageSlot in storageSlots:
-                if itemType and not storageSlot[1] == None and not storageSlot[1] == itemType:
+                if itemType and storageSlot[1] != None and storageSlot[1] != itemType:
                     continue
 
                 items = self.getItemByPosition(storageSlot[0])
                 if not items:
                     continue
 
-                if itemType and not items[0].type == itemType:
+                if itemType and items[0].type != itemType:
                     continue
 
                 result.append(storageSlot)
@@ -221,7 +221,7 @@ class Room:
     def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False):
         result = []
         for inputSlot in self.inputSlots:
-            if (itemType and not inputSlot[1] == itemType) and (not allowAny or not inputSlot[1] == None):
+            if (itemType and inputSlot[1] != itemType) and (not allowAny or inputSlot[1] != None):
                 continue
 
             items = self.getItemByPosition(inputSlot[0])
@@ -232,10 +232,10 @@ class Room:
             if fullyEmpty:
                 continue
 
-            if (itemType and not items[0].type == itemType):
+            if (itemType and items[0].type != itemType):
                 continue
 
-            if (inputSlot[1] and not items[0].type == inputSlot[1]):
+            if (inputSlot[1] and items[0].type != inputSlot[1]):
                 continue
 
             if items[-1].type == "Scrap":
@@ -255,7 +255,7 @@ class Room:
 
         if allowStorage:
             for storageSlot in self.storageSlots:
-                if (itemType and not storageSlot[1] == itemType) and (not allowAny or  not storageSlot[1] == None):
+                if (itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] != None):
                     continue
 
                 pos = storageSlot[0]
@@ -266,10 +266,10 @@ class Room:
                     result.append(storageSlot)
                     continue
 
-                if (itemType and not items[0].type == itemType):
+                if (itemType and items[0].type != itemType):
                     continue
 
-                if (storageSlot[1] and not items[0].type == storageSlot[1]):
+                if (storageSlot[1] and items[0].type != storageSlot[1]):
                     continue
 
                 if items[0].type == "Scrap":
@@ -302,7 +302,7 @@ class Room:
             path = self.getPathTile_test2(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character,clearing=clearing)
 
         command = ""
-        if isinstance(self,src.rooms.TrapRoom) and not (character.faction == self.faction):
+        if isinstance(self,src.rooms.TrapRoom) and character.faction != self.faction:
             movementMap = {(1,0):"Lddk",(-1,0):"Laak",(0,1):"Lssk",(0,-1):"Lwwk"}
         else:
             movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -314,9 +314,9 @@ class Room:
     def getRoomMap(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None,clearing=False):
 
         roomMap = []
-        for x in range(0,13):
+        for x in range(13):
             roomMap.append([])
-            for y in range(0,13):
+            for y in range(13):
                 roomMap[x].append(50)
 
         for walkingSpacePos in self.walkingSpace:
@@ -328,16 +328,16 @@ class Room:
             else:
                 roomMap[storageSlot[0][0]][storageSlot[0][1]] = 50
 
-        for y in range(0,13):
-            for x in range(0,13):
+        for y in range(13):
+            for x in range(13):
                 if self.getItemByPosition((x,y,0)):
                     if clearing:
                         roomMap[x][y] = 10
                     else:
                         roomMap[x][y] = 100
 
-        for y in range(0,13):
-            for x in range(0,13):
+        for y in range(13):
+            for x in range(13):
                 if not self.getPositionWalkable((x,y,0),character=character):
                     if clearing and not (y == 0 or y == 12 or x == 0 or x == 12):
                         roomMap[x][y] = 100
@@ -367,9 +367,8 @@ class Room:
 
     def edgeCostCallback(self, startX, startY, endX, endY):
         endPos = (endX,endY,0)
-        if self.pathfindingIgnoreEndBlocked:
-            if endPos == self.pathfindingTargetPos:
-                return 1
+        if self.pathfindingIgnoreEndBlocked and endPos == self.pathfindingTargetPos:
+            return 1
 
         if (endPos in [(0,6,0),(6,0,0),(12,6,0),(6,12,0)]):
             return 1
@@ -537,16 +536,15 @@ class Room:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 0 or newPos[1] < 0:
                     continue
 
-                if not costMap.get(newPos) == None:
+                if costMap.get(newPos) != None:
                     continue
 
-                if newPos in blockedPositions:
-                    if (not ignoreEndBlocked or not newPos == targetPos):
-                        continue
+                if newPos in blockedPositions and (not ignoreEndBlocked or newPos != targetPos):
+                    continue
 
                 if not self.getPositionWalkable(newPos,character=character):
                     blockedPositions.add(newPos)
-                    if (not ignoreEndBlocked or not newPos == targetPos):
+                    if (not ignoreEndBlocked or newPos != targetPos):
                         continue
 
                 costMap[newPos] = currentCost+1
@@ -666,7 +664,7 @@ class Room:
             info: additional info
         """
 
-        if not tag == "default":
+        if tag != "default":
             if tag not in self.listeners:
                 return
 
@@ -853,9 +851,9 @@ class Room:
             fixedChar = None
             if len(self.floorDisplay) == 1:
                 fixedChar = self.floorDisplay[0]
-            for i in range(0, self.sizeY):
+            for i in range(self.sizeY):
                 subChars = []
-                for j in range(0, self.sizeX):
+                for j in range(self.sizeX):
                     if fixedChar:
                         #subChars.append(src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i,0)}},content=fixedChar))
                         subChars.append(fixedChar)
@@ -1115,7 +1113,7 @@ class Room:
                                 color = "#3f3"
 
                         bgColor = "#227"
-                        if not character.faction == src.gamestate.gamestate.mainChar.faction:
+                        if character.faction != src.gamestate.gamestate.mainChar.faction:
                             bgColor = "#722"
                             color = "#f00"
                             char = "EE"
@@ -1344,9 +1342,9 @@ class Room:
         else:
             # fill the rooms inside with invisibility char
             chars = []
-            for i in range(0, self.sizeY):
+            for i in range(self.sizeY):
                 subChars = []
-                for j in range(0, self.sizeX):
+                for j in range(self.sizeX):
                     subChars.append(src.canvas.displayChars.invisibleRoom)
                 chars.append(subChars)
 
@@ -1545,7 +1543,7 @@ class Room:
 
             # move affected items
             for thing in movementBlock:
-                if not thing == self:
+                if thing != self:
                     thing.moveDirection(direction, initialMovement=False)
 
         # actually move the room
@@ -1624,14 +1622,13 @@ class Room:
                 if other == character:
                     continue
 
-                if not tuple(newPosition) == other.getPosition():
+                if tuple(newPosition) != other.getPosition():
                     continue
 
                 if character.faction == "player" and other.faction == "player":
                     continue
-                if character.faction.startswith("city"):
-                    if character.faction == other.faction:
-                        continue
+                if character.faction.startswith("city") and character.faction == other.faction:
+                    continue
                 if character.faction == other.faction:
                     continue
 
@@ -1783,7 +1780,6 @@ class Room:
         """
         dummy to prevent crashes
         """
-        pass
 
     def getDistance(self,position):
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])
@@ -2116,7 +2112,7 @@ XXX
                 doorPos.append([(sizeX - 1, sizeY // 2)])
 
             for x in (0, sizeX - 1):
-                for y in range(0, sizeY):
+                for y in range(sizeY):
                     if (x, y) in doorPos:
                         item = src.items.itemMap["Door"]()
                         item.walkable = True
@@ -2438,8 +2434,8 @@ class TrapRoom(EmptyRoom):
 
         newPos = character.getPosition()
 
-        if not oldPos == newPos and character.container == self:
-            if self.electricalCharges > 0 and not character.faction == self.faction:
+        if oldPos != newPos and character.container == self:
+            if self.electricalCharges > 0 and character.faction != self.faction:
                 if not self.itemByCoordinates.get(newPos): # don't do damage on filled tiles
                     damage = self.chargeStrength
 
@@ -2673,11 +2669,10 @@ class StaticRoom(EmptyRoom):
                             if character.satiation < 1 and not character.godMode:
                                 character.die()
 
-                    if not blocked:
-                        if item.energy:
-                            item.energy -= 2
-                            self.removeItem(item)
-                            self.addItem(item,newPos)
+                    if not blocked and item.energy:
+                        item.energy -= 2
+                        self.removeItem(item)
+                        self.addItem(item,newPos)
 
                 if (
                     character.yPosition == item.yPosition

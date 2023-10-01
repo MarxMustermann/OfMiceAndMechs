@@ -70,7 +70,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
                 return ([quest],None)
 
-            if not character.getBigPosition() == self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
                 return ([quest], None)
 

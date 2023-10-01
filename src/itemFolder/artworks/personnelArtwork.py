@@ -99,11 +99,11 @@ Use the complex interaction to recharge the personel artwork
 
     def spawnSet(self,character):
         cityleader = self.spawnRank(3,character)
-        for i in range(0,3):
+        for i in range(3):
             self.spawnRank(4,character)
-        for i in range(0,9):
+        for i in range(9):
             self.spawnRank(5,character)
-        for i in range(0,9*3):
+        for i in range(9*3):
             self.spawnRank(6,character)
         return cityleader
 
@@ -236,18 +236,15 @@ Use the complex interaction to recharge the personel artwork
         if character.rank == None or character.rank > 5:
             character.addMessage("you need to be rank 5 or higher to spawn a bodyguard")
             return None
-        if character.rank == 5:
-            if character.getNumSubordinates() > 0:
-                character.addMessage("you can only have one bodyguard with rank 5")
-                return
-        if character.rank == 4:
-            if character.getNumSubordinates() > 1:
-                character.addMessage("you can only have two bodyguards with rank 4")
-                return
-        if character.rank == 3:
-            if character.getNumSubordinates() > 2:
-                character.addMessage("you can only have three bodyguards with rank 3")
-                return
+        if character.rank == 5 and character.getNumSubordinates() > 0:
+            character.addMessage("you can only have one bodyguard with rank 5")
+            return
+        if character.rank == 4 and character.getNumSubordinates() > 1:
+            character.addMessage("you can only have two bodyguards with rank 4")
+            return
+        if character.rank == 3 and character.getNumSubordinates() > 2:
+            character.addMessage("you can only have three bodyguards with rank 3")
+            return
 
         if not self.charges:
             character.addMessage("no charges left. Use the epoch artwork to recharge")
@@ -293,9 +290,9 @@ Use the complex interaction to recharge the personel artwork
     def configure(self,character):
         foundFlasks = []
         for item in character.inventory:
-            if not item.type == "GooFlask":
+            if item.type != "GooFlask":
                 continue
-            if not item.uses == 100:
+            if item.uses != 100:
                 continue
             foundFlasks.append(item)
 
@@ -313,10 +310,9 @@ Use the complex interaction to recharge the personel artwork
     def spawnRank(self,rank,actor,isMilitary=False):
         cityLeader = self.fetchCityleader()
 
-        if rank == 3:
-            if cityLeader and not cityLeader.dead:
-                actor.addMessage("only one rank 3 possible")
-                return
+        if rank == 3 and cityLeader and not cityLeader.dead:
+            actor.addMessage("only one rank 3 possible")
+            return
 
         if rank == 4:
             if not cityLeader or self.cityLeader.dead:
@@ -383,9 +379,8 @@ Use the complex interaction to recharge the personel artwork
         char.registers["HOMETy"] = terrainPosition[1]
         char.personality["abortMacrosOnAttack"] = False
 
-        if rank == 3:
-            if not cityLeader or cityLeader.dead:
-                self.cityLeader = char
+        if rank == 3 and (not cityLeader or cityLeader.dead):
+            self.cityLeader = char
 
         if rank == 4:
             cityLeader.subordinates.append(char)

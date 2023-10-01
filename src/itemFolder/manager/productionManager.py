@@ -128,7 +128,7 @@ commands:
                 self.character.macroState["recordingTo"] = None
                 del self.character.macroState["macros"]["auto"]
                 options = []
-                for key in itemMap.keys():
+                for key in itemMap:
                     options.append((key, key))
                 self.submenue = src.interaction.SelectionMenu(
                     "Setting command for producing item. What item do you want to set the command for?",
@@ -156,7 +156,7 @@ commands:
             self.character.macroState["submenue"].followUp = self.runCommand
         elif self.submenue.selection == "addCommand":
             options = []
-            for key in itemMap.keys():
+            for key in itemMap:
                 options.append((key, key))
             self.submenue = src.interaction.SelectionMenu(
                 "Setting command for producing item. What item do you want to set the command for?",

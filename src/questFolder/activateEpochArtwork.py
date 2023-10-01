@@ -95,9 +95,8 @@ Remember to press ctrl-d if you lose control over your character.
             if direction == "east":
                 return "D"
 
-        if not self.subQuests:
-            if character.getPosition() == (6,7,0):
-                return "Jw"
+        if not self.subQuests and character.getPosition() == (6,7,0):
+            return "Jw"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character,silent=False):
@@ -118,7 +117,7 @@ Remember to press ctrl-d if you lose control over your character.
         pos = character.getBigPosition()
 
         if pos == (7,7,0):
-            if not character.getPosition() == (6,7,0):
+            if character.getPosition() != (6, 7, 0):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(6,7,0), description="go to epoch artwork")
                 quest.activate()
                 self.addQuest(quest)

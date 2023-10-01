@@ -61,22 +61,20 @@ class ScrapCompactor(src.items.Item):
             if item.type == "Scrap":
                 scrap = item
                 break
-        if self.level > 1:
-            if not scrap:
-                for item in self.container.getItemByPosition(
-                    (self.xPosition, self.yPosition + 1, self.zPosition)
-                ):
-                    if isinstance(item, itemMap["Scrap"]):
-                        scrap = item
-                        break
-        if self.level > 2:
-            if not scrap:
-                for item in self.container.getItemByPosition(
-                    (self.xPosition, self.yPosition - 1, self.zPosition)
-                ):
-                    if isinstance(item, itemMap["Scrap"]):
-                        scrap = item
-                        break
+        if self.level > 1 and not scrap:
+            for item in self.container.getItemByPosition(
+                (self.xPosition, self.yPosition + 1, self.zPosition)
+            ):
+                if isinstance(item, itemMap["Scrap"]):
+                    scrap = item
+                    break
+        if self.level > 2 and not scrap:
+            for item in self.container.getItemByPosition(
+                (self.xPosition, self.yPosition - 1, self.zPosition)
+            ):
+                if isinstance(item, itemMap["Scrap"]):
+                    scrap = item
+                    break
         return scrap
 
     def checkCoolDownEnded(self):
@@ -146,7 +144,7 @@ class ScrapCompactor(src.items.Item):
             )
             self.runCommand("targetFull", character)
             color = "#740"
-            if not itemList[0].type == "MetalBars":
+            if itemList[0].type != "MetalBars":
                 color = "#f00"
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"XX")})
             self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec(color, "black"),"][")})

@@ -212,7 +212,7 @@ class GlassStatue(src.items.Item):
             return
         corpses = []
         for item in character.inventory:
-            if not item.type == "MoldFeed":
+            if item.type != "MoldFeed":
                 continue
             corpses.append(item)
 

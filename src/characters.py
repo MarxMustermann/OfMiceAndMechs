@@ -271,7 +271,7 @@ class Character:
         for otherChar in characters:
             if otherChar == self:
                 continue
-            if not otherChar.faction == self.faction:
+            if otherChar.faction != self.faction:
                 enemiesFound.append(otherChar)
 
         if enemiesFound:
@@ -363,7 +363,7 @@ class Character:
                 continue
             if character.faction == self.faction:
                 continue
-            if not character.xPosition//15 == self.xPosition//15 or not character.yPosition//15 == self.yPosition//15:
+            if character.xPosition // 15 != self.xPosition // 15 or character.yPosition // 15 != self.yPosition // 15:
                 continue
 
             foundEnemy = character
@@ -461,9 +461,9 @@ class Character:
         for character in self.container.characters:
             if character == self:
                 continue
-            if not character.xPosition//15 == self.xPosition//15:
+            if character.xPosition // 15 != self.xPosition // 15:
                 continue
-            if not character.yPosition//15 == self.yPosition//15:
+            if character.yPosition // 15 != self.yPosition // 15:
                 continue
             if character.faction == self.faction:
                 continue
@@ -619,7 +619,7 @@ class Character:
 
         foundItems = []
         for item in self.inventory:
-            if not item.type == itemType:
+            if item.type != itemType:
                 continue
 
             if extra.get("uses") and not item.uses >= extra.get("uses"):
@@ -847,10 +847,7 @@ class Character:
 
     def getIsHome(self):
         charPos = self.getBigPosition()
-        if (self.registers.get("HOMEx"),self.registers.get("HOMEy"),0) == charPos:
-            return True
-        else:
-            return False
+        return (self.registers.get("HOMEx"), self.registers.get("HOMEy"), 0) == charPos
 
     def selectSpecialAttack(self,target):
 
@@ -974,15 +971,13 @@ press any other key to attack normally"""
         if self.dead:
             return
 
-        if initial:
-            if self.exhaustion > 0:
-                self.addMessage("you are too exhausted to do an initial attack")
-                initial = False
+        if initial and self.exhaustion > 0:
+            self.addMessage("you are too exhausted to do an initial attack")
+            initial = False
 
-        if ultraheavy:
-            if self.exhaustion >= 10:
-                self.addMessage("you are too exhausted to do an ultraheavy attack")
-                ultraheavy = False
+        if ultraheavy and self.exhaustion >= 10:
+            self.addMessage("you are too exhausted to do an ultraheavy attack")
+            ultraheavy = False
 
         speed = self.attackSpeed
         if quick:
@@ -1026,21 +1021,17 @@ press any other key to attack normally"""
 
         damage = baseDamage
 
-        if self.bonusDamageOnLowerExhaustion:
-            if self.exhaustion < target.exhaustion:
-                damage = damage + damage//2
+        if self.bonusDamageOnLowerExhaustion and self.exhaustion < target.exhaustion:
+            damage = damage + damage//2
 
-        if self.doubleDamageOnZeroExhaustion:
-            if self.exhaustion == 0:
-                damage = damage * 2
+        if self.doubleDamageOnZeroExhaustion and self.exhaustion == 0:
+            damage = damage * 2
 
-        if self.reduceDamageOnAttackerExhausted:
-            if self.exhaustion//10:
-                damage = damage//(self.exhaustion//10+1)
+        if self.reduceDamageOnAttackerExhausted and self.exhaustion//10:
+            damage = damage//(self.exhaustion//10+1)
 
-        if self.increaseDamageOnTargetExhausted:
-            if target.exhaustion//10:
-                damage = damage * (target.exhaustion//10+1)
+        if self.increaseDamageOnTargetExhausted and target.exhaustion//10:
+            damage = damage * (target.exhaustion//10+1)
 
         if quick:
             damage = damage//2
@@ -1127,10 +1118,9 @@ press any other key to attack normally"""
             other: the other character
         """
 
-        if not other.faction == self.faction:
-            if self.personality.get("attacksEnemiesOnContact"):
-                if actor == self:
-                    self.attack(other)
+        if other.faction != self.faction:
+            if self.personality.get("attacksEnemiesOnContact") and actor == self:
+                self.attack(other)
         else:
             if self.personality.get("annoyenceByNpcCollisions"):
                 self.frustration += self.personality.get("annoyenceByNpcCollisions")
@@ -1614,7 +1604,7 @@ press any other key to attack normally"""
 
         # move along the predetermined path
         currentPosition = (self.xPosition, self.yPosition)
-        if not (self.path and not self.path == [currentPosition]):
+        if not (self.path and self.path != [currentPosition]):
             return True
 
         # get next step
@@ -1689,64 +1679,60 @@ press any other key to attack normally"""
                 if (
                     room.yPosition * 15 + room.offsetY + room.sizeY
                     == nextPosition[1] + 1
+                ) and (
+                    room.xPosition * 15 + room.offsetX < self.xPosition
+                    and room.xPosition * 15 + room.offsetX + room.sizeX
+                    > self.xPosition
                 ):
-                    if (
-                        room.xPosition * 15 + room.offsetX < self.xPosition
-                        and room.xPosition * 15 + room.offsetX + room.sizeX
-                        > self.xPosition
-                    ):
-                        # try to move character
-                        localisedEntry = (
-                            self.xPosition % 15 - room.offsetX,
-                            nextPosition[1] % 15 - room.offsetY,
-                        )
-                        item = moveCharacter(localisedEntry, "north")
-                        break
+                    # try to move character
+                    localisedEntry = (
+                        self.xPosition % 15 - room.offsetX,
+                        nextPosition[1] % 15 - room.offsetY,
+                    )
+                    item = moveCharacter(localisedEntry, "north")
+                    break
                 # check south
-                if room.yPosition * 15 + room.offsetY == nextPosition[1]:
-                    if (
-                        room.xPosition * 15 + room.offsetX < self.xPosition
-                        and room.xPosition * 15 + room.offsetX + room.sizeX
-                        > self.xPosition
-                    ):
-                        # try to move character
-                        localisedEntry = (
-                            (self.xPosition - room.offsetX) % 15,
-                            ((nextPosition[1] - room.offsetY) % 15),
-                        )
-                        item = moveCharacter(localisedEntry, "south")
-                        break
+                if room.yPosition * 15 + room.offsetY == nextPosition[1] and (
+                    room.xPosition * 15 + room.offsetX < self.xPosition
+                    and room.xPosition * 15 + room.offsetX + room.sizeX
+                    > self.xPosition
+                ):
+                    # try to move character
+                    localisedEntry = (
+                        (self.xPosition - room.offsetX) % 15,
+                        ((nextPosition[1] - room.offsetY) % 15),
+                    )
+                    item = moveCharacter(localisedEntry, "south")
+                    break
                 # check east
                 if (
                     room.xPosition * 15 + room.offsetX + room.sizeX
                     == nextPosition[0] + 1
+                ) and (
+                    room.yPosition * 15 + room.offsetY < self.yPosition
+                    and room.yPosition * 15 + room.offsetY + room.sizeY
+                    > self.yPosition
                 ):
-                    if (
-                        room.yPosition * 15 + room.offsetY < self.yPosition
-                        and room.yPosition * 15 + room.offsetY + room.sizeY
-                        > self.yPosition
-                    ):
-                        # try to move character
-                        localisedEntry = (
-                            (nextPosition[0] - room.offsetX) % 15,
-                            (self.yPosition - room.offsetY) % 15,
-                        )
-                        item = moveCharacter(localisedEntry, "east")
-                        break
+                    # try to move character
+                    localisedEntry = (
+                        (nextPosition[0] - room.offsetX) % 15,
+                        (self.yPosition - room.offsetY) % 15,
+                    )
+                    item = moveCharacter(localisedEntry, "east")
+                    break
                 # check west
-                if room.xPosition * 15 + room.offsetX == nextPosition[0]:
-                    if (
-                        room.yPosition * 15 + room.offsetY < self.yPosition
-                        and room.yPosition * 15 + room.offsetY + room.sizeY
-                        > self.yPosition
-                    ):
-                        # try to move character
-                        localisedEntry = (
-                            (nextPosition[0] - room.offsetX) % 15,
-                            (self.yPosition - room.offsetY) % 15,
-                        )
-                        item = moveCharacter(localisedEntry, "west")
-                        break
+                if room.xPosition * 15 + room.offsetX == nextPosition[0] and (
+                    room.yPosition * 15 + room.offsetY < self.yPosition
+                    and room.yPosition * 15 + room.offsetY + room.sizeY
+                    > self.yPosition
+                ):
+                    # try to move character
+                    localisedEntry = (
+                        (nextPosition[0] - room.offsetX) % 15,
+                        (self.yPosition - room.offsetY) % 15,
+                    )
+                    item = moveCharacter(localisedEntry, "west")
+                    break
             else:
                 # move the char to the next position on path
                 self.xPosition = nextPosition[0]
@@ -1762,9 +1748,8 @@ press any other key to attack normally"""
 
         # smooth over impossible state
         else:
-            if not src.interaction.debug:
-                if not self.path or not nextPosition == self.path[0]:
-                    return False
+            if not src.interaction.debug and (not self.path or nextPosition != self.path[0]):
+                return False
 
             # remove last step from path
             if self.xPosition == nextPosition[0] and self.yPosition == nextPosition[1]:
@@ -2005,24 +1990,21 @@ press any other key to attack normally"""
             )
             return
 
-        if self.health < self.maxHealth:
-            if src.gamestate.gamestate.tick%self.health == 0:
-                self.heal(1,reason="time heals your wounds")
+        if self.health < self.maxHealth and src.gamestate.gamestate.tick%self.health == 0:
+            self.heal(1,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
-        if self.satiation < 300:
-            if self.flask and self.flask.uses > 0:
-                self.flask.apply(self)
+        if self.satiation < 300 and self.flask and self.flask.uses > 0:
+            self.flask.apply(self)
 
         if self.satiation == 299:
             self.changed("thirst")
 
         if self.satiation < 30:
             for item in self.inventory:
-                if isinstance(item, src.items.itemMap["GooFlask"]):
-                    if item.uses > 0:
-                        item.apply(self)
-                        break
+                if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses > 0:
+                    item.apply(self)
+                    break
 
                 if (
                     isinstance(item, src.items.itemMap["Bloom"])
@@ -2150,7 +2132,7 @@ press any other key to attack normally"""
                     continue
                 if character.faction == self.faction:
                     continue
-                if not character.xPosition//15 == self.xPosition//15 or not character.yPosition//15 == self.yPosition//15:
+                if character.xPosition // 15 != self.xPosition // 15 or character.yPosition // 15 != self.yPosition // 15:
                     continue
 
                 if abs(character.xPosition-self.xPosition) < 2 and abs(character.yPosition-self.yPosition) < 2 and ( abs(character.xPosition-self.xPosition) == 0 or abs(character.yPosition-self.yPosition) == 0):
@@ -2172,13 +2154,13 @@ press any other key to attack normally"""
                 command = random.choice(commands)
         elif (
             self.frustration < 1000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # real idle
             command = waitString
             self.frustration -= 1
         elif (
             self.frustration < 4000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # do mainly harmless stuff
             command = random.choice(
                 [
@@ -2193,7 +2175,7 @@ press any other key to attack normally"""
             self.frustration -= 10
         elif (
             self.frustration < 16000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # do not so harmless stuff
             command = random.choice(
                 [
@@ -2216,7 +2198,7 @@ press any other key to attack normally"""
             self.frustration -= 100
         elif (
             self.frustration < 64000 + self.personality["frustrationTolerance"]
-            and not random.randint(1, waitChance) == 1
+            and random.randint(1, waitChance) != 1
         ):  # bad stuff
             command = random.choice(
                 [
@@ -2462,7 +2444,7 @@ class Monster(Character):
             "s": list("opf$=aa$=ss$=ww$=ddj"),
         }
         self.macroState["macros"]["m"] = []
-        for i in range(0, 8):
+        for i in range(8):
             self.macroState["macros"]["m"].extend(["_", "s"])
             self.macroState["macros"]["m"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["m"].append(random.choice(["a", "w", "s", "d"]))
@@ -2481,7 +2463,7 @@ class Monster(Character):
             "w": [],
             "f": list("%c_s_w_f"),
         }
-        for i in range(0, 4):
+        for i in range(4):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
         self.runCommandString("_f")
@@ -2493,7 +2475,7 @@ class Monster(Character):
 
         self.phase = 5
         self.faction = ""
-        for i in range(0, 5):
+        for i in range(5):
             self.faction += random.choice("abcdefghiasjlkasfhoiuoijpqwei10934009138402")
         self.macroState["macros"] = {
             "j": list(70 * "Jf" + "m"),
@@ -2502,7 +2484,7 @@ class Monster(Character):
             "k": list("ope$=aam$=wwm$=ddm$=ssm"),
             "f": list("%c_s_w_k_f"),
         }
-        for i in range(0, 8):
+        for i in range(8):
             self.macroState["macros"]["w"].append(str(random.randint(0, 9)))
             self.macroState["macros"]["w"].append(random.choice(["a", "w", "s", "d"]))
             self.macroState["macros"]["w"].append("m")
@@ -2523,7 +2505,7 @@ class Monster(Character):
         if len(self.inventory) == 10:
             fail = False
             for item in self.inventory:
-                if not item.type == "Corpse":
+                if item.type != "Corpse":
                     fail = True
             if not fail:
                 self.addMessage("do action")
@@ -3062,7 +3044,7 @@ class Maggot(Character):
     def advance(self,advanceMacros=False):
         if self.timeTaken > 1:
             return
-        if not src.gamestate.gamestate.tick%2 == 0:
+        if src.gamestate.gamestate.tick % 2 != 0:
             return
 
         self.satiation -= 1
@@ -3074,7 +3056,7 @@ class Maggot(Character):
         characters = terrain.charactersByTile.get(self.getBigPosition(),[])
         directions = []
         for character in characters:
-            if not character == self:
+            if character != self:
                 if character.xPosition < self.xPosition:
                     directions.append("a")
                     directions.append("a")

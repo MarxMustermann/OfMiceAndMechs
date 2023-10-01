@@ -63,7 +63,7 @@ reduce the food consumption on the base{reason}.
                 if npc == character:
                     continue
 
-                if not character.container == npc.container:
+                if character.container != npc.container:
                     if character.getBigPosition() == npc.getBigPosition():
                         return (None,(".","wait"))
                     quest = src.quests.questMap["GoToTile"](targetPosition=npc.getBigPosition(),reason=f"to get near {npc.name}")

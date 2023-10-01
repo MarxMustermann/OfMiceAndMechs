@@ -127,7 +127,7 @@ Swords can range from 10 to 25 damage per hit.
                 source = None
                 for itemType in toSearchFor:
                     for candidate in room.sources:
-                        if not candidate[1] == itemType:
+                        if candidate[1] != itemType:
                             continue
 
                         sourceRoom = room.container.getRoomByPosition(candidate[0])

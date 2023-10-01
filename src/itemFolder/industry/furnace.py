@@ -110,7 +110,7 @@ Place the furnace next to a boiler to be able to heat up the boiler with this fu
         render the furnace depending on it burning or not
 
         Returns:
-           what the furnace should look like 
+           what the furnace should look like
         """
         if self.activated:
             return src.canvas.displayChars.furnace_active

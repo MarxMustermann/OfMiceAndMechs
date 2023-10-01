@@ -38,7 +38,7 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
         if not (character.superior or character.superior.dead):
             self.fail()
             return True
-        
+
         """
         if self.delegatedTask == False and character.rank < 6:
             command = ".QSNProtectSuperior\n ."
@@ -67,7 +67,7 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
                 return
             character.runCommandString("5.")
             return
-        
+
         self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
         if not self.lastSuperiorPos[0] in (0,14,) and not self.lastSuperiorPos[1] in (0,14,):
             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))

@@ -57,7 +57,7 @@ class FloorPlate(src.items.Item):
         Returns:
             the description text
         """
-        
+
         text = super().getLongInfo()
         text += """
 item: FloorPlate

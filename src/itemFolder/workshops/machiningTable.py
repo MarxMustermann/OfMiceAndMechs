@@ -7,13 +7,13 @@ class MachiningTable(src.items.Item):
 
     type = "MachiningTable"
     name = "MachiningTable"
-    description = "Use it to build machines" 
+    description = "Use it to build machines"
     walkable = False
     bolted = True
 
     def __init__(self):
         """
-        set up internal state 
+        set up internal state
         """
 
         super().__init__(display = "WX")
@@ -39,7 +39,7 @@ class MachiningTable(src.items.Item):
         self.produceItem({"character":character})
 
     def produceItem(self,params):
-        character = params["character"]           
+        character = params["character"]
 
         if not "type" in params:
             options = []
@@ -61,7 +61,7 @@ class MachiningTable(src.items.Item):
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
-        
+
         if not params.get("type") in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
@@ -93,7 +93,7 @@ class MachiningTable(src.items.Item):
         character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
 
     def produceItem_wait(self,params):
-        character = params["character"]           
+        character = params["character"]
         ticksLeft = params["productionTime"]-params["doneProductionTime"]
 
         baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
@@ -118,17 +118,17 @@ class MachiningTable(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
 
     def produceItem_done(self,params):
-        character = params["character"]           
+        character = params["character"]
 
         preferInventoryOut = True
         if params.get("key") == "k":
             preferInventoryOut = False
-        
+
         dropsSpotsFull = self.checkForDropSpotsFull()
         if not character.getFreeInventorySpace() > 0 and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
-            return 
+            return
 
         new = src.items.itemMap["Machine"]()
         new.setToProduce(params["type"])
@@ -152,7 +152,7 @@ class MachiningTable(src.items.Item):
                 for item in itemList:
                     if item.walkable == False:
                         targetFull = True
-                
+
                 if not targetFull:
                     self.container.addItem(new,targetPos)
                     break
@@ -196,7 +196,7 @@ class MachiningTable(src.items.Item):
 
     def scheduleProduction(self,params):
 
-        character = params["character"]           
+        character = params["character"]
 
         if not "type" in params:
             options = []

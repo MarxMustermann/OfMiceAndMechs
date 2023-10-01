@@ -27,7 +27,7 @@ Set the floor plan: {self.floorPlanType}
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        
+
         if self.subQuests:
             return (None,None)
 
@@ -156,7 +156,7 @@ Set the floor plan: {self.floorPlanType}
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleAssignFloorPlan, "assigned floor plan")
 
         return super().assignToCharacter(character)

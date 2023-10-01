@@ -27,7 +27,7 @@ Use a CityPlaner to do this.
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False):
-        
+
         if self.subQuests:
             return (None,None)
 
@@ -133,7 +133,7 @@ Use a CityPlaner to do this.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleScheduledRoom, "scheduled room")
 
         return super().assignToCharacter(character)

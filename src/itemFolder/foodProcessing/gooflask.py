@@ -11,7 +11,7 @@ class GooFlask(src.items.Item):
 
         self.uses = uses
         super().__init__(display=src.canvas.displayChars.gooflask_empty)
-        
+
         self.name = "goo flask"
         self.walkable = True
         self.bolted = False

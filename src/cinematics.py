@@ -2,16 +2,14 @@
 cinematics and related code belong here
 """
 
-# import basic libs
-import json
+import logging
 
-# import basic internal libs
 import src.chats
-import src.logger
-import src.interaction
 import src.gamestate
+import src.interaction
 import src.urwidSpecials
 
+logger = logging.getLogger(__name__)
 cinematicQueue = []
 
 class BasicCinematic:
@@ -125,7 +123,7 @@ class InformationTransfer(BasicCinematic):
         try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
-            src.logger.debugMessages.append("removed non existent alarm")
+            logger.debug("removed non existent alarm")
 
 # obsolete: only used in old storymode
 # bad code: this should be abstracted to have a zoom in/out for various things like the quest menu
@@ -233,7 +231,7 @@ class MessageZoomCinematic(BasicCinematic):
         try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
-            src.logger.debugMessages.append("removed non existent alarm")
+            logger.debug("removed non existent alarm")
 
         # trigger follow up functions
         if self.endTrigger:
@@ -360,7 +358,7 @@ class TextCinematic(BasicCinematic):
         try:
             src.interaction.loop.remove_alarm(self.alarm)
         except:
-            src.logger.debugMessages.append("removed non existent alarm")
+            logger.debug("removed non existent alarm")
 
         # trigger follow up actions
         if self.endTrigger:
@@ -427,7 +425,7 @@ class ShowQuestExecution(BasicCinematic):
         """
         advance and show game
         """
-        
+
         super().advance()
 
         # do setup on the first run
@@ -671,7 +669,7 @@ class SelectionCinematic(BasicCinematic):
 # obsolete: only used in old storymode
 class ShowMessageCinematic(BasicCinematic):
     """
-    this cutscenes shows some message 
+    this cutscenes shows some message
     """
 
     def __init__(self, message=""):

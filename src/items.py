@@ -2,19 +2,8 @@
 items and item related code belongs here
 """
 
-import config
-import src.logger
 import src.gamestate
 import src.interaction
-
-# load basic libs
-import json
-import random
-import time
-
-# load basic internal libs
-import src.events
-import config
 
 
 class Item:
@@ -376,7 +365,7 @@ class Item:
         Parameters:
             character: the character picking up the item
         """
-        
+
         if src.gamestate.gamestate.mainChar in character.container.characters:
             src.interaction.playSound("itemPickedUp","actions")
 
@@ -630,7 +619,7 @@ class Item:
             command: the command to set
             eventName: the name of the event that should trigger running the command
         """
-        
+
         self.commands[eventName] = command.command
 
     def reset(self, character):
@@ -944,7 +933,7 @@ class Item:
 
             # place scrap
             container.addItems([(newItem,pos)])
-    
+
 commons = [
     "MarkerBean",
     "MetalBars",

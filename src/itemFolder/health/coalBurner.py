@@ -32,7 +32,7 @@ class CoalBurner(src.items.Item):
         """
 
         moldFeed = None
-        
+
         for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:
             items = self.container.getItemByPosition(self.getPosition(offset))
             for item in items:

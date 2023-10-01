@@ -90,7 +90,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
     def handleChangedTerrain(self,extraInfo):
         self.triggerCompletionCheck(extraInfo["character"])
-            
+
     def assignToCharacter(self, character):
         if self.character:
             return

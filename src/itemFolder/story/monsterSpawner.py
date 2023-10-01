@@ -91,7 +91,7 @@ class MonsterSpawner(src.items.Item):
                 quest = src.quests.questMap["ClearTerrain"]()
                 quest.autoSolve = True
                 character.assignQuest(quest,active=True)
-        
+
         room = self.container
         super().destroy()
         room.destroy()

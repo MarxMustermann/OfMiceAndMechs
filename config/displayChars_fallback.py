@@ -37,7 +37,7 @@ except:
                         return 14*16
                     if value == "f":
                         return 15*16
-            
+
             color = []
             if self.fg[0] == "#":
                 color.append(convertValue(self.fg[1]))

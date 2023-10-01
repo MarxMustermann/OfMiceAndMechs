@@ -17,7 +17,7 @@ class OrderArtwork(src.items.Item):
         super().__init__(display="OA")
 
         self.name = "order artwork"
-                
+
         self.applyOptions.extend(
                                                 [
                                                     ("showMap", "show map"),
@@ -53,7 +53,7 @@ That should usually be around 10-20 ticks."""
         self.assignQuest({"character":character})
 
     def assignQuest(self, extraInfo):
-        
+
         character = extraInfo["character"]
 
         if not "groupType" in extraInfo:
@@ -357,7 +357,7 @@ That should usually be around 10-20 ticks."""
 
     def showQuests(self, character):
         questsCount = {}
-        
+
         cityLeader = self.fetchCityleader()
         if not cityLeader:
             character.addMessage("no city leader")

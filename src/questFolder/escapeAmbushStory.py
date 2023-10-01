@@ -24,7 +24,7 @@ They look like [- and come from """+enemyDirection+""".
 
 So get moving and leave this room.
 Use the wasd movement keys to move.
-Pass through the door (""",door.render(),""") in the """+self.direction+""". 
+Pass through the door (""",door.render(),""") in the """+self.direction+""".
 
 
 

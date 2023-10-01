@@ -43,7 +43,7 @@ Try luring enemies into landmines or detonating some bombs."""
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.wrapedTriggerCompletionCheck2, "character died on tile")
         self.startWatching(character,self.handleTileChange2, "changedTile")
 

@@ -9,7 +9,7 @@ class Scraper(src.items.Item):
 
     def __init__(self):
         """
-        set up internal state 
+        set up internal state
         """
 
         self.coolDown = 10

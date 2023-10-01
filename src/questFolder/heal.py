@@ -50,5 +50,5 @@ Press JH to auto heal.
         if self.triggerCompletionCheck(character):
             return
         return super().solver(character)
-    
+
 src.quests.addType(Heal)

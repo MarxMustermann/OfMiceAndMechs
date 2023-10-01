@@ -16,7 +16,7 @@ class Siren(src.items.Item):
         super().__init__(display="ii")
 
         self.name = "siren"
-                
+
         self.applyOptions.extend(
                                                 [
                                                     ("run alarm", "run alarm"),

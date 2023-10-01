@@ -158,7 +158,7 @@ class CityBuilder(src.items.Item):
 
     def clearTask(self, character):
         """
-        handle a character trying to clear a task this items 
+        handle a character trying to clear a task this items
         by clearing the most recent task
 
         Parameters:
@@ -257,7 +257,7 @@ class CityBuilder(src.items.Item):
         Parameters:
             character: the character available to do the task
         """
-        
+
         if self.idleExtend:
             if len(self.plotPool) < self.numReservedPathPlots + self.numBufferPlots:
                 self.tasks.append({"task": "expand"})
@@ -327,7 +327,7 @@ class CityBuilder(src.items.Item):
     def doExtendStorage(self, context):
         """
         handle a task to extend to storage space of the internal item storage
-        
+
         Parameters:
             context: the context for this task
         """
@@ -430,7 +430,7 @@ class CityBuilder(src.items.Item):
     def doPrepareScrapField(self, context):
         """
         handle a task to extend to storage space of the internal item storage
-        
+
         Parameters:
             context: the context for this task
         """
@@ -451,7 +451,7 @@ class CityBuilder(src.items.Item):
     def doSetUpBasicProduction(self, context):
         """
         handle a task to add basic production capabilities
-        
+
         Parameters:
             context: the context for this task
         """
@@ -467,7 +467,7 @@ class CityBuilder(src.items.Item):
     def doBuildRoads(self, context):
         """
         handle a task to extend to storage space of the internal item storage
-        
+
         Parameters:
             context: the context for this task
         """
@@ -533,7 +533,7 @@ class CityBuilder(src.items.Item):
     def doExpand(self, context):
         """
         handle the task of expandng the city
-        
+
         Parameters:
             context: the context for this task
         """
@@ -935,7 +935,7 @@ class CityBuilder(src.items.Item):
     def expandFromPlot(self, plot):
         """
         expand the city by converting a plot into a road
-        
+
         Parameters:
             plot: the plot to convert
         """
@@ -1107,7 +1107,7 @@ class CityBuilder(src.items.Item):
 
         for plot in self.reservedPlots:
             mapContent[plot[1]][plot[0]] = "RR"
-                
+
             if plot not in functionMap:
                 functionMap[plot] = {}
 
@@ -1153,7 +1153,7 @@ class CityBuilder(src.items.Item):
 
         newTask = {"task":"expand"}
         self.tasks.append(newTask)
-    
+
     def buildFactoryFromRoom(self, params):
         """
         handle a character having selected building a factory
@@ -1257,7 +1257,7 @@ class CityBuilder(src.items.Item):
             return
 
         newTask = {
-            "task": "build mine", 
+            "task": "build mine",
             "scrapField": list(params["scrapField"]),
             "reservedPlots": [list(params["scrapField"][0])],
         }

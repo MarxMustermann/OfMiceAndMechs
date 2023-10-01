@@ -36,7 +36,7 @@ You may want to plan an escape route."""
 
         if foundSpawner:
             self.startWatching(foundSpawner,self.handleSpawnerKill, "spawner will be destroyed")
-        
+
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):
@@ -88,7 +88,7 @@ You may want to plan an escape route."""
                     (0,-1,0):"Jw",
                     (0,0,0):"j",
                 }
-            
+
             if offset in commandMap:
                 quest = src.quests.questMap["RunCommand"](command=commandMap[offset])
                 self.addQuest(quest)

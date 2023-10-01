@@ -3,8 +3,12 @@ drawing and related code should be here
 bad code: drawstuff is everywhere
 """
 
-# import basic libs
-import src.logger
+import logging
+
+import src.gamestate
+import src.interaction
+
+logger = logging.getLogger(__name__)
 
 # bad code: this is unintuitive, ugly and unnecessary it should be replaced by a simpler solution
 class Mapping:
@@ -172,7 +176,7 @@ class TileMapping(Mapping):
         add missing tiles by loading data from the tile based mode
 
         Parameters:
-            rawConfig: the unmodified config 
+            rawConfig: the unmodified config
         """
 
         # load the fallback chars
@@ -185,7 +189,7 @@ class TileMapping(Mapping):
             # ignore internal state
             if item[0].startswith("__"):
                 continue
-        
+
             # skip non missing tiles
             if hasattr(rawConfig,item[0]):
                 continue
@@ -313,8 +317,8 @@ class Canvas:
         sets a pseudo pixel on the canvas
         Parameters:
             x: the x coordinate
-            y: the y coordinate 
-            char: 
+            y: the y coordinate
+            char:
         """
 
         # shift coordinates
@@ -490,13 +494,11 @@ class Canvas:
                 # render the character via the abstraction layer
                 if isinstance(char, int):
                     if self.displayChars.indexedMapping[char] is None:
-                        src.logger.debugMessages.append(
-                            "failed rendering "
-                            + str(char)
-                            + " "
-                            + str(self.displayChars.indexedMapping[char - 10])
-                            + " "
-                            + str(self.displayChars.indexedMapping[char + 10])
+                        logger.debug(
+                            "failed rendering %s %s %s",
+                            char,
+                            self.displayChars.indexedMapping[char - 10],
+                            self.displayChars.indexedMapping[char + 10],
                         )
                     else:
                         out.append(self.displayChars.indexedMapping[char])
@@ -513,7 +515,7 @@ class Canvas:
     def setPygameDisplay(self, pydisplay, pygame, tileSize):
         """
         draw the display onto a pygame display
-        
+
         Parameters:
             pydisplay: the display from pygame
             pygame: the pygame itself

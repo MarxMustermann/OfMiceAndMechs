@@ -9,7 +9,7 @@ class SporeExtractor(src.items.Item):
 
     def __init__(self):
         """
-        configure the super class 
+        configure the super class
         """
 
         super().__init__(display = src.canvas.displayChars.sporeExtractor)

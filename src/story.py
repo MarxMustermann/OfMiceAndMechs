@@ -6,22 +6,24 @@ most thing should be abstracted and converted to a game mechanism later
 most of this code is currently not in use and needs to be reintegrated
 """
 
-import src.rooms
-import src.canvas
-import src.cinematics
-import src.chats
-import src.quests
-import src.items
-import src.interaction
-import src.events
-import config
-import src.gamestate
-
-import random
-import requests
-import json
 import copy
+import json
+import logging
+import random
 
+import requests
+
+import src.canvas
+import src.chats
+import src.cinematics
+import src.events
+import src.gamestate
+import src.interaction
+import src.items
+import src.quests
+import src.rooms
+
+logger = logging.getLogger(__name__)
 phasesByName = None
 
 #####################################
@@ -219,7 +221,7 @@ class BasicPhase:
 # obsolete: not really used anymore
 class Challenge(BasicPhase):
     """
-    gamemode for solving escape rooms 
+    gamemode for solving escape rooms
     """
 
     def __init__(self, seed=0):
@@ -983,7 +985,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.toBuildRoomClone5.spawnPlaned()
         self.toBuildRoomClone5.spawnPlaned()
         self.toBuildRoomClone5.spawnGhouls(src.gamestate.gamestate.mainChar)
-        
+
         self.spawnMaintanenceNPCs()
         self.maintananceLoop()
 
@@ -1532,7 +1534,7 @@ class BackToTheRoots(BasicPhase):
                 enemy.macroState["macros"]["g"] = ["g","g","_","g"]
                 enemy.runCommandString("_g")
                 room.addCharacter(enemy, pos[0], pos[1])
-        
+
         placedMainChar = False
 
         currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
@@ -1562,7 +1564,7 @@ class BackToTheRoots(BasicPhase):
                             else:
                                 mine = src.items.itemMap["LandMine"]()
                                 currentTerrain.addItem(mine,pos)
-                        
+
                         #item = src.items.itemMap["Scrap"](amount=int(random.random()*13))
                         #currentTerrain.addItem(item,pos)
 
@@ -1641,7 +1643,7 @@ class BackToTheRoots(BasicPhase):
                     item = src.items.itemMap["Mold"]()
                     items.append(item)
                     molds.append(item)
-            
+
                 terrain.randomAddItems(items)
                 for mold in molds:
                     mold.spawn()
@@ -1652,7 +1654,7 @@ class BackToTheRoots(BasicPhase):
                     if random.choice([True,False]):
                         if landmine.getPosition()[0]:
                             terrain.addItem(scrap,landmine.getPosition())
-                
+
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
                 for i in range(0,150):
@@ -1686,7 +1688,7 @@ class BackToTheRoots(BasicPhase):
         cityCounter = 1
         for citylocation in self.citylocations:
             currentTerrain = src.gamestate.gamestate.terrainMap[6][7]
-            
+
             architect = src.items.itemMap["ArchitectArtwork"]()
             currentTerrain.addItem(architect,(124, 110, 0))
 
@@ -1784,7 +1786,7 @@ class BackToTheRoots(BasicPhase):
                     subsubleader.superior = subleader
                     subsubleader.rank = 5
                     subsubleader.assignQuest(quest, active=True)
-                        
+
                     """
                     if not placedMainChar and i == 2 and j == 2:
                         src.gamestate.gamestate.mainChar = subsubleader
@@ -1904,7 +1906,7 @@ class BackToTheRoots(BasicPhase):
         mainChar.satiation = 1000000
         mainChar.reputation = 1000000
         """
-        
+
         src.gamestate.gamestate.mainChar.solvers = [
             "SurviveQuest",
             "Serve",
@@ -2059,7 +2061,7 @@ class BackToTheRoots(BasicPhase):
 
             if not foundRoom:
                 return
-        
+
             missingItems = []
             foundItems = []
             for pos in self.specialItemSlotPositions:
@@ -2094,7 +2096,7 @@ class BackToTheRoots(BasicPhase):
                     src.gamestate.gamestate.mainChar.runCommandString("",clear=True)
                 itemToFetch = None
                 break
-             
+
             itemToFetch = random.choice(candidates)
             toFetchMap[cityLocation] = itemToFetch
 
@@ -2182,7 +2184,7 @@ class BackToTheRoots(BasicPhase):
                         cityLeaderSubordinates.append(None)
 
                     for subleader in cityLeaderSubordinates:
-                        
+
                         if subleader and not subleader.dead:
                             infogrid[2*9+1+row2Counter*3] = getname(subleader)+" "*(rowwidth-len(getname(subleader)))
                             infogrid[3*9+1+row2Counter*3] = str(subleader.reputation)+" "*(rowwidth-len(str(subleader.reputation)))
@@ -2250,7 +2252,7 @@ press space to continue"""%(reputationTree))
 
             if cityLeader.dead:
                 continue
-        
+
             # spawn reward npcs
             for i in range(0,numNpcs):
                 newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
@@ -2394,7 +2396,7 @@ press space to continue"""%(reputationTree))
 
             foundQuest = None
             for quest in cityLeader.quests:
-                if isinstance(quest,src.quests.ObtainAllSpecialItems): 
+                if isinstance(quest,src.quests.ObtainAllSpecialItems):
                     foundQuest = quest
 
             if foundQuest and newScore <= self.scoreTracker[cityLocation]:
@@ -2589,7 +2591,7 @@ press space to continue""")
                                     name = "== "+name+" =="
                                 return name
 
-                            
+
                             rowwidth = 17
 
                             infogrid = []
@@ -2611,7 +2613,7 @@ press space to continue""")
                                     subleaderSubordinates = subleader.subordinates
                                 else:
                                     subleaderSubordinates = [None,None,None]
-                        
+
                                 while len(subleaderSubordinates) < 3:
                                     subleaderSubordinates.append(None)
 
@@ -2628,7 +2630,7 @@ press space to continue""")
 
                                     while len(subsubleaderSubordinates) < 3:
                                         subsubleaderSubordinates.append(None)
-                                        
+
                                     for worker in subsubleaderSubordinates:
                                         if worker and not worker.dead:
                                             infogrid[(2+1+lineCounter)*2*9+row3Counter] = getname(worker)+" "*(rowwidth-len(getname(worker)))
@@ -2795,7 +2797,7 @@ press space to start
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
 
         src.gamestate.gamestate.mainChar.health = 99
-        
+
         enemy = src.characters.Monster(4,4)
         enemy.health = 10
         enemy.baseDamage = 10
@@ -2809,7 +2811,7 @@ press space to start
         text = """
 Attacking is pretty simple, you move into an enemy and you will attack that enemy.
 
-I spawned an enemy nearby. It looks something like <- 
+I spawned an enemy nearby. It looks something like <-
 
 Kill it.
 
@@ -2846,7 +2848,7 @@ reminder:
         mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+5,0))
 
         text = """
-On top of the screen you should see a health bar. 
+On top of the screen you should see a health bar.
 You should see that you have lost some heath.
 
 There are 2 main healing items in this game:
@@ -2943,7 +2945,7 @@ reminder:
         item = src.items.itemMap["Armor"]()
         item.armorValue = 2
         mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+2,0))
-        
+
         item = src.items.itemMap["Armor"]()
         item.armorValue = 5
         mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+3,0))
@@ -2987,7 +2989,7 @@ reminder:
         self.tutorialCheckWeapongrades()
 
     def tutorialCheckWeapongrades(self):
-        if not ((src.gamestate.gamestate.mainChar.weapon and src.gamestate.gamestate.mainChar.weapon.baseDamage == 25) and 
+        if not ((src.gamestate.gamestate.mainChar.weapon and src.gamestate.gamestate.mainChar.weapon.baseDamage == 25) and
                 (src.gamestate.gamestate.mainChar.armor and src.gamestate.gamestate.mainChar.armor.armorValue == 5)):
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "tutorialCheckWeapongrades"})
@@ -3013,7 +3015,7 @@ reminder:
 
         item = src.items.itemMap["Scrap"](amount=20)
         mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+3,0))
-        
+
         item = src.items.itemMap["Scrap"](amount=20)
         mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+3,0))
 
@@ -3034,13 +3036,13 @@ reminder:
 
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+5,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+5,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+6,0))
-        
+
         item = src.items.itemMap["Scrap"](amount=20)
         mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+6,0))
 
@@ -3082,43 +3084,43 @@ reminder:
 
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+9,charPos[1]*15+7,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+8,charPos[1]*15+7,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+8,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+4,charPos[1]*15+7,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+8,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+9,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+2,charPos[1]*15+9,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+7,charPos[1]*15+3,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+2,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+7,charPos[1]*15+1,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+5,charPos[1]*15+1,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+4,charPos[1]*15+2,0))
-        
+
         item = src.items.itemMap["LandMine"]()
         mainChar.container.addItem(item,(charPos[0]*15+3,charPos[1]*15+1,0))
-        
+
         item = src.items.itemMap["Scrap"](amount=20)
         mainChar.container.addItem(item,(charPos[0]*15+6,charPos[1]*15+3,0))
 
@@ -3289,7 +3291,7 @@ press space when you are ready.
 Another menu that might be important is the message log.
 Press x to open it.
 
-Usually it shows the combat log and similar stuff. 
+Usually it shows the combat log and similar stuff.
 In this tutorial it also shows the instructions this tutorial ave you.
 So press x, if you forget what you were supposed to do.
 
@@ -3473,7 +3475,7 @@ It mostly works like picking up or dropping items.
  * press J and a direction (wasd) to activate a nearby item
  * use the inventory menu to activate a specific item
 
- * press e to examine an item 
+ * press e to examine an item
  * walk against a big item and press e to examine it
  * press E and a direction (wasd) to examine a nearby item
 
@@ -3498,7 +3500,7 @@ examine it and activate it.
         storyItem.usageInfo = "activate the item and input the code 3798"
         storyItem.display = "cl"
         storyItem.function = {"container":self,"method":"getActivateCode"}
-        
+
         characterPos = mainChar.getPosition()
         baseX = characterPos[0]//15
         baseY = characterPos[1]//15
@@ -3524,7 +3526,7 @@ examine it and activate it.
     def tutorialExplainDocking(self):
         mainChar = src.gamestate.gamestate.mainChar
         text = """
-that worked, awesome. 
+that worked, awesome.
 
 I'm sure you noticed that opening and closing the inventory can get annoying fast.
 To solve this, the game offers you to dock menus to the left and right of the game map.
@@ -3975,7 +3977,7 @@ class MainGame(BasicPhase):
         containerQuest.activate()
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-        
+
 
         src.gamestate.gamestate.mainChar.messages = []
 
@@ -4313,7 +4315,7 @@ try to remember how you got here ..."""
         glassHeart.hasItem = True
         glassHeart.itemID = itemID
         mainRoom.addItem(glassHeart,(6,6,0))
-        
+
         for x in range(1,13):
             for y in range(1,13):
                 if currentTerrain.getRoomByPosition((x,y,0)):
@@ -5304,7 +5306,7 @@ try to remember how you got here ..."""
         farm.tag = "farm"
         farm = cityBuilder.addFarmFromMap({"coordinate":(9,2),"character":mainChar},forceSpawn=10)
         farm.tag = "farm"
-        
+
         questArtwork = src.items.itemMap["QuestArtwork"]()
         mainRoom.addItem(questArtwork,(1,3,0))
 
@@ -5336,7 +5338,7 @@ try to remember how you got here ..."""
 
     def createRaidBase(self,pos):
         raidBaseInfo = {"type":"raidBase"}
-        
+
         mainChar = src.characters.Character()
         # add basic set of abilities in openworld phase
         mainChar.questsDone = [
@@ -5449,7 +5451,7 @@ try to remember how you got here ..."""
         siegedBaseInfo["mainChar"] = mainChar
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         siegedBaseInfo["terrain"] = currentTerrain
-        
+
         siegedBaseInfo["playerActivatedEpochArtwork"] = False
 
         item = src.items.itemMap["ArchitectArtwork"]()
@@ -5689,7 +5691,7 @@ try to remember how you got here ..."""
 
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
-        
+
         orderArtwork = src.items.itemMap["OrderArtwork"]()
         mainRoom.addItem(orderArtwork,(3,1,0))
 
@@ -5707,7 +5709,7 @@ try to remember how you got here ..."""
 
         orderArtwork.assignQuest({"character":mainChar,"questType":"cancel","groupType":"all","amount":0})
         orderArtwork.assignQuest({"character":mainChar,"questType":"BeUsefull","groupType":"rank 6","amount":0})
-        
+
         epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength)
         epochArtwork.lastNumSpawners = 0
         siegedBaseInfo["epochArtwork"] = epochArtwork
@@ -5755,7 +5757,7 @@ try to remember how you got here ..."""
         hiveStyles = ["simple","empty","attackHeavy","healthHeavy","single"]
         if self.difficulty == "easy":
             hiveStyles = ["empty","empty","empty","empty","empty"]
-                
+
         random.shuffle(hiveStyles)
 
         # add hardcoded treasure rooms
@@ -5777,7 +5779,7 @@ try to remember how you got here ..."""
             room.tag = "hive"
 
             hiveStyle = hiveStyles.pop()
-            
+
             if hiveStyle == "empty":
                 pass
             elif hiveStyle == "simple":
@@ -5846,7 +5848,7 @@ try to remember how you got here ..."""
                 architect.doFillWith(neighbour[0],neighbour[1],fillMaterial)
                 currentTerrain.minimapOverride[neighbour] = (src.interaction.urwid.AttrSpec("#474", "black"), "**")
             room.bio = True
-        
+
         hivePositions = [(3,3,0),(11,11,0),(3,11,0),(11,3,0)]
         for hivePos in hivePositions:
             addHive(hivePos)
@@ -5867,7 +5869,7 @@ try to remember how you got here ..."""
         for farmPlot in farmPlots:
             if farmPlot in hivePositions:
                 continue
-            
+
             if self.difficulty == "easy":
                 amount = int(random.random()*4)+1
             elif self.difficulty == "difficult":
@@ -5932,7 +5934,7 @@ try to remember how you got here ..."""
                     for i in range(1,2+random.randint(1,5)):
                         offsetX = random.randint(1,13)
                         offsetY = random.randint(1,13)
-                        
+
                         xPos = 15*x+offsetX
                         yPos = 15*y+offsetY
 
@@ -6286,7 +6288,7 @@ When you rise in rank you will be able to build a way out of here."""
             self.advanceColonyBase2(colonyBaseInfo)
 
         self.numRounds += 1
-        
+
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + self.epochLength)
         event.setCallback({"container": self, "method": "startRound"})
 
@@ -6306,7 +6308,7 @@ When you rise in rank you will be able to build a way out of here."""
                 if not specialItemSlot.hasItem:
                     continue
                 hasSpecialItems.append(specialItemSlot)
-        
+
         room = random.choice(terrain.rooms)
 
         '''
@@ -6323,7 +6325,7 @@ You are rewarded with the following:
 no reward.
 
 """
-                
+
                 if len(hasSpecialItems):
                     npc = src.characters.Character()
                     npc.questsDone = [
@@ -6545,7 +6547,7 @@ press enter to continue"""
             for item in room.getItemByPosition((6,6,0)):
                 if item.type == "MonsterSpawner":
                     spawnerRooms.append(room)
-        
+
         if not spawnerRooms:
             return
 
@@ -6647,7 +6649,7 @@ class MainGameArena2(BasicPhase):
         """
 
         self.arenaStage = 0
-        
+
     def start(self, seed=0, difficulty=None):
         mainChar = src.characters.Character()
         # add basic set of abilities in openworld phase
@@ -6783,7 +6785,7 @@ class MainGameArena2(BasicPhase):
         event.setCallback({"container": self, "method": "startRound"})
 
         terrain = src.gamestate.gamestate.terrainMap[7][7]
-        
+
         for i in range(0,self.numCharacters-len(terrain.characters)):
             if self.mainChar.dead:
                 continue
@@ -6819,7 +6821,7 @@ class MainGameArena(BasicPhase):
         """
 
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
-        
+
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
         item.godMode = True
@@ -7277,7 +7279,7 @@ class MainGameArena(BasicPhase):
         item = src.items.itemMap["ScrapCompactor"]()
         item.bolted = False
         room.addItem(item,(11,1,0))
-        
+
         item = src.items.itemMap["Machine"]()
         item.setToProduce("RoomBuilder")
         item.bolted = False
@@ -7306,7 +7308,7 @@ class MainGameArena(BasicPhase):
         event.setCallback({"container": self, "method": "startRound"})
 
         terrain = src.gamestate.gamestate.terrainMap[7][7]
-        
+
         for i in range(0,self.numCharacters-len(terrain.characters)):
             if self.mainChar.dead:
                 continue
@@ -7763,7 +7765,7 @@ class DesertSurvival(BasicPhase):
 # obsolete: maybe just delete and rebuild
 class FactoryDream(BasicPhase):
     """
-    game mode basically 
+    game mode basically
     """
 
     def __init__(self, seed=0):
@@ -7782,7 +7784,7 @@ class FactoryDream(BasicPhase):
         Parameters:
             seed: rng seed
         """
-        
+
         import random
 
         src.cinematics.showCinematic("just look at my pretty factory")
@@ -7989,7 +7991,7 @@ So let's give you a Tour!
 
 The following scenarios represent the roguelike aspect: roguelikeStart, survival, dungeon
 The following scenarios represent the imperative programming part of the game: siege, creative mode
-The following scenarios represent the functional programming part of the game: 
+The following scenarios represent the functional programming part of the game:
 
 -- press space to continue --
 (loads of spoilers ahead)
@@ -8000,7 +8002,7 @@ some sidenotes:
     * Commands are ment to be recorded by standing on a sheet and activating it
     * Commands are ment to be be placed on the floor and activated while standing on them
     * You can activate commands while recording a command
-    * The result of a recorded action may change  
+    * The result of a recorded action may change
     * Your commands can include moving commands
     * You cannot record two commands at once
     * Commands alone are not enough for full automation
@@ -8027,7 +8029,7 @@ Read the notes on the floor for more information.
 
         terrain = src.gamestate.gamestate.mainChar.terrain
 
-        
+
         # room 1
         roomPos = (1,1)
         item = src.items.itemMap["Note"]()
@@ -8168,7 +8170,7 @@ continue east to see an example for this.
 This command in the tile center will take about 17000 ticks to complete.
 This is a simplfied food production setup, it works like this (west to east):
 
-The character uses the tree to drop 1 maggot 
+The character uses the tree to drop 1 maggot
 The character picks it up and carries it into the room and drops it
 The character does that 10 times to get 10 maggots
 The character uses the maggot fermenter to produce 1 biomass from 10 maggots
@@ -8276,7 +8278,7 @@ But be aware of the fact that doing complex automation only using commands is ve
 By activating a command from your inventory you can build commands that doesn't stop where it started.
 This is useful to to build endless loops to have npc do a job forever or for building fast travel system.
 
-Moving, storing, stacking and copying commands works. 
+Moving, storing, stacking and copying commands works.
 
 So you could have a todo-stack of commands that get a npc takes in an endless loop and distributes those to a pool of workers.
 You could have npcs that spawn more npcs. You could have self replicating strutures.
@@ -8354,7 +8356,7 @@ So there are helper items that do to complex things like managing a stockpile fo
 They do this by calculating a command to do the task and run that command on a npc.
 
 This example is the last example but with 2 smart items build in:
-* a storage manager is used to store the produced case properly. 
+* a storage manager is used to store the produced case properly.
 * an item collector to gather scrap easily
 
 """
@@ -8362,7 +8364,7 @@ This example is the last example but with 2 smart items build in:
 
         item = src.items.itemMap["UniformStockpileManager"]()
         terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+8,0))
-        
+
         for i in range(0,10):
             item = src.items.itemMap["Sheet"]()
             terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+9,0))

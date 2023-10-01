@@ -31,7 +31,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDelivery, "deliveredSpecialItem")
 
         return super().assignToCharacter(character)
@@ -48,7 +48,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             if not item.type == "SpecialItem":
                 continue
             hasSpecialItem = item
-        
+
         terrain = character.getTerrain()
 
         if not hasSpecialItem:
@@ -128,14 +128,14 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         foundGlassStatue = None
-        for room in [character.container]+terrain.rooms: 
+        for room in [character.container]+terrain.rooms:
             for glassStatue in room.getItemsByType("GlassStatue"):
                 if glassStatue.itemID == hasSpecialItem.itemID:
                     foundGlassStatue = glassStatue
                     break
             if foundGlassStatue:
                 break
-                
+
         if not foundGlassStatue:
             self.fail(reason="no glass statues found")
             return (None,None)

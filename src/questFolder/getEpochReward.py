@@ -76,7 +76,7 @@ This will allow you to focus on other tasks.
         return out
 
     def getNextStep(self,character=None,ignoreCommands=False):
-        
+
         while self.subQuests:
             if not self.subQuests[-1].completed:
                 break
@@ -179,7 +179,7 @@ This will allow you to focus on other tasks.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleGotEpochReward, "got epoch reward")
 
         return super().assignToCharacter(character)

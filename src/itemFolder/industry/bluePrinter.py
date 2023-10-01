@@ -104,7 +104,7 @@ The items from the blueprint reciepe need to be added to the west or south.
     def apply(self, character):
         """
         handle a character trying to research a blueprint
-        
+
         Parameters:
             character: the character trying to use the item
         """

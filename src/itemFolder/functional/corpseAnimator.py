@@ -59,7 +59,7 @@ Activate a filled corpse animator to spawn a ghoul
 
     def render(self):
         """
-        render the growth tank depending on the fill state 
+        render the growth tank depending on the fill state
 
         Returns:
             how the growth tank should be shown
@@ -150,7 +150,7 @@ Activate a filled corpse animator to spawn a ghoul
             name = "%s %s"%(firstName,lastName,)
             """
             name = "worker"
-                
+
             return name
 
         # add character

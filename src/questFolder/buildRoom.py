@@ -153,7 +153,7 @@ Press d to move the cursor and show the subquests description.
                     quests.append(quest)
                     counter += 1
                 return (list(reversed(quests)),None)
-            
+
             doorPositions = [(7,1,0),(1,7,0),(7,13,0),(13,7,0)]
             missingDoorPositions = []
             for doorPos in doorPositions:
@@ -183,7 +183,7 @@ Press d to move the cursor and show the subquests description.
                     quests.append(quest)
                     counter += 1
                 return (list(reversed(quests)),None)
-            
+
             roomBuilderPos = (7,7,0)
             if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=roomBuilderPos,ignoreEndBlocked=True,reason="get next to the RoomBuilder")
@@ -195,7 +195,7 @@ Press d to move the cursor and show the subquests description.
                     return (None, (command,"activate the RoomBuilder"))
             1/0
         return (None,None)
-    
+
     def generateSubquests(self, character=None):
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
         if nextQuests:

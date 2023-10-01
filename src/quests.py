@@ -3,18 +3,13 @@ quests and quest related code
 
 """
 
-# import basic libs
-import json
 import random
 import time
 
-# import basic internal libs
-import src.items
-import src.chats
-import src.events
-import src.interaction
 import src.cinematics
+import src.events
 import src.gamestate
+import src.interaction
 
 # HACK: common variables with modules
 mainChar = None
@@ -130,14 +125,14 @@ class Quest:
 
     def getRequiredParameters(self):
         return []
-    
+
     def getOptionalParameters(self):
         return [{"name":"lifetime","type":"int","default":None}]
 
     def setParameters(self,parameters):
         if "lifetime" in parameters:
             self.lifetime = parameters["lifetime"]
-    
+
     def reroll(self):
         self.randomSeed = random.random()
 
@@ -609,7 +604,7 @@ class MetaQuestSequence(Quest):
 
     def render(self,depth=0,cursor=None,sidebared=False):
         description = [self.description]
-        
+
         #if not depth == 0 and sidebared:
         #    description = ["..."]
 

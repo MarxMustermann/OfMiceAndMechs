@@ -133,7 +133,7 @@ class PavingGenerator(src.items.Item):
             directions += "/north"
         text = f"""
 
-Place scrap to the {directions} of the machine and activate it 
+Place scrap to the {directions} of the machine and activate it
 
 After using this machine you need to wait {self.coolDown} ticks till you can use this machine again.
 """

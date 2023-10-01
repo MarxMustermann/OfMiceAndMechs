@@ -1,21 +1,18 @@
 """
 the code for the characters belongs here
 """
-# import basic libs
-import json
-urwid = None
-
-# import the other internal libs
-import src.items
-import src.quests
-import src.chats
-import src.events
-import src.canvas
-import src.interaction
-import config
+import logging
 import random
-import src.logger
+
+import config
+import src.canvas
+import src.chats
 import src.gamestate
+import src.interaction
+import src.items
+
+urwid = None
+logger = logging.getLogger(__name__)
 
 
 class Character:
@@ -106,7 +103,7 @@ class Character:
             display = src.canvas.displayChars.staffCharactersByLetter[name[0].lower()]
 
         if name is None:
-            
+
             firstName = random.choice([
                 "Siegfried","Ernst","Alfred","Herrmann","Friedrich","Helmut","Karl","Gunnar","Berthold","Dietrich",
                 "Friedhelm","Horst","Edmund","Wilhelm","Albert","Johann","Herbert","Bertram","Hans","Jochen","Ludwig",
@@ -291,7 +288,7 @@ class Character:
             ownDamage = self.baseDamage
             if self.weapon:
                 ownDamage += self.weapon.baseDamage
-            
+
             numTurns = completeHealth//ownDamage+1
             challengeRating += numTurns*completeDamage
             return challengeRating
@@ -342,7 +339,7 @@ class Character:
 
         homeRoom = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))[0]
         return homeRoom
-        
+
     def getRoom(self):
         room = None
         if isinstance(self.container,src.rooms.Room):
@@ -1236,7 +1233,7 @@ press any other key to attack normally"""
 
         # log impossible state
         if not self.quests:
-            src.logger.debugMessages.append("recalculate path called without quests")
+            logger.debug("recalculate path called without quests")
             self.path = []
             return
 
@@ -1312,7 +1309,7 @@ press any other key to attack normally"""
         if fraction and self.reputation:
             totalAmount += self.reputation // fraction
         self.reputation += totalAmount
-        
+
         text = "you were rewarded %i reputation" % totalAmount
         if reason:
             text += " for " + reason
@@ -1360,7 +1357,7 @@ press any other key to attack normally"""
             try:
                 self.setPathToQuest(self.quests[0])
             except:
-                src.logger.debugMessages.append("setting path to quest failed")
+                logger.debug("setting path to quest failed")
                 pass
 
     def getDetailedInfo(self):
@@ -1480,7 +1477,7 @@ press any other key to attack normally"""
         """
 
         if self.disableCommandsOnPlus:
-            
+
             hasComand = False
             quest = self.getActiveQuest()
             try:
@@ -1567,11 +1564,7 @@ press any other key to attack normally"""
 
         # log impossible state
         else:
-            src.logger.debugMessages.append(
-                "this should not happen, character died without being somewhere ("
-                + str(self)
-                + ")"
-            )
+            logger.debug("this should not happen, character died without being somewhere (%s)", self)
 
         self.macroState["commandKeyQueue"] = []
 
@@ -1613,11 +1606,11 @@ press any other key to attack normally"""
 
         # smooth over impossible state
         if self.dead:
-            src.logger.debugMessages.append("dead men walking")
+            logger.debug("dead men walking")
             return
         if not self.path:
             self.setPathToQuest(self.quests[0])
-            src.logger.debugMessages.append("walking without path")
+            logger.debug("walking without path")
 
         # move along the predetermined path
         currentPosition = (self.xPosition, self.yPosition)
@@ -1658,9 +1651,7 @@ press any other key to attack normally"""
                     self.xPosition = nextPosition[0]
                     self.yPosition = nextPosition[1]
                 else:
-                    src.logger.debugMessages.append(
-                        "character moved on non continious path"
-                    )
+                    logger.debug("character moved on non-continuous path")
         # try to move within a terrain
         else:
             # check if a room was entered
@@ -1988,9 +1979,7 @@ press any other key to attack normally"""
         # smooth over impossible state
         while self.events and src.gamestate.gamestate.tick > self.events[0].tick:
             event = self.events[0]
-            src.logger.debugMessages.append(
-                "something went wrong and event" + str(event) + "was skipped"
-            )
+            logger.debug("something went wrong and event %s was skipped", event)
             self.events.remove(event)
 
         # handle events
@@ -1998,7 +1987,7 @@ press any other key to attack normally"""
             event = self.events[0]
             event.handleEvent()
             if event not in self.events:
-                src.logger.debugMessages.append("impossible state with events")
+                logger.debug("impossible state with events")
                 continue
             self.events.remove(event)
 
@@ -2572,7 +2561,7 @@ class Monster(Character):
         render = src.canvas.displayChars.monster_spore
         if self.phase == 2:
             render = src.canvas.displayChars.monster_feeder
-            
+
             if self.health > 150:
                 colorHealth = "#f80"
             elif self.health > 140:
@@ -2717,7 +2706,7 @@ class Guardian(Character):
         """
 
         render = src.canvas.displayChars.monster_feeder
-        
+
         if self.health > 1500:
             colorHealth = "#f80"
         elif self.health > 1400:

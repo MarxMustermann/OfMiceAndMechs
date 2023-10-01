@@ -221,7 +221,7 @@ class TradingArtwork2(src.items.Item):
             didSomething = False
             for inputSlot in self.container.inputSlots:
                 items = self.container.getItemByPosition(inputSlot[0])
-            
+
                 for giveSpec in tradeCopy["give"][:]:
                     while items and items[-1].type == giveSpec[0]:
                         item = items[-1]

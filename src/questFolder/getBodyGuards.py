@@ -67,7 +67,7 @@ Use it to gain a new body guard."""
         if not homeRoom:
             return None
         return homeRoom.getItemByType("PersonnelArtwork")
-        
+
     def generateSubquests(self,character):
         if not self.active:
             return

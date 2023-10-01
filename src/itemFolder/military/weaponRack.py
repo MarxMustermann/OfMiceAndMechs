@@ -14,7 +14,7 @@ class Armor(src.items.Item):
 
     def __init__(self):
         """
-        set up internal state    
+        set up internal state
         """
 
         super().__init__(display="ar")

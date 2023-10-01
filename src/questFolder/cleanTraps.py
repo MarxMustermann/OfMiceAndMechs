@@ -55,8 +55,8 @@ Trap rooms that need to be cleaned are:
                         continue
                     filledTraproom.append(room)
                     break
-        
-        return filledTraproom 
+
+        return filledTraproom
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):

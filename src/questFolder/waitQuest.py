@@ -22,7 +22,7 @@ Wait."""
         if self.lifetimeEvent:
             text += f"""
 
-This quest will end in {str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)} ticks""" 
+This quest will end in {str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)} ticks"""
         return text
 
     def isPaused(self):

@@ -41,7 +41,7 @@ do some metal working
         benches = []
         if character.container.isRoom:
             benches.extend(character.container.getItemsByType("MetalWorkingBench"))
-        
+
         benchNearBy = None
         for bench in benches:
             if not character.getDistance(bench.getPosition()) > 1:
@@ -123,7 +123,7 @@ do some metal working
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleWorkedMetal, "worked metal")
 
         return super().assignToCharacter(character)

@@ -41,7 +41,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             anvils.extend(character.container.getItemsByType("Anvil"))
         if not character.container.isRoom:
             return ([src.quests.questMap["EnterRoom"]],None)
-        
+
         anvilNearBy = None
         for anvil in anvils:
             if not character.getDistance(anvil.getPosition()) > 1:
@@ -150,7 +150,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleHammeredScrap, "hammered scrap")
         self.startWatching(character,self.handleInventoryFull, "inventory full error")
         self.startWatching(character,self.handleNoScrap, "no scrap error")

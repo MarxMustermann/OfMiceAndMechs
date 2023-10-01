@@ -22,13 +22,13 @@ Clear path to position {self.targetPosition}{reason}.
 
 Pick up and unbolt items that are in the way.
 """
-        
+
         return text
 
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
-        
+
         pos = character.getPosition()
         pos = (pos[0]%15,pos[1]%15,pos[2]%15)
         if pos == self.targetPosition:

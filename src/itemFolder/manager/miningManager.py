@@ -107,7 +107,7 @@ class MiningManager(src.items.Item):
                     ]
             targetJobOrder.addTasks(tasks)
             character.addToInventory(targetJobOrder)
-            
+
         if selection == "spawn npc":
             character = src.characters.Character(name="mining npc")
             character.godMode = True
@@ -225,7 +225,7 @@ class MiningManager(src.items.Item):
             task: details about this task
             context: context about this task
         """
-        
+
         setupInfo = task["setupInfo"]
 
         jobOrder = context["jobOrder"]

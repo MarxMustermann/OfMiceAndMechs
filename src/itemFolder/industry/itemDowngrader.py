@@ -33,7 +33,7 @@ Place item to upgrade to the west and the downgraded item will be placed to the 
             return
 
         inputItem = None
-        
+
         itemsFound = self.container.getItemByPosition((self.xPosition - 1, self.yPosition,0))
         if itemsFound:
             inputItem = itemsFound[0]

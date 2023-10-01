@@ -132,7 +132,7 @@ Try as hard as you can to achieve this.
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handleDrewMarking, "drew marking")
 
         return super().assignToCharacter(character)

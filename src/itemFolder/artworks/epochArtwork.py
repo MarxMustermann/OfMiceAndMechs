@@ -720,7 +720,6 @@ Prepare your base to brace the impact before you destroy the spawner.
             epochQuest.addQuest(quest)
             return
 
-        print(len(terrain.rooms))
         if len(terrain.rooms) < 6:
             text += """
 set up base

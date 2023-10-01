@@ -136,21 +136,32 @@ This will allow you to focus on other tasks.
                 quest = src.quests.questMap["EnterRoom"]()
                 return ([quest],None)
 
-            epochArtwork = character.container.getItemsByType("EpochArtwork")[0]
+            shrines = character.container.getItemsByType("Shrine")
+            foundShrine = None
+            for shrine in shrines:
+                if (self.rewardType.startswith("spawn ") and self.rewardType.endswith("NPC")) and shrine.god == 1:
+                    foundShrine = shrine
+                if self.rewardType == "spawn scrap" and shrine.god == 2:
+                    foundShrine = shrine
+
+            if not foundShrine:
+                self.fail("no shrine found")
+                return (None,None)
+
             command = None
-            if character.getPosition(offset=(1,0,0)) == epochArtwork.getPosition():
+            if character.getPosition(offset=(1,0,0)) == foundShrine.getPosition():
                 command = "d"
-            if character.getPosition(offset=(-1,0,0)) == epochArtwork.getPosition():
+            if character.getPosition(offset=(-1,0,0)) == foundShrine.getPosition():
                 command = "a"
-            if character.getPosition(offset=(0,1,0)) == epochArtwork.getPosition():
+            if character.getPosition(offset=(0,1,0)) == foundShrine.getPosition():
                 command = "s"
-            if character.getPosition(offset=(0,-1,0)) == epochArtwork.getPosition():
+            if character.getPosition(offset=(0,-1,0)) == foundShrine.getPosition():
                 command = "w"
 
             if command:
-                return (None,("J"+command,"to activate the epoch artwork"))
+                return (None,("J"+command,"to start praying at the shrine"))
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
             return ([quest],None)
 
         quest = src.quests.questMap["GoHome"](description="go to command centre")

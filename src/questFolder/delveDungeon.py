@@ -65,54 +65,99 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                 #if character.health > character.maxHealth*0.5 and character.health < character.maxHealth:
                 #    return (None,("..............","wait to heal"))
                 if not dryRun:
-                    self.fail()
-                return (None,None)
-            if character.getBigPosition() != (7, 7, 0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),abortHealthPercentage=0.75)
-                return ([quest],None)
-            specialItem = character.container.getItemByType("SpecialItem")
-            if not specialItem:
-                specialItemSlots = character.container.getItemsByType("SpecialItemSlot")
-                for specialItemSlot in specialItemSlots:
-                    if not specialItemSlot.hasItem:
-                        continue
-                    if self.itemID and specialItemSlot.itemID != self.itemID:
-                        continue
-                    if character.getPosition() != specialItemSlot.getPosition():
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition())
-                        return ([quest],None)
-                    return (None,("j","get special item"))
-                if not dryRun:
-                    self.fail()
+                    self.fail("too hurt")
                 return (None,None)
 
-            if character.getPosition() != specialItem.getPosition():
-                quest = src.quests.questMap["GoToPosition"](targetPosition=specialItem.getPosition())
+            foundGlassHeart = None
+            for room in terrain.rooms:
+                for specialItem in room.getItemsByType("SpecialItem"):
+                    if self.itemID and not specialItem.itemID == self.itemID:
+                        continue
+                    foundGlassHeart = specialItem
+
+            if not foundGlassHeart:
+                foundGlassStatue = None
+                for room in terrain.rooms:
+                    for glassStatue in room.getItemsByType("GlassStatue"):
+                        if not glassStatue.hasItem:
+                            print("skipped item filled")
+                            continue
+                        if self.itemID and not glassStatue.itemID == self.itemID:
+                            print("skipped item id")
+                            continue
+                        foundGlassStatue = glassStatue
+
+                if foundGlassStatue:
+                    if not character.container == foundGlassStatue.container:
+                        quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.75)
+                        return ([quest],None)
+
+                    if character.getDistance(foundGlassStatue.getPosition()) > 1:
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True)
+                        return ([quest],None)
+
+                    directionCommand = None
+                    if character.getPosition(offset=(0,0,0)) == foundGlassStatue.getPosition():
+                        directionCommand = "."
+                    if character.getPosition(offset=(1,0,0)) == foundGlassStatue.getPosition():
+                        directionCommand = "d"
+                    if character.getPosition(offset=(0,1,0)) == foundGlassStatue.getPosition():
+                        directionCommand = "s"
+                    if character.getPosition(offset=(-1,0,0)) == foundGlassStatue.getPosition():
+                        directionCommand = "a"
+                    if character.getPosition(offset=(0,-1,0)) == foundGlassStatue.getPosition():
+                        directionCommand = "w"
+                    return (None,(directionCommand+"cg","get special item"))
+
+                if not dryRun:
+                    self.fail("no glassStatue found")
+                return (None,None)
+
+            if not character.getPosition() == foundGlassHeart.getPosition():
+                quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition())
                 return ([quest],None)
             return (None,("k","pick up special item"))
 
-        if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
-            quest = src.quests.questMap["GoHome"]()
+        if not terrain.xPosition == character.registers["HOMETx"] or not terrain.yPosition == character.registers["HOMETy"]:
+            quest = src.quests.questMap["GoHome"](reason="to go to your home territory")
             return ([quest],None)
 
         if not character.container.isRoom:
-            quest = src.quests.questMap["GoHome"]()
-            return ([quest],None)
-        specialItemSlots = character.container.getItemsByType("SpecialItemSlot")
-        if not specialItemSlots:
-            quest = src.quests.questMap["GoHome"]()
+            quest = src.quests.questMap["GoHome"](reason="get into a room")
             return ([quest],None)
 
-        for specialItemSlot in specialItemSlots:
-            if specialItemSlot.itemID == hasSpecialItem.itemID:
-                if character.getPosition() != specialItemSlot.getPosition():
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=specialItemSlot.getPosition())
-                    return ([quest],None)
-                return (None,("j","insert special item"))
+        foundGlassStatue = None
+        for room in [character.container]+terrain.rooms:
+            for glassStatue in room.getItemsByType("GlassStatue"):
+                if glassStatue.itemID == hasSpecialItem.itemID:
+                    foundGlassStatue = glassStatue
+                    break
+            if foundGlassStatue:
+                break
 
-        if not dryRun:
-            self.fail()
-        return (None,None)
+        if not foundGlassStatue:
+            self.fail(reason="no glass statues found")
+            return (None,None)
+
+        if not foundGlassStatue.container == character.container:
+            quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition())
+            return ([quest],None)
+
+        if character.getDistance(glassStatue.getPosition()) > 1:
+            quest = src.quests.questMap["GoToPosition"](targetPosition=glassStatue.getPosition(),ignoreEndBlocked=True)
+            return ([quest],None)
+        directionCommand = None
+        if character.getPosition(offset=(0,0,0)) == glassStatue.getPosition():
+            directionCommand = "."
+        if character.getPosition(offset=(1,0,0)) == glassStatue.getPosition():
+            directionCommand = "d"
+        if character.getPosition(offset=(0,1,0)) == glassStatue.getPosition():
+            directionCommand = "s"
+        if character.getPosition(offset=(-1,0,0)) == glassStatue.getPosition():
+            directionCommand = "a"
+        if character.getPosition(offset=(0,-1,0)) == glassStatue.getPosition():
+            directionCommand = "w"
+        return (None,(directionCommand+"cg","insert glass heart"))
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

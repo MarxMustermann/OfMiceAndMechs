@@ -1452,6 +1452,10 @@ class Room:
                         if not item.commands:
                             item.settings = {}
                         item.settings.update(buildSite[2].get("settings"))
+                    if buildSite[1] == "Shrine" and buildSite[2].get("god"):
+                        item.god = int(buildSite[2].get("god"))
+                    if buildSite[1] == "GlassStatue" and buildSite[2].get("god"):
+                        item.itemID = int(buildSite[2].get("god"))
 
 
     def removeItem(self, item):

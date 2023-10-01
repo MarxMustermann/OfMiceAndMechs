@@ -11,3 +11,4 @@ import src.itemFolder.functional.painter
 import src.itemFolder.functional.throne
 import src.itemFolder.functional.glassHeart
 import src.itemFolder.functional.glassStatue
+import src.itemFolder.functional.shrine

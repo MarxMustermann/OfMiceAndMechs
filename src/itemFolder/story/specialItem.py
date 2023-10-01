@@ -8,7 +8,7 @@ class SpecialItem(src.items.Item):
 
     type = "SpecialItem"
 
-    def __init__(self):
+    def __init__(self,epoch=0):
         """
         configure the superclass
         """
@@ -19,5 +19,6 @@ class SpecialItem(src.items.Item):
         self.walkable = True
         self.bolted = False
         self.itemID = None
+        self.epoch = epoch
 
 src.items.addType(SpecialItem)

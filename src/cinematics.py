@@ -178,7 +178,7 @@ class MessageZoomCinematic(BasicCinematic):
         textWithDeco = ""
         for line in self.text:
             textWithDeco += " " * self.left + "┃ " + line + "\n"
-        for i in range(0, self.top - 2 - len(self.text)):
+        for i in range(self.top - 2 - len(self.text)):
             textWithDeco += " " * self.left + "┃\n"
         textWithDeco += " " * self.left + "┗" + "━" * (self.right - 1)
 

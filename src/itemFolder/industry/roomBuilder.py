@@ -105,9 +105,8 @@ The room has to be a rectangle.
                     wallFound = item
                     if item not in items:
                         items.append(item)
-                    if item.type in ("Door",):
-                        if item not in specialItems:
-                            specialItems.append(item)
+                    if item.type in ("Door",) and item not in specialItems:
+                        specialItems.append(item)
                     break
             if not wallFound:
                 wallMissing = True
@@ -120,9 +119,8 @@ The room has to be a rectangle.
                     wallFound = item
                     if item not in items:
                         items.append(item)
-                    if item.type in ("Door",):
-                        if item not in specialItems:
-                            specialItems.append(item)
+                    if item.type in ("Door",) and item not in specialItems:
+                        specialItems.append(item)
                     break
             if not wallFound:
                 wallMissing = True
@@ -135,9 +133,8 @@ The room has to be a rectangle.
                     wallFound = item
                     if item not in items:
                         items.append(item)
-                    if item.type in ("Door",):
-                        if item not in specialItems:
-                            specialItems.append(item)
+                    if item.type in ("Door",) and item not in specialItems:
+                        specialItems.append(item)
                     break
             if not wallFound:
                 wallMissing = True
@@ -150,9 +147,8 @@ The room has to be a rectangle.
                     wallFound = item
                     if item not in items:
                         items.append(item)
-                    if item.type in ("Door",):
-                        if item not in specialItems:
-                            specialItems.append(item)
+                    if item.type in ("Door",) and item not in specialItems:
+                        specialItems.append(item)
                     break
             if not wallFound:
                 wallMissing = True

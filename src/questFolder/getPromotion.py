@@ -71,7 +71,7 @@ You need to reach rank {self.character.rank-1} to complete the quest.
         for item in room.itemsOnFloor:
             if not item.bolted:
                 continue
-            if not item.type == "Assimilator":
+            if item.type != "Assimilator":
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
@@ -103,7 +103,7 @@ You need to reach rank {self.character.rank-1} to complete the quest.
         for item in room.itemsOnFloor:
             if not item.bolted:
                 continue
-            if not item.type == "Assimilator":
+            if item.type != "Assimilator":
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):

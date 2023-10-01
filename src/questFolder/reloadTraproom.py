@@ -71,7 +71,7 @@ This will reload the trap room and consume the lightning rods.
 
         if not self.subQuests:
             if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:
-                if not (character.getBigPosition() == (self.targetPosition[0],self.targetPosition[1],0)):
+                if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
                     quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                     self.addQuest(quest)
                     return
@@ -122,7 +122,7 @@ This will reload the trap room and consume the lightning rods.
             if rooms:
                 room = rooms[0]
 
-            if not room == character.container:
+            if room != character.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 return
@@ -133,7 +133,7 @@ This will reload the trap room and consume the lightning rods.
             for item in room.itemsOnFloor:
                 if not item.bolted:
                     continue
-                if not item.type == "Shocker":
+                if item.type != "Shocker":
                     continue
                 foundCharger = item
 
@@ -173,7 +173,7 @@ This will reload the trap room and consume the lightning rods.
             if foundCharger:
                 source = None
                 for sourceCandidate in random.sample(list(room.sources),len(room.sources)):
-                    if not sourceCandidate[1] == "LightningRod":
+                    if sourceCandidate[1] != "LightningRod":
                        continue
 
                     sourceRoom = room.container.getRoomByPosition(sourceCandidate[0])

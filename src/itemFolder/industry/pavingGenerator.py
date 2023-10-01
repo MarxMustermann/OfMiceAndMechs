@@ -45,22 +45,20 @@ class PavingGenerator(src.items.Item):
             if item.type == "Scrap":
                 scrap = item
                 break
-        if self.level > 1:
-            if not scrap:
-                for item in self.container.getItemByPosition(
-                    (self.xPosition, self.yPosition + 1, self.zPosition)
-                ):
-                    if isinstance(item, itemMap["Scrap"]):
-                        scrap = item
-                        break
-        if self.level > 2:
-            if not scrap:
-                for item in self.container.getItemByPosition(
-                    (self.xPosition, self.yPosition - 1, self.zPosition)
-                ):
-                    if isinstance(item, itemMap["Scrap"]):
-                        scrap = item
-                        break
+        if self.level > 1 and not scrap:
+            for item in self.container.getItemByPosition(
+                (self.xPosition, self.yPosition + 1, self.zPosition)
+            ):
+                if isinstance(item, itemMap["Scrap"]):
+                    scrap = item
+                    break
+        if self.level > 2 and not scrap:
+            for item in self.container.getItemByPosition(
+                (self.xPosition, self.yPosition - 1, self.zPosition)
+            ):
+                if isinstance(item, itemMap["Scrap"]):
+                    scrap = item
+                    break
 
         if (
             src.gamestate.gamestate.tick < self.coolDownTimer + self.coolDown

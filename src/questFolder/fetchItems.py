@@ -111,7 +111,7 @@ Press d to move the cursor and show the subquests description.
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
-                if not item.type == self.toCollect:
+                if item.type != self.toCollect:
                     break
                 numItems += 1
 
@@ -175,7 +175,7 @@ Press d to move the cursor and show the subquests description.
         if not self.amount:
             numItemsCollected = 0
             for item in reversed(character.inventory):
-                if not item.type == self.toCollect:
+                if item.type != self.toCollect:
                     break
                 numItemsCollected += 1
             if (numItemsCollected+character.getFreeInventorySpace()) < 5:
@@ -187,7 +187,7 @@ Press d to move the cursor and show the subquests description.
         if self.amount:
             numItemsCollected = 0
             for item in reversed(character.inventory):
-                if not item.type == self.toCollect:
+                if item.type != self.toCollect:
                     break
                 numItemsCollected += 1
 
@@ -203,7 +203,7 @@ Press d to move the cursor and show the subquests description.
                 charPos = (character.container.xPosition,character.container.yPosition,0)
             else:
                 charPos = (character.xPosition//15,character.yPosition//15,0)
-            if not charPos == self.tileToReturnTo:
+            if charPos != self.tileToReturnTo:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.tileToReturnTo,reason="return where you came from")
                 self.tileToReturnTo = None
                 return ([quest],None)
@@ -282,7 +282,7 @@ Press d to move the cursor and show the subquests description.
                     item = random.choice(candidates)
                     quests = []
                     quests.append(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}"))
-                    if not character.container == item.container:
+                    if character.container != item.container:
                         quests.append(src.quests.questMap["GoToTile"](targetPosition=item.container.getPosition(),description="go to "+self.toCollect+" source",reason=f"reach a source for {self.toCollect}"))
                     return (quests,None)
             else:

@@ -215,7 +215,7 @@ This is a level {self.level} item
                 ]["a"][:-1]
             else:
                 counter = 1
-                while not self.character.macroState["macros"]["a"][-counter] == "i":
+                while self.character.macroState["macros"]["a"][-counter] != "i":
                     counter += 1
                 self.character.macroState["macros"]["a"] = self.character.macroState[
                     "macros"

@@ -43,7 +43,7 @@ class RoadManager(src.items.Item):
             node = tuple(value["coordinate"])
             counter = 0
             backPath = []
-            while not node == tuple(self.center):
+            while node != tuple(self.center):
                 counter += 1
                 if counter == 100:
                     break
@@ -246,7 +246,7 @@ class RoadManager(src.items.Item):
 
         startPos = [7, 7]
         startPos[index] += changePerStep
-        for i in range(0, 12):
+        for i in range(12):
             startPos[index] += changePerStep
             if i in (
                 5,
@@ -333,7 +333,7 @@ class RoadManager(src.items.Item):
         toRemove = []
         for x in range(minX, maxX):
             for y in range(minY, maxY):
-                if (not x % 15 == 7) and (not y % 15 == 7):
+                if (x % 15 != 7) and (y % 15 != 7):
                     continue
                 toRemove.extend(terrain.getItemByPosition((x, y, 0)))
         terrain.removeItems(toRemove)

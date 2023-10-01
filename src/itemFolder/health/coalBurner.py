@@ -45,7 +45,7 @@ class CoalBurner(src.items.Item):
 
         if not moldFeed:
             for item in character.inventory:
-                if not item.type == "MoldFeed":
+                if item.type != "MoldFeed":
                     continue
                 moldFeed = item
                 break

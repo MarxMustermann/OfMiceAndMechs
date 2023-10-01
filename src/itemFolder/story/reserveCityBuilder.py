@@ -15,7 +15,7 @@ class ReserveCityBuilder(src.items.Item):
         self.neededRepairItems = []
         repairCandidates = ["Rod","Heater","puller","Stripe","Bolt","Tank"]
         #for i in range(0,random.randint(3,5)):
-        for i in range(0,0):
+        for i in range(0):
             candidate = random.choice(repairCandidates)
             self.neededRepairItems.append(candidate)
             repairCandidates.remove(candidate)
@@ -137,21 +137,16 @@ class ReserveCityBuilder(src.items.Item):
         elif foundOther:
             for (pos,info) in self.storageSlots.items():
                 if info["type"] == foundOther.type and info["amount"] < 15:
-                    if foundOther.type == "Armor":
-                        if not (foundOther.armorValue == info["armorValue"]):
-                            continue
-                    if foundOther.type == "Vial":
-                        if not (bool(foundOther.uses) == info["hasCharges"]):
-                            continue
-                    if foundOther.type == "GooFlask":
-                        if not (bool(foundOther.uses) == info["hasCharges"]):
-                            continue
-                    if foundOther.type == "GooFlask":
-                        if not ((foundOther.uses == 100) == info["full"]):
-                            continue
-                    if foundOther.type == "Rod":
-                        if not (foundOther.baseDamage == info["baseDamage"]):
-                            continue
+                    if foundOther.type == "Armor" and foundOther.armorValue != info["armorValue"]:
+                        continue
+                    if foundOther.type == "Vial" and bool(foundOther.uses) != info["hasCharges"]:
+                        continue
+                    if foundOther.type == "GooFlask" and bool(foundOther.uses) != info["hasCharges"]:
+                        continue
+                    if foundOther.type == "GooFlask" and (foundOther.uses == 100) != info["full"]:
+                        continue
+                    if foundOther.type == "Rod" and foundOther.baseDamage != info["baseDamage"]:
+                        continue
                     target = pos
 
         if not target:
@@ -330,7 +325,7 @@ class ReserveCityBuilder(src.items.Item):
                         else:
                             self.nonUrgentClear.append((x,y,0))
 
-                    if not (x,y+1,0) == (5,5,0):
+                    if (x, y + 1, 0) != (5, 5, 0):
                         if not self.container.getItemByPosition((x,y+1,0)):
                             itemSlots.append((x,y+1,0))
                         else:
@@ -351,7 +346,7 @@ class ReserveCityBuilder(src.items.Item):
                         else:
                             self.nonUrgentClear.append((x,y,0))
 
-                    if not (x,y+1,0) == (7,5,0):
+                    if (x, y + 1, 0) != (7, 5, 0):
                         if not self.container.getItemByPosition((x,y+1,0)):
                             itemSlots.append((x,y+1,0))
                         else:
@@ -402,7 +397,7 @@ class ReserveCityBuilder(src.items.Item):
                                 if not (x,y+1,0) in self.usedItemSlots:
                                     self.urgentClear.append((x,y+1,0))
 
-                        if not (x,y-1,0) == (5,7,0):
+                        if (x, y - 1, 0) != (5, 7, 0):
                             if not self.container.getItemByPosition((x,y-1,0)):
                                 itemSlots.append((x,y-1,0))
                             else:
@@ -423,7 +418,7 @@ class ReserveCityBuilder(src.items.Item):
                                 if not (x,y+1,0) in self.usedItemSlots:
                                     self.urgentClear.append((x,y+1,0))
 
-                        if not (x,y-1,0) == (7,7,0):
+                        if (x, y - 1, 0) != (7, 7, 0):
                             if not self.container.getItemByPosition((x,y-1,0)):
                                 itemSlots.append((x,y-1,0))
                             else:

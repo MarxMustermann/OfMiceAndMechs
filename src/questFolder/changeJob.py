@@ -21,9 +21,8 @@ class ChangeJob(src.quests.MetaQuestSequence):
                     duties.append("resource gathering")
 
             for item in room.itemsOnFloor:
-                if item.type in ("ScrapCompactor","Machine"):
-                    if item.readyToUse():
-                        duties.append("machine operation")
+                if item.type in ("ScrapCompactor","Machine") and item.readyToUse():
+                    duties.append("machine operation")
 
             emptyInputs = character.container.getEmptyInputslots()
             if emptyInputs:

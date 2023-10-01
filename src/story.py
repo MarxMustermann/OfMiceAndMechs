@@ -186,7 +186,6 @@ class BasicPhase:
         do nothing when done
         """
 
-        pass
 
     def callIndirect(self, callback, extraParams={}):
         """
@@ -334,7 +333,6 @@ class Challenge(BasicPhase):
         handle a player loose
         """
 
-        pass
 
 class OpenWorld(BasicPhase):
     """
@@ -612,10 +610,10 @@ the floorplan is available in basebuilder mode and main game now""")
             floorPlan["buildSites"].append((pos,item.type,extraInfos))
 
         blockedPositions = []
-        for x in range(0,13):
+        for x in range(13):
             for y in (0,12):
                 blockedPositions.append((x,y,0))
-        for y in range(0,13):
+        for y in range(13):
             for x in (0,12):
                 blockedPositions.append((x,y,0))
 
@@ -856,9 +854,8 @@ the floorplan is available in basebuilder mode and main game now""")
                     for buildSite in floorPlan["buildSites"]:
                         if buildSite[0] == pos:
                             fillIn = False
-                if "walkingSpace" in floorPlan:
-                    if pos in floorPlan["walkingSpace"]:
-                        fillIn = False
+                if "walkingSpace" in floorPlan and pos in floorPlan["walkingSpace"]:
+                    fillIn = False
                 if fillIn:
                     floorPlan["walkingSpace"].add(pos)
 
@@ -924,7 +921,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
         self.stats["current"]["1500"] = {"produced":0}
 
-        for i in range(0,1500):
+        for i in range(1500):
             self.toBuildRoomClone4.advance(advanceMacros=True)
             self.handleMaintanenceNPCs(self.toBuildRoomClone4)
 
@@ -950,7 +947,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
         self.stats["current"]["15000"] = {"produced":0}
 
-        for i in range(0,15000):
+        for i in range(15000):
             self.toBuildRoomClone6.advance(advanceMacros=True)
             self.handleMaintanenceNPCs(self.toBuildRoomClone6)
 
@@ -1009,7 +1006,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             character = src.characters.Character(3,3)
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
-            for i in range(0,10):
+            for i in range(10):
                 character.inventory.append(src.items.itemMap["Scrap"]())
 
 
@@ -1025,7 +1022,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             character = src.characters.Character(3,3)
             character.runCommandString("*********")
             room.addCharacter(character,0,6)
-            for i in range(0,10):
+            for i in range(10):
                 character.inventory.append(src.items.itemMap["Corpse"]())
 
             quest = src.quests.RestockRoom(targetPosition=(room.xPosition,room.yPosition,0),toRestock="Corpse")
@@ -1098,12 +1095,12 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
                 continue
             if len(npc.quests) > 1:
                 continue
-            if not npc.xPosition == 0 or not npc.yPosition == 6:
+            if npc.xPosition != 0 or npc.yPosition != 6:
                 continue
 
             if room == self.toBuildRoomClone4:
                 for item in npc.inventory:
-                    if not item.type == "MetalBars":
+                    if item.type != "MetalBars":
                         continue
                     try:
                         self.stats["current"]["1500"]["produced"] += 1
@@ -1111,7 +1108,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
                         pass
             if room == self.toBuildRoomClone6:
                 for item in npc.inventory:
-                    if not item.type == "MetalBars":
+                    if item.type != "MetalBars":
                         continue
                     try:
                         self.stats["current"]["15000"]["produced"] += 1
@@ -1525,7 +1522,7 @@ class BackToTheRoots(BasicPhase):
         roomCounter = 0
         for room in reversed(rooms[1:-1]):
             roomCounter += 1
-            for i in range(0,3):
+            for i in range(3):
                 pos = (int(random.random()*12)+1,int(random.random()*12)+1)
                 enemy = src.characters.Monster(pos[0],pos[1])
                 enemy.health = 10*roomCounter
@@ -1607,39 +1604,39 @@ class BackToTheRoots(BasicPhase):
                 items = []
                 molds = []
                 landmines = []
-                for i in range(0,random.randint(1,100)):
+                for i in range(random.randint(1,100)):
                     item = src.items.itemMap["MetalBars"]()
                     items.append(item)
-                for i in range(0,random.randint(1,100)):
+                for i in range(random.randint(1,100)):
                     item = src.items.itemMap["Rod"]()
                     if item.baseDamage > 10:
                         item.baseDamage = random.randint(7,10)
                     items.append(item)
-                for i in range(0,random.randint(1,30)):
+                for i in range(random.randint(1,30)):
                     item = src.items.itemMap["Armor"]()
                     if item.armorValue > 3:
                         item.armorValue = random.randint(1,3)
                     items.append(item)
-                for i in range(0,random.randint(1,30)):
+                for i in range(random.randint(1,30)):
                     item = src.items.itemMap["GooFlask"]()
                     item.uses = random.randint(1,3)
                     items.append(item)
-                for i in range(0,random.randint(1,200)):
+                for i in range(random.randint(1,200)):
                     item = src.items.itemMap["FireCrystals"]()
                     items.append(item)
-                for i in range(0,random.randint(1,1500)):
+                for i in range(random.randint(1,1500)):
                     item = src.items.itemMap["LandMine"]()
                     items.append(item)
                     landmines.append(item)
-                for i in range(0,random.randint(1,300)):
+                for i in range(random.randint(1,300)):
                     item = src.items.itemMap["Bomb"]()
                     items.append(item)
                     landmines.append(item)
-                for i in range(0,random.randint(1,200)):
+                for i in range(random.randint(1,200)):
                     item = src.items.itemMap["Bolt"]()
                     items.append(item)
                     landmines.append(item)
-                for i in range(0,random.randint(1,2000)):
+                for i in range(random.randint(1,2000)):
                     item = src.items.itemMap["Mold"]()
                     items.append(item)
                     molds.append(item)
@@ -1651,13 +1648,12 @@ class BackToTheRoots(BasicPhase):
 
                 for landmine in landmines:
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,3))
-                    if random.choice([True,False]):
-                        if landmine.getPosition()[0]:
-                            terrain.addItem(scrap,landmine.getPosition())
+                    if random.choice([True,False]) and landmine.getPosition()[0]:
+                        terrain.addItem(scrap,landmine.getPosition())
 
                 #for i in range(0,random.randint(1,20)):
                 #for i in range(0,200):
-                for i in range(0,150):
+                for i in range(150):
                     xPos = int(random.random()*13+1)*15+int(random.random()*13+1)
                     yPos = int(random.random()*13+1)*15+int(random.random()*13+1)
                     foundCity = None
@@ -1759,7 +1755,7 @@ class BackToTheRoots(BasicPhase):
             slotItem.itemID = cityCounter
 
 
-            for i in range(0,3):
+            for i in range(3):
                 subleader = self.genNPC(cityCounter,citylocation)
                 subleader.registers["ATTNPOSx"] = 3+i*3
                 subleader.registers["ATTNPOSy"] = 4
@@ -1773,7 +1769,7 @@ class BackToTheRoots(BasicPhase):
                 subleader.rank = 4
                 subleader.assignQuest(quest, active=True)
 
-                for j in range(0,3):
+                for j in range(3):
                     subsubleader = self.genNPC(cityCounter,citylocation)
                     subsubleader.registers["ATTNPOSx"] = 2+i*3+j
                     subsubleader.registers["ATTNPOSy"] = 5
@@ -1793,7 +1789,7 @@ class BackToTheRoots(BasicPhase):
                         placedMainChar = True
                     """
 
-                    for k in range(0,3):
+                    for k in range(3):
                         spawnArmor = False
                         spawnWeapon = False
                         worker = self.genNPC(cityCounter,citylocation,flaskUses=(2-k)+10,spawnWeapon=spawnWeapon,spawnArmor=spawnArmor)
@@ -1954,7 +1950,7 @@ class BackToTheRoots(BasicPhase):
             room = src.gamestate.gamestate.mainChar.container
             if room.container == src.gamestate.gamestate.terrainMap[6][7]:
                 for citylocation in self.citylocations:
-                    if not self.leaders[citylocation].faction == src.gamestate.gamestate.mainChar.faction:
+                    if self.leaders[citylocation].faction != src.gamestate.gamestate.mainChar.faction:
                         continue
 
                     if (room.xPosition,room.yPosition) == citylocation:
@@ -2066,7 +2062,7 @@ class BackToTheRoots(BasicPhase):
             foundItems = []
             for pos in self.specialItemSlotPositions:
                 for item in foundRoom.getItemByPosition((pos[0],pos[1],0)):
-                    if not item.type == "SpecialItemSlot":
+                    if item.type != "SpecialItemSlot":
                         continue
                     if not item.hasItem:
                         missingItems.append(item.itemID)
@@ -2153,7 +2149,7 @@ class BackToTheRoots(BasicPhase):
             mainRoom = foundRoom
 
             for item in mainRoom.itemsOnFloor[:]:
-                if not item.type == "Corpse":
+                if item.type != "Corpse":
                     continue
                 mainRoom.removeItem(item)
 
@@ -2164,7 +2160,7 @@ class BackToTheRoots(BasicPhase):
                     rowwidth = 17
 
                     infogrid = []
-                    for i in range(0,9*6*2):
+                    for i in range(9*6*2):
                         infogrid.append(" "*rowwidth)
 
                     def getname(character):
@@ -2254,7 +2250,7 @@ press space to continue"""%(reputationTree))
                 continue
 
             # spawn reward npcs
-            for i in range(0,numNpcs):
+            for i in range(numNpcs):
                 newNPC = self.genNPC(self.cityIds[cityLocation],cityLocation)
                 self.cityNPCCounters[cityLocation] += 1
 
@@ -2595,7 +2591,7 @@ press space to continue""")
                             rowwidth = 17
 
                             infogrid = []
-                            for i in range(0,9*6*2):
+                            for i in range(9*6*2):
                                 infogrid.append(" "*rowwidth)
 
                             infogrid[4] = cityLeader.name+" "*(rowwidth-len(cityLeader.name))
@@ -2869,7 +2865,7 @@ reminder:
         self.tutorialCheckHeal()
 
     def tutorialCheckHeal(self):
-        if not src.gamestate.gamestate.mainChar.health == 100:
+        if src.gamestate.gamestate.mainChar.health != 100:
             event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
             event.setCallback({"container": self, "method": "tutorialCheckHeal"})
             src.gamestate.gamestate.mainChar.container.addEvent(event)
@@ -3342,7 +3338,7 @@ press space when you are ready
     def tutorialCheckMovement(self,extraInfo=None):
         mainChar = src.gamestate.gamestate.mainChar
 
-        if not tuple(extraInfo["lastPos"]) == mainChar.getPosition():
+        if tuple(extraInfo["lastPos"]) != mainChar.getPosition():
             extraInfo["count"] += 1
         extraInfo["lastPos"] = list(mainChar.getPosition())
 
@@ -3381,7 +3377,7 @@ remember to press z if you forget the keybindings
         baseX = characterPos[0]//15
         baseY = characterPos[1]//15
 
-        for i in range(0,4):
+        for i in range(4):
             scrap = src.items.itemMap["Scrap"](amount=1)
             mainChar.container.addItem(scrap,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
         wall = src.items.itemMap["Wall"]()
@@ -3517,7 +3513,7 @@ examine it and activate it.
             }
 
     def checkActivateCode(self, extraInfo):
-        if not "text" in extraInfo or not extraInfo["text"] == "3798":
+        if not "text" in extraInfo or extraInfo["text"] != "3798":
             submenu = src.interaction.TextMenu("wrong code - examine the combination lock for instructions. press z to view keybindings")
             src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
             return
@@ -3576,7 +3572,7 @@ press space to start
         baseX = characterPos[0]//15
         baseY = characterPos[1]//15
 
-        for i in range(0,30):
+        for i in range(30):
             scrap = src.items.itemMap["Scrap"](amount=1)
             src.gamestate.gamestate.mainChar.container.addItem(scrap,(baseX*15+random.randint(1,11),baseY*15+random.randint(1,11),0))
 
@@ -3813,7 +3809,7 @@ class BaseBuilding(BasicPhase):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -4012,7 +4008,7 @@ class MainGame(BasicPhase):
                 characterPool.extend(room.characters)
 
             for character in characterPool[:]:
-                if not character.faction == self.activeStory["mainChar"].faction:
+                if character.faction != self.activeStory["mainChar"].faction:
                     characterPool.remove(character)
                     continue
                 if isinstance(character,src.characters.Ghoul):
@@ -4073,14 +4069,14 @@ try to remember how you got here ..."""
         self.activeStory["mainChar"].messages.insert(0,("""but see nothing that could directly harm you."""))
 
         for character in self.activeStory["terrain"].characters[:]:
-            if not character == self.activeStory["mainChar"]:
+            if character != self.activeStory["mainChar"]:
                 character.die(reason="sudden death")
 
         for room in self.activeStory["terrain"].rooms:
             if isinstance(room, src.rooms.TrapRoom):
                 room.electricalCharges = 0
             for character in room.characters[:]:
-                if not character == self.activeStory["mainChar"]:
+                if character != self.activeStory["mainChar"]:
                     character.die(reason="sudden death")
             for item in room.itemsOnFloor[:]:
                 if item.bolted:
@@ -4097,7 +4093,6 @@ try to remember how you got here ..."""
         for i in range(0,amountNPCs):
             npc = personnelArtwork.spawnIndependentClone(mainChar)
         """
-        pass
 
     def setUpDungeon(self,pos):
         #set up dungeons
@@ -4163,8 +4158,8 @@ try to remember how you got here ..."""
 
                 currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
 
-                for i in range(0,random.randint(0,3)):
-                    for k in range(0,2):
+                for i in range(random.randint(0,3)):
+                    for k in range(2):
                         scrap = src.items.itemMap["Scrap"](amount=20)
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
 
@@ -4560,44 +4555,44 @@ try to remember how you got here ..."""
             mainRoom.walkingSpace.add((6,y,0))
 
         # scatter items around
-        for i in range(0,20):
+        for i in range(20):
             item = src.items.itemMap["ScrapCompactor"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,75):
+        for i in range(75):
             item = src.items.itemMap["Case"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,200):
+        for i in range(200):
             item = src.items.itemMap["MetalBars"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,25):
+        for i in range(25):
             item = src.items.itemMap["Frame"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,25):
+        for i in range(25):
             item = src.items.itemMap["Rod"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,50):
+        for i in range(50):
             item = src.items.itemMap["Wall"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,50):
+        for i in range(50):
             item = src.items.itemMap["Wall"]()
             item.bolted = False
             pos = (random.randint(15*5,15*10),random.randint(15*5,15*10),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,10):
+        for i in range(10):
             bigPos = None
-            for i in range(0,10):
+            for i in range(10):
                 pos = (random.randint(1,13),random.randint(1,13),0)
                 if (pos[0] < 11 and pos[0] > 4) and (pos[1] < 11 and pos[1] > 4):
                     continue
@@ -4607,7 +4602,7 @@ try to remember how you got here ..."""
             if not bigPos:
                 break
 
-            for i in range(0,20):
+            for i in range(20):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
@@ -4629,7 +4624,7 @@ try to remember how you got here ..."""
             currentTerrain.addCharacter(enemy, bigPos[0]*15+7, bigPos[1]*15+7)
 
         for bigPos in [(4,4,0),(10,4,0),(4,10,0),(10,10,0)]:
-            for i in range(0,20):
+            for i in range(20):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
@@ -4650,7 +4645,7 @@ try to remember how you got here ..."""
 
             currentTerrain.addCharacter(enemy, bigPos[0]*15+7, bigPos[1]*15+7)
 
-        for i in range(0,40):
+        for i in range(40):
             item = src.items.itemMap["Door"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
@@ -4716,7 +4711,7 @@ try to remember how you got here ..."""
             src.interaction.showInterruptText(text)
 
         for colonyBaseInfo in self.colonyBaseInfos2:
-            if not colonyBaseInfo["mainChar"] == extraParam["character"]:
+            if colonyBaseInfo["mainChar"] != extraParam["character"]:
                 continue
 
             candidates = []
@@ -4731,7 +4726,7 @@ try to remember how you got here ..."""
                 if candidate.health == 0:
                     candidates.remove(candidate)
                     continue
-                if not candidate.faction == faction:
+                if candidate.faction != faction:
                     candidates.remove(candidate)
                     continue
                 if candidate == extraParam["character"]:
@@ -4957,7 +4952,7 @@ try to remember how you got here ..."""
         mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
 
         for y in (7,9,11):
-            if not y == 7:
+            if y != 7:
                 for x in range(7,12):
                     mainRoom.addStorageSlot((x,y,0),None)
             for x in range(1,6):
@@ -5031,42 +5026,42 @@ try to remember how you got here ..."""
             mainRoom.walkingSpace.add((6,y,0))
 
         # scatter items around
-        for i in range(0,20):
+        for i in range(20):
             item = src.items.itemMap["ScrapCompactor"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,75):
+        for i in range(75):
             item = src.items.itemMap["Case"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,200):
+        for i in range(200):
             item = src.items.itemMap["MetalBars"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,25):
+        for i in range(25):
             item = src.items.itemMap["Frame"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,25):
+        for i in range(25):
             item = src.items.itemMap["Rod"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,50):
+        for i in range(50):
             item = src.items.itemMap["Wall"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,40):
+        for i in range(40):
             item = src.items.itemMap["Door"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,10):
+        for i in range(10):
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
 
             if i < 2:
@@ -5090,30 +5085,30 @@ try to remember how you got here ..."""
             item.bolted = False
             currentTerrain.addItem(item,pos)
 
-        for i in range(0,4):
+        for i in range(4):
             item = src.items.itemMap["Sword"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,4):
+        for i in range(4):
             item = src.items.itemMap["Armor"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Vial"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["GooFlask"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
 
-        for i in range(0,20):
+        for i in range(20):
             bigPos = None
-            for i in range(0,10):
+            for i in range(10):
                 pos = (random.randint(1,13),random.randint(1,13),0)
                 if (pos[0] < 11 and pos[0] > 4) and (pos[1] < 11 and pos[1] > 4):
                     continue
@@ -5123,13 +5118,13 @@ try to remember how you got here ..."""
             if not bigPos:
                 break
 
-            for i in range(0,20):
+            for i in range(20):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
                 currentTerrain.addItem(item,pos)
 
-            for i in range(0,3):
+            for i in range(3):
                 enemy = src.characters.Monster(4,4)
                 enemy.health = 20
                 enemy.baseDamage = 5
@@ -5328,7 +5323,7 @@ try to remember how you got here ..."""
         temple = cityInfo["temple"]
 
         for item in temple.itemsOnFloor:
-            if not item.type == "SpecialItemSlot":
+            if item.type != "SpecialItemSlot":
                 continue
             if item.itemID == thisFactionId:
                 item.hasItem = True
@@ -5423,7 +5418,7 @@ try to remember how you got here ..."""
         temple = cityData["temple"]
 
         for item in temple.itemsOnFloor:
-            if not item.type == "SpecialItemSlot":
+            if item.type != "SpecialItemSlot":
                 continue
             if item.itemID == thisFactionId:
                 item.hasItem = True
@@ -5680,7 +5675,7 @@ try to remember how you got here ..."""
         temple = cityData["temple"]
 
         for item in temple.itemsOnFloor:
-            if not item.type == "SpecialItemSlot":
+            if item.type != "SpecialItemSlot":
                 continue
             if item.itemID == thisFactionId:
                 item.hasItem = True
@@ -5895,7 +5890,7 @@ try to remember how you got here ..."""
 
         blockerRingPositions = [(7,4,0),(6,5,0)]
         for pos in blockerRingPositions:
-            for i in range(0,3):
+            for i in range(3):
                 enemy = src.characters.Monster(4,4)
                 enemy.godMode = True
                 enemy.health = 100
@@ -5954,10 +5949,9 @@ try to remember how you got here ..."""
                     if currentTerrain.getItemByPosition((xPos,yPos,0)):
                         continue
 
-                    if not self.difficulty == "easy":
-                        if placedMines:
-                            landmine = src.items.itemMap["LandMine"]()
-                            currentTerrain.addItem(landmine,(xPos,yPos,0))
+                    if self.difficulty != "easy" and placedMines:
+                        landmine = src.items.itemMap["LandMine"]()
+                        currentTerrain.addItem(landmine,(xPos,yPos,0))
 
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
                     currentTerrain.addItem(scrap,(xPos,yPos,0))
@@ -5974,7 +5968,7 @@ try to remember how you got here ..."""
                 if random.random() < spawnChance and not (x,y) in blockerRingPositions and not (x,y) in farmPlots:
                     if (x <= 5 and (y <= 5 or y >= 9)) or (x >= 9 and (y <= 5 or y >= 9)):
                         continue
-                    for j in range(0,random.randint(1,maxNumSpawns)):
+                    for j in range(random.randint(1,maxNumSpawns)):
                         enemy = src.characters.Monster(4,4)
                         enemy.godMode = True
                         enemy.health = 15
@@ -6027,13 +6021,13 @@ try to remember how you got here ..."""
 
         if self.difficulty == "easy":
             toClear = [(7,1),(7,13),(1,7),(13,7)]
-            for bigX in range(0,14):
-                for bigY in range(0,14):
+            for bigX in range(14):
+                for bigY in range(14):
                     for (x,y) in toClear:
                         currentTerrain.removeItems(currentTerrain.getItemByPosition((bigX*15+x,bigY*15+y,0)))
 
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
-        if not self.difficulty == "easy":
+        if self.difficulty != "easy":
             for i in range(1,10):
                 waypoints = waypoints[1:]+[waypoints[0]]
 
@@ -6415,11 +6409,11 @@ no curse.
 
 """
                 if len(hasSpecialItems):
-                    for j in range(0,4):
+                    for j in range(4):
                         bigPos = (random.randint(1,13),random.randint(1,13),0)
                         numEnemies = 3
 
-                        for i in range(0,numEnemies):
+                        for i in range(numEnemies):
                             enemy = src.characters.Monster(4,4)
                             enemy.health = 20
                             enemy.baseDamage = 5
@@ -6455,7 +6449,7 @@ for controlling at least 1 glass heart.
                     numEnemies = (specialItemSlot.itemID-2)**2
                     numSpectres += numEnemies
 
-                    for i in range(0,numEnemies):
+                    for i in range(numEnemies):
                         bigPos = (random.randint(1,13),random.randint(1,13),0)
                         enemy = src.characters.Monster(6,6)
                         enemy.health = 200
@@ -6510,13 +6504,13 @@ press enter to continue"""
 
         remainingEnemyCounter = 0
         for character in terrain.characters:
-            if not character.tag == "wave":
+            if character.tag != "wave":
                 continue
             remainingEnemyCounter += 1
 
         for room in terrain.rooms:
             for character in room.characters:
-                if not character.tag == "wave":
+                if character.tag != "wave":
                     continue
                 remainingEnemyCounter += 1
 
@@ -6536,7 +6530,7 @@ press enter to continue"""
             npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
         """
 
-        if not src.gamestate.gamestate.mainChar.rank == 3:
+        if src.gamestate.gamestate.mainChar.rank != 3:
             if not state["epochArtwork"].leader or state["pochArtwork"].leader.dead:
                 state["epochArtwork"].dispenseEpochRewards({"rewardType":"autoSpend"})
 
@@ -6574,14 +6568,12 @@ press enter to continue"""
         #    numMonsters = self.numRounds-8
         numMonsters = self.numRounds+remainingEnemyCounter
 
-        if self.difficulty == "easy":
-            if self.numRounds < 3:
-                numMonsters = 0
-        if self.difficulty == "medium":
-            if self.numRounds == 1:
-                numMonsters = 0
+        if self.difficulty == "easy" and self.numRounds < 3:
+            numMonsters = 0
+        if self.difficulty == "medium" and self.numRounds == 1:
+            numMonsters = 0
 
-        for i in range(0,numMonsters):
+        for i in range(numMonsters):
             enemy = src.characters.Monster(6,6)
             enemy.health = 10*(i%10+1)
             enemy.baseDamage = (i%10+1)
@@ -6597,13 +6589,13 @@ press enter to continue"""
             enemy.quests.append(quest)
 
         numLurkers = 10
-        if not self.difficulty == "easy":
+        if self.difficulty != "easy":
             numLurkers = 5
-        if not self.difficulty == "difficult":
+        if self.difficulty != "difficult":
             numLurkers = 20
 
         numLurkers = int(numLurkers*random.random()*2)
-        for i in range(0,numLurkers):
+        for i in range(numLurkers):
             x = random.randint(1,13)
             y = random.randint(1,13)
 
@@ -6718,8 +6710,8 @@ class MainGameArena2(BasicPhase):
 
                 currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
 
-                for i in range(0,random.randint(0,3)):
-                    for k in range(0,2):
+                for i in range(random.randint(0,3)):
+                    for k in range(2):
                         scrap = src.items.itemMap["Scrap"](amount=20)
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
 
@@ -6786,7 +6778,7 @@ class MainGameArena2(BasicPhase):
 
         terrain = src.gamestate.gamestate.terrainMap[7][7]
 
-        for i in range(0,self.numCharacters-len(terrain.characters)):
+        for i in range(self.numCharacters-len(terrain.characters)):
             if self.mainChar.dead:
                 continue
 
@@ -6908,7 +6900,7 @@ class MainGameArena(BasicPhase):
         item = src.items.itemMap["SpecialItemSlot"]()
         item.itemID = 2
         mainRoom.addItem(item,(2,1,0))
-        for i in range(0,5):
+        for i in range(5):
             item = src.items.itemMap["SpecialItemSlot"]()
             item.hasItem = False
             item.itemID = 3+i
@@ -6943,7 +6935,7 @@ class MainGameArena(BasicPhase):
                 mainRoom.walkingSpace.add((6,y,0))
 
             for y in (7,9,11):
-                if not y == 7:
+                if y != 7:
                     for x in range(7,12):
                         mainRoom.addStorageSlot((x,y,0),None)
                 for x in range(1,6):
@@ -7122,7 +7114,7 @@ class MainGameArena(BasicPhase):
         for pos in [(6,6,0),(6,8,0)]:
             room = currentTerrain.getRoomByPosition(pos)[0]
             for inputSlot in room.inputSlots:
-                if not inputSlot[1] == "Scrap":
+                if inputSlot[1] != "Scrap":
                     continue
                 room.addItem(src.items.itemMap["Scrap"](amount=1),inputSlot[0])
 
@@ -7309,7 +7301,7 @@ class MainGameArena(BasicPhase):
 
         terrain = src.gamestate.gamestate.terrainMap[7][7]
 
-        for i in range(0,self.numCharacters-len(terrain.characters)):
+        for i in range(self.numCharacters-len(terrain.characters)):
             if self.mainChar.dead:
                 continue
 
@@ -7384,7 +7376,7 @@ class Siege(BasicPhase):
                     continue
                 if random.randint(1, 1) == 1:
                     amount = max(30-(bigX+bigY)*2,0)
-                    for i in range(0, amount):
+                    for i in range(amount):
                         pos = (bigX * 15 + random.randint(1, 13),bigY * 15 + random.randint(1, 13),0)
                         if currentTerrain.getItemByPosition(pos):
                             continue
@@ -8365,7 +8357,7 @@ This example is the last example but with 2 smart items build in:
         item = src.items.itemMap["UniformStockpileManager"]()
         terrain.addItem(item,(15*roomPos[0]+8,15*roomPos[1]+8,0))
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Sheet"]()
             terrain.addItem(item,(15*roomPos[0]+5,15*roomPos[1]+9,0))
 
@@ -8580,7 +8572,7 @@ class Tutorial(BasicPhase):
         numProducts = 0
         while (
             len(self.helper_getFilteredProducables()) not in (1,)
-            or not numProducts == 3
+            or numProducts != 3
         ):
             seed += seed % 42
             src.gamestate.gamestate.terrain.removeRoom(self.miniBase)
@@ -8590,12 +8582,11 @@ class Tutorial(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.product in desiredProducts
-                        and item.product not in itemsFound
-                    ):
-                        itemsFound.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.product in desiredProducts
+                    and item.product not in itemsFound
+                ):
+                    itemsFound.append(item.product)
 
             numProducts = len(itemsFound)
 
@@ -8646,25 +8637,24 @@ class Tutorial(BasicPhase):
 
         itemCount = 0
         for item in src.gamestate.gamestate.terrain.itemsOnFloor:
-            if isinstance(item, src.items.itemMap["Scrap"]):
-                if (
-                    (item.xPosition - 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition + 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition - 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition + 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                ):
-                    quest = src.quests.PickupQuestMeta(toPickup=item)
-                    if len(mainChar.inventory) < 9:
-                        method = "scrapTest1"
-                    else:
-                        method = "scrapTest2"
-                    quest.endTrigger = {"container": self, "method": method}
-                    self.mainChar.assignQuest(quest, active=True)
-                    break
+            if isinstance(item, src.items.itemMap["Scrap"]) and (
+                (item.xPosition - 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition + 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition - 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition + 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+            ):
+                quest = src.quests.PickupQuestMeta(toPickup=item)
+                if len(mainChar.inventory) < 9:
+                    method = "scrapTest1"
+                else:
+                    method = "scrapTest2"
+                quest.endTrigger = {"container": self, "method": method}
+                self.mainChar.assignQuest(quest, active=True)
+                break
 
         self.dupPrevention = False
 
@@ -8862,12 +8852,11 @@ class Tutorial(BasicPhase):
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.resource in producableStuff
-                        and item.product not in producableStuff
-                    ):
-                        producableStuff.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.resource in producableStuff
+                    and item.product not in producableStuff
+                ):
+                    producableStuff.append(item.product)
         return producableStuff
 
     def productionSection(self):
@@ -8888,7 +8877,7 @@ class Tutorial(BasicPhase):
                 showText(
                     "The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now."
                 )
-                for x in range(0, 10):
+                for x in range(10):
                     self.productionQueue.append(src.items.itemMap["Hutch"])
                 self.batchFurnaceProducing = False
                 self.batchHutchProducing = True
@@ -8901,7 +8890,7 @@ class Tutorial(BasicPhase):
                 showText(
                     "The second batch is ready. Another trick that may be useful for you is the multiplier. It allows to repeat commmands\n\nYou can use this for example to drop 7 items by pressing 7l . This will be translated to lllllll .\nYou can use this within macros and when calling macros. Press 5_f to run the macro f 5 times.\n\nUse this the produce 10 growth tanks with one macro."
                 )
-                for x in range(0, 10):
+                for x in range(10):
                     self.productionQueue.append(src.items.itemMap["GrowthTank"])
                 self.batchHutchProducing = False
                 self.batchGrowthTankProcing = True
@@ -8928,7 +8917,7 @@ class Tutorial(BasicPhase):
             for x in range(0,10):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             """
-            if not self.fastProductionStart == 0:
+            if self.fastProductionStart != 0:
                 if src.gamestate.gamestate.tick - self.fastProductionStart > 100:
                     showText("it took you %s ticks to complete the order.")
                 else:
@@ -8936,7 +8925,7 @@ class Tutorial(BasicPhase):
                     return
 
             self.fastProductionStart = src.gamestate.gamestate.tick
-            for x in range(0, 10):
+            for x in range(10):
                 self.productionQueue.append(src.items.itemMap["Hutch"])
 
         self.seed += self.seed % 43
@@ -8996,7 +8985,7 @@ class Tutorial(BasicPhase):
             )
 
             self.batchProducing = True
-            for x in range(0, 10):
+            for x in range(10):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             self.batchFurnaceProducing = True
             self.mainChar.delListener(self.checkProductionLine)
@@ -9137,7 +9126,7 @@ class Testing_1(BasicPhase):
         numProducts = 0
         while (
             len(self.helper_getFilteredProducables()) not in (1,)
-            or not numProducts == 3
+            or numProducts != 3
         ):
             seed += seed % 42
             src.gamestate.gamestate.terrain.removeRoom(self.miniBase)
@@ -9147,12 +9136,11 @@ class Testing_1(BasicPhase):
 
             itemsFound = []
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.product in desiredProducts
-                        and item.product not in itemsFound
-                    ):
-                        itemsFound.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.product in desiredProducts
+                    and item.product not in itemsFound
+                ):
+                    itemsFound.append(item.product)
 
             numProducts = len(itemsFound)
 
@@ -9203,25 +9191,24 @@ class Testing_1(BasicPhase):
 
         itemCount = 0
         for item in src.gamestate.gamestate.terrain.itemsOnFloor:
-            if isinstance(item, src.items.itemMap["Scrap"]):
-                if (
-                    (item.xPosition - 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition + 1, item.yPosition)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition - 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                    or (item.xPosition, item.yPosition + 1)
-                    in src.gamestate.gamestate.terrain.watershedCoordinates
-                ):
-                    quest = src.quests.PickupQuestMeta(toPickup=item)
-                    if len(src.gamestate.gamestate.mainChar.inventory) < 9:
-                        method = "scrapTest1"
-                    else:
-                        method = "scrapTest2"
-                    quest.endTrigger = {"container": self, "method": method}
-                    self.mainChar.assignQuest(quest, active=True)
-                    break
+            if isinstance(item, src.items.itemMap["Scrap"]) and (
+                (item.xPosition - 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition + 1, item.yPosition)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition - 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+                or (item.xPosition, item.yPosition + 1)
+                in src.gamestate.gamestate.terrain.watershedCoordinates
+            ):
+                quest = src.quests.PickupQuestMeta(toPickup=item)
+                if len(src.gamestate.gamestate.mainChar.inventory) < 9:
+                    method = "scrapTest1"
+                else:
+                    method = "scrapTest2"
+                quest.endTrigger = {"container": self, "method": method}
+                self.mainChar.assignQuest(quest, active=True)
+                break
 
         self.dupPrevention = False
 
@@ -9419,12 +9406,11 @@ class Testing_1(BasicPhase):
         while lastLength < len(producableStuff):
             lastLength = len(producableStuff)
             for item in self.miniBase.itemsOnFloor:
-                if isinstance(item, src.items.itemMap["GameTestingProducer"]):
-                    if (
-                        item.resource in producableStuff
-                        and item.product not in producableStuff
-                    ):
-                        producableStuff.append(item.product)
+                if isinstance(item, src.items.itemMap["GameTestingProducer"]) and (
+                    item.resource in producableStuff
+                    and item.product not in producableStuff
+                ):
+                    producableStuff.append(item.product)
         return producableStuff
 
     def productionSection(self):
@@ -9445,7 +9431,7 @@ class Testing_1(BasicPhase):
                 showText(
                     "The first batch is ready. You can optimise your macros in many ways.\nYou can record your macros to buffers from a-z. This way you can store marcos for different actions.\n\nI recommend recording the macro for producing furnaces to f, the macro for producing hutches to h and the macro for producing the growthtanks to g\n\nproduce 10 hutches now."
                 )
-                for x in range(0, 10):
+                for x in range(10):
                     self.productionQueue.append(src.items.itemMap["Hutch"])
                 self.batchFurnaceProducing = False
                 self.batchHutchProducing = True
@@ -9458,7 +9444,7 @@ class Testing_1(BasicPhase):
                 showText(
                     "The second batch is ready. Another trick that may be useful for you is the multiplier. It allows to repeat commmands\n\nYou can use this for example to drop 7 items by pressing 7l . This will be translated to lllllll .\nYou can use this within macros and when calling macros. Press 5_f to run the macro f 5 times.\n\nUse this the produce 10 growth tanks with one macro."
                 )
-                for x in range(0, 10):
+                for x in range(10):
                     self.productionQueue.append(src.items.itemMap["GrowthTank"])
                 self.batchHutchProducing = False
                 self.batchGrowthTankProcing = True
@@ -9485,7 +9471,7 @@ class Testing_1(BasicPhase):
             for x in range(0,10):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             """
-            if not self.fastProductionStart == 0:
+            if self.fastProductionStart != 0:
                 if src.gamestate.gamestate.tick - self.fastProductionStart > 100:
                     showText("it took you %s ticks to complete the order.")
                 else:
@@ -9493,7 +9479,7 @@ class Testing_1(BasicPhase):
                     return
 
             self.fastProductionStart = src.gamestate.gamestate.tick
-            for x in range(0, 10):
+            for x in range(10):
                 self.productionQueue.append(src.items.itemMap["Hutch"])
 
         self.seed += self.seed % 43
@@ -9553,7 +9539,7 @@ class Testing_1(BasicPhase):
             )
 
             self.batchProducing = True
-            for x in range(0, 10):
+            for x in range(10):
                 self.productionQueue.append(src.items.itemMap["Furnace"])
             self.batchFurnaceProducing = True
             self.mainChar.delListener(self.checkProductionLine)

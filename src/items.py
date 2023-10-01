@@ -682,7 +682,6 @@ class Item:
             context: the context of the task
         """
 
-        pass
 
     def jobOrderRunCommand(self, task, context):
         character = context["character"]
@@ -797,7 +796,7 @@ class Item:
             self.listeners[tag].remove(listenFunction)
 
         # clean up empty buckets
-        if not self.listeners[tag] and not tag == "default":
+        if not self.listeners[tag] and tag != "default":
             del self.listeners[tag]
 
     # bad code: probably misnamed
@@ -835,7 +834,7 @@ class Item:
 
         # add things chained to the item
         for thing in self.chainedTo:
-            if thing not in movementBlock and not thing == self:
+            if thing not in movementBlock and thing != self:
                 movementBlock.add(thing)
                 thing.getAffectedByMovementDirection(
                     direction, force=force, movementBlock=movementBlock
@@ -924,7 +923,7 @@ class Item:
             toRemove = []
             for item in container.getItemByPosition(pos):
                 toRemove.append(item)
-                if not item.type == "Scrap":
+                if item.type != "Scrap":
                     newItem.amount += 1
                 else:
                     newItem.amount += item.amount

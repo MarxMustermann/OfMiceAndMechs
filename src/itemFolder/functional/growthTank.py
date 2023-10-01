@@ -100,9 +100,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
 
         flask = None
         for item in character.inventory:
-            if isinstance(item, src.items.itemMap["GooFlask"]):
-                if item.uses == 100:
-                    flask = item
+            if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
+                flask = item
         if flask:
             flask.uses = 0
             flask.changed()

@@ -132,7 +132,7 @@ class Terrain:
         return (self.xPosition,self.yPosition,0)
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
-        if not self == src.gamestate.gamestate.mainChar.getTerrain():
+        if self != src.gamestate.gamestate.mainChar.getTerrain():
             return
         if src.interaction.noFlicker:
             return
@@ -141,7 +141,7 @@ class Terrain:
     def getRoomsByTag(self,tag):
         result = []
         for room in self.rooms:
-            if not room.tag == tag:
+            if room.tag != tag:
                 continue
             result.append(room)
         return result
@@ -371,7 +371,7 @@ class Terrain:
             info: additional information
         """
 
-        if not tag == "default":
+        if tag != "default":
             if tag not in self.listeners:
                 return
 
@@ -637,72 +637,68 @@ class Terrain:
             # check north
             if direction == "north":
                 # check if the character crossed the edge of the room
-                if room.yPosition * 15 + room.offsetY + room.sizeY == char.yPosition:
-                    if (
-                        room.xPosition * 15 + room.offsetX - 1 < char.xPosition
-                        and room.xPosition * 15 + room.offsetX + room.sizeX
-                        > char.xPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            char.xPosition % 15 - room.offsetX,
-                            char.yPosition % 15 - room.offsetY - 1,
-                            0,
-                        )
-                        if localisedEntry[1] == -1:
-                            localisedEntry = (localisedEntry[0], room.sizeY - 1,0)
+                if room.yPosition * 15 + room.offsetY + room.sizeY == char.yPosition and (
+                    room.xPosition * 15 + room.offsetX - 1 < char.xPosition
+                    and room.xPosition * 15 + room.offsetX + room.sizeX
+                    > char.xPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        char.xPosition % 15 - room.offsetX,
+                        char.yPosition % 15 - room.offsetY - 1,
+                        0,
+                    )
+                    if localisedEntry[1] == -1:
+                        localisedEntry = (localisedEntry[0], room.sizeY - 1,0)
 
             # check south
             elif direction == "south":
                 # check if the character crossed the edge of the room
-                if room.yPosition * 15 + room.offsetY == char.yPosition + 1:
-                    if (
-                        room.xPosition * 15 + room.offsetX - 1 < char.xPosition
-                        and room.xPosition * 15 + room.offsetX + room.sizeX
-                        > char.xPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            (char.xPosition - room.offsetX) % 15,
-                            (char.yPosition - room.offsetY + 1) % 15,
-                            0
-                        )
+                if room.yPosition * 15 + room.offsetY == char.yPosition + 1 and (
+                    room.xPosition * 15 + room.offsetX - 1 < char.xPosition
+                    and room.xPosition * 15 + room.offsetX + room.sizeX
+                    > char.xPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        (char.xPosition - room.offsetX) % 15,
+                        (char.yPosition - room.offsetY + 1) % 15,
+                        0
+                    )
 
             # check east
             elif direction == "east":
                 # check if the character crossed the edge of the room
-                if room.xPosition * 15 + room.offsetX == char.xPosition + 1:
-                    if (
-                        room.yPosition * 15 + room.offsetY < char.yPosition + 1
-                        and room.yPosition * 15 + room.offsetY + room.sizeY
-                        > char.yPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            (char.xPosition - room.offsetX + 1) % 15,
-                            (char.yPosition - room.offsetY) % 15,
-                            0
-                        )
+                if room.xPosition * 15 + room.offsetX == char.xPosition + 1 and (
+                    room.yPosition * 15 + room.offsetY < char.yPosition + 1
+                    and room.yPosition * 15 + room.offsetY + room.sizeY
+                    > char.yPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        (char.xPosition - room.offsetX + 1) % 15,
+                        (char.yPosition - room.offsetY) % 15,
+                        0
+                    )
 
             # check west
             elif direction == "west":
                 # check if the character crossed the edge of the room
-                if room.xPosition * 15 + room.offsetX + room.sizeX == char.xPosition:
-                    if (
-                        room.yPosition * 15 + room.offsetY < char.yPosition + 1
-                        and room.yPosition * 15 + room.offsetY + room.sizeY
-                        > char.yPosition
-                    ):
-                        # get the entry point in room coordinates
-                        hadRoomInteraction = True
-                        localisedEntry = (
-                            (char.xPosition - room.offsetX - 1) % 15,
-                            (char.yPosition - room.offsetY) % 15,
-                            0,
-                        )
+                if room.xPosition * 15 + room.offsetX + room.sizeX == char.xPosition and (
+                    room.yPosition * 15 + room.offsetY < char.yPosition + 1
+                    and room.yPosition * 15 + room.offsetY + room.sizeY
+                    > char.yPosition
+                ):
+                    # get the entry point in room coordinates
+                    hadRoomInteraction = True
+                    localisedEntry = (
+                        (char.xPosition - room.offsetX - 1) % 15,
+                        (char.yPosition - room.offsetY) % 15,
+                        0,
+                    )
 
             # move player into the room
             if hadRoomInteraction:
@@ -743,15 +739,14 @@ class Terrain:
 
                 if item.isStepOnActive:
                     stepOnActiveItems.append(item)
-            if not foundItem:
-                if len(foundItems) >= 15:
-                    char.addMessage("the floor is too full to walk there")
-                    # char.addMessage("press "+commandChars.activate+" to apply")
-                    # if noAdvanceGame == False:
-                    #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
+            if not foundItem and len(foundItems) >= 15:
+                char.addMessage("the floor is too full to walk there")
+                # char.addMessage("press "+commandChars.activate+" to apply")
+                # if noAdvanceGame == False:
+                #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
 
-                    # remember the item for interaction and abort
-                    foundItem = foundItems[0]
+                # remember the item for interaction and abort
+                foundItem = foundItems[0]
 
             if foundItem:
                 foundItem = foundItems[0]
@@ -760,15 +755,14 @@ class Terrain:
                 if other == char:
                     continue
 
-                if not destCoord == other.getPosition():
+                if destCoord != other.getPosition():
                     continue
 
                 if char.faction == "player" and other.faction == "player":
                     continue
 
-                if char.faction.startswith("city"):
-                    if char.faction == other.faction:
-                        continue
+                if char.faction.startswith("city") and char.faction == other.faction:
+                    continue
 
                 if char.faction == other.faction:
                     continue
@@ -1000,13 +994,13 @@ class Terrain:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not costMap.get(newPos) == None:
+                if costMap.get(newPos) != None:
                     continue
 
-                if not newPos == targetPos and newPos in self.scrapFields:
+                if newPos != targetPos and newPos in self.scrapFields:
                     continue
                 items = self.getItemByPosition((newPos[0]*15+7,newPos[1]*15+7,0))
-                if not newPos == targetPos and items and items[0].type == "RoomBuilder":
+                if newPos != targetPos and items and items[0].type == "RoomBuilder":
                     continue
 
                 passable = False
@@ -1098,9 +1092,9 @@ class Terrain:
         pathfinder = self.pathfinderCache.get(tilePos)
         if not pathfinder or ignoreEndBlocked or clearing:
             tileMap = []
-            for x in range(0,15):
+            for x in range(15):
                 tileMap.append([])
-                for y in range(0,15):
+                for y in range(15):
                     if x in (0,14,) or y in (0,14):
                         tileMap[x].append(0)
                     else:
@@ -1126,9 +1120,8 @@ class Terrain:
             for y in range(1,14):
                 for x in range(1,14):
                     items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
-                    if items:
-                        if items[0].type == "Bush":
-                            tileMap[x][y] = 127
+                    if items and items[0].type == "Bush":
+                        tileMap[x][y] = 127
             if ignoreEndBlocked or clearing:
                 tileMap[targetPos[0]][targetPos[1]] = 1
 
@@ -1170,9 +1163,9 @@ class Terrain:
         """
 
         tileMap = []
-        for x in range(0,15):
+        for x in range(15):
             tileMap.append([])
-            for y in range(0,15):
+            for y in range(15):
                 if x in (0,14,) or y in (0,14):
                     tileMap[x].append(0)
                 else:
@@ -1196,9 +1189,8 @@ class Terrain:
         for y in range(1,14):
             for x in range(1,14):
                 items = self.getItemByPosition((x+15*tilePos[0],y+15*tilePos[1],0))
-                if items:
-                    if items[0].type == "Bush":
-                        tileMap[x][y] = 127
+                if items and items[0].type == "Bush":
+                    tileMap[x][y] = 127
 
         cost = np.array(tileMap, dtype=np.int8)
         tcod.path.AStar(cost,diagonal = 0)
@@ -1284,16 +1276,15 @@ class Terrain:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if not costMap.get(newPos) == None:
+                if costMap.get(newPos) != None:
                     continue
 
-                if newPos in blockedPositions:
-                    if (not ignoreEndBlocked or not newPos == targetPos):
-                        continue
+                if newPos in blockedPositions and (not ignoreEndBlocked or newPos != targetPos):
+                    continue
 
                 if not self.getPositionWalkable((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15),character):
                     blockedPositions.add(newPos)
-                    if (not ignoreEndBlocked or not newPos == targetPos):
+                    if (not ignoreEndBlocked or newPos != targetPos):
                         continue
 
                 if not tryHard:
@@ -1492,19 +1483,19 @@ class Terrain:
         chars = []
 
         if size[0] > coordinateOffset[0]:
-            for i in range(0,coordinateOffset[0]-size[0]):
+            for i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(0, size[1]):
+                for j in range(size[1]):
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 250):
+        for i in range(250):
             line = []
 
             if coordinateOffset[1] < 0:
-                for j in range(0,-coordinateOffset[1]):
+                for j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 250):
+            for j in range(250):
                 line.append(displayChar)
             chars.append(line)
         return chars
@@ -1566,7 +1557,7 @@ class Terrain:
                continue
             if otherChar.dead:
                continue
-            if not pos == otherChar.getBigPosition():
+            if pos != otherChar.getBigPosition():
                continue
             out.append(otherChar)
 
@@ -1578,7 +1569,7 @@ class Terrain:
                    continue
                 if otherChar.dead:
                    continue
-                if not pos == otherChar.getBigPosition():
+                if pos != otherChar.getBigPosition():
                    continue
                 out.append(otherChar)
 
@@ -1607,21 +1598,21 @@ class Terrain:
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
-            for x in range(0, 225):
+            for x in range(225):
                 if (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
                     continue
 
-                for y in range(0, 16):
+                for y in range(16):
                     if not (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
                     if not (y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0]):
                         chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
 
-            for y in range(0, 225):
+            for y in range(225):
                 if (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
                     continue
 
-                for x in range(0, 16):
+                for x in range(16):
                     if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
                         try:
                             chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
@@ -1640,16 +1631,16 @@ class Terrain:
                     else:
                         room.hidden = True
 
-            for bigX in range(0, 14):
+            for bigX in range(14):
                 if bigX*15 < coordinateOffset[1]-15 or bigX*15 > coordinateOffset[1]+size[1]+15:
                     continue
 
-                for bigY in range(0, 14):
+                for bigY in range(14):
                     if bigY*15 < coordinateOffset[0]-15 or bigY*15 > coordinateOffset[0]+size[0]+15:
                         continue
 
-                    for x in range(0, 15):
-                        for y in range(0, 15):
+                    for x in range(15):
+                        for y in range(15):
 
                             if x == 7 or y == 7:
                                 continue
@@ -1716,7 +1707,7 @@ class Terrain:
 
                     if not (item.yPosition and item.xPosition):
                         continue
-                    if not (item.zPosition == src.gamestate.gamestate.mainChar.zPosition):
+                    if item.zPosition != src.gamestate.gamestate.mainChar.zPosition:
                         continue
 
                     try:
@@ -1916,9 +1907,9 @@ class Terrain:
 
     def renderTiles(self):
         chars = []
-        for y in range(0,15):
+        for y in range(15):
             chars.append([])
-            for x in range(0,15):
+            for x in range(15):
                 if y == 0 or x == 0 or y == 14 or x == 14:
                     chars[y].append(src.canvas.displayChars.forceField)
                 else:
@@ -1930,9 +1921,8 @@ class Terrain:
 
         homePos = (src.gamestate.gamestate.mainChar.registers.get("HOMEx"),src.gamestate.gamestate.mainChar.registers.get("HOMEy"))
         homePosTerrain = (src.gamestate.gamestate.mainChar.registers.get("HOMETx"),src.gamestate.gamestate.mainChar.registers.get("HOMETy"),0)
-        if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition():
-            if homePos[0] and homePos[1]:
-                chars[homePos[1]][homePos[0]] = "HH"
+        if homePosTerrain == src.gamestate.gamestate.mainChar.getTerrainPosition() and homePos[0] and homePos[1]:
+            chars[homePos[1]][homePos[0]] = "HH"
 
         for scrapField in self.scrapFields:
             chars[scrapField[1]][scrapField[0]] = "ss"
@@ -2001,7 +1991,7 @@ class Terrain:
             pass
 
         for subordinate in src.gamestate.gamestate.mainChar.subordinates:
-            if not subordinate.getTerrain() == self:
+            if subordinate.getTerrain() != self:
                 continue
             displayChar = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@s")
             pos = subordinate.getBigPosition()
@@ -2072,61 +2062,57 @@ class Terrain:
                     roomCandidate.yPosition * 15
                     + roomCandidate.offsetY
                     + roomCandidate.sizeY
+                ) and (
+                    room.xPosition * 15 + room.offsetX
+                    < roomCandidate.xPosition * 15
+                    + roomCandidate.offsetX
+                    + roomCandidate.sizeX
+                ) and (
+                    room.xPosition * 15 + room.offsetX + room.sizeX
+                    > roomCandidate.xPosition * 15 + roomCandidate.offsetX
                 ):
-                    if (
-                        room.xPosition * 15 + room.offsetX
-                        < roomCandidate.xPosition * 15
-                        + roomCandidate.offsetX
-                        + roomCandidate.sizeX
-                    ) and (
-                        room.xPosition * 15 + room.offsetX + room.sizeX
-                        > roomCandidate.xPosition * 15 + roomCandidate.offsetX
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             elif direction == "south":
                 if (room.yPosition * 15 + room.offsetY + room.sizeY) == (
                     roomCandidate.yPosition * 15 + roomCandidate.offsetY
+                ) and (
+                    room.xPosition * 15 + room.offsetX
+                    < roomCandidate.xPosition * 15
+                    + roomCandidate.offsetX
+                    + roomCandidate.sizeX
+                ) and (
+                    room.xPosition * 15 + room.offsetX + room.sizeX
+                    > roomCandidate.xPosition * 15 + roomCandidate.offsetX
                 ):
-                    if (
-                        room.xPosition * 15 + room.offsetX
-                        < roomCandidate.xPosition * 15
-                        + roomCandidate.offsetX
-                        + roomCandidate.sizeX
-                    ) and (
-                        room.xPosition * 15 + room.offsetX + room.sizeX
-                        > roomCandidate.xPosition * 15 + roomCandidate.offsetX
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             elif direction == "west":
                 if (room.xPosition * 15 + room.offsetX) == (
                     roomCandidate.xPosition * 15
                     + roomCandidate.offsetX
                     + roomCandidate.sizeX
+                ) and (
+                    room.yPosition * 15 + room.offsetY
+                    < roomCandidate.yPosition * 15
+                    + roomCandidate.offsetY
+                    + roomCandidate.sizeY
+                ) and (
+                    room.yPosition * 15 + room.offsetY + room.sizeY
+                    > roomCandidate.yPosition * 15 + roomCandidate.offsetY
                 ):
-                    if (
-                        room.yPosition * 15 + room.offsetY
-                        < roomCandidate.yPosition * 15
-                        + roomCandidate.offsetY
-                        + roomCandidate.sizeY
-                    ) and (
-                        room.yPosition * 15 + room.offsetY + room.sizeY
-                        > roomCandidate.yPosition * 15 + roomCandidate.offsetY
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             elif direction == "east":
                 if (room.xPosition * 15 + room.offsetX + room.sizeX) == (
                     roomCandidate.xPosition * 15 + roomCandidate.offsetX
+                ) and (
+                    room.yPosition * 15 + room.offsetY
+                    < roomCandidate.yPosition * 15
+                    + roomCandidate.offsetY
+                    + roomCandidate.sizeY
+                ) and (
+                    room.yPosition * 15 + room.offsetY + room.sizeY
+                    > roomCandidate.yPosition * 15 + roomCandidate.offsetY
                 ):
-                    if (
-                        room.yPosition * 15 + room.offsetY
-                        < roomCandidate.yPosition * 15
-                        + roomCandidate.offsetY
-                        + roomCandidate.sizeY
-                    ) and (
-                        room.yPosition * 15 + room.offsetY + room.sizeY
-                        > roomCandidate.yPosition * 15 + roomCandidate.offsetY
-                    ):
-                        roomCollisions.add(roomCandidate)
+                    roomCollisions.add(roomCandidate)
             else:
                 logger.debug("invalid movement direction: %s", direction)
 
@@ -2339,11 +2325,10 @@ class Terrain:
 
         # remove room from old position
         oldPosition = (room.xPosition, room.yPosition)
-        if oldPosition in self.roomByCoordinates:
-            if room in self.roomByCoordinates[oldPosition]:
-                self.roomByCoordinates[oldPosition].remove(room)
-                if not len(self.roomByCoordinates[oldPosition]):
-                    del self.roomByCoordinates[oldPosition]
+        if oldPosition in self.roomByCoordinates and room in self.roomByCoordinates[oldPosition]:
+            self.roomByCoordinates[oldPosition].remove(room)
+            if not len(self.roomByCoordinates[oldPosition]):
+                del self.roomByCoordinates[oldPosition]
 
         # add room to new position
         if newPosition in self.roomByCoordinates:
@@ -2368,7 +2353,7 @@ class Terrain:
 
         import random
 
-        while not start == end:
+        while start != end:
             pivot = (start + end) // 2
             compareEvent = self.events[pivot]
             if compareEvent.tick < event.tick:
@@ -2412,20 +2397,20 @@ class Nothingness(Terrain):
             displayChar = f"+{src.gamestate.gamestate.mainChar.zPosition}"
 
         chars = []
-        for i in range(0,-coordinateOffset[0]):
+        for i in range(-coordinateOffset[0]):
             line = []
             chars.append(line)
 
-        for i in range(0, 15*15):
+        for i in range(15*15):
             line = []
 
             if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
                 continue
 
-            for j in range(0,-coordinateOffset[1]):
+            for j in range(-coordinateOffset[1]):
                 line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 15*15):
+            for j in range(15*15):
 
                 if coordinateOffset: # game runs horrible without this flag
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
@@ -2530,7 +2515,7 @@ _____________"""
                 while counter < maxItems:
 
                     position = None
-                    while position is None or position in excludes.keys():
+                    while position is None or position in excludes:
                         position = (
                             xRange[0] + seed % maxOffsetX,
                             yRange[0] + seed // (maxItems * 2) % maxOffsetY,
@@ -2555,7 +2540,7 @@ _____________"""
                             continue
                         if key[0] % 15 in (0, 14) or key[1] % 15 in (0, 14):
                             continue
-                        if not counter % (5 * 3) == 0:
+                        if counter % (5 * 3) != 0:
                             l1types = [
                                 src.items.itemMap["Sheet"],
                                 src.items.itemMap["Rod"],
@@ -2763,22 +2748,22 @@ _____________"""
         chars = []
 
         if size[0] > coordinateOffset[0]:
-            for i in range(0,coordinateOffset[0]-size[0]):
+            for i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(0, size[1]):
+                for j in range(size[1]):
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                         continue
 
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 250):
+        for i in range(250):
             line = []
 
             if coordinateOffset[1] < 0:
-                for j in range(0,-coordinateOffset[1]):
+                for j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 250):
+            for j in range(250):
                 if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                     continue
 
@@ -2907,9 +2892,9 @@ class Desert(Terrain):
         import random
 
         self.heatmap = []
-        for x in range(0, 15):
+        for x in range(15):
             self.heatmap.append([])
-            for y in range(0, 15):
+            for y in range(15):
                 self.heatmap[x].append(0)
                 self.heatmap[x][y] = random.randint(1, 5)
 
@@ -2978,21 +2963,21 @@ class Desert(Terrain):
 
         chars = []
         if size[0] > coordinateOffset[0]:
-            for i in range(0,coordinateOffset[0]-size[0]):
+            for i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(0, size[1]):
+                for j in range(size[1]):
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(0, 15*15):
+        for i in range(15*15):
             line = []
             if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
                 continue
 
             if coordinateOffset[1] < 0:
-                for j in range(0,-coordinateOffset[1]):
+                for j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(0, 15*15):
+            for j in range(15*15):
                 if coordinateOffset: # game runs horrible without this flag
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                         continue
@@ -3024,9 +3009,9 @@ class Desert(Terrain):
         ]
 
         chars = []
-        for i in range(0, 250):
+        for i in range(250):
             line = []
-            for j in range(0, 250):
+            for j in range(250):
                 if not self.hidden:
                     try:
                         line.append(desertTiles[self.heatmap[j // 15][i // 15]])
@@ -3107,7 +3092,7 @@ class Base(Nothingness):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -3218,7 +3203,7 @@ class Base2(Nothingness):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(0,10):
+        for i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -3319,7 +3304,7 @@ class Ruin(Base):
             item.destroy()
 
         for room in self.rooms:
-            for i in range(0,4):
+            for i in range(4):
                 room.damage()
 
         for character in self.characters[:]:
@@ -3339,7 +3324,7 @@ class Ruin(Base):
             if level < 0:
                 continue
 
-            for i in range(0,level):
+            for i in range(level):
                 enemy = src.characters.Monster()
                 room.addCharacter(enemy,random.randint(2,13),random.randint(2,13))
                 enemy.macroState["macros"]["g"] = ["g","g","_","g"]
@@ -3347,7 +3332,7 @@ class Ruin(Base):
                 enemy.baseDamage = 10+level
                 enemy.runCommandString("_g")
 
-            for i in range(0,2**level):
+            for i in range(2**level):
                 room.addItem(src.items.itemMap["GlassCrystal"](),(random.randint(2,13),random.randint(2,13),0))
 
 class ScrapField(Terrain):

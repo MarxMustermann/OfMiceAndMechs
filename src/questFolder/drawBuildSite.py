@@ -96,7 +96,7 @@ Try as hard as you can to achieve this.
 
                     correctIndex = 0
                     while correctIndex < len(itemType) and correctIndex < len(submenue.text):
-                        if not itemType[correctIndex] == submenue.text[correctIndex]:
+                        if itemType[correctIndex] != submenue.text[correctIndex]:
                             break
                         correctIndex += 1
 
@@ -113,7 +113,7 @@ Try as hard as you can to achieve this.
 
                     correctIndex = 0
                     while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
-                        if not nameToSet[correctIndex] == submenue.text[correctIndex]:
+                        if nameToSet[correctIndex] != submenue.text[correctIndex]:
                             break
                         correctIndex += 1
 
@@ -130,7 +130,7 @@ Try as hard as you can to achieve this.
 
                     correctIndex = 0
                     while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
-                        if not valueToSet[correctIndex] == submenue.text[correctIndex]:
+                        if valueToSet[correctIndex] != submenue.text[correctIndex]:
                             break
                         correctIndex += 1
 
@@ -156,7 +156,7 @@ Try as hard as you can to achieve this.
             foundOffset = None
             for offset in offsets:
                 items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-                if not items or not items[-1].type == "Painter":
+                if not items or items[-1].type != "Painter":
                     continue
 
                 foundOffset = (offset,items[-1])
@@ -166,10 +166,10 @@ Try as hard as you can to achieve this.
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),reason="get to the painter")
                     return ([quest],None)
 
-                if not item.paintMode == "buildSite":
+                if item.paintMode != "buildSite":
                     return (None,(["c","m","b","enter"],"to configure the painter to paint build site"))
 
-                if not (self.itemType == item.paintType):
+                if self.itemType != item.paintType:
                     return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the build site"))
 
                 for (key,value) in item.paintExtraInfo.items():
@@ -177,21 +177,21 @@ Try as hard as you can to achieve this.
                         return (None,(["c","c"],"to clear the painters extra info"))
 
                 for (key,value) in self.extraInfo.items():
-                    if (not key in item.paintExtraInfo) or (not value == item.paintExtraInfo[key]):
+                    if (not key in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                         return (None,(["c","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
-                if not (item.offset == (0,0,0)):
+                if item.offset != (0, 0, 0):
                     return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
 
                 return (None,("jk","draw to stockpile"))
 
             if not self.painterPos:
-                if not character.inventory or not character.inventory[-1].type == "Painter":
+                if not character.inventory or character.inventory[-1].type != "Painter":
                     quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to draw a stockpile")
                     return ([quest],None)
                 painter = character.inventory[-1]
 
-            if not character.getBigPosition() == self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the drawing spot")
                 return ([quest],None)
 

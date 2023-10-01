@@ -38,7 +38,7 @@ class Vial(src.items.Item):
 
         # print feedback
         if character.watched:
-            if not self.uses == 1:
+            if self.uses != 1:
                 character.addMessage("you drink from the vial")
             else:
                 character.addMessage("you drink from the vial and empty it")

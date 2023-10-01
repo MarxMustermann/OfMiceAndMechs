@@ -62,7 +62,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                 return (None,None)
             room = rooms[0]
 
-            if not character.getBigPosition() == self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
                 return ([quest], None)
 
@@ -70,7 +70,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
             foundOffset = None
             for offset in offsets:
                 items = room.getItemByPosition((self.targetPosition[0]+offset[0],self.targetPosition[1]+offset[1],self.targetPosition[2]+offset[2]))
-                if not items or not items[0].type == "Painter":
+                if not items or items[0].type != "Painter":
                     continue
 
                 foundOffset = (offset,items[0])
@@ -85,23 +85,18 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                     if item.getPosition(offset=checkOffset) == self.targetPosition:
                         painterOffset = checkOffset
 
-                if painterOffset == (0,0,0):
-                    if not (painterOffset == item.offset):
-                        return (None,(["c","d",".","enter"],"to configure painter direction"))
-                if painterOffset == (0,1,0):
-                    if not (painterOffset == item.offset):
-                        return (None,(["c","d","s","enter"],"to configure painter direction"))
-                if painterOffset == (0,-1,0):
-                    if not (painterOffset == item.offset):
-                        return (None,(["c","d","w","enter"],"to configure painter direction"))
-                if painterOffset == (1,0,0):
-                    if not (painterOffset == item.offset):
-                        return (None,(["c","d","d","enter"],"to configure painter direction"))
-                if painterOffset == (-1,0,0):
-                    if not (painterOffset == item.offset):
-                        return (None,(["c","d","a","enter"],"to configure painter direction"))
+                if painterOffset == (0,0,0) and painterOffset != item.offset:
+                    return (None,(["c","d",".","enter"],"to configure painter direction"))
+                if painterOffset == (0,1,0) and painterOffset != item.offset:
+                    return (None,(["c","d","s","enter"],"to configure painter direction"))
+                if painterOffset == (0,-1,0) and painterOffset != item.offset:
+                    return (None,(["c","d","w","enter"],"to configure painter direction"))
+                if painterOffset == (1,0,0) and painterOffset != item.offset:
+                    return (None,(["c","d","d","enter"],"to configure painter direction"))
+                if painterOffset == (-1,0,0) and painterOffset != item.offset:
+                    return (None,(["c","d","a","enter"],"to configure painter direction"))
 
-                if not item.paintMode == "delete":
+                if item.paintMode != "delete":
                     return (None,(["c","m","d","enter"],"to configure the painter to input stockpile"))
 
                 return (None,("jk","delete marking"))
@@ -109,9 +104,8 @@ class DeleteMarking(src.quests.MetaQuestSequence):
             if not self.painterPos:
                 painter = None
                 painterIndex = -1
-                if character.inventory:
-                    if character.inventory[-1].type == "Painter":
-                        painter = character.inventory[-1]
+                if character.inventory and character.inventory[-1].type == "Painter":
+                    painter = character.inventory[-1]
 
                 if not painter:
                     counter = 0
@@ -127,7 +121,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1,reason="be able to delete marking")
                     return ([quest],None)
 
-            if not character.getBigPosition() == self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get nearby to the marking to delete")
                 return ([quest],None)
 

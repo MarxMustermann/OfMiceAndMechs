@@ -228,7 +228,7 @@ slotsByItemtype
 
         if self.submenue.selection == "fetchItem":
             options = []
-            for key in self.slotsByItemtype.keys():
+            for key in self.slotsByItemtype:
                 options.append((key, key))
             self.submenue = src.interaction.SelectionMenu(
                 "what do you want to do?", options
@@ -352,7 +352,7 @@ slotsByItemtype
         """
 
         result = super().fetchSpecialRegisterInformation()
-        for itemType in self.slotsByItemtype.keys():
+        for itemType in self.slotsByItemtype:
             result["num " + str(itemType) + " stored"] = len(
                 self.slotsByItemtype[itemType]
             )

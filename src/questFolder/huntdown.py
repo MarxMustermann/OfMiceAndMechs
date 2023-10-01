@@ -49,7 +49,7 @@ class Huntdown(src.quests.MetaQuestSequence):
                 character.runCommandString("a")
                 return
 
-            if not charPos == targetPos:
+            if charPos != targetPos:
                 if abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                     newPos = targetPos
                 else:

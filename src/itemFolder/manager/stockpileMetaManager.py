@@ -359,14 +359,13 @@ class StockpileMetaManager(src.items.Item):
         sources = {}
         for stockPile in self.stockPiles:
             stockPileInfo = self.stockPileInfo[stockPile]
-            if "desiredAmount" in stockPileInfo:
-                if stockPileInfo["desiredAmount"] > stockPileInfo["amount"]:
-                    itemType = stockPileInfo.get("itemType")
-                    if itemType is None:
-                        itemType = "all"
-                    if not needyStockpiles.get(itemType):
-                        needyStockpiles[itemType] = []
-                    needyStockpiles[itemType].append(stockPile)
+            if "desiredAmount" in stockPileInfo and stockPileInfo["desiredAmount"] > stockPileInfo["amount"]:
+                itemType = stockPileInfo.get("itemType")
+                if itemType is None:
+                    itemType = "all"
+                if not needyStockpiles.get(itemType):
+                    needyStockpiles[itemType] = []
+                needyStockpiles[itemType].append(stockPile)
 
             if stockPileInfo.get("source") == True:
                 itemType = stockPileInfo.get("itemType")
@@ -377,7 +376,7 @@ class StockpileMetaManager(src.items.Item):
                 sources[itemType].append(stockPile)
 
         stockPileFound = None
-        for itemType in needyStockpiles.keys():
+        for itemType in needyStockpiles:
             if itemType not in sources:
                 continue
             stockPile = sources[itemType][0]
@@ -494,7 +493,7 @@ class StockpileMetaManager(src.items.Item):
         for stockPile in self.stockPiles:
             stockPileInfo = self.stockPileInfo[stockPile]
 
-            if not stockPileInfo["active"] == True:
+            if stockPileInfo["active"] != True:
                 continue
 
             if stockPileInfo.get("source") == True:

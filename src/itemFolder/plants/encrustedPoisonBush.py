@@ -25,7 +25,7 @@ class EncrustedPoisonBush(src.items.Item):
             character: the character trying to us the item
         """
 
-        if 100 > character.satiation:
+        if character.satiation < 100:
             character.satiation = 0
         else:
             character.satiation -= 100

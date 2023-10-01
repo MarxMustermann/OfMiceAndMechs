@@ -106,7 +106,7 @@ That should usually be around 10-20 ticks."""
         mode = extraInfo["groupType"]
 
         def checkAdd(person):
-            if not person.faction == character.faction:
+            if person.faction != character.faction:
                 return
             if mode == "all":
                 targets.append(person)
@@ -163,7 +163,7 @@ That should usually be around 10-20 ticks."""
         counter = 0
         extraInfo["amount"] = int(extraInfo["amount"])
         for target in targets:
-            if not extraInfo["amount"] == 0 and not extraInfo["amount"] > counter:
+            if extraInfo["amount"] != 0 and not extraInfo["amount"] > counter:
                 break
             if extraInfo["questType"] == "cancel":
                 if target.quests:
@@ -206,12 +206,12 @@ That should usually be around 10-20 ticks."""
     def showMap(self, character):
         # render empty map
         mapContent = []
-        for x in range(0, 15):
+        for x in range(15):
             mapContent.append([])
-            for y in range(0, 15):
+            for y in range(15):
                 if x not in (0, 14) and y not in (0, 14):
                     char = "  "
-                elif not x == 7 and not y == 7:
+                elif x != 7 and y != 7:
                     char = "##"
                 else:
                     char = "  "
@@ -346,7 +346,7 @@ That should usually be around 10-20 ticks."""
     def fetchCityleader(self):
         cityBuilder = None
         for item in self.container.itemsOnFloor:
-            if not item.type == "PersonnelArtwork":
+            if item.type != "PersonnelArtwork":
                 continue
             cityBuilder = item
 

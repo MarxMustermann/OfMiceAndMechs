@@ -729,7 +729,7 @@ class MetaQuestSequence(Quest):
             if not subQuest.active:
                 subQuest.activate()
                 return
-            if not (subQuest.character == self.character):
+            if subQuest.character != self.character:
                 subQuest.assignToCharacter(self.character)
                 return
 
@@ -802,18 +802,16 @@ class MetaQuestSequence(Quest):
         self.startWatching(quest, self.triggerCompletionCheck2, "completed")
 
         # deactivate last active quest
-        if addFront:
-            if len(self.subQuests) > 1:
-                self.subQuests[1].deactivate()
+        if addFront and len(self.subQuests) > 1:
+            self.subQuests[1].deactivate()
 
     """
     activate self and first subquest
     """
 
     def activate(self):
-        if len(self.subQuests):
-            if not self.subQuests[0].active:
-                self.subQuests[0].activate()
+        if len(self.subQuests) and not self.subQuests[0].active:
+            self.subQuests[0].activate()
         super().activate()
 
     """
@@ -833,7 +831,7 @@ class MetaQuestSequence(Quest):
             if not subQuest.active:
                 subQuest.activate()
                 return
-            if not (subQuest.character == character):
+            if subQuest.character != character:
                 subQuest.assignToCharacter(character)
                 return
             self.subQuests[0].solver(character)
@@ -847,9 +845,8 @@ class MetaQuestSequence(Quest):
     """
 
     def deactivate(self):
-        if len(self.subQuests):
-            if self.subQuests[0].active:
-                self.subQuests[0].deactivate()
+        if len(self.subQuests) and self.subQuests[0].active:
+            self.subQuests[0].deactivate()
         super().deactivate()
 
     def getSolvingCommandString(self,character,dryRun=True):

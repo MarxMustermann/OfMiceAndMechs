@@ -67,7 +67,7 @@ Reputation is rewarded for picking up items from walkways.\n\n"""
                 else:
                     out += f"{duty}\n\n"
 
-        if not self.character.rank == 3:
+        if self.character.rank != 3:
             reputationForPromotion = "???"
             if self.character.rank == 6:
                 reputationForPromotion = 300
@@ -183,7 +183,7 @@ We should stop watching and do something about that.
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def awardnearbyKillReputation(self,extraInfo):
-        if not extraInfo["deadChar"].faction == self.character.faction:
+        if extraInfo["deadChar"].faction != self.character.faction:
             if "Questing" in self.character.duties:
                 amount = 5*self.character.rank
                 amount += extraInfo["deadChar"].maxHealth//3
@@ -260,7 +260,7 @@ We should stop watching and do something about that.
                 self.character.awardReputation(10, reason="operating a machine")
 
     def pickedUpItem(self,extraInfo):
-        if not self.character == src.gamestate.gamestate.mainChar:
+        if self.character != src.gamestate.gamestate.mainChar:
             return
 
         if isinstance(self.character.container,src.terrains.Terrain):
@@ -268,9 +268,8 @@ We should stop watching and do something about that.
                 self.character.awardReputation(1, reason="gathering an item")
         else:
             room = self.character.container
-            if "cleaning" in self.character.duties:
-                if extraInfo[2] in room.walkingSpace:
-                    self.character.awardReputation(2, reason="cleaning a cluttered walkway")
+            if "cleaning" in self.character.duties and extraInfo[2] in room.walkingSpace:
+                self.character.awardReputation(2, reason="cleaning a cluttered walkway")
 
             for inputSlot in room.inputSlots:
                 if inputSlot[0] == extraInfo[2]:
@@ -327,14 +326,13 @@ We should stop watching and do something about that.
         super().solver(character)
 
     def checkTriggerTrapSetting(self,character,room):
-        if hasattr(room,"electricalCharges"):
-            if room.electricalCharges < room.maxElectricalCharges:
+        if hasattr(room,"electricalCharges") and room.electricalCharges < room.maxElectricalCharges:
 
-                quest = src.quests.questMap["ReloadTraproom"](targetPosition=room.getPosition())
-                self.addQuest(quest)
-                quest.activate()
-                self.idleCounter = 0
-                return True
+            quest = src.quests.questMap["ReloadTraproom"](targetPosition=room.getPosition())
+            self.addQuest(quest)
+            quest.activate()
+            self.idleCounter = 0
+            return True
 
     def checkTriggerMachineOperation(self,character,room):
         terrain = character.getTerrain()
@@ -381,11 +379,10 @@ We should stop watching and do something about that.
                 for item in items:
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
 
-        if freeStorage:
-            if itemsInStorage.get("MetalBars",0) < 40:
-                self.addQuest(src.quests.questMap["ScrapHammering"](amount=10))
-                self.idleCounter = 0
-                return True
+        if freeStorage and itemsInStorage.get("MetalBars",0) < 40:
+            self.addQuest(src.quests.questMap["ScrapHammering"](amount=10))
+            self.idleCounter = 0
+            return True
 
     def checkTriggerMetalWorking(self,character,room):
         for room in character.getTerrain().rooms:
@@ -437,19 +434,19 @@ We should stop watching and do something about that.
             for storageSlot in room.storageSlots:
                 items = room.getItemByPosition(storageSlot[0])
                 for item in items:
-                    if not item.type == "Machine":
+                    if item.type != "Machine":
                         continue
                     machinesInStorage[item.toProduce] = machinesInStorage.get(item.toProduce,0)+1
             for outputSlot in room.outputSlots:
                 items = room.getItemByPosition(outputSlot[0])
                 for item in items:
-                    if not item.type == "Machine":
+                    if item.type != "Machine":
                         continue
                     machinesInStorage[item.toProduce] = machinesInStorage.get(item.toProduce,0)+1
 
         for room in character.getTerrain().rooms:
             for buildSite in room.buildSites:
-                if not buildSite[1] == "Machine":
+                if buildSite[1] != "Machine":
                     continue
                 if buildSite[2]["toProduce"] in machinesInStorage:
                     continue
@@ -613,7 +610,7 @@ We should stop watching and do something about that.
             numFreeStorage = 0
             for room in terrain.rooms:
                 for storageSlot in room.storageSlots:
-                    if not storageSlot[1] == None:
+                    if storageSlot[1] != None:
                         continue
                     items = room.getItemByPosition(storageSlot[0])
                     if items:
@@ -690,7 +687,7 @@ We should stop watching and do something about that.
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
             if emptyInputSlots:
                 for inputSlot in emptyInputSlots:
-                    if not inputSlot[1] == "Scrap":
+                    if inputSlot[1] != "Scrap":
                         continue
 
                     source = None
@@ -724,7 +721,7 @@ We should stop watching and do something about that.
             emptyInputSlots = room.getEmptyInputslots(itemType="VatMaggot")
             if emptyInputSlots:
                 for inputSlot in emptyInputSlots:
-                    if not inputSlot[1] == "VatMaggot":
+                    if inputSlot[1] != "VatMaggot":
                         continue
 
                     source = None
@@ -829,12 +826,12 @@ We should stop watching and do something about that.
                         reason = "finish hauling"
                         if inputSlot[1]:
                             self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason))
-                            if not character.container == room:
+                            if character.container != room:
                                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                         else:
                             if hasItem:
                                 self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason))
-                                if not character.container == room:
+                                if character.container != room:
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                                 self.idleCounter = 0
                                 return True
@@ -895,7 +892,7 @@ We should stop watching and do something about that.
 
         for room in [room] + character.getTerrain().rooms:
             for storageSlot in room.storageSlots:
-                if not storageSlot[2].get("desiredState") == "filled":
+                if storageSlot[2].get("desiredState") != "filled":
                     continue
 
                 items = room.getItemByPosition(storageSlot[0])
@@ -907,7 +904,7 @@ We should stop watching and do something about that.
                         items = room.getItemByPosition(checkStorageSlot[0])
                         if checkStorageSlot[2].get("desiredState") == "filled":
                             continue
-                        if not items or not items[0].type == storageSlot[1]:
+                        if not items or items[0].type != storageSlot[1]:
                             continue
 
                         self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="to fill a storage stockpile designated to be filled"))
@@ -940,7 +937,7 @@ We should stop watching and do something about that.
                         if not hasItem:
                             source = None
                             for candidateSource in room.sources:
-                                if not candidateSource[1] == inputSlot[1]:
+                                if candidateSource[1] != inputSlot[1]:
                                     continue
 
                                 sourceRoom = room.container.getRoomByPosition(candidateSource[0])
@@ -971,17 +968,16 @@ We should stop watching and do something about that.
                             if not source:
                                 continue
 
-                        if not hasItem:
-                            if self.triggerClearInventory(character,room):
-                                self.idleCounter = 0
-                                return True
+                        if not hasItem and self.triggerClearInventory(character,room):
+                            self.idleCounter = 0
+                            return True
 
                         if trueInput:
                             self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched"))
                         else:
                             if hasItem:
                                 self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,reason="restock the room with the items fetched",allowAny=True))
-                                if not character.room == room:
+                                if character.room != room:
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                                 self.idleCounter = 0
                                 return True
@@ -1005,18 +1001,18 @@ We should stop watching and do something about that.
                                         amountToFetch = amountNeeded
 
                                 roomPos = (room.xPosition,room.yPosition,0)
-                                if not source[0] == roomPos:
+                                if source[0] != roomPos:
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
 
                                 self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch))
-                                if not source[0] == roomPos:
+                                if source[0] != roomPos:
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
 
                                 if character.inventory and (not amountToFetch or amountToFetch > character.getFreeInventorySpace()):
                                     self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
                             else:
                                 roomPos = (room.xPosition,room.yPosition,0)
-                                if not source[0] == roomPos:
+                                if source[0] != roomPos:
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
 
                                 self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=source[0],targetPosition=source[2][0][0]))
@@ -1030,7 +1026,7 @@ We should stop watching and do something about that.
 
         for room in [room] + character.getTerrain().rooms:
             for storageSlot in room.storageSlots:
-                if not storageSlot[2].get("desiredState") == "filled":
+                if storageSlot[2].get("desiredState") != "filled":
                     continue
 
                 items = room.getItemByPosition(storageSlot[0])
@@ -1045,7 +1041,7 @@ We should stop watching and do something about that.
                             items = otherRoom.getItemByPosition(checkStorageSlot[0])
                             if checkStorageSlot[2].get("desiredState") == "filled":
                                 continue
-                            if not items or not items[0].type == storageSlot[1]:
+                            if not items or items[0].type != storageSlot[1]:
                                 continue
 
                             self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="to fill a storage stockpile designated to be filled"))
@@ -1069,9 +1065,9 @@ We should stop watching and do something about that.
                 items = room.getItemByPosition(storageSlot[0])
                 if items:
                     continue
-                if not storageSlot[1] == None:
+                if storageSlot[1] != None:
                     continue
-                if not storageSlot[2] == {}:
+                if storageSlot[2] != {}:
                     continue
                 numFreeStorage += 1
 
@@ -1134,7 +1130,7 @@ We should stop watching and do something about that.
         # get storage stockpiles that have the filled tag
         desireFilledStorageSlots = {}
         for room in character.getTerrain().rooms:
-            if not room.tag == "storage":
+            if room.tag != "storage":
                 continue
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") == "filled":
@@ -1150,7 +1146,7 @@ We should stop watching and do something about that.
                 continue
 
             for room in character.getTerrain().rooms:
-                if not room.tag == "storage":
+                if room.tag != "storage":
                     continue
                 storageSlots = room.storageSlots[:]
                 random.shuffle(storageSlots)
@@ -1168,11 +1164,10 @@ We should stop watching and do something about that.
         for x in range(1,13):
             for y in range(1,13):
                 items = terrain.getItemByPosition((x*15+7,y*15+7,0))
-                if items:
-                    if items[0].type == "RoomBuilder":
-                        self.addQuest(src.quests.questMap["BuildRoom"](targetPosition=(x,y,0)))
-                        self.idleCounter = 0
-                        return True
+                if items and items[0].type == "RoomBuilder":
+                    self.addQuest(src.quests.questMap["BuildRoom"](targetPosition=(x,y,0)))
+                    self.idleCounter = 0
+                    return True
 
         rooms = terrain.getRoomByPosition((7,7,0))
         if rooms:
@@ -1292,7 +1287,7 @@ We should stop watching and do something about that.
 
                     if not hasItem:
                         for candidateSource in room.sources:
-                            if not candidateSource[1] == neededItem:
+                            if candidateSource[1] != neededItem:
                                 continue
 
                             sourceRoom = room.container.getRoomByPosition(candidateSource[0])
@@ -1327,7 +1322,7 @@ We should stop watching and do something about that.
 
                             continue
 
-                    if not buildSite[1] == "Command":
+                    if buildSite[1] != "Command":
                         self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
                         self.idleCounter = 0
                         return True
@@ -1354,7 +1349,7 @@ We should stop watching and do something about that.
 
                         roomPos = (room.xPosition,room.yPosition)
 
-                        if not source[0] == roomPos:
+                        if source[0] != roomPos:
                             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
                         self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
                     self.idleCounter = 0
@@ -1499,7 +1494,7 @@ We should stop watching and do something about that.
         return False
 
     def checkTriggerQuesting(self,character,room):
-        if character.rank and not character.rank == 1:
+        if character.rank and character.rank != 1:
             terrainPos = (character.registers["HOMETx"],character.registers["HOMETy"])
 
             foundMissingHeart = False
@@ -1668,7 +1663,7 @@ We should stop watching and do something about that.
             return
 
         terrain = character.getTerrain()
-        if not terrain.xPosition == character.registers["HOMETx"] or not terrain.yPosition == character.registers["HOMETy"]:
+        if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
             self.addQuest(quest)
             quest.activate()
@@ -1761,7 +1756,7 @@ We should stop watching and do something about that.
         if character.health < character.maxHealth//2:
             foundItem = None
             for item in character.inventory:
-                if not item.type == "Vial":
+                if item.type != "Vial":
                     continue
                 if not item.uses:
                     continue
@@ -1776,7 +1771,7 @@ We should stop watching and do something about that.
 
         if "guarding" in character.duties:
             for otherCharacter in room.characters:
-                if not otherCharacter.faction == character.faction:
+                if otherCharacter.faction != character.faction:
                     character.runCommandString("gg")
                     self.idleCounter = 0
                     return
@@ -1843,81 +1838,62 @@ We should stop watching and do something about that.
 
         room = character.container
         for duty in character.duties:
-            if duty == "trap setting":
-                if self.checkTriggerTrapSetting(character,room):
-                    return
+            if duty == "trap setting" and self.checkTriggerTrapSetting(character,room):
+                return
 
-            if duty == "machine operation":
-                if self.checkTriggerMachineOperation(character,room):
-                    return
+            if duty == "machine operation" and self.checkTriggerMachineOperation(character,room):
+                return
 
-            if duty == "resource gathering":
-                if self.checkTriggerResourceGathering(character,room):
-                    return
+            if duty == "resource gathering" and self.checkTriggerResourceGathering(character,room):
+                return
 
-            if duty == "maggot gathering":
-                if self.checkTriggerMaggotGathering(character,room):
-                    return
+            if duty == "maggot gathering" and self.checkTriggerMaggotGathering(character,room):
+                return
 
-            if duty == "scratch checking":
-                if self.checkTriggerScratchChecking(character,room):
-                    return
+            if duty == "scratch checking" and self.checkTriggerScratchChecking(character,room):
+                return
 
-            if duty == "cleaning":
-                if self.checkTriggerCleaning(character,room):
-                    return
+            if duty == "cleaning" and self.checkTriggerCleaning(character,room):
+                return
 
-            if duty == "hauling":
-                if self.checkTriggerHauling(character,room):
-                    return
+            if duty == "hauling" and self.checkTriggerHauling(character,room):
+                return
 
-            if duty == "resource fetching":
-                if self.checkTriggerResourceFetching(character,room):
-                    return
+            if duty == "resource fetching" and self.checkTriggerResourceFetching(character,room):
+                return
 
-            if duty == "painting":
-                if self.checkTriggerPainting(character,room):
-                    return
+            if duty == "painting" and self.checkTriggerPainting(character,room):
+                return
 
-            if duty == "machine placing":
-                if self.checkTriggerMachinePlacing(character,room):
-                    return
+            if duty == "machine placing" and self.checkTriggerMachinePlacing(character,room):
+                return
 
-            if duty == "room building":
-                if self.checkTriggerRoomBuilding(character,room):
-                    return
+            if duty == "room building" and self.checkTriggerRoomBuilding(character,room):
+                return
 
-            if duty == "scavenging":
-                if self.checkTriggerScavenging(character,room):
-                    return
+            if duty == "scavenging" and self.checkTriggerScavenging(character,room):
+                return
 
-            if duty == "scrap hammering":
-                if self.checkTriggerScrapHammering(character,room):
-                    return
+            if duty == "scrap hammering" and self.checkTriggerScrapHammering(character,room):
+                return
 
-            if duty == "metal working":
-                if self.checkTriggerMetalWorking(character,room):
-                    return
+            if duty == "metal working" and self.checkTriggerMetalWorking(character,room):
+                return
 
-            if duty == "machining":
-                if self.checkTriggerMachining(character,room):
-                    return
+            if duty == "machining" and self.checkTriggerMachining(character,room):
+                return
 
-            if duty == "city planning":
-                if self.checkTriggerCityPlaning(character,room):
-                    return
+            if duty == "city planning" and self.checkTriggerCityPlaning(character,room):
+                return
 
-            if duty == "clone spawning":
-                if self.checkTriggerCloneSpawning(character,room):
-                    return
+            if duty == "clone spawning" and self.checkTriggerCloneSpawning(character,room):
+                return
 
-            if duty == "epoch questing":
-                if self.checkTriggerEpochQuesting(character,room):
-                    return
+            if duty == "epoch questing" and self.checkTriggerEpochQuesting(character,room):
+                return
 
-            if duty == "questing":
-                if self.checkTriggerQuesting(character,room):
-                    return
+            if duty == "questing" and self.checkTriggerQuesting(character,room):
+                return
 
             if duty == "praying":
                 if self.checkTriggerPraying(character,room):
@@ -1934,10 +1910,9 @@ We should stop watching and do something about that.
                     self.idleCounter += 1
                     self.addQuest(quest)
                     return
-                if self.idleCounter > 15:
-                    if self.checkTriggerQuesting(character,room):
-                        self.idleCounter = 0
-                        return
+                if self.idleCounter > 15 and self.checkTriggerQuesting(character,room):
+                    self.idleCounter = 0
+                    return
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
                 self.idleCounter += 1
                 self.addQuest(quest)
@@ -1946,15 +1921,14 @@ We should stop watching and do something about that.
 
         if 1 == 1:
             room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-            if not room == character.container:
+            if room != character.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to meeting hall")
                 self.idleCounter += 1
                 self.addQuest(quest)
                 return
-            if self.idleCounter > 15:
-                if self.checkTriggerQuesting(character,room):
-                    self.idleCounter = 0
-                    return
+            if self.idleCounter > 15 and self.checkTriggerQuesting(character,room):
+                self.idleCounter = 0
+                return
             quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
             self.idleCounter += 1
             self.addQuest(quest)
@@ -2569,20 +2543,19 @@ Try it out!
         except:
             self.showedPlanWeaponProduction = False
 
-        if not self.showedPlanWeaponProduction:
-            if not cityPlaner or not cityPlaner.getAvailableRooms():
-                if not self.showedBuildWeaponPrductionRoom:
-                    text = """
+        if not self.showedPlanWeaponProduction and (not cityPlaner or not cityPlaner.getAvailableRooms()):
+            if not self.showedBuildWeaponPrductionRoom:
+                text = """
 You need to have an empty room available to continue.
 
 Supply the materials to build a new room.
 
 = press enter to continue playing =
 """
-                    character.addMessage(text)
-                    src.interaction.showInterruptText(text)
-                    self.showedBuildWeaponPrductionRoom = True
-                return
+                character.addMessage(text)
+                src.interaction.showInterruptText(text)
+                self.showedBuildWeaponPrductionRoom = True
+            return
 
         if cityPlaner and cityPlaner.getAvailableRooms():
             if not self.showedPlanWeaponProduction:
@@ -2626,7 +2599,7 @@ Start by using the city builder to order a weapon production line to be built.
 
         foundWeaponProduction = False
         for room in terrain.rooms:
-            if not room.tag == "weaponProduction":
+            if room.tag != "weaponProduction":
                 continue
             if room.floorPlan:
                 continue
@@ -2707,7 +2680,7 @@ Let's go on a adventure to fetch them.
             toSpawn = ["Rod","Rod","Rod","Rod","Sword","Sword","Sword","Sword","Armor","Armor"]
             generalPurposeRoom = None
             for room in otherTerrain.rooms:
-                if not room.tag == "generalPurposeRoom":
+                if room.tag != "generalPurposeRoom":
                     continue
                 for itemType in toSpawn:
                     item = src.items.itemMap["Machine"]()
@@ -2810,7 +2783,7 @@ That should give you enough health to kill them all.
             src.gamestate.gamestate.save()
             src.interaction.showInterruptText(text)
 
-            for i in range(0,2):
+            for i in range(2):
                 item = src.items.itemMap["Vial"]()
                 item.uses = 10
                 character.inventory.append(item)

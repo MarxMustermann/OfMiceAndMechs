@@ -55,7 +55,6 @@ class Chat(src.interaction.SubMenu):
             state: the state to set
         """
 
-        pass
 
 
 class OneTimeMessage(Chat):
@@ -1088,7 +1087,6 @@ class RoomDutyChat2(Chat):
             state: the state to set
         """
 
-        pass
 
     def handleKey(self, key, noRender=False):
         """
@@ -1270,7 +1268,7 @@ class StopChat(Chat):
 
             # replace dialog option
             for option in self.partner.basicChatOptions:
-                if not option["chat"] == StopChat:
+                if option["chat"] != StopChat:
                     continue
                 self.partner.basicChatOptions.remove(option)
                 break
@@ -1333,7 +1331,7 @@ class StartChat(Chat):
 
             # replace dialog option
             for option in self.partner.basicChatOptions:
-                if not option["chat"] == StartChat:
+                if option["chat"] != StartChat:
                     continue
                 self.partner.basicChatOptions.remove(option)
                 break
@@ -1586,7 +1584,7 @@ class CaptainChat(Chat):
             )
 
             # reject player request
-            if not src.gamestate.gamestate.mainChar == self.partner.room.secondOfficer:
+            if src.gamestate.gamestate.mainChar != self.partner.room.secondOfficer:
                 self.persistentText += (
                     self.partner.name
                     + ': "Only my second in command could possibly succeed me"'
@@ -1887,7 +1885,7 @@ class ChatMenu(Chat):
             self.partner.wakeUp()
             return True
 
-        if not key == "~":
+        if key != "~":
             if self.partner.rank and src.gamestate.gamestate.mainChar.rank > self.partner.rank:
                 src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to address someone out of rank")
                 return True

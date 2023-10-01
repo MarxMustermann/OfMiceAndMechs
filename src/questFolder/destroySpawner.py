@@ -71,7 +71,7 @@ You may want to plan an escape route."""
                 self.spawnedPrepared = True
                 return
 
-            if not character.getBigPosition() == self.targetPosition:
+            if character.getBigPosition() != self.targetPosition:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 self.addQuest(quest)
                 return

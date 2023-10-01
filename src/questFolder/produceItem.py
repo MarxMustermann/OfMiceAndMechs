@@ -98,12 +98,12 @@ If you don't find a {self.itemType} machine needed, build it.
                     self.fail("missing machine ScrapCompactor")
                     return
 
-                if not character.getBigPosition() == room.getPosition():
+                if character.getBigPosition() != room.getPosition():
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                     return ([quest], None)
 
                 items = foundItem.container.getItemByPosition(foundItem.getPosition(offset=(-1,0,0)))
-                if not items or not items[-1].type == "Scrap":
+                if not items or items[-1].type != "Scrap":
                     quest = src.quests.questMap["PlaceItem"](targetPosition=foundItem.getPosition(offset=(-1,0,0)),targetPositionBig=foundItem.container.getPosition(),itemType="Scrap",tryHard=self.tryHard)
                     return ([quest], None)
                 """
@@ -159,7 +159,7 @@ If you don't find a {self.itemType} machine needed, build it.
                     foundItem = False
                     for inputOffset in inputOffsets:
                         items = foundMachine.container.getItemByPosition(foundMachine.getPosition(offset=inputOffset))
-                        if not items or not items[-1].type == neededItem:
+                        if not items or items[-1].type != neededItem:
                             continue
                         foundItem = True
                         break
@@ -180,9 +180,9 @@ If you don't find a {self.itemType} machine needed, build it.
                     for inputOffset in enptyInputOffsets:
                         newPos = foundMachine.getPosition(offset=inputOffset)
                         for inputStockpile in foundMachine.container.inputSlots:
-                            if not inputStockpile[0] == newPos:
+                            if inputStockpile[0] != newPos:
                                 continue
-                            if not inputStockpile[1] == neededItem:
+                            if inputStockpile[1] != neededItem:
                                 continue
 
                             quest = src.quests.questMap["PlaceItem"](targetPosition=foundMachine.getPosition(offset=inputOffset),targetPositionBig=foundMachine.container.getPosition(),itemType=neededItem,tryHard=self.tryHard)
@@ -199,7 +199,7 @@ If you don't find a {self.itemType} machine needed, build it.
                     quest = src.quests.questMap["CleanSpace"](targetPosition=foundMachine.getPosition(offset=(1,0,0)),targetPositionBig=room.getPosition())
                     return ([quest], None)
 
-                if not character.container == foundMachine.container:
+                if character.container != foundMachine.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=foundMachine.container.getPosition())
                     return ([quest], None)
 

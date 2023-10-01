@@ -20,10 +20,10 @@ class SupportAttack(src.quests.MetaQuestSequence):
             self.fail()
             return
 
-        if not character.getTerrain() == character.superior.getTerrain():
+        if character.getTerrain() != character.superior.getTerrain():
             return
 
-        if not self.lastSuperiorPos == self.getSuperiorsTileCoordinate(character):
+        if self.lastSuperiorPos != self.getSuperiorsTileCoordinate(character):
             self.clearSubQuests()
             self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
 
@@ -57,7 +57,7 @@ class SupportAttack(src.quests.MetaQuestSequence):
         if self.subQuests:
             return super().solver(character)
 
-        if not character.getTerrain() == character.superior.getTerrain():
+        if character.getTerrain() != character.superior.getTerrain():
             targetTerrain = character.superior.getTerrain()
             pos = (targetTerrain.xPosition,targetTerrain.yPosition,0)
             self.addQuest(src.quests.questMap["GoToTerrain"](targetTerrain=pos))
@@ -79,39 +79,39 @@ class SupportAttack(src.quests.MetaQuestSequence):
                 if character.superior.getSpacePosition() == (6,12,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0],pos[1]+1,0),endWhenCleared=True))
                     return
-                if character.superior.getSpacePosition() == (6,11,0) and not character.getPosition() == (6,11,0):
+                if character.superior.getSpacePosition() == (6,11,0) and character.getPosition() != (6, 11, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(6,11,0)))
                     return
                 if character.superior.getSpacePosition() == (12,6,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0]+1,pos[1],0),endWhenCleared=True))
                     return
-                if character.superior.getSpacePosition() == (11,6,0) and not character.getPosition() == (11,6,0):
+                if character.superior.getSpacePosition() == (11,6,0) and character.getPosition() != (11, 6, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(11,6,0)))
                     return
                 if character.superior.getSpacePosition() == (0,6,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0]-1,pos[1],0),endWhenCleared=True))
                     return
-                if character.superior.getSpacePosition() == (1,6,0) and not character.getPosition() == (1,6,0):
+                if character.superior.getSpacePosition() == (1,6,0) and character.getPosition() != (1, 6, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(1,6,0)))
                     return
                 if character.superior.getSpacePosition() == (6,0,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0],pos[1]-1,0),endWhenCleared=True))
                     return
-                if character.superior.getSpacePosition() == (6,1,0) and not character.getPosition() == (6,1,0):
+                if character.superior.getSpacePosition() == (6,1,0) and character.getPosition() != (6, 1, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(6,1,0)))
                     return
             else:
                 pos = character.getBigPosition()
-                if character.superior.getSpacePosition() == (7,13,0) and not character.getPosition() == (7,13,0):
+                if character.superior.getSpacePosition() == (7,13,0) and character.getPosition() != (7, 13, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,13,0)))
                     return
-                if character.superior.getSpacePosition() == (13,7,0) and not character.getPosition() == (13,7,0):
+                if character.superior.getSpacePosition() == (13,7,0) and character.getPosition() != (13, 7, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(13,7,0)))
                     return
-                if character.superior.getSpacePosition() == (1,7,0) and not character.getPosition() == (1,7,0):
+                if character.superior.getSpacePosition() == (1,7,0) and character.getPosition() != (1, 7, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(1,7,0)))
                     return
-                if character.superior.getSpacePosition() == (7,1,0) and not character.getPosition() == (7,1,0):
+                if character.superior.getSpacePosition() == (7,1,0) and character.getPosition() != (7, 1, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,1,0)))
                     return
 

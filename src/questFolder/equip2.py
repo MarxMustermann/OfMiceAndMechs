@@ -52,7 +52,7 @@ Swords can range from 10 to 25 damage per hit.
         bestSword = None
         for room in self.character.getTerrain().rooms:
             for item in room.getItemsByType("Armor"):
-                if not item == room.getItemByPosition(item.getPosition())[0]:
+                if item != room.getItemByPosition(item.getPosition())[0]:
                     continue
                 if not bestArmor:
                     bestArmor = item
@@ -61,7 +61,7 @@ Swords can range from 10 to 25 damage per hit.
                     continue
                 bestArmor = item
             for item in room.getItemsByType("Sword"):
-                if not item == room.getItemByPosition(item.getPosition())[0]:
+                if item != room.getItemByPosition(item.getPosition())[0]:
                     continue
                 if not bestSword:
                     bestSword = item
@@ -88,9 +88,8 @@ Swords can range from 10 to 25 damage per hit.
         if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
             return
 
-        if "metal working" in character.duties:
-            if not character.weapon or not character.armor:
-                return
+        if "metal working" in character.duties and (not character.weapon or not character.armor):
+            return
 
         self.postHandler()
         return
@@ -138,7 +137,7 @@ Swords can range from 10 to 25 damage per hit.
 
         (bestSword,bestArmor) = self.findBestEquipment(character)
         if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
-            if not character.container == bestSword.container:
+            if character.container != bestSword.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())
                 return ([quest],None)
 
@@ -153,7 +152,7 @@ Swords can range from 10 to 25 damage per hit.
             1/0
 
         if bestArmor and (not character.armor or bestArmor.armorValue > character.armor.armorValue):
-            if not character.container == bestArmor.container:
+            if character.container != bestArmor.container:
                 quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition())
                 return ([quest],None)
 

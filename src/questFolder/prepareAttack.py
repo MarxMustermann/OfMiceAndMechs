@@ -94,24 +94,24 @@ Attack the hive guards while you are waiting for the work complete.
         terrain = character.getTerrain()
         guards = []
         for otherChar in terrain.characters:
-            if not otherChar.faction == "invader":
+            if otherChar.faction != "invader":
                 continue
 
             distance = otherChar.getBigDistance(self.targetPosition)
             if distance > 3:
                 continue
-            if not otherChar.tag == "hiveGuard":
+            if otherChar.tag != "hiveGuard":
                 continue
             guards.append(otherChar)
 
         for room in terrain.rooms:
-            if not otherChar.faction == "invader":
+            if otherChar.faction != "invader":
                 continue
 
             distance = room.getDistance(self.targetPosition)
             if distance > 3:
                 continue
-            if not otherChar.tag == "hiveGuard":
+            if otherChar.tag != "hiveGuard":
                 continue
             guards.append(otherChar)
         return guards
@@ -149,7 +149,7 @@ Attack the hive guards while you are waiting for the work complete.
             if not subQuest.active:
                 subQuest.activate()
                 return
-            if not (subQuest.character == character):
+            if subQuest.character != character:
                 subQuest.assignToCharacter(character)
                 return
             if subQuest.isPaused():

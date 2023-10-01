@@ -24,7 +24,7 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
 
         if len(self.targetTerrain) < 3:
             self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
-        if not character.getTerrainPosition() == self.targetTerrain:
+        if character.getTerrainPosition() != self.targetTerrain:
             return
 
         temple = None
@@ -34,10 +34,10 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
             temple = room
             break
 
-        if not temple.getPosition() == character.getBigPosition():
+        if temple.getPosition() != character.getBigPosition():
             return
 
-        if not temple == character.container:
+        if temple != character.container:
             if character.xPosition%15 == 0:
                 return "d"
             if character.xPosition%15 == 14:
@@ -50,14 +50,13 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
 
         for item in character.container.itemsOnFloor:
             if isinstance(item,src.items.itemMap["SpecialItem"]):
-                if not item.getPosition() == character.getPosition():
+                if item.getPosition() != character.getPosition():
                     return
                 return "k"
-            if isinstance(item,src.items.itemMap["SpecialItemSlot"]):
-                if item.itemID == self.itemId and item.hasItem:
-                    if not item.getPosition() == character.getPosition():
-                        return
-                    return "j"
+            if isinstance(item,src.items.itemMap["SpecialItemSlot"]) and item.itemID == self.itemId and item.hasItem:
+                if item.getPosition() != character.getPosition():
+                    return
+                return "j"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character=None):
@@ -68,14 +67,14 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
         for item in character.inventory:
             if not isinstance(item, src.items.itemMap["SpecialItem"]):
                 continue
-            if not item.itemID == self.itemId:
+            if item.itemID != self.itemId:
                 continue
             foundSpecialItem = True
 
         if not foundSpecialItem:
             if len(self.targetTerrain) < 3:
                 self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
-            if not character.getTerrainPosition() == self.targetTerrain:
+            if character.getTerrainPosition() != self.targetTerrain:
                 self.addQuest(src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain))
                 return
 
@@ -86,22 +85,22 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
                 temple = room
                 break
 
-            if not temple.getPosition() == character.getBigPosition():
+            if temple.getPosition() != character.getBigPosition():
                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=temple.getPosition()))
                 return
 
-            if not temple == character.container:
+            if temple != character.container:
                 return
 
             for item in character.container.itemsOnFloor:
                 if isinstance(item,src.items.itemMap["SpecialItem"]):
-                    if not item.getPosition() == character.getPosition():
+                    if item.getPosition() != character.getPosition():
                         self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
                         return
                     return
                 if isinstance(item,src.items.itemMap["SpecialItemSlot"]):
                     if item.itemID == self.itemId and item.hasItem:
-                        if not item.getPosition() == character.getPosition():
+                        if item.getPosition() != character.getPosition():
                             self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
                             return
                         return

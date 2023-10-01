@@ -30,7 +30,7 @@ do some metal working
         if self.subQuests:
             return (None,None)
 
-        if not character.getBigPosition() == (7,7,0):
+        if character.getBigPosition() != (7, 7, 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")
             return ([quest],None)
 
@@ -100,13 +100,11 @@ do some metal working
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason:
-            if reason.startswith("no source for item "):
-                if "scrap hammering" in self.character.duties:
-                    newQuest = src.quests.questMap["ScrapHammering"](amount=1)
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    return
+        if reason and reason.startswith("no source for item ") and "scrap hammering" in self.character.duties:
+            newQuest = src.quests.questMap["ScrapHammering"](amount=1)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
         self.fail(reason)
 
     def handleWorkedMetal(self, extraInfo):
@@ -116,9 +114,8 @@ do some metal working
             return
 
         self.amountDone += 1
-        if not self.amount == None:
-            if self.amountDone >= self.amount:
-                self.postHandler()
+        if self.amount != None and self.amountDone >= self.amount:
+            self.postHandler()
 
     def assignToCharacter(self, character):
         if self.character:

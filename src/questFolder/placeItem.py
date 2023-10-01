@@ -26,7 +26,7 @@ Place item {self.itemType} on position {self.targetPosition} on tile {self.targe
 
 Bolt down the item after placing it."""
 
-        if not self.character.inventory or not self.character.inventory[-1].type == self.itemType:
+        if not self.character.inventory or self.character.inventory[-1].type != self.itemType:
             text += f"""
 
 You do not have a {self.itemType} in your inventory."""
@@ -166,7 +166,7 @@ Press d to move the cursor and show the subquests description.
                 if submenue:
                     return (None,(["esc"],"exit the menu"))
 
-            if not character.getBigPosition() == self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
                 return ([quest],None)
 
@@ -205,7 +205,7 @@ Press d to move the cursor and show the subquests description.
                     quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard,reason="have an item to place")
                     return ([quest],None)
 
-                if not character.getBigPosition() == self.targetPositionBig:
+                if character.getBigPosition() != self.targetPositionBig:
                     quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
                     return ([quest],None)
 
@@ -214,11 +214,11 @@ Press d to move the cursor and show the subquests description.
                         items = character.container.getItemByPosition((self.targetPosition[0],self.targetPosition[1],0))
                     else:
                         items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                    if items and not items[-1].type == self.itemType:
+                    if items and items[-1].type != self.itemType:
                         quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
                         return ([quest],None)
 
-                if not character.getSpacePosition() == self.targetPosition:
+                if character.getSpacePosition() != self.targetPosition:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,description="go to placement spot",reason=f"be able to place the {self.itemType}")
                     return ([quest],None)
 
@@ -230,7 +230,7 @@ Press d to move the cursor and show the subquests description.
 
                     return (None,(dropCommand,"drop the item"))
 
-            if self.targetPositionBig and not self.targetPositionBig == character.getBigPosition():
+            if self.targetPositionBig and self.targetPositionBig != character.getBigPosition():
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,description="go to buildsite",reason=f"be able to place the {self.itemType}")
                 return ([quest],None)
 
@@ -267,10 +267,9 @@ Press d to move the cursor and show the subquests description.
         if not items:
             return False
 
-        if items[-1].type == self.itemType:
-            if not self.boltDown or items[-1].bolted:
-                self.postHandler()
-                return True
+        if items[-1].type == self.itemType and (not self.boltDown or items[-1].bolted):
+            self.postHandler()
+            return True
         return False
 
 src.quests.addType(PlaceItem)

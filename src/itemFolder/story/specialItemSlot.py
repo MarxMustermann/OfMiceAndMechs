@@ -34,7 +34,7 @@ class SpecialItemSlot(src.items.Item):
         if self.hasItem == False:
             foundItem = None
             for item in character.inventory:
-                if not item.type == "SpecialItem":
+                if item.type != "SpecialItem":
                     continue
                 if item.itemID == self.itemID:
                     foundItem = item

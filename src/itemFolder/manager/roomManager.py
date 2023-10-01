@@ -263,10 +263,9 @@ class RoomManager(src.items.Item):
             typeParameter = params["selection"]
             self.tasksType = "add item"
 
-        if params["tasksType"] == "add item":
-            if typeParameter not in src.items.itemMap:
-                character.addMessage("item not found")
-                return
+        if params["tasksType"] == "add item" and typeParameter not in src.items.itemMap:
+            character.addMessage("item not found")
+            return
 
         newTask = {
             "task": params["tasksType"],
@@ -710,15 +709,9 @@ class RoomManager(src.items.Item):
 
             for resource in needResources:
                 if resource == "MetalBars":
-                    if self.resourceTerminalPositions.get(resource):
-                        candidateList = self.resourceTerminalPositions[resource]
-                    else:
-                        candidateList = []
+                    candidateList = self.resourceTerminalPositions.get(resource, [])
                 else:
-                    if resource in self.machinePositions:
-                        candidateList = self.machinePositions[resource]
-                    else:
-                        candidateList = []
+                    candidateList = self.machinePositions.get(resource, [])
 
                 for candidate in candidateList:
                     desiredPos = candidate[:]
@@ -983,7 +976,7 @@ class RoomManager(src.items.Item):
 
         if (
             task["ItemType"] not in self.itemPositions
-            and not task["ItemType"] == "CityBuilder"
+            and task["ItemType"] != "CityBuilder"
         ):
             jobOrder.error = {
                 "message": "tried to relay task, but item %s was not found"

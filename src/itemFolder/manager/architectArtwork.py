@@ -139,46 +139,45 @@ class ArchitectArtwork(src.items.Item):
             del jobOrder.information["pathFrom"]
             del jobOrder.information["pathTo"]
 
-        if task["type"] == "set source":
-            if "sourceCommand" in task:
-                newJobOrder = src.items.itemMap["JobOrder"]()
-                newJobOrder.taskName = "configure stockpile"
+        if task["type"] == "set source" and "sourceCommand" in task:
+            newJobOrder = src.items.itemMap["JobOrder"]()
+            newJobOrder.taskName = "configure stockpile"
 
-                storageCommand = (
-                    jobOrder.information["pathFrom"]
-                    + "Js.sjj"
-                    + jobOrder.information["pathTo"]
-                )
+            storageCommand = (
+                jobOrder.information["pathFrom"]
+                + "Js.sjj"
+                + jobOrder.information["pathTo"]
+            )
 
-                tasks = [
-                    {
-                        "task": "go to room manager",
-                        "command": self.commands["go to room manager"],
-                    },
-                    {
-                        "task": "go to stockPile",
-                        "command": jobOrder.information["pathTo"],
-                    },
-                    {"task": "insert job order", "command": "scj"},
-                    {
-                        "task": "configure machine",
-                        "command": None,
-                        "commands": {"empty": task["sourceCommand"]},
-                    },
-                    {
-                        "task": "return from stockPile",
-                        "command": jobOrder.information["pathFrom"],
-                    },
-                    {
-                        "task": "return from room manager",
-                        "command": self.commands["return from room manager"],
-                    },
-                ]
+            tasks = [
+                {
+                    "task": "go to room manager",
+                    "command": self.commands["go to room manager"],
+                },
+                {
+                    "task": "go to stockPile",
+                    "command": jobOrder.information["pathTo"],
+                },
+                {"task": "insert job order", "command": "scj"},
+                {
+                    "task": "configure machine",
+                    "command": None,
+                    "commands": {"empty": task["sourceCommand"]},
+                },
+                {
+                    "task": "return from stockPile",
+                    "command": jobOrder.information["pathFrom"],
+                },
+                {
+                    "task": "return from room manager",
+                    "command": self.commands["return from room manager"],
+                },
+            ]
 
-                newJobOrder.tasks = list(reversed(tasks))
-                context["character"].addJobOrder(newJobOrder)
-                del jobOrder.information["pathFrom"]
-                del jobOrder.information["pathTo"]
+            newJobOrder.tasks = list(reversed(tasks))
+            context["character"].addJobOrder(newJobOrder)
+            del jobOrder.information["pathFrom"]
+            del jobOrder.information["pathTo"]
 
     def jobOrderAddScrapField(self, task, character):
         """
@@ -390,11 +389,9 @@ class ArchitectArtwork(src.items.Item):
             context: the context for this task
         """
 
-        if context["jobOrder"].error:
-            if not context["jobOrder"].getTask():
-                if len(context["character"].jobOrders) > 1:
-                    jobOrder = context["character"].jobOrders[-2]
-                    jobOrder.error = context["jobOrder"].error
+        if context["jobOrder"].error and not context["jobOrder"].getTask() and len(context["character"].jobOrders) > 1:
+            jobOrder = context["character"].jobOrders[-2]
+            jobOrder.error = context["jobOrder"].error
 
     def apply(self, character):
         """
@@ -429,7 +426,6 @@ class ArchitectArtwork(src.items.Item):
         show debug info or trigger a test function
         """
 
-        pass
 
     def addRemants(self,character):
         terrain = self.getTerrain()
@@ -445,7 +441,7 @@ class ArchitectArtwork(src.items.Item):
 
         streets = []
         connections = {}
-        for i in range(0,5):
+        for i in range(5):
             xPosition = random.randint(1,13)
             yPosition = random.randint(1,13)
 
@@ -568,9 +564,9 @@ class ArchitectArtwork(src.items.Item):
 
         freeRoomSlots = roomSlots[:]
         roomMap = []
-        for y in range(0,15):
+        for y in range(15):
             roomMap.append([])
-            for x in range(0,15):
+            for x in range(15):
                 roomMap[y].append("  ")
 
         # add target room
@@ -618,7 +614,7 @@ class ArchitectArtwork(src.items.Item):
                 #continue
 
             last = None
-            while not x == 7 or not y == 7:
+            while x != 7 or y != 7:
 
                 items = []
                 if x > 7:
@@ -631,13 +627,13 @@ class ArchitectArtwork(src.items.Item):
                     direction = "south"
 
                 # bug: does not work as intended
-                if (x-1,y) in pathSlots and not last == (x-1,y) and x > 7:
+                if (x-1,y) in pathSlots and last != (x - 1, y) and x > 7:
                     direction = "west"
-                if (x+1,y) in pathSlots and not last == (x+1,y) and x < 7:
+                if (x+1,y) in pathSlots and last != (x + 1, y) and x < 7:
                     direction = "east"
-                if (x,y-1) in pathSlots and not last == (x,y-1) and y > 7:
+                if (x,y-1) in pathSlots and last != (x, y - 1) and y > 7:
                     direction = "north"
-                if (x,y+1) in pathSlots and not last == (x,y+1) and y < 7:
+                if (x,y+1) in pathSlots and last != (x, y + 1) and y < 7:
                     direction = "south"
 
                 if x > 7 and (x-1,y) in roomSlots:
@@ -731,9 +727,9 @@ class ArchitectArtwork(src.items.Item):
                 },
                 None,
                 )
-        for i in range(0,random.randint(0,10)):
+        for i in range(random.randint(0,10)):
             targetRoom.damage()
-        for i in range(0,random.randint(50,60)):
+        for i in range(random.randint(50,60)):
             pos = (random.randint(1,11),random.randint(1,11),0)
             if pos == (6,6,0):
                 continue
@@ -825,7 +821,7 @@ class ArchitectArtwork(src.items.Item):
                     room.damage()
                 """
 
-                for i in range(0,random.randint(4,8)):
+                for i in range(random.randint(4,8)):
                     machine = src.items.itemMap["Machine"]()
                     toProduceType = random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask","MemoryCell","Connector","PocketFrame"])
                     if not ensuredConnectorMachine:
@@ -837,7 +833,7 @@ class ArchitectArtwork(src.items.Item):
                     machine.setToProduce(toProduceType)
                     #room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
                     terrain.addItem(machine,(roomSlot[0]*15+random.randint(2,11),roomSlot[1]*15+random.randint(2,11),0))
-                for i in range(0,random.randint(0,10)):
+                for i in range(random.randint(0,10)):
                     gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Mount"])]()
                     #room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
                     terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(2,11),roomSlot[1]*15+random.randint(2,11),0))
@@ -860,14 +856,14 @@ class ArchitectArtwork(src.items.Item):
                     room.damage()
                 """
 
-                for i in range(0,random.randint(4,10)):
+                for i in range(random.randint(4,10)):
                     machine = src.items.itemMap[random.choice(["CorpseShredder","MaggotFermenter","SporeExtractor","GooDispenser","BioPress","BloomShredder"])]()
                     if machine.type == "GooDispenser":
                         machine.charges = random.randint(0,3)
                     #room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
                     terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,11),roomSlot[1]*15+random.randint(1,11),0))
 
-                for i in range(0,random.randint(0,4)):
+                for i in range(random.randint(0,4)):
                     gooFlask = src.items.itemMap["GooFlask"]()
                     gooFlask.uses = random.choice([0,0,1,2,3,5,7,8,25,45,100])
                     #room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
@@ -875,7 +871,7 @@ class ArchitectArtwork(src.items.Item):
                 roomMap[roomSlot[1]][roomSlot[0]] = "FF"
 
             if theme == "military":
-                for i in range(0,random.randint(4,20)):
+                for i in range(random.randint(4,20)):
                     bomb = src.items.itemMap["Bomb"]()
                     terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
@@ -893,13 +889,13 @@ class ArchitectArtwork(src.items.Item):
                 terrain.addItem(manager,(roomSlot[0]*15+7,roomSlot[1]*15+7,0))
 
                 itemType = random.choice(src.items.commons)
-                for i in range(0,random.randint(4,20)):
+                for i in range(random.randint(4,20)):
                     bomb = src.items.itemMap[itemType]()
                     terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
                 roomMap[roomSlot[1]][roomSlot[0]] = "ss"
 
-            for i in range(0,random.randint(0,5)):
+            for i in range(random.randint(0,5)):
                 enemy = src.characters.Monster(x, y)
                 enemy.health = 10 + random.randint(1, 100)
                 enemy.baseDamage = random.randint(1, 5)
@@ -951,7 +947,7 @@ class ArchitectArtwork(src.items.Item):
             self.doClearField(roomSlot[0],roomSlot[1])
             distance = abs(roomSlot[0]-7)+abs(roomSlot[1]-7)
 
-            for i in range(0,random.randint(0,distance)):
+            for i in range(random.randint(0,distance)):
                 lootType = random.choice(["Frame","Mount","FireCrystals","FireCrystals","Rod","Rod","Vial","Vial","Rod","Heater","puller","Stripe","Bolt","Bolt","Case","Tank","Armor","GooFlask"])
                 if not ensuredMountDrop:
                     lootType = "Mount"
@@ -971,7 +967,7 @@ class ArchitectArtwork(src.items.Item):
 
             numScrap = random.randint(0,50)
             #numScrap += random.choice((0,0,10,40,100))
-            for i in range(0,numScrap):
+            for i in range(numScrap):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     if random.randint(0,3) == 1:
@@ -983,13 +979,13 @@ class ArchitectArtwork(src.items.Item):
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,30))
                     terrain.addItem(scrap,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
 
-            for i in range(0,random.randint(0,14)):
+            for i in range(random.randint(0,14)):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     mold = src.items.itemMap["Mold"]()
                     terrain.addItem(mold,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
                     mold.startSpawn()
-            for i in range(0,random.randint(0,2)):
+            for i in range(random.randint(0,2)):
                 enemy = src.characters.Monster(x, y)
                 enemy.health = 10 + random.randint(1, distance*10)
                 enemy.baseDamage = random.randint(1, distance)
@@ -1102,12 +1098,12 @@ class ArchitectArtwork(src.items.Item):
                 item.startSpawn()
         if self.submenue.selection == "showMap":
             mapContent = []
-            for x in range(0, 15):
+            for x in range(15):
                 mapContent.append([])
-                for y in range(0, 15):
+                for y in range(15):
                     if x not in (0, 14) and y not in (0, 14):
                         char = "  "
-                    elif not x == 7 and not y == 7:
+                    elif x != 7 and y != 7:
                         char = "##"
                     else:
                         char = "  "
@@ -1122,7 +1118,7 @@ class ArchitectArtwork(src.items.Item):
                 mapContent[coordinate[1]][coordinate[0]] = "RR"
 
             mapText = ""
-            for x in range(0, 15):
+            for x in range(15):
                 mapText += "".join(mapContent[x]) + "\n"
             self.submenue = src.interaction.TextMenu(text=mapText)
             self.character.macroState["submenue"] = self.submenue
@@ -1264,9 +1260,9 @@ class ArchitectArtwork(src.items.Item):
 
     def doSpawnItems(self, x, y, itemTypes, amount, repeat=1):
         terrain = self.getTerrain()
-        for i in range(0,amount):
+        for i in range(amount):
             selectedPos = None
-            for j in range(0,repeat):
+            for j in range(repeat):
                 pos = (x*15+random.randint(1,13),y*15+random.randint(1,13),0)
                 if terrain.getItemByPosition(pos):
                     continue
@@ -1307,10 +1303,10 @@ class ArchitectArtwork(src.items.Item):
             if (leavePath and (xPos%15 == 7 or yPos%15 == 7)):
                 continue
 
-            if not random.randint(1, 15) == 10:
+            if random.randint(1, 15) != 10:
                 itemPair = (src.items.itemMap["Scrap"](amount=random.randint(1, 20)), pos, )
             else:
-                if not random.randint(1, 10) == 2:
+                if random.randint(1, 10) != 2:
                     itemPair = (src.items.itemMap[random.choice(src.items.commons)](), pos, )
                 else:
                     itemPair = (src.items.itemMap[random.choice(src.items.semiCommons)](), pos, )
@@ -1318,7 +1314,7 @@ class ArchitectArtwork(src.items.Item):
                 item = itemPair[0]
                 item.bolted = False
                 if item.type == "Machine":
-                    if not random.randint(1, 10) == 2:
+                    if random.randint(1, 10) != 2:
                         item.setToProduce(random.choice(src.items.commons))
                     else:
                         item.setToProduce(random.choice(src.items.semiCommons))
@@ -1391,18 +1387,16 @@ class ArchitectArtwork(src.items.Item):
                 self.character.macroState["submenue"].followUp = self.addRoom
                 return
 
-        if self.targetRoomType == "EmptyRoom":
+        if self.targetRoomType == "EmptyRoom" and not self.emptyRoomSizeY:
+            self.emptyRoomSizeX = int(self.submenue.text.split(",")[0])
+            self.emptyRoomSizeY = int(self.submenue.text.split(",")[1])
 
-            if not self.emptyRoomSizeY:
-                self.emptyRoomSizeX = int(self.submenue.text.split(",")[0])
-                self.emptyRoomSizeY = int(self.submenue.text.split(",")[1])
-
-                self.submenue = src.interaction.InputMenu(
-                    "enter the doors positions ( x,y x,y x,y )"
-                )
-                self.character.macroState["submenue"] = self.submenue
-                self.character.macroState["submenue"].followUp = self.addRoom
-                return
+            self.submenue = src.interaction.InputMenu(
+                "enter the doors positions ( x,y x,y x,y )"
+            )
+            self.character.macroState["submenue"] = self.submenue
+            self.character.macroState["submenue"].followUp = self.addRoom
+            return
 
         self.doAddRoom(
             {

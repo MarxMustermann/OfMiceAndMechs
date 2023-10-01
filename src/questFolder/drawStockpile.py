@@ -183,7 +183,7 @@ Try as hard as you can to achieve this.
 
                     correctIndex = 0
                     while correctIndex < len(itemType) and correctIndex < len(submenue.text):
-                        if not itemType[correctIndex] == submenue.text[correctIndex]:
+                        if itemType[correctIndex] != submenue.text[correctIndex]:
                             break
                         correctIndex += 1
 
@@ -195,7 +195,7 @@ Try as hard as you can to achieve this.
                 if submenue.tag == "paintExtraParamName":
                     nameToSet = ""
                     for (key,value) in self.extraInfo.items():
-                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (not value == submenue.extraInfo["item"].paintExtraInfo[key]):
+                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
                             nameToSet = key
 
                     if nameToSet == submenue.text:
@@ -203,7 +203,7 @@ Try as hard as you can to achieve this.
 
                     correctIndex = 0
                     while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
-                        if not nameToSet[correctIndex] == submenue.text[correctIndex]:
+                        if nameToSet[correctIndex] != submenue.text[correctIndex]:
                             break
                         correctIndex += 1
 
@@ -216,7 +216,7 @@ Try as hard as you can to achieve this.
                     #BUG: ordering is not actually checked
                     valueToSet = ""
                     for (key,value) in self.extraInfo.items():
-                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (not value == submenue.extraInfo["item"].paintExtraInfo[key]):
+                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
                             valueToSet = value
 
                     if valueToSet == submenue.text:
@@ -224,7 +224,7 @@ Try as hard as you can to achieve this.
 
                     correctIndex = 0
                     while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
-                        if not valueToSet[correctIndex] == submenue.text[correctIndex]:
+                        if valueToSet[correctIndex] != submenue.text[correctIndex]:
                             break
                         correctIndex += 1
 
@@ -259,13 +259,13 @@ Try as hard as you can to achieve this.
                             self.postHandler()
                         return (None,None)
 
-            if not character.inventory or not character.inventory[-1].type == "Painter":
+            if not character.inventory or character.inventory[-1].type != "Painter":
                 quest = src.quests.questMap["FetchItems"](toCollect="Painter",amount=1)
                 return ([quest],None)
 
             item = character.inventory[-1]
 
-            if not self.targetPositionBig == character.getBigPosition():
+            if self.targetPositionBig != character.getBigPosition():
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="go to the tile the stockpile should be drawn on")
                 return ([quest],None)
             if character.getDistance(self.targetPosition) > 0:
@@ -278,13 +278,13 @@ Try as hard as you can to achieve this.
                 if character.getPosition(offset=offset) == self.targetPosition:
                     foundOffset = offset
 
-            if self.stockpileType == "i" and not item.paintMode == "inputSlot":
+            if self.stockpileType == "i" and item.paintMode != "inputSlot":
                 return (None,(["C","i","m","i","enter"],"to configure the painter to input stockpile"))
-            if self.stockpileType == "o" and not item.paintMode == "outputSlot":
+            if self.stockpileType == "o" and item.paintMode != "outputSlot":
                 return (None,(["C","i","m","o","enter"],"to configure the painter to output stockpile"))
-            if self.stockpileType == "s" and not item.paintMode == "storageSlot":
+            if self.stockpileType == "s" and item.paintMode != "storageSlot":
                 return (None,(["C","i","m","s","enter"],"to configure the painter to storage stockpile"))
-            if not (self.itemType == item.paintType):
+            if self.itemType != item.paintType:
                 if self.itemType:
                     return (None,(["C","i","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
                 else:
@@ -295,10 +295,10 @@ Try as hard as you can to achieve this.
                     return (None,(["C","i","c"],"to clear the painters extra info"))
 
             for (key,value) in self.extraInfo.items():
-                if (not key in item.paintExtraInfo) or (not value == item.paintExtraInfo[key]):
+                if (not key in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                     return (None,(["C","i","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
-            if not (item.offset == (0,0,0)):
+            if item.offset != (0, 0, 0):
                 return (None,(["C","i","d","."] + ["enter"],"to remove the offset from the painter"))
 
             return (None,("Ji","draw to stockpile"))

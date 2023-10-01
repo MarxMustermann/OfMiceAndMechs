@@ -110,7 +110,7 @@ class Eat(src.quests.MetaQuestSequence):
             source = None
             for itemType in toSearchFor:
                 for candidate in room.sources:
-                    if not candidate[1] == itemType:
+                    if candidate[1] != itemType:
                         continue
 
                     sourceRoom = room.container.getRoomByPosition(candidate[0])

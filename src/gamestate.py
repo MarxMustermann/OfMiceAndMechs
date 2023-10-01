@@ -118,9 +118,9 @@ class GameState:
         self.openingCinematic = None
 
         self.terrainMap = []
-        for y in range(0, 15):
+        for y in range(15):
             line = []
-            for x in range(0, 15):
+            for x in range(15):
                 if x == 15 and y == 15:
                     thisTerrain = self.terrainType(seed=seed)
                     self.terrain = thisTerrain
@@ -167,13 +167,8 @@ class GameState:
         except:
             pass
 
-        file = open(f"gamestate/gamestate_{self.gameIndex}", 'wb')
-
-        # dump information to that file
-        pickle.dump(self, file)
-
-        # close the file
-        file.close()
+        with open(f"gamestate/gamestate_{self.gameIndex}", 'wb') as file:
+            pickle.dump(self, file)
 
         try:
             # register the save
@@ -211,12 +206,8 @@ class GameState:
 
 
         import pickle
-        file = open(f"gamestate/gamestate_{gameIndex}", 'rb')
-        # dump information to that file
-        newSelf = pickle.load(file)
-
-        # close the file
-        file.close()
+        with open(f"gamestate/gamestate_{gameIndex}", 'rb') as file:
+            newSelf = pickle.load(file)
 
         return newSelf
 

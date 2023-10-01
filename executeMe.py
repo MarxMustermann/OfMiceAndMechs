@@ -72,7 +72,6 @@ story.registerPhases()
 
 interaction.debug = args.debug
 logging.basicConfig(
-    encoding="utf-8",
     level=logging.DEBUG if interaction.debug else logging.INFO,
     handlers=[logging.StreamHandler()]
     + ([logging.FileHandler("debug.log", "w", "utf-8")] if interaction.debug else []),

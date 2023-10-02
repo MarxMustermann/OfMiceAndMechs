@@ -38,7 +38,7 @@ class Shrine(src.items.Item):
             terrainPos = (terrain.xPosition,terrain.yPosition)
             roomRewardMapByTerrain = god.get("roomRewardMapByTerrain",{})
             lastNumRooms = roomRewardMapByTerrain.get(terrainPos,1)
-            
+
             numRooms = len(terrain.rooms)
 
             if numRooms > lastNumRooms:
@@ -96,25 +96,35 @@ class Shrine(src.items.Item):
         baseCost += numCharacters*0.2
         return baseCost
 
+    def getDutyMap(self,character):
+        terrain = self.getTerrain()
+        charactersOnMap = []
+        charactersOnMap.extend(terrain.characters)
+        for room in terrain.rooms:
+            charactersOnMap.extend(room.characters)
+        dutyMap = {}
+
+        for otherCharacter in charactersOnMap:
+            if otherCharacter.faction != character.faction:
+                continue
+            if len(otherCharacter.duties) != 1:
+                continue
+            dutyMap[otherCharacter.duties[0]] = dutyMap.get(otherCharacter.duties[0],0)+1
+
+        return dutyMap
+
     def getRewards(self,character,selected=None):
         cost = self.getCharacterSpawningCost(character)
+
+        dutyMap = self.getDutyMap(character)
 
         options = []
         options.append(("None","(0) None (exit)"))
         if self.god == 1:
-            options.append(("spawn resource gathering NPC",f"({cost}) spawn gatherer"))
-            options.append(("spawn resource fetching NPC",f"({cost}) spawn fetcher"))
-            options.append(("spawn hauling NPC",f"({cost}) spawn hauler"))
-            options.append(("spawn room building NPC",f"({cost}) spawn room builder"))
-            options.append(("spawn scrap hammering NPC",f"({cost}) spawn scrap hammerer"))
-            options.append(("spawn metal working NPC",f"({cost}) spawn metal worker"))
-            options.append(("spawn machining NPC",f"({cost}) spawn machining worker"))
-            options.append(("spawn painting NPC",f"({cost}) spawn painter"))
-            options.append(("spawn scavenging NPC",f"({cost}) spawn scavenger"))
-            options.append(("spawn machine operation NPC",f"({cost}) spawn machine operator"))
-            options.append(("spawn machine placing NPC",f"({cost}) spawn machine placer"))
-            options.append(("spawn maggot gathering NPC",f"({cost}) spawn maggot gatherer"))
-            options.append(("spawn cleaning NPC",f"({cost}) spawn cleaner"))
+            duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","machining","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning"]
+
+            for duty in duties:
+                options.append((f"spawn {duty} NPC",f"({cost}) {dutyMap.get(duty,0)} spawn {duty} NPC"))
         elif self.god == 2:
             options.append(("spawn scrap","(20) respawn scrap field"))
         else:
@@ -138,7 +148,7 @@ class Shrine(src.items.Item):
 
         if not "rewardType" in extraInfo:
             return
-        
+
         if extraInfo["rewardType"] == None:
             return
         if extraInfo["rewardType"] == "None":

@@ -1816,14 +1816,6 @@ We should stop watching and do something about that.
                 if not duty in character.duties:
                     continue
 
-                """
-                if duty == "machine operation":
-                    quest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition())
-                    self.addQuest(quest)
-                    quest.activate()
-                    self.idleCounter = 0
-                """
-
                 checkRoom.requiredDuties.remove(duty)
 
                 quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())

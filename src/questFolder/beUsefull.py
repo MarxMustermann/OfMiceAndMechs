@@ -1802,6 +1802,7 @@ We should stop watching and do something about that.
         if self.checkTriggerEat(character,room):
             return
 
+        """
         terrain = character.getTerrain()
         for checkRoom in terrain.rooms:
             try:
@@ -1823,6 +1824,7 @@ We should stop watching and do something about that.
                 quest.activate()
                 self.idleCounter = 0
                 return
+        """
 
         room = character.container
         for duty in character.duties:

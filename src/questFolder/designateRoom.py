@@ -112,7 +112,21 @@ Use the CityPlaner to designate the room.
                 return (None,((list(self.roomTag[correctIndex:])),"to enter the room tag"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-            return (None,("j","to show the map"))
+            submenue = character.macroState["submenue"]
+            rewardIndex = 0
+            if rewardIndex == 0:
+                counter = 1
+                for option in submenue.options.items():
+                    if option[1] == "showMap":
+                        break
+                    counter += 1
+                rewardIndex = counter
+
+            offset = rewardIndex-submenue.selectionIndex
+            if offset > 0:
+                return (None,("s"*offset+"j","show the map"))
+            else:
+                return (None,("w"*(-offset)+"j","show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))

@@ -2745,7 +2745,7 @@ _____________"""
         chars = []
 
         if size[0] > coordinateOffset[0]:
-            for i in range(coordinateOffset[0]-size[0]):
+            for _i in range(coordinateOffset[0]-size[0]):
                 line = []
                 for j in range(size[1]):
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
@@ -3089,7 +3089,7 @@ class Base(Nothingness):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(10):
+        for _i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -3200,7 +3200,7 @@ class Base2(Nothingness):
         mainRoom.addOutputSlot((9,11,0),"Corpse")
         mainRoom.addOutputSlot((8,11,0),"ScratchPlate")
 
-        for i in range(10):
+        for _i in range(10):
             item = src.items.itemMap["Painter"]()
             mainRoom.addItem(item,(11,9,0))
 
@@ -3301,7 +3301,7 @@ class Ruin(Base):
             item.destroy()
 
         for room in self.rooms:
-            for i in range(4):
+            for _i in range(4):
                 room.damage()
 
         for character in self.characters[:]:
@@ -3321,7 +3321,7 @@ class Ruin(Base):
             if level < 0:
                 continue
 
-            for i in range(level):
+            for _i in range(level):
                 enemy = src.characters.Monster()
                 room.addCharacter(enemy,random.randint(2,13),random.randint(2,13))
                 enemy.macroState["macros"]["g"] = ["g","g","_","g"]
@@ -3329,7 +3329,7 @@ class Ruin(Base):
                 enemy.baseDamage = 10+level
                 enemy.runCommandString("_g")
 
-            for i in range(2**level):
+            for _i in range(2**level):
                 room.addItem(src.items.itemMap["GlassCrystal"](),(random.randint(2,13),random.randint(2,13),0))
 
 class ScrapField(Terrain):

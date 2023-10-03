@@ -370,12 +370,10 @@ If you don't find a {self.itemType} blueprint, research it.
         self.fail(extraParam["reason"])
 
     def getQuestMarkersSmall(self,character,renderForTile=False):
-        if isinstance(character.container,src.rooms.Room):
-            if renderForTile:
-                return []
-        else:
-            if not renderForTile:
-                return []
+        if isinstance(character.container,src.rooms.Room) and renderForTile:
+            return []
+        elif not renderForTile:
+            return []
 
         result = super().getQuestMarkersSmall(character,renderForTile=renderForTile)
         if renderForTile:

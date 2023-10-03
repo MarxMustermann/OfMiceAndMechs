@@ -898,6 +898,8 @@ We should stop watching and do something about that.
                 items = room.getItemByPosition(storageSlot[0])
                 if items and (not items[0].walkable or len(items) >= 20):
                     continue
+                if items and items[0].type != storageSlot[1]:
+                    continue
 
                 for checkStorageSlot in room.storageSlots:
                     if checkStorageSlot[1] == storageSlot[1] or not checkStorageSlot[1]:

@@ -30,12 +30,15 @@ class RestockRoom(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
-        return f"""
-Restock the room with items from your inventory{reason}.
+        text = f"""
+Restock the room {self.targetPositionBig} with items from your inventory{reason}.
 
 Place the items in the correct input or storage stockpile.
+"""
+        if self.targetPosition:
+            text += f"""Use the stocpile in position {self.targetPosition}"""
 
-{self.targetPositionBig}"""
+        return text
 
     def setParameters(self,parameters):
         if "targetPositionBig" in parameters and "targetPositionBig" in parameters:

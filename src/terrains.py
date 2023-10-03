@@ -224,10 +224,7 @@ class Terrain:
         self.handleEvents()
 
         if src.gamestate.gamestate.tick%(15*15*15) == 0:
-            try:
-                self.mana
-            except:
-                self.mana = 0
+            self.mana = 0
 
             increaseAmount = min(self.manaRegen,self.maxMana-self.mana)
             self.mana += increaseAmount

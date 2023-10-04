@@ -1487,11 +1487,11 @@ class MainGame(BasicPhase):
             #self.setUpThroneDungeon((7,7))
             self.setUpGlassHeartDungeon((7,6),3,1)
             self.setUpGlassHeartDungeon((7,5),4,1)
-            self.setUpGlassHeartDungeon((7,4),5,1)
-            self.setUpGlassHeartDungeon((7,3),6,1)
-            self.setUpGlassHeartDungeon((7,2),7,1)
-            self.setUpGlassHeartDungeon((7,7),2,1)
-            self.setUpGlassHeartDungeon((7,8),1,1)
+            self.setUpGlassHeartDungeon((7,4),5,2)
+            self.setUpGlassHeartDungeon((7,3),6,2)
+            self.setUpGlassHeartDungeon((7,2),7,3)
+            self.setUpGlassHeartDungeon((7,7),2,3)
+            self.setUpGlassHeartDungeon((7,8),1,4)
             self.activeStory = self.colonyBaseInfos2[0]
             """
         else:

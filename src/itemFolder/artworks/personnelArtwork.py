@@ -235,7 +235,7 @@ Use the complex interaction to recharge the personel artwork
 
         if character.rank is None or character.rank > 5:
             character.addMessage("you need to be rank 5 or higher to spawn a bodyguard")
-            return None
+            return
         if character.rank == 5 and character.getNumSubordinates() > 0:
             character.addMessage("you can only have one bodyguard with rank 5")
             return
@@ -248,7 +248,7 @@ Use the complex interaction to recharge the personel artwork
 
         if not self.charges:
             character.addMessage("no charges left. Use the epoch artwork to recharge")
-            return None
+            return
 
         self.charges -= 1
         char = src.characters.Character()

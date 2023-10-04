@@ -23,7 +23,7 @@ class Pray(src.quests.MetaQuestSequence):
     def assignToCharacter(self, character):
         if self.character:
             return
-        
+
         self.startWatching(character,self.handlePrayed, "prayed")
 
         return super().assignToCharacter(character)

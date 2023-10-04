@@ -2109,8 +2109,7 @@ def handlePriorityActions(params):
     if key in (commandChars.quit_normal, commandChars.quit_instant):
         if hasattr(urwid,"ExitMainLoop"):
             raise urwid.ExitMainLoop()
-        else:
-            raise SystemExit()
+        raise SystemExit()
 
     return (1,key)
 

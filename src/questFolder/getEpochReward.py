@@ -119,13 +119,22 @@ This will allow you to focus on other tasks.
                     command += "w"*(-offset)
                 command += "j"
                 return (None,(command,"get your reward"))
+
             submenue = character.macroState["submenue"]
-            counter = 2
+            rewardIndex = 0
+            if rewardIndex == 0:
+                counter = 1
+                for option in submenue.options.items():
+                    if option[1] == "wish":
+                        break
+                    counter += 1
+                rewardIndex = counter
+
             command = ""
-            if submenue.selectionIndex > counter:
-                command += "w"*(submenue.selectionIndex-counter)
-            if submenue.selectionIndex < counter:
-                command += "s"*(counter-submenue.selectionIndex)
+            if submenue.selectionIndex > rewardIndex:
+                command += "w"*(submenue.selectionIndex-rewardIndex)
+            if submenue.selectionIndex < rewardIndex:
+                command += "s"*(rewardIndex-submenue.selectionIndex)
             command += "j"
             return (None,(command,"get your reward"))
 

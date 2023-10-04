@@ -115,7 +115,7 @@ def advanceGame():
                     if not god["lastHeartPos"] == checkGod["lastHeartPos"]:
                         numGlassHeartsOnPos += 1
 
-                for _i in range(0,numSpectres):
+                for _i in range(numSpectres):
                     bigPos = (random.randint(1,13),random.randint(1,13),0)
                     enemy = src.characters.Monster(6,6)
                     enemy.health = 10*numGlassHeartsOnPos

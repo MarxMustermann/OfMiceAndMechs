@@ -441,7 +441,7 @@ class ArchitectArtwork(src.items.Item):
 
         streets = []
         connections = {}
-        for i in range(5):
+        for _i in range(5):
             xPosition = random.randint(1,13)
             yPosition = random.randint(1,13)
 
@@ -456,15 +456,15 @@ class ArchitectArtwork(src.items.Item):
             room.xPosition = xPosition
             room.yPosition = yPosition
 
-            for i in range(1,random.randint(4,10)):
+            for _j in range(1,random.randint(4,10)):
                 enemy = src.characters.Spider()
                 enemy.godMode = True
                 room.addCharacter(enemy,random.randint(1,11),random.randint(1,11))
                 enemy.startDefending()
-            for i in range(1,random.randint(4,40)):
+            for _j in range(1,random.randint(4,40)):
                 net = src.items.itemMap["SpiderNet"]()
                 room.addItem(net,(random.randint(1,11),random.randint(1,11),0))
-            for i in range(1,random.randint(4,10)):
+            for _j in range(1,random.randint(4,10)):
                 net = src.items.itemMap["AcidBladder"]()
                 room.addItem(net,(random.randint(1,11),random.randint(1,11),0))
 
@@ -520,7 +520,7 @@ class ArchitectArtwork(src.items.Item):
             directions = [(1,0),(0,-1)]
             for direction in connections[street]:
                 start = [7,7]
-                for j in range(1,7):
+                for _j in range(1,7):
                     start[0] += direction[0]
                     start[1] += direction[1]
                     positions.append(tuple(start))
@@ -552,7 +552,7 @@ class ArchitectArtwork(src.items.Item):
         ringrooms.append((9,7))
         ringrooms.append((7,9))
         roomSlots.extend(ringrooms)
-        for i in range(1,50):
+        for _i in range(1,50):
             x = random.randint(1,13)
             y = random.randint(1,13)
 
@@ -566,7 +566,7 @@ class ArchitectArtwork(src.items.Item):
         roomMap = []
         for y in range(15):
             roomMap.append([])
-            for x in range(15):
+            for _x in range(15):
                 roomMap[y].append("  ")
 
         # add target room
@@ -727,9 +727,9 @@ class ArchitectArtwork(src.items.Item):
                 },
                 None,
                 )
-        for i in range(random.randint(0,10)):
+        for _i in range(random.randint(0,10)):
             targetRoom.damage()
-        for i in range(random.randint(50,60)):
+        for _i in range(random.randint(50,60)):
             pos = (random.randint(1,11),random.randint(1,11),0)
             if pos == (6,6,0):
                 continue
@@ -821,7 +821,7 @@ class ArchitectArtwork(src.items.Item):
                     room.damage()
                 """
 
-                for i in range(random.randint(4,8)):
+                for _i in range(random.randint(4,8)):
                     machine = src.items.itemMap["Machine"]()
                     toProduceType = random.choice(["Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Armor","GooFlask","MemoryCell","Connector","PocketFrame"])
                     if not ensuredConnectorMachine:
@@ -833,7 +833,7 @@ class ArchitectArtwork(src.items.Item):
                     machine.setToProduce(toProduceType)
                     #room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
                     terrain.addItem(machine,(roomSlot[0]*15+random.randint(2,11),roomSlot[1]*15+random.randint(2,11),0))
-                for i in range(random.randint(0,10)):
+                for _i in range(random.randint(0,10)):
                     gooFlask = src.items.itemMap[random.choice(["MetalBars","Rod","Rod","Vial","Rod","Heater","puller","Stripe","Bolt","Case","Tank","Mount"])]()
                     #room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
                     terrain.addItem(gooFlask,(roomSlot[0]*15+random.randint(2,11),roomSlot[1]*15+random.randint(2,11),0))
@@ -856,14 +856,14 @@ class ArchitectArtwork(src.items.Item):
                     room.damage()
                 """
 
-                for i in range(random.randint(4,10)):
+                for _i in range(random.randint(4,10)):
                     machine = src.items.itemMap[random.choice(["CorpseShredder","MaggotFermenter","SporeExtractor","GooDispenser","BioPress","BloomShredder"])]()
                     if machine.type == "GooDispenser":
                         machine.charges = random.randint(0,3)
                     #room.addItem(machine,(random.randint(2,10),random.randint(2,10),0))
                     terrain.addItem(machine,(roomSlot[0]*15+random.randint(1,11),roomSlot[1]*15+random.randint(1,11),0))
 
-                for i in range(random.randint(0,4)):
+                for _i in range(random.randint(0,4)):
                     gooFlask = src.items.itemMap["GooFlask"]()
                     gooFlask.uses = random.choice([0,0,1,2,3,5,7,8,25,45,100])
                     #room.addItem(gooFlask,(random.randint(2,10),random.randint(2,10),0))
@@ -871,7 +871,7 @@ class ArchitectArtwork(src.items.Item):
                 roomMap[roomSlot[1]][roomSlot[0]] = "FF"
 
             if theme == "military":
-                for i in range(random.randint(4,20)):
+                for _i in range(random.randint(4,20)):
                     bomb = src.items.itemMap["Bomb"]()
                     terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
@@ -889,13 +889,13 @@ class ArchitectArtwork(src.items.Item):
                 terrain.addItem(manager,(roomSlot[0]*15+7,roomSlot[1]*15+7,0))
 
                 itemType = random.choice(src.items.commons)
-                for i in range(random.randint(4,20)):
+                for _i in range(random.randint(4,20)):
                     bomb = src.items.itemMap[itemType]()
                     terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
                 roomMap[roomSlot[1]][roomSlot[0]] = "ss"
 
-            for i in range(random.randint(0,5)):
+            for _i in range(random.randint(0,5)):
                 enemy = src.characters.Monster(x, y)
                 enemy.health = 10 + random.randint(1, 100)
                 enemy.baseDamage = random.randint(1, 5)
@@ -947,7 +947,7 @@ class ArchitectArtwork(src.items.Item):
             self.doClearField(roomSlot[0],roomSlot[1])
             distance = abs(roomSlot[0]-7)+abs(roomSlot[1]-7)
 
-            for i in range(random.randint(0,distance)):
+            for _i in range(random.randint(0,distance)):
                 lootType = random.choice(["Frame","Mount","FireCrystals","FireCrystals","Rod","Rod","Vial","Vial","Rod","Heater","puller","Stripe","Bolt","Bolt","Case","Tank","Armor","GooFlask"])
                 if not ensuredMountDrop:
                     lootType = "Mount"
@@ -967,7 +967,7 @@ class ArchitectArtwork(src.items.Item):
 
             numScrap = random.randint(0,50)
             #numScrap += random.choice((0,0,10,40,100))
-            for i in range(numScrap):
+            for _i in range(numScrap):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     if random.randint(0,3) == 1:
@@ -979,13 +979,13 @@ class ArchitectArtwork(src.items.Item):
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(1,30))
                     terrain.addItem(scrap,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
 
-            for i in range(random.randint(0,14)):
+            for _i in range(random.randint(0,14)):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     mold = src.items.itemMap["Mold"]()
                     terrain.addItem(mold,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
                     mold.startSpawn()
-            for i in range(random.randint(0,2)):
+            for _i in range(random.randint(0,2)):
                 enemy = src.characters.Monster(x, y)
                 enemy.health = 10 + random.randint(1, distance*10)
                 enemy.baseDamage = random.randint(1, distance)
@@ -1035,17 +1035,17 @@ class ArchitectArtwork(src.items.Item):
             self.test()
         if self.submenue.selection == "shapeTerrain":
             terrain = self.getTerrain()
-            for i in range(1, 10):
+            for _i in range(1, 10):
                 self.doAddScrapfield(
                     random.randint(1, 13),
                     random.randint(1, 13),
                     random.randint(200, 400),
                 )
-            for i in range(1, 30):
+            for _i in range(1, 30):
                 self.doAddScrapfield(
                     random.randint(1, 13), random.randint(1, 13), random.randint(20, 40)
                 )
-            for i in range(1, 5):
+            for _i in range(1, 5):
                 item = src.items.itemMap["Rod"]()
                 item.baseDamage = i
                 itemPos = (
@@ -1054,7 +1054,7 @@ class ArchitectArtwork(src.items.Item):
                     0,
                 )
                 terrain.addItem(item, itemPos)
-            for i in range(1, 5):
+            for _i in range(1, 5):
                 item = src.items.itemMap["Armor"]()
                 item.armorValue = i
                 itemPos = (
@@ -1078,7 +1078,7 @@ class ArchitectArtwork(src.items.Item):
                 terrain.addCharacter(enemy,random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
                 enemy.godMode = True
             """
-            for i in range(1, 2):
+            for _i in range(1, 2):
                 item = src.items.itemMap["GooFlask"]()
                 item.uses = 100
                 itemPos = (
@@ -1087,7 +1087,7 @@ class ArchitectArtwork(src.items.Item):
                     0,
                 )
                 terrain.addItem(item, itemPos)
-            for i in range(1, 30):
+            for _i in range(1, 30):
                 item = src.items.itemMap["Mold"]()
                 itemPos = (
                     random.randint(1, 13) * 15 + random.randint(1, 13),
@@ -1260,9 +1260,9 @@ class ArchitectArtwork(src.items.Item):
 
     def doSpawnItems(self, x, y, itemTypes, amount, repeat=1):
         terrain = self.getTerrain()
-        for i in range(amount):
+        for _i in range(amount):
             selectedPos = None
-            for j in range(repeat):
+            for _j in range(repeat):
                 pos = (x*15+random.randint(1,13),y*15+random.randint(1,13),0)
                 if terrain.getItemByPosition(pos):
                     continue
@@ -1363,7 +1363,7 @@ class ArchitectArtwork(src.items.Item):
             self.targetOffsetY = int(self.submenue.text.split(",")[1])
 
             options = []
-            for key, value in src.rooms.roomMap.items():
+            for key, _value in src.rooms.roomMap.items():
                 options.append((key, key))
             self.submenue = src.interaction.SelectionMenu(
                 "select the room to produce", options

@@ -35,7 +35,7 @@ class MonsterSpawner(src.items.Item):
         self.destroy()
 
     def spawnMonster(self,mass=1):
-        for i in range(mass):
+        for _i in range(mass):
             pos = self.getPosition()
             room = self.container
             enemy = src.characters.Monster(pos[0],pos[1])

@@ -92,7 +92,7 @@ The MoldSpores will be outputted to the east/right.
         self.container.removeItem(items[0])
 
         # spawn the new item
-        for i in range(1, 5):
+        for _i in range(1, 5):
             new = src.items.itemMap["MoldSpore"]()
             self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
 

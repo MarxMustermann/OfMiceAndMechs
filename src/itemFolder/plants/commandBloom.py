@@ -30,7 +30,7 @@ class CommandBloom(src.items.Item):
         self.name = "command bloom"
 
         self.faction = ""
-        for i in range(5):
+        for _i in range(5):
             char = random.choice("abcdefghijklmopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             self.faction += char
 
@@ -173,7 +173,7 @@ class CommandBloom(src.items.Item):
                     command = self.masterCommand
                     if self.numSick:
                         items = []
-                        for i in range(2):
+                        for _i in range(2):
                             items.append(character.inventory.pop())
                         crawler = self.runCommandOnNewCrawler("j",character.faction)
                         crawler.inventory.extend(items)
@@ -198,21 +198,21 @@ class CommandBloom(src.items.Item):
                     path.append((pos[0], pos[1]))
                     while length < 13:
                         if length % 2 == 1:
-                            for i in range(length):
+                            for _i in range(length):
                                 pos[1] -= 1
                                 path.append((pos[0], pos[1]))
-                            for i in range(length):
+                            for _i in range(length):
                                 pos[0] -= 1
                                 path.append((pos[0], pos[1]))
                         else:
-                            for i in range(length):
+                            for _i in range(length):
                                 pos[1] += 1
                                 path.append((pos[0], pos[1]))
-                            for i in range(length):
+                            for _i in range(length):
                                 pos[0] += 1
                                 path.append((pos[0], pos[1]))
                         length += 1
-                    for i in range(length - 1):
+                    for _i in range(length - 1):
                         pos[1] -= 1
                         path.append((pos[0], pos[1]))
 
@@ -328,21 +328,21 @@ class CommandBloom(src.items.Item):
 
                 while length < 13:
                     if length % 2 == 1:
-                        for i in range(length):
+                        for _i in range(length):
                             pos[1] -= 1
                             path.append((pos[0], pos[1], 0))
-                        for i in range(length):
+                        for _i in range(length):
                             pos[0] -= 1
                             path.append((pos[0], pos[1], 0))
                     else:
-                        for i in range(length):
+                        for _i in range(length):
                             pos[1] += 1
                             path.append((pos[0], pos[1], 0))
-                        for i in range(length):
+                        for _i in range(length):
                             pos[0] += 1
                             path.append((pos[0], pos[1], 0))
                     length += 1
-                for i in range(length - 1):
+                for _i in range(length - 1):
                     pos[1] -= 1
                     path.append((pos[0], pos[1], 0))
 
@@ -599,7 +599,7 @@ class CommandBloom(src.items.Item):
                             command += str(pos[0] - lastCharacterPosition[0]) + "d"
                             lastDirection = "d"
                         command += "j"
-                        for i in range(11):
+                        for _i in range(11):
                             command += "J" + lastDirection
                         command += lastDirection
                         lastCharacterPosition = pos
@@ -791,7 +791,7 @@ class CommandBloom(src.items.Item):
                 + 3 * reverseDirection[direction]
                 + "KaKwKsKd"
             )
-            for i in range(1, 10):
+            for _i in range(1, 10):
                 direction = random.choice(["w", "a", "s", "d"])
                 command += direction + "k"
 

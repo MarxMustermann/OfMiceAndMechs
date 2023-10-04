@@ -272,7 +272,7 @@ class TradingArtwork2(src.items.Item):
 
         failedAddingItem = False
         for itemSpec in tradeCopy["recieve"]:
-            for i in range(itemSpec[1]):
+            for _i in range(itemSpec[1]):
                 item = src.items.itemMap[itemSpec[0]]()
                 if itemSpec[0] == "Machine":
                     item.setToProduce(itemSpec[2])

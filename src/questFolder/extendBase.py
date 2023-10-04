@@ -178,12 +178,12 @@ Press d to move the cursor and show the subquests description.
                             if outputSlot[0] == (x,y,0):
                                 blockedSpot = True
                                 break
-                        for inpputSlot in room.inputSlots:
+                        for inputSlot in room.inputSlots:
                             if inputSlot[0] == (x,y,0):
                                 blockedSpot = True
                                 break
                         for buildSite in room.buildSites:
-                            if buildSites[0] == (x,y,0):
+                            if buildSite[0] == (x,y,0):
                                 blockedSpot = True
                                 break
                         if blockedSpot:
@@ -431,12 +431,12 @@ Press d to move the cursor and show the subquests description.
                                 if outputSlot[0] == (x,y,0):
                                     blockedSpot = True
                                     break
-                            for inpputSlot in room.inputSlots:
+                            for inputSlot in room.inputSlots:
                                 if inputSlot[0] == (x,y,0):
                                     blockedSpot = True
                                     break
                             for buildSite in room.buildSites:
-                                if buildSites[0] == (x,y,0):
+                                if buildSite[0] == (x,y,0):
                                     blockedSpot = True
                                     break
                             if blockedSpot:
@@ -727,7 +727,7 @@ Press d to move the cursor and show the subquests description.
                         if not inputSlot[1]:
                             continue
 
-                        for outputSlot in checkRoom.getNonEmptyOutputslots(inputSlot[1]):
+                        for _outputSlot in checkRoom.getNonEmptyOutputslots(inputSlot[1]):
                             amount = None
                             if inputSlot[1] == "Case":
                                 amount = 1
@@ -740,7 +740,7 @@ Press d to move the cursor and show the subquests description.
                         if not inputSlot[1]:
                             continue
 
-                        for outputSlot in checkRoom.getNonEmptyOutputslots(inputSlot[1]):
+                        for _outputSlot in checkRoom.getNonEmptyOutputslots(inputSlot[1]):
                             amount = None
                             if inputSlot[1] == "Case":
                                 amount = 1
@@ -758,7 +758,7 @@ Press d to move the cursor and show the subquests description.
                             if sourceRoom == checkRoom:
                                 continue
 
-                            for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                            for _outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
                                 amount = None
                                 if inputSlot[1] == "Case":
                                     amount = 1
@@ -775,7 +775,7 @@ Press d to move the cursor and show the subquests description.
                             if sourceRoom == checkRoom:
                                 continue
 
-                            for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                            for _outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
                                 amount = None
                                 if inputSlot[1] == "Case":
                                     amount = 1
@@ -995,7 +995,7 @@ Press d to move the cursor and show the subquests description.
                     counter += 1
                     if counter > 5:
                         break
-                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot[1],stockpileType="i",targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="to help with drawing the markers in rooms")
+                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=inputSlot[1],stockpileType="i",targetPositionBig=room.getPosition(),targetPosition=inputSlot[0],reason="to help with drawing the markers in rooms")
                     quests.append(quest)
                 if quests:
                     return (quests,None)
@@ -1058,7 +1058,7 @@ Press d to move the cursor and show the subquests description.
                         continue
 
                     for sourceRoom in terrain.rooms:
-                        for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                        for _outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
                             amount = None
                             if inputSlot[1] == "Case":
                                 amount = 1
@@ -1125,7 +1125,7 @@ Press d to move the cursor and show the subquests description.
                         continue
 
                     for sourceRoom in terrain.rooms:
-                        for outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
+                        for _outputSlot in sourceRoom.getNonEmptyOutputslots(inputSlot[1]):
                             amount = None
                             if inputSlot[1] == "Case":
                                 amount = 1

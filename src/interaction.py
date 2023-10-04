@@ -52,8 +52,8 @@ def advanceGame():
                     multi_chars.add(character)
             specificTerrain.advance()
 
-    for item in src.gamestate.gamestate.extraRoots:
-        for character in specificTerrain.characters:
+    for extraRoot in src.gamestate.gamestate.extraRoots:
+        for character in extraRoot.characters:
             multi_chars.add(character)
 
     src.gamestate.gamestate.multi_chars = multi_chars
@@ -115,7 +115,7 @@ def advanceGame():
                     if not god["lastHeartPos"] == checkGod["lastHeartPos"]:
                         numGlassHeartsOnPos += 1
 
-                for i in range(0,numSpectres):
+                for _i in range(0,numSpectres):
                     bigPos = (random.randint(1,13),random.randint(1,13),0)
                     enemy = src.characters.Monster(6,6)
                     enemy.health = 10*numGlassHeartsOnPos
@@ -171,8 +171,8 @@ def advanceGame_disabled():
                     multi_chars.add(character)
             specificTerrain.advance()
 
-    for item in src.gamestate.gamestate.extraRoots:
-        for character in specificTerrain.characters:
+    for extraRoot in src.gamestate.gamestate.extraRoots:
+        for character in extraRoot.characters:
             multi_chars.add(character)
 
     src.gamestate.gamestate.multi_chars = multi_chars
@@ -7275,7 +7275,7 @@ def renderGameDisplay(renderChar=None):
 
                 for y in range(55):
                     pseudoDisplay.append([])
-                    for x in range(210):
+                    for _x in range(210):
                         pseudoDisplay[y].append("")
 
                 def addToPseudeDisplay(chars,offsetX,offsetY):
@@ -7484,7 +7484,7 @@ def renderGameDisplay(renderChar=None):
                     pseudoDisplay[counter][offsetLeft+extraX] = char
                     extraX += 1
                 counter += 1
-                for line in plainText.split("\n"):
+                for _line in plainText.split("\n"):
                     tcodConsole.print(x=offsetLeft, y=counter, string="| "+" "*width+" |",fg=(255,255,255),bg=(0,0,0))
                     extraX = 0
                     for char in "| "+" "*width+" |":
@@ -7727,7 +7727,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             if terrain.getRoomByPosition((x,y)):
                 continue
 
-            for i in range(1,8):
+            for _i in range(1,8):
                 mold = src.items.itemMap["Mold"]()
                 mold.dead = True
                 terrain.addItem(mold,(15*x+random.randint(1,13),15*y+random.randint(1,13),0))
@@ -7736,7 +7736,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
             if random.random() > 0.5:
                 placedMines = True
-                for i in range(1,2+random.randint(1,5)):
+                for _i in range(1,2+random.randint(1,5)):
                     offsetX = random.randint(1,13)
                     offsetY = random.randint(1,13)
 
@@ -7749,7 +7749,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     landmine = src.items.itemMap["LandMine"]()
                     terrain.addItem(landmine,(xPos,yPos,0))
 
-            for i in range(1,5+random.randint(1,20)):
+            for _i in range(1,5+random.randint(1,20)):
                 offsetX = random.randint(1,13)
                 offsetY = random.randint(1,13)
 
@@ -8817,7 +8817,7 @@ You """+"."*stageState["substep"]+"""
                 blockedMap = set()
                 stageState["scrapToAdd"] = []
                 for tile in [(6,7),(6,8),(7,8),(8,8)]:
-                    for i in range(1,150):
+                    for _i in range(1,150):
                         pos = (tile[0]*15+random.randint(1,13),tile[1]*15+random.randint(1,13),0)
                         if pos in blockedMap:
                             continue
@@ -8826,7 +8826,7 @@ You """+"."*stageState["substep"]+"""
 
                 stageState["MoldToAdd"] = []
                 for tile in [(6,6),(7,6),(8,6),(8,7)]:
-                    for i in range(1,10):
+                    for _i in range(1,10):
                         stageState["MoldToAdd"].append(((tile[0]*15+random.randint(1,13),tile[1]*15+random.randint(1,13),0),))
 
             if not skip:
@@ -8859,7 +8859,7 @@ You """+"."*stageState["substep"]+"""
                 if (time.time()-stageState["lastChange"] > 0.001 or skip) and stageState["scrapToAdd"]:
                     stageState["lastChange"] = time.time()
 
-                    for i in range(6):
+                    for _i in range(6):
                         if not stageState["scrapToAdd"]:
                             continue
                         scrapItem = stageState["scrapToAdd"].pop()
@@ -8878,7 +8878,7 @@ You """+"."*stageState["substep"]+"""
                 if (time.time()-stageState["lastChange"] > 0.1 or skip) and src.gamestate.gamestate.tick < 10000:
                     stageState["lastChange"] = time.time()
 
-                    for i in range(1,400):
+                    for _i in range(1,400):
                         terrain.advance()
                         src.gamestate.gamestate.tick += 1
 
@@ -9247,7 +9247,7 @@ You """+"."*stageState["substep"]+"""
             elif stageState["terrainItems"] and stageState["subStep"] > 2:
                 if time.time()-stageState["lastChange"] > 0.01 or skip:
                     stageState["lastChange"] = time.time()
-                    for i in range(4):
+                    for _i in range(4):
                         if not stageState["terrainItems"]:
                             continue
                         item = stageState["terrainItems"].pop()
@@ -9598,7 +9598,7 @@ grows and grows and grows and grows
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text,(45,17))
             tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
-            for i in range(100):
+            for _i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
                     continue
@@ -9737,7 +9737,7 @@ grows and grows and grows and grows
 
             x = 0
             y = 0
-            for i in range(150):
+            for _i in range(150):
                 printUrwidToTcod((attrSpec,part1),(x,y))
                 printUrwidToTcod((attrSpec3,part2),(x+part1len,y))
                 printUrwidToTcod((attrSpec2,part3),(x+part1len+1,y))

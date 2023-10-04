@@ -47,7 +47,7 @@ class CityPlaner(src.items.Item):
             params["type"] = "random"
             options = []
             index = 0
-            for item in self.prefabs["ScrapToMetalBars"]:
+            for _item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
                 options.append((index,f"prefab{index}"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
@@ -174,7 +174,7 @@ class CityPlaner(src.items.Item):
         item = src.items.itemMap["GooDispenser"]()
         room.addItem(item,(8,3,0))
 
-        for i in range(10):
+        for _i in range(10):
             item = src.items.itemMap["Corpse"]()
             room.addItem(item,(3,6,0))
 

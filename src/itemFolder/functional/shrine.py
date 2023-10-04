@@ -314,7 +314,7 @@ press enter to continue"""%(npc.name,duty,terrain)
             terrain = self.getTerrain()
             items = []
             for scrapField in terrain.scrapFields:
-                for i in range(0,30):
+                for _i in range(0,30):
                     pos = (scrapField[0]*15+random.randint(1,13),scrapField[1]*15+random.randint(1,13),0)
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(15,20))
                     terrain.addItem(scrap,pos)

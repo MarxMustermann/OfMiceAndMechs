@@ -290,7 +290,7 @@ Try as hard as you can to achieve this.
                 else:
                     return (None,(["C","i","t"] + ["enter"],"to remove the item type for the stockpile"))
 
-            for (key,value) in item.paintExtraInfo.items():
+            for (key,_value) in item.paintExtraInfo.items():
                 if not key in self.extraInfo:
                     return (None,(["C","i","c"],"to clear the painters extra info"))
 

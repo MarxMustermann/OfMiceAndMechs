@@ -133,7 +133,7 @@ Select the thing to produce and confirm."""
             self.targetItemType = self.submenue.selection
             if self.targetItemType == src.items.itemMap["Machine"]:
                 options = []
-                for key, value in src.items.itemMap.items():
+                for key, _value in src.items.itemMap.items():
                     options.append((key, key))
                 self.submenue = src.interaction.SelectionMenu(
                     "select the item the machine should produce", options
@@ -144,7 +144,7 @@ Select the thing to produce and confirm."""
                 return
             if self.targetItemType == src.items.itemMap["ResourceTerminal"]:
                 options = []
-                for key, value in src.items.itemMap.items():
+                for key, _value in src.items.itemMap.items():
                     options.append((key, key))
                 self.submenue = src.interaction.SelectionMenu(
                     "select resource the terminal is for", options

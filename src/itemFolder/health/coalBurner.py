@@ -63,7 +63,7 @@ class CoalBurner(src.items.Item):
         character.timeTaken += 30
 
         character.container.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "#fff"), "++")]})
-        for i in range(1,10):
+        for _i in range(1,10):
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             self.container.addAnimation(self.getPosition(),"smoke",8,{})
 

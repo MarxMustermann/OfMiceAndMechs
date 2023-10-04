@@ -37,7 +37,7 @@ class RoadManager(src.items.Item):
         """
 
         for (
-            key,
+            _key,
             value,
         ) in self.pathingNodes.items():
             node = tuple(value["coordinate"])

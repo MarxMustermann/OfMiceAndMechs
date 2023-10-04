@@ -107,7 +107,7 @@ class PavingGenerator(src.items.Item):
             scrap.amount -= 1
             scrap.setWalkable()
 
-        for i in range(1, 4):
+        for _i in range(1, 4):
             # spawn the metal bar
             new = src.items.itemMap["Paving"]()
             self.container.addItem(

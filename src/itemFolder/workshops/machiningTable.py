@@ -222,7 +222,7 @@ class MachiningTable(src.items.Item):
                 params["type"] = params["type"][2:]
                 amount = 10
 
-            for i in range(amount):
+            for _i in range(amount):
                 self.scheduledItems.append(params["type"])
 
         character.addMessage(self.scheduledItems)

@@ -64,21 +64,21 @@ class ItemCollector(src.items.Item):
             path.append((pos[0], y))
         while length < 13:
             if length % 2 == 1:
-                for i in range(length):
+                for _i in range(length):
                     pos[1] -= 1
                     path.append((pos[0], pos[1]))
-                for i in range(length):
+                for _i in range(length):
                     pos[0] += 1
                     path.append((pos[0], pos[1]))
             else:
-                for i in range(length):
+                for _i in range(length):
                     pos[1] += 1
                     path.append((pos[0], pos[1]))
-                for i in range(length):
+                for _i in range(length):
                     pos[0] -= 1
                     path.append((pos[0], pos[1]))
             length += 1
-        for i in range(length - 1):
+        for _i in range(length - 1):
             pos[1] -= 1
             path.append((pos[0], pos[1]))
 

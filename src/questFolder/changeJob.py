@@ -17,7 +17,7 @@ class ChangeJob(src.quests.MetaQuestSequence):
         if character and isinstance(character.container,src.rooms.Room):
             room = character.container
             if not duties:
-                for scrapIn in room.getEmptyInputslots(itemType="Scrap"):
+                for _scrapIn in room.getEmptyInputslots(itemType="Scrap"):
                     duties.append("resource gathering")
 
             for item in room.itemsOnFloor:

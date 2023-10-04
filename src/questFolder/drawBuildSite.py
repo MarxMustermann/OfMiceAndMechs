@@ -172,7 +172,7 @@ Try as hard as you can to achieve this.
                 if self.itemType != item.paintType:
                     return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the build site"))
 
-                for (key,value) in item.paintExtraInfo.items():
+                for (key,_value) in item.paintExtraInfo.items():
                     if not key in self.extraInfo:
                         return (None,(["c","c"],"to clear the painters extra info"))
 

@@ -382,9 +382,9 @@ class CityBuilder2(src.items.Item):
         backGuardRoom.electricalCharges = guardRoom.maxElectricalCharges
 
         generalStorage = self.addStorageRoomFromMap({"character":character,"coordinate":(citylocation[0]+1,citylocation[1]+2)},instaSpawn=True)
-        for i in range(1,10):
+        for _i in range(1,10):
             generalStorage.addItem(src.items.itemMap["Painter"](),(1,1,0))
-        for i in range(1,10):
+        for _i in range(1,10):
             generalStorage.addItem(src.items.itemMap["Corpse"](),(2,1,0))
         item = src.items.itemMap["CorpseAnimator"]()
         item.bolted = False
@@ -397,26 +397,26 @@ class CityBuilder2(src.items.Item):
         generalStorage.addItem(item,(5,1,0))
 
         for x in range(1,6):
-            for i in range(1,25):
+            for _i in range(1,25):
                 generalStorage.addItem(src.items.itemMap["LightningRod"](),(x,11,0))
 
         for x in range(1,6):
-            for i in range(1,25):
+            for _i in range(1,25):
                 generalStorage.addItem(src.items.itemMap["Bomb"](),(x,9,0))
 
         for x in range(1,6):
-            for i in range(1,25):
+            for _i in range(1,25):
                 generalStorage.addItem(src.items.itemMap["MetalBars"](),(x+6,11,0))
 
-        for i in range(1,10):
+        for _i in range(1,10):
             item = src.items.itemMap["ScratchPlate"]()
             item.bolted = False
             generalStorage.addItem(item,(7,1,0))
-        for i in range(1,10):
+        for _i in range(1,10):
             generalStorage.addItem(src.items.itemMap["Sheet"](),(8,1,0))
-        for i in range(1,10):
+        for _i in range(1,10):
             generalStorage.addItem(src.items.itemMap["Sheet"](),(9,1,0))
-        for i in range(1,10):
+        for _i in range(1,10):
             generalStorage.addItem(src.items.itemMap["Sheet"](),(10,1,0))
 
         self.addWorkshopRoomFromMap({"coordinate":(citylocation[0]+1,citylocation[1]+1),"character":character})
@@ -455,7 +455,7 @@ class CityBuilder2(src.items.Item):
 
         self.enemyRoomCounter += 1
 
-        for i in range(self.enemyRoomCounter):
+        for _i in range(self.enemyRoomCounter):
             enemy = src.characters.Monster()
             enemy.godMode = True
             enemy.macroState["macros"]["g"] = ["g","g","_","g"]
@@ -468,7 +468,7 @@ class CityBuilder2(src.items.Item):
 
     def addActiveEnemies(self,params):
 
-        for i in range(10):
+        for _i in range(10):
             enemy = src.characters.Monster()
             enemy.godMode = True
             self.container.container.addCharacter(enemy,params["coordinate"][0]*15+random.randint(2,11),params["coordinate"][1]*15+random.randint(2,11))
@@ -492,7 +492,7 @@ class CityBuilder2(src.items.Item):
             params["type"] = "random"
             options = []
             index = 0
-            for item in self.prefabs["ScrapToMetalBars"]:
+            for _item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
                 options.append((index,f"prefab{index}"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
@@ -596,7 +596,7 @@ class CityBuilder2(src.items.Item):
         item = src.items.itemMap["GooDispenser"]()
         room.addItem(item,(8,3,0))
 
-        for i in range(10):
+        for _i in range(10):
             item = src.items.itemMap["Corpse"]()
             room.addItem(item,(3,6,0))
 

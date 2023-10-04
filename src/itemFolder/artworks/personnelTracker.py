@@ -58,11 +58,11 @@ class PersonnelTracker(src.items.Item):
 
     def spawnSet(self,character):
         cityleader = self.spawnRank(3,character)
-        for i in range(3):
+        for _i in range(3):
             self.spawnRank(4,character)
-        for i in range(9):
+        for _i in range(9):
             self.spawnRank(5,character)
-        for i in range(9*3):
+        for _i in range(9*3):
             self.spawnRank(6,character)
         return cityleader
 

@@ -371,7 +371,7 @@ Since this clone is burned in it can not change duties.
                 storageRoom = homeRoom.storageRooms[0]
                 for inputSlot in storageRoom.getEmptyInputslots("invalid",allowAny=True):
                     text = "spawned lighning rods into storage"
-                    for i in range(1,25):
+                    for _i in range(1,25):
                         item = src.items.itemMap["LightningRod"]()
                         storageRoom.addItem(item,inputSlot[0])
                     self.changeCharges(-10)
@@ -463,7 +463,7 @@ Since this clone is burned in it can not change duties.
             terrain = self.getTerrain()
             items = []
             for scrapField in terrain.scrapFields:
-                for i in range(30):
+                for _i in range(30):
                     pos = (scrapField[0]*15+random.randint(1,13),scrapField[1]*15+random.randint(1,13),0)
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(15,20))
                     terrain.addItem(scrap,pos)

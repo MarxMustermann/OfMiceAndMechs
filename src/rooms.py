@@ -178,7 +178,7 @@ class Room:
             if not outputSlot[1]:
                 continue
 
-            for i in range(1,5):
+            for _i in range(1,5):
                 item = src.items.itemMap[outputSlot[1]]()
                 item.bolted = False
                 self.addItem(item,outputSlot[0])
@@ -316,7 +316,7 @@ class Room:
         roomMap = []
         for x in range(13):
             roomMap.append([])
-            for y in range(13):
+            for _y in range(13):
                 roomMap[x].append(50)
 
         for walkingSpacePos in self.walkingSpace:
@@ -1342,9 +1342,9 @@ class Room:
         else:
             # fill the rooms inside with invisibility char
             chars = []
-            for i in range(self.sizeY):
+            for _i in range(self.sizeY):
                 subChars = []
-                for j in range(self.sizeX):
+                for _j in range(self.sizeX):
                     subChars.append(src.canvas.displayChars.invisibleRoom)
                 chars.append(subChars)
 

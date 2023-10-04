@@ -92,7 +92,7 @@ class ResourceTerminal(src.items.Item):
         if self.submenue.selection == "getResource":
 
             numAdded = 0
-            for i in range(len(self.character.inventory), 10):
+            for _i in range(len(self.character.inventory), 10):
                 if self.balance < 2:
                     self.character.addMessage("your balance is too low")
                     break

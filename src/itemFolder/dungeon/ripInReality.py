@@ -231,7 +231,7 @@ class RipInReality(src.items.Item):
 
                 newRoom.addItem(backRip,startPosition)
 
-                for i in range(1, self.depth):
+                for _i in range(1, self.depth):
                     wall = src.items.itemMap["StaticMover"]()
                     newPos = (
                         random.randint(0, sizeX - 1),

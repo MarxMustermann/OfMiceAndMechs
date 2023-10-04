@@ -357,7 +357,7 @@ slotsByItemtype
                 self.slotsByItemtype[itemType]
             )
         numFreeSlots = 0
-        for (key, itemSlot) in self.freeItemSlots.items():
+        for (_key, itemSlot) in self.freeItemSlots.items():
             numFreeSlots += len(itemSlot)
         result["num free slots"] = numFreeSlots
         maxAmount = 0

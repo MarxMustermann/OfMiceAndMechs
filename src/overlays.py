@@ -31,7 +31,7 @@ class PathsOverlay:
         ltyellow = urwid.AttrSpec("#088", "black")
 
         # add paths
-        for dualPair, path in terrain.foundPaths.items():
+        for _dualPair, path in terrain.foundPaths.items():
             for coordinate in path:
                 chars[coordinate[1]][coordinate[0]] = (grey, "::")
 
@@ -43,7 +43,7 @@ class PathsOverlay:
         for path in terrain.foundSuperPathsComplete.values():
             for coordinate in path:
                 chars[coordinate[1]][coordinate[0]] = (ltgrey, "::")
-        for dualPair, path in terrain.foundSuperPaths.items():
+        for _dualPair, path in terrain.foundSuperPaths.items():
             for coordinate in path:
                 chars[coordinate[1]][coordinate[0]] = (ltyellow, "::")
 

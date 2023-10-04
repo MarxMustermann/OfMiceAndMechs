@@ -1480,19 +1480,19 @@ class Terrain:
         chars = []
 
         if size[0] > coordinateOffset[0]:
-            for i in range(coordinateOffset[0]-size[0]):
+            for _i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(size[1]):
+                for __j in range(size[1]):
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(250):
+        for _i in range(250):
             line = []
 
             if coordinateOffset[1] < 0:
-                for j in range(-coordinateOffset[1]):
+                for _j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
-            for j in range(250):
+            for _j in range(250):
                 line.append(displayChar)
             chars.append(line)
         return chars
@@ -2394,7 +2394,7 @@ class Nothingness(Terrain):
             displayChar = f"+{src.gamestate.gamestate.mainChar.zPosition}"
 
         chars = []
-        for i in range(-coordinateOffset[0]):
+        for _i in range(-coordinateOffset[0]):
             line = []
             chars.append(line)
 
@@ -2404,7 +2404,7 @@ class Nothingness(Terrain):
             if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
                 continue
 
-            for j in range(-coordinateOffset[1]):
+            for _j in range(-coordinateOffset[1]):
                 line.append(src.canvas.displayChars.void)
 
             for j in range(15*15):
@@ -2753,11 +2753,11 @@ _____________"""
 
                     line.append(src.canvas.displayChars.void)
 
-        for i in range(250):
+        for _i in range(250):
             line = []
 
             if coordinateOffset[1] < 0:
-                for j in range(-coordinateOffset[1]):
+                for _j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
             for j in range(250):
@@ -2830,7 +2830,7 @@ class Desert(Terrain):
         machine.bolted = False
         self.itemPool.append([machine,[0,0,0]])
         machine = src.items.itemMap["Machine"]()
-        for i in range(1, 30):
+        for _i in range(1, 30):
             self.itemPool.append([src.items.itemMap["Sheet"](),[0,0,0]])
             case = src.items.itemMap["Case"]()
             case.bolted = False
@@ -2839,7 +2839,7 @@ class Desert(Terrain):
             corpse = src.items.itemMap["Corpse"]()
             corpse.charges = random.randint(100, 300)
             self.itemPool.append([corpse,[0,0,0]])
-        for i in range(1, 200):
+        for _i in range(1, 200):
             self.itemPool.append([src.items.itemMap["Coal"](),[0,0,0]])
             self.itemPool.append([src.items.itemMap["MetalBars"](),[0,0,0]])
             self.itemPool.append([src.items.itemMap["Rod"](),[0,0,0]])
@@ -2960,9 +2960,9 @@ class Desert(Terrain):
 
         chars = []
         if size[0] > coordinateOffset[0]:
-            for i in range(coordinateOffset[0]-size[0]):
+            for _i in range(coordinateOffset[0]-size[0]):
                 line = []
-                for j in range(size[1]):
+                for _j in range(size[1]):
                     line.append(src.canvas.displayChars.void)
 
         for i in range(15*15):
@@ -2971,7 +2971,7 @@ class Desert(Terrain):
                 continue
 
             if coordinateOffset[1] < 0:
-                for j in range(-coordinateOffset[1]):
+                for _j in range(-coordinateOffset[1]):
                     line.append(src.canvas.displayChars.void)
 
             for j in range(15*15):

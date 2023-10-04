@@ -325,7 +325,7 @@ class Character:
 
     def getTerrain(self):
         if not self.container:
-            return
+            return None
 
         if self.container.isRoom:
             terrain = self.container.container
@@ -1579,7 +1579,7 @@ press any other key to attack normally"""
         # smooth over impossible state
         if self.dead:
             logger.debug("dead men walking")
-            return
+            return None
         if not self.path:
             self.setPathToQuest(self.quests[0])
             logger.debug("walking without path")
@@ -1648,12 +1648,12 @@ press any other key to attack normally"""
                         room.addCharacter(self, localisedEntry[0], localisedEntry[1])
                         self.terrain.characters.remove(self)
                         self.terrain = None
-                        return
+                        return None
                     else:
                         # show message the character bumped into a wall
                         # bad pattern: why restrict the player to standard entry points?
                         self.addMessage("you cannot move there (" + direction + ")")
-                        return
+                        return None
 
                 # handle the character moving into the rooms boundaries
                 # bad code: repetitive, confusing code

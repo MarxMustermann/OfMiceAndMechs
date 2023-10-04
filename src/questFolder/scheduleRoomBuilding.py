@@ -84,7 +84,7 @@ Use a CityPlaner to do this.
     """
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         terrain = character.getTerrain()
         room = terrain.getRoomByPosition((7,7,0))[0]
@@ -132,7 +132,7 @@ Use a CityPlaner to do this.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleScheduledRoom, "scheduled room")
 

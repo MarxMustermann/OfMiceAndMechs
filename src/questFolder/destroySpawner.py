@@ -41,10 +41,10 @@ You may want to plan an escape route."""
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         if not self.active:
-            return
+            return None
 
         foundSpawner = False
         terrain = character.getTerrain()
@@ -58,7 +58,7 @@ You may want to plan an escape route."""
         if not foundSpawner:
             self.postHandler()
             return True
-        return
+        return None
 
     def solver(self,character):
 

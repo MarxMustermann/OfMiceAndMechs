@@ -96,7 +96,7 @@ If you don't find a {self.itemType} machine needed, build it.
 
                 if not foundRoom:
                     self.fail("missing machine ScrapCompactor")
-                    return
+                    return None
 
                 if character.getBigPosition() != room.getPosition():
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())

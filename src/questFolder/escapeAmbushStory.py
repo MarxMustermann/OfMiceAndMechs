@@ -36,7 +36,7 @@ For now ignore the options below and press esc to continue.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
         if isinstance(character.container,src.rooms.Room):
             return False
         self.postHandler()

@@ -177,7 +177,7 @@ This quest will end when your inventory is full."""
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)

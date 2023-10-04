@@ -97,7 +97,7 @@ Use it to gain a new body guard."""
         personnelArtwork = self.getPersonnelArtwork(character)
         if not personnelArtwork:
             1/0
-            return
+            return None
         offset = character.getOffset(personnelArtwork.getPosition())
         baseCommand = None
         if offset == (0,0,0):
@@ -134,7 +134,7 @@ Use it to gain a new body guard."""
 
     def assignToCharacter(self,character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleTileChange, "changedTile")
         self.startWatching(character,self.handleTileChange, "got subordinate")

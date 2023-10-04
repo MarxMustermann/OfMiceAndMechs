@@ -20,7 +20,7 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         for buildSite in room.buildSites:
@@ -234,7 +234,7 @@ Try as hard as you can to achieve this.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleDrewMarking, "drew marking")
 

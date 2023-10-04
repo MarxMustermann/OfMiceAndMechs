@@ -64,7 +64,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
 
         if character.getFreeInventorySpace() < 1 and character.inventory[-1].type != "VatMaggot":
             self.addQuest(src.quests.questMap["ClearInventory"]())
-            return
+            return None
 
         foundDirectPickup = None
         for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
@@ -86,7 +86,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             if foundDirectPickup[1] == (0,0):
                 command = "k"
             character.runCommandString(command)
-            return
+            return None
 
         items = character.container.getNearbyItems(character)
         maggotFound = None
@@ -103,7 +103,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
-            return
+            return None
 
         if treeFound:
             foundDirectTree = None
@@ -128,13 +128,13 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                 if treeFound.numMaggots == 0:
                     command = "500."+command
                 character.runCommandString(command)
-                return
+                return None
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=treeFound.getSmallPosition(),ignoreEndBlocked=True)
             quest.assignToCharacter(character)
             quest.activate()
             self.addQuest(quest)
-            return
+            return None
 
         125/0
 

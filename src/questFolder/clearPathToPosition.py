@@ -27,7 +27,7 @@ Pick up and unbolt items that are in the way.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         pos = character.getPosition()
         pos = (pos[0]%15,pos[1]%15,pos[2]%15)

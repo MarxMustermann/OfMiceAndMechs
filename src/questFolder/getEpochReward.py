@@ -178,7 +178,7 @@ This will allow you to focus on other tasks.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleGotEpochReward, "got epoch reward")
 

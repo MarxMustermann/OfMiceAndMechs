@@ -200,7 +200,7 @@ Press d to move the cursor and show the subquests description.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleWorkedMetal, "worked metal")
         self.startWatching(character,self.handleInventoryFull, "inventory full error")

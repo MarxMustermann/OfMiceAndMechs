@@ -122,7 +122,7 @@ Set the floor plan: {self.floorPlanType}
     """
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         terrain = character.getTerrain()
         room = terrain.getRoomByPosition(self.roomPosition)[0]
@@ -169,7 +169,7 @@ Set the floor plan: {self.floorPlanType}
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleAssignFloorPlan, "assigned floor plan")
 

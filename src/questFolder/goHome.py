@@ -41,9 +41,9 @@ Press control-d to stop your character from moving.
 
     def triggerCompletionCheck(self, character=None):
         if not character:
-            return
+            return None
         if not self.cityLocation:
-            return
+            return None
 
         if character.getTerrainPosition() == self.terrainLocation and character.getBigPosition() == self.cityLocation:
             self.postHandler()
@@ -101,7 +101,7 @@ Press control-d to stop your character from moving.
         command = self.getSolvingCommandString(character,dryRun=False)
         if command:
             character.runCommandString(command)
-            return
+            return None
         return False
 
     def getSolvingCommandString(self,character,dryRun=True):

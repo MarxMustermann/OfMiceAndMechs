@@ -32,7 +32,7 @@ You can spend them later to get an actual reward.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.gotEpochEvaluation, "got epoch evaluation")
 

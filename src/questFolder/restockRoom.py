@@ -51,10 +51,10 @@ Place the items in the correct input or storage stockpile.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
-            return
+            return None
 
         if isinstance(character.container,src.rooms.Room):
             room = character.container
@@ -63,7 +63,7 @@ Place the items in the correct input or storage stockpile.
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
             if not inputSlots:
                 self.postHandler()
-                return
+                return None
 
             for slot in inputSlots:
                 if self.targetPosition and self.targetPosition != slot[0]:
@@ -91,7 +91,7 @@ Place the items in the correct input or storage stockpile.
         if not self.getNumDrops(character):
             self.postHandler()
             return True
-        return
+        return None
 
     def getNumDrops(self,character):
         numDrops = 0

@@ -56,21 +56,21 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
             targetTerrain = character.superior.getTerrain()
             if not targetTerrain:
                 character.timeTaken += 0.5
-                return
+                return None
             pos = (targetTerrain.xPosition,targetTerrain.yPosition,0)
             self.addQuest(src.quests.questMap["GoToTerrain"](targetTerrain=pos))
-            return
+            return None
 
         if character.container == character.superior.container and self.getSuperiorsTileCoordinate(character) == character.getBigPosition():
             if character.container.getEnemiesOnTile(character):
                 self.addQuest(src.quests.questMap["Fight"]())
-                return
+                return None
             character.runCommandString("5.")
-            return
+            return None
 
         self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
         if not self.lastSuperiorPos[0] in (0,14,) and not self.lastSuperiorPos[1] in (0,14,):
             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))
-            return
+            return None
 
 src.quests.addType(ProtectSuperior)

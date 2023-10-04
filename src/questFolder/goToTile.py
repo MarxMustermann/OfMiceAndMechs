@@ -85,7 +85,7 @@ class GoToTile(src.quests.MetaQuestSequence):
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleChangedTile, "changedTile")
         self.startWatching(character,self.handleMoved, "moved")
@@ -130,7 +130,7 @@ The target tile is {direction[4:]}
         if not character:
             return False
         if not self.active:
-            return
+            return None
         if isinstance(character.container,src.rooms.Room):
             if character.container.xPosition == self.targetPosition[0] and character.container.yPosition == self.targetPosition[1]:
                 self.postHandler()

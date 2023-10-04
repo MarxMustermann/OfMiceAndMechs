@@ -56,7 +56,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if not items:
                 self.postHandler()
                 return True
-        return
+        return None
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
@@ -114,7 +114,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)

@@ -11,7 +11,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if character == None:
-            return
+            return None
         if len(self.targetTerrain) < 3:
             self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
         if self.targetTerrain == character.getTerrainPosition():

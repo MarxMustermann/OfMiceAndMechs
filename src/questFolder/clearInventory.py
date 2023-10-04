@@ -43,7 +43,7 @@ To see your items open the your inventory by pressing i."""
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.droppedItem, "dropped")
         self.startWatching(character,self.handleTileChange, "changedTile")

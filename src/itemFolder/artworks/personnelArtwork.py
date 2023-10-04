@@ -312,12 +312,12 @@ Use the complex interaction to recharge the personel artwork
 
         if rank == 3 and cityLeader and not cityLeader.dead:
             actor.addMessage("only one rank 3 possible")
-            return
+            return None
 
         if rank == 4:
             if not cityLeader or self.cityLeader.dead:
                 actor.addMessage("no rank 3 to hook into")
-                return
+                return None
 
             for subleader in cityLeader.subordinates:
                 if subleader.dead:
@@ -325,12 +325,12 @@ Use the complex interaction to recharge the personel artwork
 
             if len(cityLeader.subordinates) > 2:
                 actor.addMessage("no rank 3 to hook into")
-                return
+                return None
 
         if rank == 5:
             if not cityLeader or cityLeader.dead:
                 actor.addMessage("no rank 3 to hook into")
-                return
+                return None
 
             foundSubleader = None
             for subleader in cityLeader.subordinates:
@@ -345,12 +345,12 @@ Use the complex interaction to recharge the personel artwork
 
             if not foundSubleader:
                 actor.addMessage("no rank 4 to hook into")
-                return
+                return None
 
         if rank == 6:
             if not cityLeader or cityLeader.dead:
                 actor.addMessage("no rank 3 to hook into")
-                return
+                return None
 
             foundSubsubleader = None
             for subleader in cityLeader.subordinates:
@@ -369,7 +369,7 @@ Use the complex interaction to recharge the personel artwork
 
             if not foundSubsubleader:
                 actor.addMessage("no rank 5 to hook into")
-                return
+                return None
 
         char = src.characters.Character()
         char.registers["HOMEx"] = self.container.xPosition

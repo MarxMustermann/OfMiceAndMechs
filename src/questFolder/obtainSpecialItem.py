@@ -20,12 +20,12 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
 
     def getSolvingCommandString(self,character=None,dryRun=True):
         if character == None:
-            return
+            return None
 
         if len(self.targetTerrain) < 3:
             self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
         if character.getTerrainPosition() != self.targetTerrain:
-            return
+            return None
 
         temple = None
         for room in character.getTerrain().rooms:
@@ -35,7 +35,7 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
             break
 
         if temple.getPosition() != character.getBigPosition():
-            return
+            return None
 
         if temple != character.container:
             if character.xPosition%15 == 0:
@@ -46,16 +46,16 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
                 return "s"
             if character.yPosition%15 == 14:
                 return "w"
-            return
+            return None
 
         for item in character.container.itemsOnFloor:
             if isinstance(item,src.items.itemMap["SpecialItem"]):
                 if item.getPosition() != character.getPosition():
-                    return
+                    return None
                 return "k"
             if isinstance(item,src.items.itemMap["SpecialItemSlot"]) and item.itemID == self.itemId and item.hasItem:
                 if item.getPosition() != character.getPosition():
-                    return
+                    return None
                 return "j"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 

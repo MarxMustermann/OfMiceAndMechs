@@ -19,9 +19,9 @@ Just clear the whole terrain tile for tile.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
         if not character.container:
-            return
+            return None
 
         if isinstance(character.container,src.rooms.Room):
             terrain = character.container.container
@@ -31,12 +31,12 @@ Just clear the whole terrain tile for tile.
         for otherChar in terrain.characters:
             if otherChar.faction == character.faction:
                 continue
-            return
+            return None
         for room in terrain.rooms:
             for otherChar in room.characters:
                 if otherChar.faction == character.faction:
                     continue
-                return
+                return None
 
         super().triggerCompletionCheck()
         return False

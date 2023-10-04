@@ -17,7 +17,7 @@ Activate the quest artwork to fetch a quest."""
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         for quest in character.quests:
             if quest.type == "BeUsefull" and len(quest.subQuests) > 1:
@@ -53,7 +53,7 @@ Activate the quest artwork to fetch a quest."""
 
     def getSolvingCommandString(self,character,dryRun=True):
         if self.subQuests:
-            return
+            return None
 
         submenue = character.macroState.get("submenue")
         if submenue:

@@ -52,7 +52,7 @@ class VialFiller(src.items.Item):
 
     def getDispenser(self):
         if not self.container:
-            return
+            return None
 
         fallBackItem = None
         for inOffset in self.ins:

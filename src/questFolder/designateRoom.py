@@ -171,7 +171,7 @@ Use the CityPlaner to designate the room.
     """
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         terrain = character.getTerrain()
         room = terrain.getRoomByPosition((7,7,0))[0]
@@ -187,9 +187,9 @@ Use the CityPlaner to designate the room.
 
         if self.roomType == "undesignate":
             if self.roomPosition in cityPlaner.generalPurposeRooms:
-                return
+                return None
             if self.roomPosition in cityPlaner.specialPurposeRooms:
-                return
+                return None
             self.postHandler()
             return True
 
@@ -231,7 +231,7 @@ Use the CityPlaner to designate the room.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleDesignatedRoom, "designated room")
 

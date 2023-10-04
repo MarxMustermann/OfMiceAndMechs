@@ -184,18 +184,18 @@ class Eat(src.quests.MetaQuestSequence):
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):
-            return
+            return None
 
         if not self.subQuests:
             self.generateSubquests(character)
             if self.subQuests:
-                return
+                return None
 
         if not self.subQuests:
             command = self.getSolvingCommandString(character,dryRun=False)
             if command:
                 character.runCommandString(command)
-                return
+                return None
 
         return super().solver(character)
 

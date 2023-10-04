@@ -114,7 +114,7 @@ class StockPlaner(src.items.Item):
     def addFarmFromMap(self,params,forceSpawn=0):
         room = self.addRoom(params["coordinate"])
         if not room:
-            return
+            return None
         for offset in [(-1,0),(1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)]:
             pos = (params["coordinate"][0]+offset[0],params["coordinate"][1]+offset[1])
             self.clearFieldFromMap({"coordinate":pos})

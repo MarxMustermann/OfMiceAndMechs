@@ -440,12 +440,12 @@ class Terrain:
                 self.charactersByTile[oldBigPos].remove(char)
 
             if not char.terrain:
-                return
+                return None
 
             char.terrain.characters.remove(char)
 
             char.changed("entered room", (char, room, direction))
-            return
+            return None
 
         # do not move player into the room
         else:
@@ -461,14 +461,14 @@ class Terrain:
         """
 
         if not char.terrain:
-            return
+            return None
         if not (char.xPosition and char.yPosition):
-            return
+            return None
 
         char.container.addAnimation(char.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "  ")})
         if direction == "west":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
-                return
+                return None
             if char.xPosition % 15 == 1:
                 if char.yPosition % 15 < 7:
                     direction = "south"
@@ -478,7 +478,7 @@ class Terrain:
                     char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.xPosition == 16 and 1==0:
-                        return
+                        return None
                     else:
                         # char.stasis = True
                         char.runCommandString("aa")
@@ -501,7 +501,7 @@ class Terrain:
                 self.charactersByTile[bigPos].append(char)
         elif direction == "east":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
-                return
+                return None
             if char.xPosition % 15 == 13:
                 if char.yPosition % 15 < 7:
                     direction = "south"
@@ -511,7 +511,7 @@ class Terrain:
                     char.container.addAnimation(char.getPosition(offset=(1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.xPosition == 15 * 14 - 2 and 1==0:
-                        return
+                        return None
                     else:
                         # char.stasis = True
                         char.runCommandString("dd")
@@ -533,7 +533,7 @@ class Terrain:
                 self.charactersByTile[bigPos].append(char)
         elif direction == "north":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
-                return
+                return None
             if char.yPosition % 15 == 1:
                 if char.xPosition % 15 < 7:
                     direction = "east"
@@ -543,7 +543,7 @@ class Terrain:
                     char.container.addAnimation(char.getPosition(offset=(-1,-1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.yPosition == 16 and 1==0:
-                        return
+                        return None
                     else:
                         # char.stasis = True
                         char.runCommandString("ww")
@@ -566,7 +566,7 @@ class Terrain:
                 self.charactersByTile[bigPos].append(char)
         elif direction == "south":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
-                return
+                return None
             if char.yPosition % 15 == 13:
                 if char.xPosition % 15 < 7:
                     direction = "east"
@@ -576,7 +576,7 @@ class Terrain:
                     char.container.addAnimation(char.getPosition(offset=(-1,1,0)),"charsequence",1,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##"),None]})
                 else:
                     if char.yPosition == 15 * 14 - 2 and 1 == 0:
-                        return
+                        return None
                     else:
                         # char.stasis = True
                         char.runCommandString("ss")
@@ -760,7 +760,7 @@ class Terrain:
                 char.messages.append("*thump*")
                 char.collidedWith(other,actor=char)
                 other.collidedWith(char,actor=char)
-                return
+                return None
 
             # move the character
             if not foundItem:
@@ -788,7 +788,7 @@ class Terrain:
 
 
                     if pos[1]-1 < 1:
-                        return
+                        return None
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]-1}")
@@ -812,7 +812,7 @@ class Terrain:
                         y +=1
 
                     if pos[1]+1 > 13:
-                        return
+                        return None
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]+1}")
@@ -836,7 +836,7 @@ class Terrain:
                         y +=1
 
                     if pos[0]-1 < 1:
-                        return
+                        return None
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]-1}/{pos[1]}")
@@ -860,7 +860,7 @@ class Terrain:
                         y +=1
 
                     if pos[0]+1 > 13:
-                        return
+                        return None
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]+1}/{pos[1]}")

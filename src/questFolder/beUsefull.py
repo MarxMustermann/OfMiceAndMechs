@@ -1208,7 +1208,7 @@ We should stop watching and do something about that.
                 threashold = cityPlaner.autoExtensionThreashold
 
             if numEmptyRooms >= threashold:
-                return
+                return None
 
             baseNeighbours = []
             offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
@@ -1550,10 +1550,10 @@ We should stop watching and do something about that.
             if not "questing" in character.duties:
                 for duty in character.duties:
                     if not numNPCsWithSameDuties[duty] > 0:
-                        return
+                        return None
 
             if numNPCs < 5:
-                return
+                return None
 
             if foundEnemies:
                 random.shuffle(foundEnemies)
@@ -1582,10 +1582,10 @@ We should stop watching and do something about that.
             if foundEnemies:
                 grievance = ("fighting","bad equipment")
                 self.character.addGrievance(grievance)
-                return
+                return None
 
             if numNPCs < 9:
-                return
+                return None
 
             hasTemple = False
             for room in terrain.rooms:
@@ -2016,7 +2016,7 @@ When you know what you are doing, press "+" less and act more independently.
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
         if not cityPlaner:
-            return
+            return None
 
         if not self.showedBaseBuildingText:
             text = """
@@ -2036,7 +2036,7 @@ Let me show you how add more rooms to the base.
             self.showedBaseBuildingText = True
 
         if not cityPlaner.plannedRooms and not self.showedNPCSpawningText:
-            return
+            return None
 
         if not self.showedNPCSpawningText:
             text = """
@@ -2061,7 +2061,7 @@ Let me show you how that works out.
 
         epochArtwork = cityCore.getItemsByType("EpochArtwork",needsBolted=True)[0]
         if epochArtwork.charges and not self.showedNPCWatchingText:
-            return
+            return None
 
         if not self.showedNPCWatchingText:
             text = """
@@ -2191,10 +2191,10 @@ In that case a NPC will automatically draw new storage stockpiles there.
 
         if not self.showedKillStuff4:
             if epochArtwork.recalculateGlasstears(character,dryRun=True):
-                return
+                return None
 
             if epochArtwork.charges:
-                return
+                return None
 
         if not self.showedKillStuff:
             text = """
@@ -2303,7 +2303,7 @@ With some experience you will mostly disregard the quest system.
                 character.health = character.maxHealth
                 character.duties = ["tutorial","city planning","clone spawning","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
                 return True
-            return
+            return None
 
         if self.selectedMachineTutorial == None:
             '''
@@ -2493,7 +2493,7 @@ Supply the materials to build a new room.
                 character.addMessage(text)
                 src.interaction.showInterruptText(text)
                 self.showedBuildWeaponPrductionRoom = True
-            return
+            return None
 
         if cityPlaner and cityPlaner.getAvailableRooms():
             if not self.showedPlanWeaponProduction:
@@ -2578,7 +2578,7 @@ Explore, be creative or just watch the NPCs.
                 self.showedWaitForFloorPlan = True
                 character.duties = ["tutorial","city planning","clone spawning","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
                 return True
-            return
+            return None
 
 
         if not self.showedMachineRaid:
@@ -2680,7 +2680,7 @@ Help out and produce some equipment until you have some decent gear.
 
 
         if character.armor.armorValue <= 2 or character.weapon.baseDamage <= 13:
-            return
+            return None
 
         if not self.showedSpecialItemRaid:
             text = """

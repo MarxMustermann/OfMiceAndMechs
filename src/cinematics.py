@@ -519,7 +519,7 @@ class ShowGameCinematic(BasicCinematic):
                 0.0, src.interaction.callShow_or_exit, " "
             )
             self.skipable = True
-            return
+            return None
 
         # advance the game
         advanceGame()

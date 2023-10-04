@@ -509,7 +509,7 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid):
     # bad code: these calculation should be done elsewhere
     else:
         if not char.terrain:
-            return
+            return None
 
         return char.terrain.moveCharacterDirection(char, direction)
 
@@ -741,7 +741,7 @@ type the macro name you want to record to
                     footer.set_text((urwid.AttrSpec("default", "default"), ""))
                     char.specialRender = True
 
-            return
+            return None
         else:
             if "norecord" not in flags:
                 charState["macros"][charState["recordingTo"]].append(key)
@@ -2051,7 +2051,7 @@ def handlePriorityActions(params):
     if params[1][recordingStr]:
         result = checkRecording(key,char,charState,main,header,footer,urwid,flags)
         if not (result and result[0]):
-            return
+            return None
         key = result[1]
 
     if (
@@ -2064,31 +2064,31 @@ def handlePriorityActions(params):
 
     if runactionStr in char.interactionState:
         handleActivitySelection(char)
-        return
+        return None
 
     if advancedInteractionStr in char.interactionState:
         doAdvancedInteraction(params)
-        return
+        return None
 
     if advancedConfigureStr in char.interactionState:
         doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags)
-        return
+        return None
 
     if advancedPickupStr in char.interactionState:
         doAdvancedPickup(params)
-        return
+        return None
 
     if advancedDropStr in char.interactionState:
         doAdvancedDrop(params)
-        return
+        return None
 
     if not charState[submenueStr] and key in numKeysConst:
         doBuildNumber(params)
-        return
+        return None
 
     if key == recordKeyConst and not char.interactionState.get(varActionsStr):
         startStopRecording(key,char,charState,main,header,footer,urwid,flags)
-        return
+        return None
 
     if charState[replayStr] and key not in (
         "lagdetection",
@@ -2096,11 +2096,11 @@ def handlePriorityActions(params):
         "~",
     ):
         handleMacroReplayChar(key,char,charState,main,header,footer,urwid,flags)
-        return
+        return None
 
     if key == replayKeyConst:
         handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags)
-        return
+        return None
 
     if charState[numberStr] and key not in (
         commandChars.ignore,
@@ -2108,7 +2108,7 @@ def handlePriorityActions(params):
         "lagdetection_",
     ):
         doRepeat(params)
-        return
+        return None
 
     # save and quit
     if key in (commandChars.quit_normal, commandChars.quit_instant):
@@ -2258,20 +2258,20 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     # do automated movement for the main character
     if key in ("u",):
         doSetInterrupt(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
-        return
+        return None
 
     if key in ("ESC","lESC",):
         doDockLeft(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
-        return
+        return None
     if key in ("rESC",):
         doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
-        return
+        return None
     if key in ("esc",):
         doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
-        return
+        return None
     if key in ("y",):
         doSpecialAction(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
-        return
+        return None
     """
     if key in ("o",):
         doStartObserve(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
@@ -2303,27 +2303,27 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             char.timeTaken += 1
             char.exhaustion = max(0,char.exhaustion-10)
             char.lastMoveSkipped = True
-            return
+            return None
         if key in (commandChars.move_north, "up"):
             charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-            return
+            return None
         if key in (commandChars.move_south, "down"):
             charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-            return
+            return None
         if key in (commandChars.move_east, "right"):
             charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-            return
+            return None
         if key in (commandChars.move_west, "left"):
             charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid)
             if charState["itemMarkedLast"]:
                 handleCollision(char,charState)
-            return
+            return None
 
         # move the player
         if key in (
@@ -2337,7 +2337,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             for enemy in char.getNearbyEnemies():
                 if enemy.getPosition(offset=offset) == charPos:
                     char.selectSpecialAttack(enemy)
-                    return
+                    return None
 
             if isinstance(char.container,src.rooms.Room):
                 charPos = char.container.getPosition()
@@ -2409,7 +2409,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 #        item.apply(char)
                 #        break
                 if not char.container:
-                    return
+                    return None
                 entry = char.container.getItemByPosition(
                     (char.xPosition, char.yPosition, char.zPosition)
                 )
@@ -2421,7 +2421,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             # activate the marked item
             if charState["itemMarkedLast"]:
                 if not charState["itemMarkedLast"].container:
-                    return
+                    return None
 
                 charState["itemMarkedLast"].apply(char)
                 char.timeTaken += char.movementSpeed
@@ -2501,7 +2501,7 @@ press key for the advanced interaction
                 char.specialRender = True
 
             char.interactionState["advancedInteraction"] = {}
-            return
+            return None
 
         if key in ("C",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -2526,11 +2526,11 @@ press key for the configuration interaction
                 char.specialRender = True
 
             char.interactionState["advancedConfigure"] = {}
-            return
+            return None
 
         if key in ("g",):
             handleActivityKeypress(char, header, main, footer, flags)
-            return
+            return None
 
         if key in ("f",) and 1==0:
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -2553,7 +2553,7 @@ press key to set fire direction
                 char.specialRender = True
 
             char.interactionState["fireDirection"] = {}
-            return
+            return None
 
         if key in ("K",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -2577,7 +2577,7 @@ press key for advanced pickup
                 char.specialRender = True
 
             char.interactionState["advancedPickup"] = {}
-            return
+            return None
 
         if key in ("L",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
@@ -2601,13 +2601,13 @@ press key for advanced drop
                 char.specialRender = True
 
             char.interactionState["advancedDrop"] = {}
-            return
+            return None
 
         if key in ("#",):
             activeQuest = char.getActiveQuest()
             if activeQuest:
                 activeQuest.reroll()
-            return
+            return None
 
 
         # pick up items
@@ -2622,7 +2622,7 @@ press key for advanced drop
 
                 if not item:
                     if not char.container:
-                        return
+                        return None
                     itemList = char.container.getItemByPosition(
                         (char.xPosition, char.yPosition, char.zPosition)
                     )
@@ -2633,7 +2633,7 @@ press key for advanced drop
                 if not item:
                     char.addMessage("no item to pick up found")
                     char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-                    return
+                    return None
 
                 item.pickUp(char)
 
@@ -4312,9 +4312,9 @@ class InputMenu(SubMenu):
         elif key == "~":
             pass
         elif key == "+":
-            return
+            return None
         elif key == "*":
-            return
+            return None
         elif key == "left":
             self.position -= 1
         elif key == "right":
@@ -5373,7 +5373,7 @@ class ViewNPCsMenu(SubMenu):
 
         if not characters:
             main.set_text((urwid.AttrSpec("default", "default"), "no personnel found"))
-            return
+            return None
 
         if key in (".",):
             character.timeTaken += 1
@@ -6136,7 +6136,7 @@ class RoomMenu(SubMenu):
 
         if self.firstKey:
             self.firstKey = False
-            return
+            return None
 
         if character and key in ("q",):
             character.macroState["submenue"] = RoomDutyMenu(self.room)

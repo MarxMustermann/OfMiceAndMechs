@@ -16,7 +16,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         terrain = character.getTerrain()
 
@@ -146,7 +146,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleDeletedMarking, "deleted marking")
 

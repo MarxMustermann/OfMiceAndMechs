@@ -86,7 +86,7 @@ Clear your inventory afterwards to complete the quest."""
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.droppedItem, "dropped")
 

@@ -19,13 +19,13 @@ run,run,run!!!
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         if not character.getNearbyEnemies():
             self.postHandler()
             return True
 
-        return
+        return None
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):

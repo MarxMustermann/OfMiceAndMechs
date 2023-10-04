@@ -44,7 +44,7 @@ Attack the hive guards while you are waiting for the work complete.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         foundSpawner = False
         terrain = character.getTerrain()

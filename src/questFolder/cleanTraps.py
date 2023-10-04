@@ -30,13 +30,13 @@ Trap rooms that need to be cleaned are:
     def triggerCompletionCheck(self,character=None):
 
         if not character:
-            return
+            return None
 
         if not self.getClutteredTraprooms(character):
             self.postHandler()
             return True
 
-        return
+        return None
 
     def getClutteredTraprooms(self,character):
 

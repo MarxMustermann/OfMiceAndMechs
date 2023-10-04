@@ -119,7 +119,7 @@ do some metal working
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleWorkedMetal, "worked metal")
 

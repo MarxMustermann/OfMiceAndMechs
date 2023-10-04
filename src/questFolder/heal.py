@@ -46,9 +46,9 @@ Press JH to auto heal.
         command = self.getSolvingCommandString(character,dryRun=False)
         if command:
             character.runCommandString(command)
-            return
+            return None
         if self.triggerCompletionCheck(character):
-            return
+            return None
         return super().solver(character)
 
 src.quests.addType(Heal)

@@ -374,7 +374,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
             if pos == None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place scrap compactor")
-                return
+                return None
 
             floorPlan["outputSlots"].append(((pos[0]+1,pos[1],pos[2]),"MetalBars",{}))
             floorPlan["inputSlots"].append(((pos[0]-1,pos[1],pos[2]),"Scrap",{}))
@@ -407,7 +407,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
             if pos == None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place corpse animator")
-                return
+                return None
 
             floorPlan["buildSites"].append((pos,"CorpseAnimator",{}))
             self.toBuildRoomClone3.addItem(src.items.itemMap["Wall"](),pos)
@@ -433,7 +433,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
             if pos == None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place corpse stockpile")
-                return
+                return None
 
             floorPlan["inputSlots"].append((pos,"Corpse",{"maxAmount":2}))
             corpseStockpilePositions.append(pos)
@@ -457,7 +457,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
             if pos == None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place scratch plate")
-                return
+                return None
 
             scratchPlatePositions.append(pos)
 

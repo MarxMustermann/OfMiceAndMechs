@@ -43,12 +43,12 @@ The Hives are shown on the minimap as: """,(src.interaction.urwid.AttrSpec("#484
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         if not self.getSpawners(character):
             self.postHandler()
             return True
-        return
+        return None
 
     def solver(self,character):
         if self.triggerCompletionCheck(character):

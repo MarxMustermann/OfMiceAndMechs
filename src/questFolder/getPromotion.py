@@ -43,7 +43,7 @@ You need to reach rank {self.character.rank-1} to complete the quest.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         if character.reputation == 0:
             self.fail()
@@ -56,7 +56,7 @@ You need to reach rank {self.character.rank-1} to complete the quest.
 
     def getSolvingCommandString(self,character,dryRun=True):
         if self.subQuests:
-            return
+            return None
 
         submenue = character.macroState.get("submenue")
         if submenue:
@@ -66,7 +66,7 @@ You need to reach rank {self.character.rank-1} to complete the quest.
 
         room = character.container
         if not isinstance(character.container, src.rooms.Room):
-            return
+            return None
 
         for item in room.itemsOnFloor:
             if not item.bolted:

@@ -1610,7 +1610,7 @@ class Room:
 
                 character.collidedWith(other,actor=character)
                 other.collidedWith(character,actor=character)
-                return
+                return None
 
             character.timeTaken += character.movementSpeed
             return self.moveCharacter(character, tuple(newPosition))
@@ -1618,7 +1618,7 @@ class Room:
         # move onto terrain
         if not character.room.yPosition:
             character.addMessage("you cannot move through the static")
-            return
+            return None
 
         newYPos = (
             character.yPosition + character.room.yPosition * 15 + character.room.offsetY
@@ -1655,7 +1655,7 @@ class Room:
             self.removeCharacter(character)
         character.timeTaken += character.movementSpeed
         self.terrain.addCharacter(character, newXPos, newYPos)
-        return
+        return None
 
     def moveCharacter(self, character, newPosition):
         """

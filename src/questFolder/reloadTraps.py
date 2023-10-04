@@ -54,14 +54,14 @@ Trap rooms that need to be reloaded:
         self.triggerCompletionCheck(character)
 
         if self.completed:
-            return
+            return None
 
         if not self.subQuests:
             room = random.choice(self.getUnfilledTrapRooms(character))
 
             quest = src.quests.questMap["ReloadTraproom"](targetPosition=room.getPosition())
             self.addQuest(quest)
-            return
+            return None
 
         return super().solver(character)
 

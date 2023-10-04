@@ -151,13 +151,13 @@ Press d now to move the quest cursor to select the sub quest.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return None
 
         if character.getBigPosition() == (7,6,0):
             for quest in self.subQuests:
                 quest.postHandler()
             self.postHandler()
-            return
+            return None
         return False
 
     def handleMovement(self, extraInfo):

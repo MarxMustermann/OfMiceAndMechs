@@ -146,7 +146,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
     def assignToCharacter(self, character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleHammeredScrap, "hammered scrap")
         self.startWatching(character,self.handleInventoryFull, "inventory full error")

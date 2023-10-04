@@ -268,7 +268,7 @@ class TradingArtwork2(src.items.Item):
                     self.container.addItem(item,pos)
             if character:
                 character.addMessage("not enough resources")
-            return
+            return None
 
         failedAddingItem = False
         for itemSpec in tradeCopy["recieve"]:
@@ -306,7 +306,7 @@ class TradingArtwork2(src.items.Item):
                     self.container.addItem(item,pos)
             if character:
                 character.addMessage("no space to put the trade result")
-            return
+            return None
 
         if character:
             # check inventory

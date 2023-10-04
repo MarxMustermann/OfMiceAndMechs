@@ -61,7 +61,7 @@ class SupportAttack(src.quests.MetaQuestSequence):
             targetTerrain = character.superior.getTerrain()
             pos = (targetTerrain.xPosition,targetTerrain.yPosition,0)
             self.addQuest(src.quests.questMap["GoToTerrain"](targetTerrain=pos))
-            return
+            return None
 
         if character.container == character.superior.container and self.getSuperiorsTileCoordinate(character) == character.getBigPosition():
             terrain = character.getTerrain()
@@ -69,51 +69,51 @@ class SupportAttack(src.quests.MetaQuestSequence):
             if terrain.getEnemiesOnTile(character):
                 if character.health < character.maxHealth//5:
                     self.addQuest(src.quests.questMap["Flee"]())
-                    return
+                    return None
                 else:
                     self.addQuest(src.quests.questMap["Fight"]())
-                    return
+                    return None
 
             if character.container.isRoom:
                 pos = character.getBigPosition()
                 if character.superior.getSpacePosition() == (6,12,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0],pos[1]+1,0),endWhenCleared=True))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (6,11,0) and character.getPosition() != (6, 11, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(6,11,0)))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (12,6,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0]+1,pos[1],0),endWhenCleared=True))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (11,6,0) and character.getPosition() != (11, 6, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(11,6,0)))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (0,6,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0]-1,pos[1],0),endWhenCleared=True))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (1,6,0) and character.getPosition() != (1, 6, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(1,6,0)))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (6,0,0):
                     self.addQuest(src.quests.questMap["SecureTile"](toSecure=(pos[0],pos[1]-1,0),endWhenCleared=True))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (6,1,0) and character.getPosition() != (6, 1, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(6,1,0)))
-                    return
+                    return None
             else:
                 pos = character.getBigPosition()
                 if character.superior.getSpacePosition() == (7,13,0) and character.getPosition() != (7, 13, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,13,0)))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (13,7,0) and character.getPosition() != (13, 7, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(13,7,0)))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (1,7,0) and character.getPosition() != (1, 7, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(1,7,0)))
-                    return
+                    return None
                 if character.superior.getSpacePosition() == (7,1,0) and character.getPosition() != (7, 1, 0):
                     self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=(7,1,0)))
-                    return
+                    return None
 
             offsets = [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0)]
             pos = character.getBigPosition()
@@ -154,40 +154,40 @@ class SupportAttack(src.quests.MetaQuestSequence):
 
                     if challengeRating < 0:
                         self.addQuest(src.quests.questMap["SecureTile"](toSecure=checkPos,endWhenCleared=True))
-                        return
+                        return None
 
             if character.getFreeInventorySpace() > 2 and character.container.isRoom:
                 moldFeeds = character.container.getItemsByType("MoldFeed")
                 random.shuffle(moldFeeds)
                 for moldFeed in moldFeeds:
                     self.addQuest(src.quests.questMap["CleanSpace"](targetPosition=moldFeed.getPosition(),targetPositionBig=moldFeed.getBigPosition()))
-                    return
+                    return None
 
             if character.health < character.maxHealth-30 and character.container.isRoom:
                 coalBurner = character.container.getItemByType("CoalBurner")
                 if coalBurner:
                     if character.getDistance(coalBurner.getPosition()) > 1:
                         self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=coalBurner.getPosition(),ignoreEndBlocked=True))
-                        return
+                        return None
                     if coalBurner.getPosition() == character.getPosition(offset=(-1,0,0)):
                         character.runCommandString("Ja")
-                        return
+                        return None
                     if coalBurner.getPosition() == character.getPosition(offset=(1,0,0)):
                         character.runCommandString("Jd")
-                        return
+                        return None
                     if coalBurner.getPosition() == character.getPosition(offset=(0,-1,0)):
                         character.runCommandString("Jw")
-                        return
+                        return None
                     if coalBurner.getPosition() == character.getPosition(offset=(0,1,0)):
                         character.runCommandString("Js")
-                        return
+                        return None
 
             character.runCommandString(".....")
-            return
+            return None
 
         self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
         if not self.lastSuperiorPos[0] in (0,14,) and not self.lastSuperiorPos[1] in (0,14,):
             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))
-            return
+            return None
 
 src.quests.addType(SupportAttack)

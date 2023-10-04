@@ -88,7 +88,7 @@ Clear your inventory afterwards to complete this quest.
         targetRooms = currentTerrain.getRoomsByTag("cargo")
         if not targetRooms:
             self.postHandler()
-            return
+            return None
         targetRoom = targetRooms[0]
 
         for item in targetRoom.itemsOnFloor:

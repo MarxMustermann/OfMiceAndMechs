@@ -147,7 +147,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             return (["esc"],"exit submenu")
 
         if not self.path:
-            return
+            return None
 
         if character.xPosition%15 == 0:
             return ("d","enter tile")
@@ -161,7 +161,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             return (".12..","wait")
 
         if self.ignoreEndBlocked and len(self.path) == 1:
-            return
+            return None
 
         command  = ""
         movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
@@ -183,7 +183,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if not character:
             return False
         if not self.active:
-            return
+            return None
 
         if character.xPosition%15 == self.targetPosition[0] and character.yPosition%15 == self.targetPosition[1]:
             self.postHandler()

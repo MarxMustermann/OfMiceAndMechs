@@ -53,7 +53,7 @@ press d to get a description on how to join the base
     def solver(self,character):
         if not self.subQuests:
             self.generateSubquests(character)
-            return
+            return None
         return super().solver(character)
 
     def triggerCompletionCheck(self,character=None):

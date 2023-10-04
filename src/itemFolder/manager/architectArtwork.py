@@ -1447,7 +1447,7 @@ class ArchitectArtwork(src.items.Item):
         if not terrain:
             if context:
                 context["character"].addMessage("no terrain found")
-            return
+            return None
 
         terrain.addRooms([room])
         return room

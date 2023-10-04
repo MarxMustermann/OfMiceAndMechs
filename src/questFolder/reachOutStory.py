@@ -28,7 +28,7 @@ class ReachOutStory(src.quests.MetaQuestSequence):
 
     def assignToCharacter(self,character):
         if self.character:
-            return
+            return None
 
         self.startWatching(character,self.handleQuestsOpened,"opened quest menu")
         return super().assignToCharacter(character)

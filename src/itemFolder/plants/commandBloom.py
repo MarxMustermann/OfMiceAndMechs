@@ -806,7 +806,7 @@ class CommandBloom(src.items.Item):
         """
 
         if not self.numSick:
-            return
+            return None
         newCharacter = src.characters.Monster()
 
         newCharacter.solvers = [

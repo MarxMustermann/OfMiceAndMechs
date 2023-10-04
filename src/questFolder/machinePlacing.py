@@ -33,7 +33,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
             1/0
             if not character.container.floorPlan:
                 self.fail()
-                return
+                return None
 
             if character.getBigPosition() != self.targetPosition:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)

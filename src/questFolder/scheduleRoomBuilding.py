@@ -47,7 +47,25 @@ Use a CityPlaner to do this.
             return (None,(command,"to schedule building a room"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-            return (None,("j","to show the map"))
+
+            submenue = character.macroState["submenue"]
+            rewardIndex = 0
+            if rewardIndex == 0:
+                counter = 1
+                for option in submenue.options.items():
+                    if option[1] == "showMap":
+                        break
+                    counter += 1
+                rewardIndex = counter
+
+            offset = rewardIndex-submenue.selectionIndex
+            command = ""
+            if offset > 0:
+                command += "s"*offset
+            else:
+                command += "w"*(-offset)
+            command += "j"
+            return (None,(command,"show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))

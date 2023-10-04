@@ -18,21 +18,20 @@ class AttrSpec:
 
     def get_rgb_values(self):
         def convertValue(value):
-            try:
+            if value == "a":
+                return 10*16
+            elif value == "b":
+                return 11*16
+            elif value == "c":
+                return 12*16
+            elif value == "d":
+                return 13*16
+            elif value == "e":
+                return 14*16
+            elif value == "f":
+                return 15*16
+            else:
                 return int(value)*16
-            except:
-                if value == "a":
-                    return 10*16
-                if value == "b":
-                    return 11*16
-                if value == "c":
-                    return 12*16
-                if value == "d":
-                    return 13*16
-                if value == "e":
-                    return 14*16
-                if value == "f":
-                    return 15*16
 
         color = []
         if self.fg[0] == "#":

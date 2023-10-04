@@ -216,52 +216,49 @@ playerDamage         = {self.playerDamage}
             character.macroState["submenue"].followUp = {"container":self,"method":"setSetting","params":extraParam}
             return
 
-        try:
-            value = extraParam["value"]
+        value = extraParam["value"]
 
-            if settingType == "setEnemyAttackSpeed":
-                self.enemyAttackSpeed = float(value)
-                for otherCharacter in self.getTerrain().characters:
-                    if otherCharacter == character:
-                        continue
-                    otherCharacter.attackSpeed = float(value)
-            if settingType == "setEnemyMovementSpeed":
-                self.enemyMovementSpeed = float(value)
-                for otherCharacter in self.getTerrain().characters:
-                    if otherCharacter == character:
-                        continue
-                    otherCharacter.movementSpeed = float(value)
-            if settingType == "setEnemyHP":
-                self.enemyHP = int(value)
-                for otherCharacter in self.getTerrain().characters:
-                    if otherCharacter == character:
-                        continue
-                    otherCharacter.health = int(value)
-                    otherCharacter.maxHealth = int(value)
-            if settingType == "setEnemyDamage":
-                self.enemyDamage = int(value)
-                for otherCharacter in self.getTerrain().characters:
-                    if otherCharacter == character:
-                        continue
-                    otherCharacter.baseDamage = int(value)
+        if settingType == "setEnemyAttackSpeed":
+            self.enemyAttackSpeed = float(value)
+            for otherCharacter in self.getTerrain().characters:
+                if otherCharacter == character:
+                    continue
+                otherCharacter.attackSpeed = float(value)
+        if settingType == "setEnemyMovementSpeed":
+            self.enemyMovementSpeed = float(value)
+            for otherCharacter in self.getTerrain().characters:
+                if otherCharacter == character:
+                    continue
+                otherCharacter.movementSpeed = float(value)
+        if settingType == "setEnemyHP":
+            self.enemyHP = int(value)
+            for otherCharacter in self.getTerrain().characters:
+                if otherCharacter == character:
+                    continue
+                otherCharacter.health = int(value)
+                otherCharacter.maxHealth = int(value)
+        if settingType == "setEnemyDamage":
+            self.enemyDamage = int(value)
+            for otherCharacter in self.getTerrain().characters:
+                if otherCharacter == character:
+                    continue
+                otherCharacter.baseDamage = int(value)
 
-            if settingType == "setPlayerAttackSpeed":
-                self.playerAttackSpeed = float(value)
-                character.attackSpeed = float(value)
+        if settingType == "setPlayerAttackSpeed":
+            self.playerAttackSpeed = float(value)
+            character.attackSpeed = float(value)
 
-            if settingType == "setPlayerMovementSpeed":
-                self.playerMovementSpeed = float(value)
-                character.movementSpeed = float(value)
+        if settingType == "setPlayerMovementSpeed":
+            self.playerMovementSpeed = float(value)
+            character.movementSpeed = float(value)
 
-            if settingType == "setPlayerHP":
-                self.playerHP = int(value)
-                character.health = int(value)
-                character.maxHealth = int(value)
+        if settingType == "setPlayerHP":
+            self.playerHP = int(value)
+            character.health = int(value)
+            character.maxHealth = int(value)
 
-            if settingType == "setPlayerDamage":
-                self.playerDamage = int(value)
-                character.baseDamage = int(value)
-        except:
-            character.addMessage("Error")
+        if settingType == "setPlayerDamage":
+            self.playerDamage = int(value)
+            character.baseDamage = int(value)
 
 src.items.addType(ArenaArtwork)

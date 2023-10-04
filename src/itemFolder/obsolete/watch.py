@@ -21,10 +21,7 @@ class Watch(src.items.Item):
 
         self.bolted = False
         self.walkable = True
-        try:
-            self.creationTime = src.gamestate.gamestate.tick
-        except:
-            pass
+        self.creationTime = src.gamestate.gamestate.tick
 
     def apply(self, character):
 

@@ -22,11 +22,6 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
-        try:
-            self.shownPickedUpSpecialItemSlot
-        except:
-            self.shownPickedUpSpecialItemSlot = False
-
         if (terrain.yPosition == 7 and terrain.xPosition == 6) and not self.shownPickedUpSpecialItemSlot:
             #if character.inventory:
             #    quest = src.quests.questMap["ClearInventory"](returnToTile=False)

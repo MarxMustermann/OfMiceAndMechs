@@ -20,10 +20,7 @@ class WaterCondenser(src.items.Item):
         self.walkable = False
         self.bolted = True
         self.rods = 0
-        try:
-            self.lastUsage = src.gamestate.gamestate.tick
-        except:
-            self.lastUsage = 0
+        self.lastUsage = src.gamestate.gamestate.tick
 
     def apply(self, character):
         """

@@ -41,10 +41,6 @@ This quest will end when your inventory is full."""
         return False
 
     def solver(self, character):
-        try:
-            self.lastMoveDirection
-        except:
-            self.lastMoveDirection = None
 
         if self.triggerCompletionCheck(character=character):
             return

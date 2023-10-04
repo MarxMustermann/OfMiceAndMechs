@@ -72,10 +72,13 @@ class StaffArtwork(src.items.Item):
             description = "\n"
             description += "staff: \n"
             for staffCharacter in room.staff:
-                try:
-                    description += staffCharacter.name+f" {staffCharacter.quests[0].subQuests[0]} \n"
-                except:
+                if not staffCharacter.quests:
                     description += staffCharacter.name+" \n"
+                    continue
+                if not staffCharacter.quests[0].subQuests:
+                    description += staffCharacter.name+" \n"
+                    continue
+                description += staffCharacter.name+f" {staffCharacter.quests[0].subQuests[0]} \n"
             description += "\n"
             for duty in room.duties:
                 description += f"{duty}: "

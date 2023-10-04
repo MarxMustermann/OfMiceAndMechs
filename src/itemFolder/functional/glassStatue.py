@@ -31,10 +31,6 @@ class GlassStatue(src.items.Item):
         self.hasItem = False
 
     def render(self):
-        try:
-            self.hasItem
-        except:
-            self.hasItem = False
         if not self.hasItem:
             return "GG"
         else:
@@ -80,7 +76,7 @@ class GlassStatue(src.items.Item):
 
         if not "rewardType" in extraInfo:
             return
-        
+
         if extraInfo["rewardType"] == None:
             return
         if extraInfo["rewardType"] == "None":
@@ -372,7 +368,7 @@ class GlassStatue(src.items.Item):
                     return
 
                 increaseValue = min(8-character.armor.armorValue,increaseValue)
-                
+
                 godInfo["mana"] -= 10
                 character.armor.armorValue += increaseValue
                 character.addMessage(f"your armors armor value is increased by {increaseValue} to {character.armor.armorValue}")
@@ -504,11 +500,6 @@ class GlassStatue(src.items.Item):
         character.movementSpeed = character.movementSpeed*2
 
     def setGlassHeart(self,character):
-        try:
-            self.hasItem
-        except:
-            self.hasItem = False
-
         glassHeart = None
         hasHeart = False
         for item in character.inventory:

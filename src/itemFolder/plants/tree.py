@@ -21,10 +21,7 @@ class Tree(src.items.Item):
 
         self.maxMaggot = random.randint(75, 150)
 
-        try:
-            self.lastUse = src.gamestate.gamestate.tick
-        except:
-            self.lastUse = -100000
+        self.lastUse = src.gamestate.gamestate.tick
 
     def regenerateMaggots(self):
         """

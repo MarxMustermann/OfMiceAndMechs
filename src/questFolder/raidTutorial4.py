@@ -21,11 +21,6 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
-        try:
-            self.shownPickedUpSpecialItemSlot
-        except:
-            self.shownPickedUpSpecialItemSlot = False
-
         if (terrain.yPosition == 7 and terrain.xPosition == 6) and not self.shownPickedUpSpecialItemSlot:
             for item in character.inventory:
                 if item.type == "Machine":

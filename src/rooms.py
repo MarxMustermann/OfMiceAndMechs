@@ -902,12 +902,9 @@ class Room:
 
             # draw items
             for item in self.itemsOnFloor:
-                try:
-                    display = item.render()
-                    #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
-                    chars[item.yPosition][item.xPosition] = display
-                except:
-                    logger.debug("room drawing failed")
+                display = item.render()
+                #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
+                chars[item.yPosition][item.xPosition] = display
 
             # draw characters
             viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
@@ -1136,10 +1133,7 @@ class Room:
                         if activeQuest:
                             for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                                 pos = marker[0]
-                                try:
-                                    display = chars[pos[1]][pos[0]]
-                                except:
-                                    continue
+                                display = chars[pos[1]][pos[0]]
 
                                 if isinstance(display,list):
                                     displayList = display
@@ -1204,10 +1198,8 @@ class Room:
                         display = ".x"
                     else:
                         display = ".."
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+
+                    chars[pos[1]][pos[0]] = display
 
                     if duration > 10:
                         animation[2] -= 10
@@ -1219,10 +1211,8 @@ class Room:
                         display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
                     if animationType == "shielded":
                         display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+
+                    chars[pos[1]][pos[0]] = display
 
                     if duration > 10:
                         animation[2] -= 10
@@ -1244,10 +1234,9 @@ class Room:
                     if extraInfo["mainChar"]:
                         display = "!!"
                         display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+
+                    chars[pos[1]][pos[0]] = display
+
                     animation[2] -= 1
                     if duration < 1:
                         self.animations.remove(animation)
@@ -1257,10 +1246,8 @@ class Room:
                     display = character
                     display = (src.interaction.urwid.AttrSpec("#740","#000"),display)
 
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
+
                     animation[2] -= 1
 
                     if duration < 1:
@@ -1269,10 +1256,8 @@ class Room:
                     display = "##"
                     display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
 
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
+
                     animation[2] -= 1
 
                     if duration < 1:
@@ -1280,10 +1265,8 @@ class Room:
                 elif animationType in ("showchar",):
                     display = extraInfo["char"]
 
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
+
                     animation[2] -= 1
 
                     if duration < 1:
@@ -1291,10 +1274,8 @@ class Room:
                 elif animationType in ("charsequence",):
                     display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
+
                     animation[2] -= 1
 
                     if duration < 1:
@@ -1302,10 +1283,7 @@ class Room:
                 elif animationType in ("smoke",):
                     display = (src.interaction.urwid.AttrSpec("#555", "black"), "##")
 
-                    try:
-                        chars[pos[1]][pos[0]] = display
-                    except:
-                        continue
+                    chars[pos[1]][pos[0]] = display
 
                     direction = random.choice([(1,0,0),(0,1,0),(-1,0,0),(1,0,0),])
 
@@ -1323,20 +1301,18 @@ class Room:
             if src.gamestate.gamestate.dragState:
                 if src.gamestate.gamestate.dragState["start"]["container"] == self:
                     pos = src.gamestate.gamestate.dragState["start"]["pos"]
-                    try:
-                        chars[pos[1]][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                        chars[pos[1]][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                        chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                        chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                        chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
 
-                        chars[pos[1]-1][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"e"}},content="ee")
-                        chars[pos[1]-1][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"j"}},content="jj")
-                        chars[pos[1]-1][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"k"}},content="kk")
-                        chars[pos[1]-1][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"l"}},content="ll")
-                        chars[pos[1]-1][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"."}},content="..")
-                    except:
-                        pass
+                    chars[pos[1]][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+
+                    chars[pos[1]-1][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"e"}},content="ee")
+                    chars[pos[1]-1][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"j"}},content="jj")
+                    chars[pos[1]-1][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"k"}},content="kk")
+                    chars[pos[1]-1][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"l"}},content="ll")
+                    chars[pos[1]-1][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"."}},content="..")
 
         # show dummy of the room
         else:

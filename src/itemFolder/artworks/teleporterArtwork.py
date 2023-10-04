@@ -40,11 +40,9 @@ class TeleporterArtwork(src.items.Item):
         submenue.followUp = {"container":self,"method":"doTeleport","params":{"character":character}}
 
     def doTeleport(self,extraInfo):
-        try:
-            xPos = int(extraInfo["targetPos"].split(",")[0])
-            yPos = int(extraInfo["targetPos"].split(",")[1])
-        except:
-            return
+        xPos = int(extraInfo["targetPos"].split(",")[0])
+        yPos = int(extraInfo["targetPos"].split(",")[1])
+
         extraInfo["character"].addMessage("should do teleport")
         oldPosX = self.container.xPosition
         oldPosY = self.container.yPosition

@@ -1668,11 +1668,6 @@ We should stop watching and do something about that.
             quest.assignToCharacter(character)
             return
 
-        try:
-            self.checkedRoomPositions
-        except:
-            self.checkedRoomPositions = []
-
         if not character.container:
             return
 
@@ -1807,11 +1802,6 @@ We should stop watching and do something about that.
         """
         terrain = character.getTerrain()
         for checkRoom in terrain.rooms:
-            try:
-                checkRoom.requiredDuties
-            except:
-                checkRoom.requiredDuties = []
-
             if not checkRoom.requiredDuties:
                 continue
 
@@ -2130,11 +2120,6 @@ Produce some more Walls and see time flying by.
             self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce="Wall",produceToInventory=True,reason="see time flying by"))
             return True
 
-        try:
-            self.showedRestockingQuestText
-        except:
-            self.showedRestockingQuestText = False
-
         terrain = character.getTerrain()
         if len(terrain.rooms) == 1:
             if character.getFreeInventorySpace() > 0:
@@ -2298,11 +2283,6 @@ Let's produce some better weapons.
             #self.addQuest(quest)
             return True
 
-        try:
-            self.showedBuildRoomInfo
-        except:
-            self.showedBuildRoomInfo = False
-
         if len(terrain.rooms) < 3:
             if not self.showedBuildRoomInfo:
                 text = """
@@ -2324,16 +2304,6 @@ With some experience you will mostly disregard the quest system.
                 character.duties = ["tutorial","city planning","clone spawning","room building","metal working","hauling","resource fetching","scrap hammering","resource gathering"]
                 return True
             return
-
-        try:
-            self.showedBuildMachines
-        except:
-            self.showedBuildMachines = False
-
-        try:
-            self.selectedMachineTutorial
-        except:
-            self.selectedMachineTutorial = None
 
         if self.selectedMachineTutorial == None:
             '''
@@ -2413,11 +2383,6 @@ Let's set a ScrapCompactor up so you can try it out.
             self.addQuest(src.quests.questMap["PlaceItem"](itemType="ScrapCompactor",targetPositionBig=(6,7,0),targetPosition=(2,2,0),boltDown=True))
             return True
 
-        try:
-            self.showedBuildMachines2
-        except:
-            self.showedBuildMachines2 = False
-
         if self.selectedMachineTutorial and not self.showedBuildMachines2:
             text = """
 Most Machines are built at a MachiningTable. That is a workshop.
@@ -2436,10 +2401,6 @@ Produce a Rod-Machine to try it out.
             self.addQuest(newQuest)
             return True
 
-        try:
-            self.showedBuildMachines3
-        except:
-            self.showedBuildMachines3 = False
         if self.selectedMachineTutorial and not self.showedBuildMachines3:
             text = """
 Ohhhkay... producing machines takes long, but how does this make the game a factory builder?
@@ -2505,11 +2466,6 @@ Set up a production chain for walls.
             self.showedBuildMachines3 = True
             return True
 
-        try:
-            self.showedBuildMachines4
-        except:
-            self.showedBuildMachines4 = False
-
         if self.selectedMachineTutorial and not self.showedBuildMachines4:
             text = """
 Try it out!
@@ -2524,16 +2480,6 @@ Try it out!
             self.addQuest(src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True))
             self.addQuest(src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True))
             return True
-
-        try:
-            self.showedBuildWeaponPrductionRoom
-        except:
-            self.showedBuildWeaponPrductionRoom = False
-
-        try:
-            self.showedPlanWeaponProduction
-        except:
-            self.showedPlanWeaponProduction = False
 
         if not self.showedPlanWeaponProduction and (not cityPlaner or not cityPlaner.getAvailableRooms()):
             if not self.showedBuildWeaponPrductionRoom:
@@ -2597,11 +2543,6 @@ Start by using the city builder to order a weapon production line to be built.
                 continue
             foundWeaponProduction = True
 
-            try:
-                self.showedFloorPlanDone
-            except:
-                self.showedFloorPlanDone = False
-
             if not self.showedFloorPlanDone:
                 text = """
 The layout for the production line was painted.
@@ -2619,11 +2560,6 @@ You can use e to examine things.
                 newQuest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                 self.addQuest(newQuest)
                 return True
-
-        try:
-            self.showedWaitForFloorPlan
-        except:
-            self.showedWaitForFloorPlan = False
 
         if not foundWeaponProduction:
             if not self.showedWaitForFloorPlan:
@@ -2644,11 +2580,6 @@ Explore, be creative or just watch the NPCs.
                 return True
             return
 
-
-        try:
-            self.showedMachineRaid
-        except:
-            self.showedMachineRaid = False
 
         if not self.showedMachineRaid:
             text = """
@@ -2707,11 +2638,6 @@ Let's go on a adventure to fetch them.
             #src.gamestate.gamestate.save()
             return True
 
-        try:
-            self.showedProduceGoodArmor
-        except:
-            self.showedProduceGoodArmor = False
-
         if not self.showedProduceGoodArmor:
             text = """
 Spawn a machine placing NPC. It will set up the Machines.
@@ -2756,11 +2682,6 @@ Help out and produce some equipment until you have some decent gear.
         if character.armor.armorValue <= 2 or character.weapon.baseDamage <= 13:
             return
 
-        try:
-            self.showedSpecialItemRaid
-        except:
-            self.showedSpecialItemRaid = False
-
         if not self.showedSpecialItemRaid:
             text = """
 You are well enough equipped to properly raid the enemy base.
@@ -2790,11 +2711,6 @@ That should give you enough health to kill them all.
         # introduce full clones
         # get top equipment
         # go to throne
-
-        try:
-            self.showedThroneRun
-        except:
-            self.showedThroneRun = False
 
         if not self.showedThroneRun:
             text = """

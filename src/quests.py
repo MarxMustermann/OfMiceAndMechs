@@ -174,14 +174,8 @@ class Quest:
         if tag == "":
             1/0
 
-        try:
-            target.delListener(callback, tag)
-        except:
-            pass
-        try:
-            self.watched.remove((target, callback, tag))
-        except:
-            pass
+        target.delListener(callback, tag)
+        self.watched.remove((target, callback, tag))
 
     """
     unregister all callback
@@ -667,30 +661,6 @@ class MetaQuestSequence(Quest):
         for quest in self.subQuests:
             quest.fail()
         self.subQuests = []
-
-    """
-    get target position from first subquest
-    bad code: should use a position object
-    """
-
-    @property
-    def dstX(self):
-        try:
-            return self.subQuests[0].dstX
-        except:
-            return self.character.xPosition
-
-    """
-    get target position from first subquest
-    bad code: should use a position object
-    """
-
-    @property
-    def dstY(self):
-        try:
-            return self.subQuests[0].dstY
-        except:
-            return self.character.yPosition
 
     """
     render description as simple string

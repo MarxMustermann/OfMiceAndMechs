@@ -386,10 +386,7 @@ class Terrain:
         """
 
         oldBigPos = character.getBigPosition()
-        try:
-            self.charactersByTile[oldBigPos].remove(character)
-        except:
-            pass
+        self.charactersByTile[oldBigPos].remove(character)
 
         while character in self.characters:
             self.characters.remove(character)
@@ -444,10 +441,8 @@ class Terrain:
 
             if not char.terrain:
                 return
-            try:
-                char.terrain.characters.remove(char)
-            except:
-                char.addMessage("fail,fail,fail")
+
+            char.terrain.characters.remove(char)
 
             char.changed("entered room", (char, room, direction))
             return
@@ -530,10 +525,8 @@ class Terrain:
 
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
-                try:
-                    self.charactersByTile[oldBigPos].remove(char)
-                except:
-                    pass
+                self.charactersByTile[oldBigPos].remove(char)
+
                 bigPos = char.getBigPosition(offset=(1,0,0))
                 if not bigPos in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
@@ -794,10 +787,9 @@ class Terrain:
                         y +=1
 
 
-                    try:
-                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
-                    except:
+                    if pos[1]-1 < 1:
                         return
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]-1}")
 
@@ -819,10 +811,9 @@ class Terrain:
                             x += 1
                         y +=1
 
-                    try:
-                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
-                    except:
+                    if pos[1]+1 > 13:
                         return
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]+1][pos[0]]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]+1}")
 
@@ -844,10 +835,9 @@ class Terrain:
                             x += 1
                         y +=1
 
-                    try:
-                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
-                    except:
+                    if pos[0]-1 < 1:
                         return
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]-1]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]-1}/{pos[1]}")
 
@@ -869,10 +859,9 @@ class Terrain:
                             x += 1
                         y +=1
 
-                    try:
-                        newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
-                    except:
+                    if pos[0]+1 > 13:
                         return
+                    newTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]+1]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]+1}/{pos[1]}")
 
@@ -1366,11 +1355,8 @@ class Terrain:
 
             self.itemsByBigCoordinate[bigPos].remove(item)
 
-        try:
-            itemList = self.getItemByPosition(pos)
-            itemList.remove(item)
-        except:
-            pass
+        itemList = self.getItemByPosition(pos)
+        itemList.remove(item)
 
         item.xPosition = None
         item.zPosition = None
@@ -1611,10 +1597,7 @@ class Terrain:
 
                 for x in range(16):
                     if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
-                        try:
-                            chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
-                        except:
-                            raise Exception(f"{coordinateOffset[0]} {coordinateOffset[1]}")
+                        chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
                     if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
                         chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
 
@@ -1707,10 +1690,7 @@ class Terrain:
                     if item.zPosition != src.gamestate.gamestate.mainChar.zPosition:
                         continue
 
-                    try:
-                        chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.render()
-                    except:
-                        pass
+                    chars[item.yPosition-coordinateOffset[0]][item.xPosition-coordinateOffset[1]] = item.render()
 
             # render each room
             for room in self.rooms:
@@ -1758,10 +1738,8 @@ class Terrain:
                         continue
                     if pos[1] < 0:
                         continue
-                    try:
-                        display = chars[pos[1]][pos[0]]
-                    except:
-                        continue
+
+                    display = chars[pos[1]][pos[0]]
 
                     actionMeta = None
                     if isinstance(display,src.interaction.ActionMeta):
@@ -1885,11 +1863,8 @@ class Terrain:
             elif animationType in ("charsequence",):
                 display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
-                try:
-                    if display:
-                        chars[pos[1]][pos[0]] = display
-                except:
-                    pass
+                if display:
+                    chars[pos[1]][pos[0]] = display
                 animation[2] -= 1
 
                 if duration < 1:
@@ -1943,10 +1918,7 @@ class Terrain:
                     foundEnemy = True
                 if foundEnemy:
                     pos = (x,y)
-                    try:
-                        display = chars[pos[1]][pos[0]]
-                    except:
-                        continue
+                    display = chars[pos[1]][pos[0]]
 
                     if isinstance(display,int):
                         display = src.canvas.displayChars.indexedMapping[display]
@@ -1965,10 +1937,7 @@ class Terrain:
         if quest:
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
-                try:
-                    display = chars[pos[1]][pos[0]]
-                except:
-                    continue
+                display = chars[pos[1]][pos[0]]
 
                 if isinstance(display,int):
                     display = src.canvas.displayChars.indexedMapping[display]
@@ -2003,10 +1972,7 @@ class Terrain:
         if src.gamestate.gamestate.mainChar.macroState.get("submenue"):
             for marker in src.gamestate.gamestate.mainChar.macroState["submenue"].getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
-                try:
-                    display = chars[pos[1]][pos[0]]
-                except:
-                    continue
+                display = chars[pos[1]][pos[0]]
 
                 if isinstance(display,int):
                     display = src.canvas.displayChars.indexedMapping[display]
@@ -2979,11 +2945,7 @@ class Desert(Terrain):
                     if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
                         continue
 
-                try:
-                    #line.append(desertTiles[self.heatmap[(j+coordinateOffset[1]) // 15][(i+coordinateOffset[k]) // 15]])
-                    line.append(desertTiles[self.heatmap[j // 15][i // 15]])
-                except:
-                    line.append(src.canvas.displayChars.void)
+                line.append(desertTiles[self.heatmap[j // 15][i // 15]])
             chars.append(line)
         return chars
 
@@ -3010,10 +2972,7 @@ class Desert(Terrain):
             line = []
             for j in range(250):
                 if not self.hidden:
-                    try:
-                        line.append(desertTiles[self.heatmap[j // 15][i // 15]])
-                    except:
-                        line.append(src.canvas.displayChars.void)
+                    line.append(desertTiles[self.heatmap[j // 15][i // 15]])
                 else:
                     line.append(src.canvas.displayChars.void)
             chars.append(line)

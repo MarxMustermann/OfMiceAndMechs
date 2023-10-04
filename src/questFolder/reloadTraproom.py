@@ -203,13 +203,8 @@ This will reload the trap room and consume the lightning rods.
         if rooms:
             room = rooms[0]
 
-        try:
-            if room.electricalCharges < room.maxElectricalCharges:
-                return False
-            return True
-        except:
-            pass
-
-        return False
+        if room.electricalCharges < room.maxElectricalCharges:
+            return False
+        return True
 
 src.quests.addType(ReloadTraproom)

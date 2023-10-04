@@ -1040,14 +1040,8 @@ press any other key to attack normally"""
         if harassing:
             damage = 0
 
-        try:
-            self.container.addAnimation(target.getPosition(),"attack",damage,{})
-        except:
-            pass
-        try:
-            self.container.addAnimation(target.getPosition(),"attack",damage,{})
-        except:
-            pass
+        self.container.addAnimation(target.getPosition(),"attack",damage,{})
+        self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(
@@ -1344,11 +1338,7 @@ press any other key to attack normally"""
 
         if len(self.quests):
             self.quests[0].recalculate()
-            try:
-                self.setPathToQuest(self.quests[0])
-            except:
-                logger.debug("setting path to quest failed")
-                pass
+            self.setPathToQuest(self.quests[0])
 
     def getDetailedInfo(self):
         """
@@ -1397,12 +1387,8 @@ press any other key to attack normally"""
         quest.assignToCharacter(self)
         quest.activate()
         if active or len(self.quests) == 1:
-            try:
-                if self.quests[0] == quest:
-                    self.setPathToQuest(quest)
-            except:
-                # bad pattern: exceptions should be logged
-                pass
+            if self.quests[0] == quest:
+                self.setPathToQuest(quest)
 
     # bad pattern: path should be determined by a quests solver
     # bad pattern: the walking should be done in a quest solver so this method should removed on the long run
@@ -1470,12 +1456,8 @@ press any other key to attack normally"""
 
             hasComand = False
             quest = self.getActiveQuest()
-            try:
-                if quest.getSolvingCommandString(self):
-                    hasComand = True
-            except:
-                pass
-
+            if quest.getSolvingCommandString(self):
+                hasComand = True
 
             if hasComand:
                 hasAutoSolve = False

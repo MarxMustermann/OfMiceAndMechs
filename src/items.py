@@ -138,17 +138,11 @@ class Item:
         Returns:
             the position
         """
-        try:
-            return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
-        except:
-            return None,None,None
+        return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 
     def getSmallPosition(self,offset=(0,0,0)):
-        try:
-            pos = self.getPosition()
-            return (pos[0]%15,pos[1]%15,pos[2]%15)
-        except:
-            return None,None,None
+        pos = self.getPosition()
+        return (pos[0]%15,pos[1]%15,pos[2]%15)
 
     def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information={}):
         """

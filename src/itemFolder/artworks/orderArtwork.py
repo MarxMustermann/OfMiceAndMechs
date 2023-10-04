@@ -440,10 +440,7 @@ That should usually be around 10-20 ticks."""
         questType = "BeUsefull"
 
         if "numNPCs" in extraInfo:
-            try:
-                extraInfo["numNPCs"] = int(extraInfo["numNPCs"])
-            except:
-                extraInfo["numNPCs"] = None
+            extraInfo["numNPCs"] = int(extraInfo["numNPCs"])
 
         if not "numNPCs" in extraInfo:
             submenue = src.interaction.InputMenu("how many NPCs to send?",targetParamName="numNPCs")

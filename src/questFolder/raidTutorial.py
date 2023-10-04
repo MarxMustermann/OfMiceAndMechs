@@ -24,11 +24,6 @@ class RaidTutorial(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
-        try:
-            self.shownEnemyBaseIntro
-        except:
-            self.shownEnemyBaseIntro = False
-
         if (terrain.yPosition == 7 and terrain.xPosition == 6) and not self.specialItemText:
             if character.inventory:
                 quest = src.quests.questMap["ClearInventory"]()
@@ -69,11 +64,6 @@ I healed you again, just in case.
                 src.interaction.showInterruptText(text)
                 character.health = character.maxHealth
                 self.shownEnemyBaseIntro = True
-
-            try:
-                self.specialItemText
-            except:
-                self.specialItemText = False
 
             if not self.specialItemText:
                 if character.getBigPosition() != (6, 8, 0):

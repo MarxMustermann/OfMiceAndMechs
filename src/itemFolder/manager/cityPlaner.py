@@ -805,10 +805,7 @@ class CityPlaner(src.items.Item):
         character = extraInfo["character"]
 
         value = extraInfo["value"]
-        try:
-            value = int(value)
-        except:
-            pass
+        value = int(value)
 
         if value:
             character.addMessage("set value")

@@ -29,11 +29,6 @@ class DutyBell(src.items.Item):
             character.addMessage("this items needs to be within a room to be used")
             return
 
-        try:
-            self.container.requiredDuties
-        except:
-            self.container.requiredDuties = []
-
         if not self.duty in self.container.requiredDuties:
             self.container.requiredDuties.append(self.duty)
 

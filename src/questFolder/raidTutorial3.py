@@ -22,11 +22,6 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
-        try:
-            self.shownPickedUpSpecialItemSlot
-        except:
-            self.shownPickedUpSpecialItemSlot = False
-
         if character.health < 80 and character.canHeal():
             return (None,"JH","to heal")
 

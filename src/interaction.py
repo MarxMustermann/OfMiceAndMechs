@@ -1567,10 +1567,8 @@ press any other key to finish
         if action == "=":
             if register not in char.registers:
                 char.registers[register] = [0]
-            try:
-                char.registers[register][-1] = int(lastVarAction["number"])
-            except:
-                pass
+
+            char.registers[register][-1] = int(lastVarAction["number"])
         if action == "+":
             char.registers[register][-1] += int(lastVarAction["number"])
         if action == "-":
@@ -3118,15 +3116,12 @@ class SubMenu:
 
             # show the rendered options
             # bad code: urwid specific code
-            try:
-                main.set_text(
-                    (
-                        urwid.AttrSpec("default", "default"),
-                        self.persistentText + "\n\n" + out,
-                    )
+            main.set_text(
+                (
+                    urwid.AttrSpec("default", "default"),
+                    self.persistentText + "\n\n" + out,
                 )
-            except:
-                pass
+            )
 
         return False
 
@@ -3320,10 +3315,7 @@ class SelectionMenu(SubMenu):
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:None})
             return True
         if not noRender:
-            try:
-                header.set_text("")
-            except:
-                pass
+            header.set_text("")
 
         # let superclass handle the actual selection
         if not self.getSelection():
@@ -5012,10 +5004,7 @@ class AdvancedQuestMenu(SubMenu):
                     elif self.quest == src.quests.WaitQuest:
                         questInstance = self.quest()
                     elif self.quest == src.quests.LeaveRoomQuest:
-                        try:
-                            questInstance = self.quest(self.character.room)
-                        except:
-                            pass
+                        questInstance = self.quest(self.character.room)
                     elif self.quest == src.quests.ClearRubble:
                         questInstance = self.quest()
                     elif self.quest == src.quests.RoomDuty:
@@ -5216,42 +5205,36 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
     # render the quests
     if len(char.quests):
         if sidebared:
-            try:
-                result = char.quests[0].getSolvingCommandString(char)
-                solvingCommangString = None
-                if result:
-                    if isinstance(result,list):
-                        result = (result,"continue")
-                    if isinstance(result,str):
-                        result = (result,"continue")
-                    (solvingCommangString,reason) = result
-                    if isinstance(solvingCommangString,list):
-                        solvingCommangString = "".join(solvingCommangString)
-                    if solvingCommangString:
-                        solvingCommangString = solvingCommangString.replace("\n","\\n")
-
+            result = char.quests[0].getSolvingCommandString(char)
+            solvingCommangString = None
+            if result:
+                if isinstance(result,list):
+                    result = (result,"continue")
+                if isinstance(result,str):
+                    result = (result,"continue")
+                (solvingCommangString,reason) = result
+                if isinstance(solvingCommangString,list):
+                    solvingCommangString = "".join(solvingCommangString)
                 if solvingCommangString:
-                    nextstep = f"suggested action: \npress {solvingCommangString} \nto {reason}\n\n"
-                else:
-                    nextstep = "suggested action: \npress + \nto generate subquests\n\n"
-                txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
-            except:
-                pass
+                    solvingCommangString = solvingCommangString.replace("\n","\\n")
+
+            if solvingCommangString:
+                nextstep = f"suggested action: \npress {solvingCommangString} \nto {reason}\n\n"
+            else:
+                nextstep = "suggested action: \npress + \nto generate subquests\n\n"
+            txt.append(src.interaction.ActionMeta(payload="+",content=nextstep))
 
         if not sidebared:
-            try:
-                baseList = char.quests
-                for index in questCursor:
-                    quest = baseList[index]
-                    try:
-                        baseList = quest.subQuests
-                    except:
-                        baseList = None
-                txt.append(quest.generateTextDescription())
-                txt.append("\n")
-                txt.append("\n")
-            except:
-                pass
+            baseList = char.quests
+            for index in questCursor:
+                quest = baseList[index]
+                try:
+                    baseList = quest.subQuests
+                except:
+                    baseList = None
+            txt.append(quest.generateTextDescription())
+            txt.append("\n")
+            txt.append("\n")
 
             solvingCommangString = char.getActiveQuest().getSolvingCommandString(char)
 
@@ -5818,11 +5801,7 @@ class MapMenu(SubMenu):
         if quest:
             for marker in quest.getQuestMarkersTile(character):
                 pos = marker[0]
-                try:
-                    display = self.mapContent[pos[1]][pos[0]]
-                except:
-                    23/0
-                    continue
+                display = self.mapContent[pos[1]][pos[0]]
 
                 actionMeta = None
                 if isinstance(display,src.interaction.ActionMeta):
@@ -6107,18 +6086,12 @@ class RoomMenu(SubMenu):
 
         self.persistentText = [self.persistentText]
         self.persistentText.append(f"{self.room.objType} - {self.room.tag}\n")
-        try:
+        if hasattr(self.room,"chargeStrength"):
             self.persistentText.append("chargeStrength: " + str(self.room.chargeStrength)+"\n")
-        except:
-            pass
-        try:
+        if hasattr(self.room,"electricalCharges"):
             self.persistentText.append("electricalCharges: " + str(self.room.electricalCharges)+"\n")
-        except:
-            pass
-        try:
+        if hasattr(self.room,"maxElectricalCharges"):
             self.persistentText.append("maxElectricalCharges: " + str(self.room.maxElectricalCharges)+"\n")
-        except:
-            pass
         self.persistentText.append("\n\n")
         if self.room.staff:
             self.persistentText.append("staff:\n")

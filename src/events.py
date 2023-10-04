@@ -110,14 +110,8 @@ class RunCallbackEvent(Event):
         call the callback
         """
 
-        try:
-            self.callback
-        except:
-            return
         if self.callback:
             self.callIndirect(self.callback)
-        else:
-            pass
 
 # obsolete: only used in old story mode
 class ShowMessageEvent(Event):

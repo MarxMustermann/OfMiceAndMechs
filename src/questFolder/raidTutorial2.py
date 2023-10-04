@@ -25,11 +25,6 @@ class RaidTutorial2(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
-        try:
-            self.shownPickedUpMachines
-        except:
-            self.shownPickedUpMachines = False
-
         if (terrain.yPosition == 7 and terrain.xPosition == 6) and not self.shownPickedUpMachines:
             for item in character.inventory:
                 if item.type == "Machine":

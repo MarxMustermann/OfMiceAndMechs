@@ -2314,8 +2314,6 @@ class Terrain:
         start = 0
         end = len(self.events)
 
-        import random
-
         while start != end:
             pivot = (start + end) // 2
             compareEvent = self.events[pivot]

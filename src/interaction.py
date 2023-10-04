@@ -7742,8 +7742,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
     lastStep = time.time()
     submenu = None
 
-    import os
-
     while 1:
         tcodConsole.clear()
 
@@ -10360,8 +10358,6 @@ def sendNetworkDraw(pseudoDisplay):
         return
 
     import json
-
-    import urwid
 
     #data = conn.recv(1024 * 1024 * 1024)
 

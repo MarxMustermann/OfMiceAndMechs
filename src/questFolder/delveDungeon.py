@@ -125,7 +125,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         foundGlassStatue = None
-        for room in [character.container]+terrain.rooms:
+        for room in [character.container, *terrain.rooms]:
             for glassStatue in room.getItemsByType("GlassStatue"):
                 if glassStatue.itemID == hasSpecialItem.itemID:
                     foundGlassStatue = glassStatue

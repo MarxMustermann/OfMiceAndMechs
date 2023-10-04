@@ -513,7 +513,7 @@ class HiveMind(src.items.Item):
         lastNode = (self.xPosition // 15, self.yPosition // 15)
         secondToLastNode = None
         targetNodeDone = False
-        for node in path + [target]:
+        for node in [*path, target]:
             if node[0] - lastNode[0] > 0:
                 command += str(13 * (node[0] - lastNode[0])) + "d"
             if lastNode[0] - node[0] > 0:

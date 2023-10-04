@@ -101,7 +101,7 @@ Try as hard as you can to achieve this.
                 if item.paintMode != "walkingSpace":
                     return (None,(["c","m","w","enter"],"to configure the painter to walking space"))
                 if item.offset != (0, 0, 0):
-                    return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
+                    return (None,(["c", "d", ".", "enter"],"to remove the offset from the painter"))
                 return (None,("jk","draw the walkingspace"))
 
             if not self.painterPos:

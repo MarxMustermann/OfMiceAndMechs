@@ -171,7 +171,7 @@ Try as hard as you can to achieve this.
                     return (None,(["c","m","b","enter"],"to configure the painter to paint build site"))
 
                 if self.itemType != item.paintType:
-                    return (None,(["c","t"] + list(self.itemType) + ["enter"],"to configure the item type for the build site"))
+                    return (None,(["c", "t", *list(self.itemType), "enter"],"to configure the item type for the build site"))
 
                 for (key,_value) in item.paintExtraInfo.items():
                     if not key in self.extraInfo:
@@ -182,7 +182,7 @@ Try as hard as you can to achieve this.
                         return (None,(["c","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
                 if item.offset != (0, 0, 0):
-                    return (None,(["c","d","."] + ["enter"],"to remove the offset from the painter"))
+                    return (None,(["c", "d", ".", "enter"],"to remove the offset from the painter"))
 
                 return (None,("jk","draw to stockpile"))
 

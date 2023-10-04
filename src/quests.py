@@ -610,13 +610,13 @@ class MetaQuestSequence(Quest):
             color = "#070"
 
         if self.active:
-            description = ["> "]+description
+            description = ["> ", *description]
         elif self.completed:
-            description = ["X "]+description
+            description = ["X ", *description]
         elif self.isPaused():
-            description = ["# "]+description
+            description = ["# ", *description]
         else:
-            description = ["x "]+description
+            description = ["x ", *description]
         description = [[(src.interaction.urwid.AttrSpec(color, "default"), description)]]
 
         counter = 0
@@ -636,7 +636,7 @@ class MetaQuestSequence(Quest):
             numSpaces = 4
             if sidebared:
                 numSpaces = 1
-            description.append(["\n"]+[" "*numSpaces*numIndents]+quest.render(depth=depth+1,cursor=newCursor,sidebared=sidebared))
+            description.append(["\n", " " * numSpaces * numIndents, *quest.render(depth=depth + 1, cursor=newCursor, sidebared=sidebared)])
             counter += 1
         return description
 
@@ -653,7 +653,7 @@ class MetaQuestSequence(Quest):
 
     def getActiveQuests(self):
         if self.subQuests:
-            return self.subQuests[0].getActiveQuests()+[self]
+            return [*self.subQuests[0].getActiveQuests(), self]
         else:
             return [self]
 

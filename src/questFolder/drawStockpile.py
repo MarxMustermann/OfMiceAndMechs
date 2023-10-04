@@ -287,9 +287,9 @@ Try as hard as you can to achieve this.
                 return (None,(["C","i","m","s","enter"],"to configure the painter to storage stockpile"))
             if self.itemType != item.paintType:
                 if self.itemType:
-                    return (None,(["C","i","t"] + list(self.itemType) + ["enter"],"to configure the item type for the stockpile"))
+                    return (None,(["C", "i", "t", *list(self.itemType), "enter"],"to configure the item type for the stockpile"))
                 else:
-                    return (None,(["C","i","t"] + ["enter"],"to remove the item type for the stockpile"))
+                    return (None,(["C", "i", "t", "enter"],"to remove the item type for the stockpile"))
 
             for (key,_value) in item.paintExtraInfo.items():
                 if not key in self.extraInfo:
@@ -300,7 +300,7 @@ Try as hard as you can to achieve this.
                     return (None,(["C","i","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
             if item.offset != (0, 0, 0):
-                return (None,(["C","i","d","."] + ["enter"],"to remove the offset from the painter"))
+                return (None,(["C", "i", "d", ".", "enter"],"to remove the offset from the painter"))
 
             return (None,("Ji","draw to stockpile"))
 

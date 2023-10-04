@@ -794,9 +794,7 @@ class RoomManager(src.items.Item):
                         },
                         {
                             "task": "produce blueprint",
-                            "command": list("Js" + task["type"])
-                            + ["enter"]
-                            + list("dKsa"),
+                            "command": [*list("Js" + task["type"]), "enter", *list("dKsa")],
                         },
                         {
                             "task": "go to resource terminal",

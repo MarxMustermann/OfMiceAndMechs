@@ -973,7 +973,7 @@ class ArchitectArtwork(src.items.Item):
                 pos = (random.randint(1,13),random.randint(1,13))
                 if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     if random.randint(0,3) == 1:
-                        loot = src.items.itemMap[random.choice(["MetalBars","Rod","Frame"]+src.items.commons)]()
+                        loot = src.items.itemMap[random.choice(["MetalBars", "Rod", "Frame", *src.items.commons])]()
                         loot.bolted = False
                         if loot.walkable:
                             terrain.addItem(loot,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))

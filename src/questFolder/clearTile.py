@@ -181,7 +181,7 @@ Remove all items from the walkways."""
             return []
 
         foundItems = []
-        for position in random.sample(list(room.walkingSpace)+[(6,0,0),(0,6,0),(12,6,0),(6,12,0)],len(room.walkingSpace)+4):
+        for position in random.sample([*list(room.walkingSpace), (6, 0, 0), (0, 6, 0), (12, 6, 0), (6, 12, 0)],len(room.walkingSpace)+4):
             items = room.getItemByPosition(position)
 
             if not items:

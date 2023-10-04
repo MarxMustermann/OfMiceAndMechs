@@ -338,7 +338,7 @@ We should stop watching and do something about that.
         terrain = character.getTerrain()
         rooms = terrain.rooms
         random.shuffle(rooms)
-        for room in [room]+rooms:
+        for room in [room, *rooms]:
             items = room.itemsOnFloor[:]
             random.shuffle(items)
             for item in items:
@@ -683,7 +683,7 @@ We should stop watching and do something about that.
                     return True
 
     def checkTriggerResourceGathering(self,character,room):
-        for room in [room]+character.getTerrain().rooms:
+        for room in [room, *character.getTerrain().rooms]:
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
             if emptyInputSlots:
                 for inputSlot in emptyInputSlots:
@@ -717,7 +717,7 @@ We should stop watching and do something about that.
                     return True
 
     def checkTriggerMaggotGathering(self,character,room):
-        for room in [room]+character.getTerrain().rooms:
+        for room in [room, *character.getTerrain().rooms]:
             emptyInputSlots = room.getEmptyInputslots(itemType="VatMaggot")
             if emptyInputSlots:
                 for inputSlot in emptyInputSlots:
@@ -799,7 +799,7 @@ We should stop watching and do something about that.
         random.shuffle(rooms)
 
         for trueInput in (True,False):
-            for room in [room] + rooms:
+            for room in [room, *rooms]:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
                 random.shuffle(emptyInputSlots)
 
@@ -847,7 +847,7 @@ We should stop watching and do something about that.
                                 return True
 
         for trueInput in (True,False):
-            for room in [room] + character.getTerrain().rooms:
+            for room in [room, *character.getTerrain().rooms]:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
                 if emptyInputSlots:
@@ -890,7 +890,7 @@ We should stop watching and do something about that.
                                 self.idleCounter = 0
                                 return True
 
-        for room in [room] + character.getTerrain().rooms:
+        for room in [room, *character.getTerrain().rooms]:
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":
                     continue
@@ -918,7 +918,7 @@ We should stop watching and do something about that.
         checkedTypes = set()
 
         for trueInput in (True,False):
-            for room in [room] + character.getTerrain().rooms:
+            for room in [room, *character.getTerrain().rooms]:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
                 if emptyInputSlots:
@@ -1026,7 +1026,7 @@ We should stop watching and do something about that.
                         self.idleCounter = 0
                         return True
 
-        for room in [room] + character.getTerrain().rooms:
+        for room in [room, *character.getTerrain().rooms]:
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":
                     continue
@@ -1054,7 +1054,7 @@ We should stop watching and do something about that.
                             return True
 
     def checkTriggerPainting(self,character,room):
-        for room in [room]+character.getTerrain().rooms:
+        for room in [room, *character.getTerrain().rooms]:
             if room.floorPlan:
                 self.addQuest(src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition()))
                 self.idleCounter = 0
@@ -1258,7 +1258,7 @@ We should stop watching and do something about that.
         rooms = terrain.rooms[:]
         random.shuffle(rooms)
         produceQuest = None
-        for room in [room]+rooms:
+        for room in [room, *rooms]:
             if (not room.floorPlan) and room.buildSites:
                 checkedMaterial = set()
                 for buildSite in random.sample(room.buildSites,len(room.buildSites)):
@@ -1621,7 +1621,7 @@ We should stop watching and do something about that.
         rooms = terrain.rooms[:]
         random.shuffle(rooms)
         produceQuest = None
-        for room in [room]+rooms:
+        for room in [room, *rooms]:
             shrines = room.getItemsByType("Shrine")
             foundShrine = None
             for checkShrine in shrines:

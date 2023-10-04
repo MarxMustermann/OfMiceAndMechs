@@ -272,7 +272,7 @@ class RoomManager(src.items.Item):
             "task": params["tasksType"],
         }
 
-        if not typeParameter is None:
+        if typeParameter is not None:
             newTask["type"] = typeParameter
 
         self.tasks.append(newTask)

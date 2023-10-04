@@ -4121,7 +4121,7 @@ class InventoryMenu(SubMenu):
 
         if self.subMenu:
             self.subMenu.handleKey(key, noRender=noRender, character=character)
-            if not self.subMenu.getSelection() is None:
+            if self.subMenu.getSelection() is not None:
                 if self.activate:
                     text = (
                         "you activate the "
@@ -9897,7 +9897,7 @@ def gameLoop_disabled(loop, user_data=None):
     if not os.path.exists("perfDebug"):
         os.makedirs("perfDebug")
 
-    if not src.gamestate.gamestate.stopGameInTicks is None:
+    if src.gamestate.gamestate.stopGameInTicks is not None:
         if src.gamestate.gamestate.stopGameInTicks == 0:
             src.gamestate.gamestate.gameHalted = True
             src.gamestate.gamestate.stopGameInTicks = None

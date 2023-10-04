@@ -37,7 +37,7 @@ class MemoryDump(src.items.Item):
 
         import copy
 
-        if not self.macros is None:
+        if self.macros is not None:
             character.addMessage(
                 "you overwrite your macros with the ones in your memory dump"
             )

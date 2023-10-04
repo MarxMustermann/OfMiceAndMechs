@@ -1135,7 +1135,11 @@ class Room:
                         if activeQuest:
                             for marker in activeQuest.getQuestMarkersSmall(foundMainchar):
                                 pos = marker[0]
-                                display = chars[pos[1]][pos[0]]
+                                try:
+                                    display = chars[pos[1]][pos[0]]
+                                except IndexError:
+                                    logger.error(f"drawing outside of room {pos}")
+                                    continue
 
                                 if isinstance(display,list):
                                     displayList = display

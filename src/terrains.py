@@ -262,6 +262,10 @@ class Terrain:
         return self.itemsByBigCoordinate.get(character.getBigPosition(),[])[:]
 
     def shiftPosition(self,position):
+        if position[0] is None or position[1] is None:
+            logger.error("tried to shift None position")
+            return (None,None,None)
+
         smallX = position[0] % 15
         smallY = position[1] % 15
         if smallX == 0:
@@ -1359,7 +1363,10 @@ class Terrain:
             self.itemsByBigCoordinate[bigPos].remove(item)
 
         itemList = self.getItemByPosition(pos)
-        itemList.remove(item)
+        try:
+            itemList.remove(item)
+        except ValueError:
+            logger.error("tried to remove non registered item")
 
         item.xPosition = None
         item.zPosition = None

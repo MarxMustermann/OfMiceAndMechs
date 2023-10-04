@@ -1,4 +1,3 @@
-import src.itemFolder.story.autoTutor
 import src.itemFolder.story.brokenCityCore
 import src.itemFolder.story.portableChallenger
 import src.itemFolder.story.specialItem

@@ -9592,24 +9592,24 @@ grows and grows and grows and grows
         elif stage == 2:
             backgroundText = "You will rule the world some day, but first follow your orders.   "
 
-            l=len(backgroundText)-14
-            #if subStep < l*1:
+            numChars=len(backgroundText)-14
+            #if subStep < numChars*1:
             #    color = "#000"
             #    color2 = "#000"
             #    color3 = "#000"
-            if subStep < l*1:
+            if subStep < numChars*1:
                 color = "#000"
                 color2 = "#000"
                 color3 = "#111"
-            elif subStep < l*2:
+            elif subStep < numChars*2:
                 color = "#000"
                 color2 = "#111"
                 color3 = "#222"
-            elif subStep < l*3:
+            elif subStep < numChars*3:
                 color = "#111"
                 color2 = "#222"
                 color3 = "#332"
-            elif subStep < l*4:
+            elif subStep < numChars*4:
                 color = "#222"
                 color2 = "#333"
                 color3 = "#442"
@@ -9682,7 +9682,7 @@ grows and grows and grows and grows
             offset = 0
             width = len(backgroundText)
 
-            index = subStep%l
+            index = subStep%numChars
             backgroundText = "You will rule the world some day, but first follow your orders.   "
             if index > 2:
                 index += 1

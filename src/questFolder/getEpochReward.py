@@ -118,7 +118,7 @@ This will allow you to focus on other tasks.
                 else:
                     command += "w"*(-offset)
                 command += "j"
-                return (None,(command,"to get your reward"))
+                return (None,(command,"get your reward"))
             submenue = character.macroState["submenue"]
             counter = 2
             command = ""
@@ -127,10 +127,10 @@ This will allow you to focus on other tasks.
             if submenue.selectionIndex < counter:
                 command += "s"*(counter-submenue.selectionIndex)
             command += "j"
-            return (None,(command,"to get your reward"))
+            return (None,(command,"get your reward"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
 
@@ -162,7 +162,7 @@ This will allow you to focus on other tasks.
                 command = "w"
 
             if command:
-                return (None,("J"+command,"to start praying at the shrine"))
+                return (None,("J"+command,"start praying at the shrine"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
             return ([quest],None)

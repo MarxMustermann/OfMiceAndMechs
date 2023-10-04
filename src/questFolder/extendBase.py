@@ -362,7 +362,7 @@ Press d to move the cursor and show the subquests description.
 
             # set up city planer
             if not cityPlaner:
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,2,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan city expansion")
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(5,2,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="be able to plan city expansion")
                 return ([quest],None)
 
             # ensure there is a general purpose room
@@ -637,11 +637,11 @@ Press d to move the cursor and show the subquests description.
                             break
 
                         counter2 += 1
-                        quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],tryHard=True,reason="to help with setting up the rooms")
+                        quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],tryHard=True,reason="help with setting up the rooms")
                         quests.append(quest)
                         for buildSite2 in buildSites[counter:]:
                             if buildSite[2] == buildSite2[2]:
-                                quest = src.quests.questMap["SetUpMachine"](itemType=buildSite2[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],tryHard=True,reason="to help with setting up the rooms")
+                                quest = src.quests.questMap["SetUpMachine"](itemType=buildSite2[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],tryHard=True,reason="help with setting up the rooms")
                                 quests.append(quest)
                                 buildSites.remove(buildSite2)
                                 counter2 += 1
@@ -665,11 +665,11 @@ Press d to move the cursor and show the subquests description.
                             break
 
                         counter2 += 1
-                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite[0],itemType=buildSite[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite[0],itemType=buildSite[1],tryHard=True,boltDown=True,reason="help with setting up the rooms")
                         quests.append(quest)
                         for buildSite2 in buildSites[counter:]:
                             if buildSite[1] == buildSite2[1]:
-                                quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],itemType=buildSite2[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                                quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],itemType=buildSite2[1],tryHard=True,boltDown=True,reason="help with setting up the rooms")
                                 quests.append(quest)
                                 buildSites.remove(buildSite2)
                                 counter2 += 1
@@ -854,11 +854,11 @@ Press d to move the cursor and show the subquests description.
                         break
 
                     counter2 += 1
-                    quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],tryHard=True,reason="to help with setting up the rooms")
+                    quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],tryHard=True,reason="help with setting up the rooms")
                     quests.append(quest)
                     for buildSite2 in buildSites[counter:]:
                         if buildSite[2] == buildSite2[2]:
-                            quest = src.quests.questMap["SetUpMachine"](itemType=buildSite2[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],tryHard=True,reason="to help with setting up the rooms")
+                            quest = src.quests.questMap["SetUpMachine"](itemType=buildSite2[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],tryHard=True,reason="help with setting up the rooms")
                             quests.append(quest)
                             buildSites.remove(buildSite2)
                             counter2 += 1
@@ -882,11 +882,11 @@ Press d to move the cursor and show the subquests description.
                         break
 
                     counter2 += 1
-                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite[0],itemType=buildSite[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                    quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite[0],itemType=buildSite[1],tryHard=True,boltDown=True,reason="help with setting up the rooms")
                     quests.append(quest)
                     for buildSite2 in buildSites[counter:]:
                         if buildSite[1] == buildSite2[1]:
-                            quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],itemType=buildSite2[1],tryHard=True,boltDown=True,reason="to help with setting up the rooms")
+                            quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],itemType=buildSite2[1],tryHard=True,boltDown=True,reason="help with setting up the rooms")
                             quests.append(quest)
                             buildSites.remove(buildSite2)
                             counter2 += 1
@@ -920,12 +920,12 @@ Press d to move the cursor and show the subquests description.
                     counter += 1
                     counter2 += 1
 
-                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot[1],stockpileType="o",targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="to help with drawing the markers in rooms")
+                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot[1],stockpileType="o",targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="help with drawing the markers in rooms")
                     quests.append(quest)
 
                     for outputSlot2 in outputSlots[counter:]:
                         if outputSlot[1] == outputSlot2[1]:
-                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot2[1],stockpileType="o",targetPositionBig=room.getPosition(),targetPosition=outputSlot2[0],reason="to help with drawing the markers in rooms")
+                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot2[1],stockpileType="o",targetPositionBig=room.getPosition(),targetPosition=outputSlot2[0],reason="help with drawing the markers in rooms")
                             quests.append(quest)
                             outputSlots.remove(outputSlot2)
                             counter2 += 1
@@ -961,12 +961,12 @@ Press d to move the cursor and show the subquests description.
                     counter += 1
                     counter2 += 1
 
-                    quest = src.quests.questMap["DrawBuildSite"](tryHard=True,itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],extraInfo=buildSite[2],reason="to help with drawing the markers in rooms")
+                    quest = src.quests.questMap["DrawBuildSite"](tryHard=True,itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],extraInfo=buildSite[2],reason="help with drawing the markers in rooms")
                     quests.append(quest)
 
                     for buildSite2 in buildSites[counter:]:
                         if buildSite[1] == buildSite2[1] and buildSite[2] == buildSite2[2]:
-                            quest = src.quests.questMap["DrawBuildSite"](tryHard=True,itemType=buildSite2[1],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],extraInfo=buildSite2[2],reason="to help with drawing the markers in rooms")
+                            quest = src.quests.questMap["DrawBuildSite"](tryHard=True,itemType=buildSite2[1],targetPositionBig=room.getPosition(),targetPosition=buildSite2[0],extraInfo=buildSite2[2],reason="help with drawing the markers in rooms")
                             quests.append(quest)
                             buildSites.remove(buildSite2)
                             counter2 += 1
@@ -996,7 +996,7 @@ Press d to move the cursor and show the subquests description.
                     counter += 1
                     if counter > 5:
                         break
-                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=inputSlot[1],stockpileType="i",targetPositionBig=room.getPosition(),targetPosition=inputSlot[0],reason="to help with drawing the markers in rooms")
+                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=inputSlot[1],stockpileType="i",targetPositionBig=room.getPosition(),targetPosition=inputSlot[0],reason="help with drawing the markers in rooms")
                     quests.append(quest)
                 if quests:
                     return (quests,None)
@@ -1023,7 +1023,7 @@ Press d to move the cursor and show the subquests description.
                     counter += 1
                     if counter > 5:
                         break
-                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot[1],stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="to help with drawing the markers in rooms")
+                    quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=outputSlot[1],stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=outputSlot[0],reason="help with drawing the markers in rooms")
                     quests.append(quest)
                 if quests:
                     return (quests,None)

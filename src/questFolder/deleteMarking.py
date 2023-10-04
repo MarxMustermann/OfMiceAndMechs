@@ -88,18 +88,18 @@ class DeleteMarking(src.quests.MetaQuestSequence):
                         painterOffset = checkOffset
 
                 if painterOffset == (0,0,0) and painterOffset != item.offset:
-                    return (None,(["c","d",".","enter"],"to configure painter direction"))
+                    return (None,(["c","d",".","enter"],"configure painter direction"))
                 if painterOffset == (0,1,0) and painterOffset != item.offset:
-                    return (None,(["c","d","s","enter"],"to configure painter direction"))
+                    return (None,(["c","d","s","enter"],"configure painter direction"))
                 if painterOffset == (0,-1,0) and painterOffset != item.offset:
-                    return (None,(["c","d","w","enter"],"to configure painter direction"))
+                    return (None,(["c","d","w","enter"],"configure painter direction"))
                 if painterOffset == (1,0,0) and painterOffset != item.offset:
-                    return (None,(["c","d","d","enter"],"to configure painter direction"))
+                    return (None,(["c","d","d","enter"],"configure painter direction"))
                 if painterOffset == (-1,0,0) and painterOffset != item.offset:
-                    return (None,(["c","d","a","enter"],"to configure painter direction"))
+                    return (None,(["c","d","a","enter"],"configure painter direction"))
 
                 if item.paintMode != "delete":
-                    return (None,(["c","m","d","enter"],"to configure the painter to input stockpile"))
+                    return (None,(["c","m","d","enter"],"configure the painter to input stockpile"))
 
                 return (None,("jk","delete marking"))
 

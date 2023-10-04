@@ -271,7 +271,7 @@ If you don't find a {self.itemType} blueprint, research it.
                             command = "s"*offset+"j"
                         else:
                             command = "w"*(-offset)+"j"
-                        return (None,(command,"to produce the machine"))
+                        return (None,(command,"produce the machine"))
                     else:
                         submenue = character.macroState["submenue"]
                         counter = 2
@@ -281,13 +281,13 @@ If you don't find a {self.itemType} blueprint, research it.
                         if submenue.selectionIndex < counter:
                             command += "s"*(counter-submenue.selectionIndex)
                         command += "j"
-                        return (None,(command,"to start producing a machine"))
+                        return (None,(command,"start producing a machine"))
 
                 directions = [((0,0,0),"."),((0,1,0),"s"),((1,0,0),"d"),((0,-1,0),"w"),((-1,0,0),"a")]
                 directionFound = None
                 for direction in directions:
                     if character.getPosition(offset=direction[0]) == machineMachine.getPosition():
-                        return (None,("J"+direction[1],"to activate the epoch artwork"))
+                        return (None,("J"+direction[1],"activate the epoch artwork"))
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(0,-1,0)))
             placedBlueprintFound = False

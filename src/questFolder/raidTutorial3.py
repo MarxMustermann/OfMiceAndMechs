@@ -23,7 +23,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
         terrain = character.getTerrain()
 
         if character.health < 80 and character.canHeal():
-            return (None,"JH","to heal")
+            return (None,"JH","heal")
 
         if (terrain.yPosition == 7 and terrain.xPosition == 6) and not self.shownPickedUpSpecialItemSlot:
             #if character.inventory:
@@ -35,7 +35,7 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
             if character.getBigPosition() not in ((0,7,0),) and character.getSpacePosition() != (1, 7, 0):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                 return ([quest],None)
-            return (None,("a","to cheat yourself onto the neighbor terrain"))
+            return (None,("a","cheat yourself onto the neighbor terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 5):
             enemies = []

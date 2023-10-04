@@ -82,11 +82,11 @@ Try as hard as you can to achieve this.
             if submenue:
                 if submenue.tag == "paintModeSelection":
                     if submenue.text == "":
-                        return (None,(["b"],"to configure the painter to build site"))
+                        return (None,(["b"],"configure the painter to build site"))
                     elif submenue.text == "b":
-                        return (None,(["enter"],"to configure the painter to nuild site"))
+                        return (None,(["enter"],"configure the painter to nuild site"))
                     else:
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
                 if submenue.tag == "paintTypeSelection":
                     itemType = self.itemType
@@ -94,7 +94,7 @@ Try as hard as you can to achieve this.
                         itemType = ""
 
                     if itemType == submenue.text:
-                        return (None,(["enter"],"to configure the item type"))
+                        return (None,(["enter"],"configure the item type"))
 
                     correctIndex = 0
                     while correctIndex < len(itemType) and correctIndex < len(submenue.text):
@@ -103,15 +103,15 @@ Try as hard as you can to achieve this.
                         correctIndex += 1
 
                     if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
-                    return (None,(itemType[correctIndex:],"to enter type"))
+                    return (None,(itemType[correctIndex:],"enter type"))
 
                 if submenue.tag == "paintExtraParamName":
                     nameToSet = "toProduce"
 
                     if nameToSet == submenue.text:
-                        return (None,(["enter"],"to set the name of the extra parameter"))
+                        return (None,(["enter"],"set the name of the extra parameter"))
 
                     correctIndex = 0
                     while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
@@ -120,15 +120,15 @@ Try as hard as you can to achieve this.
                         correctIndex += 1
 
                     if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
-                    return (None,(nameToSet[correctIndex:],"to enter name of the extra parameter"))
+                    return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
 
                 if submenue.tag == "paintExtraParamValue":
                     valueToSet = self.extraInfo["toProduce"]
 
                     if valueToSet == submenue.text:
-                        return (None,(["enter"],"to set the value of the extra parameter"))
+                        return (None,(["enter"],"set the value of the extra parameter"))
 
                     correctIndex = 0
                     while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
@@ -137,9 +137,9 @@ Try as hard as you can to achieve this.
                         correctIndex += 1
 
                     if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
-                    return (None,(valueToSet[correctIndex:],"to enter value of the extra parameter"))
+                    return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
 
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
@@ -169,21 +169,21 @@ Try as hard as you can to achieve this.
                     return ([quest],None)
 
                 if item.paintMode != "buildSite":
-                    return (None,(["c","m","b","enter"],"to configure the painter to paint build site"))
+                    return (None,(["c","m","b","enter"],"configure the painter to paint build site"))
 
                 if self.itemType != item.paintType:
-                    return (None,(["c", "t", *list(self.itemType), "enter"],"to configure the item type for the build site"))
+                    return (None,(["c", "t", *list(self.itemType), "enter"],"configure the item type for the build site"))
 
                 for (key,_value) in item.paintExtraInfo.items():
                     if key not in self.extraInfo:
-                        return (None,(["c","c"],"to clear the painters extra info"))
+                        return (None,(["c","c"],"clear the painters extra info"))
 
                 for (key,value) in self.extraInfo.items():
                     if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
-                        return (None,(["c","e",key,"enter",value,"enter"],"to clear the painters extra info"))
+                        return (None,(["c","e",key,"enter",value,"enter"],"clear the painters extra info"))
 
                 if item.offset != (0, 0, 0):
-                    return (None,(["c", "d", ".", "enter"],"to remove the offset from the painter"))
+                    return (None,(["c", "d", ".", "enter"],"remove the offset from the painter"))
 
                 return (None,("jk","draw to stockpile"))
 

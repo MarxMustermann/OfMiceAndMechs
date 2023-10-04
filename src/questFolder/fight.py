@@ -69,7 +69,7 @@ kill,kill,kill!
             return (None,None)
 
         if character.health < character.maxHealth//5 and character.canHeal():
-            return (None,("JH","to heal"))
+            return (None,("JH","heal"))
 
         if character.health < character.maxHealth//5:
             self.fail()

@@ -541,7 +541,7 @@ We should stop watching and do something about that.
             return True
 
         if not cityPlaner:
-            quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to be able to plan city expansion")
+            quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="be able to plan city expansion")
             self.addQuest(quest)
             return True
 
@@ -924,8 +924,8 @@ We should stop watching and do something about that.
                         if not items or items[0].type != storageSlot[1]:
                             continue
 
-                        self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="to fill a storage stockpile designated to be filled"))
-                        self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to fill a storage stockpile designated to be filled",abortOnfullInventory=True))
+                        self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
+                        self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="fill a storage stockpile designated to be filled",abortOnfullInventory=True))
                         self.idleCounter = 0
                         return True
         return None
@@ -1062,8 +1062,8 @@ We should stop watching and do something about that.
                             if not items or items[0].type != storageSlot[1]:
                                 continue
 
-                            self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="to fill a storage stockpile designated to be filled"))
-                            self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="to fill a storage stockpile designated to be filled",abortOnfullInventory=True))
+                            self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
+                            self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="fill a storage stockpile designated to be filled",abortOnfullInventory=True))
                             if character.inventory:
                                 self.addQuest(src.quests.questMap["ClearInventory"]())
                             self.idleCounter = 0
@@ -1394,7 +1394,7 @@ We should stop watching and do something about that.
                         itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
 
             if itemsInStorage.get("CityPlaner") or "metal working" in character.duties:
-                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="to have it to plan the city with")
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="have it to plan the city with")
                 self.addQuest(quest)
                 return True
 
@@ -1444,7 +1444,7 @@ We should stop watching and do something about that.
                         break
 
                     if validTargetPosition:
-                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="to have at least one scrpa compactor")
+                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="have at least one scrpa compactor")
                         self.addQuest(quest)
                         return True
             return None

@@ -156,20 +156,20 @@ Try as hard as you can to achieve this.
                 if submenue.tag == "paintModeSelection":
                     if submenue.text == "":
                         if self.stockpileType == "i":
-                            return (None,(["i"],"to configure the painter to input stockpile"))
+                            return (None,(["i"],"configure the painter to input stockpile"))
                         if self.stockpileType == "o":
-                            return (None,(["o"],"to configure the painter to output stockpile"))
+                            return (None,(["o"],"configure the painter to output stockpile"))
                         if self.stockpileType == "s":
-                            return (None,(["s"],"to configure the painter to storage stockpile"))
+                            return (None,(["s"],"configure the painter to storage stockpile"))
                     elif self.stockpileType == submenue.text:
                         if self.stockpileType == "i":
-                            return (None,(["enter"],"to configure the painter to input stockpile"))
+                            return (None,(["enter"],"configure the painter to input stockpile"))
                         if self.stockpileType == "o":
-                            return (None,(["enter"],"to configure the painter to output stockpile"))
+                            return (None,(["enter"],"configure the painter to output stockpile"))
                         if self.stockpileType == "s":
-                            return (None,(["enter"],"to configure the painter to storage stockpile"))
+                            return (None,(["enter"],"configure the painter to storage stockpile"))
                     else:
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
                 if submenue.tag == "paintTypeSelection":
                     itemType = self.itemType
@@ -178,11 +178,11 @@ Try as hard as you can to achieve this.
 
                     if itemType == submenue.text:
                         if self.stockpileType == "i":
-                            return (None,(["enter"],"to configure the painter to input stockpile"))
+                            return (None,(["enter"],"configure the painter to input stockpile"))
                         if self.stockpileType == "o":
-                            return (None,(["enter"],"to configure the painter to output stockpile"))
+                            return (None,(["enter"],"configure the painter to output stockpile"))
                         if self.stockpileType == "s":
-                            return (None,(["enter"],"to configure the painter to storage stockpile"))
+                            return (None,(["enter"],"configure the painter to storage stockpile"))
 
                     correctIndex = 0
                     while correctIndex < len(itemType) and correctIndex < len(submenue.text):
@@ -191,9 +191,9 @@ Try as hard as you can to achieve this.
                         correctIndex += 1
 
                     if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
-                    return (None,(itemType[correctIndex:],"to enter type"))
+                    return (None,(itemType[correctIndex:],"enter type"))
 
                 if submenue.tag == "paintExtraParamName":
                     nameToSet = ""
@@ -202,7 +202,7 @@ Try as hard as you can to achieve this.
                             nameToSet = key
 
                     if nameToSet == submenue.text:
-                        return (None,(["enter"],"to set the name of the extra parameter"))
+                        return (None,(["enter"],"set the name of the extra parameter"))
 
                     correctIndex = 0
                     while correctIndex < len(nameToSet) and correctIndex < len(submenue.text):
@@ -211,9 +211,9 @@ Try as hard as you can to achieve this.
                         correctIndex += 1
 
                     if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
-                    return (None,(nameToSet[correctIndex:],"to enter name of the extra parameter"))
+                    return (None,(nameToSet[correctIndex:],"enter name of the extra parameter"))
 
                 if submenue.tag == "paintExtraParamValue":
                     #BUG: ordering is not actually checked
@@ -223,7 +223,7 @@ Try as hard as you can to achieve this.
                             valueToSet = value
 
                     if valueToSet == submenue.text:
-                        return (None,(["enter"],"to set the value of the extra parameter"))
+                        return (None,(["enter"],"set the value of the extra parameter"))
 
                     correctIndex = 0
                     while correctIndex < len(valueToSet) and correctIndex < len(submenue.text):
@@ -232,9 +232,9 @@ Try as hard as you can to achieve this.
                         correctIndex += 1
 
                     if correctIndex < len(submenue.text):
-                        return (None,(["backspace"],"to delete input"))
+                        return (None,(["backspace"],"delete input"))
 
-                    return (None,(valueToSet[correctIndex:],"to enter value of the extra parameter"))
+                    return (None,(valueToSet[correctIndex:],"enter value of the extra parameter"))
 
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:
@@ -282,27 +282,27 @@ Try as hard as you can to achieve this.
                     foundOffset = offset
 
             if self.stockpileType == "i" and item.paintMode != "inputSlot":
-                return (None,(["C","i","m","i","enter"],"to configure the painter to input stockpile"))
+                return (None,(["C","i","m","i","enter"],"configure the painter to input stockpile"))
             if self.stockpileType == "o" and item.paintMode != "outputSlot":
-                return (None,(["C","i","m","o","enter"],"to configure the painter to output stockpile"))
+                return (None,(["C","i","m","o","enter"],"configure the painter to output stockpile"))
             if self.stockpileType == "s" and item.paintMode != "storageSlot":
-                return (None,(["C","i","m","s","enter"],"to configure the painter to storage stockpile"))
+                return (None,(["C","i","m","s","enter"],"configure the painter to storage stockpile"))
             if self.itemType != item.paintType:
                 if self.itemType:
-                    return (None,(["C", "i", "t", *list(self.itemType), "enter"],"to configure the item type for the stockpile"))
+                    return (None,(["C", "i", "t", *list(self.itemType), "enter"],"configure the item type for the stockpile"))
                 else:
-                    return (None,(["C", "i", "t", "enter"],"to remove the item type for the stockpile"))
+                    return (None,(["C", "i", "t", "enter"],"remove the item type for the stockpile"))
 
             for (key,_value) in item.paintExtraInfo.items():
                 if key not in self.extraInfo:
-                    return (None,(["C","i","c"],"to clear the painters extra info"))
+                    return (None,(["C","i","c"],"clear the painters extra info"))
 
             for (key,value) in self.extraInfo.items():
                 if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
-                    return (None,(["C","i","e",key,"enter",value,"enter"],"to clear the painters extra info"))
+                    return (None,(["C","i","e",key,"enter",value,"enter"],"clear the painters extra info"))
 
             if item.offset != (0, 0, 0):
-                return (None,(["C", "i", "d", ".", "enter"],"to remove the offset from the painter"))
+                return (None,(["C", "i", "d", ".", "enter"],"remove the offset from the painter"))
 
             return (None,("Ji","draw to stockpile"))
 

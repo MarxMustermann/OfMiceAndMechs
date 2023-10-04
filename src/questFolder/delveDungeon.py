@@ -117,7 +117,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             return (None,("k","pick up special item"))
 
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
-            quest = src.quests.questMap["GoHome"](reason="to go to your home territory")
+            quest = src.quests.questMap["GoHome"](reason="go to your home territory")
             return ([quest],None)
 
         if not character.container.isRoom:

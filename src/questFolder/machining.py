@@ -49,7 +49,7 @@ Press d to move the cursor and show the subquests description.
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.InputMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if self.toProduce == submenue.text:
-                return (None,(["enter"],"to set the name of the machine should produce"))
+                return (None,(["enter"],"set the name of the machine should produce"))
 
             correctIndex = 0
             while correctIndex < len(self.toProduce) and correctIndex < len(submenue.text):
@@ -58,9 +58,9 @@ Press d to move the cursor and show the subquests description.
                 correctIndex += 1
 
             if correctIndex < len(submenue.text):
-                return (None,(["backspace"],"to delete input"))
+                return (None,(["backspace"],"delete input"))
 
-            return (None,(self.toProduce[correctIndex:],"to enter name of the machine should produce"))
+            return (None,(self.toProduce[correctIndex:],"enter name of the machine should produce"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
@@ -88,7 +88,7 @@ Press d to move the cursor and show the subquests description.
                 else:
                     command += "w"*(-offset)
                 command += activationCommand
-                return (None,(command,"to produce item"))
+                return (None,(command,"produce item"))
             else:
                 submenue = character.macroState["submenue"]
                 counter = 1
@@ -98,10 +98,10 @@ Press d to move the cursor and show the subquests description.
                 if submenue.selectionIndex < counter:
                     command += "s"*(counter-submenue.selectionIndex)
                 command += "j"
-                return (None,(command,"to get your reward"))
+                return (None,(command,"get your reward"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         if character.getBigPosition() != (7, 7, 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")

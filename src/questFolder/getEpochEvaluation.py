@@ -68,10 +68,10 @@ You can spend them later to get an actual reward.
             if submenue.selectionIndex < counter:
                 command += "s"*(counter-submenue.selectionIndex)
             command += "j"
-            return (None,(command,"to collect the glass tears"))
+            return (None,(command,"collect the glass tears"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
 
@@ -88,7 +88,7 @@ You can spend them later to get an actual reward.
                 command = "w"
 
             if command:
-                return (None,("J"+command,"to activate the epoch artwork"))
+                return (None,("J"+command,"activate the epoch artwork"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True,reason="go to epoch artwork")
             return ([quest],None)

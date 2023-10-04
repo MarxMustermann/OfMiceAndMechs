@@ -108,7 +108,7 @@ Try luring enemies into landmines or detonating some bombs."""
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
             if character.health < 80 and character.canHeal():
-                return (None,"JH","to heal")
+                return (None,"JH","heal")
 
             if not self.strict:
                 self.huntdownCooldown -= 1

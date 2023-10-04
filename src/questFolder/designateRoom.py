@@ -76,7 +76,7 @@ Use the CityPlaner to designate the room.
             cityPlaner = character.container.getItemsByType("CityPlaner")[0]
             if self.roomPosition in cityPlaner.plannedRooms:
                 command += "x"
-                return (None,(command,"to remove old construction site marker"))
+                return (None,(command,"remove old construction site marker"))
 
             if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                 if not dryRun:
@@ -85,20 +85,20 @@ Use the CityPlaner to designate the room.
 
             if self.roomType == "generalPurposeRoom":
                 command += "g"
-                return (None,(command,"to designate room as general pupose room"))
+                return (None,(command,"designate room as general pupose room"))
             if self.roomType == "specialPurposeRoom":
                 command += "p"
-                return (None,(command,"to designate room as special pupose room"))
+                return (None,(command,"designate room as special pupose room"))
             if self.roomType == "undesignate":
                 command += "x"
-                return (None,(command,"to undesignate room"))
+                return (None,(command,"undesignate room"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.InputMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.text == "":
-                return (None,(list(self.roomTag),"to enter the rooms tag"))
+                return (None,(list(self.roomTag),"enter the rooms tag"))
             if submenue.text == self.roomTag:
-                return (None,(["enter"],"to set the rooms tag"))
+                return (None,(["enter"],"set the rooms tag"))
 
             correctIndex = 0
             while correctIndex < len(submenue.text) and correctIndex < len(self.roomTag):
@@ -107,10 +107,10 @@ Use the CityPlaner to designate the room.
                 correctIndex += 1
 
             if correctIndex < len(submenue.text):
-                return (None,(["backspace"]*(len(submenue.text)-correctIndex),"to delete spelling mistake"))
+                return (None,(["backspace"]*(len(submenue.text)-correctIndex),"delete spelling mistake"))
 
             if correctIndex < len(self.roomTag):
-                return (None,((list(self.roomTag[correctIndex:])),"to enter the room tag"))
+                return (None,((list(self.roomTag[correctIndex:])),"enter the room tag"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
@@ -130,7 +130,7 @@ Use the CityPlaner to designate the room.
                 return (None,("w"*(-offset)+"j","show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
 
@@ -162,7 +162,7 @@ Use the CityPlaner to designate the room.
             command = "."
 
         if command:
-            return (None,("J"+command,"to activate the CityPlaner"))
+            return (None,("J"+command,"activate the CityPlaner"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True)
         return ([quest],None)

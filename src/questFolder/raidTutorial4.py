@@ -35,7 +35,7 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
             if character.getBigPosition() not in ((14,7,0),) and character.getSpacePosition() != (13, 7, 0):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                 return ([quest],None)
-            return (None,("d","to cheat yourself onto the neighbor terrain"))
+            return (None,("d","cheat yourself onto the neighbor terrain"))
 
         if (terrain.yPosition == 7 and terrain.xPosition == 7):
             throne = None

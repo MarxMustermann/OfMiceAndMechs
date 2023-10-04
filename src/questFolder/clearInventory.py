@@ -128,7 +128,7 @@ To see your items open the your inventory by pressing i."""
                     emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                     if emptyInputSlots:
                         quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")
-                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="to remove items from your inventory")
+                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="remove items from your inventory")
                         return ([quest2,quest1],None)
 
                 if "HOMEx" not in character.registers:

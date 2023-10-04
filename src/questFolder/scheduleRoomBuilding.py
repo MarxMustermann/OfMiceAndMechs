@@ -44,7 +44,7 @@ Use a CityPlaner to do this.
             if submenue.cursor[1] < self.roomPosition[1]:
                 command += "s"*(self.roomPosition[1]-submenue.cursor[1])
             command += "r"
-            return (None,(command,"to schedule building a room"))
+            return (None,(command,"schedule building a room"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
 
@@ -68,7 +68,7 @@ Use a CityPlaner to do this.
             return (None,(command,"show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
         if pos != (7, 7, 0):
@@ -93,7 +93,7 @@ Use a CityPlaner to do this.
             command = "."
 
         if command:
-            return (None,("J"+command,"to activate the CityPlaner"))
+            return (None,("J"+command,"activate the CityPlaner"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True, reason="go to the CityPlaner")
         return ([quest],None)

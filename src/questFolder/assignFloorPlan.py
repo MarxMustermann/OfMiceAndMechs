@@ -47,7 +47,7 @@ Set the floor plan: {self.floorPlanType}
             cityPlaner = character.container.getItemsByType("CityPlaner")[0]
             if self.roomPosition in cityPlaner.plannedRooms:
                 command += "x"
-                return (None,(command,"to remove old construction site marker"))
+                return (None,(command,"remove old construction site marker"))
 
             if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                 if not dryRun:
@@ -55,7 +55,7 @@ Set the floor plan: {self.floorPlanType}
                 return (None,None)
 
             command += "f"
-            return (None,(command,"to set a floor plan"))
+            return (None,(command,"set a floor plan"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
@@ -72,7 +72,7 @@ Set the floor plan: {self.floorPlanType}
                 if submenue.selectionIndex < counter:
                     command += "s"*(counter-submenue.selectionIndex)
                 command += "j"
-                return (None,(command,"to select the floor plan"))
+                return (None,(command,"select the floor plan"))
 
             submenue = character.macroState["submenue"]
             rewardIndex = 0
@@ -94,7 +94,7 @@ Set the floor plan: {self.floorPlanType}
             return (None,(command,"show the map"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
 
@@ -116,7 +116,7 @@ Set the floor plan: {self.floorPlanType}
             command = "."
 
         if command:
-            return (None,("J"+command,"to activate the CityPlaner"))
+            return (None,("J"+command,"activate the CityPlaner"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True)
         return ([quest],None)

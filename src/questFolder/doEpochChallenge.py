@@ -44,10 +44,10 @@ Press d to the show the description for the subQuest.
             return (None,None)
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-            return (None,(["enter"],"to select option"))
+            return (None,(["enter"],"select option"))
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to exit submenu"))
+            return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
 
@@ -64,7 +64,7 @@ Press d to the show the description for the subQuest.
                 command = "w"
 
             if command:
-                return (None,("J"+command,"to activate the epoch artwork"))
+                return (None,("J"+command,"activate the epoch artwork"))
                 return (None,(list("J"+command)+["enter"]*2,"get a challenge from the epoch artwork"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=epochArtwork.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True, reason="get in reach of the EpochArtwork")

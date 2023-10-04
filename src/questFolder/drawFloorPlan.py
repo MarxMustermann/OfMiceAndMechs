@@ -43,7 +43,7 @@ Draw a floor plan assigned to a room{reason}.
                 if character.yPosition%15 == 14:
                     command = "w"
                 if command:
-                    return (None,(command,"to enter room"))
+                    return (None,(command,"enter room"))
 
             if character.getBigPosition() != self.targetPosition:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)

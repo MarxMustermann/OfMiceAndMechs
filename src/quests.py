@@ -313,7 +313,7 @@ class Quest:
         else:
             description = "x "+description
 
-        if cursor == None:
+        if cursor is None:
             color = "#fff"
         elif cursor == []:
             color = "#0f0"
@@ -602,7 +602,7 @@ class MetaQuestSequence(Quest):
         #if not depth == 0 and sidebared:
         #    description = ["..."]
 
-        if cursor == None:
+        if cursor is None:
             color = "#fff"
         elif cursor == []:
             color = "#0f0"

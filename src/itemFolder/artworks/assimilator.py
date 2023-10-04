@@ -147,7 +147,7 @@ Choose your tertiary duty:\n"""
         if character == src.gamestate.gamestate.mainChar:
             src.gamestate.gamestate.save()
 
-        if character.rank == None and character.registers.get("gotMostBasicTraining") == None:
+        if character.rank is None and character.registers.get("gotMostBasicTraining") is None:
             character.registers["gotMostBasicTraining"] = True
             self.implantIntroduction({"character":character,"step":0})
             character.registers["HOMEx"] = 7
@@ -157,7 +157,7 @@ Choose your tertiary duty:\n"""
             character.registers["HOMETy"] = terrainPosition[1]
             return
 
-        if character.rank == None:
+        if character.rank is None:
             self.shortIntroduction({"character":character})
             return
 

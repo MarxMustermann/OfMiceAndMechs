@@ -2433,10 +2433,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 #        item.apply(char)
                 #        break
                 if not (
-                    char.xPosition == None
-                    or char.yPosition == None
-                    or char.zPosition == None
-                    or char.container == None
+                    char.xPosition is None
+                    or char.yPosition is None
+                    or char.zPosition is None
+                    or char.container is None
                 ):
                     entry = char.container.getItemByPosition(
                         (char.xPosition, char.yPosition, char.zPosition)
@@ -4634,7 +4634,7 @@ class CreateQuestMenu(SubMenu):
                     self.questParams[param["name"]] = (int(rawParameter.split(",")[0]),int(rawParameter.split(",")[1]),0)
             self.submenu = None
 
-        if self.requiredParams == None:
+        if self.requiredParams is None:
             self.requiredParams = self.quest.getRequiredParameters()
 
         if self.requiredParams and not self.submenu:
@@ -4649,7 +4649,7 @@ class CreateQuestMenu(SubMenu):
 
         if not self.requiredParams and key == " ":
             for char in self.assignTo:
-                if char == None or char.dead:
+                if char is None or char.dead:
                     continue
 
                 quest = src.quests.questMap[self.questType]()
@@ -4676,10 +4676,10 @@ class CreateQuestMenu(SubMenu):
 
         if key not in ("enter","~"):
             self.stealAllKeys = True
-            if self.parameterName == None:
+            if self.parameterName is None:
                 self.parameterName = ""
 
-            if self.parameterValue == None:
+            if self.parameterValue is None:
                 if key == ":":
                     self.parameterValue = ""
                 elif key == "backspace":
@@ -4779,7 +4779,7 @@ class AdvancedQuestMenu(SubMenu):
 
                     # add the main players subordinates as target
                     for char in self.activeChar.subordinates:
-                        if char == None:
+                        if char is None:
                             continue
                         options.append((char, char.name))
                     self.setOptions("whom to give the order to: \n(press S for all subordinates)", options)
@@ -5272,7 +5272,7 @@ def renderInventory(character=None,sidebared=False):
         the rendered string
     """
 
-    if character == None:
+    if character is None:
         char = src.gamestate.gamestate.mainChar
     else:
         char = character
@@ -6984,7 +6984,7 @@ def getTcodEvents():
                         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
                     )
 
-                if translatedKey == None:
+                if translatedKey is None:
                     continue
 
                 keyboardListener(translatedKey)
@@ -6992,7 +6992,7 @@ def getTcodEvents():
             if isinstance(event,tcod.event.TextInput):
                 translatedKey = event.text
 
-                if translatedKey == None:
+                if translatedKey is None:
                     continue
 
                 keyboardListener(translatedKey)
@@ -8212,7 +8212,7 @@ def showInterruptChoice(text,options):
             if isinstance(event,tcod.event.TextInput):
                 translatedKey = event.text
 
-                if translatedKey == None:
+                if translatedKey is None:
                     continue
 
                 if translatedKey in options:
@@ -8757,7 +8757,7 @@ def showIntro():
             tcodConsole.clear()
 
         if stage == 0:
-            if stageState == None:
+            if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
 
             if not skip:
@@ -8781,7 +8781,7 @@ You """+"."*stageState["substep"]+"""
                 time.sleep(0.01)
 
         if stage == 1:
-            if stageState == None:
+            if stageState is None:
                 stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
 
                 scrapTakenMap = {}
@@ -8893,7 +8893,7 @@ You """+"."*stageState["substep"]+"""
 
             terrain.lastRender = None
 
-            if stageState == None:
+            if stageState is None:
                 stageState = {"lastChange":time.time(), "items":[],"terrainItems":[],"outputslots":[],"walkingSpaces":[],"inputslots":[],"fastSpawn":set(),"subStep":0,"didRemove":False}
 
                 machine = src.items.itemMap["Machine"]()
@@ -9240,7 +9240,7 @@ You """+"."*stageState["substep"]+"""
 
             terrain.lastRender = None
 
-            if stageState == None:
+            if stageState is None:
                 stageState = {"lastChange":time.time()}
 
             if not skip:
@@ -9263,7 +9263,7 @@ You """+"."*stageState["substep"]+"""
 
             terrain.lastRender = None
 
-            if stageState == None:
+            if stageState is None:
                 stageState = {"lastChange":time.time(),"substep":0,"endless":False}
 
                 npc = src.characters.Character()
@@ -9350,7 +9350,7 @@ You """+"."*stageState["substep"]+"""
 
             terrain.lastRender = None
 
-            if stageState == None:
+            if stageState is None:
                 stageState = {"lastChange":time.time(),"substep":0}
 
             if not skip:
@@ -9372,7 +9372,7 @@ You """+"."*stageState["substep"]+"""
                 skip = False
 
         if stage == 6:
-            if stageState == None:
+            if stageState is None:
                 stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
 
             text1 = """
@@ -9465,7 +9465,7 @@ def showRunIntro():
         tcodConsole.clear()
 
         if stage == 0:
-            if stageState == None:
+            if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
             text = """
   |                                                                         |

@@ -157,10 +157,10 @@ Scrapfields are shown on the minimap as white ss"""]
                         source = potentialSource
                         break
 
-            if source == None and not character.getTerrain().scrapFields:
+            if source is None and not character.getTerrain().scrapFields:
                 self.fail(reason="no scrap source found")
                 return (None,None)
-            elif source == None:
+            elif source is None:
                 terrain = character.getTerrain()
                 scrapFields = terrain.scrapFields[:]
                 for scrapField in scrapFields[:]:

@@ -19,7 +19,7 @@ class RipInReality(src.items.Item):
         self.target = None
         self.targetPos = None
 
-        if rootRip != None:
+        if rootRip is not None:
             self.rootRip = rootRip
             self.treasureRoom = None
         else:

@@ -42,7 +42,7 @@ press d to get a description on how to join the base
 
 
     def generateSubquests(self,character=None):
-        if not self.subQuests and self.character.rank == None:
+        if not self.subQuests and self.character.rank is None:
             quest = src.quests.questMap["Assimilate"]()
             quest.assignToCharacter(self.character)
             quest.activate()

@@ -149,7 +149,7 @@ class Shrine(src.items.Item):
         if "rewardType" not in extraInfo:
             return
 
-        if extraInfo["rewardType"] == None:
+        if extraInfo["rewardType"] is None:
             return
         if extraInfo["rewardType"] == "None":
             return

@@ -75,7 +75,7 @@ Draw a floor plan assigned to a room{reason}.
                 if quests:
                     return (list(reversed(quests)),None)
 
-                if walkingSpaces != None:
+                if walkingSpaces is not None:
                     del character.container.floorPlan["walkingSpace"]
 
             if "outputSlots" in character.container.floorPlan:
@@ -115,7 +115,7 @@ Draw a floor plan assigned to a room{reason}.
                     if quests:
                         return (list(reversed(quests)),None)
 
-                if outputSlots != None:
+                if outputSlots is not None:
                     del character.container.floorPlan["outputSlots"]
 
             if "buildSites" in character.container.floorPlan:
@@ -162,7 +162,7 @@ Draw a floor plan assigned to a room{reason}.
                         quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
                         return ([quest],None)
 
-                if buildSites != None:
+                if buildSites is not None:
                     del character.container.floorPlan["buildSites"]
 
             if "storageSlots" in character.container.floorPlan:
@@ -205,7 +205,7 @@ Draw a floor plan assigned to a room{reason}.
                     if quests:
                         return (list(reversed(quests)),None)
 
-                if storageSlots != None:
+                if storageSlots is not None:
                     del character.container.floorPlan["storageSlots"]
 
             if "inputSlots" in character.container.floorPlan:
@@ -243,7 +243,7 @@ Draw a floor plan assigned to a room{reason}.
                     if quests:
                         return (list(reversed(quests)),None)
 
-                if inputSlots != None:
+                if inputSlots is not None:
                     del character.container.floorPlan["inputSlots"]
 
             if character.container.floorPlan:

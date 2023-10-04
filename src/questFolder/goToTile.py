@@ -157,7 +157,7 @@ The target tile is {direction[4:]}
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if character == None:
+        if character is None:
             return (None,None)
 
         if not ignoreCommands and character.macroState.get("submenue"):

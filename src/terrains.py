@@ -980,7 +980,7 @@ class Terrain:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if costMap.get(newPos) != None:
+                if costMap.get(newPos) is not None:
                     continue
 
                 if newPos != targetPos and newPos in self.scrapFields:
@@ -1262,7 +1262,7 @@ class Terrain:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 1 or newPos[1] < 1:
                     continue
 
-                if costMap.get(newPos) != None:
+                if costMap.get(newPos) is not None:
                     continue
 
                 if newPos in blockedPositions and (not ignoreEndBlocked or newPos != targetPos):

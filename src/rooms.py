@@ -141,22 +141,22 @@ class Room:
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
     def addBuildSite(self,position,specification,extraInfo=None):
-        if extraInfo == None:
+        if extraInfo is None:
             extraInfo = {}
         self.buildSites.append((position,specification,extraInfo))
 
     def addOutputSlot(self,position,itemType,extraInfo=None):
-        if extraInfo == None:
+        if extraInfo is None:
             extraInfo = {}
         self.outputSlots.append((position,itemType,extraInfo))
 
     def addInputSlot(self,position,itemType,extraInfo=None):
-        if extraInfo == None:
+        if extraInfo is None:
             extraInfo = {}
         self.inputSlots.append((position,itemType,extraInfo))
 
     def addStorageSlot(self,position,itemType,extraInfo=None):
-        if extraInfo == None:
+        if extraInfo is None:
             extraInfo = {}
         self.storageSlots.append((position,itemType,extraInfo))
 
@@ -204,7 +204,7 @@ class Room:
             storageSlots = self.storageSlots[:]
             random.shuffle(storageSlots)
             for storageSlot in storageSlots:
-                if itemType and storageSlot[1] != None and storageSlot[1] != itemType:
+                if itemType and storageSlot[1] is not None and storageSlot[1] != itemType:
                     continue
 
                 items = self.getItemByPosition(storageSlot[0])
@@ -221,7 +221,7 @@ class Room:
     def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False):
         result = []
         for inputSlot in self.inputSlots:
-            if (itemType and inputSlot[1] != itemType) and (not allowAny or inputSlot[1] != None):
+            if (itemType and inputSlot[1] != itemType) and (not allowAny or inputSlot[1] is not None):
                 continue
 
             items = self.getItemByPosition(inputSlot[0])
@@ -255,7 +255,7 @@ class Room:
 
         if allowStorage:
             for storageSlot in self.storageSlots:
-                if (itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] != None):
+                if (itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None):
                     continue
 
                 pos = storageSlot[0]
@@ -296,7 +296,7 @@ class Room:
         return (self.xPosition+offset[0],self.yPosition+offset[1],0+offset[2])
 
     def getPathCommandTile(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,path=None,character=None,clearing=False):
-        if path == None:
+        if path is None:
             #path = self.getPathTile_test(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
             #path = self.getPathTile(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character)
             path = self.getPathTile_test2(startPos,targetPos,avoidItems,localRandom,tryHard,ignoreEndBlocked=ignoreEndBlocked,character=character,clearing=clearing)
@@ -536,7 +536,7 @@ class Room:
                 if newPos[0] > 13 or newPos[1] > 13 or newPos[0] < 0 or newPos[1] < 0:
                     continue
 
-                if costMap.get(newPos) != None:
+                if costMap.get(newPos) is not None:
                     continue
 
                 if newPos in blockedPositions and (not ignoreEndBlocked or newPos != targetPos):

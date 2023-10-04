@@ -193,7 +193,7 @@ class PersonnelTracker(src.items.Item):
             if subordinate.dead:
                 character.subordinates.remove(subordinate)
 
-        if character.rank == None or character.rank > 5:
+        if character.rank is None or character.rank > 5:
             character.addMessage("you need to be rank 5 or higher to spawn a bodyguard")
             return None
         if character.rank == 5 and character.getNumSubordinates() > 0:

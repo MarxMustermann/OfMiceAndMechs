@@ -20,7 +20,7 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
         return False
 
     def getSolvingCommandString(self,character=None,dryRun=True):
-        if character == None:
+        if character is None:
             return None
 
         if len(self.targetTerrain) < 3:
@@ -61,7 +61,7 @@ obtain the special item #{self.itemId} from the base on {self.targetTerrain}
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def generateSubquests(self,character=None):
-        if character == None:
+        if character is None:
             return
 
         foundSpecialItem = False

@@ -73,7 +73,7 @@ Press d to move the cursor and show the subquests description.
                         break
                     counter += 1
 
-                if index == None:
+                if index is None:
                     index = counter-1
 
                 offset = index-submenue.selectionIndex
@@ -168,7 +168,7 @@ Press d to move the cursor and show the subquests description.
             return
 
         self.amountDone += 1
-        if self.amount != None and self.amountDone >= self.amount:
+        if self.amount is not None and self.amountDone >= self.amount:
             self.postHandler()
 
     def handleInventoryFull(self, extraInfo):

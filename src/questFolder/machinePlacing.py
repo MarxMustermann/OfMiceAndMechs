@@ -49,7 +49,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["DrawWalkingSpace"](tryHard=True,targetPositionBig=self.targetPosition,targetPosition=walkingSpaces[-1])
                     return ([quest],None)
 
-                if walkingSpaces != None:
+                if walkingSpaces is not None:
                     del character.container.floorPlan["walkingSpace"]
 
             if "inputSlots" in character.container.floorPlan:
@@ -65,7 +65,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["DrawStockpile"](itemType=inputSlot[1],stockpileType="i",targetPositionBig=self.targetPosition,targetPosition=inputSlot[0])
                         return ([quest],None)
 
-                if inputSlots != None:
+                if inputSlots is not None:
                     del character.container.floorPlan["inputSlots"]
 
             if "outputSlots" in character.container.floorPlan:
@@ -81,7 +81,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["DrawStockpile"](itemType=outputSlot[1],stockpileType="o",targetPositionBig=self.targetPosition,targetPosition=outputSlot[0])
                         return ([quest],None)
 
-                if outputSlots != None:
+                if outputSlots is not None:
                     del character.container.floorPlan["outputSlots"]
 
             if "buildSites" in character.container.floorPlan:
@@ -98,7 +98,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["DrawBuildSite"](itemType=buildSite[1],targetPositionBig=self.targetPosition,targetPosition=buildSite[0],extraInfo=buildSite[2])
                         return ([quest],None)
 
-                if buildSites != None:
+                if buildSites is not None:
                     del character.container.floorPlan["buildSites"]
 
             self.postHandler()

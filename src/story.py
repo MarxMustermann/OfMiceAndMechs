@@ -372,7 +372,7 @@ the floorplan is available in basebuilder mode and main game now""")
                     if pos:
                         break
 
-            if pos == None:
+            if pos is None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place scrap compactor")
                 return None
 
@@ -405,7 +405,7 @@ the floorplan is available in basebuilder mode and main game now""")
                     if pos:
                         break
 
-            if pos == None:
+            if pos is None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place corpse animator")
                 return None
 
@@ -431,7 +431,7 @@ the floorplan is available in basebuilder mode and main game now""")
                         break
 
 
-            if pos == None:
+            if pos is None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place corpse stockpile")
                 return None
 
@@ -455,7 +455,7 @@ the floorplan is available in basebuilder mode and main game now""")
                         break
 
 
-            if pos == None:
+            if pos is None:
                 src.gamestate.gamestate.mainChar.addMessage("no room to place scratch plate")
                 return None
 
@@ -776,7 +776,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
 
 
     def handleMaintanenceNPCs(self, room=None):
-        if room == None:
+        if room is None:
             room = self.toBuildRoomClone5
 
         for npc in room.characters[:]:
@@ -3677,7 +3677,7 @@ This should get you up and running in no time""")
 
     def openedQuestsRaid(self):
         mainChar = self.activeStory["mainChar"]
-        if mainChar.armor == None or mainChar.weapon == None:
+        if mainChar.armor is None or mainChar.weapon is None:
             containerQuest = src.quests.questMap["Equip"]()
             mainChar.quests.append(containerQuest)
             containerQuest.assignToCharacter(mainChar)

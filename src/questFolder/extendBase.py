@@ -294,7 +294,7 @@ Press d to move the cursor and show the subquests description.
             numFreeStorage = 0
             for room in terrain.rooms:
                 for storageSlot in room.storageSlots:
-                    if storageSlot[1] != None:
+                    if storageSlot[1] is not None:
                         continue
                     items = room.getItemByPosition(storageSlot[0])
                     if items:
@@ -307,7 +307,7 @@ Press d to move the cursor and show the subquests description.
                 for storageSlot in room.storageSlots:
                     items = room.getItemByPosition(storageSlot[0])
                     if items:
-                        if storageSlot[1] == None or items[-1].type == storageSlot[1]:
+                        if storageSlot[1] is None or items[-1].type == storageSlot[1]:
                             if items[-1].type not in storedItems:
                                 storedItems[items[-1].type] = 0
                             storedItems[items[-1].type] += len(items)
@@ -318,7 +318,7 @@ Press d to move the cursor and show the subquests description.
                 for outputSlot in room.outputSlots:
                     items = room.getItemByPosition(outputSlot[0])
                     if items:
-                        if outputSlot[1] == None or items[-1].type == outputSlot[1]:
+                        if outputSlot[1] is None or items[-1].type == outputSlot[1]:
                             if outputSlot[1] not in storedItems:
                                 storedItems[outputSlot[1]] = 0
                             storedItems[outputSlot[1]] += len(items)

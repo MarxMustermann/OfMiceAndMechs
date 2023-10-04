@@ -285,7 +285,7 @@ You will fetch the lightning rod directly from the production line.
 
     def checkWeapon(self,extraParams):
         character = extraParams["character"]
-        if character.weapon == None or character.armor == None:
+        if character.weapon is None or character.armor is None:
             self.requireWeapon(character)
             return
 

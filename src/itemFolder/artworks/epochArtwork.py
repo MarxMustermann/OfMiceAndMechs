@@ -226,7 +226,7 @@ Since this clone is burned in it can not change duties.
         if "rewardType" not in extraInfo:
             return
 
-        if extraInfo["rewardType"] == None:
+        if extraInfo["rewardType"] is None:
             return
         if extraInfo["rewardType"] == "None":
             return

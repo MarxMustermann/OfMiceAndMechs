@@ -610,7 +610,7 @@ We should stop watching and do something about that.
             numFreeStorage = 0
             for room in terrain.rooms:
                 for storageSlot in room.storageSlots:
-                    if storageSlot[1] != None:
+                    if storageSlot[1] is not None:
                         continue
                     items = room.getItemByPosition(storageSlot[0])
                     if items:
@@ -697,7 +697,7 @@ We should stop watching and do something about that.
                                 source = potentialSource
                                 break
 
-                    if source == None and not character.getTerrain().scrapFields:
+                    if source is None and not character.getTerrain().scrapFields:
                         continue
 
                     if self.triggerClearInventory(character,room):
@@ -731,7 +731,7 @@ We should stop watching and do something about that.
                                 source = potentialSource
                                 break
 
-                    if source == None and not character.getTerrain().forests:
+                    if source is None and not character.getTerrain().forests:
                         continue
 
                     if self.triggerClearInventory(character,room):
@@ -806,7 +806,7 @@ We should stop watching and do something about that.
                 if emptyInputSlots:
 
                     for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                        if inputSlot[1] == None:
+                        if inputSlot[1] is None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
                                 inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
@@ -853,7 +853,7 @@ We should stop watching and do something about that.
                 if emptyInputSlots:
 
                     for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                        if inputSlot[1] == None:
+                        if inputSlot[1] is None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
                                 inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
@@ -924,7 +924,7 @@ We should stop watching and do something about that.
                 if emptyInputSlots:
 
                     for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                        if inputSlot[1] == None:
+                        if inputSlot[1] is None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
                                 inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
@@ -1067,7 +1067,7 @@ We should stop watching and do something about that.
                 items = room.getItemByPosition(storageSlot[0])
                 if items:
                     continue
-                if storageSlot[1] != None:
+                if storageSlot[1] is not None:
                     continue
                 if storageSlot[2] != {}:
                     continue
@@ -2305,7 +2305,7 @@ With some experience you will mostly disregard the quest system.
                 return True
             return None
 
-        if self.selectedMachineTutorial == None:
+        if self.selectedMachineTutorial is None:
             '''
             text = """
 You only have workshop made weapons and armor, those are very low quality.

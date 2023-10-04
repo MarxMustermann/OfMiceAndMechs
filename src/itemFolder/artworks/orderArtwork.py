@@ -411,7 +411,7 @@ That should usually be around 10-20 ticks."""
         character.macroState["submenue"] = submenue
 
     def assignQuestToNumNPCs(self, character, questType, numNPCs, params=None):
-        if params == None:
+        if params is None:
             params = {}
 
         numQuestsAssigned = 0

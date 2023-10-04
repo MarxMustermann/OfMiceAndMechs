@@ -125,7 +125,7 @@ kill,kill,kill!
             if not character.container.getPositionWalkable((pos[0],pos[1]-1,pos[2]),character=character):
                 command = "Kwl"
 
-        if command == None:
+        if command is None:
             return (None,None)
 
         return (None,(command,"fight"))

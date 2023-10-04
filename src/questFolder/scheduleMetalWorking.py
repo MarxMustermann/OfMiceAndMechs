@@ -115,7 +115,7 @@ do some metal working
             return
 
         self.amountDone += 1
-        if self.amount != None and self.amountDone >= self.amount:
+        if self.amount is not None and self.amountDone >= self.amount:
             self.postHandler()
 
     def assignToCharacter(self, character):

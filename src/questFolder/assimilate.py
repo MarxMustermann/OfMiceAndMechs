@@ -13,7 +13,7 @@ class Assimilate(src.quests.MetaQuestSequence):
         return False
 
     def generateTextDescription(self):
-        if self.character.rank == None:
+        if self.character.rank is None:
             return """
 When the base grows or clones are dying, replacement personnel are needed.
 The base can create new clones, but they need to be integrated into the bases systems.

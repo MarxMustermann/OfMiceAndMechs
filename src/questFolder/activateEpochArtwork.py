@@ -142,7 +142,7 @@ Remember to press ctrl-d if you lose control over your character.
                 }
 
         direction = directions.get(pos)
-        if direction == None:
+        if direction is None:
             return
 
         if direction == "north":

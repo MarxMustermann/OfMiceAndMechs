@@ -182,7 +182,7 @@ Go there and fetch the weapons and armor.
                         continue
 
                     distance = abs(room.xPosition-7)+abs(room.yPosition-7)
-                    if nearestDistance == None or distance < nearestDistance:
+                    if nearestDistance is None or distance < nearestDistance:
                         candidates = []
                         nearestDistance = distance
 
@@ -256,7 +256,7 @@ Eliminate them to break up the second siege ring.
                 lowestEnemyAmount = None
                 candidates = []
                 for (key, value) in enemiesMap.items():
-                    if lowestEnemyAmount == None or value < lowestEnemyAmount:
+                    if lowestEnemyAmount is None or value < lowestEnemyAmount:
                         candidates = []
                         lowestEnemyAmount = value
 
@@ -270,7 +270,7 @@ Eliminate them to break up the second siege ring.
                 minDistance = None
                 for candidate in candidates:
                     distance = abs(candidate[0]-7)+abs(candidate[1]-7)
-                    if minDistance == None or distance < minDistance:
+                    if minDistance is None or distance < minDistance:
                         minDistance = distance
                         pos = candidate
 

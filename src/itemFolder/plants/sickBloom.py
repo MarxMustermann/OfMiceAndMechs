@@ -119,10 +119,7 @@ class SickBloom(src.items.Item):
         command = ""
         directions = ["w", "a", "s", "d"]
         while counter < 8:
-            command += "j{}_{}k".format(
-                random.randint(1, counter * 4),
-                directions[random.randint(0, 3)],
-            )
+            command += "j{random.randint(1, counter * 4)}_{directions[random.randint(0, 3)]}k"
             counter += 1
         character.macroState["macros"]["m"] = list(command + "_m")
 

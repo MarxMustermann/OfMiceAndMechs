@@ -246,7 +246,7 @@ Press d to move the cursor and show the subquests description.
                 quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
                 return ([quest],None)
 
-            elif self.takeAnyUnbolted:
+            if self.takeAnyUnbolted:
                 candidates = []
 
                 if character.container.isRoom:

@@ -81,10 +81,14 @@ Press d to move the cursor and show the subquests description.
                     activationCommand = "j"
                 else:
                     activationCommand = "k"
+
+                command = ""
                 if offset > 0:
-                    return (None,("s"*offset+activationCommand,"to produce item"))
+                    command += "s"*offset
                 else:
-                    return (None,("w"*(-offset)+activationCommand,"to produce item"))
+                    command += "w"*(-offset)
+                command += activationCommand
+                return (None,(command,"to produce item"))
             else:
                 submenue = character.macroState["submenue"]
                 counter = 1

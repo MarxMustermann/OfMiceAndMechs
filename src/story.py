@@ -3636,13 +3636,13 @@ try to remember how you got here ..."""
         if self.activeStory["type"] == "siegedBase":
             self.openedQuestsSieged()
             return
-        elif self.activeStory["type"] == "raidBase":
+        if self.activeStory["type"] == "raidBase":
             self.openedQuestsRaid()
             return
-        elif self.activeStory["type"] == "productionBase":
+        if self.activeStory["type"] == "productionBase":
             self.openedQuestsProduction()
             return
-        elif self.activeStory["type"] == "colonyBase":
+        if self.activeStory["type"] == "colonyBase":
             self.openedQuestsColonyBase()
             return
         1/0

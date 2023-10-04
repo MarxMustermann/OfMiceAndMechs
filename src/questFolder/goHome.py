@@ -83,7 +83,7 @@ Press control-d to stop your character from moving.
             quest.assignToCharacter(character)
             quest.activate()
             return
-        elif character.getBigPosition() != self.cityLocation:
+        if character.getBigPosition() != self.cityLocation:
             quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation,reason="go to the command center")
             self.addQuest(quest)
             quest.assignToCharacter(character)

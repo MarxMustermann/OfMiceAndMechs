@@ -16,8 +16,8 @@ Without skills you are useless to the base.
 Train a skill or the base won't accept you.
 
 Activate the basic trainer in the command centre to start training a skill"""
-        else:
-            return """
+
+        return """
 Skills are what part of what makes you useful to the base.
 Train an additional skill.
 This will allow you to do a different duty.

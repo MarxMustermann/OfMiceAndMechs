@@ -62,12 +62,12 @@ class Huntdown(src.quests.MetaQuestSequence):
                 quest.assignToCharacter(character)
                 quest.activate()
                 return
-            else:
-                quest = src.quests.questMap["Fight"]()
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
+
+            quest = src.quests.questMap["Fight"]()
+            self.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            return
 
         super().solver(character)
 

@@ -274,8 +274,7 @@ class Quest:
     def solver(self, character):
         if self.paused:
             return True
-        else:
-            return character.walkPath()
+        return character.walkPath()
 
     """
     pause the quest

@@ -72,9 +72,8 @@ class SupportAttack(src.quests.MetaQuestSequence):
                 if character.health < character.maxHealth//5:
                     self.addQuest(src.quests.questMap["Flee"]())
                     return None
-                else:
-                    self.addQuest(src.quests.questMap["Fight"]())
-                    return None
+                self.addQuest(src.quests.questMap["Fight"]())
+                return None
 
             if character.container.isRoom:
                 pos = character.getBigPosition()

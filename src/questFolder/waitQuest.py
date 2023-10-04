@@ -35,16 +35,15 @@ This quest will end in {str(self.lifetimeEvent.tick - src.gamestate.gamestate.ti
     def getSolvingCommandString(self, character, dryRun=True):
         if self.lifetimeEvent:
             return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
-        else:
-            return "10."
+        return "10."
 
     def solver(self, character):
         commandString = self.getSolvingCommandString(character,dryRun=False)
         self.randomSeed = random.random()
+
         if commandString:
             character.runCommandString(commandString)
             return False
-        else:
-            return True
+        return True
 
 src.quests.addType(WaitQuest)

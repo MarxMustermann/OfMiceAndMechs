@@ -268,9 +268,10 @@ If you don't find a {self.itemType} blueprint, research it.
 
                         offset = counter-submenue.selectionIndex
                         if offset > 0:
-                            return (None,("s"*offset+"j","to produce the machine"))
+                            command = "s"*offset+"j"
                         else:
-                            return (None,("w"*(-offset)+"j","to produce the machine"))
+                            command = "w"*(-offset)+"j"
+                        return (None,(command,"to produce the machine"))
                     else:
                         submenue = character.macroState["submenue"]
                         counter = 2

@@ -112,20 +112,22 @@ This will allow you to focus on other tasks.
                     rewardIndex = counter
 
                 offset = rewardIndex-submenue.selectionIndex
-                if offset > 0:
-                    return (None,("s"*offset+"j","to get your reward"))
-                else:
-                    return (None,("w"*(-offset)+"j","to get your reward"))
-            else:
-                submenue = character.macroState["submenue"]
-                counter = 2
                 command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
                 command += "j"
                 return (None,(command,"to get your reward"))
+            submenue = character.macroState["submenue"]
+            counter = 2
+            command = ""
+            if submenue.selectionIndex > counter:
+                command += "w"*(submenue.selectionIndex-counter)
+            if submenue.selectionIndex < counter:
+                command += "s"*(counter-submenue.selectionIndex)
+            command += "j"
+            return (None,(command,"to get your reward"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to exit submenu"))

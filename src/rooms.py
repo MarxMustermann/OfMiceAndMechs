@@ -783,8 +783,8 @@ class Room:
             src.gamestate.gamestate.dragState = {}
             src.gamestate.gamestate.dragState["start"] = {"container":self,"pos":extraInfo["pos"]}
             return
-        else:
-            src.gamestate.gamestate.dragState["end"] = {"container":self,"pos":extraInfo["pos"]}
+
+        src.gamestate.gamestate.dragState["end"] = {"container":self,"pos":extraInfo["pos"]}
 
         dragState = src.gamestate.gamestate.dragState
         src.gamestate.gamestate.dragState = {}

@@ -559,23 +559,22 @@ class CommandBloom(src.items.Item):
                                         explode = True
                                         break
                                     continue
-                                else:
-                                    newCommand = ""
-                                    direction = (
-                                        items[-1].xPosition - self.xPosition,
-                                        items[-1].yPosition - self.yPosition,
-                                    )
-                                    if direction[1] < 0:
-                                        newCommand += str(-direction[1]) + "wJwJwJwJw"
-                                    if direction[0] < 0:
-                                        newCommand += str(-direction[0]) + "aJaJaJaJa"
-                                    if direction[1] > 0:
-                                        newCommand += str(direction[1]) + "sJsJsJsJs"
-                                    if direction[0] > 0:
-                                        newCommand += str(direction[0]) + "dJdJdJdJd"
-                                    newCommand += "20j2000."
-                                    self.runCommandOnNewCrawler(newCommand,character.faction)
-                                    break
+                                newCommand = ""
+                                direction = (
+                                    items[-1].xPosition - self.xPosition,
+                                    items[-1].yPosition - self.yPosition,
+                                )
+                                if direction[1] < 0:
+                                    newCommand += str(-direction[1]) + "wJwJwJwJw"
+                                if direction[0] < 0:
+                                    newCommand += str(-direction[0]) + "aJaJaJaJa"
+                                if direction[1] > 0:
+                                    newCommand += str(direction[1]) + "sJsJsJsJs"
+                                if direction[0] > 0:
+                                    newCommand += str(direction[0]) + "dJdJdJdJd"
+                                newCommand += "20j2000."
+                                self.runCommandOnNewCrawler(newCommand,character.faction)
+                                break
 
                         lastCharacterPosition = pos
 

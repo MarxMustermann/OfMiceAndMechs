@@ -45,7 +45,6 @@ class ScratchPlate(src.items.Item):
         character.addMessage("you scratch the scratch plate")
         self.lastActivation = self.container.timeIndex
         self.runsCommands = True
-        return
 
     def hasScratch(self):
         if not self.lastActivation:

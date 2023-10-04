@@ -183,7 +183,6 @@ class GameState:
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-        return
 
     def loadP(self,gameIndex):
         """

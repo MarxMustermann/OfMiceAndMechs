@@ -1151,7 +1151,6 @@ Press d to move the cursor and show the subquests description.
     def gotThirsty(self,extraParam=None):
         quest = src.quests.questMap["Eat"]()
         self.addQuest(quest)
-        return
 
     def assignToCharacter(self, character):
         if self.character:

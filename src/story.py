@@ -192,13 +192,11 @@ class PrefabDesign(BasicPhase):
 
     def advance(self):
         self.askAction()
-        return
 
     def runFloorplanGeneration(self):
         self.floorPlan = self.generateFloorPlan()
         self.saveFloorPlan(self.floorPlan)
         self.spawnRooms(self.floorPlan)
-        return
 
     def addFloorPlan(self):
         if not self.floorPlan:
@@ -581,7 +579,6 @@ the floorplan is available in basebuilder mode and main game now""")
         self.toBuildRoomClone.addRandomItems()
         self.toBuildRoomClone.spawnGhouls(src.gamestate.gamestate.mainChar)
 
-        return
 
     def simulateUsage(self):
         if not self.floorPlan:
@@ -3672,7 +3669,6 @@ This should get you up and running in no time""")
         containerQuest.assignToCharacter(mainChar)
         containerQuest.activate()
         containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-        return
 
     def openedQuestsRaid(self):
         mainChar = self.activeStory["mainChar"]

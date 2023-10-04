@@ -38,7 +38,6 @@ The new blueprint should be spawned into your inventory."""
         self.submenu = src.interaction.InputMenu("input menue")
         self.character.macroState["submenue"] = self.submenu
         self.character.macroState["submenue"].followUp = self.createBlueprint
-        return
 
     # bad code: is mixed with submenu internals
     def createBlueprint(self):

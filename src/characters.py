@@ -1877,7 +1877,6 @@ press any other key to attack normally"""
 
         self.submenue = src.interaction.OneKeystrokeMenu(text)
         self.macroState["submenue"] = self.submenue
-        return
 
     def examine(self, item):
         """
@@ -2969,7 +2968,6 @@ class Ghoul(Character):
 
     def heal(self, amount, reason=None):
         self.addMessage("ghouls don't heal")
-        return
 
     def hurt(self, damage, reason=None, actor=None):
         super().hurt(max(1,damage//2),reason=reason,actor=actor)

@@ -139,7 +139,6 @@ This should be used in cases where you can not place the Painter on the position
                                        )
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo2","params":extraInfo}
-        return
 
     def addExtraInfo2(self,extraInfo):
         character = extraInfo["character"]
@@ -153,7 +152,6 @@ This should be used in cases where you can not place the Painter on the position
         submenue.tag = "paintExtraParamValue"
         submenue.extraInfo["item"] = self
         character.macroState["submenue"].followUp = {"container":self,"method":"addExtraInfo3","params":extraInfo}
-        return
 
     def addExtraInfo3(self,extraInfo):
         extraInfo["type"] = None

@@ -23,7 +23,6 @@ So just complete the quest and don't think about it too much."""
 
     def enteredRoom(self,character=None):
         self.postHandler()
-        return
 
     def solver(self,character):
         if character.xPosition%15 == 0:

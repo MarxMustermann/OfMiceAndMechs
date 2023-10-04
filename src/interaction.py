@@ -1005,7 +1005,6 @@ def doAdvancedDrop(params):
         pos
     )
     del char.interactionState["advancedDrop"]
-    return
 
 def doStateChange(key,char,charState,main,header,footer,urwid,flags):
     if key in (">",):
@@ -2015,7 +2014,6 @@ current registers
         char.specialRender = True
 
     char.doStackPush = True
-    return
 
 runactionStr = "runaction"
 advancedInteractionStr = "advancedInteraction"

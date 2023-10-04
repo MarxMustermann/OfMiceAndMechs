@@ -15,7 +15,7 @@ class Shrine(src.items.Item):
         set up the initial state
         """
 
-        super().__init__(display="\/", name=name)
+        super().__init__(display="\\/", name=name)
         self.god = god
 
         self.applyOptions.extend(

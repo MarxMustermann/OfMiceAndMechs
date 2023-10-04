@@ -66,7 +66,7 @@ class SpecialItemSlot(src.items.Item):
 
     def render(self):
         if self.hasItem:
-            return "\/"
+            return "\\/"
         else:
             return src.canvas.displayChars.sparkPlug
 

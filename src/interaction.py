@@ -10071,8 +10071,6 @@ def gameLoop_disabled(loop, user_data=None):
         if endTime-startTime < 0.009999:
             time.sleep(0.01-(endTime-startTime))
         """
-    else:
-        continousOperation = 0
 
     loop.set_alarm_in(0.001, gameLoop)
 

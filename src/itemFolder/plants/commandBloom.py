@@ -374,16 +374,19 @@ class CommandBloom(src.items.Item):
                     items = self.container.getItemByPosition(pos)
                     if not items:
                         continue
-                    elif items[0].type in ("CommandBloom",):
+
+                    if items[0].type in ("CommandBloom",):
                         continue
-                    elif items[0].type in ("Mold", "Sprout2") and not (
+
+                    if items[0].type in ("Mold", "Sprout2") and not (
                         items[0].xPosition % 15 == 7
                         or items[0].yPosition % 15 == 7
                         or (items[0].xPosition % 15, items[0].yPosition % 15)
                         in ((6, 6), (6, 8), (8, 6), (8, 8))
                     ):
                         continue
-                    elif items[0].type in (
+
+                    if items[0].type in (
                         "Sprout",
                         "SickBloom",
                         "Bloom",

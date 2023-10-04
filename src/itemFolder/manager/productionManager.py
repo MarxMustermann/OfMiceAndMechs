@@ -37,7 +37,7 @@ class ProductionManager(src.items.Item):
         for (itemType, command) in self.commands.items():
             commandsString += "* " + itemType + " " + str(command) + "\n"
 
-        text += f"""
+        text += """
 
 commands:
 

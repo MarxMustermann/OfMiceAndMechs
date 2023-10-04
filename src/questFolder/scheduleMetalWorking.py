@@ -17,7 +17,7 @@ class ScheduleMetalWorking(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
-        return f"""
+        return """
 do some metal working
 """
 

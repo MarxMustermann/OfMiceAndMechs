@@ -232,7 +232,7 @@ class GlassStatue(src.items.Item):
             options.append(("spawn maggot gathering NPC","spawn maggot gatherer"))
             options.append(("spawn cleaning NPC","spawn cleaner"))
 
-            submenue = src.interaction.SelectionMenu(f"what reward do you desire?",options,targetParamName="rewardType")
+            submenue = src.interaction.SelectionMenu("what reward do you desire?",options,targetParamName="rewardType")
             submenue.tag = "rewardSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"dispenseRewards","params":{"character":character}}

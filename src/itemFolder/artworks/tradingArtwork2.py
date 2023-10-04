@@ -242,10 +242,9 @@ class TradingArtwork2(src.items.Item):
                                 item.amount -= giveSpec[1]
                                 slotMap[inputSlot[0]].append(src.items.itemMap["Scrap"](amount=giveSpec[1]))
                                 break
-                            else:
-                                giveSpec[1] -= item.amount
-                                self.container.removeItem(item)
-                                slotMap[inputSlot[0]].append(item)
+                            giveSpec[1] -= item.amount
+                            self.container.removeItem(item)
+                            slotMap[inputSlot[0]].append(item)
 
                         if giveSpec[1] == 0:
                             tradeCopy["give"].remove(giveSpec)

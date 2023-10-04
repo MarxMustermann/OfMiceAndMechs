@@ -558,8 +558,7 @@ class CommandBloom(src.items.Item):
                                         command += "20j2000."
                                         explode = True
                                         break
-                                    else:
-                                        continue
+                                    continue
                                 else:
                                     newCommand = ""
                                     direction = (

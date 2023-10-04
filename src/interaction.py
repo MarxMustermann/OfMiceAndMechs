@@ -835,16 +835,16 @@ def doAdvancedInteraction(params):
             if isinstance(item, src.items.itemMap["Corpse"]):
                 item.apply(character)
                 break
-    elif key == "h" or key == "H":
+    elif key in {"h","H"}:
         character = char
         for item in character.inventory:
             if isinstance(item, src.items.itemMap["Vial"]) and item.uses > 0:
                 if key == "h":
                     item.apply(character)
                     break
-                else:
-                    while item.uses and character.health < character.maxHealth:
-                        item.apply(character)
+
+                while item.uses and character.health < character.maxHealth:
+                    item.apply(character)
     del char.interactionState["advancedInteraction"]
 
 def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):

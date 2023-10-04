@@ -1114,7 +1114,7 @@ We should stop watching and do something about that.
                                     blockedSpot = True
                                     break
                             for buildSite in room.buildSites:
-                                if buildSites[0] == (x,y,0):
+                                if buildSite[0] == (x,y,0):
                                     blockedSpot = True
                                     break
                             if blockedSpot:

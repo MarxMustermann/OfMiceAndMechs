@@ -468,7 +468,7 @@ We should stop watching and do something about that.
         foundShrine = None
         for room in terrain.rooms:
             for checkShrine in room.getItemsByType("Shrine"):
-                if not checkShrine.god == 1:
+                if checkShrine.god != 1:
                     continue
                 foundShrine = checkShrine
 
@@ -646,7 +646,7 @@ We should stop watching and do something about that.
         if not foundEnemies:
             hasTemple = False
             for room in terrain.rooms:
-                if not room.tag == "temple":
+                if room.tag != "temple":
                     continue
                 hasTemple = True
 
@@ -1589,14 +1589,14 @@ We should stop watching and do something about that.
 
             hasTemple = False
             for room in terrain.rooms:
-                if not room.tag == "temple":
+                if room.tag != "temple":
                     continue
                 hasTemple = True
 
             if hasTemple:
                 target = None
                 for (godId,god) in src.gamestate.gamestate.gods.items():
-                    if not god["home"] == god["lastHeartPos"]:
+                    if god["home"] != god["lastHeartPos"]:
                         continue
                     target = (godId,god)
                     break
@@ -1887,7 +1887,7 @@ We should stop watching and do something about that.
 
         for room in character.getTerrain().rooms:
             if room.tag == "temple":
-                if not room == character.container:
+                if room != character.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to temple")
                     self.idleCounter += 1
                     self.addQuest(quest)

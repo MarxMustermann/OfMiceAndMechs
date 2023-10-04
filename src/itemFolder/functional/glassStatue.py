@@ -505,9 +505,9 @@ class GlassStatue(src.items.Item):
         hasHeart = False
         for item in character.inventory:
             #if not item.type == "GlassHeart":
-            if not item.type == "SpecialItem":
+            if item.type != "SpecialItem":
                 continue
-            if not item.itemID == self.itemID:
+            if item.itemID != self.itemID:
                 continue
             glassHeart = item
             hasHeart = True

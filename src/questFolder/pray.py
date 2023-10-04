@@ -41,7 +41,7 @@ operate the machine on {self.targetPosition}{reason}.
         if not character:
             return False
 
-        if self.targetPositionBig and not character.getBigPosition() == self.targetPositionBig:
+        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             return False
 
         if not character.container.isRoom:
@@ -54,7 +54,7 @@ operate the machine on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
-        if self.targetPositionBig and not character.getBigPosition() == self.targetPositionBig:
+        if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")
             return ([quest],None)
 

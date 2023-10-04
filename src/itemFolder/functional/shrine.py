@@ -84,12 +84,12 @@ class Shrine(src.items.Item):
 
         numCharacters = 0
         for otherCharacter in terrain.characters:
-            if not otherCharacter.faction == character.faction:
+            if otherCharacter.faction != character.faction:
                 continue
             numCharacters += 1
         for room in terrain.rooms:
             for otherCharacter in room.characters:
-                if not otherCharacter.faction == character.faction:
+                if otherCharacter.faction != character.faction:
                     continue
                 numCharacters += 1
 

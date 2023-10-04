@@ -81,7 +81,7 @@ def advanceGame():
             for room in terrain.rooms:
                 glassStatues = room.getItemsByType("GlassStatue")
                 for glassStatue in glassStatues:
-                    if not glassStatue.itemID == godId:
+                    if glassStatue.itemID != godId:
                         continue
 
                     if glassStatue.hasItem:
@@ -98,8 +98,8 @@ def advanceGame():
             terrain.mana += increaseAmount
 
         for (godId,god) in src.gamestate.gamestate.gods.items():
-            if ( (not god["lastHeartPos"][0] == god["home"][0]) or
-                 (not god["lastHeartPos"][1] == god["home"][1])):
+            if ( (god["lastHeartPos"][0] != god["home"][0]) or
+                 (god["lastHeartPos"][1] != god["home"][1])):
 
                 terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
 
@@ -111,7 +111,7 @@ def advanceGame():
 
                 numGlassHeartsOnPos = 0
                 for checkGod in src.gamestate.gamestate.gods.values():
-                    if not god["lastHeartPos"] == checkGod["lastHeartPos"]:
+                    if god["lastHeartPos"] != checkGod["lastHeartPos"]:
                         numGlassHeartsOnPos += 1
 
                 for _i in range(numSpectres):

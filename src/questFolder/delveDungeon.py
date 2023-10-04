@@ -71,7 +71,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             foundGlassHeart = None
             for room in terrain.rooms:
                 for specialItem in room.getItemsByType("SpecialItem"):
-                    if self.itemID and not specialItem.itemID == self.itemID:
+                    if self.itemID and specialItem.itemID != self.itemID:
                         continue
                     foundGlassHeart = specialItem
 
@@ -81,12 +81,12 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                     for glassStatue in room.getItemsByType("GlassStatue"):
                         if not glassStatue.hasItem:
                             continue
-                        if self.itemID and not glassStatue.itemID == self.itemID:
+                        if self.itemID and glassStatue.itemID != self.itemID:
                             continue
                         foundGlassStatue = glassStatue
 
                 if foundGlassStatue:
-                    if not character.container == foundGlassStatue.container:
+                    if character.container != foundGlassStatue.container:
                         quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.75)
                         return ([quest],None)
 
@@ -111,12 +111,12 @@ class DelveDungeon(src.quests.MetaQuestSequence):
                     self.fail("no glassStatue found")
                 return (None,None)
 
-            if not character.getPosition() == foundGlassHeart.getPosition():
+            if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition())
                 return ([quest],None)
             return (None,("k","pick up special item"))
 
-        if not terrain.xPosition == character.registers["HOMETx"] or not terrain.yPosition == character.registers["HOMETy"]:
+        if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"](reason="to go to your home territory")
             return ([quest],None)
 
@@ -137,7 +137,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
             self.fail(reason="no glass statues found")
             return (None,None)
 
-        if not foundGlassStatue.container == character.container:
+        if foundGlassStatue.container != character.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition())
             return ([quest],None)
 

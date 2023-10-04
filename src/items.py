@@ -1,8 +1,11 @@
 """
 items and item related code belongs here
 """
+import logging
 
 import src
+
+logger = logging.getLogger(__name__)
 
 class Item:
     """
@@ -138,6 +141,9 @@ class Item:
         Returns:
             the position
         """
+        if self.xPosition is None or self.yPosition is None or self.zPosition is None:
+            logger.error("get position of non positioned item. {self}")
+            return (None,None,None)
         return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 
     def getSmallPosition(self,offset=(0,0,0)):

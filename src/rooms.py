@@ -1271,6 +1271,10 @@ class Room:
                 elif animationType in ("showchar",):
                     display = extraInfo["char"]
 
+                    if pos[0] is None or pos[1] is None:
+                        logger.error(f"draw animation without position {animation}")
+                        continue
+
                     chars[pos[1]][pos[0]] = display
 
                     animation[2] -= 1

@@ -1867,7 +1867,11 @@ class Terrain:
                 display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
                 if display:
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except IndexError:
+                        logger.error("animation drawn outside of bounds {animation}")
+                        continue
                 animation[2] -= 1
 
                 if duration < 1:

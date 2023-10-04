@@ -827,10 +827,7 @@ def doAdvancedInteraction(params):
                 item.apply(character)
                 break
             if (
-                isinstance(item, src.items.itemMap["Bloom"])
-                or isinstance(item, src.items.itemMap["BioMass"])
-                or isinstance(item, src.items.itemMap["PressCake"])
-                or isinstance(item, src.items.itemMap["SickBloom"])
+                isinstance(item, src.items.itemMap["BioMass"] | src.items.itemMap["Bloom"] | src.items.itemMap["PressCake"] | src.items.itemMap["SickBloom"])
             ):
                 item.apply(character)
                 character.inventory.remove(item)
@@ -2894,8 +2891,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
         for cmd in reversed(charState["commandKeyQueue"]):
             item = cmd[0]
             if (
-                isinstance(item, list)
-                or isinstance(item, tuple)
+                isinstance(item, list | tuple)
                 or item in ("lagdetection", "lagdetection_")
             ):
                 continue
@@ -4880,9 +4876,7 @@ class AdvancedQuestMenu(SubMenu):
                     options = []
                     for room in src.gamestate.gamestate.terrain.rooms:
                         # do not show unimportant rooms
-                        if isinstance(room, src.rooms.MechArmor) or isinstance(
-                            room, src.rooms.CpuWasterRoom
-                        ):
+                        if isinstance(room, src.rooms.CpuWasterRoom | src.rooms.MechArmor):
                             continue
                         options.append((room, room.name))
                     self.setOptions("select the room:", options)
@@ -6744,7 +6738,7 @@ def getTcodEvents():
                         continue
 
                     value = src.gamestate.gamestate.clickMap[clickPos]
-                    if isinstance(value,str) or isinstance(value,list):
+                    if isinstance(value, list | str):
                         src.gamestate.gamestate.mainChar.runCommandString(value,nativeKey=True)
                     elif isinstance(value,dict):
                         if "params" not in value:
@@ -10195,8 +10189,7 @@ def advanceChar_disabled(char):
         if state["commandKeyQueue"]:
             key = state["commandKeyQueue"][-1]
             while (
-                isinstance(key[0], list)
-                or isinstance(key[0], tuple)
+                isinstance(key[0], list | tuple)
                 or key[0] in ("lagdetection", "lagdetection_")
             ):
                 if state["commandKeyQueue"]:

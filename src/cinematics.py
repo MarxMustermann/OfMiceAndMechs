@@ -65,13 +65,15 @@ class InformationTransfer(BasicCinematic):
     this is a single use cinematic basically. It flashes some info too fast to read in order to symbolise information transfer to the implant
     """
 
-    def __init__(self, information={}):
+    def __init__(self, information=None):
         """
         initialise own state
 
         Parameters:
             information: the information to show
         """
+        if information is None:
+            information = {}
         super().__init__()
 
         self.position = 0

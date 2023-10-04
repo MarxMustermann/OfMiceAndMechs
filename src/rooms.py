@@ -100,7 +100,7 @@ class Room:
 
         self.cachedPathfinder = None
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -109,6 +109,8 @@ class Room:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -1485,7 +1487,7 @@ class Room:
         self.removeItems(self.getItemByPosition(position))
 
     def moveDirection(
-        self, direction, force=1, initialMovement=True, movementBlock=set()
+        self, direction, force=1, initialMovement=True, movementBlock=None
     ):
         """
         move the room a step into some direction
@@ -1499,6 +1501,8 @@ class Room:
 
         # move items the room collided with
         # bad code: crashes when moved items were destroyed already
+        if movementBlock is None:
+            movementBlock = set()
         if initialMovement:
             # collect the things that would be affected by the movement
             movementBlock = set()
@@ -1526,7 +1530,7 @@ class Room:
         self.terrain.moveRoomDirection(direction, self)
         logger.debug("*RUMBLE*")
 
-    def getAffectedByMovementDirection(self, direction, force=1, movementBlock=set()):
+    def getAffectedByMovementDirection(self, direction, force=1, movementBlock=None):
         """
         get the things that would be affected by a room movement
 
@@ -1540,6 +1544,8 @@ class Room:
 
 
         # gather things that would be affected on terrain level
+        if movementBlock is None:
+            movementBlock = set()
         self.terrain.getAffectedByRoomMovementDirection(
             self, direction, force=force, movementBlock=movementBlock
         )
@@ -2067,7 +2073,7 @@ XXX
         for y in range(1,12):
             self.walkingSpace.add((6,y,0))
 
-    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+    def reconfigure(self, sizeX=3, sizeY=3, items=None, bio=False, doorPos=None):
         """
         change the size of the room
 
@@ -2079,6 +2085,10 @@ XXX
             doorPos: a list of door positions
         """
 
+        if doorPos is None:
+            doorPos = []
+        if items is None:
+            items = []
         items = []
 
         self.sizeX = sizeX
@@ -2336,7 +2346,11 @@ class TeleporterRoom(EmptyRoom):
         super().__init__(xPosition,yPosition,offsetX,offsetY,desiredPosition,bio)
         self.displayChar = (src.interaction.urwid.AttrSpec("#3d3", "black"), "TT")
 
-    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+    def reconfigure(self, sizeX=3, sizeY=3, items=None, bio=False, doorPos=None):
+        if doorPos is None:
+            doorPos = []
+        if items is None:
+            items = []
         super().reconfigure(sizeX,sizeY,items,bio,doorPos)
 
         teleporterArtwork = src.items.itemMap["TeleporterArtwork"]()
@@ -2363,7 +2377,11 @@ class TempleRoom(EmptyRoom):
         self.staff = []
         self.duties = []
 
-    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+    def reconfigure(self, sizeX=3, sizeY=3, items=None, bio=False, doorPos=None):
+        if doorPos is None:
+            doorPos = []
+        if items is None:
+            items = []
         super().reconfigure(sizeX,sizeY,items,bio,doorPos)
 
         for x in range(1,12):
@@ -2436,7 +2454,11 @@ class TrapRoom(EmptyRoom):
 
         return item
 
-    def reconfigure(self, sizeX=3, sizeY=3, items=[], bio=False, doorPos=[]):
+    def reconfigure(self, sizeX=3, sizeY=3, items=None, bio=False, doorPos=None):
+        if doorPos is None:
+            doorPos = []
+        if items is None:
+            items = []
         super().reconfigure(sizeX,sizeY,items,bio,doorPos)
 
         shocker = src.items.itemMap["Shocker"]()

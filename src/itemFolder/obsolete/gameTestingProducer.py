@@ -7,7 +7,11 @@ import src
 class GameTestingProducer(src.items.Item):
     type = "GameTestingProducer"
 
-    def __init__(self, seed=0, possibleSources=[], possibleResults=[]):
+    def __init__(self, seed=0, possibleSources=None, possibleResults=None):
+        if possibleResults is None:
+            possibleResults = []
+        if possibleSources is None:
+            possibleSources = []
         self.coolDown = 20
         self.coolDownTimer = -self.coolDown
 

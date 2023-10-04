@@ -25,7 +25,7 @@ class Event:
 
         self.tick = tick
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -34,6 +34,8 @@ class Event:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()

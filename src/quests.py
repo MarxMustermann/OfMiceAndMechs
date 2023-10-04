@@ -63,7 +63,7 @@ class Quest:
 
         self.shortCode = "?"
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -72,6 +72,8 @@ class Quest:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -87,7 +89,7 @@ class Quest:
             else:
                 function()
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -96,6 +98,8 @@ class Quest:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()

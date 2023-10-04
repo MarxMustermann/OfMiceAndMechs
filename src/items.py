@@ -90,7 +90,7 @@ class Item:
         # properties for traits
         self.commands = {}
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -99,6 +99,8 @@ class Item:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -142,7 +144,7 @@ class Item:
         pos = self.getPosition()
         return (pos[0]%15,pos[1]%15,pos[2]%15)
 
-    def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information={}):
+    def useJoborderRelayToLocalRoom(self, character, tasks, itemType, information=None):
         """
         delegate a task to another item using a room manager
 
@@ -154,6 +156,8 @@ class Item:
         """
 
         # set up job order
+        if information is None:
+            information = {}
         jobOrder = src.items.itemMap["JobOrder"]()
         jobOrder.taskName = "relay job Order"
         jobOrder.information = information
@@ -811,7 +815,7 @@ class Item:
             else:
                 listenFunction(info)
 
-    def getAffectedByMovementDirection(self, direction, force=1, movementBlock=set()):
+    def getAffectedByMovementDirection(self, direction, force=1, movementBlock=None):
         """
         extend the list of things that would be affected if this item would move
 
@@ -822,6 +826,8 @@ class Item:
         """
 
         # add self
+        if movementBlock is None:
+            movementBlock = set()
         movementBlock.add(self)
 
         # add things chained to the item

@@ -103,7 +103,7 @@ class Terrain:
 
         self.lastRender = None
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -112,6 +112,8 @@ class Terrain:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -1994,7 +1996,7 @@ class Terrain:
         return chars
 
     def getAffectedByRoomMovementDirection(
-        self, room, direction, force=1, movementBlock=set()
+        self, room, direction, force=1, movementBlock=None
     ):
         """
         get things that would be affected if a room would move
@@ -2007,6 +2009,8 @@ class Terrain:
         """
 
         # determine rooms that the room could collide with
+        if movementBlock is None:
+            movementBlock = set()
         roomCandidates = []
         bigX = room.xPosition
         bigY = room.yPosition
@@ -2146,7 +2150,7 @@ class Terrain:
         else:
             logger.debug("invalid movement direction: %s", direction)
 
-    def moveRoomDirection(self, direction, room, force=1, movementBlock=[]):
+    def moveRoomDirection(self, direction, room, force=1, movementBlock=None):
         """
         actually move a room trough the terrain
 
@@ -2158,6 +2162,8 @@ class Terrain:
         """
 
         # move the room
+        if movementBlock is None:
+            movementBlock = []
         if direction == "north":
             # naively move the room within current tile
             if room.offsetY > -5:

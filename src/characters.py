@@ -24,7 +24,7 @@ class Character:
         display=None,
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name=None,
         creator=None,
@@ -45,6 +45,8 @@ class Character:
             characterId: obsolete, to be removed
             seed: rng seed
         """
+        if quests is None:
+            quests = []
         self.addExhaustionOnHurt = False
         self.removeExhaustionOnHeal = True
         self.reduceExhaustionOnHeal = False
@@ -234,7 +236,7 @@ class Character:
         self.xPosition = xPosition
         self.yPosition = yPosition
 
-    def callIndirect(self, callback, extraParams={}):
+    def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
 
@@ -243,6 +245,8 @@ class Character:
             extraParams: some additional parameters
         """
 
+        if extraParams is None:
+            extraParams = {}
         if not isinstance(callback, dict):
             # bad code: direct function calls are deprecated, but not completely removed
             callback()
@@ -608,7 +612,7 @@ class Character:
         else:
             return (self.xPosition%15+offset[0], self.yPosition%15+offset[1], self.zPosition%15+offset[2])
 
-    def searchInventory(self, itemType, extra={}):
+    def searchInventory(self, itemType, extra=None):
         """
         return a list of items from the characters inventory that satisfy some conditions
 
@@ -617,6 +621,8 @@ class Character:
             extra: extra conditions
         """
 
+        if extra is None:
+            extra = {}
         foundItems = []
         for item in self.inventory:
             if item.type != itemType:
@@ -2256,7 +2262,7 @@ class Mouse(Character):
         display="🝆 ",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Mouse",
         creator=None,
@@ -2275,6 +2281,8 @@ class Mouse(Character):
             creator: obsolete, ignore
             characterId: obsolete, ignore
         """
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2319,7 +2327,7 @@ class Monster(Character):
         display="🝆~",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Mouse",
         creator=None,
@@ -2339,6 +2347,8 @@ class Monster(Character):
             characterId: obsolete, ignore
         """
 
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2610,7 +2620,7 @@ class Guardian(Character):
         display="🝆~",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Guardian",
         creator=None,
@@ -2630,6 +2640,8 @@ class Guardian(Character):
             characterId: obsolete, ignore
         """
 
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2751,7 +2763,7 @@ class Exploder(Monster):
         display="🝆~",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Mouse",
         creator=None,
@@ -2770,6 +2782,8 @@ class Exploder(Monster):
             creator: obsolete, ignore
             characterId: obsolete, ignore
         """
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2818,7 +2832,7 @@ class Spider(Monster):
         display="🝆~",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Spider",
         creator=None,
@@ -2837,6 +2851,8 @@ class Spider(Monster):
             creator: obsolete, ignore
             characterId: obsolete, ignore
         """
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2890,7 +2906,7 @@ class CollectorSpider(Spider):
         display="🝆~",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="CollectorSpider",
         creator=None,
@@ -2909,6 +2925,8 @@ class CollectorSpider(Spider):
             creator: obsolete, ignore
             characterId: obsolete, ignore
         """
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2930,7 +2948,7 @@ class Ghoul(Character):
         display="@ ",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Ghoul",
         creator=None,
@@ -2949,6 +2967,8 @@ class Ghoul(Character):
             creator: obsolete, ignore
             characterId: obsolete, ignore
         """
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,
@@ -2981,7 +3001,7 @@ class Maggot(Character):
         display="o=",
         xPosition=0,
         yPosition=0,
-        quests=[],
+        quests=None,
         automated=True,
         name="Maggot",
         creator=None,
@@ -3000,6 +3020,8 @@ class Maggot(Character):
             creator: obsolete, ignore
             characterId: obsolete, ignore
         """
+        if quests is None:
+            quests = []
         super().__init__(
             display,
             xPosition,

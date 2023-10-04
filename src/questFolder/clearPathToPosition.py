@@ -113,9 +113,9 @@ Pick up and unbolt items that are in the way.
                     if not character.container.getItemByPosition(character.getPosition()):
                         return (None,("l","drop item"))
                     directions = ["."]
-                    if not character.xPosition in (0,1,):
+                    if character.xPosition not in (0,1,):
                         directions.append("a")
-                    if not character.yPosition in (0,1,):
+                    if character.yPosition not in (0,1,):
                         directions.append("w")
                     if not (character.xPosition in (11,12,) and character.container.isRoom):
                         directions.append("d")

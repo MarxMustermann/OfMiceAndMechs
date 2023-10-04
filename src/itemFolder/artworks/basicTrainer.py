@@ -40,7 +40,7 @@ select the skill you want to train:
         allCandidates = ["fighting","gathering","trap maintence","cleaning","machine operation","hauling"]
         random.shuffle(allCandidates)
         for candidate in allCandidates:
-            if not candidate in candidates:
+            if candidate not in candidates:
                 candidates.append(candidate)
 
         if character.registers.get("failedTraining"):

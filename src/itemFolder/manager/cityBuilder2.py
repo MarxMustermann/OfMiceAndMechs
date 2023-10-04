@@ -490,7 +490,7 @@ class CityBuilder2(src.items.Item):
 
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             params["type"] = "random"
             options = []
             index = 0
@@ -654,7 +654,7 @@ class CityBuilder2(src.items.Item):
 
     def setConnectionsFromMap(self,params,noFurtherInteraction=False):
         character = params["character"]
-        if not "selection" in params:
+        if "selection" not in params:
             params["selection"] = None
 
         if params["selection"] == "done":

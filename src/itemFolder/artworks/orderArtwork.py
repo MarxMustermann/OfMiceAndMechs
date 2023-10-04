@@ -57,7 +57,7 @@ That should usually be around 10-20 ticks."""
 
         character = extraInfo["character"]
 
-        if not "groupType" in extraInfo:
+        if "groupType" not in extraInfo:
             options = []
             options.append(("all","all NPCs"))
             options.append(("staff","staff NPCs"))
@@ -78,9 +78,9 @@ That should usually be around 10-20 ticks."""
             character.macroState["submenue"].followUp = {"container":self,"method":"assignQuest","params":extraInfo}
             return
 
-        if not "questType" in extraInfo:
+        if "questType" not in extraInfo:
             options = []
-            if not "coordinate" in extraInfo:
+            if "coordinate" not in extraInfo:
                 options.append(("Equip","equip"))
                 options.append(("GoHome","go home"))
                 options.append(("shelter","shelter"))
@@ -95,7 +95,7 @@ That should usually be around 10-20 ticks."""
             character.macroState["submenue"].followUp = {"container":self,"method":"assignQuest","params":extraInfo}
             return
 
-        if not "amount" in extraInfo:
+        if "amount" not in extraInfo:
             options = []
             submenue = src.interaction.InputMenu("how many NPCs to assign? (0 for all)",targetParamName="amount")
             character.macroState["submenue"] = submenue
@@ -367,7 +367,7 @@ That should usually be around 10-20 ticks."""
         questType = "idle"
         if cityLeader.quests:
             questType = cityLeader.quests[0].type
-        if not questType in questsCount:
+        if questType not in questsCount:
             questsCount[questType] = 0
         questsCount[questType] += 1
 
@@ -378,7 +378,7 @@ That should usually be around 10-20 ticks."""
             questType = "idle"
             if subleader.quests:
                 questType = subleader.quests[0].type
-            if not questType in questsCount:
+            if questType not in questsCount:
                 questsCount[questType] = 0
             questsCount[questType] += 1
 
@@ -389,7 +389,7 @@ That should usually be around 10-20 ticks."""
                 questType = "idle"
                 if subsubleader.quests:
                     questType = subsubleader.quests[0].type
-                if not questType in questsCount:
+                if questType not in questsCount:
                     questsCount[questType] = 0
                 questsCount[questType] += 1
 
@@ -400,7 +400,7 @@ That should usually be around 10-20 ticks."""
                     questType = "idle"
                     if worker.quests:
                         questType = worker.quests[0].type
-                    if not questType in questsCount:
+                    if questType not in questsCount:
                         questsCount[questType] = 0
                     questsCount[questType] += 1
 
@@ -443,7 +443,7 @@ That should usually be around 10-20 ticks."""
         if "numNPCs" in extraInfo:
             extraInfo["numNPCs"] = int(extraInfo["numNPCs"])
 
-        if not "numNPCs" in extraInfo:
+        if "numNPCs" not in extraInfo:
             submenue = src.interaction.InputMenu("how many NPCs to send?",targetParamName="numNPCs")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"beusefulFromMap","params":extraInfo}

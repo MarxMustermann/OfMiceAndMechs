@@ -49,7 +49,7 @@ Set the floor plan: {self.floorPlanType}
                 command += "x"
                 return (None,(command,"to remove old construction site marker"))
 
-            if not self.roomPosition in cityPlaner.getAvailableRoomPositions():
+            if self.roomPosition not in cityPlaner.getAvailableRoomPositions():
                 if not dryRun:
                     self.fail("room already registered")
                 return (None,None)

@@ -71,7 +71,7 @@ def advanceGame():
 
     if src.gamestate.gamestate.tick%(15*15*15*15) == 0:
         for god in src.gamestate.gamestate.gods.values():
-            if not "mana" in god:
+            if "mana" not in god:
                 god["mana"] = 0
             god["mana"] += 10
 
@@ -666,7 +666,7 @@ def stitchCommands(charState):
         commands + charState["commandKeyQueue"]
     )
     """
-    if not charState["replay"][-1] in charState["macros"]:
+    if charState["replay"][-1] not in charState["macros"]:
         return
     stitchCommands2(charState,reversed(charState["macros"][charState["replay"][-1]]))
 
@@ -4674,7 +4674,7 @@ class CreateQuestMenu(SubMenu):
 
         self.optionalParams = self.quest.getOptionalParameters()
 
-        if not key in ("enter","~"):
+        if key not in ("enter","~"):
             self.stealAllKeys = True
             if self.parameterName == None:
                 self.parameterName = ""
@@ -4850,7 +4850,7 @@ class AdvancedQuestMenu(SubMenu):
         if self.state == "questByName":
             if key == "enter":
                 self.state = "parameter selection"
-                if not self.selection in src.quests.questMap:
+                if self.selection not in src.quests.questMap:
                     return True
                 self.quest = self.selection
                 self.selection = None
@@ -5628,11 +5628,11 @@ class JobAsMatrixMenu(SubMenu):
         npcs = []
         npcs.append(src.gamestate.gamestate.mainChar)
         for char in terrain.characters:
-            if not char in npcs:
+            if char not in npcs:
                 npcs.append(char)
         for room in terrain.rooms:
             for char in room.characters:
-                if not char in npcs:
+                if char not in npcs:
                     npcs.append(char)
 
         duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing"]))
@@ -6530,7 +6530,7 @@ def keyboardListener(key, targetCharacter=None):
     else:
         char = targetCharacter
 
-    if char.macroState["commandKeyQueue"] and not "ctrl" in key:
+    if char.macroState["commandKeyQueue"] and "ctrl" not in key:
         return
 
     global multi_currentChar
@@ -6740,14 +6740,14 @@ def getTcodEvents():
                 tcodContext.convert_event(event)
                 clickPos = (event.tile.x,event.tile.y)
                 if src.gamestate.gamestate.clickMap:
-                    if not clickPos in src.gamestate.gamestate.clickMap:
+                    if clickPos not in src.gamestate.gamestate.clickMap:
                         continue
 
                     value = src.gamestate.gamestate.clickMap[clickPos]
                     if isinstance(value,str) or isinstance(value,list):
                         src.gamestate.gamestate.mainChar.runCommandString(value,nativeKey=True)
                     elif isinstance(value,dict):
-                        if not "params" in value:
+                        if "params" not in value:
                             value["params"] = {}
                         value["params"]["event"] = event
                         src.saveing.Saveable.callIndirect(None,value)
@@ -8501,7 +8501,7 @@ def showHeroIntro():
                 if item.type == "Door":
                     continue
 
-                if not item in itemStartingPositions:
+                if item not in itemStartingPositions:
                     arriveInTicks -= 5
                     side = random.choice(["left","top","right","bottom"])
                     if side == "left":
@@ -8878,7 +8878,7 @@ You """+"."*stageState["substep"]+"""
             if (time.time()-stageState["lastChange"] > 1 or
                      (skip and stageState["substep"] == 6 and not stageState["scrapToAdd"]) or
                      (skip and stageState["substep"] == 8 and not src.gamestate.gamestate.tick < 10000) or
-                     (skip and not stageState["substep"] in [6,8])):
+                     (skip and stageState["substep"] not in [6,8])):
                 stageState["substep"] += 1
                 stageState["lastChange"] = time.time()
                 if stageState["substep"] == 11:
@@ -9161,7 +9161,7 @@ You """+"."*stageState["substep"]+"""
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
                 for pos in stageState["walkingSpaces"]:
-                    if not pos in room.walkingSpace:
+                    if pos not in room.walkingSpace:
                         room.walkingSpace.add(pos)
                 stageState["walkingSpaces"] = []
             elif stageState["outputslots"] and stageState["subStep"] > 1:
@@ -9573,7 +9573,7 @@ grows and grows and grows and grows
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
                     continue
-                if not pos in painPositions:
+                if pos not in painPositions:
                     painPositions.append(pos)
 
             if subStep < len(textBase)-1:

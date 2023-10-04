@@ -26,10 +26,10 @@ class RaidTutorial3(src.quests.MetaQuestSequence):
             #if character.inventory:
             #    quest = src.quests.questMap["ClearInventory"](returnToTile=False)
             #    return ([quest],None)
-            if not character.getBigPosition() in ((0,7,0),(1,7,0)):
+            if character.getBigPosition() not in ((0,7,0),(1,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(1,7,0))
                 return ([quest],None)
-            if not character.getBigPosition() in ((0,7,0),) and character.getSpacePosition() != (1, 7, 0):
+            if character.getBigPosition() not in ((0,7,0),) and character.getSpacePosition() != (1, 7, 0):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                 return ([quest],None)
             return (None,("a","to cheat yourself onto the neighbor terrain"))
@@ -89,10 +89,10 @@ Now return it to your base.
                 src.interaction.showInterruptText(text)
                 self.shownPickedUpSpecialItemSlot = True
 
-            if not character.getBigPosition() in ((14,7,0),(13,7,0)):
+            if character.getBigPosition() not in ((14,7,0),(13,7,0)):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(13,7,0))
                 return ([quest],None)
-            if not character.getBigPosition() in ((14,7,0),) and character.getSpacePosition() != (13, 7, 0):
+            if character.getBigPosition() not in ((14,7,0),) and character.getSpacePosition() != (13, 7, 0):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                 return ([quest],None)
             return (None,("d","to cheat yourself onto the neighbor terrain"))

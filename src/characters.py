@@ -296,7 +296,7 @@ class Character:
         return -self.health
 
     def learnSkill(self,skill):
-        if not skill in self.skills:
+        if skill not in self.skills:
             self.skills.append(skill)
         self.changed("learnedSkill",self)
 

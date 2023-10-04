@@ -86,7 +86,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             return
 
     def handleQuestFailure(self,extraParam):
-        if not extraParam["quest"] in self.subQuests:
+        if extraParam["quest"] not in self.subQuests:
             return
 
         self.subQuests.remove(extraParam["quest"])

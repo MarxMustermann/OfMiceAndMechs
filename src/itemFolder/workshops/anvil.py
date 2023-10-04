@@ -57,7 +57,7 @@ class Anvil(src.items.Item):
         scrap = scrapFound[-1]
 
         dropsSpotsFull = self.checkForDropSpotsFull()
-        if not character.getFreeInventorySpace() > 0 and not scrap in character.inventory and dropsSpotsFull:
+        if not character.getFreeInventorySpace() > 0 and scrap not in character.inventory and dropsSpotsFull:
             character.addMessage("You have no free space to put the item in")
             character.changed("inventory full error",{})
             return

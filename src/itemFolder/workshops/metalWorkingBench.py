@@ -42,7 +42,7 @@ class MetalWorkingBench(src.items.Item):
     def produceItem(self,params):
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             options = []
             options.append(("Wall","Wall"))
             options.append(("Door","Door"))
@@ -77,7 +77,7 @@ class MetalWorkingBench(src.items.Item):
             character.addMessage("Not possible.")
             return
 
-        if not params.get("type") in src.items.itemMap:
+        if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
@@ -95,7 +95,7 @@ class MetalWorkingBench(src.items.Item):
         metalBar = metalBarsFound[-1]
 
         dropsSpotsFull = self.checkForDropSpotsFull()
-        if not character.getFreeInventorySpace() > 0 and not metalBar in character.inventory and dropsSpotsFull:
+        if not character.getFreeInventorySpace() > 0 and metalBar not in character.inventory and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return
@@ -213,7 +213,7 @@ class MetalWorkingBench(src.items.Item):
 
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             options = []
             options.append(("delete","delete"))
             options.append(("Wall","Wall"))

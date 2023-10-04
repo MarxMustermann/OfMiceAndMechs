@@ -353,7 +353,7 @@ class CityBuilder(src.items.Item):
                 if "reservedPlots" in task and list(plot) in task["reservedPlots"]:
 
                     # increment failure couner to not get stuck
-                    if not "failCounter" in task:
+                    if "failCounter" not in task:
                         task["failCounter"] = 1
                     else:
                         task["failCounter"] += 1
@@ -846,7 +846,7 @@ class CityBuilder(src.items.Item):
                 task["stockPileCoordinate"][1],
             )
 
-            if not "metalBarStorageName" in task:
+            if "metalBarStorageName" not in task:
                 task["metalBarStorageName"] = "bardropoff {}".format(
                     task["metalBarStorageCoordinate"],
                 )

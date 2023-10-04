@@ -143,7 +143,7 @@ Scrapfields are shown on the minimap as white ss"""]
                         foundScrap = (oldPos,newPos,direction)
                         break
 
-                    if character.container.getPositionWalkable(newPos) and not newPos in pathMap:
+                    if character.container.getPositionWalkable(newPos) and newPos not in pathMap:
                         toCheckFrom.append(newPos)
                         pathMap[newPos] = pathMap[oldPos]+[direction]
                 if foundScrap:

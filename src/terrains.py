@@ -496,7 +496,7 @@ class Terrain:
                 if char in self.charactersByTile[oldBigPos]:
                     self.charactersByTile[oldBigPos].remove(char)
                 bigPos = char.getBigPosition((-1,0,0))
-                if not bigPos in self.charactersByTile:
+                if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
         elif direction == "east":
@@ -528,7 +528,7 @@ class Terrain:
                 self.charactersByTile[oldBigPos].remove(char)
 
                 bigPos = char.getBigPosition(offset=(1,0,0))
-                if not bigPos in self.charactersByTile:
+                if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
         elif direction == "north":
@@ -560,7 +560,7 @@ class Terrain:
                 if char in self.charactersByTile[oldBigPos]:
                     self.charactersByTile[oldBigPos].remove(char)
                 bigPos = char.getBigPosition(offset=(0,-1,0))
-                if not bigPos in self.charactersByTile:
+                if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
 
                 self.charactersByTile[bigPos].append(char)
@@ -593,7 +593,7 @@ class Terrain:
                 if char in self.charactersByTile[oldBigPos]:
                     self.charactersByTile[oldBigPos].remove(char)
                 bigPos = char.getBigPosition(offset=(0,1,0))
-                if not bigPos in self.charactersByTile:
+                if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
 
@@ -1313,7 +1313,7 @@ class Terrain:
         character.yPosition = y
 
         bigPos = character.getBigPosition()
-        if not bigPos in self.charactersByTile:
+        if bigPos not in self.charactersByTile:
             self.charactersByTile[bigPos] = []
         self.charactersByTile[bigPos].append(character)
 
@@ -1817,7 +1817,7 @@ class Terrain:
                 else:
                     self.animations.remove(animation)
             elif animationType in ("splatter",):
-                if not "display" in extraInfo:
+                if "display" not in extraInfo:
                     letters = ["*","+",".",",","'","~"]
                     character = random.choice(letters)+random.choice(letters)
                     extraInfo["display"] = character

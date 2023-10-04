@@ -224,8 +224,7 @@ class CommandBloom(src.items.Item):
                         if (
                             items
                             and (items[0].bolted or not items[0].walkable)
-                            and not items[0].type
-                            in (
+                            and items[0].type not in (
                                 "Scrap",
                                 "Mold",
                                 "Bush",
@@ -489,8 +488,7 @@ class CommandBloom(src.items.Item):
                                 or (
                                     west
                                     and (not west[0].walkable or west[0].bolted)
-                                    and not west[0].type
-                                    in (
+                                    and west[0].type not in (
                                         "Scrap",
                                         "PoisonBloom",
                                         "Mold",
@@ -503,8 +501,7 @@ class CommandBloom(src.items.Item):
                                 or (
                                     east
                                     and (not east[0].walkable or east[0].bolted)
-                                    and not east[0].type
-                                    in (
+                                    and east[0].type not in (
                                         "Scrap",
                                         "PoisonBloom",
                                         "Mold",
@@ -517,8 +514,7 @@ class CommandBloom(src.items.Item):
                                 or (
                                     north
                                     and (not north[0].walkable or north[0].bolted)
-                                    and not north[0].type
-                                    in (
+                                    and north[0].type not in (
                                         "Scrap",
                                         "PoisonBloom",
                                         "Mold",
@@ -531,8 +527,7 @@ class CommandBloom(src.items.Item):
                                 or (
                                     south
                                     and (not south[0].walkable or south[0].bolted)
-                                    and not south[0].type
-                                    in (
+                                    and south[0].type not in (
                                         "Scrap",
                                         "PoisonBloom",
                                         "Mold",
@@ -607,9 +602,9 @@ class CommandBloom(src.items.Item):
                         lastCharacterPosition = pos
                         break
 
-                    elif (not items[0].walkable or items[0].bolted) and not items[
+                    elif (not items[0].walkable or items[0].bolted) and items[
                         0
-                    ].type in (
+                    ].type not in (
                         "Scrap",
                         "PoisonBloom",
                         "Corpse",

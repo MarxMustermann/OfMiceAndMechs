@@ -229,7 +229,7 @@ class TradingArtwork2(src.items.Item):
                         allItemsFound.append(item)
                         didSomething = True
 
-                        if not inputSlot[0] in slotMap:
+                        if inputSlot[0] not in slotMap:
                             slotMap[inputSlot[0]] = []
 
                         if giveSpec[0] != "Scrap":

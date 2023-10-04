@@ -38,7 +38,7 @@ class StockPlaner(src.items.Item):
 
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             params["type"] = "random"
             options = []
             index = 0
@@ -219,7 +219,7 @@ class StockPlaner(src.items.Item):
 
     def setConnectionsFromMap(self,params,noFurtherInteraction=False):
         character = params["character"]
-        if not "selection" in params:
+        if "selection" not in params:
             params["selection"] = None
 
         if params["selection"] == "done":
@@ -322,7 +322,7 @@ class StockPlaner(src.items.Item):
 
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             options = []
             options.append(("storage","storage"))
             options.append(("wallProduction","wall production"))
@@ -681,7 +681,7 @@ class StockPlaner(src.items.Item):
     def setSpecialPurposeRoomFromMap(self,params):
         character = params["character"]
 
-        if not "tag" in params:
+        if "tag" not in params:
             submenue = src.interaction.InputMenu("enter the tag for this room",targetParamName="tag",stealAllKeys=False)
             submenue.tag = "tagInput"
             character.macroState["submenue"] = submenue

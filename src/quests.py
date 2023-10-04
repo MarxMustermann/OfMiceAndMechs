@@ -214,7 +214,7 @@ class Quest:
             tag: a tag determining what kind of event triggers the listen function. For example "died"
         """
 
-        if not tag in self.listeners:
+        if tag not in self.listeners:
             return
 
         # remove listener

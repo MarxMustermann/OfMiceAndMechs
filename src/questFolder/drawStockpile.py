@@ -196,7 +196,7 @@ Try as hard as you can to achieve this.
                 if submenue.tag == "paintExtraParamName":
                     nameToSet = ""
                     for (key,value) in self.extraInfo.items():
-                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
+                        if (key not in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
                             nameToSet = key
 
                     if nameToSet == submenue.text:
@@ -217,7 +217,7 @@ Try as hard as you can to achieve this.
                     #BUG: ordering is not actually checked
                     valueToSet = ""
                     for (key,value) in self.extraInfo.items():
-                        if (not key in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
+                        if (key not in submenue.extraInfo["item"].paintExtraInfo) or (value != submenue.extraInfo["item"].paintExtraInfo[key]):
                             valueToSet = value
 
                     if valueToSet == submenue.text:
@@ -292,11 +292,11 @@ Try as hard as you can to achieve this.
                     return (None,(["C", "i", "t", "enter"],"to remove the item type for the stockpile"))
 
             for (key,_value) in item.paintExtraInfo.items():
-                if not key in self.extraInfo:
+                if key not in self.extraInfo:
                     return (None,(["C","i","c"],"to clear the painters extra info"))
 
             for (key,value) in self.extraInfo.items():
-                if (not key in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
+                if (key not in item.paintExtraInfo) or (value != item.paintExtraInfo[key]):
                     return (None,(["C","i","e",key,"enter",value,"enter"],"to clear the painters extra info"))
 
             if item.offset != (0, 0, 0):

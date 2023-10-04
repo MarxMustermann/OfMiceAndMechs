@@ -56,7 +56,7 @@ If you miss resources, produce them.
                     "Tank"            :["Sheet","MetalBars"],
                     "Painter"         :["Tank", "Heater"],
                   }
-        if not self.itemType in itemMap:
+        if self.itemType not in itemMap:
             raise Exception("no known base ressources for {self.itemType}")
         return itemMap.get(self.itemType)
 

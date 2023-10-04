@@ -113,7 +113,7 @@ To see your items open the your inventory by pressing i."""
                     quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="remove items from your inventory")
                     return ([quest],None)
 
-            if not "HOMEx" in character.registers:
+            if "HOMEx" not in character.registers:
                 self.fail(reason="no home")
                 return (None,None)
 
@@ -131,7 +131,7 @@ To see your items open the your inventory by pressing i."""
                         quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="to remove items from your inventory")
                         return ([quest2,quest1],None)
 
-                if not "HOMEx" in character.registers:
+                if "HOMEx" not in character.registers:
                     self.fail(reason="no home")
                     return (None,None)
 

@@ -64,7 +64,7 @@ class ArenaArtwork(src.items.Item):
         character.macroState["submenue"].followUp = {"container":self,"method":"changeArenaSettingSwitch","params":{"character":character}}
 
     def changeArenaSettingSwitch(self,extraParam):
-        if not "settingCategory" in extraParam:
+        if "settingCategory" not in extraParam:
             return
 
         if extraParam["settingCategory"] == "basic stats":
@@ -145,7 +145,7 @@ playerDamage         = {self.playerDamage}
         character.macroState["submenue"].followUp = {"container":self,"method":"setSetting","params":{"character":character}}
 
     def setSetting(self,extraParam):
-        if not "settingType" in extraParam or extraParam["settingType"] == "None":
+        if "settingType" not in extraParam or extraParam["settingType"] == "None":
             self.changeArenaSetting(extraParam["character"])
             return
 
@@ -208,7 +208,7 @@ playerDamage         = {self.playerDamage}
             self.changeCombatSettings(extraParam["character"])
             return
 
-        if not "value" in extraParam:
+        if "value" not in extraParam:
             submenue = src.interaction.InputMenu("input the value you want to set for %s."%(extraParam["settingType"]),targetParamName="value")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"setSetting","params":extraParam}

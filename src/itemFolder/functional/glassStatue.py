@@ -75,7 +75,7 @@ class GlassStatue(src.items.Item):
     def dispenseRewards(self,extraInfo):
         character = extraInfo.get("character")
 
-        if not "rewardType" in extraInfo:
+        if "rewardType" not in extraInfo:
             return
 
         if extraInfo["rewardType"] == None:

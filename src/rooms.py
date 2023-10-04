@@ -917,7 +917,7 @@ class Room:
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if not "city" in character.faction or not character.charType in ("Character","Ghoul"):
+                    if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
                         #chars[character.yPosition][character.xPosition] = character.display
                         char = "<-"
                         fgColor = "#fff"
@@ -1225,7 +1225,7 @@ class Room:
                     else:
                         self.animations.remove(animation)
                 elif animationType in ("splatter",):
-                    if not "display" in extraInfo:
+                    if "display" not in extraInfo:
                         letters = ["*","+",".",",","'","~"]
                         character = random.choice(letters)+random.choice(letters)
                         extraInfo["display"] = character
@@ -2173,13 +2173,13 @@ class WorkshopRoom(EmptyRoom):
         super().doBasicSetup()
 
     def addGhoulSquare(self,offset,corpseInInventory=True):
-        if not "walkingSpace" in self.floorPlan:
+        if "walkingSpace" not in self.floorPlan:
             self.floorPlan["walkingSpace"] = set()
-        if not "buildSites" in self.floorPlan:
+        if "buildSites" not in self.floorPlan:
             self.floorPlan["buildSites"] = []
-        if not "inputSlots" in self.floorPlan:
+        if "inputSlots" not in self.floorPlan:
             self.floorPlan["inputSlots"] = []
-        if not "outputSlots" in self.floorPlan:
+        if "outputSlots" not in self.floorPlan:
             self.floorPlan["outputSlots"] = []
 
         for x in range(1,6):
@@ -2208,13 +2208,13 @@ class WorkshopRoom(EmptyRoom):
         self.floorPlan["buildSites"].append(((2+offset[0],3+offset[1],0),"ScratchPlate",{"commands":{"noscratch":"jjaKsdJsJs"},"settings":{"scratchThreashold":1000}}))
 
     def addWorkshopSquare(self,offset,machines=None):
-        if not "walkingSpace" in self.floorPlan:
+        if "walkingSpace" not in self.floorPlan:
             self.floorPlan["walkingSpace"] = set()
-        if not "buildSites" in self.floorPlan:
+        if "buildSites" not in self.floorPlan:
             self.floorPlan["buildSites"] = []
-        if not "inputSlots" in self.floorPlan:
+        if "inputSlots" not in self.floorPlan:
             self.floorPlan["inputSlots"] = []
-        if not "outputSlots" in self.floorPlan:
+        if "outputSlots" not in self.floorPlan:
             self.floorPlan["outputSlots"] = []
 
         for y in (2,4,):

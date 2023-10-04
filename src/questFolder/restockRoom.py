@@ -74,7 +74,7 @@ Place the items in the correct input or storage stockpile.
                     if len(slot[0]) < 3:
                         slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
-                    if not neighbour in room.walkingSpace:
+                    if neighbour not in room.walkingSpace:
                         continue
                     foundNeighbour = (neighbour,direction)
                     break
@@ -199,7 +199,7 @@ Place the items in the correct input or storage stockpile.
                     slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])
                 for direction in ((-1,0),(1,0),(0,-1),(0,1)):
                     neighbour = (slot[0][0]-direction[0],slot[0][1]-direction[1],slot[0][2])
-                    if not neighbour in room.walkingSpace:
+                    if neighbour not in room.walkingSpace:
                         continue
                     if not room.getPositionWalkable(neighbour):
                         continue

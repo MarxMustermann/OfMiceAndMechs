@@ -42,7 +42,7 @@ class MachiningTable(src.items.Item):
     def produceItem(self,params):
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             options = []
             options.append(("Rod","Rod Machine"))
             options.append(("Frame","Frame Machine"))
@@ -63,7 +63,7 @@ class MachiningTable(src.items.Item):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
-        if not params.get("type") in src.items.itemMap:
+        if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
@@ -199,7 +199,7 @@ class MachiningTable(src.items.Item):
 
         character = params["character"]
 
-        if not "type" in params:
+        if "type" not in params:
             options = []
             options.append(("delete","delete"))
             options.append(("Wall","Wall"))

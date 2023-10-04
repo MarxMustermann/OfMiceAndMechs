@@ -249,7 +249,7 @@ Eliminate them to break up the second siege ring.
                 enemiesMap = {}
                 for enemy in enemies:
                     pos = enemy.getBigPosition()
-                    if not pos in enemiesMap:
+                    if pos not in enemiesMap:
                         enemiesMap[pos] = 0
                     enemiesMap[pos] += 1
 

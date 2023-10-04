@@ -92,7 +92,7 @@ Press r to generate subquest and receive detailed instructions
         positions = []
         for guard in self.getGuards(character):
             pos = guard.getBigPosition()
-            if not pos in positions:
+            if pos not in positions:
                 positions.append(pos)
 
         for pos in positions:

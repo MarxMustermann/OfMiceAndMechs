@@ -127,7 +127,7 @@ Remove all items from the walkways."""
             foundItems = None
             for offset in offsets:
                 checkPos = (charPos[0]+offset[0],charPos[1]+offset[1],charPos[2]+offset[2])
-                if not checkPos in character.container.walkingSpace:
+                if checkPos not in character.container.walkingSpace:
                     continue
                 items = character.container.getItemByPosition(checkPos)
                 if not items:

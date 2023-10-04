@@ -223,7 +223,7 @@ Since this clone is burned in it can not change duties.
     def dispenseEpochRewards(self,extraInfo):
         character = extraInfo.get("character")
 
-        if not "rewardType" in extraInfo:
+        if "rewardType" not in extraInfo:
             return
 
         if extraInfo["rewardType"] == None:

@@ -69,7 +69,7 @@ After changing the duties the clones should change their behaviour after complet
         dutyMap = {}
         for char in characters:
             for duty in char.duties:
-                if not duty in dutyMap:
+                if duty not in dutyMap:
                     dutyMap[duty] = 0
                 dutyMap[duty] += 1
 

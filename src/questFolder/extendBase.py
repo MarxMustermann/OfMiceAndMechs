@@ -126,7 +126,7 @@ Press d to move the cursor and show the subquests description.
             return
 
     def handleQuestFailure(self,extraParam):
-        if not extraParam["quest"] in self.subQuests:
+        if extraParam["quest"] not in self.subQuests:
             return
 
         self.subQuests.remove(extraParam["quest"])
@@ -235,7 +235,7 @@ Press d to move the cursor and show the subquests description.
             npcDuties = {}
             for otherChar in terrain.characters:
                 for duty in otherChar.duties:
-                    if not duty in npcDuties:
+                    if duty not in npcDuties:
                         npcDuties[duty] = []
                     npcDuties[duty].append(otherChar)
             for checkRoom in character.getTerrain().rooms:
@@ -243,7 +243,7 @@ Press d to move the cursor and show the subquests description.
                     if otherChar == character:
                         continue
                     for duty in otherChar.duties:
-                        if not duty in npcDuties:
+                        if duty not in npcDuties:
                             npcDuties[duty] = []
                         npcDuties[duty].append(otherChar)
 
@@ -264,7 +264,7 @@ Press d to move the cursor and show the subquests description.
             # get the possible build sited
             possibleBuildSites = []
             for candidate in baseNeighbours:
-                if (not candidate in terrain.scrapFields) and (not candidate in terrain.forests):
+                if (candidate not in terrain.scrapFields) and (candidate not in terrain.forests):
                     possibleBuildSites.append(candidate)
 
             # get assigned floor plans
@@ -283,7 +283,7 @@ Press d to move the cursor and show the subquests description.
                     if item.type == "Machine" and item.bolted:
                         if item.readyToUse():
                             readyMachines.append(item)
-                        if not item.toProduce in machineMap:
+                        if item.toProduce not in machineMap:
                             machineMap[item.toProduce] = []
                         machineMap[item.toProduce].append(item)
 
@@ -308,7 +308,7 @@ Press d to move the cursor and show the subquests description.
                     items = room.getItemByPosition(storageSlot[0])
                     if items:
                         if storageSlot[1] == None or items[-1].type == storageSlot[1]:
-                            if not items[-1].type in storedItems:
+                            if items[-1].type not in storedItems:
                                 storedItems[items[-1].type] = 0
                             storedItems[items[-1].type] += len(items)
                         continue
@@ -319,7 +319,7 @@ Press d to move the cursor and show the subquests description.
                     items = room.getItemByPosition(outputSlot[0])
                     if items:
                         if outputSlot[1] == None or items[-1].type == outputSlot[1]:
-                            if not outputSlot[1] in storedItems:
+                            if outputSlot[1] not in storedItems:
                                 storedItems[outputSlot[1]] = 0
                             storedItems[outputSlot[1]] += len(items)
                         continue
@@ -345,7 +345,7 @@ Press d to move the cursor and show the subquests description.
 
             if numItemsScrapfield >= 100:
                 for duty in ["room building","scavenging","machine operation","resource gathering","resource fetching","painting","machine placing","hauling"]:
-                    if not duty in npcDuties and epochArtwork.charges >= 10:
+                    if duty not in npcDuties and epochArtwork.charges >= 10:
                         quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
                         return ([quest],None)
 
@@ -507,7 +507,7 @@ Press d to move the cursor and show the subquests description.
                 if item.bolted:
                     continue
 
-                if not item.type in ("Wall","Door","RoomBuilder",):
+                if item.type not in ("Wall","Door","RoomBuilder",):
                     continue
 
                 inStorage = False
@@ -607,7 +607,7 @@ Press d to move the cursor and show the subquests description.
             #
             #####
 
-            if not "room building" in npcDuties:
+            if "room building" not in npcDuties:
                 for candidate in possibleBuildSites:
                     if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
                         quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,tryHard=True,reason="start extending the base",takeAnyUnbolted=True)
@@ -616,7 +616,7 @@ Press d to move the cursor and show the subquests description.
                     quest = src.quests.questMap["BuildRoom"](targetPosition=candidate,tryHard=True,reason="start extending the base",takeAnyUnbolted=True)
                     return ([quest],None)
 
-            if not "machine placing" in npcDuties:
+            if "machine placing" not in npcDuties:
 
                 # set up machines
                 for room in terrain.rooms:
@@ -676,7 +676,7 @@ Press d to move the cursor and show the subquests description.
                     if quests:
                         return (quests,None)
 
-            if not "painting" in npcDuties:
+            if "painting" not in npcDuties:
                 for room in terrain.rooms:
                     if not room.floorPlan:
                         continue
@@ -691,7 +691,7 @@ Press d to move the cursor and show the subquests description.
                     quest2 = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),reason="paint the markings for the new room")
                     return ([quest2,quest1],None)
 
-            if not "machine operation" in npcDuties:
+            if "machine operation" not in npcDuties:
                 # operate machines in general
                 quests = []
                 firstMachine = None
@@ -722,7 +722,7 @@ Press d to move the cursor and show the subquests description.
                 if quests:
                     return (quests,None)
 
-            if not "hauling" in npcDuties:
+            if "hauling" not in npcDuties:
                 for checkRoom in terrain.rooms:
                     for inputSlot in checkRoom.getEmptyInputslots(fullyEmpty=True):
                         if not inputSlot[1]:
@@ -749,7 +749,7 @@ Press d to move the cursor and show the subquests description.
                             quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
                             return ([quest4,quest2],None)
 
-            if not "resource fetching" in npcDuties:
+            if "resource fetching" not in npcDuties:
                 for checkRoom in terrain.rooms:
                     for inputSlot in checkRoom.getEmptyInputslots(fullyEmpty=True):
                         if not inputSlot[1]:
@@ -784,7 +784,7 @@ Press d to move the cursor and show the subquests description.
                                 quest4 = src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],targetPosition=checkRoom.getPosition(),reason="fill input stockpiles for machines")
                                 return ([quest4,quest2],None)
 
-            if not "resource gathering" in npcDuties:
+            if "resource gathering" not in npcDuties:
                 for room in character.getTerrain().rooms:
                     for inputSlot in room.inputSlots:
                         if inputSlot[1] == "Scrap":
@@ -803,7 +803,7 @@ Press d to move the cursor and show the subquests description.
                                 quest3 = src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="ensure scrap supply",targetPosition=room.getPosition())
                                 return ([quest3,quest1],None)
 
-            if not "scavenging" in npcDuties:
+            if "scavenging" not in npcDuties:
                 if not character.getFreeInventorySpace():
                     quest = src.quests.questMap["ClearInventory"]()
                     return ([quest],None)
@@ -821,7 +821,7 @@ Press d to move the cursor and show the subquests description.
             quests = []
             firstMachine = None
             for item in readyMachines:
-                if not item.toProduce in ("Wall","Door","RoomBuilder",):
+                if item.toProduce not in ("Wall","Door","RoomBuilder",):
                     continue
 
                 if not firstMachine:
@@ -904,7 +904,7 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if not "outputSlots" in room.floorPlan:
+                if "outputSlots" not in room.floorPlan:
                     continue
 
                 quests = []
@@ -944,7 +944,7 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if not "buildSites" in room.floorPlan:
+                if "buildSites" not in room.floorPlan:
                     continue
 
                 quests = []
@@ -985,7 +985,7 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if not "inputSlots" in room.floorPlan:
+                if "inputSlots" not in room.floorPlan:
                     continue
 
                 quests = []
@@ -1012,7 +1012,7 @@ Press d to move the cursor and show the subquests description.
                 if not room.floorPlan:
                     continue
 
-                if not "storageSlots" in room.floorPlan:
+                if "storageSlots" not in room.floorPlan:
                     continue
 
                 quests = []
@@ -1038,7 +1038,7 @@ Press d to move the cursor and show the subquests description.
             quests = []
             firstMachine = None
             for item in readyMachines:
-                if not item.toProduce in ("Case",):
+                if item.toProduce not in ("Case",):
                     continue
 
                 if not firstMachine:
@@ -1073,13 +1073,13 @@ Press d to move the cursor and show the subquests description.
                 return ([quest],None)
 
             # directly produce missing items
-            if not "Wall" in storedItems:
+            if "Wall" not in storedItems:
                 quest = src.quests.questMap["ProduceItem"](itemType="Wall",tryHard=True)
                 return ([quest],None)
-            if not "Door" in storedItems:
+            if "Door" not in storedItems:
                 quest = src.quests.questMap["ProduceItem"](itemType="Door",tryHard=True)
                 return ([quest],None)
-            if not "RoomBuilder" in storedItems:
+            if "RoomBuilder" not in storedItems:
                 quest = src.quests.questMap["ProduceItem"](itemType="RoomBuilder",tryHard=True)
                 return ([quest],None)
 

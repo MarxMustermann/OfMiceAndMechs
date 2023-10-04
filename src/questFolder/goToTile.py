@@ -314,7 +314,7 @@ The target tile is {direction[4:]}
         super().solver(character)
 
     def unhandledSubQuestFail(self,extraParam):
-        if not extraParam["quest"] in self.subQuests:
+        if extraParam["quest"] not in self.subQuests:
             return
 
         self.subQuests.remove(extraParam["quest"])

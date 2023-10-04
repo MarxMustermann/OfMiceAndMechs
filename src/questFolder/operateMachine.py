@@ -50,7 +50,7 @@ operate the machine on {self.targetPosition}{reason}.
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
-        if not items or not items[0].type in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
+        if not items or items[0].type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
             self.fail()
             return True
 
@@ -65,7 +65,7 @@ operate the machine on {self.targetPosition}{reason}.
             return ([quest],None)
 
         pos = character.getPosition()
-        if not self.targetPosition in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
+        if self.targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
             return ([quest],None)
 

@@ -65,7 +65,7 @@ This quest will end when your inventory is full."""
                 if centerItems and centerItems[0].type == "RoomBuilder":
                     continue
 
-                if not (not target in terrain.scrapFields and not target in terrain.forests and not terrain.getRoomByPosition(target)):
+                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                     continue
                 if terrain.getRoomByPosition(target):
                     continue
@@ -99,7 +99,7 @@ This quest will end when your inventory is full."""
                 if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
 
-                if not (not target in terrain.scrapFields and not target in terrain.forests and not terrain.getRoomByPosition(target)):
+                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                     continue
                 if terrain.getRoomByPosition(target):
                     continue
@@ -133,7 +133,7 @@ This quest will end when your inventory is full."""
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
                 if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
-                if not (not target in terrain.scrapFields and not target in terrain.forests and not terrain.getRoomByPosition(target)):
+                if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                     continue
                 if terrain.getRoomByPosition(target):
                     continue

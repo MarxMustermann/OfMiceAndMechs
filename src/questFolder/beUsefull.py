@@ -344,7 +344,7 @@ We should stop watching and do something about that.
             for item in items:
                 #if not item.bolted:
                 #    continue
-                if not item.type in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
+                if item.type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
                     continue
                 if not item.readyToUse():
                     continue
@@ -456,7 +456,7 @@ We should stop watching and do something about that.
 
         itemsToCheck = ["Wall","Case","Frame","Rod","Door","RoomBuilder","ScrapCompactor","Sword","Armor"]
         for itemType in itemsToCheck:
-            if not itemType in machinesInStorage:
+            if itemType not in machinesInStorage:
                 newQuest = src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)
                 self.addQuest(newQuest)
                 return True
@@ -481,7 +481,7 @@ We should stop watching and do something about that.
             for duty in otherChar.duties:
                 if otherChar == character:
                     continue
-                if not duty in npcDuties:
+                if duty not in npcDuties:
                     npcDuties[duty] = []
                 npcDuties[duty].append(otherChar)
         for checkRoom in character.getTerrain().rooms:
@@ -489,7 +489,7 @@ We should stop watching and do something about that.
                 if otherChar == character:
                     continue
                 for duty in otherChar.duties:
-                    if not duty in npcDuties:
+                    if duty not in npcDuties:
                         npcDuties[duty] = []
                     npcDuties[duty].append(otherChar)
 
@@ -497,7 +497,7 @@ We should stop watching and do something about that.
         quests = []
         for duty in ["resource gathering","scrap hammering","hauling","metal working","resource fetching","room building","painting","machining","machine placing","machine operation","maggot gathering","cleaning"]:
 
-            if not duty in npcDuties and character.getTerrain().mana >= foundShrine.getCharacterSpawningCost(character)+chargesUsed:
+            if duty not in npcDuties and character.getTerrain().mana >= foundShrine.getCharacterSpawningCost(character)+chargesUsed:
                 quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
                 chargesUsed += 10
                 quests.append(quest)
@@ -1136,7 +1136,7 @@ We should stop watching and do something about that.
                 continue
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") == "filled":
-                    if not storageSlot[1] in desireFilledStorageSlots:
+                    if storageSlot[1] not in desireFilledStorageSlots:
                         desireFilledStorageSlots[storageSlot[1]] = 0
                     desireFilledStorageSlots[storageSlot[1]] += 1
 
@@ -1225,7 +1225,7 @@ We should stop watching and do something about that.
 
             possibleBuildSites = []
             for candidate in baseNeighbours:
-                if (not candidate in terrain.scrapFields) and (not candidate in terrain.forests):
+                if (candidate not in terrain.scrapFields) and (candidate not in terrain.forests):
                     possibleBuildSites.append(candidate)
 
             for candidate in possibleBuildSites:
@@ -1312,7 +1312,7 @@ We should stop watching and do something about that.
                                 break
 
                         if not source:
-                            if not buildSite[1] in ("Machine","Command") and "metal working" in character.duties:
+                            if buildSite[1] not in ("Machine","Command") and "metal working" in character.duties:
                                 self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
                                 self.idleCounter = 0
                                 return True
@@ -1387,7 +1387,7 @@ We should stop watching and do something about that.
                 if not item.bolted:
                     continue
 
-                if not item.type in foundPlacedItems:
+                if item.type not in foundPlacedItems:
                     foundPlacedItems[item.type] = []
                 foundPlacedItems[item.type].append(item)
 
@@ -1473,7 +1473,7 @@ We should stop watching and do something about that.
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
-            if not "HOMEx" in character.registers:
+            if "HOMEx" not in character.registers:
                 self.idleCounter = 0
                 return True
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
@@ -1547,7 +1547,7 @@ We should stop watching and do something about that.
                     if not char.dead:
                         foundEnemies.append(char)
 
-            if not "questing" in character.duties:
+            if "questing" not in character.duties:
                 for duty in character.duties:
                     if not numNPCsWithSameDuties[duty] > 0:
                         return None

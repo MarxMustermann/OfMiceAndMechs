@@ -29,7 +29,7 @@ class DutyBell(src.items.Item):
             character.addMessage("this items needs to be within a room to be used")
             return
 
-        if not self.duty in self.container.requiredDuties:
+        if self.duty not in self.container.requiredDuties:
             self.container.requiredDuties.append(self.duty)
 
         dutySignals = {"machine operation":"MO","resource fetching":"RF","resource gathering":"RG","painting":"PT","machine placing":"MP"}

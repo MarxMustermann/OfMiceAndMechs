@@ -146,7 +146,7 @@ Press d to move the cursor and show the subquests description.
             return
 
     def handleQuestFailure(self,extraParam):
-        if not extraParam["quest"] in self.subQuests:
+        if extraParam["quest"] not in self.subQuests:
             return
 
         self.subQuests.remove(extraParam["quest"])

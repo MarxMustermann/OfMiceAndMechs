@@ -498,7 +498,7 @@ class ArchitectArtwork(src.items.Item):
                 adjustedPosition[0] += direction[0]
                 adjustedPosition[1] += direction[1]
 
-                if not tuple(adjustedPosition) in streets:
+                if tuple(adjustedPosition) not in streets:
                     streets.append(tuple(adjustedPosition))
                     connections[tuple(adjustedPosition)] = []
 
@@ -561,7 +561,7 @@ class ArchitectArtwork(src.items.Item):
             if abs(x-7) < 2 and abs(y-7) < 2:
                 continue
 
-            if not (x,y) in roomSlots:
+            if (x,y) not in roomSlots:
                 roomSlots.append((x,y))
 
         freeRoomSlots = roomSlots[:]
@@ -694,7 +694,7 @@ class ArchitectArtwork(src.items.Item):
                     terrain.addItem(note,(x*15+7,y*15+7,0))
                     break
                 if (x,y) in pathSlots:
-                    if not (x,y) in crossroads:
+                    if (x,y) not in crossroads:
                         crossroads.append((x,y))
                     else:
                         break
@@ -971,7 +971,7 @@ class ArchitectArtwork(src.items.Item):
             #numScrap += random.choice((0,0,10,40,100))
             for _i in range(numScrap):
                 pos = (random.randint(1,13),random.randint(1,13))
-                if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
+                if pos not in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     if random.randint(0,3) == 1:
                         loot = src.items.itemMap[random.choice(["MetalBars", "Rod", "Frame", *src.items.commons])]()
                         loot.bolted = False
@@ -983,7 +983,7 @@ class ArchitectArtwork(src.items.Item):
 
             for _i in range(random.randint(0,14)):
                 pos = (random.randint(1,13),random.randint(1,13))
-                if not pos in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
+                if pos not in ((7,1),(1,7),(13,7),(7,13)) and not terrain.getItemByPosition((roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0)):
                     mold = src.items.itemMap["Mold"]()
                     terrain.addItem(mold,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
                     mold.startSpawn()

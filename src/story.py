@@ -235,7 +235,7 @@ the floorplan is available in basebuilder mode and main game now""")
         }
 
     def runAction(self,extraParams):
-        if not "selection" in extraParams:
+        if "selection" not in extraParams:
             return
 
         if extraParams["selection"] == "generateFloorPlan":
@@ -468,7 +468,7 @@ the floorplan is available in basebuilder mode and main game now""")
             floorPlan["buildSites"].append(buildSite)
             scratchPlate = buildSite
 
-        if not "commands" in scratchPlate[2]:
+        if "commands" not in scratchPlate[2]:
             feedingPos = (corpseStockpilePositions[0][0],corpseStockpilePositions[0][1]-1,corpseStockpilePositions[0][2])
             scratchPlatePos = (scratchPlatePositions[0][0],scratchPlatePositions[0][1],scratchPlatePositions[0][2])
             corpseAnimatorPos = (corpseAnimatorPositions[0][0]+1,corpseAnimatorPositions[0][1],corpseAnimatorPositions[0][2])
@@ -478,12 +478,12 @@ the floorplan is available in basebuilder mode and main game now""")
             pathToStart = self.toBuildRoomClone3.getPathCommandTile(corpseAnimatorPos,scratchPlatePos)[0]
             scratchPlate[2]["commands"] = {"noscratch":"jj"+pathToFeeder+"Ks"+pathToAnimator+"JaJa"+pathToStart}
 
-        if not "settings" in scratchPlate[2]:
+        if "settings" not in scratchPlate[2]:
             scratchPlate[2]["settings"] = {"scratchThreashold":1000}
 
         for corpseAnimatorPos in corpseAnimatorPositions:
             commandPos = (corpseAnimatorPos[0]+1,corpseAnimatorPos[1],corpseAnimatorPos[2])
-            if not commandPos in commandPositions:
+            if commandPos not in commandPositions:
                 command = ""
                 lastPos = commandPos
                 for compactorPos in scrapCompactorPositions:
@@ -3411,7 +3411,7 @@ try to remember how you got here ..."""
         tmpList = farmPlots[:]
         while tmpList:
             farmPlot = tmpList.pop()
-            if not farmPlot in tmpList:
+            if farmPlot not in tmpList:
                 continue
             fillMaterial = ["Bush","Bush","EncrustedBush"]
             if self.difficulty == "easy":
@@ -3525,7 +3525,7 @@ try to remember how you got here ..."""
                     spawnChance = 0.5
                     maxNumSpawns = 5
 
-                if random.random() < spawnChance and not (x,y) in blockerRingPositions and not (x,y) in farmPlots:
+                if random.random() < spawnChance and (x,y) not in blockerRingPositions and (x,y) not in farmPlots:
                     if (x <= 5 and (y <= 5 or y >= 9)) or (x >= 9 and (y <= 5 or y >= 9)):
                         continue
                     for _j in range(random.randint(1,maxNumSpawns)):

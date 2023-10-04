@@ -54,7 +54,7 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def handleQuestFailure(self,extraParam):
-        if not extraParam["quest"] in self.subQuests:
+        if extraParam["quest"] not in self.subQuests:
             return
 
         self.subQuests.remove(extraParam["quest"])
@@ -62,13 +62,13 @@ Press d to move the cursor and show the subquests description.
         reason = extraParam.get("reason")
         if reason:
             if reason.startswith("no source for item "):
-                if not reason.split(" ")[4] in ("Wall","MetalBars","Scrap",):
+                if reason.split(" ")[4] not in ("Wall","MetalBars","Scrap",):
                         newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True)
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
                 if "metal working" in self.character.duties:
-                    if not reason.split(" ")[4] in ("MetalBars","Scrap",):
+                    if reason.split(" ")[4] not in ("MetalBars","Scrap",):
                         newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True)
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")

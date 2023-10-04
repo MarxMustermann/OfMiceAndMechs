@@ -70,7 +70,7 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
             return None
 
         self.lastSuperiorPos = self.getSuperiorsTileCoordinate(character)
-        if not self.lastSuperiorPos[0] in (0,14,) and not self.lastSuperiorPos[1] in (0,14,):
+        if self.lastSuperiorPos[0] not in (0,14,) and self.lastSuperiorPos[1] not in (0,14,):
             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))
             return None
 

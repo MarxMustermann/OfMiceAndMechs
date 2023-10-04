@@ -302,7 +302,7 @@ Press d to move the cursor and show the subquests description.
                         return ([quest],None)
                 else:
                     if "metal working" in self.character.duties:
-                        if not self.toCollect in ("MetalBars","Scrap",):
+                        if self.toCollect not in ("MetalBars","Scrap",):
                             newQuest = src.quests.questMap["MetalWorking"](toProduce=self.toCollect,amount=1,reason="produce a item you do not have",produceToInventory=True)
                             return ([newQuest],None)
                     if self.tryHard:

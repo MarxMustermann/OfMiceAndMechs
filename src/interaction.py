@@ -503,6 +503,7 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid):
             return item
         else:
             char.changed("moved", (char, direction))
+            return None
 
     # do movement on terrain
     # bad code: these calculation should be done elsewhere
@@ -3332,6 +3333,7 @@ class setNPCDutiesMenu(SubMenu):
         # exit the submenu
         if key == "esc":
             return True
+        return None
 
         # set primary duty
         # set secondary duty
@@ -3863,6 +3865,7 @@ class ChatPartnerselection(SubMenu):
         if self.getSelection():
             self.subMenu = src.chats.ChatMenu(self.selection)
             self.subMenu.handleKey(key, noRender=noRender, character=character)
+            return None
 
         # wait for input
         else:
@@ -3898,6 +3901,7 @@ class DebugMenu(SubMenu):
         # exit submenu
         if key == "esc":
             return True
+        return None
 
 class QuestMenu(SubMenu):
     """
@@ -4394,6 +4398,7 @@ class MessagesMenu(SubMenu):
         header.set_text((urwid.AttrSpec("default", "default"), "messages"))
         main.set_text((urwid.AttrSpec("default", "default"), [text]))
         header.set_text((urwid.AttrSpec("default", "default"), ""))
+        return None
 
 # bad code: should be abstracted
 # bad code: uses global function to render
@@ -4483,6 +4488,7 @@ subordinates:
         header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
         main.set_text((urwid.AttrSpec("default", "default"), [text]))
         header.set_text((urwid.AttrSpec("default", "default"), ""))
+        return None
 
 
 # bad code: should be abstracted
@@ -4585,6 +4591,7 @@ class CharacterInfoMenu(SubMenu):
         header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
         main.set_text((urwid.AttrSpec("default", "default"), [text]))
         header.set_text((urwid.AttrSpec("default", "default"), ""))
+        return None
 
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"
@@ -5502,6 +5509,7 @@ class ViewNPCsMenu(SubMenu):
             self.persistentText.append("\nactive quest: None")
 
         main.set_text(self.persistentText)
+        return None
 
 class StaffAsMatrixMenu(SubMenu):
     type = "StaffAsMatrixMenu"
@@ -6062,6 +6070,7 @@ class ChangeViewsMenu(SubMenu):
         if key in ("esc",):
             self.done = True
             return True
+        return None
 
 class RoomMenu(SubMenu):
     type = "RoomMenu"
@@ -6150,6 +6159,7 @@ class RoomMenu(SubMenu):
         if key in ("esc",):
             self.done = True
             return True
+        return None
 
 class RoomSourceMenu(SubMenu):
     """
@@ -6205,6 +6215,7 @@ class RoomSourceMenu(SubMenu):
         if key in ("esc",):
             self.done = True
             return True
+        return None
 
 class RoomDutyMenu(SubMenu):
     """
@@ -6990,6 +7001,7 @@ def getTcodEvents():
 
         lastcheck = time.time()
         return foundEvent
+    return None
 
 class UiAnchor:
     def __init__(self,tag=""):
@@ -8208,6 +8220,7 @@ def showInterruptChoice(text,options):
 
                 if translatedKey in options:
                     return translatedKey
+    return None
 
 def showInterruptText(text):
     tcod.event.get()

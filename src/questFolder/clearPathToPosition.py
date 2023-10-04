@@ -36,6 +36,7 @@ Pick up and unbolt items that are in the way.
         if pos == self.targetPosition:
             self.postHandler()
             return True
+        return None
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):

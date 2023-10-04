@@ -94,6 +94,7 @@ Use a CityPlaner to do this.
         if self.roomPosition in cityPlaner.plannedRooms:
             self.postHandler()
             return True
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

@@ -116,6 +116,7 @@ Return to your base and let's see how we do that.
             character.health = character.maxHealth
             self.postHandler()
         2/0
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

@@ -78,6 +78,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         for subQuest in quest.subQuests:
             if self.recCheck(subQuest):
                 return True
+        return None
 
     def handleMoved(self, extraInfo):
         if not self.active:

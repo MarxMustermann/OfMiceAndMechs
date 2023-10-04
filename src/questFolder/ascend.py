@@ -67,6 +67,7 @@ class Ascend(src.quests.MetaQuestSequence):
             return (None,("Jw","activate the Throne"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,("Js","activate the Throne"))
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

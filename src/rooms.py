@@ -388,6 +388,7 @@ class Room:
         return 50
 
         sefl.cachedPathfinder = None
+        return None
 
     def getPathTile_test(self,startPos,targetPos,avoidItems=None,localRandom=None,tryHard=False,ignoreEndBlocked=False,character=None):
         test = tcod.path.EdgeCostCallback(self.edgeCostCallback,(14,14))
@@ -2005,6 +2006,7 @@ XXX
         for outputSlot in self.outputSlots:
             if outputSlot[0] == position:
                 return True
+        return None
 
     def spawnPlaned(self):
         if self.floorPlan:

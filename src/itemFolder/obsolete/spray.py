@@ -35,6 +35,7 @@ class Spray(src.items.Item):
                 return src.canvas.displayChars.spray_left_stage2
             elif self.terrain.tutorialMachineRoom.steamGeneration == 3:
                 return src.canvas.displayChars.spray_left_stage3
+            return None
         else:
             if self.terrain.tutorialMachineRoom.steamGeneration == 0:
                 return src.canvas.displayChars.spray_right_inactive
@@ -44,6 +45,7 @@ class Spray(src.items.Item):
                 return src.canvas.displayChars.spray_right_stage2
             elif self.terrain.tutorialMachineRoom.steamGeneration == 3:
                 return src.canvas.displayChars.spray_right_stage3
+            return None
 
     def getLongInfo(self):
         text = """

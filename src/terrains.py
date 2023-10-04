@@ -449,6 +449,7 @@ class Terrain:
         # do not move player into the room
         else:
             char.addMessage("you cannot move there")
+            return None
 
     def moveCharacterDirection(self, char, direction):
         """
@@ -876,6 +877,7 @@ class Terrain:
                     item.doStepOnAction(char)
 
             return foundItem
+        return None
 
     def getPathCommand(self,startPos,targetPos,localRandom=None,tryHard=False):
         path = self.getPath(startPos,targetPos,localRandom,tryHard)

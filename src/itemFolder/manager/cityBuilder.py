@@ -136,6 +136,7 @@ class CityBuilder(src.items.Item):
         for (resourceType, amount) in cost.items():
             self.resources[resourceType] -= amount
             return True
+        return None
 
     def addResource(self, character):
         """

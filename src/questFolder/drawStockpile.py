@@ -54,6 +54,8 @@ class DrawStockpile(src.quests.MetaQuestSequence):
                 if storageSlot[0] == self.targetPosition and storageSlot[1] == self.itemType:
                     self.postHandler()
                     return True
+            return None
+        return None
 
     def generateTextDescription(self):
         reason = ""

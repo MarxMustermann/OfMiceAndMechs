@@ -474,6 +474,7 @@ class Character:
 
         for target in targets:
             distance = abs(target.xPosition-self.xPosition)+abs(target.yPosition-self.yPosition)
+        return None
 
     def doRangedAttack(self,direction):
         shift = None
@@ -1174,6 +1175,7 @@ press any other key to attack normally"""
     def getActiveQuest(self):
         if self.quests:
             return self.quests[0].getActiveQuest()
+        return None
 
     def getActiveQuests(self):
         if self.quests:

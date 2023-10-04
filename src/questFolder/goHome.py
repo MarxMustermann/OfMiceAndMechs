@@ -118,6 +118,7 @@ Press control-d to stop your character from moving.
                 return "s"
             if charPos in ((14,7,0),(12,6,0)):
                 return "a"
+            return None
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

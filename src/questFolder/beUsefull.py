@@ -333,6 +333,7 @@ We should stop watching and do something about that.
             quest.activate()
             self.idleCounter = 0
             return True
+        return None
 
     def checkTriggerMachineOperation(self,character,room):
         terrain = character.getTerrain()
@@ -360,6 +361,7 @@ We should stop watching and do something about that.
                     quest.activate()
                     self.idleCounter = 0
                     return True
+        return None
 
     def checkTriggerScrapHammering(self,character,room):
         for room in character.getTerrain().rooms:
@@ -383,6 +385,7 @@ We should stop watching and do something about that.
             self.addQuest(src.quests.questMap["ScrapHammering"](amount=10))
             self.idleCounter = 0
             return True
+        return None
 
     def checkTriggerMetalWorking(self,character,room):
         for room in character.getTerrain().rooms:
@@ -426,6 +429,8 @@ We should stop watching and do something about that.
                     self.addQuest(src.quests.questMap["MetalWorking"](amount=checkItem[2],toProduce=checkItem[0]))
                     self.idleCounter = 0
                     return True
+            return None
+        return None
 
     def checkTriggerMachining(self,character,room):
 
@@ -460,6 +465,7 @@ We should stop watching and do something about that.
                 newQuest = src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)
                 self.addQuest(newQuest)
                 return True
+        return None
 
     def checkTriggerCloneSpawning(self,character,room):
         terrain = character.getTerrain()
@@ -507,6 +513,7 @@ We should stop watching and do something about that.
             self.addQuest(quest)
         if quests:
             return True
+        return None
 
     def checkTriggerCityPlaning(self,character,room):
         terrain = character.getTerrain()
@@ -681,6 +688,9 @@ We should stop watching and do something about that.
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=floorPlansToSet[0],reason="start the process of making the room useful")
                     self.addQuest(quest)
                     return True
+                return None
+            return None
+        return None
 
     def checkTriggerResourceGathering(self,character,room):
         for room in [room, *character.getTerrain().rooms]:
@@ -715,6 +725,7 @@ We should stop watching and do something about that.
                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
                     self.idleCounter = 0
                     return True
+        return None
 
     def checkTriggerMaggotGathering(self,character,room):
         for room in [room, *character.getTerrain().rooms]:
@@ -749,6 +760,7 @@ We should stop watching and do something about that.
                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
                     self.idleCounter = 0
                     return True
+        return None
 
     def checkTriggerScratchChecking(self,character,room):
         for item in random.sample(list(room.itemsOnFloor),len(room.itemsOnFloor)):
@@ -792,6 +804,9 @@ We should stop watching and do something about that.
                     self.addQuest(quest)
                     self.idleCounter = 0
                     return True
+                return None
+            return None
+        return None
 
     def checkTriggerHauling(self,character,room):
         checkedTypes = set()
@@ -913,6 +928,7 @@ We should stop watching and do something about that.
                         self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to fill a storage stockpile designated to be filled",abortOnfullInventory=True))
                         self.idleCounter = 0
                         return True
+        return None
 
     def checkTriggerResourceFetching(self,character,room):
         checkedTypes = set()
@@ -1052,6 +1068,7 @@ We should stop watching and do something about that.
                                 self.addQuest(src.quests.questMap["ClearInventory"]())
                             self.idleCounter = 0
                             return True
+        return None
 
     def checkTriggerPainting(self,character,room):
         for room in [room, *character.getTerrain().rooms]:
@@ -1158,6 +1175,7 @@ We should stop watching and do something about that.
                     quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="designate special storage for basic items",itemType=checkDesireFilledStorageSlot[0],extraInfo={"desiredState":"filled"})
                     self.addQuest(quest)
                     return True
+        return None
 
 
     def checkTriggerRoomBuilding(self,character,room):
@@ -1247,6 +1265,8 @@ We should stop watching and do something about that.
                 self.addQuest(quest)
                 self.idleCounter = 0
                 return True
+            return None
+        return None
 
     def registerDutyFail(self,extraParam):
         if isinstance(extraParam["quest"],src.quests.questMap["SetUpMachine"]):
@@ -1427,12 +1447,15 @@ We should stop watching and do something about that.
                         quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="to have at least one scrpa compactor")
                         self.addQuest(quest)
                         return True
+            return None
+        return None
 
     def checkTriggerFillFlask(self,character,room):
         if character.flask and character.flask.uses < 3:
             self.addQuest(src.quests.questMap["FillFlask"]())
             self.idleCounter = 0
             return True
+        return None
 
     def checkTriggerScavenging(self,character,room):
         if not character.getFreeInventorySpace():
@@ -1457,6 +1480,7 @@ We should stop watching and do something about that.
             self.addQuest(src.quests.questMap["Eat"]())
             self.idleCounter = 0
             return True
+        return None
 
     def triggerClearInventory(self,character,room):
         if len(character.inventory) > 9:
@@ -1615,6 +1639,10 @@ We should stop watching and do something about that.
                         quest.activate()
                         self.idleCounter = 0
                         return True
+                    return None
+                return None
+            return None
+        return None
 
     def checkTriggerPraying(self,character,room):
         terrain = character.getTerrain()
@@ -1638,6 +1666,7 @@ We should stop watching and do something about that.
             quest.assignToCharacter(character)
             self.idleCounter = 0
             return True
+        return None
 
     def generateSubquests(self,character):
 
@@ -2730,6 +2759,7 @@ I healed you again.
             newQuest = src.quests.questMap["RaidTutorial4"]()
             self.addQuest(newQuest)
             return True
+        return None
 
 
 src.quests.addType(BeUsefull)

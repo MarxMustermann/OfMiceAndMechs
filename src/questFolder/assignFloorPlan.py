@@ -131,6 +131,7 @@ Set the floor plan: {self.floorPlanType}
         if room.floorPlan:
             self.postHandler()
             return True
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

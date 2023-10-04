@@ -229,6 +229,7 @@ The target tile is {direction[4:]}
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
+            return None
         else:
             # TODO: reenable random
             if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
@@ -280,6 +281,7 @@ The target tile is {direction[4:]}
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
+            return None
 
     def generateSubquests(self, character=None):
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)

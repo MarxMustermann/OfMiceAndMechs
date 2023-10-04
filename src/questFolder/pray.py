@@ -73,6 +73,7 @@ operate the machine on {self.targetPosition}{reason}.
             return (None,("Jwssj","pray at the shrine"))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,("Jsssj","pray at the shrine"))
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

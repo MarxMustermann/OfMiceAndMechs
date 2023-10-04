@@ -137,5 +137,6 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             return None
 
         125/0
+        return None
 
 src.quests.addType(GatherVatMaggots)

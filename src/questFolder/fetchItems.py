@@ -154,6 +154,8 @@ Press d to move the cursor and show the subquests description.
                 for item in room.itemsOnFloor:
                     if item.bolted is False and item.type == self.toCollect:
                         return (room.getPosition(),)
+            return None
+        return None
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):

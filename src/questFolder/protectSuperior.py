@@ -73,5 +73,6 @@ class ProtectSuperior(src.quests.MetaQuestSequence):
         if self.lastSuperiorPos[0] not in (0,14,) and self.lastSuperiorPos[1] not in (0,14,):
             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=self.lastSuperiorPos,paranoid=True))
             return None
+        return None
 
 src.quests.addType(ProtectSuperior)

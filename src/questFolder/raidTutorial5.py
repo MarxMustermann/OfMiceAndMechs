@@ -123,6 +123,7 @@ Now return it to your base.
 
             self.postHandler()
             return (None,None)
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

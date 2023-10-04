@@ -219,6 +219,7 @@ class MessageZoomCinematic(BasicCinematic):
         self.alarm = src.interaction.loop.set_alarm_in(
             0.2, src.interaction.callShow_or_exit, "~"
         )
+        return None
 
     def abort(self):
         """

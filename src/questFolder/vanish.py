@@ -15,6 +15,7 @@ class Vanish(src.quests.MetaQuestSequence):
             character.container.removeCharacter(character)
             self.postHandler()
             return (None,None)
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

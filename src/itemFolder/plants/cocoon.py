@@ -26,6 +26,7 @@ class Cocoon(src.items.Item):
             return "öö"
         if self.charges == 2:
             return "ÖÖ"
+        return None
 
     def spawn(self,triggerCharacter=None):
         """

@@ -28,6 +28,7 @@ class DrawBuildSite(src.quests.MetaQuestSequence):
             if buildSite[0] == self.targetPosition:
                 self.postHandler()
                 return True
+        return None
 
     def generateTextDescription(self):
         reason = ""

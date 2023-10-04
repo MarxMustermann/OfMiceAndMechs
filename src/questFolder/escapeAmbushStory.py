@@ -41,5 +41,6 @@ For now ignore the options below and press esc to continue.
         if isinstance(character.container,src.rooms.Room):
             return False
         self.postHandler()
+        return None
 
 src.quests.addType(EscapeAmbushStory)

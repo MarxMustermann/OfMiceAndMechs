@@ -25,6 +25,7 @@ class DeleteMarking(src.quests.MetaQuestSequence):
         if not checkRoom.getPaintedByPosition(self.targetPosition):
             self.postHandler()
             return True
+        return None
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):

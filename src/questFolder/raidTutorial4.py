@@ -56,6 +56,8 @@ class RaidTutorial4(src.quests.MetaQuestSequence):
             for offset in offsets:
                 if character.getPosition(offset=offset[0]) == throne.getPosition():
                     return (None,("J"+offset[1],"sit on the throne"))
+            return None
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

@@ -22,6 +22,7 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
         if self.targetPosition in room.walkingSpace:
             self.postHandler()
             return True
+        return None
 
     def generateTextDescription(self):
         reason = ""

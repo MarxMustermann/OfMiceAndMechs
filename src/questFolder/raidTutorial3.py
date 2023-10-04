@@ -79,6 +79,7 @@ Since the actual game is not ready yet, i'll crash the game now.
 
                 self.postHandler()
             return (None,None)
+        return None
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)

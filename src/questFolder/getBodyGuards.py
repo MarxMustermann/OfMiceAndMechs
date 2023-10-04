@@ -114,6 +114,7 @@ Use it to gain a new body guard."""
 
         if baseCommand:
             return baseCommand+"sj"
+        return None
 
     def handleGotBodyguard(self,extraInfo=None):
         if not self.active:

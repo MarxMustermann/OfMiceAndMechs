@@ -19,7 +19,6 @@ import src.cinematics
 import src.events
 import src.gamestate
 import src.interaction
-import src.items
 import src.quests
 import src.rooms
 

@@ -12,7 +12,6 @@ import time
 import src.canvas
 import src.chats
 import src.gamestate
-import src.items
 import src.quests
 import src.rooms
 import src.terrains

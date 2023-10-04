@@ -9,7 +9,6 @@ if you are a first time visitor, interaction.py, story.py and gamestate.py are p
 import argparse
 import logging
 
-import src.itemFolder
 from src import canvas, characters, interaction, story
 
 parser = argparse.ArgumentParser()

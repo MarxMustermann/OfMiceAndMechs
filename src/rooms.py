@@ -10,7 +10,6 @@ import src.characters
 import src.chats
 import src.gameMath
 import src.gamestate
-import src.items
 import src.quests
 
 logger = logging.getLogger(__name__)

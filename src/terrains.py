@@ -13,7 +13,6 @@ import src.canvas
 import src.events
 import src.gameMath
 import src.gamestate
-import src.items
 import src.overlays
 import src.quests
 import src.rooms

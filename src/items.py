@@ -2,9 +2,7 @@
 items and item related code belongs here
 """
 
-import src.gamestate
-import src.interaction
-
+import src
 
 class Item:
     """

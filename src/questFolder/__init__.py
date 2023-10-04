@@ -28,7 +28,6 @@ import src.questFolder.enterRoom
 import src.questFolder.epochQuest
 import src.questFolder.equip
 import src.questFolder.equip2
-import src.questFolder.escapeAmbushStory
 import src.questFolder.extendBase
 import src.questFolder.fetchItems
 import src.questFolder.fight
@@ -89,3 +88,4 @@ import src.questFolder.takeOverBase
 import src.questFolder.trainSkill
 import src.questFolder.vanish
 import src.questFolder.waitQuest
+import src.questFolder.escapeAmbushStory

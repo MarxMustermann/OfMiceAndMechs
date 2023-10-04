@@ -9,7 +9,6 @@ import src.canvas
 import src.chats
 import src.gamestate
 import src.interaction
-import src.items
 
 urwid = None
 logger = logging.getLogger(__name__)

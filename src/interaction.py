@@ -1400,7 +1400,7 @@ def doVariableAction(key,char,charState,main,header,footer,urwid,flags):
 
     register = lastVarAction["register"]
 
-    if lastVarAction["outOperator"] == True:
+    if lastVarAction["outOperator"] is True:
         if register is None or (
             (register == "" or register[-1].isupper() or register.endswith(" "))
             and (key.isupper() or key == " ")
@@ -7870,7 +7870,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             """
             doLoad()
 
-            if loadingControl["needsStart"] == True:
+            if loadingControl["needsStart"] is True:
                 src.gamestate.gamestate.currentPhase.start(seed=None,difficulty=difficulty)
                 terrain = src.gamestate.gamestate.terrainMap[7][7]
 

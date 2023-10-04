@@ -285,7 +285,7 @@ class TradingArtwork2(src.items.Item):
                     if outputSlot[1] != itemSpec[0]:
                         continue
                     items = self.container.getItemByPosition(outputSlot[0])
-                    if items and items[-1].walkable == False:
+                    if items and items[-1].walkable is False:
                         continue
                     if len(items) > 10:
                         continue

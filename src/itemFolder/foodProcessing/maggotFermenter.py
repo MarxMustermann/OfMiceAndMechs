@@ -115,7 +115,7 @@ Activate the maggot fermenter to produce biomass.
             for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
-                if item.walkable == False:
+                if item.walkable is False:
                     targetFull = True
 
         if targetFull:

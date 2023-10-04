@@ -83,7 +83,7 @@ class PavingGenerator(src.items.Item):
         if len(itemList) > 15:
             targetFull = True
         for item in itemList:
-            if item.walkable == False:
+            if item.walkable is False:
                 targetFull = True
 
         if targetFull:

@@ -65,7 +65,7 @@ Place item to upgrade to the west and the downgraded item will be placed to the 
                 for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
-                    if item.walkable == False:
+                    if item.walkable is False:
                         targetFull = True
             else:
                 if (

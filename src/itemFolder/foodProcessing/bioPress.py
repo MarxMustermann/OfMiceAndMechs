@@ -75,7 +75,7 @@ Activate the bio press to produce press cake.
         if len(itemList) > 15:
             targetFull = True
         for item in itemList:
-            if item.walkable == False:
+            if item.walkable is False:
                 targetFull = True
 
         if targetFull:
@@ -117,7 +117,7 @@ Activate the bio press to produce press cake.
         if len(itemList) > 15:
             targetFull = True
         for item in itemList:
-            if item.walkable == False:
+            if item.walkable is False:
                 targetFull = True
 
         if targetFull:

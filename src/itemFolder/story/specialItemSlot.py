@@ -31,7 +31,7 @@ class SpecialItemSlot(src.items.Item):
             character: the character trying to unlock the item
         """
 
-        if self.hasItem == False:
+        if self.hasItem is False:
             foundItem = None
             for item in character.inventory:
                 if item.type != "SpecialItem":

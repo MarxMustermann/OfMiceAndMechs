@@ -62,7 +62,7 @@ activate the mover to move one item to the east of the mover.
             if len(items) > 15:
                 targetFull = True
             for item in items:
-                if item.walkable == False:
+                if item.walkable is False:
                     targetFull = True
         else:
             if len(items) > 1:

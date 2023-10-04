@@ -115,7 +115,7 @@ class PortableChallenger(src.items.Item):
                         for item in character.container.getItemByPosition(
                             (baseCoordinateX + extraX, baseCoordinateY + extraY)
                         ):
-                            if item.type == "Bloom" and item.dead == False:
+                            if item.type == "Bloom" and item.dead is False:
                                 numFound += 1
 
                 if not numFound >= 9:
@@ -135,7 +135,7 @@ class PortableChallenger(src.items.Item):
                         for item in character.container.getItemByPosition(
                             (baseCoordinateX + extraX, baseCoordinateY + extraY)
                         ):
-                            if item.type == "SickBloom" and item.dead == False:
+                            if item.type == "SickBloom" and item.dead is False:
                                 numFound += 1
 
                 if not numFound >= 3:

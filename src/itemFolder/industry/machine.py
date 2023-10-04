@@ -406,7 +406,7 @@ Currently the machine has no charges
                 for item in self.container.getItemByPosition(
                     (self.xPosition + 1, self.yPosition, self.zPosition)
                 ):
-                    if item.walkable == False:
+                    if item.walkable is False:
                         targetFull = True
             else:
                 if (

@@ -1763,7 +1763,7 @@ press any other key to attack normally"""
 
         itemList = self.container.getItemByPosition(position)
 
-        if item.walkable == False and len(itemList):
+        if item.walkable is False and len(itemList):
             self.addMessage("you need a clear space to drop big items")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             if position:
@@ -1782,7 +1782,7 @@ press any other key to attack normally"""
         for compareItem in itemList:
             if compareItem.type == "Scrap":
                 foundScrap = compareItem
-            if compareItem.walkable == False and not (
+            if compareItem.walkable is False and not (
                 compareItem.type == "Scrap" and compareItem.amount < 15
             ):
                 foundBig = True

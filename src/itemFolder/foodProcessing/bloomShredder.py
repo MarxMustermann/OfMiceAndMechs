@@ -77,7 +77,7 @@ Activate the bloom shredder to produce biomass.
             for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition, self.zPosition)
             ]:
-                if item.walkable == False:
+                if item.walkable is False:
                     targetFull = True
 
         if targetFull:

@@ -230,7 +230,7 @@ class StockpileMetaManager(src.items.Item):
         # check sinks
         for stockpile in self.stockPiles:
             if (
-                self.stockPileInfo[stockpile].get("sink") == True
+                self.stockPileInfo[stockpile].get("sink") is True
                 and self.stockPileInfo[stockpile]["amount"]
                 >= self.stockPileInfo[stockpile]["desiredAmount"]
             ):
@@ -291,7 +291,7 @@ class StockpileMetaManager(src.items.Item):
 
         # check sinks
         for stockpile in self.stockPiles:
-            if self.stockPileInfo[stockpile].get("source") == True and (
+            if self.stockPileInfo[stockpile].get("source") is True and (
                 self.stockPileInfo[stockpile]["amount"] == 0
                 or (
                     "desiredAmount" in self.stockPileInfo[stockpile]
@@ -367,7 +367,7 @@ class StockpileMetaManager(src.items.Item):
                     needyStockpiles[itemType] = []
                 needyStockpiles[itemType].append(stockPile)
 
-            if stockPileInfo.get("source") == True:
+            if stockPileInfo.get("source") is True:
                 itemType = stockPileInfo.get("itemType")
                 if itemType is None:
                     itemType = "all"
@@ -493,10 +493,10 @@ class StockpileMetaManager(src.items.Item):
         for stockPile in self.stockPiles:
             stockPileInfo = self.stockPileInfo[stockPile]
 
-            if stockPileInfo["active"] != True:
+            if stockPileInfo["active"] is not True:
                 continue
 
-            if stockPileInfo.get("source") == True:
+            if stockPileInfo.get("source") is True:
                 continue
 
             if not stockPileInfo["amount"] < stockPileInfo["maxAmount"]:

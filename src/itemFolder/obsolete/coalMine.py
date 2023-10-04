@@ -36,7 +36,7 @@ class CoalMine(src.items.Item):
             for item in self.terrain.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
-                if item.walkable == False:
+                if item.walkable is False:
                     targetFull = True
 
         if targetFull:

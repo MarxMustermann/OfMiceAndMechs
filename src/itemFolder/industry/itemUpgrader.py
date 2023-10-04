@@ -81,7 +81,7 @@ If the upgrade fails the remains of the item will be placed to the south.
                 if (len(itemList) > 15):
                     targetFull = True
                 for item in itemList:
-                    if item.walkable == False:
+                    if item.walkable is False:
                         targetFull = True
             else:
                 if ( len(itemList) > 1 ):

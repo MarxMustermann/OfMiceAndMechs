@@ -58,7 +58,7 @@ class Tree(src.items.Item):
         if len(items) > 15:
             targetFull = True
         for item in items:
-            if item.walkable == False:
+            if item.walkable is False:
                 targetFull = True
 
         if targetFull:

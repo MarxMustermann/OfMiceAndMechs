@@ -65,7 +65,7 @@ class Drill(src.items.Item):
                     for item in self.terrain.itemByCoordinates[
                         (self.xPosition, self.yPosition + 1)
                     ]:
-                        if item.walkable == False:
+                        if item.walkable is False:
                             targetFull = True
                         if item.type == "Scrap":
                             scrapFound = item
@@ -163,7 +163,7 @@ class Drill(src.items.Item):
             for item in self.terrain.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
-                if item.walkable == False:
+                if item.walkable is False:
                     targetFull = True
                 if item.type == "Scrap":
                     foundScrap = item

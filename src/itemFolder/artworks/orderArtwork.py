@@ -112,10 +112,10 @@ That should usually be around 10-20 ticks."""
             if mode == "all":
                 targets.append(person)
                 return
-            if mode == "staff" and person.isStaff == True:
+            if mode == "staff" and person.isStaff is True:
                 targets.append(person)
                 return
-            if mode == "non staff" and person.isStaff == False:
+            if mode == "non staff" and person.isStaff is False:
                 targets.append(person)
                 return
             if mode == "idle" and not person.quests:
@@ -139,16 +139,16 @@ That should usually be around 10-20 ticks."""
             if mode == "rank 5-6" and (person.rank == 6 or person.rank == 5):
                 targets.append(person)
                 return
-            if mode == "non staff rank 6" and (person.isStaff == False and person.rank == 6):
+            if mode == "non staff rank 6" and (person.isStaff is False and person.rank == 6):
                 targets.append(person)
                 return
             if mode == "idle rank 6" and (person.rank == 6 and not person.quests):
                 targets.append(person)
                 return
-            if mode == "idle non staff" and (person.isStaff == False and not person.quests):
+            if mode == "idle non staff" and (person.isStaff is False and not person.quests):
                 targets.append(person)
                 return
-            if mode == "idle non staff rank 6" and (person.isStaff == False and person.rank == 6 and not person.quests):
+            if mode == "idle non staff rank 6" and (person.isStaff is False and person.rank == 6 and not person.quests):
                 targets.append(person)
                 return
 

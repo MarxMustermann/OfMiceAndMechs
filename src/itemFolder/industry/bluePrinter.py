@@ -170,7 +170,7 @@ The items from the blueprint reciepe need to be added to the west or south.
                 for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition, self.zPosition)
                 ]:
-                    if item.walkable == False:
+                    if item.walkable is False:
                         targetFull = True
 
             if targetFull:

@@ -87,7 +87,7 @@ Matching items will be moved to the south and non matching items will be moved t
                 for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
-                    if item.walkable == False:
+                    if item.walkable is False:
                         targetFull = True
             else:
                 if (

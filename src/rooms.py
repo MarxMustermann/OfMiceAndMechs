@@ -565,7 +565,7 @@ class Room:
             return False
         for item in items:
             if not character:
-                if item.walkable == False:
+                if item.walkable is False:
                     return False
             else:
                 if not character.getItemWalkable(item):

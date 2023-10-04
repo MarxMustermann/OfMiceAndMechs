@@ -80,7 +80,7 @@ The MoldSpores will be outputted to the east/right.
             for item in self.container.itemByCoordinates[
                 (self.xPosition + 1, self.yPosition)
             ]:
-                if item.walkable == False:
+                if item.walkable is False:
                     targetFull = True
 
         if targetFull:

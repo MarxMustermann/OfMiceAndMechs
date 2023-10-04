@@ -114,7 +114,7 @@ The level of the copied command is the minimum level of the input command, sheet
                 for item in self.container.itemByCoordinates[
                     (self.xPosition + 1, self.yPosition)
                 ]:
-                    if item.walkable == False:
+                    if item.walkable is False:
                         targetFull = True
             else:
                 if (

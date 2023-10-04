@@ -246,7 +246,7 @@ class Terrain:
             return False
         for item in items:
             if not character:
-                if item.walkable == False:
+                if item.walkable is False:
                     return False
             else:
                 if not character.getItemWalkable(item):
@@ -1273,7 +1273,7 @@ class Terrain:
                         continue
 
                 if not tryHard:
-                    if character and character.stepsOnMines == False:
+                    if character and character.stepsOnMines is False:
                         items = self.getItemByPosition((newPos[0]+tilePos[0]*15,newPos[1]+tilePos[1]*15,newPos[2]+tilePos[2]*15))
                         if items and items[0].type == "LandMine":
                             blockedPositions.add(newPos)

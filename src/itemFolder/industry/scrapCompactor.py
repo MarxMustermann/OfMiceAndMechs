@@ -96,7 +96,7 @@ class ScrapCompactor(src.items.Item):
         if len(itemList) > 0:
             targetFull = True
         for item in itemList:
-            if item.walkable == False:
+            if item.walkable is False:
                 targetFull = True
 
         return (targetFull,itemList)

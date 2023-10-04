@@ -1,11 +1,11 @@
+import logging
+
 import src
 
 """
 a vending machine basically
 bad code: currently only dispenses goo flasks
 """
-
-import logging
 
 logger = logging.getLogger(__name__)
 

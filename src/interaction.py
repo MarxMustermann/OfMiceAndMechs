@@ -8,6 +8,8 @@ import logging
 import os
 import random
 import time
+import gzip
+
 
 import src.canvas
 import src.chats
@@ -10326,9 +10328,6 @@ def getNetworkedEvents():
 
         for command in raw["commands"]:
             keyboardListener(command,targetCharacter=shadowCharacter)
-
-import gzip
-
 
 def sendNetworkDraw(pseudoDisplay):
     """

@@ -276,7 +276,7 @@ class RoadManager(src.items.Item):
         offsetY = task["offset"][1]
 
         if not self.center:
-            self.center == [bigX, bigY]
+            self.center = [bigX, bigY]
             self.roadNetwork[tuple(self.center)] = {"type": "centerBlocked"}
         else:
             neighbours = [

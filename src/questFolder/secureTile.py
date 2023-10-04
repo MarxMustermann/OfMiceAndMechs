@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"

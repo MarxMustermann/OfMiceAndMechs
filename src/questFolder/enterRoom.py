@@ -1,5 +1,6 @@
 import src
 
+
 class EnterRoom(src.quests.MetaQuestSequence):
     type = "EnterRoom"
 

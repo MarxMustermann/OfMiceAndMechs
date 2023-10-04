@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class ClearTile(src.quests.MetaQuestSequence):
     type = "ClearTile"

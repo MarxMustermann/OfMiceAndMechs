@@ -1,5 +1,6 @@
 import src
 
+
 class Machining(src.quests.MetaQuestSequence):
     type = "Machining"
 

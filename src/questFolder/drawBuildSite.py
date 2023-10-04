@@ -1,5 +1,6 @@
 import src
 
+
 class DrawBuildSite(src.quests.MetaQuestSequence):
     type = "DrawBuildSite"
 

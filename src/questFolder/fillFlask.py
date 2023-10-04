@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class FillFlask(src.quests.MetaQuestSequence):
     type = "FillFlask"

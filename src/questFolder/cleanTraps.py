@@ -1,5 +1,6 @@
 import src
 
+
 class CleanTraps(src.quests.MetaQuestSequence):
     type = "CleanTraps"
 

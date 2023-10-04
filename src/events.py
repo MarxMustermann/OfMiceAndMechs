@@ -5,6 +5,7 @@ bad code: not all events are here yet
 
 import src.canvas
 
+
 class Event:
     """
     base class for events

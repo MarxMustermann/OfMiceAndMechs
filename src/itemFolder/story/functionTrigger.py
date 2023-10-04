@@ -1,5 +1,6 @@
 import src
 
+
 #NIY: half done
 class FunctionTrigger(src.items.Item):
 

@@ -1,5 +1,6 @@
 import src
 
+
 class PoisonBush(src.items.Item):
     """
     a hard to remove poison plant

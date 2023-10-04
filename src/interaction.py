@@ -259,8 +259,8 @@ def setUpTcod():
 
     context.present(root_console,integer_scaling=False,keep_aspect=True)
 
-    import tcod.sdl.audio as audio
     import soundfile as sf
+    import tcod.sdl.audio as audio
 
     global soundloader
     soundloader = sf
@@ -10328,6 +10328,8 @@ def getNetworkedEvents():
             keyboardListener(command,targetCharacter=shadowCharacter)
 
 import gzip
+
+
 def sendNetworkDraw(pseudoDisplay):
     """
     basically a copy of the main loop for networked multiplayer
@@ -10358,6 +10360,7 @@ def sendNetworkDraw(pseudoDisplay):
         return
 
     import json
+
     import urwid
 
     #data = conn.recv(1024 * 1024 * 1024)

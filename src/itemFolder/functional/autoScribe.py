@@ -1,5 +1,6 @@
 import src
 
+
 class AutoScribe(src.items.Item):
     """
     ingame item to copy sheet based items

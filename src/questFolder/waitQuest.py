@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class WaitQuest(src.quests.Quest):
     type = "WaitQuest"

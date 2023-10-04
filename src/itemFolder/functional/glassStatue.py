@@ -1,5 +1,6 @@
 import src
 
+
 class GlassStatue(src.items.Item):
     '''
     basic item with different appearance

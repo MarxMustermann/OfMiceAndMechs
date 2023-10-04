@@ -1,7 +1,9 @@
-import src
-import random
 import copy
 import json
+import random
+
+import src
+
 
 class EpochArtwork(src.items.Item):
     """

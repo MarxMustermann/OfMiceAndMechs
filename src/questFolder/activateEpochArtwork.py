@@ -1,5 +1,6 @@
 import src
 
+
 class ActivateEpochArtwork(src.quests.MetaQuestSequence):
     type = "ActivateEpochArtwork"
 

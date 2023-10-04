@@ -1,5 +1,6 @@
 import src
 
+
 class PatrolQuest(src.quests.MetaQuestSequence):
     type = "PatrolQuest"
 

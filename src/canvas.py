@@ -180,10 +180,10 @@ class TileMapping(Mapping):
         """
 
         # load the fallback chars
-        import config.displayChars_fallback as fallback
-
         # add missing tiles from fallbackChars
         import inspect
+
+        import config.displayChars_fallback as fallback
         raw = inspect.getmembers(fallback, lambda a: not (inspect.isroutine(a)))
         for item in raw:
             # ignore internal state

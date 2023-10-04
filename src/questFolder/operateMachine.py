@@ -1,5 +1,6 @@
 import src
 
+
 class OperateMachine(src.quests.MetaQuestSequence):
     type = "OperateMachine"
 

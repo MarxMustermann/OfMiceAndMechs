@@ -1,5 +1,6 @@
 import src
 
+
 # obolete: in use but long term future is unsure
 class Token(src.items.Item):
     """

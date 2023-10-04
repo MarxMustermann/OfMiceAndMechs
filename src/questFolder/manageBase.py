@@ -1,5 +1,6 @@
 import src
 
+
 class ManageBase(src.quests.MetaQuestSequence):
     type = "ManageBase"
 

@@ -1,5 +1,6 @@
 import src
 
+
 class GetEpochReward(src.quests.MetaQuestSequence):
     type = "GetEpochReward"
 

@@ -1,5 +1,6 @@
 import src
 
+
 class Scraper(src.items.Item):
     """
     ingame item to destroy other items

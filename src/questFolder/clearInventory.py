@@ -1,5 +1,6 @@
 import src
 
+
 class ClearInventory(src.quests.MetaQuestSequence):
     type = "ClearInventory"
 

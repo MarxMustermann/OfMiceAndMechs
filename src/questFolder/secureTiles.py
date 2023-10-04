@@ -1,5 +1,6 @@
 import src
 
+
 class SecureTiles(src.quests.MetaQuestSequence):
     type = "SecureTiles"
 

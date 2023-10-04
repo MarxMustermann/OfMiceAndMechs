@@ -1,5 +1,6 @@
 import src
 
+
 class DesignateRoom(src.quests.MetaQuestSequence):
     type = "DesignateRoom"
 

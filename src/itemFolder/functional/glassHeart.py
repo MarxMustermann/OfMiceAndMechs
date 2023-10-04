@@ -1,6 +1,8 @@
-import src
 import copy
 import json
+
+import src
+
 
 class GlassHeart(src.items.Item):
     """

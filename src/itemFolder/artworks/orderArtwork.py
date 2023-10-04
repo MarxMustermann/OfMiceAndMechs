@@ -1,5 +1,6 @@
-import src
 import random
+
+import src
 
 
 class OrderArtwork(src.items.Item):

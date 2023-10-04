@@ -1,5 +1,6 @@
 import src
 
+
 class Ascend(src.quests.MetaQuestSequence):
     type = "Ascend"
 

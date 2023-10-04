@@ -1,5 +1,6 @@
 import src
 
+
 class Note(src.items.Item):
     """
     ingame item having no other purpose that to display a text

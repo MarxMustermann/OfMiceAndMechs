@@ -1,5 +1,7 @@
-import src
 import cProfile
+
+import src
+
 
 class PerformanceTester(src.items.Item):
     """

@@ -1,5 +1,6 @@
 import src
 
+
 class LootRoom(src.quests.MetaQuestSequence):
     type = "LootRoom"
 

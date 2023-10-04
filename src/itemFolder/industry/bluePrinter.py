@@ -1,5 +1,6 @@
 import src
 
+
 class BluePrinter(src.items.Item):
     """
     ingame item to create blueprints which can be used to produce machines

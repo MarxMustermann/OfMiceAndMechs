@@ -1,5 +1,6 @@
 import src
 
+
 class GooFaucet(src.items.Item):
     """
     ingame item to get goo from in a convinient way

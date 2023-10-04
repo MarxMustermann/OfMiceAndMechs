@@ -1,5 +1,6 @@
 import src
 
+
 class ScheduleRoomBuilding(src.quests.MetaQuestSequence):
     type = "ScheduleRoomBuilding"
 

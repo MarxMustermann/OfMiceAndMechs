@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class ChangeJob(src.quests.MetaQuestSequence):
     type = "ChangeJob"

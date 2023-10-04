@@ -1,5 +1,6 @@
 import src
 
+
 class Map(src.items.Item):
     """
     ingame item for storing, handlind and running paths

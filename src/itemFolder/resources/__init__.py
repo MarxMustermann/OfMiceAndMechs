@@ -8,7 +8,9 @@ import src.itemFolder.resources.explosive
 import src.itemFolder.resources.fireCrystals
 import src.itemFolder.resources.floorPlate
 import src.itemFolder.resources.frame
+import src.itemFolder.resources.glassCrystal
 import src.itemFolder.resources.heater
+import src.itemFolder.resources.lightningRod
 import src.itemFolder.resources.memoryCell
 import src.itemFolder.resources.metalbars
 import src.itemFolder.resources.mount
@@ -18,14 +20,9 @@ import src.itemFolder.resources.puller
 import src.itemFolder.resources.pusher
 import src.itemFolder.resources.radiator
 import src.itemFolder.resources.rod
-import src.itemFolder.resources.puller
-import src.itemFolder.resources.pusher
-import src.itemFolder.resources.radiator
 import src.itemFolder.resources.scrap
 import src.itemFolder.resources.sheet
 import src.itemFolder.resources.stripe
 import src.itemFolder.resources.tank
 import src.itemFolder.resources.token
 import src.itemFolder.resources.wall
-import src.itemFolder.resources.lightningRod
-import src.itemFolder.resources.glassCrystal

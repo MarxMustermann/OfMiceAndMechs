@@ -1,5 +1,6 @@
 import src
 
+
 class SecureCargo(src.quests.MetaQuestSequence):
     type = "SecureCargo"
 

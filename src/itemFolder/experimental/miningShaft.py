@@ -1,5 +1,6 @@
 import src
 
+
 # NIY: very incomplete
 class MiningShaft(src.items.Item):
     """

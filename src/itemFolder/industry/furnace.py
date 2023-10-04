@@ -1,7 +1,6 @@
 import src
 
 
-
 class Furnace(src.items.Item):
     """
     ingame item used as heat source for generating steam and similar

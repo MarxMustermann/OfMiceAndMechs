@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class PlaceItem(src.quests.MetaQuestSequence):
     type = "PlaceItem"

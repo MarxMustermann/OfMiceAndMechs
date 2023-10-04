@@ -1,5 +1,6 @@
 import src
 
+
 class MachinePlacing(src.quests.MetaQuestSequence):
     type = "MachinePlacing"
 

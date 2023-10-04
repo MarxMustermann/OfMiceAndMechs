@@ -1,5 +1,6 @@
 import src
 
+
 class SanitaryStation(src.items.Item):
     """
     ingame item to check the health status and run actions depending on the result

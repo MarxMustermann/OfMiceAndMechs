@@ -1,5 +1,6 @@
 import src
 
+
 class MetalWorking(src.quests.MetaQuestSequence):
     type = "MetalWorking"
 

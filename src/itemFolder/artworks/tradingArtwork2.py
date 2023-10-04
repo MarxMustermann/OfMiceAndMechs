@@ -1,5 +1,6 @@
-import src
 import random
+
+import src
 
 
 class TradingArtwork2(src.items.Item):

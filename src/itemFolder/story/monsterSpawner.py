@@ -1,5 +1,6 @@
-import src
 import random
+
+import src
 
 
 class MonsterSpawner(src.items.Item):

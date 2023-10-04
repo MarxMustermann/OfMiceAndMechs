@@ -7,7 +7,6 @@ bad code: currently only dispenses goo flasks
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 class ObjectDispenser(src.items.Item):

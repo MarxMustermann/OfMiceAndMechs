@@ -1,5 +1,6 @@
 import src
 
+
 class Huntdown(src.quests.MetaQuestSequence):
     type = "Huntdown"
 

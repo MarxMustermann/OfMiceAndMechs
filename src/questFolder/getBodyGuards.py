@@ -1,5 +1,6 @@
 import src
 
+
 class GetBodyGuards(src.quests.MetaQuestSequence):
     type = "GetBodyGuards"
 

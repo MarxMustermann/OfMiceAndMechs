@@ -155,9 +155,9 @@ class GameState:
         save the game state to disc
         """
 
+        import os
         import pickle
         import shutil
-        import os
 
         if not os.path.exists("gamestate/"):
             os.makedirs("gamestate/")

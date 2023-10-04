@@ -1,5 +1,6 @@
 import src
 
+
 class TakeOverBase(src.quests.MetaQuestSequence):
     type = "TakeOverBase"
 

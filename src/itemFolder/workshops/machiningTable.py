@@ -1,5 +1,6 @@
 import src
 
+
 class MachiningTable(src.items.Item):
     """
     ingame item used as ressource. basically does nothing

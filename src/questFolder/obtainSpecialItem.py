@@ -1,5 +1,6 @@
 import src
 
+
 class ObtainSpecialItem(src.quests.MetaQuestSequence):
     type = "ObtainSpecialItem"
 

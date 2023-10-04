@@ -1,5 +1,6 @@
 import src
 
+
 class TrainSkill(src.quests.MetaQuestSequence):
     type = "TrainSkill"
 

@@ -1,5 +1,6 @@
 import src
 
+
 class GetQuestFromQuestArtwork(src.quests.MetaQuestSequence):
     type = "GetQuestFromQuestArtwork"
 

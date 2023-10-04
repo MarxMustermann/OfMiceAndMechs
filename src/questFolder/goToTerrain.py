@@ -1,5 +1,6 @@
 import src
 
+
 class GoToTerrain(src.quests.MetaQuestSequence):
     type = "GoToTerrain"
 

@@ -1,5 +1,6 @@
 import src
 
+
 class ScrapHammering(src.quests.MetaQuestSequence):
     type = "ScrapHammering"
 

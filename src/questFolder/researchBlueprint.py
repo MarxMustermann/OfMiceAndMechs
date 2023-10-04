@@ -1,5 +1,6 @@
 import src
 
+
 class ResearchBluePrint(src.quests.MetaQuestSequence):
     type = "ResearchBluePrint"
 

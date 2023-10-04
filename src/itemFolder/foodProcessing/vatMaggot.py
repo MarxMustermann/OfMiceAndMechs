@@ -1,5 +1,6 @@
 import src
 
+
 class VatMaggot(src.items.Item):
     """
     ingame item that is a basic ressource for food production

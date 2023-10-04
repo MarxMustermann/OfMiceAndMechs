@@ -1,5 +1,6 @@
 import src
 
+
 class GoToTileStory(src.quests.questMap["GoToTile"]):
     type = "GoToTileStory"
 

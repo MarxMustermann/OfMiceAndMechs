@@ -1,5 +1,6 @@
 import src
 
+
 class InitialLeaveRoomStory(src.quests.questMap["GoToTile"]):
     type = "InitialLeaveRoomStory"
 

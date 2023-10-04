@@ -1,5 +1,6 @@
 import src
 
+
 class Assimilate(src.quests.MetaQuestSequence):
     type = "Assimilate"
 

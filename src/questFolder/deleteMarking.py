@@ -1,5 +1,6 @@
 import src
 
+
 class DeleteMarking(src.quests.MetaQuestSequence):
     type = "DeleteMarking"
 

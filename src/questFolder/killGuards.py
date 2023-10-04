@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class KillGuards(src.quests.MetaQuestSequence):
     type = "KillGuards"

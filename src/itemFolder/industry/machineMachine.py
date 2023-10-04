@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class MachineMachine(src.items.Item):
     """

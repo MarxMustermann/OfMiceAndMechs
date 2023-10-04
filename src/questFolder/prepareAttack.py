@@ -1,5 +1,6 @@
 import src
 
+
 class PrepareAttack(src.quests.MetaQuestSequence):
     type = "PrepareAttack"
 

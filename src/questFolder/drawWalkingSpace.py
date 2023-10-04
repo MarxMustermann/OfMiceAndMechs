@@ -1,5 +1,6 @@
 import src
 
+
 class DrawWalkingSpace(src.quests.MetaQuestSequence):
     type = "DrawWalkingSpace"
 

@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class RaidTutorial2(src.quests.MetaQuestSequence):
     type = "RaidTutorial2"

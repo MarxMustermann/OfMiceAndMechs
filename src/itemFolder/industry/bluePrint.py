@@ -1,5 +1,6 @@
 import src
 
+
 class BluePrint(src.items.Item):
     """
     ingame item representing research done

@@ -1,5 +1,6 @@
 import src
 
+
 class Case(src.items.Item):
     """
     ingame item that is a ressource and basically does nothing

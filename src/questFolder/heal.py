@@ -1,5 +1,6 @@
 import src
 
+
 class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
 

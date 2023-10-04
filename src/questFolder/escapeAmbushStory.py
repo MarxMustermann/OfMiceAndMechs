@@ -1,5 +1,6 @@
 import src
 
+
 class EscapeAmbushStory(src.quests.questMap["GoToTile"]):
     type = "EscapeAmbushStory"
 

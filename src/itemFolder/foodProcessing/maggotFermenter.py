@@ -1,5 +1,6 @@
 import src
 
+
 class MaggotFermenter(src.items.Item):
     """
     ingame item that is part of the goo (food) production

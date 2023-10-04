@@ -1,5 +1,6 @@
 import src
 
+
 class Equip2(src.quests.MetaQuestSequence):
     type = "Equip2"
 

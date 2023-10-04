@@ -1,5 +1,6 @@
 import src
 
+
 class GetEpochEvaluation(src.quests.MetaQuestSequence):
     type = "GetEpochEvaluation"
 

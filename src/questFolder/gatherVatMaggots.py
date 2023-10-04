@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class GatherVatMaggots(src.quests.MetaQuestSequence):
     type = "GatherVatMaggots"

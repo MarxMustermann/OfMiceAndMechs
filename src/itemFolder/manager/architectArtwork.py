@@ -1,6 +1,8 @@
-import src
-import random
 import json
+import random
+
+import src
+
 
 class ArchitectArtwork(src.items.Item):
     """

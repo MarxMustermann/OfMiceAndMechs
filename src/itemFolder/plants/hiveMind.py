@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 # NIY: not implemented yet
 class HiveMind(src.items.Item):

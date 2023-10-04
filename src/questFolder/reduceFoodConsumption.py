@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class ReduceFoodConsumption(src.quests.MetaQuestSequence):
     type = "ReduceFoodConsumption"

@@ -1,5 +1,6 @@
 import src
 
+
 class BluePrintingArtwork(src.items.Item):
     """
     ingame item that produces blueprints needed to produce stuff

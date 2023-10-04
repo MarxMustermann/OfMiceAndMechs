@@ -1,5 +1,6 @@
 import src
 
+
 class EncrustedPoisonBush(src.items.Item):
     """
     ingame item that blocks paths and is hard to remove

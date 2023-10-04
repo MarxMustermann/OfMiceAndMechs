@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class SetUpProductionLine(src.quests.MetaQuestSequence):
     type = "SetUpProductionLine"

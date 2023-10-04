@@ -1,5 +1,6 @@
 import src
 
+
 class KillPatrolers(src.quests.MetaQuestSequence):
     type = "KillPatrolers"
 

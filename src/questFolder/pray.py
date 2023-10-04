@@ -1,5 +1,6 @@
 import src
 
+
 class Pray(src.quests.MetaQuestSequence):
     type = "Pray"
 

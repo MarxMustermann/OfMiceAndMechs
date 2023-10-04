@@ -1,5 +1,6 @@
 import src
 
+
 class Coal(src.items.Item):
     """
     ingame item mainly used as fuel

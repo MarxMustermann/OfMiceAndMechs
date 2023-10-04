@@ -1,5 +1,6 @@
 import src
 
+
 class PathingNode(src.items.Item):
     """
     ingame item used to mark waypoints

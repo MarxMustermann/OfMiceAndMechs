@@ -1,5 +1,6 @@
 import src
 
+
 class ProtectSuperior(src.quests.MetaQuestSequence):
     type = "ProtectSuperior"
 

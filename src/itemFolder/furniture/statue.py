@@ -1,5 +1,6 @@
 import src
 
+
 class Statue(src.items.Item):
     '''
     basic item with different appearance

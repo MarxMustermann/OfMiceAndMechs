@@ -1,5 +1,6 @@
 import src
 
+
 class GooProducer(src.items.Item):
     """
     ingame item that is the final step of the goo (food) production

@@ -1,5 +1,6 @@
 import src
 
+
 class RunCommand(src.quests.MetaQuestSequence):
     type = "RunCommand"
 

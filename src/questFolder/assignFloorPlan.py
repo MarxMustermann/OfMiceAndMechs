@@ -1,5 +1,6 @@
 import src
 
+
 class AssignFloorPlan(src.quests.MetaQuestSequence):
     type = "AssignFloorPlan"
 

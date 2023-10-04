@@ -1,5 +1,6 @@
 import src
 
+
 class BuildRoom(src.quests.MetaQuestSequence):
     type = "BuildRoom"
 

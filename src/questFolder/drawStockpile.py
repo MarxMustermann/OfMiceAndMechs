@@ -1,5 +1,6 @@
 import src
 
+
 class DrawStockpile(src.quests.MetaQuestSequence):
     type = "DrawStockpile"
 

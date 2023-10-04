@@ -1,5 +1,6 @@
 import src
 
+
 class Stripe(src.items.Item):
     """
     ingame item serving as a ressource. basically does nothing

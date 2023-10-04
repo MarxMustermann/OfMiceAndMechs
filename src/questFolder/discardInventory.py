@@ -1,5 +1,7 @@
-import src
 import random
+
+import src
+
 
 class DiscardInventory(src.quests.MetaQuestSequence):
     type = "DiscardInventory"

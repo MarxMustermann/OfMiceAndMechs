@@ -1,5 +1,6 @@
 import src
 
+
 class CorpseShredder(src.items.Item):
     """
     ingame item producing fertilizer components from corpses

@@ -1,5 +1,6 @@
 import src
 
+
 class ScrapCompactor(src.items.Item):
     """
     ingame item that converts scrapt to metal bars

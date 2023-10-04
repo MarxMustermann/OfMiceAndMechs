@@ -1,5 +1,6 @@
 import src
 
+
 class GoHome(src.quests.MetaQuestSequence):
     type = "GoHome"
 

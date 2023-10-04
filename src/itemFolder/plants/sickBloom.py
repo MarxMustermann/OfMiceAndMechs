@@ -1,6 +1,8 @@
-import src
 import random
 import string
+
+import src
+
 
 class SickBloom(src.items.Item):
     """

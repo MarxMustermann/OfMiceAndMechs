@@ -1,5 +1,6 @@
 import src
 
+
 class Vanish(src.quests.MetaQuestSequence):
     type = "Vanish"
 

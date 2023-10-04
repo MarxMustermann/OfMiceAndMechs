@@ -1,5 +1,6 @@
 import src
 
+
 class DestroySpawner(src.quests.MetaQuestSequence):
     type = "DestroySpawner"
 

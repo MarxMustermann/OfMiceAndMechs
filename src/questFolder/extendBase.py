@@ -1,5 +1,6 @@
-import src
 import random
+
+import src
 
 
 class ExtendBase(src.quests.MetaQuestSequence):

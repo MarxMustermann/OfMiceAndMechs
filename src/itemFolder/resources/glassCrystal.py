@@ -1,5 +1,6 @@
 import src
 
+
 class GlassCrystal(src.items.Item):
     """
     """

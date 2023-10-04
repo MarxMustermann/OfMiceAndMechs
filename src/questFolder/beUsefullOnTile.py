@@ -1,5 +1,6 @@
 import src
 
+
 class BeUsefullOnTile(src.quests.questMap["BeUsefull"]):
     type = "BeUsefullOnTile"
 

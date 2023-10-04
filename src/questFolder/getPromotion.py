@@ -1,5 +1,6 @@
 import src
 
+
 class GetPromotion(src.quests.MetaQuestSequence):
     type = "GetPromotion"
 

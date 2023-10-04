@@ -1,5 +1,6 @@
 import src
 
+
 class EpochQuest(src.quests.MetaQuestSequence):
     type = "EpochQuest"
 

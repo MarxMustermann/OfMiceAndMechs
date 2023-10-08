@@ -1454,6 +1454,9 @@ class MainGame(BasicPhase):
         self.colonyBaseInfos2 = []
         #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
 
+        self.ruinedBaseInfos = []
+        self.dungeonCrawlInfos = []
+
         if self.preselection == "Siege":
             self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
             self.activeStory = random.choice(self.siegedBaseInfos)
@@ -1466,6 +1469,8 @@ class MainGame(BasicPhase):
         else:
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
             self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
+            self.ruinedBaseInfos.append(self.createRuinedBase((5,5)))
+            self.dungeonCrawlInfos.append(self.createDungeonCrawl((7,4)))
             #self.siegedBaseInfos.append(self.createSiegedBase((6,6)))
 
             #self.colonyBaseInfos2.append(self.createColonyBase2((4,4)))
@@ -1493,6 +1498,8 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon((7,7),2,3)
             self.setUpGlassHeartDungeon((7,8),1,4)
             self.activeStory = self.colonyBaseInfos2[0]
+            self.activeStory = self.ruinedBaseInfos[0]
+            self.activeStory = self.dungeonCrawlInfos[0]
             """
         else:
             self.colonyBaseInfos.append(self.createColonyBase((6,7),mainCharBase=True))
@@ -1846,7 +1853,6 @@ try to remember how you got here ..."""
             #for i in range(1,2+counter//3):
             for _i in range(1,2):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-
                 enemy = src.characters.Monster(4,4)
                 enemy.baseDamage = 5+multiplier
                 enemy.maxHealth = (20+10*counter)*multiplier
@@ -1860,6 +1866,25 @@ try to remember how you got here ..."""
                 quest.assignToCharacter(enemy)
                 quest.activate()
                 enemy.quests.append(quest)
+
+                room.addCharacter(enemy, pos[0], pos[1])
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                enemy = src.characters.Monster(4,4)
+                enemy.baseDamage = 5+multiplier
+                enemy.maxHealth = (20+10*counter)*multiplier
+                enemy.health = enemy.maxHealth
+                enemy.godMode = True
+                enemy.movementSpeed = 1.3-0.1*multiplier
+                enemy.charType = "Statue"
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                item = src.items.itemMap["StopStatue"]()
+                room.addItem(item,(6,6,0))
 
                 room.addCharacter(enemy, pos[0], pos[1])
             counter += 1
@@ -2335,6 +2360,79 @@ try to remember how you got here ..."""
             bestCandidate.foodPerRound = 1
             bestCandidate.superior = None
 
+    def createDungeonCrawl(self, pos):
+        mainChar = src.characters.Character()
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 100
+
+        mainChar.registers["HOMETx"] = 3
+        mainChar.registers["HOMETy"] = 3
+        mainChar.registers["HOMEx"] = 3
+        mainChar.registers["HOMEy"] = 3
+
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.assignToCharacter(mainChar)
+        quest.activate()
+        mainChar.assignQuest(quest,active=True)
+        mainChar.foodPerRound = 1
+
+        subQuest = src.quests.questMap["DelveDungeon"](targetTerrain=(7,4,0))
+        subQuest.assignToCharacter(mainChar)
+        subQuest.activate()
+        quest.addQuest(subQuest)
+
+        weapon = src.items.itemMap["Sword"]()
+        weapon.baseDamage = 10
+        mainChar.weapon = weapon
+
+        armor = src.items.itemMap["Armor"]()
+        armor.armorValue = 1
+        mainChar.armor = armor
+
+        dungeonCrawlInfo = {}
+        dungeonCrawlInfo["terrain"] = currentTerrain
+        dungeonCrawlInfo["mainChar"] = mainChar
+        dungeonCrawlInfo["type"] = "ruined base"
+
+        currentTerrain.addCharacter(mainChar,15*1+7,15*7+7)
+
+        return dungeonCrawlInfo
+
+    def createRuinedBase(self, pos):
+        mainChar = src.characters.Character()
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        ruinedBaseInfo = {}
+        ruinedBaseInfo["terrain"] = currentTerrain
+        ruinedBaseInfo["mainChar"] = mainChar
+        ruinedBaseInfo["type"] = "ruined base"
+
+        currentTerrain.addCharacter(mainChar,15*3+7,15*3+7)
+
+        return ruinedBaseInfo
+
     def createColonyBase2(self,pos,mainCharBase=False):
         mainChar = src.characters.Character()
         mainChar.addListener(self.createColony_baseLeaderDeath,"died_pre")
@@ -2682,7 +2780,7 @@ try to remember how you got here ..."""
                 pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
                 currentTerrain.addItem(item,pos)
 
-            for _i in range(3):
+            for _i in range(random.randint(1,3)):
                 enemy = src.characters.Monster(4,4)
                 enemy.health = 20
                 enemy.baseDamage = 5

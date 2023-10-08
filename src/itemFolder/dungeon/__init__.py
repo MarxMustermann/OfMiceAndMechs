@@ -8,3 +8,4 @@ import src.itemFolder.dungeon.staticCrystal
 import src.itemFolder.dungeon.staticMover
 import src.itemFolder.dungeon.staticSpark
 import src.itemFolder.dungeon.staticWall
+import src.itemFolder.dungeon.stopStatue

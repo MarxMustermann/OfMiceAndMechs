@@ -1241,7 +1241,10 @@ class Room:
                         display = "!!"
                         display = (src.interaction.urwid.AttrSpec("#fff","#f00"),display)
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except IndexError:
+                        logger.error("drawing outside of screen")
 
                     animation[2] -= 1
                     if duration < 1:
@@ -1687,7 +1690,7 @@ class Room:
 
         if newPosition in self.itemByCoordinates:
             for item in self.itemByCoordinates[newPosition]:
-                if item.hasStepOnAction:
+                if item.isStepOnActive:
                     triggeringItems.append(item)
                 if not character.getItemWalkable(item):
                     return item
@@ -1696,7 +1699,7 @@ class Room:
                 return self.itemByCoordinates[newPosition][0]
 
         for item in triggeringItems:
-            item.stepedOn(character)
+            item.doStepOnAction(character)
 
         # teleport character to new position
         character.xPosition = newPosition[0]

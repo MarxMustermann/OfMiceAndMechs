@@ -1807,7 +1807,7 @@ try to remember how you got here ..."""
                 {
                        "coordinate": (6,6),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12 12,6",
+                       "doors": "6,12 12,6 0,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -1829,7 +1829,7 @@ try to remember how you got here ..."""
                 {
                        "coordinate": (5,7),
                        "roomType": "EmptyRoom",
-                       "doors": "0,6 12,6",
+                       "doors": "0,6 12,6 6,0",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
@@ -1848,10 +1848,22 @@ try to remember how you got here ..."""
            )
         rooms.append(room)
 
+        extraRooms = []
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (5,6),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        extraRooms.append(room)
+
         counter = 0
         for room in reversed(rooms):
-            #for i in range(1,2+counter//3):
-            for _i in range(1,2):
+            for _i in range(2):
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 enemy = src.characters.Monster(4,4)
                 enemy.baseDamage = 5+multiplier
@@ -1868,25 +1880,39 @@ try to remember how you got here ..."""
                 enemy.quests.append(quest)
 
                 room.addCharacter(enemy, pos[0], pos[1])
-                pos = (random.randint(1,11),random.randint(1,11),0)
-                enemy = src.characters.Monster(4,4)
-                enemy.baseDamage = 5+multiplier
-                enemy.maxHealth = (20+10*counter)*multiplier
-                enemy.health = enemy.maxHealth
-                enemy.godMode = True
-                enemy.movementSpeed = 1.3-0.1*multiplier
-                enemy.charType = "Statue"
 
-                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
+            counter += 1
 
+        counter = 0
+        for room in rooms:
+            if counter < 7 and counter%2 == 0:
                 item = src.items.itemMap["StopStatue"]()
                 room.addItem(item,(6,6,0))
 
-                room.addCharacter(enemy, pos[0], pos[1])
+            if counter == 7:
+                item = src.items.itemMap["CoalBurner"]()
+                room.addItem(item,(6,6,0))
+
+            if counter == 8:
+                item = src.items.itemMap["Shrine"]()
+                room.addItem(item,(6,6,0))
+
+            if counter < 5:
+                item = src.items.itemMap["LandMine"]()
+                room.addItem(item,(2,2,0))
+                item = src.items.itemMap["LandMine"]()
+                room.addItem(item,(5,9,0))
+                item = src.items.itemMap["LandMine"]()
+                room.addItem(item,(7,3,0))
+                item = src.items.itemMap["LandMine"]()
+                room.addItem(item,(3,1,0))
+
+            if counter < 7 and counter%2 == 0:
+                position = [(5,5,0),(5,6,0),(5,7,0),(6,5,0),(6,7,0)]
+                for pos in position:
+                    item = src.items.itemMap["Wall"]()
+                    room.addItem(item,pos)
+
             counter += 1
 
         glassHeart = src.items.itemMap["GlassStatue"]()
@@ -2362,15 +2388,17 @@ try to remember how you got here ..."""
 
     def createDungeonCrawl(self, pos):
         mainChar = src.characters.Character()
+        #homeTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
 
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
 
-        mainChar.registers["HOMETx"] = 3
-        mainChar.registers["HOMETy"] = 3
-        mainChar.registers["HOMEx"] = 3
-        mainChar.registers["HOMEy"] = 3
+        mainChar.registers["HOMETx"] = 4
+        mainChar.registers["HOMETy"] = 5
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
 
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
@@ -2398,7 +2426,7 @@ try to remember how you got here ..."""
         dungeonCrawlInfo = {}
         dungeonCrawlInfo["terrain"] = currentTerrain
         dungeonCrawlInfo["mainChar"] = mainChar
-        dungeonCrawlInfo["type"] = "ruined base"
+        dungeonCrawlInfo["type"] = "dungeon crawl"
 
         currentTerrain.addCharacter(mainChar,15*1+7,15*7+7)
 

@@ -34,6 +34,6 @@ class StopStatue(src.items.Item):
             if character.faction == otherChar.faction:
                 continue
             otherChar.die()
-        return
+        self.destroy()
 
 src.items.addType(StopStatue)

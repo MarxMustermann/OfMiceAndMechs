@@ -1454,7 +1454,6 @@ class MainGame(BasicPhase):
         self.colonyBaseInfos2 = []
         #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
 
-        self.ruinedBaseInfos = []
         self.dungeonCrawlInfos = []
 
         if self.preselection == "Siege":
@@ -1469,8 +1468,6 @@ class MainGame(BasicPhase):
         else:
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
             self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
-            self.ruinedBaseInfos.append(self.createRuinedBase((5,5)))
-            self.dungeonCrawlInfos.append(self.createDungeonCrawl((7,4)))
             #self.siegedBaseInfos.append(self.createSiegedBase((6,6)))
 
             #self.colonyBaseInfos2.append(self.createColonyBase2((4,4)))
@@ -1497,8 +1494,10 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon((7,2),7,3)
             self.setUpGlassHeartDungeon((7,7),2,3)
             self.setUpGlassHeartDungeon((7,8),1,4)
+
+            self.dungeonCrawlInfos.append(self.createDungeonCrawl((7,6)))
+
             self.activeStory = self.colonyBaseInfos2[0]
-            self.activeStory = self.ruinedBaseInfos[0]
             self.activeStory = self.dungeonCrawlInfos[0]
             """
         else:
@@ -1898,14 +1897,9 @@ try to remember how you got here ..."""
                 room.addItem(item,(6,6,0))
 
             if counter < 5:
-                item = src.items.itemMap["LandMine"]()
-                room.addItem(item,(2,2,0))
-                item = src.items.itemMap["LandMine"]()
-                room.addItem(item,(5,9,0))
-                item = src.items.itemMap["LandMine"]()
-                room.addItem(item,(7,3,0))
-                item = src.items.itemMap["LandMine"]()
-                room.addItem(item,(3,1,0))
+                for _i in range(random.randint(2,6)):
+                    item = src.items.itemMap["LandMine"]()
+                    room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
             if counter < 7 and counter%2 == 0:
                 position = [(5,5,0),(5,6,0),(5,7,0),(6,5,0),(6,7,0)]
@@ -1998,6 +1992,7 @@ try to remember how you got here ..."""
 
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -2005,7 +2000,6 @@ try to remember how you got here ..."""
         mainChar.foodPerRound = 1
         mainChar.personality["viewChar"] = "name"
         mainChar.personality["viewColour"] = "name"
-        self.factionCounter += 1
         colonyBaseInfo = {"type":"colonyBase"}
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         colonyBaseInfo["terrain"] = currentTerrain
@@ -2387,16 +2381,104 @@ try to remember how you got here ..."""
             bestCandidate.superior = None
 
     def createDungeonCrawl(self, pos):
-        mainChar = src.characters.Character()
-        #homeTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        homePos = (4,5,0)
+        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        homeTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 3
+        mainRoom.addItem(item,(7,7,0))
+
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        mainRoom.addItem(dutyArtwork,(5,1,0))
+
+        shrine = src.items.itemMap["Shrine"](god=1)
+        mainRoom.addItem(shrine,(1,1,0))
+
+        shrine = src.items.itemMap["Shrine"](god=2)
+        mainRoom.addItem(shrine,(2,1,0))
+
+        personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        personnelArtwork.charges = 10
+        mainRoom.addItem(personnelArtwork,(1,8,0))
+
+        anvilPos = (10,2,0)
+        machinemachine = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        metalWorkBenchPos = (8,3,0)
+        machinemachine = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+        mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+        mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+        anvilPos = (9,5,0)
+        machinemachine = src.items.itemMap["MachiningTable"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"MetalBars")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        for y in (7,9,11):
+            if y != 7:
+                for x in range(7,12):
+                    mainRoom.addStorageSlot((x,y,0),None)
+            for x in range(1,6):
+                mainRoom.addStorageSlot((x,y,0),None)
+
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(positions)]
+        for scrapPos in positions:
+            architect.doClearField(scrapPos[0], scrapPos[1])
+            architect.doAddScrapfield(scrapPos[0], scrapPos[1], 100,leavePath=True)
+
+        treePos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
+        architect.doClearField(treePos[0], treePos[1])
+        tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
+        homeTerrain.addItem(tree,(treePos[0]*15+7,treePos[1]*15+7,0))
+        homeTerrain.forests.append(treePos)
+
+        homeTerrain.maxMana = 100
+        homeTerrain.manaRegen = 5
+        homeTerrain.mana = 60
+
 
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
 
+        mainChar = src.characters.Character()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
+        mainChar.duties = ["praying","city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
 
-        mainChar.registers["HOMETx"] = 4
-        mainChar.registers["HOMETy"] = 5
+        thisFactionId = self.factionCounter
+        mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
+
+        mainChar.registers["HOMETx"] = homePos[0]
+        mainChar.registers["HOMETy"] = homePos[1]
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
 
@@ -2410,7 +2492,7 @@ try to remember how you got here ..."""
         mainChar.assignQuest(quest,active=True)
         mainChar.foodPerRound = 1
 
-        subQuest = src.quests.questMap["DelveDungeon"](targetTerrain=(7,4,0))
+        subQuest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
         subQuest.assignToCharacter(mainChar)
         subQuest.activate()
         quest.addQuest(subQuest)
@@ -2431,35 +2513,6 @@ try to remember how you got here ..."""
         currentTerrain.addCharacter(mainChar,15*1+7,15*7+7)
 
         return dungeonCrawlInfo
-
-    def createRuinedBase(self, pos):
-        mainChar = src.characters.Character()
-        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
-
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        mainRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-        ruinedBaseInfo = {}
-        ruinedBaseInfo["terrain"] = currentTerrain
-        ruinedBaseInfo["mainChar"] = mainChar
-        ruinedBaseInfo["type"] = "ruined base"
-
-        currentTerrain.addCharacter(mainChar,15*3+7,15*3+7)
-
-        return ruinedBaseInfo
 
     def createColonyBase2(self,pos,mainCharBase=False):
         mainChar = src.characters.Character()
@@ -2511,6 +2564,7 @@ try to remember how you got here ..."""
 
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
@@ -2518,7 +2572,6 @@ try to remember how you got here ..."""
         mainChar.foodPerRound = 1
         mainChar.personality["viewChar"] = "name"
         mainChar.personality["viewColour"] = "name"
-        self.factionCounter += 1
         colonyBaseInfo = {"type":"colonyBase"}
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.maxMana = 100
@@ -2921,11 +2974,11 @@ try to remember how you got here ..."""
         ]
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
         mainChar.registers["HOMETy"] = pos[1]
-        self.factionCounter += 1
         productionBaseInfo = {"type":"productionBase"}
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         productionBaseInfo["terrain"] = currentTerrain
@@ -3055,12 +3108,12 @@ try to remember how you got here ..."""
         ]
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
         mainChar.registers["HOMETy"] = pos[1]
         mainChar.rank = 3
-        self.factionCounter += 1
         raidBaseInfo["mainChar"] = mainChar
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         raidBaseInfo["terrain"] = currentTerrain
@@ -3122,11 +3175,11 @@ try to remember how you got here ..."""
         mainChar = src.characters.Character()
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
         mainChar.registers["HOMETx"] = pos[0]
         mainChar.registers["HOMETy"] = pos[1]
-        self.factionCounter += 1
         siegedBaseInfo["mainChar"] = mainChar
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         siegedBaseInfo["terrain"] = currentTerrain

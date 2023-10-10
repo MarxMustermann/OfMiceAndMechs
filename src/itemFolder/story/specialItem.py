@@ -21,4 +21,8 @@ class SpecialItem(src.items.Item):
         self.itemID = None
         self.epoch = epoch
 
+    def getLongInfo(self):
+        return f"{self.itemID}"
+
+
 src.items.addType(SpecialItem)

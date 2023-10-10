@@ -658,9 +658,10 @@ We should stop watching and do something about that.
                 hasTemple = True
 
             if not hasTemple:
-                quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType="temple",reason="have a temple to place glass hearts")
-                self.addQuest(quest)
-                return True
+                for room in cityPlaner.getAvailableRooms():
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType="temple",reason="have a temple to place glass hearts")
+                    self.addQuest(quest)
+                    return True
 
         """
         #set special purpose room

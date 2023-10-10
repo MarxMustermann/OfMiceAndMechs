@@ -14,8 +14,18 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.itemID = itemID
 
     def generateTextDescription(self):
-        text = f"""
-{self.itemID}
+        text = f"Delve the dungeon on tile {self.targetTerrain}."
+
+        if self.itemID:
+            text += f"""
+Fetch the glass heart of god {self.itemID}
+"""
+        else:
+            text += """
+Fetch any glass heart.
+"""
+        text += """
+After fetching the glass heart return the glass heart to your base and set it into the glass statue.
 """
         return text
 

@@ -1623,6 +1623,17 @@ You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
+        elif self.activeStory["type"] == "colonyBase":
+            if len(self.activeStory["mainChar"].messages) == 0:
+                text = """
+You.
+You see walls made out of solid steel
+and feel the touch of the cold hard floor.
+The room is filled with various items.
+You recognise your hostile suroundings and
+try to remember how you got here ..."""
+                self.activeStory["mainChar"].messages.insert(0,(text))
+            self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
         else:
@@ -1862,6 +1873,11 @@ try to remember how you got here ..."""
 
         counter = 0
         for room in reversed(rooms):
+
+            if counter == 0:
+                counter += 1
+                continue
+
             for _i in range(2):
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 enemy = src.characters.Monster(4,4)
@@ -2486,6 +2502,7 @@ try to remember how you got here ..."""
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
 
+        """
         quest = src.quests.questMap["BeUsefull"]()
         quest.assignToCharacter(mainChar)
         quest.activate()
@@ -2496,6 +2513,7 @@ try to remember how you got here ..."""
         subQuest.assignToCharacter(mainChar)
         subQuest.activate()
         quest.addQuest(subQuest)
+        """
 
         weapon = src.items.itemMap["Sword"]()
         weapon.baseDamage = 10
@@ -2510,7 +2528,8 @@ try to remember how you got here ..."""
         dungeonCrawlInfo["mainChar"] = mainChar
         dungeonCrawlInfo["type"] = "dungeon crawl"
 
-        currentTerrain.addCharacter(mainChar,15*1+7,15*7+7)
+        startRoom = currentTerrain.getRoomByPosition((4,7,0))[0]
+        startRoom.addCharacter(mainChar,1,6)
 
         return dungeonCrawlInfo
 
@@ -3824,7 +3843,31 @@ try to remember how you got here ..."""
         if self.activeStory["type"] == "colonyBase":
             self.openedQuestsColonyBase()
             return
+        if self.activeStory["type"] == "dungeon crawl":
+            self.openedQuestsDungeonCrawl()
+            return
         1/0
+
+    def openedQuestsDungeonCrawl(self):
+        mainChar = self.activeStory["mainChar"]
+
+        terrain = self.activeStory["terrain"]
+        pos = (terrain.xPosition,terrain.yPosition,0)
+
+        god = src.gamestate.gamestate.gods[3]
+        if god["home"] == god["lastHeartPos"]:
+            quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+        else:
+            quest = src.quests.questMap["BeUsefull"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+
 
     def openedQuestsColonyBase(self):
         mainChar = self.activeStory["mainChar"]

@@ -6,15 +6,22 @@ import src
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
         self.targetTerrain = targetTerrain
         self.itemID = itemID
+        self.storyText = storyText
 
     def generateTextDescription(self):
-        text = f"Delve the dungeon on tile {self.targetTerrain}."
+        text = ""
+
+        if self.storyText:
+            text += f"""
+{self.storyText}
+"""
+        text += f"Delve the dungeon on tile {self.targetTerrain}."
 
         if self.itemID:
             text += f"""

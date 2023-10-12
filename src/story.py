@@ -1456,59 +1456,48 @@ class MainGame(BasicPhase):
 
         self.dungeonCrawlInfos = []
 
-        if self.preselection == "Siege":
-            self.siegedBaseInfos.append(self.createSiegedBase(positions.pop()))
-            self.activeStory = random.choice(self.siegedBaseInfos)
-        elif self.preselection == "Production":
-            self.productionBaseInfos.append(self.createProductionBase(positions.pop()))
-            self.activeStory = random.choice(self.productionBaseInfos)
-        elif self.preselection == "Raid":
-            self.raidBaseInfos.append(self.createRaidBase(positions.pop()))
-            self.activeStory = random.choice(self.raidBaseInfos)
-        else:
-            self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
-            self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
-            #self.siegedBaseInfos.append(self.createSiegedBase((6,6)))
+        while self.preselection is None:
+            selection =self.preselection = src.interaction.showInterruptChoice("""
 
-            #self.colonyBaseInfos2.append(self.createColonyBase2((4,4)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((4,5)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((4,6)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((4,7)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((4,8)))
+    You selected no specific starting point.
+    Tell me what type of games do you like more?
 
-            #self.colonyBaseInfos2.append(self.createColonyBase2((3,4)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((3,5)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((3,6)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((3,7)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((3,8)))
+    c: colony builders
+    (like "Dwarf fortress: fortress mode" or "Rimworld")
 
-            #self.colonyBaseInfos2.append(self.createColonyBase2((2,4)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((2,5)))
-            #self.colonyBaseInfos2.append(self.createColonyBase2((2,6)))
+    r: roguelikes
+    (like "nethack" or "brogue")
 
-            #self.setUpThroneDungeon((7,7))
-            self.setUpGlassHeartDungeon((7,6),3,1)
-            self.setUpGlassHeartDungeon((7,5),4,1)
-            self.setUpGlassHeartDungeon((7,4),5,2)
-            self.setUpGlassHeartDungeon((7,3),6,2)
-            self.setUpGlassHeartDungeon((7,2),7,3)
-            self.setUpGlassHeartDungeon((7,7),2,3)
-            self.setUpGlassHeartDungeon((7,8),1,4)
+    press c for colony builders
+    press r for roguelikes
 
-            self.dungeonCrawlInfos.append(self.createDungeonCrawl((7,6)))
+""",["c","r"])
 
-            self.activeStory = self.colonyBaseInfos2[0]
-            self.activeStory = self.dungeonCrawlInfos[0]
             """
-        else:
-            self.colonyBaseInfos.append(self.createColonyBase((6,7),mainCharBase=True))
-            self.colonyBaseInfos.append(self.createColonyBase((5,7)))
-            self.setUpThroneDungeon((7,7))
-            self.activeStory = self.colonyBaseInfos[0]
-        """
+    r: roguelikes
+    (like "cataclysm:dda" or "Project zomboid")
+"""
 
-        for story in self.productionBaseInfos+self.siegedBaseInfos+self.raidBaseInfos:
-            story["epochArtwork"].setSpecialItemMap(self.specialItemMap)
+            if selection == "c":
+                self.preselection = "Colony"
+            if selection == "r":
+                self.preselection = "Dungeon"
+
+        self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
+        self.setUpGlassHeartDungeon((7,6),3,1)
+        self.setUpGlassHeartDungeon((7,5),4,1)
+        self.setUpGlassHeartDungeon((7,4),5,2)
+        self.setUpGlassHeartDungeon((7,3),6,2)
+        self.setUpGlassHeartDungeon((7,2),7,3)
+        self.setUpGlassHeartDungeon((7,7),2,3)
+        self.setUpGlassHeartDungeon((7,8),1,4)
+        self.dungeonCrawlInfos.append(self.createDungeonCrawl((7,6)))
+
+        if self.preselection == "Colony":
+            self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
+            self.activeStory = self.colonyBaseInfos2[1]
+        elif self.preselection == "Dungeon":
+            self.activeStory = self.dungeonCrawlInfos[0]
 
         mainChar = self.activeStory["mainChar"]
         src.gamestate.gamestate.mainChar = mainChar
@@ -1522,9 +1511,18 @@ class MainGame(BasicPhase):
         mainChar.rememberedMenu.append(questMenu)
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
-        inventoryMenu = src.interaction.InventoryMenu(mainChar)
-        inventoryMenu.sidebared = True
-        mainChar.rememberedMenu2.append(inventoryMenu)
+        if self.preselection == "Colony":
+            inventoryMenu = src.interaction.InventoryMenu(mainChar)
+            inventoryMenu.sidebared = True
+            mainChar.rememberedMenu2.append(inventoryMenu)
+        elif self.preselection == "Dungeon":
+            inventoryMenu = src.interaction.InventoryMenu(mainChar)
+            inventoryMenu.sidebared = True
+            mainChar.rememberedMenu2.append(inventoryMenu)
+            combatMenu = src.interaction.CombatInfoMenu(mainChar)
+            combatMenu.sidebared = True
+            mainChar.rememberedMenu.insert(0,combatMenu)
+        mainChar.disableCommandsOnPlus = True
 
         self.numRounds = 1
         self.startRound()
@@ -1623,7 +1621,7 @@ You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
-        elif self.activeStory["type"] == "colonyBase":
+        elif self.activeStory["type"] == "dungeon crawl":
             if len(self.activeStory["mainChar"].messages) == 0:
                 text = """
 You.
@@ -1633,7 +1631,7 @@ The room is filled with various items.
 You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
-            self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
+            self.activeStory["mainChar"].messages.insert(0,("""until you remember that your whole team died in that dungeon."""))
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
         else:
@@ -2420,6 +2418,22 @@ try to remember how you got here ..."""
         item.itemID = 3
         mainRoom.addItem(item,(7,7,0))
 
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 4
+        mainRoom.addItem(item,(8,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 5
+        mainRoom.addItem(item,(9,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 6
+        mainRoom.addItem(item,(10,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 7
+        mainRoom.addItem(item,(11,7,0))
+
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
 
@@ -2432,6 +2446,9 @@ try to remember how you got here ..."""
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         personnelArtwork.charges = 10
         mainRoom.addItem(personnelArtwork,(1,8,0))
+
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        mainRoom.addItem(cityPlaner,(4,1,0))
 
         anvilPos = (10,2,0)
         machinemachine = src.items.itemMap["Anvil"]()
@@ -2487,7 +2504,8 @@ try to remember how you got here ..."""
         mainChar = src.characters.Character()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["praying","city planning","clone spawning","questing","painting","machine placing","room building","metal working","machining","hauling","resource fetching","scrap hammering","resource gathering","machine operation"]
+        mainChar.duties = ["praying","city planning","clone spawning","questing"]
+        mainChar.rank = 6
 
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
@@ -3856,7 +3874,12 @@ try to remember how you got here ..."""
 
         god = src.gamestate.gamestate.gods[3]
         if god["home"] == god["lastHeartPos"]:
-            quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
+            storyText = """
+You reach out to your implant and it answers.
+It reminds you that have to fetch the glass heart from this dungeon.
+
+"""
+            quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos,storyText=storyText)
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)

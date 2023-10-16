@@ -1617,7 +1617,7 @@ class MainGame(BasicPhase):
     - press enter to exit the game -
 """
                 src.interaction.showInterruptText(text)
-                raise SystemExit()
+                raise src.interaction.EndGame("faction died")
 
             text = """
     You respawn as another member of your faction.
@@ -1633,7 +1633,7 @@ class MainGame(BasicPhase):
                 quest.autoSolve = False
             newChar.disableCommandsOnPlus = True
         else:
-            raise SystemExit()
+            raise src.interaction.EndGame("character died")
 
     def kickoff(self):
         if self.activeStory["type"] == "siegedBase":

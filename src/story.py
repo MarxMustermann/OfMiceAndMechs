@@ -1435,6 +1435,7 @@ class MainGame(BasicPhase):
         self.factionCounter = 1
 
         self.specialItemMap = {}
+        self.takenPositions = []
 
         self.difficulty = difficulty
         self.productionBaseInfos = []
@@ -1471,7 +1472,7 @@ class MainGame(BasicPhase):
     press c for colony builders
     press r for roguelikes
 
-""",["c","r"])
+""",["c","r","t"])
 
             """
     r: roguelikes
@@ -1482,21 +1483,44 @@ class MainGame(BasicPhase):
                 self.preselection = "Colony"
             if selection == "r":
                 self.preselection = "Dungeon"
+            if selection == "t":
+                self.preselection = "Travel"
 
         self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
-        self.setUpGlassHeartDungeon((7,6),3,1)
-        self.setUpGlassHeartDungeon((7,5),4,1)
-        self.setUpGlassHeartDungeon((7,4),5,2)
-        self.setUpGlassHeartDungeon((7,3),6,2)
-        self.setUpGlassHeartDungeon((7,2),7,3)
-        self.setUpGlassHeartDungeon((7,7),2,3)
-        self.setUpGlassHeartDungeon((7,8),1,4)
-        self.dungeonCrawlInfos.append(self.createDungeonCrawl((7,6)))
+        difficultyModifier = 1
+        if self.difficulty == "easy":
+            difficultyModifier = 0.5
+        if self.difficulty == "difficult":
+            difficultyModifier = 2
+
+        dungeonPositions = []
+        while len(dungeonPositions) < 7:
+            pos = (random.randint(1,13),random.randint(1,13))
+            if pos in self.takenPositions:
+                continue
+            dungeonPositions.append(pos)
+            self.takenPositions.append(pos)
+
+        self.setUpGlassHeartDungeon(dungeonPositions[0],3,1*difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[1],4,1.5*difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[2],5,2*difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[3],6,2.5*difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[4],7,3*difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[5],2,3.5*difficultyModifier)
+        self.setUpGlassHeartDungeon(dungeonPositions[6],1,4*difficultyModifier)
 
         if self.preselection == "Colony":
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
             self.activeStory = self.colonyBaseInfos2[1]
-        elif self.preselection == "Dungeon":
+        else:
+            self.colonyBaseInfos2.append(self.createColonyBase2((6,6)))
+
+        if self.preselection == "Dungeon":
+            self.dungeonCrawlInfos.append(self.createDungeonCrawl(dungeonPositions[0]))
+            self.activeStory = self.dungeonCrawlInfos[0]
+
+        if self.preselection == "Travel":
+            self.dungeonCrawlInfos.append(self.createTravel(dungeonPositions[0]))
             self.activeStory = self.dungeonCrawlInfos[0]
 
         mainChar = self.activeStory["mainChar"]
@@ -1506,6 +1530,12 @@ class MainGame(BasicPhase):
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
 
+        if self.difficulty == "easy":
+            mainChar.maxHealth *= 2
+            mainChar.health *= 2
+        if self.difficulty == "difficult":
+            mainChar.maxHealth *= 0.5
+            mainChar.health *= 0.5
         questMenu = src.interaction.QuestMenu(mainChar)
         questMenu.sidebared = True
         mainChar.rememberedMenu.append(questMenu)
@@ -1737,6 +1767,12 @@ try to remember how you got here ..."""
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
+        src.gamestate.gamestate.gods[itemID] = {
+                "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,
+            }
+        if itemID == 1:
+            src.gamestate.gamestate.gods[itemID]["roomRewardMapByTerrain"] = {}
+
         #set up dungeons
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         item = src.items.itemMap["ArchitectArtwork"]()
@@ -2393,6 +2429,163 @@ try to remember how you got here ..."""
             bestCandidate.assignQuest(quest,active=True)
             bestCandidate.foodPerRound = 1
             bestCandidate.superior = None
+
+    def createTravel(self, pos):
+        homePos = (1,1,0)
+        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        homeTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 3
+        mainRoom.addItem(item,(7,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 4
+        mainRoom.addItem(item,(8,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 5
+        mainRoom.addItem(item,(9,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 6
+        mainRoom.addItem(item,(10,7,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 7
+        mainRoom.addItem(item,(11,7,0))
+
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        mainRoom.addItem(dutyArtwork,(5,1,0))
+
+        shrine = src.items.itemMap["Shrine"](god=1)
+        mainRoom.addItem(shrine,(1,1,0))
+
+        shrine = src.items.itemMap["Shrine"](god=2)
+        mainRoom.addItem(shrine,(2,1,0))
+
+        personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
+        personnelArtwork.charges = 10
+        mainRoom.addItem(personnelArtwork,(1,8,0))
+
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        mainRoom.addItem(cityPlaner,(4,1,0))
+
+        anvilPos = (10,2,0)
+        machinemachine = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        metalWorkBenchPos = (8,3,0)
+        machinemachine = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+        mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+        mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+        anvilPos = (9,5,0)
+        machinemachine = src.items.itemMap["MachiningTable"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"MetalBars")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        for y in (7,9,11):
+            if y != 7:
+                for x in range(7,12):
+                    mainRoom.addStorageSlot((x,y,0),None)
+            for x in range(1,6):
+                mainRoom.addStorageSlot((x,y,0),None)
+
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(positions)]
+        for scrapPos in positions:
+            architect.doClearField(scrapPos[0], scrapPos[1])
+            architect.doAddScrapfield(scrapPos[0], scrapPos[1], 100,leavePath=True)
+
+        treePos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
+        architect.doClearField(treePos[0], treePos[1])
+        tree = src.items.itemMap["Tree"]()
+        tree.numMaggots = tree.maxMaggot
+        homeTerrain.addItem(tree,(treePos[0]*15+7,treePos[1]*15+7,0))
+        homeTerrain.forests.append(treePos)
+
+        homeTerrain.maxMana = 100
+        homeTerrain.manaRegen = 5
+        homeTerrain.mana = 60
+
+
+        currentTerrain = src.gamestate.gamestate.terrainMap[13][13]
+
+        mainChar = src.characters.Character()
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 100
+        mainChar.duties = ["praying","city planning","clone spawning","questing"]
+        mainChar.rank = 6
+
+        thisFactionId = self.factionCounter
+        mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
+
+        mainChar.registers["HOMETx"] = homePos[0]
+        mainChar.registers["HOMETy"] = homePos[1]
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+
+        """
+        quest = src.quests.questMap["BeUsefull"]()
+        quest.assignToCharacter(mainChar)
+        quest.activate()
+        mainChar.assignQuest(quest,active=True)
+        mainChar.foodPerRound = 1
+
+        subQuest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
+        subQuest.assignToCharacter(mainChar)
+        subQuest.activate()
+        quest.addQuest(subQuest)
+        """
+
+        weapon = src.items.itemMap["Sword"]()
+        weapon.baseDamage = 10
+        mainChar.weapon = weapon
+
+        armor = src.items.itemMap["Armor"]()
+        armor.armorValue = 1
+        mainChar.armor = armor
+
+        dungeonCrawlInfo = {}
+        dungeonCrawlInfo["terrain"] = currentTerrain
+        dungeonCrawlInfo["mainChar"] = mainChar
+        dungeonCrawlInfo["type"] = "travel"
+
+        currentTerrain.addCharacter(mainChar,13*15+7,13*15+7)
+
+        return dungeonCrawlInfo
+
 
     def createDungeonCrawl(self, pos):
         homePos = (4,5,0)
@@ -3864,7 +4057,18 @@ try to remember how you got here ..."""
         if self.activeStory["type"] == "dungeon crawl":
             self.openedQuestsDungeonCrawl()
             return
+        if self.activeStory["type"] == "travel":
+            self.openedQuestsTravel()
+            return
         1/0
+
+    def openedQuestsTravel(self):
+        mainChar = self.activeStory["mainChar"]
+        quest = src.quests.questMap["GoHome"]()
+        quest.assignToCharacter(mainChar)
+        quest.activate()
+        mainChar.assignQuest(quest,active=True)
+        quest.endTrigger = {"container": self, "method": "reachImplant"}
 
     def openedQuestsDungeonCrawl(self):
         mainChar = self.activeStory["mainChar"]

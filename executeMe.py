@@ -148,10 +148,15 @@ if args.urwid:
     input("game ready. press enter to start")
     interaction.loop.run()
 
+logger = logging.getLogger(__name__)
 if not args.urwid:
     interaction.showIntro()
-    interaction.showMainMenu(args)
-    interaction.gameLoop(None, None)
+    while 1:
+        interaction.showMainMenu(args)
+        try:
+            interaction.gameLoop(None, None)
+        except src.interaction.EndGame:
+            logger.info("ended game")
     """
     while 1:
         try:

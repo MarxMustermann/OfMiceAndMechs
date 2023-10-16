@@ -37,6 +37,11 @@ speed = None
 libtcodpy = None
 noFlicker = False
 
+
+
+class EndGame(Exception):
+    pass
+
 def advanceGame():
     """
     advance the game
@@ -2135,10 +2140,10 @@ def doDockRight(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame)
         char.specialRender = True
 
 def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
-    options = [("save", "save"), ("quit", "save and quit"), ("actions", "actions"),
+    options = [("save", "save"), ("main menu","save and back to main menu"),("quit", "save and quit"), ("actions", "actions"),
                ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
                ("changeFaction", "changeFaction"),
-               ("change personality settings", "change personality settings")]
+               ("change personality settings", "change personality settings"),]
     submenu = SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
 
@@ -2203,6 +2208,12 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             charState["submenue"] = HelpMenu()
         elif selection == "keybinding":
             pass
+        elif selection == "main menu":
+            char.macroState["submenue"] = None
+            char.specialRender = False
+            src.gamestate.gamestate.save()
+            src.gamestate.gamestate = None
+            raise EndGame("the game was ended manually")
 
     char.macroState["submenue"].followUp = trigger
     char.runCommandString(".",nativeKey=True)

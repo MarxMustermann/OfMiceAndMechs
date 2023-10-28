@@ -529,7 +529,10 @@ class Terrain:
 
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
-                self.charactersByTile[oldBigPos].remove(char)
+                try:
+                    self.charactersByTile[oldBigPos].remove(char)
+                except ValueError:
+                    logger.error("removing character rhat is not there")
 
                 bigPos = char.getBigPosition(offset=(1,0,0))
                 if bigPos not in self.charactersByTile:
@@ -2351,6 +2354,59 @@ class EmptyTerrain(Terrain):
     """
 
     objType = "EmptyTerrain"
+
+class Swamp(Terrain):
+    def __init__(self, seed=0, noContent=False):
+        self.floordisplay = src.canvas.displayChars.dirt
+
+        super().__init__(
+            seed=seed,
+            noContent=noContent,
+        )
+
+    def paintFloor(self,size=None,coordinateOffset=None):
+        """
+        paint floor with minimal variation to ease perception of movement
+
+        Returns:
+            the painted floor
+        """
+
+        displayChar = self.floordisplay
+        if src.gamestate.gamestate.mainChar.zPosition < 0:
+            displayChar = f"{src.gamestate.gamestate.mainChar.zPosition}"
+        if src.gamestate.gamestate.mainChar.zPosition > 0:
+            displayChar = f"+{src.gamestate.gamestate.mainChar.zPosition}"
+
+        chars = []
+        for _i in range(-coordinateOffset[0]):
+            line = []
+            chars.append(line)
+
+        for i in range(15*15):
+            line = []
+
+            if i < coordinateOffset[0] or i > coordinateOffset[0]+size[0]:
+                continue
+
+            for _j in range(-coordinateOffset[1]):
+                line.append(src.canvas.displayChars.void)
+
+            for j in range(15*15):
+
+                if coordinateOffset: # game runs horrible without this flag
+                    if j < coordinateOffset[1] or j > coordinateOffset[1]+size[1]:
+                        continue
+
+                if not self.hidden:
+                    display = displayChar
+                    #display = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (j,i)}},content=display)
+                    line.append(display)
+                else:
+                    line.append(src.canvas.displayChars.void)
+            chars.append(line)
+
+        return chars
 
 class Nothingness(Terrain):
     """

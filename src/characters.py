@@ -47,18 +47,25 @@ class Character:
         """
         if quests is None:
             quests = []
-        self.addExhaustionOnHurt = False
-        self.removeExhaustionOnHeal = True
-        self.reduceExhaustionOnHeal = False
-        self.doubleDamageOnZeroExhaustion = False
-        self.bonusDamageOnLowerExhaustion = False
-        self.reduceDamageOnAttackerExhausted = False
-        self.increaseDamageOnTargetExhausted = False
-        self.addRandomExhaustionOnAttack = False
-        self.addRandomExhaustionOnHurt = False
-        self.flatExhaustionAttackCost = 0
-        self.disableCommandsOnPlus = False
 
+        self.addExhaustionOnHurt = False # flag to exhaustion if hurt
+        self.removeExhaustionOnHeal = True # flag to remove exhaustion fully on heal
+        self.reduceExhaustionOnHeal = False # flag to reduce exhaustion when healing
+        self.reduceExhaustionBonus = 1 # bonus added when reducing exhaustion
+        self.reduceExhaustionDividend = 10 # flag to reduce exhaustion when healing
+        self.doubleDamageOnZeroExhaustion = False # flag to double damage with zero exhaustion
+        self.bonusDamageOnLowerExhaustion = False # flag to deal bonus damage when attacker has lower exhaustion then the enemy
+        self.reduceDamageOnAttackerExhausted = False # flag to reduce damage dealt when exhausted
+        self.increaseDamageOnTargetExhausted = False # flag to increase damage when target is exhausted
+        self.addRandomExhaustionOnAttack = False # flag to add random exhaustion when attacking
+        self.addRandomExhaustionOnHurt = False # flag to add random exhaustion when getting hurt
+        self.flatExhaustionAttackCost = 0 # constant cost for attacking
+        self.healingModifier = 1.0 # multiplier for how much health healing adds
+        self.healingThreashold = 1 # threashold regulating when healing triggers
+        self.movementSpeed = 1 # the speed characters move with
+        self.attackSpeed = 1 # the speed characters attack with
+
+        self.disableCommandsOnPlus = False
         self.charType = "Character"
         self.disabled = False
         self.superior = None
@@ -80,8 +87,6 @@ class Character:
         self.skills = []
         self.grievances = {}
 
-        self.movementSpeed = 1
-        self.attackSpeed = 1
         self.exhaustion = 0
         self.tag = None
 
@@ -173,8 +178,8 @@ class Character:
         self.personality = {}
         self.lastRoom = None
         self.lastTerrain = None
-        self.health = 100
-        self.maxHealth = 100
+        self.health = 100 # the current health
+        self.maxHealth = 100 # the maximum heath a character can have
         self.heatResistance = 0
         self.godMode = False
         self.submenue = None
@@ -1098,9 +1103,12 @@ press any other key to attack normally"""
             amount: the amount of health healed
             reason: the reason why the character was healed
         """
+        amount = int(amount*self.healingModifier)
+        if not amount:
+            return
 
         if self.reduceExhaustionOnHeal:
-            self.exhaustion = max(0,self.exhaustion-(amount//10+1))
+            self.exhaustion = max(0,self.exhaustion-(amount//self.reduceExhaustionDividend+self.reduceExhaustionBonus))
         if self.removeExhaustionOnHeal:
             self.exhaustion = 0
 
@@ -1978,7 +1986,7 @@ press any other key to attack normally"""
             )
             return
 
-        if self.health < self.maxHealth and src.gamestate.gamestate.tick%self.health == 0:
+        if self.health < self.maxHealth and src.gamestate.gamestate.tick%int(self.health) < self.healingThreashold:
             self.heal(1,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
@@ -2609,6 +2617,56 @@ class Monster(Character):
 
         return render
 
+# bad code: animals should not be characters. This means it is possible to chat with a mouse
+class Statue(Monster):
+    """
+    the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
+    """
+
+
+    def __init__(
+        self,
+        display="@@",
+        xPosition=0,
+        yPosition=0,
+        quests=None,
+        automated=True,
+        name="Statue",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: how the mouse should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+        if quests is None:
+            quests = []
+
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+        self.charType = "Statue"
+        self.specialDisplay = "@@"
+
+    def die(self, reason=None, addCorpse=True):
+        super().die(reason, addCorpse=False)
+
 # bad code: there is very specific code in here, so it it stopped to be a generic class
 class Guardian(Character):
     """
@@ -3087,6 +3145,8 @@ class Maggot(Character):
             self.container.addItem(new,self.getPosition())
 
         super().die(reason=reason, addCorpse=False)
+
+
 
 characterMap = {
     "Character": Character,

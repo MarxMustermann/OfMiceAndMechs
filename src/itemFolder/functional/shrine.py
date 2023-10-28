@@ -23,13 +23,23 @@ class Shrine(src.items.Item):
                                                                 ("showInfo", "show Info"),
                                                                 ("wish", "wish"),
                                                                 ("challenge", "pray"),
+                                                                ("teleport", "telport"),
                         ]
                         )
         self.applyMap = {
                     "showInfo": self.showInfo,
                     "wish": self.getRewards,
                     "challenge": self.challenge,
+                    "teleport": self.teleport,
                         }
+
+    def teleport(self,character):
+        x = character.registers["HOMETx"]
+        y = character.registers["HOMETy"]
+        newTerrain = src.gamestate.gamestate.terrainMap[y][x]
+
+        character.container.removeCharacter(character)
+        newTerrain.addCharacter(character,15*1+0,15*7+7)
 
     def isChallengeDone(self):
         if self.god == 1:

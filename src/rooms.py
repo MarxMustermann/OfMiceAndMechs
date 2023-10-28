@@ -1296,7 +1296,11 @@ class Room:
                 elif animationType in ("smoke",):
                     display = (src.interaction.urwid.AttrSpec("#555", "black"), "##")
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except IndexError:
+                        logger.error(f"drawing outside of room {pos}")
+                        continue
 
                     direction = random.choice([(1,0,0),(0,1,0),(-1,0,0),(1,0,0),])
 

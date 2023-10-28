@@ -1534,8 +1534,8 @@ class MainGame(BasicPhase):
             mainChar.maxHealth *= 2
             mainChar.health *= 2
         if self.difficulty == "difficult":
-            mainChar.maxHealth *= 0.5
-            mainChar.health *= 0.5
+            mainChar.maxHealth = int(mainChar.maxHealth*0.5)
+            mainChar.health = int(mainChar.health*0.5)
         questMenu = src.interaction.QuestMenu(mainChar)
         questMenu.sidebared = True
         mainChar.rememberedMenu.append(questMenu)
@@ -1912,11 +1912,11 @@ try to remember how you got here ..."""
                 counter += 1
                 continue
 
-            for _i in range(2):
+            for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 enemy = src.characters.Monster(4,4)
                 enemy.baseDamage = 5+multiplier
-                enemy.maxHealth = (20+10*counter)*multiplier
+                enemy.maxHealth = int((20+10)*multiplier)
                 enemy.health = enemy.maxHealth
                 enemy.godMode = True
                 enemy.movementSpeed = 1.3-0.1*multiplier
@@ -1930,14 +1930,27 @@ try to remember how you got here ..."""
 
                 room.addCharacter(enemy, pos[0], pos[1])
 
+            for _i in range(counter):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                enemy = src.characters.Monster(4,4)
+                enemy.baseDamage = 2+multiplier
+                enemy.maxHealth = int(10*multiplier)
+                enemy.health = enemy.maxHealth
+                enemy.godMode = True
+                enemy.movementSpeed = 1.0*0.9**multiplier
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                room.addCharacter(enemy, pos[0], pos[1])
+
             counter += 1
 
         counter = 0
         for room in rooms:
-            if counter < 7 and counter%2 == 0:
-                item = src.items.itemMap["StopStatue"]()
-                room.addItem(item,(6,6,0))
-
             if counter == 7:
                 item = src.items.itemMap["CoalBurner"]()
                 room.addItem(item,(6,6,0))
@@ -1946,16 +1959,21 @@ try to remember how you got here ..."""
                 item = src.items.itemMap["Shrine"]()
                 room.addItem(item,(6,6,0))
 
-            if counter < 5:
-                for _i in range(random.randint(2,6)):
-                    item = src.items.itemMap["LandMine"]()
-                    room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
+            if counter < 7:
+                if random.random() > 0.5:
+                    item = src.items.itemMap["StopStatue"]()
+                    room.addItem(item,(6,6,0))
 
-            if counter < 7 and counter%2 == 0:
-                position = [(5,5,0),(5,6,0),(5,7,0),(6,5,0),(6,7,0)]
-                for pos in position:
-                    item = src.items.itemMap["Wall"]()
-                    room.addItem(item,pos)
+                    position = [(5,5,0),(5,6,0),(5,7,0),(6,5,0),(6,7,0)]
+                    for pos in position:
+                        item = src.items.itemMap["Wall"]()
+                        room.addItem(item,pos)
+
+            if counter < 5:
+                if random.random() > 0.5:
+                    for _i in range(random.randint(2,6)):
+                        item = src.items.itemMap["LandMine"]()
+                        room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
             counter += 1
 
@@ -2395,8 +2413,9 @@ try to remember how you got here ..."""
                     bestCandidate = candidate
 
             if not bestCandidate:
-                text = "the faction was wiped out"
-                src.interaction.showInterruptText(text)
+                if faction == src.gamestate.gamestate.mainChar.faction:
+                    text = "the faction was wiped out"
+                    src.interaction.showInterruptText(text)
                 return
 
             if faction == src.gamestate.gamestate.mainChar.faction:
@@ -2535,6 +2554,9 @@ try to remember how you got here ..."""
         homeTerrain.mana = 60
 
 
+        src.gamestate.gamestate.terrainMap[13][13] = src.terrains.Swamp()
+        src.gamestate.gamestate.terrainMap[13][13].xPosition = 13
+        src.gamestate.gamestate.terrainMap[13][13].yPosition = 13
         currentTerrain = src.gamestate.gamestate.terrainMap[13][13]
 
         mainChar = src.characters.Character()
@@ -2577,14 +2599,35 @@ try to remember how you got here ..."""
         armor.armorValue = 1
         mainChar.armor = armor
 
-        dungeonCrawlInfo = {}
-        dungeonCrawlInfo["terrain"] = currentTerrain
-        dungeonCrawlInfo["mainChar"] = mainChar
-        dungeonCrawlInfo["type"] = "travel"
+        travelInfo = {}
+        travelInfo["terrain"] = currentTerrain
+        travelInfo["mainChar"] = mainChar
+        travelInfo["type"] = "travel"
 
         currentTerrain.addCharacter(mainChar,13*15+7,13*15+7)
 
-        return dungeonCrawlInfo
+        # add dummy content
+        for x in range(1,14):
+            for y in range(1,14):
+                bigPos = (x,y,0)
+
+                if random.random() < 0.1:
+                    enemy = src.characters.Monster(4,4)
+                    enemy.health = 500
+                    enemy.baseDamage = 50
+                    enemy.maxHealth = 500
+                    enemy.godMode = True
+                    enemy.movementSpeed = 0.8
+
+                    quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+                    currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
+
+        return travelInfo
 
 
     def createDungeonCrawl(self, pos):
@@ -3028,40 +3071,41 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for i in range(10):
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+        if not self.difficulty == "difficult":
+            for i in range(10):
+                pos = (random.randint(15,15*13),random.randint(15,15*13),0)
 
-            if i < 2:
-                item = src.items.itemMap["Vial"]()
+                if i < 2:
+                    item = src.items.itemMap["Vial"]()
+                    item.bolted = False
+                    currentTerrain.addItem(item,pos)
+                if i < 4:
+                    item = src.items.itemMap["Armor"]()
+                    item.bolted = False
+                    currentTerrain.addItem(item,pos)
+                if i < 6:
+                    item = src.items.itemMap["Sword"]()
+                    item.bolted = False
+                    currentTerrain.addItem(item,pos)
+                if i < 8:
+                    item = src.items.itemMap["GooFlask"]()
+                    item.bolted = False
+                    currentTerrain.addItem(item,pos)
+
+                item = src.items.itemMap["Corpse"]()
                 item.bolted = False
                 currentTerrain.addItem(item,pos)
-            if i < 4:
-                item = src.items.itemMap["Armor"]()
-                item.bolted = False
-                currentTerrain.addItem(item,pos)
-            if i < 6:
+
+            for _i in range(4):
                 item = src.items.itemMap["Sword"]()
                 item.bolted = False
+                pos = (random.randint(15,15*13),random.randint(15,15*13),0)
                 currentTerrain.addItem(item,pos)
-            if i < 8:
-                item = src.items.itemMap["GooFlask"]()
+            for _i in range(4):
+                item = src.items.itemMap["Armor"]()
                 item.bolted = False
+                pos = (random.randint(15,15*13),random.randint(15,15*13),0)
                 currentTerrain.addItem(item,pos)
-
-            item = src.items.itemMap["Corpse"]()
-            item.bolted = False
-            currentTerrain.addItem(item,pos)
-
-        for _i in range(4):
-            item = src.items.itemMap["Sword"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
-        for _i in range(4):
-            item = src.items.itemMap["Armor"]()
-            item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
         for _i in range(10):
             item = src.items.itemMap["Vial"]()
             item.bolted = False
@@ -3072,6 +3116,13 @@ try to remember how you got here ..."""
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
+
+        modifier = 1
+        if self.difficulty == "easy":
+            modifier = 0.5
+        if self.difficulty == "difficult":
+            modifier = 2
+
 
         for _i in range(20):
             bigPos = None
@@ -3093,11 +3144,29 @@ try to remember how you got here ..."""
 
             for _i in range(random.randint(1,3)):
                 enemy = src.characters.Monster(4,4)
-                enemy.health = 20
+                enemy.health = 20*modifier
                 enemy.baseDamage = 5
-                enemy.maxHealth = 20
+                enemy.maxHealth = 20*modifier
                 enemy.godMode = True
                 enemy.movementSpeed = 0.8
+                enemy.faction = "guard"
+
+                quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
+
+            if random.random() < 0.5:
+                enemy = src.characters.Statue(4,4)
+                enemy.health = 200*modifier
+                enemy.baseDamage = 10
+                enemy.maxHealth = 200*modifier
+                enemy.godMode = True
+                enemy.movementSpeed = 0.8
+                enemy.faction = "guard"
 
                 quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
                 quest.autoSolve = True

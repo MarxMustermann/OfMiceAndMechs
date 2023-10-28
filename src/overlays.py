@@ -112,7 +112,10 @@ class NPCsOverlay:
 
             if "city" not in character.faction or character.charType not in ("Character","Ghoul",):
                 #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
-                char = "<-"
+                if character.specialDisplay:
+                    char = character.specialDisplay
+                else:
+                    char = "<-"
                 bgColor = "#722"
                 chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
             else:

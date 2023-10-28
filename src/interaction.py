@@ -10076,6 +10076,10 @@ def gameLoop_disabled(loop, user_data=None):
             print("average tick length on %s ticks: %s"%(numTrackedTicks,(totalTickSpeed/numTrackedTicks),))
         """
 
+        """ HACK
+        if not src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]:
+            renderGameDisplay()
+        """
         renderGameDisplay()
 
         """
@@ -10105,6 +10109,11 @@ def advanceChar(char,render=True):
             #for room in char.getTerrain().rooms:
             #    room.animations = []
             if render:
+                """ HACK
+                if not src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]:
+                    skipedRenders = 0
+                    renderGameDisplay()
+                """
                 renderGameDisplay()
             lastRender = time.time()
             rerender = False

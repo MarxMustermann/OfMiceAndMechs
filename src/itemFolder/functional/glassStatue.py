@@ -19,6 +19,7 @@ class GlassStatue(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("showInfo", "show Info"),
+                                                                ("teleport", "teleport"),
                         ]
                         )
         self.applyMap = {
@@ -26,6 +27,7 @@ class GlassStatue(src.items.Item):
                     "showChallenges": self.showChallenges,
                     "getExtraChallenge": self.getExtraChallenge,
                     "getReward": self.getReward,
+                    "teleport": self.teleport,
                         }
         self.itemID = itemID
         self.challenges = []
@@ -36,6 +38,15 @@ class GlassStatue(src.items.Item):
             return "GG"
         else:
             return "KK"
+
+    def teleport(self,character):
+        character.addMessage(str(src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]))
+
+        (x,y) = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
+        newTerrain = src.gamestate.gamestate.terrainMap[y][x]
+
+        character.container.removeCharacter(character)
+        newTerrain.addCharacter(character,15*1+0,15*7+7)
 
     def showInfo(self,character):
         character.addMessage(f"mana: {self.getTerrain().mana}")

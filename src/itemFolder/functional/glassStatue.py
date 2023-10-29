@@ -19,7 +19,8 @@ class GlassStatue(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("showInfo", "show Info"),
-                                                                ("teleport", "teleport"),
+                                                                ("getSetHeart", "remove/set glass heart"),
+                                                                ("teleport", "teleport to dungeon"),
                         ]
                         )
         self.applyMap = {
@@ -28,6 +29,7 @@ class GlassStatue(src.items.Item):
                     "getExtraChallenge": self.getExtraChallenge,
                     "getReward": self.getReward,
                     "teleport": self.teleport,
+                    "getSetHeart": self.getSetHeart,
                         }
         self.itemID = itemID
         self.challenges = []
@@ -45,8 +47,10 @@ class GlassStatue(src.items.Item):
         (x,y) = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
         newTerrain = src.gamestate.gamestate.terrainMap[y][x]
 
+        bigPos = (3,7)
+
         character.container.removeCharacter(character)
-        newTerrain.addCharacter(character,15*1+0,15*7+7)
+        newTerrain.addCharacter(character,15*bigPos[0]+13,15*bigPos[1]+7)
 
     def showInfo(self,character):
         character.addMessage(f"mana: {self.getTerrain().mana}")
@@ -499,6 +503,12 @@ class GlassStatue(src.items.Item):
         else:
             options["b"] = ("bolt down", self.boltAction)
         return options
+
+    def getSetHeart(self,character):
+        if self.hasItem:
+            self.removeGlassHeart(character)
+        else:
+            self.setGlassHeart(character)
 
     def removeGlassHeart(self,character):
         newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15*15))

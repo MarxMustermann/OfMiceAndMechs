@@ -23,7 +23,7 @@ class Shrine(src.items.Item):
                                                                 ("showInfo", "show Info"),
                                                                 ("wish", "wish"),
                                                                 ("challenge", "pray"),
-                                                                ("teleport", "telport"),
+                                                                ("teleport", "telport home"),
                         ]
                         )
         self.applyMap = {
@@ -38,8 +38,9 @@ class Shrine(src.items.Item):
         y = character.registers["HOMETy"]
         newTerrain = src.gamestate.gamestate.terrainMap[y][x]
 
+        bigPos = (7,7)
         character.container.removeCharacter(character)
-        newTerrain.addCharacter(character,15*1+0,15*7+7)
+        newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
 
     def isChallengeDone(self):
         if self.god == 1:
@@ -83,7 +84,7 @@ class Shrine(src.items.Item):
             roomRewardMapByTerrain[terrainPos] = numRooms
             god["roomRewardMapByTerrain"] = roomRewardMapByTerrain
         else:
-            1/0
+            character.addMessage("nothing happens - not implemented yet")
 
     def showInfo(self,character):
         character.addMessage(self.getTerrain().mana)

@@ -612,6 +612,10 @@ class Character:
         Returns:
             the position
         """
+        if not self.container:
+            logger.error("getting position of character that is nowhere")
+            return
+
         if self.container.isRoom:
             return (self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2])
         else:
@@ -1986,7 +1990,8 @@ press any other key to attack normally"""
             )
             return
 
-        if self.health < self.maxHealth and src.gamestate.gamestate.tick%int(self.health) < self.healingThreashold:
+        if self.health < self.maxHealth and (
+                int(self.health) and src.gamestate.gamestate.tick%int(self.health) < self.healingThreashold):
             self.heal(1,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):

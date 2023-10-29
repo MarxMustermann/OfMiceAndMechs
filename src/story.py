@@ -2650,26 +2650,6 @@ try to remember how you got here ..."""
                 None,
            )
 
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 3
-        mainRoom.addItem(item,(7,7,0))
-
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 4
-        mainRoom.addItem(item,(8,7,0))
-
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 5
-        mainRoom.addItem(item,(9,7,0))
-
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 6
-        mainRoom.addItem(item,(10,7,0))
-
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 7
-        mainRoom.addItem(item,(11,7,0))
-
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
 
@@ -2734,6 +2714,76 @@ try to remember how you got here ..."""
         homeTerrain.manaRegen = 5
         homeTerrain.mana = 60
 
+
+        temple = architect.doAddRoom(
+                {
+                       "coordinate": (6,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 1
+        temple.addItem(item,(1,2,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 1
+        temple.addItem(item,(2,2,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 2
+        temple.addItem(item,(3,2,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 2
+        temple.addItem(item,(4,2,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 3
+        temple.addItem(item,(7,1,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 3
+        temple.addItem(item,(7,2,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 4
+        temple.addItem(item,(10,1,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 4
+        temple.addItem(item,(10,2,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 5
+        temple.addItem(item,(11,5,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 5
+        temple.addItem(item,(10,5,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 6
+        temple.addItem(item,(7,5,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 6
+        temple.addItem(item,(7,4,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.itemID = 7
+        temple.addItem(item,(8,4,0))
+
+        item = src.items.itemMap["GlassStatue"]()
+        item.itemID = 7
+        temple.addItem(item,(8,5,0))
+
+        item = src.items.itemMap["Throne"]()
+        temple.addItem(item,(6,6,0))
 
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
 

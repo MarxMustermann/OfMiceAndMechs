@@ -1914,7 +1914,7 @@ try to remember how you got here ..."""
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                enemy = src.characters.Monster(4,4)
+                enemy = src.characters.Statue(4,4)
                 enemy.baseDamage = 5+multiplier
                 enemy.maxHealth = int((20+10)*multiplier)
                 enemy.health = enemy.maxHealth
@@ -1932,7 +1932,7 @@ try to remember how you got here ..."""
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                enemy = src.characters.Monster(4,4)
+                enemy = src.characters.Statuette(4,4)
                 enemy.baseDamage = 2+multiplier
                 enemy.maxHealth = int(10*multiplier)
                 enemy.health = enemy.maxHealth

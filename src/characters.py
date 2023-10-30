@@ -2401,6 +2401,10 @@ class Monster(Character):
             addCorpse: a flag determining wether or not a corpse should be added
         """
 
+        if not addCorpse:
+            super().die(reason, addCorpse=False)
+            return
+
         if self.phase == 1:
             if (
                 self.xPosition
@@ -2668,6 +2672,56 @@ class Statue(Monster):
         )
         self.charType = "Statue"
         self.specialDisplay = "@@"
+
+    def die(self, reason=None, addCorpse=True):
+        super().die(reason, addCorpse=False)
+
+# bad code: animals should not be characters. This means it is possible to chat with a mouse
+class Statuette(Monster):
+    """
+    the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
+    """
+
+
+    def __init__(
+        self,
+        display="st",
+        xPosition=0,
+        yPosition=0,
+        quests=None,
+        automated=True,
+        name="Statuette",
+        creator=None,
+        characterId=None,
+    ):
+        """
+        basic state setting
+
+        Parameters:
+            display: how the mouse should look like
+            xPosition: obsolete, ignore
+            yPosition: obsolete, ignore
+            quests: obsolete, ignore
+            automated: obsolete, ignore
+            name: obsolete, ignore
+            creator: obsolete, ignore
+            characterId: obsolete, ignore
+        """
+        if quests is None:
+            quests = []
+
+        super().__init__(
+            display,
+            xPosition,
+            yPosition,
+            quests,
+            automated,
+            name,
+            creator=creator,
+            characterId=characterId,
+        )
+        self.charType = "Statuette"
+        self.specialDisplay = "st"
 
     def die(self, reason=None, addCorpse=True):
         super().die(reason, addCorpse=False)

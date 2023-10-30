@@ -1930,7 +1930,7 @@ try to remember how you got here ..."""
 
                 room.addCharacter(enemy, pos[0], pos[1])
 
-            for _i in range(counter):
+            for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 enemy = src.characters.Monster(4,4)
                 enemy.baseDamage = 2+multiplier

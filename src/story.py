@@ -1487,11 +1487,17 @@ class MainGame(BasicPhase):
                 self.preselection = "Travel"
 
         self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
+        self.takenPositions.append((8,6))
+
         difficultyModifier = 1
         if self.difficulty == "easy":
             difficultyModifier = 0.5
         if self.difficulty == "difficult":
             difficultyModifier = 2
+
+        self.takenPositions.append((6,6))
+        self.takenPositions.append((4,5))
+        self.takenPositions.append((1,1))
 
         dungeonPositions = []
         while len(dungeonPositions) < 7:
@@ -1780,6 +1786,12 @@ try to remember how you got here ..."""
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
+        currentTerrain.mana = 9
+        if self.difficulty == "medium":
+            currentTerrain.mana = 4
+        if self.difficulty == "difficult":
+            currentTerrain.mana = 0
+
         mainRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,7),
@@ -1905,6 +1917,9 @@ try to remember how you got here ..."""
            )
         extraRooms.append(room)
 
+        runModifier = (random.random()-0.5)*0.5
+        logger.info(f"runmodifer dungeon {itemID}: {runModifier}")
+
         counter = 0
         for room in reversed(rooms):
 
@@ -1914,38 +1929,41 @@ try to remember how you got here ..."""
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                enemy = src.characters.Statue(4,4)
-                enemy.baseDamage = 5+multiplier
-                enemy.maxHealth = int((20+10)*multiplier)
-                enemy.health = enemy.maxHealth
-                enemy.godMode = True
-                enemy.movementSpeed = 1.3-0.1*multiplier
-                enemy.charType = "Statue"
+                statue = src.characters.Statue(4,4)
+                statue.baseDamage = int(5+multiplier)
+                statue.baseDamage = int(statue.baseDamage*(1-runModifier))
+                statue.maxHealth = int((20+10)*multiplier)
+                statue.maxHealth = int(statue.maxHealth*(1+runModifier))
+                statue.health = statue.maxHealth
+                statue.godMode = True
+                statue.movementSpeed = 1.3-0.1*multiplier
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
-                quest.assignToCharacter(enemy)
+                quest.assignToCharacter(statue)
                 quest.activate()
-                enemy.quests.append(quest)
+                statue.quests.append(quest)
 
-                room.addCharacter(enemy, pos[0], pos[1])
+                room.addCharacter(statue, pos[0], pos[1])
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                enemy = src.characters.Statuette(4,4)
-                enemy.baseDamage = 2+multiplier
-                enemy.maxHealth = int(10*multiplier)
-                enemy.health = enemy.maxHealth
-                enemy.godMode = True
-                enemy.movementSpeed = 1.0*0.9**multiplier
+                statuette = src.characters.Statuette(4,4)
+                statuette.baseDamage = int(2+multiplier)
+                statuette.baseDamage = int(statuette.baseDamage*(1+runModifier))
+                statuette.maxHealth = int(10*multiplier)
+                statuette.maxHealth = int(statuette.maxHealth*(1-runModifier))
+                statuette.health = statuette.maxHealth
+                statuette.godMode = True
+                statuette.movementSpeed = 1.0*0.9**multiplier
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
-                quest.assignToCharacter(enemy)
+                quest.assignToCharacter(statuette)
                 quest.activate()
-                enemy.quests.append(quest)
+                statuette.quests.append(quest)
 
-                room.addCharacter(enemy, pos[0], pos[1])
+                room.addCharacter(statuette, pos[0], pos[1])
 
             counter += 1
 
@@ -1957,6 +1975,7 @@ try to remember how you got here ..."""
 
             if counter == 8:
                 item = src.items.itemMap["Shrine"]()
+                item.god = itemID
                 room.addItem(item,(6,6,0))
 
             if counter < 7:
@@ -2653,12 +2672,6 @@ try to remember how you got here ..."""
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         mainRoom.addItem(dutyArtwork,(5,1,0))
 
-        shrine = src.items.itemMap["Shrine"](god=1)
-        mainRoom.addItem(shrine,(1,1,0))
-
-        shrine = src.items.itemMap["Shrine"](god=2)
-        mainRoom.addItem(shrine,(2,1,0))
-
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         personnelArtwork.charges = 10
         mainRoom.addItem(personnelArtwork,(1,8,0))
@@ -2698,26 +2711,20 @@ try to remember how you got here ..."""
                 mainRoom.addStorageSlot((x,y,0),None)
 
         positions = [(7,6),(6,7),(7,8),(8,7),]
-        positions = [random.choice(positions)]
-        for scrapPos in positions:
-            architect.doClearField(scrapPos[0], scrapPos[1])
-            architect.doAddScrapfield(scrapPos[0], scrapPos[1], 100,leavePath=True)
-
-        treePos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
-        architect.doClearField(treePos[0], treePos[1])
-        tree = src.items.itemMap["Tree"]()
-        tree.numMaggots = tree.maxMaggot
-        homeTerrain.addItem(tree,(treePos[0]*15+7,treePos[1]*15+7,0))
-        homeTerrain.forests.append(treePos)
+        scrapPos = random.choice(positions)
+        architect.doClearField(scrapPos[0], scrapPos[1])
+        architect.doAddScrapfield(scrapPos[0], scrapPos[1], 100,leavePath=True)
 
         homeTerrain.maxMana = 100
-        homeTerrain.manaRegen = 5
-        homeTerrain.mana = 60
+        homeTerrain.manaRegen = 0
+        homeTerrain.mana = 0
 
-
+        positions = [(7,6),(6,7),(7,8),(8,7),]
+        positions.remove(scrapPos)
+        roomPosition = random.choice(positions)
         temple = architect.doAddRoom(
                 {
-                       "coordinate": (6,7),
+                       "coordinate": roomPosition,
                        "roomType": "EmptyRoom",
                        "doors": "0,6 6,0 12,6 6,12",
                        "offset": [1,1],
@@ -2727,7 +2734,7 @@ try to remember how you got here ..."""
            )
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 1
+        item.god = 1
         temple.addItem(item,(1,2,0))
 
         item = src.items.itemMap["GlassStatue"]()
@@ -2735,7 +2742,7 @@ try to remember how you got here ..."""
         temple.addItem(item,(2,2,0))
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 2
+        item.god = 2
         temple.addItem(item,(3,2,0))
 
         item = src.items.itemMap["GlassStatue"]()
@@ -2743,7 +2750,7 @@ try to remember how you got here ..."""
         temple.addItem(item,(4,2,0))
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 3
+        item.god = 3
         temple.addItem(item,(7,1,0))
 
         item = src.items.itemMap["GlassStatue"]()
@@ -2751,7 +2758,7 @@ try to remember how you got here ..."""
         temple.addItem(item,(7,2,0))
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 4
+        item.god = 4
         temple.addItem(item,(10,1,0))
 
         item = src.items.itemMap["GlassStatue"]()
@@ -2759,7 +2766,7 @@ try to remember how you got here ..."""
         temple.addItem(item,(10,2,0))
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 5
+        item.god = 5
         temple.addItem(item,(11,5,0))
 
         item = src.items.itemMap["GlassStatue"]()
@@ -2767,7 +2774,7 @@ try to remember how you got here ..."""
         temple.addItem(item,(10,5,0))
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 6
+        item.god = 6
         temple.addItem(item,(7,5,0))
 
         item = src.items.itemMap["GlassStatue"]()
@@ -2775,7 +2782,7 @@ try to remember how you got here ..."""
         temple.addItem(item,(7,4,0))
 
         item = src.items.itemMap["Shrine"]()
-        item.itemID = 7
+        item.god = 7
         temple.addItem(item,(8,4,0))
 
         item = src.items.itemMap["GlassStatue"]()

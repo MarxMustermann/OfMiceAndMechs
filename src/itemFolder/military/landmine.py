@@ -22,6 +22,41 @@ class LandMine(src.items.Item):
 
         super().__init__(display=src.canvas.displayChars.landmine)
 
+        self.active = True
+
+    def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += f"""
+
+This item explodes when stepped on.
+The explosion covers 4 of the 5 nearby fields.
+So you get a chance to evade the explosion.
+
+The explosion happens in 2 phases.
+You get hit with 30 damage directly.
+You get extra damage, if you wait around and do not move out of the explosion.
+This will hit you with 50 more explosion damage.
+
+"""
+        return text
+
+    def configure(self,character):
+        if self.active:
+            character.addMessage("you defuse the landmine, that takes 30 ticks")
+            character.timeTaken += 30
+            self.active = False
+        else:
+            character.addMessage("you fuse the landmine again, that takes 50 ticks")
+            character.timeTaken += 50
+            self.active = True
+
     def pickUp(self, character):
         if random.random() < 0.5:
             self.destroy()
@@ -29,8 +64,15 @@ class LandMine(src.items.Item):
             super().pickUp(character)
 
     def doStepOnAction(self, character):
-        character.addMessage("you step on a landmine")
-        self.apply(character)
+        if self.active:
+            character.addMessage("you step on an active landmine")
+            self.apply(character)
+
+    def render(self):
+        if self.active:
+            return self.display
+        else:
+            return "_~"
 
     def apply(self, character):
         """

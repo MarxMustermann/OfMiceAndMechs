@@ -1255,7 +1255,8 @@ class Room:
                     display = character
                     display = (src.interaction.urwid.AttrSpec("#740","#000"),display)
 
-                    chars[pos[1]][pos[0]] = display
+                    if not pos == (None,None,None):
+                        chars[pos[1]][pos[0]] = display
 
                     animation[2] -= 1
 

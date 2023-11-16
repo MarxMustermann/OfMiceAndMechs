@@ -22,6 +22,25 @@ class CoalBurner(src.items.Item):
         self.bolted = False
         self.charges = 0
 
+    def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += f"""
+This item can heal you.
+Collect MoldFeed and burn it to heal.
+
+To heal use this item place with MoldFeed next to the item
+or use this item with MoldFeed in your inventory.
+
+"""
+        return text
+
     # abstraction: super class functionality should be used
     def apply(self, character):
         """

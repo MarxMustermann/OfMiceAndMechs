@@ -40,7 +40,12 @@ class Shrine(src.items.Item):
 
         bigPos = (7,7)
         character.container.removeCharacter(character)
-        newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
+        room = newTerrain.getRoomByPosition(bigPos)
+        print(room)
+        if room:
+            room[0].addCharacter(character,7,7)
+        else:
+            newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
 
     def isChallengeDone(self):
         if self.god == 1:
@@ -57,7 +62,34 @@ class Shrine(src.items.Item):
 
         return False
 
+    def setGod1(self,character):
+        options = []
+        options.append((1,"1 - god of fertility"))
+        options.append((2,"2 - god of desolution"))
+        options.append((3,"3 - god of construction"))
+        options.append((4,"4 - god of fighting"))
+        options.append((5,"5 - god of battle gear"))
+        options.append((6,"6 - god of life"))
+        options.append((7,"7 - god of crushing"))
+
+        submenu = src.interaction.SelectionMenu(
+            "Select what god to pray to", options,
+            targetParamName="god",
+        )
+        character.macroState["submenue"] = submenu
+        character.macroState["submenue"].followUp = {
+                "container": self,
+                "method": "setGod2",
+                "params": {"character":character},
+        }
+
+    def setGod2(self,extraInfo):
+        self.god = extraInfo["god"]
+
     def challenge(self,character):
+        if self.god is None:
+            self.setGod1(character)
+            return
         character.changed("prayed",{})
 
         if self.god == 1:
@@ -87,7 +119,23 @@ class Shrine(src.items.Item):
             character.addMessage("nothing happens - not implemented yet")
 
     def showInfo(self,character):
-        character.addMessage(self.getTerrain().mana)
+
+        character.addMessage(f"mana: {self.getTerrain().mana}")
+
+        if self.god == 1:
+            character.addMessage("this god can spawn NPCs")
+        if self.god == 2:
+            character.addMessage("this god can spawn ressources")
+        if self.god == 3:
+            character.addMessage("this god can spawn walls")
+        if self.god == 4:
+            character.addMessage("this god can improve your attack speed")
+        if self.god == 5:
+            character.addMessage("this god can improve your armor or weapon")
+        if self.god == 6:
+            character.addMessage("this god can improve your max health")
+        if self.god == 7:
+            character.addMessage("this god can improve your base damage")
 
     def getCharacterSpawningCost(self,character):
         baseCost = 10
@@ -136,8 +184,38 @@ class Shrine(src.items.Item):
 
             for duty in duties:
                 options.append((f"spawn {duty} NPC",f"({cost}) {dutyMap.get(duty,0)} spawn {duty} NPC"))
+
         elif self.god == 2:
             options.append(("spawn scrap","(20) respawn scrap field"))
+
+        elif self.god == 3:
+            options.append(("spawn walls","(5) spawn walls"))
+
+        elif self.god == 4:
+            if character.attackSpeed <= 0.5:
+                character.addMessage("you can't improve your attack speed further")
+                return
+
+            options.append(("upgrade attack speed","(5) upgrade attack speed"))
+
+        elif self.god == 5:
+            options.append(("improve armor","(5) improve armor"))
+            options.append(("upgrade weapon","(5) upgrade weapon"))
+
+        elif self.god == 6:
+            if character.maxHealth >= 500:
+                character.addMessage("you can't improve your health further")
+                return
+
+            options.append(("improve your health","(5) improve your health"))
+
+        elif self.god == 7:
+            if character.baseDamage >= 10:
+                character.addMessage("you can't improve your base damage further")
+                return
+
+            options.append(("improve base damage","(5) improve your base damage"))
+
         else:
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
             options.append(("spawn PerformanceTester","(0) spawn PerformanceTester"))
@@ -213,6 +291,72 @@ class Shrine(src.items.Item):
         elif extraInfo["rewardType"] == "spawn scrap":
             text = "spawning scrap"
             self.spawnScrap(character)
+
+        elif extraInfo['rewardType'] == "upgrade weapon":
+            text = "upgrading weapon"
+            if self.getTerrain().mana >= 5:
+                increaseValue = 4
+                increaseValue = min(30-character.weapon.baseDamage,increaseValue)
+                character.weapon.baseDamage += increaseValue
+                character.addMessage(f"your weapons base damage is increased by {increaseValue} to {character.weapon.baseDamage}")
+                self.getTerrain().mana -= 5
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "upgrade attack speed":
+            text = "upgrading attack speed"
+            if self.getTerrain().mana >= 5:
+                increaseValue = 0.1
+                increaseValue = min(character.attackSpeed-0.5,increaseValue)
+                character.attackSpeed -= increaseValue
+                character.addMessage(f"your attack speed is improved by {increaseValue} to {character.attackSpeed}")
+                self.getTerrain().mana -= 5
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "improve armor":
+            if self.getTerrain().mana >= 5:
+                text = "improving armor"
+                increaseValue = 0.5
+                increaseValue = min(8-character.armor.armorValue,increaseValue)
+                character.armor.armorValue += increaseValue
+                character.addMessage(f"your armors armor value is increased by {increaseValue} to {character.armor.armorValue}")
+                self.getTerrain().mana -= 5
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "improve your health":
+            if self.getTerrain().mana >= 5:
+                text = "improving your health"
+                increaseValue = 20
+                increaseValue = min(500-character.maxHealth,increaseValue)
+                character.maxHealth += increaseValue
+                character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
+                self.getTerrain().mana -= 5
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "improve base damage":
+            if self.getTerrain().mana >= 5:
+                text = "increasing base damage"
+                increaseValue = 2
+                increaseValue = min(10-character.baseDamage,increaseValue)
+                character.baseDamage += increaseValue
+                character.addMessage(f"your base damage is increased by {increaseValue} to {character.baseDamage}")
+                self.getTerrain().mana -= 5
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "spawn walls":
+            if self.getTerrain().mana >= 5:
+                text = "spawning walls"
+                for _i in range(0,10):
+                    item = src.items.itemMap["Wall"]()
+                    item.bolted = False
+                    character.inventory.append(item)
+                self.getTerrain().mana -= 5
+            else:
+                character.addMessage(f"the mana is used up")
 
         character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
         character.addMessage(text)
@@ -361,6 +505,10 @@ press enter to continue"""%(npc.name,duty,terrain)
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
-        return f"{self.god}"
+        return f"""
+A shrine allows to interact eith a god in simple ways.
+
+This shrine is set to the god {self.god}.
+"""
 
 src.items.addType(Shrine)

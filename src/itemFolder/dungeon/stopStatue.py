@@ -19,6 +19,23 @@ class StopStatue(src.items.Item):
         self.walkable = False
         self.bolted = True
 
+    def getLongInfo(self):
+        """
+        return a longer than normal description text
+
+        Returns:
+            the description text
+        """
+
+        text = super().getLongInfo()
+        text += f"""
+This item destroys all statues in the room.
+
+Using this item destroys this item.
+So be cerful you only can use the item once.
+"""
+        return text
+
     def apply(self, character):
         """
         handle a character tyring to destroy the wall

@@ -538,6 +538,8 @@ def handleActivityKeypress(char, header, main, footer, flags):
 press key to select action
 
 * g = run guard mode for 10 ticks
+* h = get emergency heatlh
+* m = move to position
 """
         header.set_text(
             (urwid.AttrSpec("default", "default"), "action menu")
@@ -548,8 +550,58 @@ press key to select action
 
     char.interactionState["runaction"] = {}
 
-def handleActivitySelection(char):
-    char.startGuarding(1)
+def handleActivitySelection(key,char):
+    if key == "g":
+        char.startGuarding(1)
+    if key == "h":
+        char.getEmergencyHealth()
+    if key == "m":
+        terrain = char.getTerrain()
+
+        # render empty map
+        mapContent = []
+        for x in range(15):
+            mapContent.append([])
+            for y in range(15):
+                if x not in (0, 14) and y not in (0, 14):
+                    displayChar = "  "
+                elif x != 7 and y != 7:
+                    displayChar = "##"
+                else:
+                    displayChar = "  "
+                mapContent[x].append(displayChar)
+
+        functionMap = {}
+
+        for x in range(1,14):
+            for y in range(1,14):
+                functionMap[(x,y)] = {}
+                functionMap[(x,y)]["m"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveToTile",
+                        "params":{},
+                    },
+                    "description":"move to tile",
+                }
+
+        for scrapField in terrain.scrapFields:
+            mapContent[scrapField[1]][scrapField[0]] = "ss"
+
+        for forest in terrain.forests:
+            mapContent[forest[1]][forest[0]] = "ff"
+
+        for room in terrain.rooms:
+            if not (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots):
+                mapContent[room.yPosition][room.xPosition] = "EE"
+            else:
+                mapContent[room.yPosition][room.xPosition] = room.displayChar
+
+        extraText = "\n\n"
+
+        submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
+        char.macroState["submenue"] = submenue
+        char.runCommandString("~",nativeKey=True)
     del char.interactionState["runaction"]
 
 def handleStartMacroReplayChar(key,char,charState,main,header,footer,urwid,flags):
@@ -906,6 +958,10 @@ def doAdvancedPickup(params):
     header = params[5]
     footer = params[6]
     urwid = params[7]
+
+    if char.container is None:
+        del char.interactionState["advancedPickup"]
+        return
 
     char.timeTaken += char.movementSpeed
     if len(char.inventory) >= 10:
@@ -2065,7 +2121,7 @@ def handlePriorityActions(params):
         key = commandChars.ignore
 
     if runactionStr in char.interactionState:
-        handleActivitySelection(char)
+        handleActivitySelection(key,char)
         return None
 
     if advancedInteractionStr in char.interactionState:

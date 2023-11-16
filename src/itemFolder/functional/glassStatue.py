@@ -522,6 +522,8 @@ class GlassStatue(src.items.Item):
         character.movementSpeed = character.movementSpeed*2
 
     def setGlassHeart(self,character):
+        self.getTerrain().mana += 10
+
         glassHeart = None
         hasHeart = False
         for item in character.inventory:

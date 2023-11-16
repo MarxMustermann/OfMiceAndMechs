@@ -267,6 +267,23 @@ class Character:
             else:
                 function()
 
+    def triggerAutoMoveToTile(self,extraParam):
+        targetPosition = extraParam["coordinate"]
+        targetPosition = (targetPosition[0],targetPosition[1],0)
+
+        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,paranoid=True)
+        quest.selfAssigned = True
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+
+        self.quests.insert(0,quest)
+
+    def getEmergencyHealth(self):
+        if self.maxHealth > 10:
+            self.maxHealth -= 10
+            self.heal(50)
+
     def addGrievance(self,grievance):
         self.grievances[grievance] = src.gamestate.gamestate.tick
 

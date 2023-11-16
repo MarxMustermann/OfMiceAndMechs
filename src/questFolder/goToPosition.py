@@ -251,6 +251,10 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         if not self.path:
             return False
 
+        pos = character.getSpacePosition()
+        if not pos:
+            logger.error("checking path in non placed character")
+            return False
         pos = list(character.getSpacePosition())
         for step in self.path:
             pos[0] += step[0]

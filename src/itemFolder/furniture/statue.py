@@ -33,22 +33,28 @@ class Statue(src.items.Item):
         return options
 
     def pray(self,character):
-        itemID = None
-        if self.getPosition() == (2,2,0):
-            itemID = 1
-        if self.getPosition() == (4,2,0):
-            itemID = 2
-        if self.getPosition() == (7,2,0):
-            itemID = 3
-        if self.getPosition() == (10,2,0):
-            itemID = 4
-        if self.getPosition() == (10,5,0):
-            itemID = 5
-        if self.getPosition() == (8,5,0):
-            itemID = 6
-        if self.getPosition() == (7,4,0):
-            itemID = 7
-        new = src.items.itemMap["GlassStatue"](itemID=itemID)
+        options = []
+        options.append((1,"1 - god of fertility"))
+        options.append((2,"2 - god of desolution"))
+        options.append((3,"3 - god of construction"))
+        options.append((4,"4 - god of fighting"))
+        options.append((5,"5 - god of battle gear"))
+        options.append((6,"6 - god of life"))
+        options.append((7,"7 - god of crushing"))
+
+        submenu = src.interaction.SelectionMenu(
+            "Select what god to pray to", options,
+            targetParamName="god",
+        )
+        character.macroState["submenue"] = submenu
+        character.macroState["submenue"].followUp = {
+                "container": self,
+                "method": "pray2",
+                "params": {"character":character},
+        }
+
+    def pray2(self,extraInfo):
+        new = src.items.itemMap["GlassStatue"](itemID=extraInfo["god"])
         self.container.addItem(new,self.getPosition())
         self.container.removeItem(self)
 

@@ -10136,7 +10136,7 @@ def gameLoop_disabled(loop, user_data=None):
         if not src.gamestate.gamestate.mainChar.macroState["commandKeyQueue"]:
             renderGameDisplay()
         """
-        renderGameDisplay()
+        #renderGameDisplay()
 
         """
         endTime = time.time()
@@ -10151,13 +10151,16 @@ def clearMessages(char):
         char.messages = char.messages[-100:]
 
 skipNextRender = False
+lastRender = None
 def advanceChar(char,render=True):
     global skipNextRender
 
     state = char.macroState
 
     rerender = True
-    lastRender = None
+
+    global lastRender
+
     lastLoop = time.time()
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
@@ -10170,7 +10173,8 @@ def advanceChar(char,render=True):
                     skipedRenders = 0
                     renderGameDisplay()
                 """
-                renderGameDisplay()
+                if src.gamestate.gamestate.tick%2 == 0:
+                    renderGameDisplay()
             lastRender = time.time()
             rerender = False
         if (char == src.gamestate.gamestate.mainChar):

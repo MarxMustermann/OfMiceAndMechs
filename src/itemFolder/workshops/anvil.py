@@ -69,7 +69,7 @@ class Anvil(src.items.Item):
 
         character.timeTaken += 10
         character.addMessage("You produce a metal bar")
-        character.addMessage("It takes you a hundred turns to do that")
+        character.addMessage("It takes you 10 turns to do that")
         if scrap in character.inventory:
             character.inventory.remove(scrap)
         else:

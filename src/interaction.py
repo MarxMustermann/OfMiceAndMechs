@@ -75,7 +75,7 @@ def advanceGame():
     if src.gamestate.gamestate.mainChar.dead:
         showDeathScreen()
 
-    if src.gamestate.gamestate.tick%(15*15*15*15) == 0:
+    if src.gamestate.gamestate.tick%(15*15*15) == 0:
         for god in src.gamestate.gamestate.gods.values():
             if "mana" not in god:
                 god["mana"] = 0
@@ -101,7 +101,7 @@ def advanceGame():
 
         for god in src.gamestate.gamestate.gods.values():
             terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
-            increaseAmount = min(5,terrain.maxMana-terrain.mana)
+            increaseAmount = min(1,terrain.maxMana-terrain.mana)
             terrain.mana += increaseAmount
 
         for (godId,god) in src.gamestate.gamestate.gods.items():
@@ -978,19 +978,20 @@ def doAdvancedPickup(params):
     elif not char.container:
         pass
     else:
+        container = char.container
         if key == "w":
-            items = char.container.getItemByPosition(
+            items = container.getItemByPosition(
                 (char.xPosition, char.yPosition - 1, char.zPosition)
             )
             if items:
                 item = items[0]
                 item.pickUp(char)
-                char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",1,{"chars":["--",item.render()]})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+                container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",1,{"chars":["--",item.render()]})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
-                char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+                container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == "s":
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition + 1, char.zPosition)
@@ -998,12 +999,12 @@ def doAdvancedPickup(params):
             if items:
                 item = items[0]
                 item.pickUp(char)
-                char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",1,{"chars":["--",item.render()]})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+                container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",1,{"chars":["--",item.render()]})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
-                char.container.addAnimation(char.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+                container.addAnimation(char.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == "d":
             items = char.container.getItemByPosition(
                 (char.xPosition + 1, char.yPosition, char.zPosition)
@@ -1011,12 +1012,12 @@ def doAdvancedPickup(params):
             if items:
                 item = items[0]
                 item.pickUp(char)
-                char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+                container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
-                char.container.addAnimation(char.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+                container.addAnimation(char.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == "a":
             items = char.container.getItemByPosition(
                 (char.xPosition - 1, char.yPosition, char.zPosition)
@@ -1024,12 +1025,12 @@ def doAdvancedPickup(params):
             if items:
                 item = items[0]
                 item.pickUp(char)
-                char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
+                container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
-                char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
+                container.addAnimation(char.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
         elif key == ".":
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition, char.zPosition)
@@ -1039,7 +1040,7 @@ def doAdvancedPickup(params):
                 item.pickUp(char)
             else:
                 char.addMessage("no item to pick up")
-                char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
+                container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
     del char.interactionState["advancedPickup"]
 
 def doAdvancedDrop(params):
@@ -1125,7 +1126,7 @@ def doStackPush(key,char,charState,main,header,footer,urwid,flags):
     char.registers[key].append(0)
     char.doStackPush = False
 
-def doRangedAttack(key,char,charState,main,header,footer,urwid,flags):
+def doRangedAttack(key,char):
     char.doRangedAttack(direction=key)
     del char.interactionState["fireDirection"]
 
@@ -2124,8 +2125,16 @@ def handlePriorityActions(params):
         handleActivitySelection(key,char)
         return None
 
+    if "fireDirection" in char.interactionState:
+        doRangedAttack(key,char)
+        return None
+
     if advancedInteractionStr in char.interactionState:
         doAdvancedInteraction(params)
+        return None
+
+    if runactionStr in char.interactionState:
+        handleActivitySelection(key,char)
         return None
 
     if advancedConfigureStr in char.interactionState:
@@ -2595,7 +2604,7 @@ press key for the configuration interaction
             handleActivityKeypress(char, header, main, footer, flags)
             return None
 
-        if key in ("f",) and 1==0:
+        if key in ("f",):
             if src.gamestate.gamestate.mainChar == char and "norecord" not in flags:
                 text = """
 
@@ -10173,7 +10182,7 @@ def advanceChar(char,render=True):
                     skipedRenders = 0
                     renderGameDisplay()
                 """
-                if src.gamestate.gamestate.tick%2 == 0:
+                if src.gamestate.gamestate.tick%3 == 0:
                     renderGameDisplay()
             lastRender = time.time()
             rerender = False

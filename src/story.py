@@ -1973,10 +1973,16 @@ try to remember how you got here ..."""
                 item = src.items.itemMap["CoalBurner"]()
                 room.addItem(item,(6,6,0))
 
+            """
             if counter == 8:
                 item = src.items.itemMap["Shrine"]()
                 item.god = itemID
                 room.addItem(item,(6,6,0))
+            """
+            if counter == 0:
+                item = src.items.itemMap["Shrine"]()
+                item.god = itemID
+                room.addItem(item,(6,4,0))
 
             if counter < 7:
                 if random.random() > 0.5:
@@ -2000,6 +2006,14 @@ try to remember how you got here ..."""
         glassHeart.hasItem = True
         glassHeart.itemID = itemID
         mainRoom.addItem(glassHeart,(6,6,0))
+
+        vial = src.items.itemMap["Vial"]()
+        vial.uses = 10
+        mainRoom.addItem(vial,(5,6,0))
+
+        flask = src.items.itemMap["GooFlask"]()
+        flask.uses = 100
+        mainRoom.addItem(flask,(6,5,0))
 
         for x in range(1,13):
             for y in range(1,13):
@@ -2812,6 +2826,10 @@ try to remember how you got here ..."""
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
+
+        for i in range(0,10):
+            bolt = src.items.itemMap["Bolt"]()
+            mainChar.inventory.append(bolt)
 
         """
         quest = src.quests.questMap["BeUsefull"]()

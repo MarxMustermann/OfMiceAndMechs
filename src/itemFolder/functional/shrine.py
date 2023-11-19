@@ -41,7 +41,6 @@ class Shrine(src.items.Item):
         bigPos = (7,7)
         character.container.removeCharacter(character)
         room = newTerrain.getRoomByPosition(bigPos)
-        print(room)
         if room:
             room[0].addCharacter(character,7,7)
         else:
@@ -173,13 +172,22 @@ class Shrine(src.items.Item):
         return dutyMap
 
     def getRewards(self,character,selected=None):
-        cost = self.getCharacterSpawningCost(character)
-
-        dutyMap = self.getDutyMap(character)
-
         options = []
         options.append(("None","(0) None (exit)"))
         if self.god == 1:
+            cost = self.getCharacterSpawningCost(character)
+            dutyMap = self.getDutyMap(character)
+
+            foundFlask = None
+            for item in character.inventory:
+                if item.type != "GooFlask":
+                    continue
+                if item.uses < 100:
+                    continue
+                foundFlask = item
+            if foundFlask:
+                cost /= 2
+
             duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","machining","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning"]
 
             for duty in duties:
@@ -189,32 +197,32 @@ class Shrine(src.items.Item):
             options.append(("spawn scrap","(20) respawn scrap field"))
 
         elif self.god == 3:
-            options.append(("spawn walls","(5) spawn walls"))
+            options.append(("spawn walls","(10) spawn walls"))
 
         elif self.god == 4:
             if character.attackSpeed <= 0.5:
                 character.addMessage("you can't improve your attack speed further")
                 return
 
-            options.append(("upgrade attack speed","(5) upgrade attack speed"))
+            options.append(("upgrade attack speed","(10) upgrade attack speed"))
 
         elif self.god == 5:
-            options.append(("improve armor","(5) improve armor"))
-            options.append(("upgrade weapon","(5) upgrade weapon"))
+            options.append(("improve armor","(10) improve armor"))
+            options.append(("upgrade weapon","(10) upgrade weapon"))
 
         elif self.god == 6:
             if character.maxHealth >= 500:
                 character.addMessage("you can't improve your health further")
                 return
 
-            options.append(("improve your health","(5) improve your health"))
+            options.append(("improve your health","(10) improve your health"))
 
         elif self.god == 7:
             if character.baseDamage >= 10:
                 character.addMessage("you can't improve your base damage further")
                 return
 
-            options.append(("improve base damage","(5) improve your base damage"))
+            options.append(("improve base damage","(10) improve your base damage"))
 
         else:
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
@@ -294,67 +302,67 @@ class Shrine(src.items.Item):
 
         elif extraInfo['rewardType'] == "upgrade weapon":
             text = "upgrading weapon"
-            if self.getTerrain().mana >= 5:
+            if self.getTerrain().mana >= 10:
                 increaseValue = 4
                 increaseValue = min(30-character.weapon.baseDamage,increaseValue)
                 character.weapon.baseDamage += increaseValue
                 character.addMessage(f"your weapons base damage is increased by {increaseValue} to {character.weapon.baseDamage}")
-                self.getTerrain().mana -= 5
+                self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "upgrade attack speed":
             text = "upgrading attack speed"
-            if self.getTerrain().mana >= 5:
+            if self.getTerrain().mana >= 10:
                 increaseValue = 0.1
                 increaseValue = min(character.attackSpeed-0.5,increaseValue)
                 character.attackSpeed -= increaseValue
                 character.addMessage(f"your attack speed is improved by {increaseValue} to {character.attackSpeed}")
-                self.getTerrain().mana -= 5
+                self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "improve armor":
-            if self.getTerrain().mana >= 5:
+            if self.getTerrain().mana >= 10:
                 text = "improving armor"
                 increaseValue = 0.5
                 increaseValue = min(8-character.armor.armorValue,increaseValue)
                 character.armor.armorValue += increaseValue
                 character.addMessage(f"your armors armor value is increased by {increaseValue} to {character.armor.armorValue}")
-                self.getTerrain().mana -= 5
+                self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "improve your health":
-            if self.getTerrain().mana >= 5:
+            if self.getTerrain().mana >= 10:
                 text = "improving your health"
                 increaseValue = 20
                 increaseValue = min(500-character.maxHealth,increaseValue)
                 character.maxHealth += increaseValue
                 character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
-                self.getTerrain().mana -= 5
+                self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "improve base damage":
-            if self.getTerrain().mana >= 5:
+            if self.getTerrain().mana >= 10:
                 text = "increasing base damage"
                 increaseValue = 2
                 increaseValue = min(10-character.baseDamage,increaseValue)
                 character.baseDamage += increaseValue
                 character.addMessage(f"your base damage is increased by {increaseValue} to {character.baseDamage}")
-                self.getTerrain().mana -= 5
+                self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "spawn walls":
-            if self.getTerrain().mana >= 5:
+            if self.getTerrain().mana >= 10:
                 text = "spawning walls"
                 for _i in range(0,10):
                     item = src.items.itemMap["Wall"]()
                     item.bolted = False
                     character.inventory.append(item)
-                self.getTerrain().mana -= 5
+                self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -366,6 +374,18 @@ class Shrine(src.items.Item):
     def spawnBurnedInNPC(self, character, duty):
         cost = self.getCharacterSpawningCost(character)
         mana = self.getTerrain().mana
+
+        foundFlask = None
+        for item in character.inventory:
+            if item.type != "GooFlask":
+                continue
+            if item.uses < 100:
+                continue
+            foundFlask = item
+        if foundFlask:
+            cost /= 2
+            character.inventory.remove(foundFlask)
+
         text = ""
         if not mana >= cost:
             text = "not enough mana"

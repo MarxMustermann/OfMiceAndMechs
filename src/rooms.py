@@ -1193,6 +1193,10 @@ class Room:
                     continue
                 usedAnimationSlots.add(pos)
 
+                if pos[0] == None:
+                    self.animations.remove(animation)
+                    continue
+
                 if animationType == "attack":
                     if duration > 75:
                         display = "XX"

@@ -433,6 +433,13 @@ We should stop watching and do something about that.
         return None
 
     def checkTriggerMachining(self,character,room):
+        for room in character.getTerrain().rooms:
+            for machiningTable in room.getItemsByType("MachiningTable"):
+                if machiningTable.scheduledItems:
+                    self.addQuest(src.quests.questMap["ClearInventory"]())
+                    self.addQuest(src.quests.questMap["Machining"](amount=1,toProduce=machiningTable.scheduledItems[0]))
+                    self.idleCounter = 0
+                    return True
 
         machinesInStorage = {}
         for room in character.getTerrain().rooms:

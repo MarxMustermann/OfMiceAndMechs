@@ -226,6 +226,7 @@ class MetalWorkingBench(src.items.Item):
             options.append(("CityPlaner","CityPlaner"))
             options.append(("ScrapCompactor","ScrapCompactor"))
             options.append(("10ScrapCompactor","10 ScrapCompactor"))
+            options.append(("10Bolt","10 Bolt"))
             submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}

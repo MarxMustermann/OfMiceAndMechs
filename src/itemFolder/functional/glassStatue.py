@@ -511,7 +511,7 @@ class GlassStatue(src.items.Item):
             self.setGlassHeart(character)
 
     def removeGlassHeart(self,character):
-        newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15*15))
+        newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15))
         newItem.itemID = self.itemID
         if self.yPosition == 1:
             self.container.addItem(newItem,(self.xPosition,self.yPosition+1,self.zPosition))
@@ -543,7 +543,7 @@ class GlassStatue(src.items.Item):
             character.addMessage("you do not have the right glass heart to set")
             return
 
-        if glassHeart.epoch < src.gamestate.gamestate.tick//(15*15*15*15):
+        if glassHeart.epoch < src.gamestate.gamestate.tick//(15*15*15):
             character.addMessage("the heart stpped beating and shatters. Transer the heart faster next time.")
             character.inventory.remove(glassHeart)
             character.movementSpeed = character.movementSpeed/2

@@ -526,6 +526,7 @@ class Character:
 
         self.addMessage("you fire a bolt")
         self.inventory.remove(bolt)
+        self.timeTaken += 1
 
         potentialTargets = []
         if direction == "w":
@@ -559,8 +560,8 @@ class Character:
 
             for character in potentialTargets:
                 if character.getPosition() == tuple(newPos):
-                    self.addMessage("the bolt hits somebody for 20 damage")
-                    character.hurt(20,reason="got hit by a bolt",actor=character)
+                    self.addMessage("the bolt hits somebody for 50 damage")
+                    character.hurt(50,reason="got hit by a bolt",actor=character)
                     return
 
             newPos[0] += shift[0]

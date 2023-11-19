@@ -389,6 +389,8 @@ class Terrain:
         """
 
         oldBigPos = character.getBigPosition()
+        if (oldBigPos == (0,0,0)):
+            return
         self.charactersByTile[oldBigPos].remove(character)
 
         while character in self.characters:

@@ -1,5 +1,7 @@
 import src
+import logging
 
+logger = logging.getLogger(__name__)
 
 class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"

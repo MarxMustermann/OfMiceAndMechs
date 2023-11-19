@@ -203,13 +203,13 @@ class MachiningTable(src.items.Item):
             options = []
             options.append(("delete","delete"))
             options.append(("Wall","Wall"))
-            options.append(("10Wall","10 Walls"))
-            options.append(("Door","Door"))
-            options.append(("10Door","10 Doors"))
-            options.append(("RoomBuilder","RoomBuilder"))
-            options.append(("10RoomBuilder","10 RoomBuilder"))
-            options.append(("Painter","Painter"))
-            options.append(("CityPlaner","CityPlaner"))
+            options.append(("Case","Case"))
+            options.append(("Frame","Frame"))
+            options.append(("Rod","Rod"))
+            options.append(("Sheet","Sheet"))
+            options.append(("Weapon","Weapon"))
+            options.append(("Armor","Armor"))
+            options.append(("Bolt","Bolt"))
             submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}

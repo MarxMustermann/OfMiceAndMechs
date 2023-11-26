@@ -48,6 +48,7 @@ def advanceGame():
     """
     global multi_chars
 
+    mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
     multi_chars = set()
     for row in src.gamestate.gamestate.terrainMap:
         for specificTerrain in row:
@@ -57,6 +58,10 @@ def advanceGame():
                 for character in room.characters:
                     multi_chars.add(character)
             specificTerrain.advance()
+            if specificTerrain != mainCharTerrain:
+                specificTerrain.animations = []
+                for room in specificTerrain.rooms:
+                    room.animations = []
 
     for extraRoot in src.gamestate.gamestate.extraRoots:
         for character in extraRoot.characters:
@@ -490,11 +495,11 @@ def show_or_exit(key,targetCharacter=None):
 
 shownStarvationWarning = False
 
-def moveCharacter(direction,char,noAdvanceGame,header,urwid):
+def moveCharacter(direction,char,noAdvanceGame,header,urwid,dash=False):
 
     # do inner room movement
     if char.room:
-        item = char.room.moveCharacterDirection(char, direction)
+        item = char.room.moveCharacterDirection(char, direction, dash=dash)
 
         # remember items bumped into for possible interaction
         if item:
@@ -518,7 +523,7 @@ def moveCharacter(direction,char,noAdvanceGame,header,urwid):
         if not char.terrain:
             return None
 
-        return char.terrain.moveCharacterDirection(char, direction)
+        return char.terrain.moveCharacterDirection(char, direction, dash=dash)
 
 def handleCollision(char,charState):
     if charState["itemMarkedLast"] and char.personality["moveItemsOnCollision"]:
@@ -2411,6 +2416,44 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     char.selectSpecialAttack(enemy)
                     return None
 
+            if key in ("W",):
+                charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
+                if charState["itemMarkedLast"]:
+                    handleCollision(char,charState)
+                if char.exhaustion < 10:
+                    charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                return None
+            if key in ("S",):
+                charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
+                if charState["itemMarkedLast"]:
+                    handleCollision(char,charState)
+                if char.exhaustion < 10:
+                    charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                return None
+            if key in ("D",):
+                charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
+                if charState["itemMarkedLast"]:
+                    handleCollision(char,charState)
+                if char.exhaustion < 10:
+                    charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                return None
+            if key in ("A",):
+                charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
+                if charState["itemMarkedLast"]:
+                    handleCollision(char,charState)
+                if char.exhaustion < 10:
+                    charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                return None
+
+            """
             if isinstance(char.container,src.rooms.Room):
                 charPos = char.container.getPosition()
             else:
@@ -2432,6 +2475,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
             quest.activate()
 
             char.quests.insert(0,quest)
+            """
 
         """
         if key in ("M",):
@@ -3444,6 +3488,7 @@ class IdleChatNPCMenu(SubMenu):
                 options.append(("showQuests","What are you doing?"))
                 options.append(("showInventory","What is in your inventory?"))
                 options.append(("showFeelings","How are you feeling?"))
+                options.append(("reset","You are behaving eratically. Get yourself together!"))
                 self.subMenu = SelectionMenu("", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
@@ -3474,6 +3519,17 @@ class IdleChatNPCMenu(SubMenu):
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
+        if self.instructionType == "reset":
+            for quest in self.npc.quests:
+                quest.fail()
+
+            containerQuest = src.quests.questMap["BeUsefull"]()
+            self.npc.quests.append(containerQuest)
+            containerQuest.assignToCharacter(self.npc)
+            containerQuest.activate()
+            containerQuest.autoSolve = True
+
+            self.npc.timeTaken = 0
         return True
 
 class InstructSubordinatesMenu(SubMenu):
@@ -8245,16 +8301,28 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     if key == tcod.event.KeySym.ESCAPE:
                         submenu = "confirmQuit"
                     if key == tcod.event.KeySym.p:
+                        try:
+                            # register the save
+                            with open("gamestate/globalInfo.json") as globalInfoFile:
+                                rawState = json.loads(globalInfoFile.read())
+                        except:
+                            rawState = {"saves": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"customPrefabs":[],"lastGameIndex":0}
+
+                        rawState["lastGameIndex"] = gameIndex
+                        with open("gamestate/globalInfo.json", "w") as globalInfoFile:
+                            json.dump(rawState,globalInfoFile)
                         startGame = True
                     if key == tcod.event.KeySym.g:
                         submenu = "gameslot"
                     if key == tcod.event.KeySym.s:
-                        submenu = "scenario"
+                        if not canLoad:
+                            submenu = "scenario"
                     if key == tcod.event.KeySym.d:
                         if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
                             submenu = "delete"
                         else:
-                            submenu = "difficulty"
+                            if not canLoad:
+                                submenu = "difficulty"
 
 def showDeathScreen():
     text = "\n\n\n       you died.\n\n\n\n   - press enter to quit -"

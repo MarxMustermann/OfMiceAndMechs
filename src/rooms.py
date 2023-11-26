@@ -1580,7 +1580,7 @@ class Room:
 
         return movementBlock
 
-    def moveCharacterDirection(self, character, direction):
+    def moveCharacterDirection(self, character, direction, dash=False):
         """
         move a character into some direction within or out of a room
 
@@ -1588,6 +1588,9 @@ class Room:
             character: the character to move
             direction: the direction to move the character
         """
+
+        if dash and character.exhaustion >= 10:
+            dash = False
 
         # check whether movement is contained in the room
         innerRoomMovement = True
@@ -1638,7 +1641,11 @@ class Room:
                 other.collidedWith(character,actor=character)
                 return None
 
-            character.timeTaken += character.movementSpeed
+            if not dash:
+                character.timeTaken += character.movementSpeed
+            else:
+                character.timeTaken += character.movementSpeed/2
+                character.exhaustion += 5
             return self.moveCharacter(character, tuple(newPosition))
 
         # move onto terrain
@@ -1679,7 +1686,11 @@ class Room:
 
         if character in self.characters:
             self.removeCharacter(character)
-        character.timeTaken += character.movementSpeed
+        if not dash:
+            character.timeTaken += character.movementSpeed
+        else:
+            character.timeTaken += character.movementSpeed/2
+            character.exhaustion += 5
         self.terrain.addCharacter(character, newXPos, newYPos)
         return None
 

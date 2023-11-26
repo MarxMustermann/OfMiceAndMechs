@@ -24,17 +24,20 @@ class MetalWorkingBench(src.items.Item):
                                                                 ("produce item", "produce item"),
                                                                 ("check schedule production", "check schedule"),
                                                                 ("schedule production", "schedule production"),
+                                                                ("repeat", "repeat last production"),
                         ]
                         )
         self.applyMap = {
                     "produce item": self.produceItemHook,
                     "check schedule production": self.checkProductionScheduleHook,
                     "schedule production": self.scheduleProductionHook,
+                    "repeat": self.repeat,
                         }
 
         self.ins = [(1,0,0),]
         self.outs = [(0,1,0),(0,-1,0)]
         self.scheduledItems = []
+        self.lastProduction = None
 
     def produceItemHook(self,character):
         self.produceItem({"character":character})
@@ -44,6 +47,7 @@ class MetalWorkingBench(src.items.Item):
 
         if "type" not in params:
             options = []
+            options.append(("Bolt","Bolt"))
             options.append(("Wall","Wall"))
             options.append(("Door","Door"))
             options.append(("RoomBuilder","RoomBuilder"))
@@ -107,6 +111,8 @@ class MetalWorkingBench(src.items.Item):
             character.inventory.remove(metalBar)
         else:
             self.container.removeItem(metalBar)
+
+        self.lastProduction = params["type"]
 
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
@@ -187,7 +193,6 @@ class MetalWorkingBench(src.items.Item):
                 result.append(item)
         return result
 
-
     def checkForDropSpotsFull(self):
 
         for output in self.outs:
@@ -208,6 +213,13 @@ class MetalWorkingBench(src.items.Item):
 
     def scheduleProductionHook(self,character):
         self.scheduleProduction({"character":character})
+
+    def repeat(self,character):
+        if not self.lastProduction:
+            character.addMessage("no last produced item found")
+            return
+        params = {"character":character,"type":self.lastProduction}
+        self.produceItem(params)
 
     def scheduleProduction(self,params):
 

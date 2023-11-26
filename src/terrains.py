@@ -457,7 +457,7 @@ class Terrain:
             char.addMessage("you cannot move there")
             return None
 
-    def moveCharacterDirection(self, char, direction):
+    def moveCharacterDirection(self, char, direction, dash=False):
         """
         move a character into a direction
 
@@ -465,6 +465,9 @@ class Terrain:
             char: the character to move
             direction: the direction to move the character in
         """
+
+        if dash and char.exhaustion >= 10:
+            dash = False
 
         if not char.terrain:
             return None
@@ -881,7 +884,11 @@ class Terrain:
                         src.gamestate.gamestate.terrain = newTerrain
 
                 char.changed("moved", (char, direction))
-                char.timeTaken += char.movementSpeed
+                if not dash:
+                    char.timeTaken += char.movementSpeed
+                else:
+                    char.timeTaken += char.movementSpeed/2
+                    char.exhaustion += 5
                 for item in stepOnActiveItems:
                     item.doStepOnAction(char)
 

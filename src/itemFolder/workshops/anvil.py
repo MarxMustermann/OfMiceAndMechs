@@ -25,7 +25,8 @@ class Anvil(src.items.Item):
 
         self.applyOptions.extend(
                         [
-                                                                ("produce item", "produce item"),
+                                                                ("produce item", "produce MetalBars"),
+                                                                ("produce 10 item", "produce 10 MetalBars"),
                                                                 ("check schedule production", "check schedule"),
                                                                 ("schedule production", "schedule production"),
                         ]
@@ -33,12 +34,38 @@ class Anvil(src.items.Item):
         self.applyMap = {
                     "produce item": self.produceItem,
                     "produce item_k": self.produceItemK,
+                    "produce 10 item": self.produce10Item,
+                    "produce 10 item_k": self.produce10ItemK,
                     "check schedule production": self.checkProductionScheduleHook,
                     "schedule production": self.scheduleProductionHook,
                         }
 
+    def produce10ItemK(self,character):
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+        self.produceItemK(character)
+
     def produceItemK(self,character):
         self.produceItem(character,preferInventoryOut=False)
+
+    def produce10Item(self,character):
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
+        self.produceItem(character)
 
     def produceItem(self,character,preferInventoryOut=True):
 

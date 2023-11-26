@@ -49,12 +49,12 @@ Activate a filled corpse animator to spawn a ghoul
 
     def boltAction(self,character):
         self.bolted = True
-        character.addMessage("you bolt down the GrowthTank")
+        character.addMessage("you bolt down the CorpseAnimater")
         character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
         self.bolted = False
-        character.addMessage("you unbolt the GrowthTank")
+        character.addMessage("you unbolt the CorpseAnimater")
         character.changed("unboltedItem",{"character":character,"item":self})
 
 

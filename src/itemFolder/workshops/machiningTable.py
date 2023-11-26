@@ -207,7 +207,7 @@ class MachiningTable(src.items.Item):
             options.append(("Frame","Frame"))
             options.append(("Rod","Rod"))
             options.append(("Sheet","Sheet"))
-            options.append(("Weapon","Weapon"))
+            options.append(("Sword","Sword"))
             options.append(("Armor","Armor"))
             options.append(("Bolt","Bolt"))
             submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")

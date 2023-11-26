@@ -198,6 +198,10 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         return False
 
     def generatePath(self,character,dryRun=True):
+        if not character.container:
+            self.fail()
+            return
+
         if character.container.isRoom:
             self.path = character.container.getPathCommandTile(character.getSpacePosition(),self.targetPosition,ignoreEndBlocked=self.ignoreEndBlocked,character=character)[1]
         else:

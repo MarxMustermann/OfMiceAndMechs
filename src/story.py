@@ -1579,6 +1579,9 @@ class MainGame(BasicPhase):
         self.kickoff()
 
     def mainCharacterDeath(self,extraParam):
+        if not src.gamestate.gamestate.mainChar.dead:
+            return
+
         if self.activeStory["type"] == "colonyBase":
             text = f"""
     You died.
@@ -1973,16 +1976,11 @@ try to remember how you got here ..."""
                 item = src.items.itemMap["CoalBurner"]()
                 room.addItem(item,(6,6,0))
 
-            """
-            if counter == 8:
-                item = src.items.itemMap["Shrine"]()
-                item.god = itemID
-                room.addItem(item,(6,6,0))
-            """
-            if counter == 0:
-                item = src.items.itemMap["Shrine"]()
-                item.god = itemID
-                room.addItem(item,(6,4,0))
+            if self.difficulty != "difficult":
+                if counter == 8:
+                    item = src.items.itemMap["Shrine"]()
+                    item.god = itemID
+                    room.addItem(item,(6,6,0))
 
             if counter < 7:
                 if random.random() > 0.5:
@@ -2014,6 +2012,10 @@ try to remember how you got here ..."""
         flask = src.items.itemMap["GooFlask"]()
         flask.uses = 100
         mainRoom.addItem(flask,(6,5,0))
+
+        item = src.items.itemMap["Shrine"]()
+        item.god = itemID
+        mainRoom.addItem(item,(6,2,0))
 
         for x in range(1,13):
             for y in range(1,13):
@@ -2407,6 +2409,54 @@ try to remember how you got here ..."""
         currentTerrain.removeItems(itemsToRemove)
 
         return colonyBaseInfo
+
+    def roguelike_baseLeaderDeath(self,extraParam):
+        character = extraParam["character"]
+        faction = character.faction
+        if character == src.gamestate.gamestate.mainChar:
+            text = f"You died, try keeping your HP over 0"
+            src.interaction.showInterruptText(text)
+
+        homePos = (character.registers["HOMETx"],character.registers["HOMETy"],0)
+        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+
+        if character == src.gamestate.gamestate.mainChar:
+            filledStatues = []
+            for room in homeTerrain.rooms:
+                for item in room.itemsOnFloor:
+                    if not item.type == "GlassStatue":
+                        continue
+                    if not item.hasItem:
+                        continue
+                    filledStatues.append(item)
+
+            if filledStatues:
+                text = f"Your faction controls {len(filledStatues)} glass hearts"
+                src.interaction.showInterruptText(text)
+
+        candidates = homeTerrain.characters[:]
+        for room in homeTerrain.rooms:
+            candidates.extend(room.characters)
+
+        for candidate in candidates:
+            if candidate == character:
+                continue
+            if candidate.faction != character.faction:
+                continue
+            candidate.runCommandString("~",clear=True)
+            for quest in candidate.quests[:]:
+                #quest.fail("taken over NPC")
+                quest.autoSolve = False
+
+            candidate.health = int(candidate.health/2)
+            candidate.maxHealth = int(candidate.maxHealth/2)
+            candidate.addListener(self.roguelike_baseLeaderDeath,"died_pre")
+
+            if character == src.gamestate.gamestate.mainChar:
+                text = f"You are respawned as one of the NPCs in your base"
+                src.interaction.showInterruptText(text)
+                src.gamestate.gamestate.mainChar = candidate
+            return
 
     def createColony_baseLeaderDeath(self,extraParam):
         faction = extraParam["character"].faction
@@ -2826,6 +2876,7 @@ try to remember how you got here ..."""
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
+        mainChar.addListener(self.roguelike_baseLeaderDeath,"died_pre")
 
         for i in range(0,10):
             bolt = src.items.itemMap["Bolt"]()

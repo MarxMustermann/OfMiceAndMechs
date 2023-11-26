@@ -70,6 +70,7 @@ class Shrine(src.items.Item):
         options.append((5,"5 - god of battle gear"))
         options.append((6,"6 - god of life"))
         options.append((7,"7 - god of crushing"))
+        options.append((None,"all gods"))
 
         submenu = src.interaction.SelectionMenu(
             "Select what god to pray to", options,
@@ -151,7 +152,7 @@ class Shrine(src.items.Item):
                     continue
                 numCharacters += 1
 
-        baseCost += numCharacters*0.2
+        baseCost *= 1.05**numCharacters
         return baseCost
 
     def getDutyMap(self,character):
@@ -171,11 +172,17 @@ class Shrine(src.items.Item):
 
         return dutyMap
 
+    def getGlassHeartRebate(self):
+        return 0.5
+
     def getRewards(self,character,selected=None):
+        glassHeartRebate = self.getGlassHeartRebate()
+
         options = []
         options.append(("None","(0) None (exit)"))
         if self.god == 1:
             cost = self.getCharacterSpawningCost(character)
+            cost *= glassHeartRebate
             dutyMap = self.getDutyMap(character)
 
             foundFlask = None
@@ -197,25 +204,60 @@ class Shrine(src.items.Item):
             options.append(("spawn scrap","(20) respawn scrap field"))
 
         elif self.god == 3:
-            options.append(("spawn walls","(10) spawn walls"))
+            cost = 10
+            cost *= glassHeartRebate
+            options.append(("spawn walls",f"({cost}) spawn walls"))
 
         elif self.god == 4:
+            cost = 10
+            cost *= glassHeartRebate
             if character.attackSpeed <= 0.5:
                 character.addMessage("you can't improve your attack speed further")
                 return
-
-            options.append(("upgrade attack speed","(10) upgrade attack speed"))
+            options.append(("upgrade attack speed",f"({cost}) upgrade attack speed"))
+            options.append(("upgrade movement speed",f"({cost}) upgrade movement speed"))
 
         elif self.god == 5:
-            options.append(("improve armor","(10) improve armor"))
-            options.append(("upgrade weapon","(10) upgrade weapon"))
+            foundArmor = None
+            foundWeapon = None
+            numMetalBars = 0
+            for item in character.inventory:
+                if item.type == "Sword":
+                    foundWeapon = item
+                    continue
+                if item.type == "Armor":
+                    foundArmor = item
+                    continue
+                if item.type == "MetalBars":
+                    numMetalBars += 1
+                    continue
+
+            cost = 10
+            if foundArmor:
+                cost = cost/2
+            cost *= glassHeartRebate
+            options.append(("improve armor",f"({cost}) improve armor"))
+
+            cost = 10
+            if foundWeapon:
+                cost = cost/2
+            cost *= glassHeartRebate
+            options.append(("upgrade weapon",f"({cost}) upgrade weapon"))
+
+            cost = 10
+            cost = cost-0.5*numMetalBars
+            cost *= glassHeartRebate
+            options.append(("spawnBolts",f"({cost}) spawn bolts"))
 
         elif self.god == 6:
             if character.maxHealth >= 500:
                 character.addMessage("you can't improve your health further")
                 return
 
-            options.append(("improve your health","(10) improve your health"))
+            options.append(("improve your max health","(10) improve your max health"))
+            options.append(("heal","(10) heal"))
+            options.append(("healingThreashold","(10) improve your healing threashold"))
+            options.append(("healingModifier","(10) improve your healing amount"))
 
         elif self.god == 7:
             if character.baseDamage >= 10:
@@ -241,6 +283,8 @@ class Shrine(src.items.Item):
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseRewards","params":{"character":character}}
 
     def dispenseRewards(self,extraInfo):
+        glassHeartRebate = self.getGlassHeartRebate()
+
         character = extraInfo.get("character")
 
         if "rewardType" not in extraInfo:
@@ -301,45 +345,100 @@ class Shrine(src.items.Item):
             self.spawnScrap(character)
 
         elif extraInfo['rewardType'] == "upgrade weapon":
+            foundWeapon = None
+            for item in character.inventory:
+                if item.type == "Sword":
+                    foundWeapon = item
+                    continue
+
+            cost = 10
+            if foundWeapon:
+                cost = cost/2
+            cost *= glassHeartRebate
+
             text = "upgrading weapon"
-            if self.getTerrain().mana >= 10:
+            if self.getTerrain().mana >= cost:
                 increaseValue = 4
                 increaseValue = min(30-character.weapon.baseDamage,increaseValue)
                 character.weapon.baseDamage += increaseValue
                 character.addMessage(f"your weapons base damage is increased by {increaseValue} to {character.weapon.baseDamage}")
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
+                if foundWeapon:
+                    character.inventory.remove(foundWeapon)
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "upgrade attack speed":
+            cost = 10
+            cost *= glassHeartRebate
+
             text = "upgrading attack speed"
-            if self.getTerrain().mana >= 10:
-                increaseValue = 0.1
+            if self.getTerrain().mana >= cost:
+                increaseValue = 0.1*character.attackSpeed
                 increaseValue = min(character.attackSpeed-0.5,increaseValue)
                 character.attackSpeed -= increaseValue
                 character.addMessage(f"your attack speed is improved by {increaseValue} to {character.attackSpeed}")
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "upgrade movement speed":
+            cost = 10
+            cost *= glassHeartRebate
+
+            text = "upgrading movement speed"
+            if self.getTerrain().mana >= cost:
+                increaseValue = 0.1
+                increaseValue = min(character.movementSpeed-0.5,increaseValue)
+                character.movementSpeed -= increaseValue
+                character.addMessage(f"your movement speed is improved by {increaseValue} to {character.movementSpeed}")
+                self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "improve armor":
-            if self.getTerrain().mana >= 10:
+            foundArmor = None
+            for item in character.inventory:
+                if item.type == "Armor":
+                    foundArmor = item
+                    continue
+
+            cost = 10
+            if foundArmor:
+                cost = cost/2
+            cost *= glassHeartRebate
+
+            if self.getTerrain().mana >= cost:
                 text = "improving armor"
                 increaseValue = 0.5
                 increaseValue = min(8-character.armor.armorValue,increaseValue)
                 character.armor.armorValue += increaseValue
                 character.addMessage(f"your armors armor value is increased by {increaseValue} to {character.armor.armorValue}")
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
+                if foundArmor:
+                    character.inventory.remove(foundArmor)
             else:
                 character.addMessage(f"the mana is used up")
 
-        elif extraInfo['rewardType'] == "improve your health":
+        elif extraInfo['rewardType'] == "improve your max health":
             if self.getTerrain().mana >= 10:
                 text = "improving your health"
                 increaseValue = 20
                 increaseValue = min(500-character.maxHealth,increaseValue)
                 character.maxHealth += increaseValue
                 character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
+                self.getTerrain().mana -= 10
+            else:
+                character.addMessage(f"the mana is used up")
+
+            options.append(("heal","(10) heal"))
+            options.append(("healingThreashold","(10) improve your healing threashold"))
+            options.append(("healingModifier","(10) improve your healing amount"))
+        elif extraInfo['rewardType'] == "heal":
+            if self.getTerrain().mana >= 10:
+                text = "healing"
+                character.heal(200,"praying")
+                character.addMessage(f"your are healed")
                 self.getTerrain().mana -= 10
             else:
                 character.addMessage(f"the mana is used up")
@@ -356,13 +455,37 @@ class Shrine(src.items.Item):
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "spawn walls":
-            if self.getTerrain().mana >= 10:
+            cost = 10
+            cost *= glassHeartRebate
+            if self.getTerrain().mana >= cost:
                 text = "spawning walls"
                 for _i in range(0,10):
                     item = src.items.itemMap["Wall"]()
                     item.bolted = False
                     character.inventory.append(item)
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
+            else:
+                character.addMessage(f"the mana is used up")
+
+        elif extraInfo['rewardType'] == "spawnBolts":
+            cost = 10
+
+            foundWeapons = []
+            for item in character.inventory:
+                if item.type == "MetalBars":
+                    foundWeapons.append(item)
+
+            for foundWeapon in foundWeapons:
+                character.inventory.remove(foundWeapon)
+                cost -= 0.5
+            cost *= glassHeartRebate
+            if self.getTerrain().mana >= cost:
+                text = "spawning bolts"
+                for _i in range(0,10):
+                    item = src.items.itemMap["Bolt"]()
+                    item.bolted = False
+                    character.inventory.append(item)
+                self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -373,6 +496,7 @@ class Shrine(src.items.Item):
 
     def spawnBurnedInNPC(self, character, duty):
         cost = self.getCharacterSpawningCost(character)
+        glassHeartRebate = self.getGlassHeartRebate()
         mana = self.getTerrain().mana
 
         foundFlask = None
@@ -385,6 +509,7 @@ class Shrine(src.items.Item):
         if foundFlask:
             cost /= 2
             character.inventory.remove(foundFlask)
+        cost *= glassHeartRebate
 
         text = ""
         if not mana >= cost:
@@ -526,7 +651,9 @@ press enter to continue"""%(npc.name,duty,terrain)
 
     def getLongInfo(self):
         return f"""
-A shrine allows to interact eith a god in simple ways.
+A shrine allows to interact with a god.
+
+You can wish for things or other favours.
 
 This shrine is set to the god {self.god}.
 """

@@ -260,8 +260,8 @@ class Shrine(src.items.Item):
 
             options.append(("improve your max health","(10) improve your max health"))
             options.append(("heal","(10) heal"))
-            options.append(("healingThreashold","(10) improve your healing threashold"))
-            options.append(("healingModifier","(10) improve your healing amount"))
+            #options.append(("healingThreashold","(10) improve your healing threashold"))
+            #options.append(("healingModifier","(10) improve your healing amount"))
 
         elif self.god == 7:
             if character.baseDamage >= 10:

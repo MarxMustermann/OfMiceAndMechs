@@ -835,6 +835,9 @@ class Character:
             return
 
         if self.health - damage > 0:
+            if src.gamestate.gamestate.mainChar in self.container.characters:
+                src.interaction.playSound("hurt","actions")
+
             staggerThreshold = self.health // 4 + 1
 
             self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":self==src.gamestate.gamestate.mainChar,"health":self.health})

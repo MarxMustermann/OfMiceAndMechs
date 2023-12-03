@@ -260,12 +260,19 @@ def playMusic():
         # add new sample
         device.queue_audio(converted)
 
+musicProcess = None
 def startPlayMusic():
     '''
     Starts a thread to play a music loop in the background
     '''
-    P = Process(name="playsound",target=playMusic)
-    P.start() # Inititialize Process
+    global musicProcess
+    musicProcess = Process(name="playsound",target=playMusic)
+    musicProcess.start() # Inititialize Process
+
+def stop_playing_music():
+    if not musicProcess:
+        logger.error("stopped music that doesn't play")
+    musicProcess.terminate()
 
 def setUpTcod():
     startPlayMusic()
@@ -2231,6 +2238,7 @@ def handlePriorityActions(params):
     if key in (commandChars.quit_normal, commandChars.quit_instant):
         if hasattr(urwid,"ExitMainLoop"):
             raise urwid.ExitMainLoop()
+        src.interaction.stop_playing_music()
         raise SystemExit()
 
     return (1,key)
@@ -2308,6 +2316,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             char.macroState["submenue"] = None
             char.specialRender = False
             src.gamestate.gamestate.save()
+            src.interaction.stop_playing_music()
             raise SystemExit() #HACK: workaround for bug that causes memory leak
         elif selection == "actions":
             pass
@@ -6919,9 +6928,11 @@ def getTcodEvents():
         for event in events:
             foundEvent = True
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent):
                 if event.type == "WINDOWCLOSE":
+                    src.interaction.stop_playing_music()
                     raise SystemExit()
                 if event.type == "WINDOWEXPOSED":
                     renderGameDisplay()
@@ -8332,12 +8343,15 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
                     if key in (tcod.event.KeySym.RETURN,tcod.event.KeySym.y):
+                        src.interaction.stop_playing_music()
                         raise SystemExit()
                     submenu = None
             else:
                 if isinstance(event, tcod.event.Quit):
+                    src.interaction.stop_playing_music()
                     raise SystemExit()
                 if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                    src.interaction.stop_playing_music()
                     raise SystemExit()
                 if isinstance(event,tcod.event.KeyDown):
                     key = event.sym
@@ -8387,12 +8401,15 @@ def showDeathScreen():
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
+                    src.interaction.stop_playing_music()
                     raise SystemExit()
 
 def showInterruptChoice(text,options):
@@ -8406,8 +8423,10 @@ def showInterruptChoice(text,options):
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
                 raise SystemExit()
 
             if isinstance(event,tcod.event.TextInput):
@@ -8431,8 +8450,10 @@ def showInterruptText(text):
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -8743,6 +8764,7 @@ def showHeroIntro():
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -8927,8 +8949,10 @@ def showHeroIntro2():
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -9621,8 +9645,10 @@ FOLLOW YOUR ORDERS
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
@@ -10053,8 +10079,10 @@ to remember"""
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
                 raise SystemExit()
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym

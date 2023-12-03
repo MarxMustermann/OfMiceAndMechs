@@ -96,6 +96,9 @@ This will hit you with 50 more explosion damage.
         if not self.xPosition or not self.yPosition:
             return
 
+        if src.gamestate.gamestate.mainChar in self.container.characters:
+            src.interaction.playSound("explosion","importantActions")
+
         offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         random.shuffle(offsets)
 

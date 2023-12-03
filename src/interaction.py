@@ -343,6 +343,12 @@ def setUpTcod():
     sounds["playerDeath"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/died.wav',dtype='float32')
     sounds["enemyDied"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/hurt.wav',dtype='float32')
+    sounds["hurt"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/shot.wav',dtype='float32')
+    sounds["shot"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/explosion.wav',dtype='float32')
+    sounds["explosion"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemDropped.ogg',dtype='float32')
     sounds["itemDropped"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemPickedUp.ogg',dtype='float32')

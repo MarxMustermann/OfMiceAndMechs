@@ -524,6 +524,9 @@ class Character:
             self.addMessage("you have no bolt to fire")
             return
 
+        if src.gamestate.gamestate.mainChar in self.container.characters:
+            src.interaction.playSound("shot","actions")
+
         self.addMessage("you fire a bolt")
         self.inventory.remove(bolt)
         self.timeTaken += 1

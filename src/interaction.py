@@ -341,6 +341,7 @@ def setUpTcod():
     sounds["electroRoom"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/playerDeath.ogg',dtype='float32')
     sounds["playerDeath"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/died.wav',dtype='float32')
     sounds["enemyDied"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/itemDropped.ogg',dtype='float32')
     sounds["itemDropped"] = sound_clip

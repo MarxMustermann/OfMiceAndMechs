@@ -19,6 +19,7 @@ import src.rooms
 import src.terrains
 from config import commandChars
 from src import cinematics
+from multiprocessing import Process
 
 ################################################################################
 #
@@ -222,12 +223,53 @@ tcodMixer = None
 sounds = {}
 
 def playSound(soundName,channelName,loop=False):
-    return
     channel = src.interaction.tcodMixer.get_channel(channelName)
     if not channel.busy:
         channel.play(sounds[soundName])
 
+def playMusic():
+    '''
+    this function plays the music loop for the game forever
+    It should be run as a seperate process, so everything is reinitialised here
+    '''
+    # load libs
+    import time
+    import soundfile  # pip install soundfile
+    import tcod
+    import tcod.sdl.audio
+
+    # set up
+    device = tcod.sdl.audio.open()
+
+    # play initial sample
+    sound, sample_rate = soundfile.read("sounds/loop1_start.wav", dtype="float32")
+    converted = device.convert(sound, sample_rate)
+    device.queue_audio(converted)
+
+    # prepare looped sample
+    sound, sample_rate = soundfile.read("sounds/loop1.wav", dtype="float32")
+    converted = device.convert(sound, sample_rate)
+
+    # play the looped sound forever
+    while True:
+        # do nothing if ~1s of audio is queued
+        if device.queued_samples > 100000:
+            time.sleep(1)
+            continue
+
+        # add new sample
+        device.queue_audio(converted)
+
+def startPlayMusic():
+    '''
+    Starts a thread to play a music loop in the background
+    '''
+    P = Process(name="playsound",target=playMusic)
+    P.start() # Inititialize Process
+
 def setUpTcod():
+    startPlayMusic()
+
     import tcod as internalTcod
     global tcod
     tcod = internalTcod
@@ -295,6 +337,8 @@ def setUpTcod():
     sounds["itemPickedUp"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/machineUsed.ogg',dtype='float32')
     sounds["machineUsed"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop1.wav',dtype='float32')
+    sounds["loop1"] = sound_clip
 
     global tcodAudio
     tcodAudio = audio
@@ -6479,26 +6523,33 @@ def renderHelp():
 
     char = src.gamestate.gamestate.mainChar
     txt = ""
-    txt += "your keybindings are:\n\n"
+    txt += "\n= movement =\n"
     txt += " w/a/s/d: move north/east/south/west (up/left/down/right)\n"
-    txt += " W/A/S/D: move tile north/east/south/west (up/left/down/right)\n"
-    txt += " j/J : activate items\n"
-    txt += " k/K: pick up\n"
-    txt += " l/L: drop\n"
-    txt += " e/E: examine\n"
-    txt += " q/Q: quests\n"
-    txt += " r: show room menu\n"
-    txt += " i: show inventory\n"
-    txt += " m: attack\n"
-    txt += " ctrl+d: stop automove\n"
+    txt += " W/A/S/D: dash north/east/south/west (up/left/down/right)\n"
     txt += " .: wait\n"
+    txt += "\n= item interaction =\n"
+    txt += " j/J: activate items\n"
+    txt += " c/C: complex activate items\n"
+    txt += " k/K: pick up item\n"
+    txt += " l/L: drop item\n"
+    txt += " e/E: examine item\n"
+    txt += "\n"
+    txt += "lowercase keys work on the square you stand on or the last item you bumped into\n"
+    txt += "uppercase keys open a secondary menu\n"
+    txt += "\n= fighting =\n"
+    txt += " w/a/s/d: attack north/east/south/west (up/left/down/right)\n"
+    txt += " W/A/S/D: advanced attack north/east/south/west (up/left/down/right)\n"
+    txt += "\n= user interface =\n"
+    txt += " q: open quests\n"
+    txt += " Q: open advanced quest menu\n"
+    txt += " i: show inventory\n"
     txt += " t: set information to render\n"
+    txt += " r: show room menu\n"
     txt += "\n"
     txt += "sadly the controls cannot be changed at the moment\n"
     txt += "if you have issues with the character running into wall, tap the keys instead of holding them\n"
     txt += "\n"
-    txt += "play the tutorial scenarios to find out more about the game itself"
-    txt += "\n"
+    txt += ""
     return txt
 
 
@@ -7634,7 +7685,6 @@ def renderGameDisplay(renderChar=None):
             renderGameDisplay(shadowCharacter)
 
 def showMainMenu(args=None):
-
     try:
         with open("gamestate/globalInfo.json") as globalInfoFile:
             rawState = json.loads(globalInfoFile.read())

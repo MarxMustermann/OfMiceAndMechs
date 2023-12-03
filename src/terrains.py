@@ -1565,7 +1565,7 @@ class Terrain:
             out.append(otherChar)
 
         for room in self.getRoomByPosition(pos):
-            for character in room.characters:
+            for otherChar in room.characters:
                 if character == otherChar:
                    continue
                 if character.faction == otherChar.faction:

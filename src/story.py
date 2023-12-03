@@ -1671,10 +1671,299 @@ You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until you remember that your whole team died in that dungeon."""))
+
+            if self.difficulty == "easy":
+                text = """
+Your task is to take the GlassHeart from this dungeon.
+Go to the center chamber of this dungeon to get it.
+Use the wasd keys to move to the center chamber.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+            if self.difficulty == "medium":
+                text = """
+The basic game is set up just like on easy difficulty,
+but it is tuned to be a bit harder to do.
+This means you have to know more game mechanics to survive.
+
+So bring the GlassHeart to your base.
+I'll teach you along the way.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+            self.activeStory["mainChar"].addListener(self.enteredRoom,"entered room")
+            self.activeStory["mainChar"].addListener(self.itemPickedUp,"itemPickedUp")
+            self.activeStory["mainChar"].addListener(self.changedTerrain,"changedTerrain")
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
         else:
             pass
+
+    def changedTerrain(self,extraParam):
+        print(extraParam)
+        item = extraParam["character"]
+
+        if self.difficulty == "easy":
+            try:
+                self.showedBaseInfo
+            except:
+                self.showedBaseInfo = False
+
+            if not self.showedBaseInfo:
+                    text = """
+You returned to your base. The base is your home.
+It is a small base, but it has a temple.
+Bring the GlassHeart to your temple.
+
+Use the GlassStatue marked as (kk) to claim the GlassHeart as yours.
+When the GlassHeart is properly set it will show as KK.
+"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedBaseInfo = False
+
+    def itemPickedUp(self,extraParam):
+        item = extraParam[1]
+
+        if self.difficulty == "easy":
+            try:
+                self.showedGlassHeartInfo
+            except:
+                self.showedGlassHeartInfo = False
+
+            if not self.showedGlassHeartInfo:
+                if item.type == "SpecialItem":
+                    text = """
+    You picked up the GlassHeart.
+    Now return to your base to put the GlassHeart to use.
+
+    To return back to the base use the Shrine (\\/).
+    Select the "teleport home" option to get back to base."""
+                    submenu = src.interaction.TextMenu(text+"""
+
+    = press esc to close this menu =
+    """)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedGlassHeartInfo = True
+                    return
+
+    def enteredRoom(self,extraParam):
+        newRoom = extraParam[1]
+
+        if self.difficulty == "easy":
+            try:
+                self.showedEnemyWarning
+            except:
+                self.showedEnemyWarning = False
+            try:
+                self.showedLandMineWarning
+            except:
+                self.showedLandMineWarning = False
+            try:
+                self.showedStatueExtractInfo
+            except:
+                self.showedStatueExtractInfo = False
+
+            if not self.showedEnemyWarning:
+                foundEnemies = False
+                for otherChar in newRoom.characters:
+                    if otherChar.faction == extraParam[0].faction:
+                        continue
+                    foundEnemies = True
+
+                if foundEnemies:
+                    text = """
+There are enemies in the room.
+Enemies are shown with a red background.
+Fight the enemies by bumping into them.
+
+There are more complex fighting systems,
+but you won't need them on easy difficulty."""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedEnemyWarning = True
+                    return
+
+            if not self.showedLandMineWarning:
+                foundLandMine = False
+                for item in newRoom.itemsOnFloor:
+                    if item.type != "LandMine":
+                        continue
+                    foundLandMine = True
+
+                if foundLandMine:
+                    text = """
+This room contains LandMines.
+Active LandMines are shown as red "_~".
+
+Try not to step onto them and avoid standing next to them."""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedLandMineWarning = True
+                    return
+
+            if not self.showedStatueExtractInfo:
+                foundFilledStatue = False
+                for item in newRoom.itemsOnFloor:
+                    if item.type != "GlassStatue":
+                        continue
+                    if not item.hasItem:
+                        continue
+                    foundFilledStatue = True
+
+                if foundFilledStatue:
+                    text = """
+You reached the central chamber of a dungeon.
+
+Use the GlassStatue to extract the GlassHeart from the Statue (KK).
+Pick up the GlassHeart (!!) afterwards.
+
+press ? after closing this menu to see what keys you need to use.
+"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedStatueExtractInfo = True
+                    return
+
+        if self.difficulty == "medium":
+            try:
+                self.showedAdvanceCombatInfo
+            except:
+                self.showedAdvanceCombatInfo = False
+
+            if not self.showedAdvanceCombatInfo:
+                text = """
+One big difference is that you are weaker and the enemies are stronger.
+This means you can still kill them by bumping into them,
+but the enemies can realistically kill you.
+
+If you bump into the enemies using WASD you can do special attacks.
+Those do much more damag, but often cause exhaustion.
+If you have more than 10 exhaustion then you get penalities.
+
+To reduce your exhaustion press .
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showedAdvanceCombatInfo = True
+                return
+
+            try:
+                self.showedRangedCombatInfo
+            except:
+                self.showedRangedCombatInfo = False
+
+            if not self.showedRangedCombatInfo:
+                text = """
+Another thing you can to is to used ranged combat.
+
+The ranged combat allows you to fire bolts by pressing f.
+As long as you have Bolts in your inventory, you can shoot in straight lines.
+Each shot will consume a Bolt.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showedRangedCombatInfo = True
+                return
+
+            try:
+                self.showedBaitInfo
+            except:
+                self.showedBaitInfo = False
+
+            if not self.showedBaitInfo:
+                text = """
+Another thing you can to is to bait/kite enemies
+
+When you enter and leave a room sometimes enemies will chase you.
+You can use this to divide enemy groups and kite enemies into traps.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showedBaitInfo = True
+                return
+
+            try:
+                self.showedWaitInfo
+            except:
+                self.showedWaitInfo = False
+
+            if not self.showedWaitInfo:
+                text = """
+Another thing you can to is to wait to heal.
+
+When time passes you slowly heal, so you can just wait
+The more hurt you are
+You can use this to divide enemy groups and kite enemies into traps.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showedBaitInfo = True
+                return
+
+
 
     def kickoffProduction(self):
         self.activeStory["playerActivatedEpochArtwork"] = False
@@ -2864,6 +3153,8 @@ try to remember how you got here ..."""
         mainChar.duties = ["praying","city planning","clone spawning","questing"]
         mainChar.rank = 6
 
+
+
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
         self.factionCounter += 1
@@ -2878,9 +3169,10 @@ try to remember how you got here ..."""
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(self.roguelike_baseLeaderDeath,"died_pre")
 
-        for i in range(0,10):
-            bolt = src.items.itemMap["Bolt"]()
-            mainChar.inventory.append(bolt)
+        if not self.difficulty == "easy":
+            for i in range(0,10):
+                bolt = src.items.itemMap["Bolt"]()
+                mainChar.inventory.append(bolt)
 
         """
         quest = src.quests.questMap["BeUsefull"]()

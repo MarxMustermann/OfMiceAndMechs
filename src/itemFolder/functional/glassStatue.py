@@ -37,6 +37,14 @@ class GlassStatue(src.items.Item):
 
     def render(self):
         if not self.hasItem:
+            # search for glass hearts in the players inventory
+            mainCharHasItem = False
+            for item in src.gamestate.gamestate.mainChar.inventory:
+                if not item.type == "SpecialItem":
+                    continue
+                if not item.itemID == self.itemID:
+                    continue
+                return "kk"
             return "GG"
         else:
             return "KK"

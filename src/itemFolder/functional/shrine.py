@@ -45,6 +45,7 @@ class Shrine(src.items.Item):
             room[0].addCharacter(character,7,7)
         else:
             newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
+        character.changed("changedTerrain",{"character":character})
 
     def isChallengeDone(self):
         if self.god == 1:

@@ -174,7 +174,10 @@ class Shrine(src.items.Item):
         return dutyMap
 
     def getGlassHeartRebate(self):
-        return 0.5
+        if src.gamestate.gamestate.gods[self.god]["lastHeartPos"] == (self.getTerrain().xPosition,self.getTerrain().yPosition):
+            return 0.5
+        else:
+            return 1
 
     def getRewards(self,character,selected=None):
         glassHeartRebate = self.getGlassHeartRebate()

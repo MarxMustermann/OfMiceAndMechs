@@ -7707,6 +7707,9 @@ def renderGameDisplay(renderChar=None):
             renderGameDisplay(shadowCharacter)
 
 def showMainMenu(args=None):
+    from pathlib import Path
+    Path("gamestate").mkdir(parents=True, exist_ok=True)
+
     try:
         with open("gamestate/globalInfo.json") as globalInfoFile:
             rawState = json.loads(globalInfoFile.read())

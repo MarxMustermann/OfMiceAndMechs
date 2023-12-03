@@ -270,6 +270,9 @@ def startPlayMusic():
     musicProcess.start() # Inititialize Process
 
 def stop_playing_music():
+    """
+    Stops the background music playback.
+    """
     if not musicProcess:
         logger.error("stopped music that doesn't play")
     musicProcess.terminate()

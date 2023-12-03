@@ -1571,6 +1571,9 @@ press any other key to attack normally"""
                 corpse = src.items.itemMap["Corpse"]()
                 container.addItem(corpse, pos)
 
+            if src.gamestate.gamestate.mainChar in container.characters:
+                src.interaction.playSound("enemyDied","actions")
+
         # log impossible state
         else:
             logger.debug("this should not happen, character died without being somewhere (%s)", self)

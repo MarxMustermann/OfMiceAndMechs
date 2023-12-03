@@ -173,14 +173,14 @@ class Shrine(src.items.Item):
 
         return dutyMap
 
-    def getGlassHeartRebate(self):
+    def get_glass_heart_rebate(self):
         if src.gamestate.gamestate.gods[self.god]["lastHeartPos"] == (self.getTerrain().xPosition,self.getTerrain().yPosition):
             return 0.5
         else:
             return 1
 
     def getRewards(self,character,selected=None):
-        glassHeartRebate = self.getGlassHeartRebate()
+        glassHeartRebate = self.get_glass_heart_rebate()
 
         options = []
         options.append(("None","(0) None (exit)"))
@@ -287,7 +287,7 @@ class Shrine(src.items.Item):
         character.macroState["submenue"].followUp = {"container":self,"method":"dispenseRewards","params":{"character":character}}
 
     def dispenseRewards(self,extraInfo):
-        glassHeartRebate = self.getGlassHeartRebate()
+        glassHeartRebate = self.get_glass_heart_rebate()
 
         character = extraInfo.get("character")
 
@@ -500,7 +500,7 @@ class Shrine(src.items.Item):
 
     def spawnBurnedInNPC(self, character, duty):
         cost = self.getCharacterSpawningCost(character)
-        glassHeartRebate = self.getGlassHeartRebate()
+        glassHeartRebate = self.get_glass_heart_rebate()
         mana = self.getTerrain().mana
 
         foundFlask = None

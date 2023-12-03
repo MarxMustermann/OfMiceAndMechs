@@ -1713,7 +1713,6 @@ I'll teach you along the way.
             pass
 
     def gotEpochReward(self,extraParam):
-        print(extraParam)
         if self.difficulty == "easy" and "NPC" in extraParam["rewardType"]:
             try:
                 self.showed_npc_respawn_info
@@ -1737,8 +1736,8 @@ Now claim the other GlassHearts to win the game.
 Use the other GlassStatues (GG) to teleport to dungeons.
 Then go and claim their heart.
 
-You should start with the one of GlassStatues on the to right.
-That is the next easiest dungeon.
+You should start with the GlassStatue on the top right.
+That GlassStatue leads to the next easiest dungeon.
 """
                 submenu = src.interaction.TextMenu(text+"""
 
@@ -1777,10 +1776,67 @@ What the NPC does does not matter on easy.
                 self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
                 self.activeStory["mainChar"].addMessage(text)
 
-                self.showed_glass_heart_info = False
+                self.showed_glass_heart_info = True
+                return
+
+            try:
+                self.showed_glass_heart_info2
+            except:
+                self.showed_glass_heart_info2 = False
+
+            if not self.showed_glass_heart_info2:
+                text = """
+You claimed ownership of a second GlassHeart.
+Now collect the rest of them.
+
+Use the GlassStatues to get to the remaining dungeons.
+Complete them from right to left to do the easier dungeons first.
+
+Check out the different Shrines (\\/) for rewards.
+Some Shrines allow you to buy charactor upgrades.
+Keep in mind that you lose those upgrades when you die.
+
+That is basically all you need to know to beat the easy difficulty.
+See you again when you collected all GlassHearts or on medium difficulty.
+There are many systems you have not seen yet.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showed_glass_heart_info2 = True
+                return
+
+            numGlassHearts = 0
+            for god,godData in src.gamestate.gamestate.gods.items():
+                if godData["lastHeartPos"] == (self.activeStory["mainChar"].getTerrain().xPosition,self.activeStory["mainChar"].getTerrain().yPosition):
+                    numGlassHearts += 1
+                    print(godData)
+
+            if numGlassHearts == 7:
+                text = """
+You claimed all GlassHearts.
+Now there is only one step left to do.
+
+Use the Throne (TT) in the middle of the Temple.
+And when you are done then try medium difficulty, much more will be explained there.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showed_glass_heart_info2 = True
+                return
 
     def changedTerrain(self,extraParam):
-        print(extraParam)
         item = extraParam["character"]
 
         if self.difficulty == "easy":

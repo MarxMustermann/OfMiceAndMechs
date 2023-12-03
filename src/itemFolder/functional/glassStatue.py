@@ -557,11 +557,11 @@ class GlassStatue(src.items.Item):
             character.movementSpeed = character.movementSpeed/2
             return
 
-        character.changed("deliveredSpecialItem",{"itemID":self.itemID})
         self.hasItem = True
         character.inventory.remove(glassHeart)
         src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = (character.getTerrain().xPosition,character.getTerrain().yPosition)
         character.movementSpeed = character.movementSpeed/2
+        character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
     def boltAction(self,character):
         self.bolted = True

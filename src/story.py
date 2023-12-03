@@ -1691,7 +1691,7 @@ The basic game is set up just like on easy difficulty,
 but it is tuned to be a bit harder to do.
 This means you have to know more game mechanics to survive.
 
-So bring the GlassHeart to your base.
+So bring the GlassHearts to your base.
 I'll teach you along the way.
 """
                 submenu = src.interaction.TextMenu(text+"""
@@ -1794,7 +1794,7 @@ Complete them from right to left to do the easier dungeons first.
 
 Check out the different Shrines (\\/) for rewards.
 Some Shrines allow you to buy charactor upgrades.
-Keep in mind that you lose those upgrades when you die.
+Another one allows you to heal.
 
 That is basically all you need to know to beat the easy difficulty.
 See you again when you collected all GlassHearts or on medium difficulty.
@@ -1900,14 +1900,6 @@ Select the "teleport home" option to get back to base."""
                 self.showedEnemyWarning
             except:
                 self.showedEnemyWarning = False
-            try:
-                self.showedLandMineWarning
-            except:
-                self.showedLandMineWarning = False
-            try:
-                self.showedStatueExtractInfo
-            except:
-                self.showedStatueExtractInfo = False
 
             if not self.showedEnemyWarning:
                 foundEnemies = False
@@ -1935,6 +1927,11 @@ but you won't need them on easy difficulty."""
                     self.showedEnemyWarning = True
                     return
 
+            try:
+                self.showedLandMineWarning
+            except:
+                self.showedLandMineWarning = False
+
             if not self.showedLandMineWarning:
                 foundLandMine = False
                 for item in newRoom.itemsOnFloor:
@@ -1958,6 +1955,11 @@ Try not to step onto them and avoid standing next to them."""
 
                     self.showedLandMineWarning = True
                     return
+
+            try:
+                self.showedStatueExtractInfo
+            except:
+                self.showedStatueExtractInfo = False
 
             if not self.showedStatueExtractInfo:
                 foundFilledStatue = False
@@ -1989,13 +1991,64 @@ press ? after closing this menu to see what keys you need to use.
                     return
 
         if self.difficulty == "medium":
-            try:
-                self.showedAdvanceCombatInfo
-            except:
-                self.showedAdvanceCombatInfo = False
+            foundEnemies = False
+            for otherChar in newRoom.characters:
+                if otherChar.faction == extraParam[0].faction:
+                    continue
+                foundEnemies = True
 
-            if not self.showedAdvanceCombatInfo:
-                text = """
+            foundLandMine = False
+            for item in newRoom.itemsOnFloor:
+                if item.type != "LandMine":
+                    continue
+                foundLandMine = True
+
+            foundStopStatue = False
+            for item in newRoom.itemsOnFloor:
+                if item.type != "StopStatue":
+                    continue
+                foundStopStatue = True
+
+            try:
+                self.showedExtraLoot
+            except:
+                self.showedExtraLoot = False
+
+            if not self.showedExtraLoot:
+                foundFilledStatue = False
+                for item in newRoom.itemsOnFloor:
+                    if item.type != "GlassStatue":
+                        continue
+                    if not item.hasItem:
+                        continue
+                    foundFilledStatue = True
+
+                if foundFilledStatue:
+                    text = """
+You reached the central chamber of the dungeon.
+Keep in mind that the GlassHeart is not the only reward in this room.
+
+Remember to take the additional items with you.
+"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedExtraLoot = True
+                    return
+
+            if foundEnemies:
+                try:
+                    self.showedAdvanceCombatInfo
+                except:
+                    self.showedAdvanceCombatInfo = False
+
+                if not self.showedAdvanceCombatInfo:
+                    text = """
 One big difference is that you are weaker and the enemies are stronger.
 This means you can still kill them by bumping into them,
 but the enemies can realistically kill you.
@@ -2006,89 +2059,174 @@ If you have more than 10 exhaustion then you get penalities.
 
 To reduce your exhaustion press .
 """
-                submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.interaction.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
 
-                self.showedAdvanceCombatInfo = True
-                return
+                    self.showedAdvanceCombatInfo = True
+                    return
 
-            try:
-                self.showedRangedCombatInfo
-            except:
-                self.showedRangedCombatInfo = False
+                try:
+                    self.showedRangedCombatInfo
+                except:
+                    self.showedRangedCombatInfo = False
 
-            if not self.showedRangedCombatInfo:
-                text = """
+                if not self.showedRangedCombatInfo:
+                    text = """
 Another thing you can to is to used ranged combat.
 
 The ranged combat allows you to fire bolts by pressing f.
 As long as you have Bolts in your inventory, you can shoot in straight lines.
 Each shot will consume a Bolt.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.interaction.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
 
-                self.showedRangedCombatInfo = True
-                return
+                    self.showedRangedCombatInfo = True
+                    return
 
-            try:
-                self.showedBaitInfo
-            except:
-                self.showedBaitInfo = False
+                if foundLandMine:
+                    try:
+                        self.showedLandMineLuringInfo
+                    except:
+                        self.showedLandMineLuringInfo = False
 
-            if not self.showedBaitInfo:
-                text = """
+                    if not self.showedLandMineLuringInfo:
+                        text = """
+Another thing you can to is to kite enemies into LandMines.
+
+It hurts a lot and enemies often step into them.
+I can hurt you quite a lot, too. So remember to keep a distance.
+
+
+"""
+                        submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                        self.activeStory["mainChar"].macroState["submenue"] = submenu
+                        self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                        self.activeStory["mainChar"].addMessage(text)
+
+                        self.showedLandMineLuringInfo = True
+                        return
+
+                try:
+                    self.showedBaitInfo
+                except:
+                    self.showedBaitInfo = False
+
+                if not self.showedBaitInfo:
+                    text = """
 Another thing you can to is to bait/kite enemies
 
 When you enter and leave a room sometimes enemies will chase you.
 You can use this to divide enemy groups and kite enemies into traps.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.interaction.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
 
-                self.showedBaitInfo = True
-                return
+                    self.showedBaitInfo = True
+                    return
 
-            try:
-                self.showedWaitInfo
-            except:
-                self.showedWaitInfo = False
+                try:
+                    self.showedWaitInfo
+                except:
+                    self.showedWaitInfo = False
 
-            if not self.showedWaitInfo:
-                text = """
+                if not self.showedWaitInfo:
+                    text = """
 Another thing you can to is to wait to heal.
 
 When time passes you slowly heal, so you can just wait
 The more hurt you are
 You can use this to divide enemy groups and kite enemies into traps.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.interaction.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
 
-                self.showedBaitInfo = True
-                return
+                    self.showedWaitInfo = True
+                    return
 
+            if foundStopStatue:
+                try:
+                    self.showedStopStatueInfo
+                except:
+                    self.showedStopStatueInfo = False
 
+                if not self.showedStopStatueInfo:
+                    text = """
+Some rooms in the dungeons have a StopStatue (OO) item.
+This item allows to destroy statues in the same room,
+but destroys the item itself.
+
+If you can reach and use it without getting killed,
+it is a very fast and HP saving way to clear a room.
+"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedStopStatueInfo = True
+                    return
+
+            if not foundEnemies:
+                if foundLandMine:
+                    try:
+                        self.showedLandMineCollectingInfo
+                    except:
+                        self.showedLandMineCollectingInfo = False
+
+                    if not self.showedLandMineCollectingInfo:
+                        text = """
+You not only can lure enemies into LandMines,
+but you can also disarm and move Landmines.
+
+Press C to do a complex action on a Landmine.
+This will disable the LandMine and it will be shown white.
+Then you can pick it up and place it somewhere else.
+Use C again to rearm the LandMine.
+
+That way you can build your own traps and lure the enemies into them.
+Be carefull though disarming a LandMine takes a long time,
+this can easily kill you if enemies are nearby.
+
+You can also pick up active LandMines,
+but they are likely to explode when disturbed.
+"""
+                        submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                        self.activeStory["mainChar"].macroState["submenue"] = submenu
+                        self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                        self.activeStory["mainChar"].addMessage(text)
+
+                        self.showedLandMineCollectingInfo = True
+                        return
 
     def kickoffProduction(self):
         self.activeStory["playerActivatedEpochArtwork"] = False
@@ -3126,7 +3264,6 @@ You can use this to divide enemy groups and kite enemies into traps.
 
         return travelInfo
 
-
     def createDungeonCrawl(self, pos):
         homePos = (4,5,0)
         homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
@@ -3198,7 +3335,7 @@ You can use this to divide enemy groups and kite enemies into traps.
         if self.difficulty == "easy":
             homeTerrain.mana = 60
         if self.difficulty == "medium":
-            homeTerrain.mana = 10
+            homeTerrain.mana = 20
 
         positions = [(7,6),(6,7),(7,8),(8,7),]
         positions.remove(scrapPos)

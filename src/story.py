@@ -1705,10 +1705,40 @@ I'll teach you along the way.
             self.activeStory["mainChar"].addListener(self.enteredRoom,"entered room")
             self.activeStory["mainChar"].addListener(self.itemPickedUp,"itemPickedUp")
             self.activeStory["mainChar"].addListener(self.changedTerrain,"changedTerrain")
+            self.activeStory["mainChar"].addListener(self.deliveredSpecialItem,"deliveredSpecialItem")
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
         else:
             pass
+
+    def deliveredSpecialItem(self,extraParam):
+        if self.difficulty == "easy":
+            try:
+                self.showed_glass_heart_info
+            except:
+                self.showed_glass_heart_info = False
+
+            if not self.showed_glass_heart_info:
+                text = """
+You claimed ownership of a GlassHeart.
+This means you are one step closer to win the game.
+You need to control all GlassHearts to win the game.
+
+You also get some mana as a reward.
+Use that to spawn a NPC. That is pretty important actually.
+
+Use the leftmost Shrine (\\/) to wish for a NPC.
+What the NPC does does not matter on easy.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showed_glass_heart_info = False
 
     def changedTerrain(self,extraParam):
         print(extraParam)
@@ -3070,7 +3100,10 @@ You can use this to divide enemy groups and kite enemies into traps.
 
         homeTerrain.maxMana = 100
         homeTerrain.manaRegen = 0
-        homeTerrain.mana = 0
+        if self.difficulty == "easy":
+            homeTerrain.mana = 60
+        if self.difficulty == "medium":
+            homeTerrain.mana = 10
 
         positions = [(7,6),(6,7),(7,8),(8,7),]
         positions.remove(scrapPos)

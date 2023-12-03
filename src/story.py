@@ -1751,14 +1751,14 @@ When the GlassHeart is properly set it will show as KK.
             if not self.showedGlassHeartInfo:
                 if item.type == "SpecialItem":
                     text = """
-    You picked up the GlassHeart.
-    Now return to your base to put the GlassHeart to use.
+You picked up the GlassHeart.
+Now return to your base to put the GlassHeart to use.
 
-    To return back to the base use the Shrine (\\/).
-    Select the "teleport home" option to get back to base."""
+To return back to the base use the Shrine (\\/).
+Select the "teleport home" option to get back to base."""
                     submenu = src.interaction.TextMenu(text+"""
 
-    = press esc to close this menu =
+= press esc to close this menu =
     """)
                     self.activeStory["mainChar"].macroState["submenue"] = submenu
                     self.activeStory["mainChar"].runCommandString("~",nativeKey=True)

@@ -493,10 +493,10 @@ class Shrine(src.items.Item):
             else:
                 character.addMessage(f"the mana is used up")
 
+        self.getRewards(character,selected=extraInfo["rewardType"])
+
         character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
         character.addMessage(text)
-
-        self.getRewards(character,selected=extraInfo["rewardType"])
 
     def spawnBurnedInNPC(self, character, duty):
         cost = self.getCharacterSpawningCost(character)

@@ -1706,10 +1706,49 @@ I'll teach you along the way.
             self.activeStory["mainChar"].addListener(self.itemPickedUp,"itemPickedUp")
             self.activeStory["mainChar"].addListener(self.changedTerrain,"changedTerrain")
             self.activeStory["mainChar"].addListener(self.deliveredSpecialItem,"deliveredSpecialItem")
+            self.activeStory["mainChar"].addListener(self.gotEpochReward,"got epoch reward")
         elif self.activeStory["type"] == "productionBase":
             self.kickoffProduction()
         else:
             pass
+
+    def gotEpochReward(self,extraParam):
+        print(extraParam)
+        if self.difficulty == "easy" and "NPC" in extraParam["rewardType"]:
+            try:
+                self.showed_npc_respawn_info
+            except:
+                self.showed_npc_respawn_info = False
+
+            if not self.showed_npc_respawn_info:
+                text = """
+You spawned a NPC. The NPC will do some work on the base,
+but that is not why the NPC is so important.
+
+The NPC basically acts as an extralife.
+If you have no NPCs the game is permadeath.
+You die and the game ends.
+
+If you die and have NPCs in your base,
+you will take control over one of those NPCs.
+So now you can die and respawn afterwards until you run out of NPCs.
+
+Now claim the other GlassHearts to win the game.
+Use the other GlassStatues (GG) to teleport to dungeons.
+Then go and claim their heart.
+
+You should start with the one of GlassStatues on the to right.
+That is the next easiest dungeon.
+"""
+                submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                self.activeStory["mainChar"].macroState["submenue"] = submenu
+                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                self.activeStory["mainChar"].addMessage(text)
+
+                self.showed_npc_respawn_info = True
 
     def deliveredSpecialItem(self,extraParam):
         if self.difficulty == "easy":
@@ -1767,7 +1806,7 @@ When the GlassHeart is properly set it will show as KK.
                     self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
                     self.activeStory["mainChar"].addMessage(text)
 
-                    self.showedBaseInfo = False
+                    self.showedBaseInfo = True
 
     def itemPickedUp(self,extraParam):
         item = extraParam[1]

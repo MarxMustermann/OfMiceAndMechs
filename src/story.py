@@ -3000,14 +3000,53 @@ but they are likely to explode when disturbed.
                 #quest.fail("taken over NPC")
                 quest.autoSolve = False
 
-            candidate.health = int(candidate.health/2)
-            candidate.maxHealth = int(candidate.maxHealth/2)
+            if self.difficulty == "easy":
+                if candidate.maxHealth < character.maxHealth:
+                    candidate.maxHealth = character.maxHealth
+                    candidate.health = candidate.maxHealth
+                candidate.baseDamage = character.baseDamage
+                candidate.attackSpeed = character.attackSpeed
+                candidate.movementSpeed = character.movementSpeed
+                if not candidate.weapon:
+                    weapon = src.items.itemMap["Sword"]()
+                    weapon.baseDamage = 10
+                    candidate.weapon = weapon
+
+                if not candidate.armor:
+                    armor = src.items.itemMap["Armor"]()
+                    armor.armorValue = 1
+                    candidate.armor = armor
+
+            if self.difficulty == "difficult":
+                candidate.health = int(candidate.health/2)
+                candidate.maxHealth = int(candidate.maxHealth/2)
             candidate.addListener(self.roguelike_baseLeaderDeath,"died_pre")
 
             if character == src.gamestate.gamestate.mainChar:
-                text = f"You are respawned as one of the NPCs in your base"
+                text = f"You are respawned as one of the NPCs in your base."
+                if self.difficulty == "easy":
+                    text += "\nSince you are playing on easy your character stats are transfered to that NPC"
                 src.interaction.showInterruptText(text)
                 src.gamestate.gamestate.mainChar = candidate
+
+                questMenu = src.interaction.QuestMenu(candidate)
+                questMenu.sidebared = True
+                candidate.rememberedMenu.append(questMenu)
+                messagesMenu = src.interaction.MessagesMenu(candidate)
+                candidate.rememberedMenu2.append(messagesMenu)
+                inventoryMenu = src.interaction.InventoryMenu(candidate)
+                inventoryMenu.sidebared = True
+                candidate.rememberedMenu2.append(inventoryMenu)
+                combatMenu = src.interaction.CombatInfoMenu(candidate)
+                combatMenu.sidebared = True
+                candidate.rememberedMenu.insert(0,combatMenu)
+                candidate.disableCommandsOnPlus = True
+
+            candidate.addListener(self.enteredRoom,"entered room")
+            candidate.addListener(self.itemPickedUp,"itemPickedUp")
+            candidate.addListener(self.changedTerrain,"changedTerrain")
+            candidate.addListener(self.deliveredSpecialItem,"deliveredSpecialItem")
+            candidate.addListener(self.gotEpochReward,"got epoch reward")
             return
 
     def createColony_baseLeaderDeath(self,extraParam):

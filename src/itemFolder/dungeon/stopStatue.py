@@ -29,10 +29,10 @@ class StopStatue(src.items.Item):
 
         text = super().getLongInfo()
         text += f"""
-This item destroys all statues in the room.
+This item obliterates all statues in the room.
 
-Using this item destroys this item.
-So be cerful you only can use the item once.
+Using this item destroys the item itself.
+So be careful; you can only use the item once.
 """
         return text
 
@@ -51,6 +51,7 @@ So be cerful you only can use the item once.
             if character.faction == otherChar.faction:
                 continue
             otherChar.die()
+        character.addMessage("All statues in the room have been annihilated")
         self.destroy()
 
 src.items.addType(StopStatue)

@@ -37,13 +37,6 @@ So be careful; you can only use the item once.
         return text
 
     def apply(self, character):
-        """
-        handle a character tyring to destroy the wall
-
-        Parameters:
-            character: the character trying to destroy the wall
-        """
-
         if not self.container.isRoom:
             return
 

@@ -2107,14 +2107,13 @@ press any other key to attack normally"""
             info: additional information
         """
 
-        if self.container and src.gamestate.gamestate.mainChar in self.container.characters and tag == "moved":
-            src.interaction.playSound("step","steps")
-
+        """
         if src.gamestate.gamestate.mainChar == self and tag == "entered room":
             if isinstance(info[1],src.rooms.WorkshopRoom):
                 src.interaction.playSound("workshopRoom","roomMusic",loop=True)
             elif isinstance(info[1],src.rooms.TrapRoom):
                 src.interaction.playSound("electroRoom","roomMusic",loop=True)
+        """
 
         # do nothing if nobody listens
         if tag not in self.listeners:

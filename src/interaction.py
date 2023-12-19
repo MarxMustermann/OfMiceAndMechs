@@ -131,6 +131,7 @@ def advanceGame():
                     bigPos = (random.randint(1,13),random.randint(1,13),0)
                     enemy = src.characters.Monster(6,6)
                     enemy.health = 10*numGlassHeartsOnPos
+                    enemy.maxHealth = enemy.health
                     enemy.baseDamage = numGlassHeartsOnPos
                     enemy.faction = "spectre"
                     enemy.tag = "spectre"
@@ -5454,7 +5455,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
         if sidebared:
             txt.append("press q to see detailed descriptions\n\n")
     else:
-        txt.append("No Quest")
+        txt.append("No Quest\n\n")
 
     return txt
 

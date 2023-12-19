@@ -3,6 +3,7 @@ chats and chat related code belongs here
 bad pattern: chats should have a parent class
 """
 import logging
+import random
 
 import config
 import src.canvas
@@ -1886,13 +1887,14 @@ class ChatMenu(Chat):
             return True
 
         if key != "~":
-            if self.partner.rank and src.gamestate.gamestate.mainChar.rank > self.partner.rank:
-                src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to address someone out of rank")
-                return True
+            if not isinstance(self.partner,src.characters.Ghoul):
+                if self.partner.rank and src.gamestate.gamestate.mainChar.rank > self.partner.rank:
+                    src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to address someone out of rank")
+                    return True
 
-            if src.gamestate.gamestate.mainChar.rank == self.partner.rank:
-                src.gamestate.gamestate.mainChar.addMessage("not now.")
-                return True
+                if src.gamestate.gamestate.mainChar.rank == self.partner.rank:
+                    src.gamestate.gamestate.mainChar.addMessage("not now.")
+                    return True
 
         # maybe exit the submenu
         if key == "esc" and not self.subMenu:
@@ -1951,6 +1953,12 @@ class ChatMenu(Chat):
                     options.append(("talkWork", "talk about work"))
                 options.append(("chat", "chat idly"))
 
+                if isinstance(self.partner,src.characters.Ghoul):
+                    options = []
+                    options.append(("come to me", "come to me"))
+                    options.append(("run command", "run command below you"))
+
+
                 """
                 for option in self.partner.getChatOptions(src.gamestate.gamestate.mainChar):
                     if not isinstance(option,dict):
@@ -1985,6 +1993,37 @@ class ChatMenu(Chat):
                             self.subMenu.setUp(self.selection["params"])
 
                     self.subMenu.handleKey(key, noRender=noRender)
+                elif self.selection == "come to me":
+                    vector = [character.xPosition-self.partner.xPosition,character.yPosition-self.partner.yPosition]
+                    movementString = ""
+                    while True:
+                        movementOptions = []
+                        if vector[0] > 0:
+                            movementOptions.append("d")
+                        if vector[0] < 0:
+                            movementOptions.append("a")
+                        if vector[1] > 0:
+                            movementOptions.append("s")
+                        if vector[1] < 0:
+                            movementOptions.append("w")
+
+                        movement = random.choice(movementOptions)
+                        movementString += movement
+
+                        if movement == "d":
+                            vector[0] -= 1
+                        if movement == "a":
+                            vector[0] += 1
+                        if movement == "w":
+                            vector[1] += 1
+                        if movement == "s":
+                            vector[1] -= 1
+
+                        if vector[0] == 0 and vector[1] == 0:
+                            break
+                    self.partner.runCommandString(movementString)
+                elif self.selection == "run command":
+                    self.partner.runCommandString("j")
                 elif self.selection == "giveInstruction":
                     submenue = src.interaction.InstructNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue

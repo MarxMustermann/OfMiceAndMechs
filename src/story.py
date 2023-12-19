@@ -1749,6 +1749,9 @@ That GlassStatue leads to the next easiest dungeon.
 
                 self.showed_npc_respawn_info = True
 
+        if self.difficulty == "medium":
+            1/0
+
     def deliveredSpecialItem(self,extraParam):
         if self.difficulty == "easy":
             try:
@@ -1864,6 +1867,36 @@ When the GlassHeart is properly set it will show as KK.
 
                     self.showedBaseInfo = True
 
+        if self.difficulty == "medium":
+            try:
+                self.showedBaseInfo
+            except:
+                self.showedBaseInfo = False
+
+            if not self.showedBaseInfo:
+                    text = """
+You returned to your base. The base is your home.
+Just like in easy difficulty the base has a temple,
+but on medium difficulty you have to make use of the base.
+
+Remember the Bolts you need to be able to shooot at enemies?
+Your base can produce those while you do other things.
+
+To get basic production active you need the following NPCs:
+
+a resource gatherer
+a scrap hammerer
+a metal worker"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+""")
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedBaseInfo = True
+
     def itemPickedUp(self,extraParam):
         item = extraParam[1]
 
@@ -1890,6 +1923,86 @@ Select the "teleport home" option to get back to base."""
                     self.activeStory["mainChar"].addMessage(text)
 
                     self.showedGlassHeartInfo = True
+                    return
+        if self.difficulty == "medium":
+            try:
+                self.showedGlassHeartInfo
+            except:
+                self.showedGlassHeartInfo = False
+
+            if not self.showedGlassHeartInfo:
+                if item.type == "SpecialItem":
+                    text = """
+You picked up the GlassHeart.
+Until you bring set it into a GlassStatue again you are cursed.
+
+Your movement speed is halfed, so running from enemies is much harder.
+Bring the GlassHeart back to your base to lift that curse."""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+    """)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedGlassHeartInfo = True
+                    return
+            try:
+                self.showedVialInfo
+            except:
+                self.showedVialInfo = False
+
+            if not self.showedVialInfo:
+                if item.type == "Vial":
+                    text = """
+You picked up a Vial.
+Vials can be used to heal yourself.
+
+You can use the Vial directly to heal, but there is a easier way.
+Use the advanced interaction menu (J) to heal once (h) or heal fully (H).
+For this you have to have a healing item like the Vial in you inventory.
+
+The less health you have the stronger the Vials healing effect.
+"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+    """)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedVialInfo = True
+                    return
+
+            try:
+                self.showedGooFlaskInfo
+            except:
+                self.showedGooFlaskInfo = False
+
+            if not self.showedGooFlaskInfo:
+                if item.type == "GooFlask":
+                    text = """
+You picked up a Goo Flask.
+Their primary use as food source is not important right now.
+You have a GooFlask equipped and should have thaousands of moves left.
+
+A completely full GooFlask is very valuable, because it helps spawning new NPCs.
+Have a GooFlask in your inventory when wishing for a NPC and you will use less mana.
+The GooFlask is destroyed in the progress though.
+
+So bring it with you to be able to spawn one NPC cheaper.
+"""
+                    submenu = src.interaction.TextMenu(text+"""
+
+= press esc to close this menu =
+    """)
+                    self.activeStory["mainChar"].macroState["submenue"] = submenu
+                    self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
+                    self.activeStory["mainChar"].addMessage(text)
+
+                    self.showedGooFlaskInfo = True
                     return
 
     def enteredRoom(self,extraParam):
@@ -2104,7 +2217,7 @@ Each shot will consume a Bolt.
                         text = """
 Another thing you can to is to kite enemies into LandMines.
 
-It hurts a lot and enemies often step into them.
+It usually kills the enemies and they often step into them.
 I can hurt you quite a lot, too. So remember to keep a distance.
 
 
@@ -2995,6 +3108,8 @@ but they are likely to explode when disturbed.
                 continue
             if candidate.faction != character.faction:
                 continue
+            if isinstance(candidate,src.characters.Ghoul):
+                continue
             candidate.runCommandString("~",clear=True)
             for quest in candidate.quests[:]:
                 #quest.fail("taken over NPC")
@@ -3374,7 +3489,7 @@ but they are likely to explode when disturbed.
         if self.difficulty == "easy":
             homeTerrain.mana = 60
         if self.difficulty == "medium":
-            homeTerrain.mana = 20
+            homeTerrain.mana = 30
 
         positions = [(7,6),(6,7),(7,8),(8,7),]
         positions.remove(scrapPos)

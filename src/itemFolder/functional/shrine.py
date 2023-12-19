@@ -254,11 +254,23 @@ class Shrine(src.items.Item):
             options.append(("spawnBolts",f"({cost}) spawn bolts"))
 
         elif self.god == 6:
+
+            cost = 10
+            foundVial = None
+            for item in character.inventory:
+                if item.type != "Vial":
+                    continue
+                if item.uses < 10:
+                    continue
+                foundVial = item
+            if foundVial:
+                cost /= 2
+
             if character.maxHealth >= 500:
                 character.addMessage("you can't improve your health further")
                 return
 
-            options.append(("improve your max health","(10) improve your max health"))
+            options.append(("improve your max health",f"({cost}) improve your max health"))
             options.append(("heal","(10) heal"))
             #options.append(("healingThreashold","(10) improve your healing threashold"))
             #options.append(("healingModifier","(10) improve your healing amount"))
@@ -425,19 +437,28 @@ class Shrine(src.items.Item):
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "improve your max health":
-            if self.getTerrain().mana >= 10:
+            cost = 10
+            foundVial = None
+            for item in character.inventory:
+                if item.type != "Vial":
+                    continue
+                if item.uses < 10:
+                    continue
+                foundVial = item
+            if foundVial:
+                cost /= 2
+
+            if self.getTerrain().mana >= cost:
                 text = "improving your health"
                 increaseValue = 20
                 increaseValue = min(500-character.maxHealth,increaseValue)
                 character.maxHealth += increaseValue
                 character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
+                character.inventory.remove(foundVial)
             else:
                 character.addMessage(f"the mana is used up")
 
-            options.append(("heal","(10) heal"))
-            options.append(("healingThreashold","(10) improve your healing threashold"))
-            options.append(("healingModifier","(10) improve your healing amount"))
         elif extraInfo['rewardType'] == "heal":
             if self.getTerrain().mana >= 10:
                 text = "healing"

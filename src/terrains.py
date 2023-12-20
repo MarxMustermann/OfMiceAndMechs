@@ -908,6 +908,67 @@ class Terrain:
         return command
 
     def getPath(self,startPos,targetPos,localRandom=None,tryHard=False,character=None):
+        if startPos == targetPos:
+            return []
+
+        tileMap = []
+        tileMap.append([0]*(15*2+1))
+        for x in range(15):
+            tileMap.append([])
+            tileMap[x*2+1].append(0)
+            for y in range(15):
+                if x in (0,14,) or y in (0,14):
+                    tileMap[x*2+1].append(0)
+                else:
+                    tileMap[x*2+1].append(5)
+                tileMap[x*2+1].append("1")
+            tileMap[x*2+1].pop()
+            tileMap[x*2+1].append(0)
+            tileMap.append([0,"1"]*(15)+[0])
+        tileMap.pop()
+        tileMap.append([0]*(15*2+1))
+
+        tileMap[0*2+1][7*2+1] = 1
+        tileMap[7*2+1][0*2+1] = 1
+        tileMap[14*2+1][7*2+1] = 1
+        tileMap[7*2+1][14*2+1] = 1
+
+        for room in self.rooms:
+            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
+            if not room.getPositionWalkable((0,6,0)):
+                tileMap[room.xPosition*2+0][room.yPosition*2+1] = "0"
+            if not room.getPositionWalkable((12,6,0)):
+                tileMap[room.xPosition*2+2][room.yPosition*2+1] = "0"
+            if not room.getPositionWalkable((6,0,0)):
+                tileMap[room.xPosition*2+1][room.yPosition*2+0] = "0"
+            if not room.getPositionWalkable((6,12,0)):
+                tileMap[room.xPosition*2+1][room.yPosition*2+2] = "0"
+
+        cost = np.array(tileMap, dtype=np.int8)
+        pathfinder = tcod.path.AStar(cost,diagonal = 0)
+        path = pathfinder.get_path(startPos[0]*2+1,startPos[1]*2+1,targetPos[0]*2+1,targetPos[1]*2+1)
+        realPath = []
+        counter = 0
+        lastPos = startPos
+        for step in path:
+            counter += 1
+            if counter%2 == 1:
+                continue
+
+            newPos = ((path[counter-1][0]-1)//2, (path[counter-1][1]-1)//2)
+            if lastPos[0] < newPos[0]:
+                realPath.append((1,0))
+            if lastPos[0] > newPos[0]:
+                realPath.append((-1,0))
+            if lastPos[1] < newPos[1]:
+                realPath.append((0,1))
+            if lastPos[1] > newPos[1]:
+                realPath.append((0,-1))
+            lastPos = newPos
+
+        return realPath
+
+    def getPath_old(self,startPos,targetPos,localRandom=None,tryHard=False,character=None):
         if not localRandom:
             localRandom = random
 
@@ -1040,7 +1101,9 @@ class Terrain:
             if nextPos == targetPos:
                 break
 
-        return paths.get(targetPos)
+        if character == src.gamestate.gamestate.mainChar:
+            print(paths.get(targetPos))
+            return paths.get(targetPos)
 
     def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,clearing=False):
         path = self.getPathTile_test(tilePos,startPos,targetPos,tryHard,avoidItems,localRandom,ignoreEndBlocked=ignoreEndBlocked,character=character,clearing=clearing)

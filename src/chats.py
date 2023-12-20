@@ -1955,8 +1955,14 @@ class ChatMenu(Chat):
 
                 if isinstance(self.partner,src.characters.Ghoul):
                     options = []
+                    options.append(("stop", "stop"))
                     options.append(("come to me", "come to me"))
                     options.append(("run command", "run command below you"))
+                    options.append(("step east", "step east"))
+                    options.append(("step west", "step west"))
+                    options.append(("step north", "step north"))
+                    options.append(("step south", "step south"))
+                    options.append(("drop items", "drop items"))
 
 
                 """
@@ -2024,6 +2030,26 @@ class ChatMenu(Chat):
                     self.partner.runCommandString(movementString)
                 elif self.selection == "run command":
                     self.partner.runCommandString("j")
+                elif self.selection == "step east":
+                    if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 12:
+                        self.partner.runCommandString("dd")
+                    self.partner.runCommandString("d")
+                elif self.selection == "step west":
+                    if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 0:
+                        self.partner.runCommandString("aa")
+                    self.partner.runCommandString("a")
+                elif self.selection == "step north":
+                    if isinstance(self.partner.container,src.rooms.Room) and self.partner.xPosition == 0:
+                        self.partner.runCommandString("ww")
+                    self.partner.runCommandString("w")
+                elif self.selection == "step south":
+                    if isinstance(self.partner.container,src.rooms.Room) and self.partner.yPosition == 12:
+                        self.partner.runCommandString("ss")
+                    self.partner.runCommandString("s")
+                elif self.selection == "drop items":
+                    self.partner.runCommandString("l"*10)
+                elif self.selection == "stop":
+                    self.partner.runCommandString(".",clear=True)
                 elif self.selection == "giveInstruction":
                     submenue = src.interaction.InstructNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue

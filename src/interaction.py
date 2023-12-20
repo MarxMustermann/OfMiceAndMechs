@@ -4014,43 +4014,14 @@ class ChatPartnerselection(SubMenu):
                         continue
                     if not (char.xPosition//15 == src.gamestate.gamestate.mainChar.xPosition//15 and char.yPosition//15 == src.gamestate.gamestate.mainChar.yPosition//15):
                         continue
-                    if not char.rank:
-                        continue
 
-                    if char.rank < src.gamestate.gamestate.mainChar.rank:
-                        options.append((char, char.name + " (outranks you)"))
-                    elif char.rank == src.gamestate.gamestate.mainChar.rank:
-                        options.append((char, char.name + " (same rank)"))
+                    if char.rank and src.gamestate.gamestate.mainChar.rank:
+                        if char.rank < src.gamestate.gamestate.mainChar.rank:
+                            options.append((char, char.name + " (outranks you)"))
+                        elif char.rank == src.gamestate.gamestate.mainChar.rank:
+                            options.append((char, char.name + " (same rank)"))
                     else:
                         options.append((char, char.name))
-
-                """
-                # get nearby rooms
-                bigX = src.gamestate.gamestate.mainChar.xPosition // 15
-                bigY = src.gamestate.gamestate.mainChar.yPosition // 15
-                rooms = []
-                coordinates = [
-                    (bigX, bigY),
-                    (bigX - 1, bigY),
-                    (bigX + 1, bigY),
-                    (bigX, bigY - 1),
-                    (bigX, bigY + 1),
-                ]
-                for coordinate in coordinates:
-                    if coordinate not in char.terrain.roomByCoordinates:
-                        continue
-                    rooms.extend(char.terrain.roomByCoordinates[coordinate])
-
-                # add character from nearby open rooms
-                for room in rooms:
-                    if not room.open:
-                        continue
-
-                    for char in room.characters:
-                        if not char.faction == src.gamestate.gamestate.mainChar.faction:
-                            continue
-                        options.append((char, char.name))
-                """
 
             for char in src.gamestate.gamestate.mainChar.subordinates:
                 options.insert(0,(char, char.name))
@@ -8618,6 +8589,7 @@ def showHeroIntro():
                 mainRoom.addStorageSlot((x,y,0),None)
 
     tileset = tcod.tileset.load_tilesheet("Acorntileset2.png", 16, 16, tcod.tileset.CHARMAP_CP437)
+    tileset = tcod.tileset.load_tilesheet("OfMiceAndMechs.png", 16, 16, tcod.tileset.CHARMAP_CP437)
     #tileset = tcod.tileset.load_tilesheet("dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD)
     console1 = tcod.console.Console(26, 13)
     console2 = tcod.console.Console(26, 13)

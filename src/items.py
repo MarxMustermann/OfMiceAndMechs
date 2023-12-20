@@ -142,7 +142,7 @@ class Item:
             the position
         """
         if self.xPosition is None or self.yPosition is None or self.zPosition is None:
-            logger.error("get position of non positioned item. {self}")
+            logger.error(f"get position of non positioned item. {self}")
             return (None,None,None)
         return self.xPosition+offset[0], self.yPosition+offset[1], self.zPosition+offset[2]
 

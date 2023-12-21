@@ -462,6 +462,7 @@ We should stop watching and do something about that.
                     continue
                 if buildSite[2]["toProduce"] in machinesInStorage:
                     continue
+                self.addQuest(src.quests.questMap["ClearInventory"]())
                 newQuest = src.quests.questMap["Machining"](toProduce=buildSite[2]["toProduce"],amount=1,produceToInventory=False)
                 self.addQuest(newQuest)
                 return True
@@ -469,6 +470,7 @@ We should stop watching and do something about that.
         itemsToCheck = ["Wall","Case","Frame","Rod","Door","RoomBuilder","ScrapCompactor","Sword","Armor"]
         for itemType in itemsToCheck:
             if itemType not in machinesInStorage:
+                self.addQuest(src.quests.questMap["ClearInventory"]())
                 newQuest = src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)
                 self.addQuest(newQuest)
                 return True
@@ -929,11 +931,11 @@ We should stop watching and do something about that.
                         items = room.getItemByPosition(checkStorageSlot[0])
                         if checkStorageSlot[2].get("desiredState") == "filled":
                             continue
-                        if not items or items[0].type != storageSlot[1]:
+                        if not items or items[0].type != storageSlot[1] or not items[0].walkable:
                             continue
 
                         self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
-                        self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="fill a storage stockpile designated to be filled",abortOnfullInventory=True))
+                        self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to get the items to fill a storage stockpile designated to be filled",abortOnfullInventory=True))
                         self.idleCounter = 0
                         return True
         return None

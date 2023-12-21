@@ -267,6 +267,9 @@ class Room:
                     result.append(storageSlot)
                     continue
 
+                if fullyEmpty:
+                    continue
+
                 if (itemType and items[0].type != itemType):
                     continue
 

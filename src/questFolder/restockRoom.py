@@ -135,9 +135,13 @@ Place the items in the correct input or storage stockpile.
                     self.fail(reason="no input slot attribute")
                 return (None,None)
 
-            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False)
+            if not character.inventory:
+                return (None,None)
+
+            fullyEmpty = not character.inventory[-1].walkable
+            inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
             if not inputSlots:
-                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny)
+                inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,fullyEmpty=fullyEmpty)
             random.shuffle(inputSlots)
 
             if self.targetPosition:
@@ -162,25 +166,29 @@ Place the items in the correct input or storage stockpile.
                 if not dropContent or dropContent[0].type != "Scrap":
                     maxSpace = foundDirectDrop[2][2].get("maxAmount")
                     if not maxSpace:
-                        maxSpace = 25
+                        if (dropContent and dropContent[0].walkable == False) or character.inventory[-1].walkable == False:
+                            maxSpace = 1
+                        else:
+                            maxSpace = 25
                     if not dropContent:
                         spaceTaken = 0
                     else:
                         spaceTaken = len(dropContent)
                     numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
-                    if not character.inventory[-1].walkable:
-                        numToDrop = 1
+                    if numToDrop > 0:
+                        if not character.inventory[-1].walkable:
+                            numToDrop = 1
 
-                    if foundDirectDrop[1] == (-1,0):
-                        return (None,("La"*numToDrop,"store an item"))
-                    if foundDirectDrop[1] == (1,0):
-                        return (None,("Ld"*numToDrop,"store an item"))
-                    if foundDirectDrop[1] == (0,-1):
-                        return (None,("Lw"*numToDrop,"store an item"))
-                    if foundDirectDrop[1] == (0,1):
-                        return (None,("Ls"*numToDrop,"store an item"))
-                    if foundDirectDrop[1] == (0,0):
-                        return (None,("l"*numToDrop,"store an item"))
+                        if foundDirectDrop[1] == (-1,0):
+                            return (None,("La"*numToDrop,"store an item"))
+                        if foundDirectDrop[1] == (1,0):
+                            return (None,("Ld"*numToDrop,"store an item"))
+                        if foundDirectDrop[1] == (0,-1):
+                            return (None,("Lw."*numToDrop,"store an item"))
+                        if foundDirectDrop[1] == (0,1):
+                            return (None,("Ls"*numToDrop,"store an item"))
+                        if foundDirectDrop[1] == (0,0):
+                            return (None,("l"*numToDrop,"store an item"))
                 else:
                     if foundDirectDrop[1] == (-1,0):
                         return (None,("Ja"*10,"put scrap on scrap pile"))

@@ -124,15 +124,21 @@ def advanceGame():
 
                 numGlassHeartsOnPos = 0
                 for checkGod in src.gamestate.gamestate.gods.values():
-                    if god["lastHeartPos"] != checkGod["lastHeartPos"]:
+                    print("wtf")
+                    print(god)
+                    print(checkGod)
+                    if god["lastHeartPos"] == checkGod["lastHeartPos"]:
                         numGlassHeartsOnPos += 1
+                        print("increment")
+                print("numGlassHeartsOnPos")
+                print(numGlassHeartsOnPos)
 
                 for _i in range(numSpectres):
                     bigPos = (random.randint(1,13),random.randint(1,13),0)
                     enemy = src.characters.Monster(6,6)
-                    enemy.health = 10*numGlassHeartsOnPos
+                    enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)
                     enemy.maxHealth = enemy.health
-                    enemy.baseDamage = numGlassHeartsOnPos
+                    enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
                     enemy.faction = "spectre"
                     enemy.tag = "spectre"
                     enemy.movementSpeed = 2

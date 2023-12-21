@@ -1963,6 +1963,7 @@ class ChatMenu(Chat):
                     options.append(("step north", "step north"))
                     options.append(("step south", "step south"))
                     options.append(("drop items", "drop items"))
+                    options.append(("set name", "set name"))
 
 
                 """
@@ -2050,6 +2051,11 @@ class ChatMenu(Chat):
                     self.partner.runCommandString("l"*10)
                 elif self.selection == "stop":
                     self.partner.runCommandString(".",clear=True)
+                elif self.selection == "set name":
+                    submenue = src.interaction.NameGhoulMenu(npc=self.partner)
+                    character.macroState["submenue"] = submenue
+                    submenue.handleKey("~", noRender=noRender,character=character)
+                    return True
                 elif self.selection == "giveInstruction":
                     submenue = src.interaction.InstructNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue

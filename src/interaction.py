@@ -284,15 +284,34 @@ def stop_playing_music():
         logger.error("stopped music that doesn't play")
     musicProcess.terminate()
 
+def checkResetWindowSize(width,height):
+    print(width)
+    print(height)
+
+    tileHeight = height//51//2*2
+    if tileHeight < 6:
+        tileHeight = 6
+    if tileHeight > 14:
+        tileHeight = 14
+    print(tileHeight)
+
+    newHeight = height//tileHeight
+    newWidth  = (width//tileHeight)*2
+    tileset = tcod.tileset.load_tilesheet(
+        f"scaled_{tileHeight//2}x{tileHeight}.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+    tcodContext.change_tileset(tileset)
+
+    global tcodConsole
+    root_console = tcod.Console(newWidth, newHeight, order="F")
+    tcodConsole = root_console
+
 def setUpTcod():
     startPlayMusic()
 
     import tcod as internalTcod
     global tcod
     tcod = internalTcod
-
-    screen_width = 200
-    screen_height = 55
 
     """
     tileset = tcod.tileset.load_tilesheet(
@@ -305,29 +324,42 @@ def setUpTcod():
         "ownFont2.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
+    """
     tileset = tcod.tileset.load_tilesheet(
-        "Acorntileset.png", 16, 16, tcod.tileset.CHARMAP_CP437
+        "OfMiceAndMechs_7x15.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+    """
+    tileset = tcod.tileset.load_tilesheet(
+        "miniFont.png", 16, 16, tcod.tileset.CHARMAP_CP437
+    )
+    tileset = tcod.tileset.load_tilesheet(
+        "scaled_7x14.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
     tileset =  tcod.tileset.load_truetype_font("./config/font/dejavu-sans-mono-fonts-ttf-2.35/ttf/DejaVuSansMono.ttf",48,24)
     """
 
     context = tcod.context.new_terminal(
-            screen_width,
-            screen_height,
+            None,
+            None,
             tileset=tileset,
             title="OfMiceAndMechs",
             vsync=True,
+            sdl_window_flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
                 )
-    root_console = tcod.Console(screen_width, screen_height, order="F")
+    size = context.recommended_console_size()
+    print(size)
+
+    root_console = tcod.Console(size[0], size[1], order="F")
     global tcodConsole
     global tcodContext
     tcodConsole = root_console
     tcodContext = context
 
+
     root_console.print(x=1,y=1,string="loading game")
 
-    context.present(root_console,integer_scaling=False,keep_aspect=True)
+    context.present(root_console,integer_scaling=True,keep_aspect=True)
 
     import soundfile as sf
     import tcod.sdl.audio as audio
@@ -368,10 +400,12 @@ def setUpTcod():
     global tcodAudio
     tcodAudio = audio
 
+    """
     tcod.lib.SDL_SetWindowFullscreen(
         context.sdl_window_p,
         tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
     )
+    """
 
     global tcodMixer
     global tcodAudioDevice
@@ -3304,12 +3338,13 @@ class SubMenu:
 
             # show the rendered options
             # bad code: urwid specific code
-            main.set_text(
-                (
-                    urwid.AttrSpec("default", "default"),
-                    self.persistentText + "\n\n" + out,
+            if main:
+                main.set_text(
+                    (
+                        urwid.AttrSpec("default", "default"),
+                        self.persistentText + "\n\n" + out,
+                    )
                 )
-            )
 
         return False
 
@@ -3502,7 +3537,7 @@ class SelectionMenu(SubMenu):
             if self.followUp:
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:None})
             return True
-        if not noRender:
+        if not noRender and header:
             header.set_text("")
 
         # let superclass handle the actual selection
@@ -6945,6 +6980,8 @@ def getTcodEvents():
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent):
                 if event.type == "WINDOWCLOSE":
                     src.interaction.stop_playing_music()
@@ -7605,7 +7642,7 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToDummy(pseudoDisplay,chars,offset,size=size)
 
                 if not char.specialRender:
-                    tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                    tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             if not useTiles and not tcodConsole:
                 main.set_text(
                     (
@@ -7701,7 +7738,7 @@ def renderGameDisplay(renderChar=None):
             #printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2),size=(width,height))
             if not renderChar:
                 printUrwidToTcod(main.get_text(),(offsetLeft+2,offsetTop+2))
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             else:
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 
@@ -7987,7 +8024,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+13))
                 printUrwidToTcod("| loading game |",(offsetX+3+16,offsetY+14))
                 printUrwidToTcod("+--------------+",(offsetX+3+16,offsetY+15))
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             def doLoad():
                 if canLoad:
@@ -8211,7 +8248,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"| press y/enter to confirm    |"),(offsetX+2,offsetY+23))
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#fff", "black"),"+-----------------------------+"),(offsetX+2,offsetY+24))
 
-        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
@@ -8368,6 +8405,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                 if isinstance(event, tcod.event.Quit):
                     src.interaction.stop_playing_music()
                     raise SystemExit()
+                if isinstance(event, tcod.event.WindowResized):
+                    checkResetWindowSize(event.width,event.height)
                 if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                     src.interaction.stop_playing_music()
                     raise SystemExit()
@@ -8414,13 +8453,15 @@ def showDeathScreen():
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.stop_playing_music()
                 raise SystemExit()
@@ -8436,13 +8477,15 @@ def showInterruptChoice(text,options):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.stop_playing_music()
                 raise SystemExit()
@@ -8463,13 +8506,15 @@ def showInterruptText(text):
     while 1:
         tcodConsole.clear()
         printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         events = tcod.event.get()
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.stop_playing_music()
                 raise SystemExit()
@@ -8629,7 +8674,7 @@ def showHeroIntro():
     sdl_window = tcod.sdl.video.new_window(
         (console1.width+40) * tileset.tile_width,
         (console1.height+20) * tileset.tile_height,
-        flags=tcod.lib.SDL_WINDOW_RESIZABLE,
+        flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMISED,
     )
     sdl_renderer = tcod.sdl.render.new_renderer(sdl_window, target_textures=True)
     atlas = tcod.render.SDLTilesetAtlas(sdl_renderer, tileset)
@@ -8785,6 +8830,8 @@ def showHeroIntro():
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event,tcod.event.KeyDown):
                 key = event.sym
                 if key == tcod.event.KeySym.RETURN:
@@ -8820,7 +8867,7 @@ def showHeroIntro2():
 
         if stage == 0:
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(62,27))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         if stage == 1:
             offset = (16,7)
@@ -8835,7 +8882,7 @@ def showHeroIntro2():
                 printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY+12))
                 printUrwidToTcod(wall.render(),(totalOffsetX+12*2,totalOffsetY+i))
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(62,27))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
         if stage in (2,3,4,5,6,7,):
             mainRoom = src.rooms.EmptyRoom(None,None,None,None)
@@ -8962,7 +9009,7 @@ def showHeroIntro2():
         if stage in (2,3,4,5,6,7,):
             printUrwidToTcod(fixRoomRender(mainRoom.render()),(56+26-offset[0]*2,15+13-offset[1]))
 
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
 
         events = tcod.event.get()
@@ -8970,6 +9017,8 @@ def showHeroIntro2():
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.stop_playing_music()
                 raise SystemExit()
@@ -9013,7 +9062,7 @@ You """+"."*stageState["substep"]+"""
 """
                 printUrwidToTcod(text,(60,24))
                 printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(63,27))
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 1 or skip:
                 stageState["substep"] += 1
@@ -9114,7 +9163,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(text,(47-min(9,stageState["animationStep"]//2),19-min(stageState["animationStep"],17)))
                 else:
                     printUrwidToTcod(text,(38,2))
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:
                 stageState["animationStep"] += 1
@@ -9401,7 +9450,7 @@ You """+"."*stageState["substep"]+"""
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 printUrwidToTcod(text,(38,2))
                 printUrwidToTcod(terrainRender,(19,5))
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
                 stageState["lastChange"] = time.time()
@@ -9496,7 +9545,7 @@ You """+"."*stageState["substep"]+"""
                 printUrwidToTcod(text2,(42,3))
                 printUrwidToTcod(terrainRender,(19,5))
 
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 2 or skip:
                 stageState = None
@@ -9564,7 +9613,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod("press space to stop watching",(47,4))
                 else:
                     printUrwidToTcod("press space to continue watching",(46,4))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
                 stageState["lastChange"] = time.time()
@@ -9606,7 +9655,7 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(terrainRender,(19+2*offset,5+offset))
                 printUrwidToTcod(text1,(38,2+offset))
                 printUrwidToTcod(text2,(42,3+offset))
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 0.3:
                 stageState["lastChange"] = time.time()
@@ -9638,7 +9687,7 @@ FOLLOW YOUR ORDERS
                 printUrwidToTcod(text2,(44,23))
             if stageState["substep"] > 3:
                 printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):
                 if time.time()-stageState["lastChange"] > 0.1:
@@ -9666,6 +9715,8 @@ FOLLOW YOUR ORDERS
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.stop_playing_music()
                 raise SystemExit()
@@ -9751,13 +9802,13 @@ The pain ate your mind and           \n\
 starts to burn your flesh.                                                \n\
 """]
             if not noFlicker and not subStep < len(textBase)-1:
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
                 time.sleep(0.01)
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
             printUrwidToTcod(text,(45,17))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
                 subStep += 1
@@ -9778,7 +9829,7 @@ starts to burn your flesh.                                                \n\
                 printUrwidToTcod((src.interaction.urwid.AttrSpec(painColor, "black"), painChar),painPos)
 
             if not noFlicker:
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.01)
             text = """
                                                                                    \n\
@@ -9804,7 +9855,7 @@ starts to burn your flesh.                                                \n\
 """
             printUrwidToTcod(text,(38,13))
             if not noFlicker:
-                tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.02)
             textBase = """
 The pain grows and grows and grows and grows and grows and grows and
@@ -9815,7 +9866,7 @@ grows and grows and grows and grows
 """.split(" ")
             text = " ".join(textBase[0:subStep])
             printUrwidToTcod(text,(45,17))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             for _i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
                 if pos[0] > 37 and pos[0] < 121 and pos[1] > 13 and pos[1] < 34:
@@ -10012,7 +10063,7 @@ suggested action:
 press enter to continue
 """
             printUrwidToTcod(text,(45,17))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
@@ -10090,7 +10141,7 @@ to remember"""
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+6,22+6))
-            tcodContext.present(tcodConsole,integer_scaling=False,keep_aspect=True)
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.1)
         else:
             break
@@ -10100,6 +10151,8 @@ to remember"""
             if isinstance(event, tcod.event.Quit):
                 src.interaction.stop_playing_music()
                 raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 src.interaction.stop_playing_music()
                 raise SystemExit()

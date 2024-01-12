@@ -1724,9 +1724,9 @@ I'll teach you along the way.
 You spawned a NPC. The NPC will do some work on the base,
 but that is not why the NPC is so important.
 
-The NPC basically acts as an extralife.
+The NPC basically acts as an extra life.
 If you have no NPCs the game is permadeath.
-You die and the game ends.
+This means you die and the game ends.
 
 If you die and have NPCs in your base,
 you will take control over one of those NPCs.
@@ -1750,7 +1750,7 @@ That GlassStatue leads to the next easiest dungeon.
                 self.showed_npc_respawn_info = True
 
         if self.difficulty == "medium":
-            1/0
+            pass
 
     def deliveredSpecialItem(self,extraParam):
         if self.difficulty == "easy":
@@ -2167,7 +2167,7 @@ This means you can still kill them by bumping into them,
 but the enemies can realistically kill you.
 
 If you bump into the enemies using WASD you can do special attacks.
-Those do much more damag, but often cause exhaustion.
+Those do much more damage, but often cause exhaustion.
 If you have more than 10 exhaustion then you get penalities.
 
 To reduce your exhaustion press .
@@ -4988,6 +4988,17 @@ but they are likely to explode when disturbed.
 You reach out to your implant and it answers.
 It reminds you that have to fetch the glass heart from this dungeon.
 
+The information popups will try to give you some rough directions about what you should be doing.
+Not every interaction will be explained by popup, though.
+Press ? and examine items for more information.
+
+There is a lot to explain and the game has pretty complex systems.
+This quest system is build to help you out with the details.
+It will show you keys to press on the left side of the screen.
+Press those keys when you are stuck.
+
+Those keys are automatically generated and not optimal.
+Once you understand things try to find better solutions.
 """
             quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos,storyText=storyText)
             quest.assignToCharacter(mainChar)
@@ -5008,7 +5019,7 @@ It reminds you that have to fetch the glass heart from this dungeon.
         storyText = """
 You reach out to your implant and it answers:
 
-Your task is to set up a base.
+Katze Your task is to set up a base.
 For this purpose you were given the colony core and its machines.
 The whole process can be somewhat complicated, but you have guidance in this task.
 

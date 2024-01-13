@@ -399,7 +399,7 @@ We should stop watching and do something about that.
         itemsInStorage = {}
         freeStorage = 0
         for room in character.getTerrain().rooms:
-            for storageSlot in room.storageSlots+room.outputSlots:
+            for storageSlot in room.storageSlots:
                 items = room.getItemByPosition(storageSlot[0])
                 if not items:
                     freeStorage += 1

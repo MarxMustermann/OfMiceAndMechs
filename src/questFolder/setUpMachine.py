@@ -213,11 +213,12 @@ If you don't find a {self.itemType} blueprint, research it.
 
             if not machineMachine or (src.gamestate.gamestate.tick < machineMachine.coolDownTimer + machineMachine.coolDown):
 
-                newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
-                return ([newQuest],None)
-                #if not dryRun:
-                #    self.fail(reason="no machine machine found")
-                #return (None,None)
+                if "machining" in character.duties:
+                    newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
+                    return ([newQuest],None)
+                if not dryRun:
+                    self.fail(reason="no machine found")
+                return (None,None)
 
             items = machineMachine.container.getItemByPosition(machineMachine.getPosition(offset=(1,0,0)))
             if items and items[-1].type == "Machine":

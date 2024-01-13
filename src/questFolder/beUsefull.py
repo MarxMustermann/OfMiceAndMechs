@@ -940,11 +940,11 @@ We should stop watching and do something about that.
                         return True
         return None
 
-    def checkTriggerResourceFetching(self,character,room):
+    def checkTriggerResourceFetching(self,character,currentRoom):
         checkedTypes = set()
 
         for trueInput in (True,False):
-            for room in [room, *character.getTerrain().rooms]:
+            for room in [currentRoom, *character.getTerrain().rooms]:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
                 if emptyInputSlots:
@@ -983,10 +983,10 @@ We should stop watching and do something about that.
 
                             if not source:
                                 for otherRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
-                                    if otherRoom == character.container:
+                                    if otherRoom == room:
                                         continue
 
-                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=trueInput)
+                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=trueInput,)
                                     if not outputSlots:
                                         continue
 
@@ -1052,7 +1052,7 @@ We should stop watching and do something about that.
                         self.idleCounter = 0
                         return True
 
-        for room in [room, *character.getTerrain().rooms]:
+        for room in [currentRoom, *character.getTerrain().rooms]:
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":
                     continue

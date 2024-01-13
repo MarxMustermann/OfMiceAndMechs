@@ -124,14 +124,8 @@ def advanceGame():
 
                 numGlassHeartsOnPos = 0
                 for checkGod in src.gamestate.gamestate.gods.values():
-                    print("wtf")
-                    print(god)
-                    print(checkGod)
                     if god["lastHeartPos"] == checkGod["lastHeartPos"]:
                         numGlassHeartsOnPos += 1
-                        print("increment")
-                print("numGlassHeartsOnPos")
-                print(numGlassHeartsOnPos)
 
                 for _i in range(numSpectres):
                     bigPos = (random.randint(1,13),random.randint(1,13),0)
@@ -285,15 +279,11 @@ def stop_playing_music():
     musicProcess.terminate()
 
 def checkResetWindowSize(width,height):
-    print(width)
-    print(height)
-
     tileHeight = height//51//2*2
     if tileHeight < 6:
         tileHeight = 6
     if tileHeight > 14:
         tileHeight = 14
-    print(tileHeight)
 
     newHeight = height//tileHeight
     newWidth  = (width//tileHeight)*2
@@ -330,9 +320,6 @@ def setUpTcod():
     )
     """
     tileset = tcod.tileset.load_tilesheet(
-        "miniFont.png", 16, 16, tcod.tileset.CHARMAP_CP437
-    )
-    tileset = tcod.tileset.load_tilesheet(
         "scaled_7x14.png", 16, 16, tcod.tileset.CHARMAP_CP437
     )
     """
@@ -348,7 +335,6 @@ def setUpTcod():
             sdl_window_flags=tcod.lib.SDL_WINDOW_RESIZABLE | tcod.lib.SDL_WINDOW_MAXIMIZED,
                 )
     size = context.recommended_console_size()
-    print(size)
 
     root_console = tcod.Console(size[0], size[1], order="F")
     global tcodConsole

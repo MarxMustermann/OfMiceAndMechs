@@ -399,7 +399,7 @@ We should stop watching and do something about that.
         itemsInStorage = {}
         freeStorage = 0
         for room in character.getTerrain().rooms:
-            for storageSlot in room.storageSlots:
+            for storageSlot in room.storageSlots+room.outputSlots:
                 items = room.getItemByPosition(storageSlot[0])
                 if not items:
                     freeStorage += 1
@@ -422,7 +422,7 @@ We should stop watching and do something about that.
                     self.addQuest(newQuest)
                     return True
 
-            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Vial",1,1),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Bolt",10,5),("Vial",1,1),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
             for checkItem in checkItems:
                 if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
                     self.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))

@@ -457,7 +457,7 @@ We should stop watching and do something about that.
                     machinesInStorage[item.toProduce] = machinesInStorage.get(item.toProduce,0)+1
 
         for room in character.getTerrain().rooms:
-            for buildSite in room.buildSites:
+            for buildSite in random.sample(room.buildSites,len(room.buildSites)):
                 if buildSite[1] != "Machine":
                     continue
                 if buildSite[2]["toProduce"] in machinesInStorage:
@@ -818,13 +818,13 @@ We should stop watching and do something about that.
             return None
         return None
 
-    def checkTriggerHauling(self,character,room):
+    def checkTriggerHauling(self,character,currentRoom):
         checkedTypes = set()
         rooms = character.getTerrain().rooms[:]
         random.shuffle(rooms)
 
         for trueInput in (True,False):
-            for room in [room, *rooms]:
+            for room in [currentRoom, *rooms]:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
                 random.shuffle(emptyInputSlots)
 
@@ -872,7 +872,7 @@ We should stop watching and do something about that.
                                 return True
 
         for trueInput in (True,False):
-            for room in [room, *character.getTerrain().rooms]:
+            for room in [currentRoom, *character.getTerrain().rooms]:
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
                 if emptyInputSlots:

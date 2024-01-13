@@ -830,7 +830,7 @@ We should stop watching and do something about that.
 
                 if emptyInputSlots:
 
-                    for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
+                    for inputSlot in emptyInputSlots:
                         if inputSlot[1] is None:
                             items = room.getItemByPosition(inputSlot[0])
                             if items:
@@ -844,18 +844,21 @@ We should stop watching and do something about that.
                             hasItem = True
 
                         if not hasItem:
-                            sources = room.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=trueInput)
+                            allowStorage = False
+                            if inputSlot[2].get("desiredState") == "filled":
+                                allowStorage = True
+                            sources = room.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=trueInput)
                             if not sources:
                                 continue
 
                         reason = "finish hauling"
                         if inputSlot[1]:
-                            self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason))
+                            self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason,targetPosition=inputSlot[0]))
                             if character.container != room:
                                 self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                         else:
                             if hasItem:
-                                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason))
+                                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason,targetPosition=inputSlot[0]))
                                 if character.container != room:
                                     self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                                 self.idleCounter = 0

@@ -184,7 +184,7 @@ class Room:
                 item.bolted = False
                 self.addItem(item,outputSlot[0])
 
-    def getNonEmptyOutputslots(self,itemType=None,allowStorage=True):
+    def getNonEmptyOutputslots(self,itemType=None,allowStorage=True,allowDesiredFilled=True):
         result = []
         outputSlots = self.outputSlots[:]
         random.shuffle(outputSlots)
@@ -206,6 +206,9 @@ class Room:
             random.shuffle(storageSlots)
             for storageSlot in storageSlots:
                 if itemType and storageSlot[1] is not None and storageSlot[1] != itemType:
+                    continue
+
+                if (not allowDesiredFilled) and storageSlot[2].get("desiredState",None) == "filled":
                     continue
 
                 items = self.getItemByPosition(storageSlot[0])

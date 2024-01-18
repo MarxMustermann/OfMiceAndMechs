@@ -4,3 +4,5 @@ import src.itemFolder.military.landmine
 import src.itemFolder.military.mortar
 import src.itemFolder.military.shocker
 import src.itemFolder.military.sword
+import src.itemFolder.military.weaponRack
+import src.itemFolder.military.armorStand

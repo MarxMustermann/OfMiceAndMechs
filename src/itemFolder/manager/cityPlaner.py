@@ -346,6 +346,7 @@ class CityPlaner(src.items.Item):
             options.append(("productionRoom","production room"))
             options.append(("gooProcessing","goo processing"))
             options.append(("weaponProduction","weapon production"))
+            options.append(("boltProduction","bolt production"))
             options.append(("smokingRoom","smoking room"))
             options.append(("temple","temple"))
             options.append(("exit","exit menu"))
@@ -510,6 +511,20 @@ class CityPlaner(src.items.Item):
                     inputSlots.append(((x+2,y,0),"MetalBars",{}))
                     buildSites.append( ((x+3,y,0),"Machine",{"toProduce":"ScrapCompactor"}))
                     storageSlots.append(((x+4,y,0),"ScrapCompactor",{}))
+                walkingSpaces.append((6,y,0))
+            walkingSpaces.append((6,11,0))
+
+        if floorPlanType == "boltProduction":
+            for y in (1,4,6,8,11,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            for y in (2,3,5,7,9,10,):
+                for x in (1,7,):
+                    inputSlots.append( ((x  ,y,0),"Scrap",{}))
+                    buildSites.append( ((x+1,y,0),"ScrapCompactor",{}))
+                    inputSlots.append(((x+2,y,0),"MetalBars",{}))
+                    buildSites.append( ((x+3,y,0),"Machine",{"toProduce":"Bolt"}))
+                    storageSlots.append(((x+4,y,0),"Bolt",{}))
                 walkingSpaces.append((6,y,0))
             walkingSpaces.append((6,11,0))
 

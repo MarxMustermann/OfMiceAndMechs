@@ -1818,7 +1818,6 @@ There are many systems you have not seen yet.
             for god,godData in src.gamestate.gamestate.gods.items():
                 if godData["lastHeartPos"] == (self.activeStory["mainChar"].getTerrain().xPosition,self.activeStory["mainChar"].getTerrain().yPosition):
                     numGlassHearts += 1
-                    print(godData)
 
             if numGlassHearts == 7:
                 text = """

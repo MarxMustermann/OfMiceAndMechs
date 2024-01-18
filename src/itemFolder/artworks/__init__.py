@@ -17,3 +17,4 @@ import src.itemFolder.artworks.staffArtwork
 import src.itemFolder.artworks.teleporterArtwork
 import src.itemFolder.artworks.tradingArtwork
 import src.itemFolder.artworks.tradingArtwork2
+import src.itemFolder.artworks.stockTracker

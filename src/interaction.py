@@ -130,11 +130,12 @@ def advanceGame():
                 for _i in range(numSpectres):
                     bigPos = (random.randint(1,13),random.randint(1,13),0)
                     enemy = src.characters.Monster(6,6)
-                    enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)
+                    enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)//2+1
                     enemy.maxHealth = enemy.health
                     enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
                     enemy.faction = "spectre"
                     enemy.tag = "spectre"
+                    enemy.name = "stealerSpectre"
                     enemy.movementSpeed = 2
                     enemy.registers["HOMETx"] = spectreHome[0]
                     enemy.registers["HOMETy"] = spectreHome[1]
@@ -160,6 +161,33 @@ def advanceGame():
                     enemy.quests.append(quest)
 
                     quest = src.quests.questMap["Vanish"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+
+                    bigPos = (random.randint(1,13),random.randint(1,13),0)
+                    enemy = src.characters.Monster(6,6)
+                    enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
+                    enemy.maxHealth = enemy.health
+                    enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
+                    enemy.faction = "spectre"
+                    enemy.tag = "spectre"
+                    enemy.name = "killerSpectre"
+                    enemy.movementSpeed = 1.8
+                    enemy.registers["HOMETx"] = spectreHome[0]
+                    enemy.registers["HOMETy"] = spectreHome[1]
+                    enemy.registers["HOMEx"] = 7
+                    enemy.registers["HOMEy"] = 7
+                    enemy.personality["moveItemsOnCollision"] = False
+                    rooms = terrain.getRoomByPosition(bigPos)
+                    if rooms:
+                        rooms[0].addCharacter(enemy,6,6)
+                    else:
+                        terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+
+                    quest = src.quests.questMap["ClearTerrain"]()
                     quest.autoSolve = True
                     quest.assignToCharacter(enemy)
                     quest.activate()
@@ -7537,6 +7565,8 @@ def renderGameDisplay(renderChar=None):
                         healthtext = "testt"
 
                         stepSize = char.maxHealth/15
+                        if stepSize == 0:
+                            stepSize = 1
                         healthRate = int(char.health/stepSize)
 
                         if char.health == 0:

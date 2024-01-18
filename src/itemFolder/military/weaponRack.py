@@ -3,82 +3,84 @@ import random
 import src
 
 
-class Armor(src.items.Item):
+class WeaponRack(src.items.Item):
     """
     ingame item increasing the players armor
     """
 
-    type = "Armor"
-    name = "armor"
+    type = "WeaponRack"
+    name = "weapon rack"
     bolted = False
-    walkable = True
-    damageType = "attacked"
+    walkable = False
 
     def __init__(self):
         """
         set up internal state
         """
 
-        super().__init__(display="ar")
+        super().__init__(display="RW")
 
-        self.armorValue = random.randint(1, 5)
+        self.applyOptions.extend(
+                        [
+                                                                ("addSword", "add swords"),
+                                                                ("takeBest", "take best sword"),
+                                                                ("checkSwords", "check swords"),
+                                                                ("takeWorst", "take worst sword"),
+                        ]
+                        )
+        self.applyMap = {
+                    "addSword": self.addSword,
+                    "takeBest":self.takeBest,
+                    "checkSwords":self.checkSwords,
+                    "takeWorst":self.takeWorst,
+                        }
 
-    def getArmorValue(self, damageType):
-        """
-        returns the items armor value
+        self.swords = []
 
-        Parameters:
-            damageType: the damage type to armor against
-        """
+    def addSword(self,character):
+        items = character.searchInventory("Sword")
+        if not items:
+            character.addMessage("you have no swords with you")
+            return
+        if len(items) >= 25:
+            character.addMessage("weapon rack full")
+            return
+        self.swords.extend(items)
+        character.removeItemsFromInventory(items)
 
-        if damageType == self.damageType:
-            return self.armorValue
-        if damageType == "explosion":
-            return self.armorValue*5
-        return 0
+    def checkSwords(self,character):
+        qualites = []
+        for sword in self.swords:
+            qualites.append(sword.baseDamage)
+        qualites = sorted(qualites)
+        qualites.reverse()
+        character.addMessage(f"qualites {qualites}")
+        character.addMessage(f"numSwords {len(self.swords)}")
 
-    def getLongInfo(self):
-        """
-        returns a longer than normal description text
+    def takeBest(self,character):
+        self.take(character,best=True)
 
-        Returns:
-            the description text
-        """
+    def takeWorst(self,character):
+        self.take(character,best=False)
 
-        text = super().getLongInfo()
+    def take(self,character,best=True):
+        if character.getFreeInventorySpace() < 1:
+            character.addMessage("you have no free inventory space")
+            return
+        if not self.swords:
+            character.addMessage("no swords left")
+            return
 
-        text += f"""
-armorvalue:
-{self.armorValue}
+        selected = None
+        for sword in self.swords:
+            if best:
+                if selected == None or selected.baseDamage < sword.baseDamage:
+                    selected = sword
+            else:
+                if selected == None or selected.baseDamage > sword.baseDamage:
+                    selected = sword
 
-description:
-protects you in combat
+        character.addToInventory(selected)
+        self.swords.remove(selected)
 
-"""
-        return text
-
-    def apply(self, character):
-        """
-        handle a character trying to use this item
-        by equiping it
-        """
-
-        character.addMessage(f"you equip the armor and wear a {self.armorValue} armor now")
-
-        if character.armor:
-            oldArmor = character.armor
-            character.armor = None
-            self.container.addItem(oldArmor,self.getPosition())
-
-        character.armor = self
-        self.container.removeItem(self)
-
-    def upgrade(self):
-        self.armorValue += 1
-        super().upgrade()
-
-    def downgrade(self):
-        self.armorValue -= 1
-        super().downgrade()
-
-src.items.addType(Armor)
+src.items.addType(WeaponRack)

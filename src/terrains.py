@@ -391,7 +391,8 @@ class Terrain:
         oldBigPos = character.getBigPosition()
         if (oldBigPos == (0,0,0)):
             return
-        self.charactersByTile[oldBigPos].remove(character)
+        if character in self.charactersByTile[oldBigPos]:
+            self.charactersByTile[oldBigPos].remove(character)
 
         while character in self.characters:
             self.characters.remove(character)
@@ -1102,7 +1103,6 @@ class Terrain:
                 break
 
         if character == src.gamestate.gamestate.mainChar:
-            print(paths.get(targetPos))
             return paths.get(targetPos)
 
     def getPathCommandTile(self,tilePos,startPos,targetPos,tryHard=False,avoidItems=None,localRandom=None,ignoreEndBlocked=None,character=None,clearing=False):

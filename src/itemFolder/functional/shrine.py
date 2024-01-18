@@ -1,6 +1,7 @@
 import random
 
 import src
+import math
 
 
 class Shrine(src.items.Item):
@@ -154,6 +155,7 @@ class Shrine(src.items.Item):
                 numCharacters += 1
 
         baseCost *= 1.05**numCharacters
+        baseCost = math.ceil(baseCost*10)/10
         return baseCost
 
     def getDutyMap(self,character):
@@ -179,6 +181,18 @@ class Shrine(src.items.Item):
         else:
             return 1
 
+    def getCost(self,wishType,character):
+        baseCost = 1
+        if wishType == "spawn scrap":
+            baseCost = 20
+        if wishType == "spawn walls":
+            baseCost = 10
+
+        glassHeartRebate = self.get_glass_heart_rebate()
+        baseCost = baseCost*glassHeartRebate
+
+        return baseCost
+
     def getRewards(self,character,selected=None):
         glassHeartRebate = self.get_glass_heart_rebate()
 
@@ -202,14 +216,16 @@ class Shrine(src.items.Item):
             duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","machining","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning"]
 
             for duty in duties:
-                options.append((f"spawn {duty} NPC",f"({cost}) {dutyMap.get(duty,0)} spawn {duty} NPC"))
+                specificCost = cost*(dutyMap.get(duty,0)+1)
+                specificCost = math.ceil(specificCost*10)/10
+                options.append((f"spawn {duty} NPC",f"({specificCost}) {dutyMap.get(duty,0)} spawn {duty} NPC"))
 
         elif self.god == 2:
-            options.append(("spawn scrap","(20) respawn scrap field"))
+            cost = self.getCost("spawn scrap",character)
+            options.append(("spawn scrap",f"({cost}) respawn scrap field"))
 
         elif self.god == 3:
-            cost = 10
-            cost *= glassHeartRebate
+            cost = self.getCost("spawn walls",character)
             options.append(("spawn walls",f"({cost}) spawn walls"))
 
         elif self.god == 4:
@@ -236,17 +252,19 @@ class Shrine(src.items.Item):
                     numMetalBars += 1
                     continue
 
-            cost = 10
-            if foundArmor:
-                cost = cost/2
-            cost *= glassHeartRebate
-            options.append(("improve armor",f"({cost}) improve armor"))
+            if character.armor and character.armor.armorValue < 8:
+                cost = 10
+                if foundArmor:
+                    cost = cost/2
+                cost *= glassHeartRebate
+                options.append(("improve armor",f"({cost}) improve armor"))
 
-            cost = 10
-            if foundWeapon:
-                cost = cost/2
-            cost *= glassHeartRebate
-            options.append(("upgrade weapon",f"({cost}) upgrade weapon"))
+            if character.weapon and character.weapon.baseDamage < 30:
+                cost = 10
+                if foundWeapon:
+                    cost = cost/2
+                cost *= glassHeartRebate
+                options.append(("upgrade weapon",f"({cost}) upgrade weapon"))
 
             cost = 10
             cost = cost-0.5*numMetalBars
@@ -269,9 +287,12 @@ class Shrine(src.items.Item):
             if character.maxHealth >= 500:
                 character.addMessage("you can't improve your health further")
                 return
-
+            cost *= glassHeartRebate
             options.append(("improve your max health",f"({cost}) improve your max health"))
-            options.append(("heal","(10) heal"))
+
+            cost = 5
+            cost *= glassHeartRebate
+            options.append(("heal",f"({cost}) heal"))
             #options.append(("healingThreashold","(10) improve your healing threashold"))
             #options.append(("healingModifier","(10) improve your healing amount"))
 
@@ -357,8 +378,8 @@ class Shrine(src.items.Item):
             self.spawnBurnedInNPC(character,"cleaning")
 
         elif extraInfo["rewardType"] == "spawn scrap":
-            text = "spawning scrap"
-            self.spawnScrap(character)
+             self.spawnScrap(character)
+             text = None
 
         elif extraInfo['rewardType'] == "upgrade weapon":
             foundWeapon = None
@@ -447,6 +468,7 @@ class Shrine(src.items.Item):
                 foundVial = item
             if foundVial:
                 cost /= 2
+            cost *= glassHeartRebate
 
             if self.getTerrain().mana >= cost:
                 text = "improving your health"
@@ -455,16 +477,20 @@ class Shrine(src.items.Item):
                 character.maxHealth += increaseValue
                 character.addMessage(f"your max health is increased by {increaseValue} to {character.maxHealth}")
                 self.getTerrain().mana -= cost
-                character.inventory.remove(foundVial)
+                if foundVial:
+                    character.inventory.remove(foundVial)
             else:
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "heal":
-            if self.getTerrain().mana >= 10:
+            cost = 5
+            cost *= glassHeartRebate
+
+            if self.getTerrain().mana >= cost:
                 text = "healing"
-                character.heal(200,"praying")
+                character.heal(200,"wishing for health")
                 character.addMessage(f"your are healed")
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -517,7 +543,8 @@ class Shrine(src.items.Item):
         self.getRewards(character,selected=extraInfo["rewardType"])
 
         character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
-        character.addMessage(text)
+        if text:
+            character.addMessage(text)
 
     def spawnBurnedInNPC(self, character, duty):
         cost = self.getCharacterSpawningCost(character)
@@ -535,6 +562,9 @@ class Shrine(src.items.Item):
             cost /= 2
             character.inventory.remove(foundFlask)
         cost *= glassHeartRebate
+
+        dutyMap = self.getDutyMap(character)
+        cost = cost*dutyMap.get(duty,1)
 
         text = ""
         if not mana >= cost:
@@ -628,12 +658,13 @@ press enter to continue"""%(npc.name,duty,terrain)
             character.addMessage(text)
 
     def spawnScrap(self, character):
+        cost = self.getCost("spawn scrap",character)
         mana = self.getTerrain().mana
         text = ""
-        if not mana >= 20:
+        if not mana >= cost:
             text = "not enough glass tears"
         else:
-            self.getTerrain().mana -= 20
+            self.getTerrain().mana -= cost
 
             text = "spawning scrap field"
             terrain = self.getTerrain()
@@ -643,8 +674,6 @@ press enter to continue"""%(npc.name,duty,terrain)
                     pos = (scrapField[0]*15+random.randint(1,13),scrapField[1]*15+random.randint(1,13),0)
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(15,20))
                     terrain.addItem(scrap,pos)
-
-            text = "spawing food into your inventory"
 
         if character:
             character.addMessage(text)

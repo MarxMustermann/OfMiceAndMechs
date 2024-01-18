@@ -51,6 +51,8 @@ I'm currently working on making this thing more fluid and hope to get tha actual
 I'd love to get feedback. Do not hestiate to contact me.
 
 The game will continue to run, but there is not further content for you to see.
+The rules changed ab bit, though.
+The game will actually end now as soon as you loose a single glass heart, now.
 
 = press enter to continue =
 """

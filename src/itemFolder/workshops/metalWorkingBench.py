@@ -65,6 +65,8 @@ class MetalWorkingBench(src.items.Item):
             options.append(("Throne","Throne"))
             options.append(("ItemCollector","ItemCollector"))
             options.append(("PersonnelTracker","PersonnelTracker"))
+            options.append(("ArmorStand","ArmorStand"))
+            options.append(("WeaponRack","WeaponRack"))
             options.append(("byName","produce by name"))
             submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
             submenue.tag = "metalWorkingProductSelection"

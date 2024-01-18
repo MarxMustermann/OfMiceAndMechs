@@ -829,7 +829,6 @@ We should stop watching and do something about that.
                 random.shuffle(emptyInputSlots)
 
                 if emptyInputSlots:
-
                     for inputSlot in emptyInputSlots:
                         if inputSlot[1] is None:
                             items = room.getItemByPosition(inputSlot[0])
@@ -844,7 +843,7 @@ We should stop watching and do something about that.
                             hasItem = True
 
                         if not hasItem:
-                            allowStorage = False
+                            allowStorage = trueInput
                             if inputSlot[2].get("desiredState") == "filled":
                                 allowStorage = True
                             sources = room.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=trueInput)

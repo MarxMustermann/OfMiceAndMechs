@@ -1,6 +1,7 @@
+pyinstaller==6.3.0
+tcod
 urwid
 pre-commit
 pygame
 soundfile
-tcod
 requests

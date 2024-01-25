@@ -1,0 +1,25 @@
+name: Package Application with Pyinstaller
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Package Application
+      uses: hero-clashes/pyinstaller-action-windows@python3-10-pyinstaller-5-3
+      with:
+        path: .
+        spec: OfMiceAndMechs.spec
+    - uses: actions/upload-artifact@v2
+      with:
+        name: OfMiceAndMechs
+        path: ./dist/windows

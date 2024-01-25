@@ -24,24 +24,3 @@ jobs:
         name: OfMiceAndMechs-win
         path: ./dist/windows
         compression-level: 9
-  build-linux:
-
-    runs-on: ubuntu-22.04
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Package Application
-      uses: MarxMustermann/pyinstaller-action-linux@python3.10
-      with:
-        path: .
-        spec: OfMiceAndMechs.spec
-    - uses: actions/upload-artifact@v4
-      with:
-        name: OfMiceAndMechs
-        path: ./dist/linux
-        compression-level: 9
-  build-debug:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v2

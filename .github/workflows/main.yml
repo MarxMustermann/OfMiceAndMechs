@@ -38,6 +38,6 @@ jobs:
         spec: OfMiceAndMechs.spec
     - uses: actions/upload-artifact@v4
       with:
-        name: OfMiceAndMechs-linux
+        name: OfMiceAndMechs
         path: ./dist/linux
         compression-level: 9

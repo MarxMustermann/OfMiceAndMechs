@@ -34,6 +34,7 @@ jobs:
         cp -r scaled_* dist/executeMe/
         cp -r data/ dist/executeMe/
         cp -r states/ dist/executeMe/
+        cp -r sounds/ dist/executeMe/
     - uses: actions/upload-artifact@v4
       with:
         name: OfMiceAndMechs-win

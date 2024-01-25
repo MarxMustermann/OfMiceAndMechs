@@ -1,5 +1,5 @@
 pyinstaller==6.3.0
-tcod==14
+tcod==13
 urwid
 pre-commit
 pygame

@@ -43,3 +43,5 @@ jobs:
         compression-level: 9
   build-debug:
     runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v2

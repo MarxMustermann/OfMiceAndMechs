@@ -13,12 +13,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
     - name: Package Application
       uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
       with:
         path: .
         spec: OfMiceAndMechs.spec
+    - run: |
+        cp -r config/ dist/windows/
+        cp -r scaled_* dist/windows/
+        cp -r data/ dist/windows/
+        cp -r states/ dist/windows/
+        cp -r sounds/ dist/windows/
     - uses: actions/upload-artifact@v4
       with:
         name: OfMiceAndMechs-win

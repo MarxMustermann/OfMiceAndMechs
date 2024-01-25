@@ -1499,21 +1499,31 @@ class MainGame(BasicPhase):
         self.takenPositions.append((4,5))
         self.takenPositions.append((1,1))
 
+        src.gamestate.gamestate.difficulty = self.difficulty
+
         dungeonPositions = []
-        while len(dungeonPositions) < 7:
+        numDungeons = 7
+        if self.difficulty == "easy":
+            numDungeons = 2
+
+        while len(dungeonPositions) < numDungeons:
             pos = (random.randint(1,13),random.randint(1,13))
             if pos in self.takenPositions:
                 continue
             dungeonPositions.append(pos)
             self.takenPositions.append(pos)
 
-        self.setUpGlassHeartDungeon(dungeonPositions[0],3,1*difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[1],4,1.5*difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[2],5,2*difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[3],6,2.5*difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[4],7,3*difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[5],2,3.5*difficultyModifier)
-        self.setUpGlassHeartDungeon(dungeonPositions[6],1,4*difficultyModifier)
+        if self.difficulty == "easy":
+            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
+        else:
+            self.setUpGlassHeartDungeon(dungeonPositions[0],3,1*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[1],4,1.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[2],5,2*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[3],6,2.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[4],7,3*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[5],2,3.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[6],1,4*difficultyModifier)
 
         if self.preselection == "Colony":
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
@@ -1789,19 +1799,11 @@ What the NPC does does not matter on easy.
 
             if not self.showed_glass_heart_info2:
                 text = """
-You claimed ownership of a second GlassHeart.
-Now collect the rest of them.
+You claimed ownership of the second GlassHeart.
+On easy this means that you collected all GlassHearts.
 
-Use the GlassStatues to get to the remaining dungeons.
-Complete them from right to left to do the easier dungeons first.
-
-Check out the different Shrines (\\/) for rewards.
-Some Shrines allow you to buy charactor upgrades.
-Another one allows you to heal.
-
-That is basically all you need to know to beat the easy difficulty.
-See you again when you collected all GlassHearts or on medium difficulty.
-There are many systems you have not seen yet.
+Now there is only one step left to do.
+Use the Throne (TT) in the middle of the Temple to win the game.
 """
                 submenu = src.interaction.TextMenu(text+"""
 
@@ -1814,6 +1816,7 @@ There are many systems you have not seen yet.
                 self.showed_glass_heart_info2 = True
                 return
 
+            '''
             numGlassHearts = 0
             for god,godData in src.gamestate.gamestate.gods.items():
                 if godData["lastHeartPos"] == (self.activeStory["mainChar"].getTerrain().xPosition,self.activeStory["mainChar"].getTerrain().yPosition):
@@ -1822,9 +1825,7 @@ There are many systems you have not seen yet.
             if numGlassHearts == 7:
                 text = """
 You claimed all GlassHearts.
-Now there is only one step left to do.
 
-Use the Throne (TT) in the middle of the Temple.
 And when you are done then try medium difficulty, much more will be explained there.
 """
                 submenu = src.interaction.TextMenu(text+"""
@@ -1837,6 +1838,7 @@ And when you are done then try medium difficulty, much more will be explained th
 
                 self.showed_glass_heart_info2 = True
                 return
+            '''
 
     def changedTerrain(self,extraParam):
         item = extraParam["character"]
@@ -3512,53 +3514,55 @@ but they are likely to explode when disturbed.
         item.itemID = 1
         temple.addItem(item,(2,2,0))
 
-        item = src.items.itemMap["Shrine"]()
-        item.god = 2
-        temple.addItem(item,(3,2,0))
+        if not self.difficulty == "easy":
+            item = src.items.itemMap["Shrine"]()
+            item.god = 2
+            temple.addItem(item,(3,2,0))
 
         item = src.items.itemMap["GlassStatue"]()
         item.itemID = 2
         temple.addItem(item,(4,2,0))
 
-        item = src.items.itemMap["Shrine"]()
-        item.god = 3
-        temple.addItem(item,(7,1,0))
+        if not self.difficulty == "easy":
+            item = src.items.itemMap["Shrine"]()
+            item.god = 3
+            temple.addItem(item,(7,1,0))
 
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 3
-        temple.addItem(item,(7,2,0))
+            item = src.items.itemMap["GlassStatue"]()
+            item.itemID = 3
+            temple.addItem(item,(7,2,0))
 
-        item = src.items.itemMap["Shrine"]()
-        item.god = 4
-        temple.addItem(item,(10,1,0))
+            item = src.items.itemMap["Shrine"]()
+            item.god = 4
+            temple.addItem(item,(10,1,0))
 
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 4
-        temple.addItem(item,(10,2,0))
+            item = src.items.itemMap["GlassStatue"]()
+            item.itemID = 4
+            temple.addItem(item,(10,2,0))
 
-        item = src.items.itemMap["Shrine"]()
-        item.god = 5
-        temple.addItem(item,(11,5,0))
+            item = src.items.itemMap["Shrine"]()
+            item.god = 5
+            temple.addItem(item,(11,5,0))
 
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 5
-        temple.addItem(item,(10,5,0))
+            item = src.items.itemMap["GlassStatue"]()
+            item.itemID = 5
+            temple.addItem(item,(10,5,0))
 
-        item = src.items.itemMap["Shrine"]()
-        item.god = 6
-        temple.addItem(item,(7,5,0))
+            item = src.items.itemMap["Shrine"]()
+            item.god = 6
+            temple.addItem(item,(7,5,0))
 
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 6
-        temple.addItem(item,(7,4,0))
+            item = src.items.itemMap["GlassStatue"]()
+            item.itemID = 6
+            temple.addItem(item,(7,4,0))
 
-        item = src.items.itemMap["Shrine"]()
-        item.god = 7
-        temple.addItem(item,(8,4,0))
+            item = src.items.itemMap["Shrine"]()
+            item.god = 7
+            temple.addItem(item,(8,4,0))
 
-        item = src.items.itemMap["GlassStatue"]()
-        item.itemID = 7
-        temple.addItem(item,(8,5,0))
+            item = src.items.itemMap["GlassStatue"]()
+            item.itemID = 7
+            temple.addItem(item,(8,5,0))
 
         item = src.items.itemMap["Throne"]()
         temple.addItem(item,(6,6,0))

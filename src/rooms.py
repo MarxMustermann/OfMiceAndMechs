@@ -912,6 +912,9 @@ class Room:
             for item in self.itemsOnFloor:
                 display = item.render()
                 #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
+                if item.yPosition == None:
+                    logger.error("drawing non positioned item")
+                    continue
                 chars[item.yPosition][item.xPosition] = display
 
             # draw characters

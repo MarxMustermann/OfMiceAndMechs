@@ -110,88 +110,90 @@ def advanceGame():
             increaseAmount = min(1,terrain.maxMana-terrain.mana)
             terrain.mana += increaseAmount
 
-        for (godId,god) in src.gamestate.gamestate.gods.items():
-            if ( (god["lastHeartPos"][0] != god["home"][0]) or
-                 (god["lastHeartPos"][1] != god["home"][1])):
+        if not src.gamestate.gamestate.difficulty == "easy":
+            for (godId,god) in src.gamestate.gamestate.gods.items():
+                if ( (god["lastHeartPos"][0] != god["home"][0]) or
+                     (god["lastHeartPos"][1] != god["home"][1])):
 
-                terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
+                    terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
 
-                spectreHome = (god["home"][0],god["home"][1],0)
+                    spectreHome = (god["home"][0],god["home"][1],0)
 
-                numEnemies = 1
-                numSpectres = 0
-                numSpectres += numEnemies
+                    numEnemies = 1
+                    numSpectres = 0
+                    numSpectres += numEnemies
 
-                numGlassHeartsOnPos = 0
-                for checkGod in src.gamestate.gamestate.gods.values():
-                    if god["lastHeartPos"] == checkGod["lastHeartPos"]:
-                        numGlassHeartsOnPos += 1
+                    numGlassHeartsOnPos = 0
+                    for checkGod in src.gamestate.gamestate.gods.values():
+                        if god["lastHeartPos"] == checkGod["lastHeartPos"]:
+                            numGlassHeartsOnPos += 1
 
-                for _i in range(numSpectres):
-                    bigPos = (random.randint(1,13),random.randint(1,13),0)
-                    enemy = src.characters.Monster(6,6)
-                    enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)//2+1
-                    enemy.maxHealth = enemy.health
-                    enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
-                    enemy.faction = "spectre"
-                    enemy.tag = "spectre"
-                    enemy.name = "stealerSpectre"
-                    enemy.movementSpeed = 2
-                    enemy.registers["HOMETx"] = spectreHome[0]
-                    enemy.registers["HOMETy"] = spectreHome[1]
-                    enemy.registers["HOMEx"] = 7
-                    enemy.registers["HOMEy"] = 7
-                    enemy.personality["moveItemsOnCollision"] = False
-                    rooms = terrain.getRoomByPosition(bigPos)
-                    if rooms:
-                        rooms[0].addCharacter(enemy,6,6)
-                    else:
-                        terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                    for _i in range(numSpectres):
+                        enemy = src.characters.Monster(6,6)
+                        enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)//2+1
+                        enemy.maxHealth = enemy.health
+                        enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
+                        enemy.faction = "spectre"
+                        enemy.tag = "spectre"
+                        enemy.name = "stealerSpectre"
+                        enemy.movementSpeed = 2
+                        enemy.registers["HOMETx"] = spectreHome[0]
+                        enemy.registers["HOMETy"] = spectreHome[1]
+                        enemy.registers["HOMEx"] = 7
+                        enemy.registers["HOMEy"] = 7
+                        enemy.personality["moveItemsOnCollision"] = False
 
-                    quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId)
-                    quest.autoSolve = True
-                    quest.assignToCharacter(enemy)
-                    quest.activate()
-                    enemy.quests.append(quest)
+                        bigPos = (random.randint(1,13),random.randint(1,13),0)
+                        rooms = terrain.getRoomByPosition(bigPos)
+                        if rooms:
+                            rooms[0].addCharacter(enemy,6,6)
+                        else:
+                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
 
-                    quest = src.quests.questMap["GoHome"]()
-                    quest.autoSolve = True
-                    quest.assignToCharacter(enemy)
-                    quest.activate()
-                    enemy.quests.append(quest)
+                        quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId)
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
 
-                    quest = src.quests.questMap["Vanish"]()
-                    quest.autoSolve = True
-                    quest.assignToCharacter(enemy)
-                    quest.activate()
-                    enemy.quests.append(quest)
+                        quest = src.quests.questMap["GoHome"]()
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
+
+                        quest = src.quests.questMap["Vanish"]()
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
 
 
-                    bigPos = (random.randint(1,13),random.randint(1,13),0)
-                    enemy = src.characters.Monster(6,6)
-                    enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
-                    enemy.maxHealth = enemy.health
-                    enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
-                    enemy.faction = "spectre"
-                    enemy.tag = "spectre"
-                    enemy.name = "killerSpectre"
-                    enemy.movementSpeed = 1.8
-                    enemy.registers["HOMETx"] = spectreHome[0]
-                    enemy.registers["HOMETy"] = spectreHome[1]
-                    enemy.registers["HOMEx"] = 7
-                    enemy.registers["HOMEy"] = 7
-                    enemy.personality["moveItemsOnCollision"] = False
-                    rooms = terrain.getRoomByPosition(bigPos)
-                    if rooms:
-                        rooms[0].addCharacter(enemy,6,6)
-                    else:
-                        terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                        bigPos = (random.randint(1,13),random.randint(1,13),0)
+                        enemy = src.characters.Monster(6,6)
+                        enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
+                        enemy.maxHealth = enemy.health
+                        enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
+                        enemy.faction = "spectre"
+                        enemy.tag = "spectre"
+                        enemy.name = "killerSpectre"
+                        enemy.movementSpeed = 1.8
+                        enemy.registers["HOMETx"] = spectreHome[0]
+                        enemy.registers["HOMETy"] = spectreHome[1]
+                        enemy.registers["HOMEx"] = 7
+                        enemy.registers["HOMEy"] = 7
+                        enemy.personality["moveItemsOnCollision"] = False
+                        rooms = terrain.getRoomByPosition(bigPos)
+                        if rooms:
+                            rooms[0].addCharacter(enemy,6,6)
+                        else:
+                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
 
-                    quest = src.quests.questMap["ClearTerrain"]()
-                    quest.autoSolve = True
-                    quest.assignToCharacter(enemy)
-                    quest.activate()
-                    enemy.quests.append(quest)
+                        quest = src.quests.questMap["ClearTerrain"]()
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
 
     #if src.gamestate.gamestate.tick%100 == 15:
     #    src.gamestate.gamestate.save()

@@ -42,7 +42,22 @@ A throne. Use it to win the game.
         character.rank = 1
 
         if character == src.gamestate.gamestate.mainChar:
-            text = """
+            if src.gamestate.gamestate.difficulty == "easy":
+                text = """
+You now saw the very basic outline of the game.
+
+Do the medium difficulty next. It should offer an actual challenge.
+There are also a lot of features you have not seen.
+
+There is an advanced combat system to explore and learn.
+And you'll have to make use of your base to survive.
+
+= press enter to continue =
+"""
+                src.interaction.showInterruptText(text)
+                1/0
+            else:
+                text = """
 You won the game and rule the world now. congratz.
 
 I know the ending is cheap, but the game is a shadow of whait it should be.
@@ -56,7 +71,7 @@ The game will actually end now as soon as you loose a single glass heart, now.
 
 = press enter to continue =
 """
-            src.interaction.showInterruptText(text)
+                src.interaction.showInterruptText(text)
 
     def getConfigurationOptions(self, character):
         """

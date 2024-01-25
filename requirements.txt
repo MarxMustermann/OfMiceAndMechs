@@ -1,5 +1,5 @@
 pyinstaller==6.3.0
-numpy==1.10.4
+numpy==1.22.0
 tcod==13
 urwid
 pre-commit

@@ -30,6 +30,10 @@ jobs:
     - name: build linux binary with pyinstaller
       run: |
         pyinstaller executeMe.py
+        cp -r config/ dist/executeMe/
+        cp -r scaled_* dist/executeMe/
+        cp -r data/ dist/executeMe/
+        cp -r states/ dist/executeMe/
     - uses: actions/upload-artifact@v4
       with:
         name: OfMiceAndMechs-win

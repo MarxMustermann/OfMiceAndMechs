@@ -37,6 +37,6 @@ jobs:
         cp -r sounds/ dist/executeMe/
     - uses: actions/upload-artifact@v4
       with:
-        name: OfMiceAndMechs-win
+        name: OfMiceAndMechs-linux
         path: ./dist/executeMe/
         compression-level: 9

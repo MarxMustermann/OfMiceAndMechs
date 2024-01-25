@@ -5,7 +5,7 @@ a = Analysis(
     ['executeMe.py'],
     pathex=[],
     binaries=[],
-    datas=[('.', '.')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -31,7 +31,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    contents_directory='.',
 )
 coll = COLLECT(
     exe,

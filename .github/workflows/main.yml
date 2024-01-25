@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-win:
 
     runs-on: ubuntu-latest
 
@@ -23,7 +23,7 @@ jobs:
       with:
         name: OfMiceAndMechs-win
         path: ./dist/windows
-  build:
+  build-linux:
 
     runs-on: ubuntu-latest
 

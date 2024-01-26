@@ -560,7 +560,6 @@ class Shrine(src.items.Item):
             foundFlask = item
         if foundFlask:
             cost /= 2
-            character.inventory.remove(foundFlask)
         cost *= glassHeartRebate
 
         dutyMap = self.getDutyMap(character)
@@ -653,6 +652,9 @@ press enter to continue"""%(npc.name,duty,terrain)
                 src.interaction.showInterruptText(text)
             '''
             text = f"spawning burned in NPC ({duty})"
+
+            if foundFlask:
+                character.inventory.remove(foundFlask)
 
         if character:
             character.addMessage(text)

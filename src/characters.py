@@ -793,6 +793,7 @@ class Character:
     def hurt(self, damage, reason=None, actor=None):
         if self.disabled:
             self.disabled = False
+
         """
         hurt the character
 
@@ -1008,6 +1009,20 @@ press any other key to attack normally"""
             target: the target to attack
         """
         if self.dead:
+            return
+
+        if target.dead:
+            if not target.container:
+                while target in self.container.characters:
+                    self.container.characters.remove(target)
+
+                if isinstance(self.container,src.terrains.Terrain):
+                    cachedList = self.container.charactersByTile.get(self.getBigPosition(),[])
+                    while target in cachedList:
+                        cachedList.remove(target)
+            else:
+                self.container.removeCharacter(target)
+            logger.error("killed ghost")
             return
 
         if initial and self.exhaustion > 0:

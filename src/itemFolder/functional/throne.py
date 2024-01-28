@@ -42,7 +42,7 @@ A throne. Use it to win the game.
         character.rank = 1
 
         if character == src.gamestate.gamestate.mainChar:
-            if src.gamestate.gamestate.difficulty == "easy":
+            if src.gamestate.gamestate.difficulty == "tutorial":
                 text = """
 You now saw the very basic outline of the game.
 

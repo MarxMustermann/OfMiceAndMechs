@@ -110,7 +110,7 @@ def advanceGame():
             increaseAmount = min(1,terrain.maxMana-terrain.mana)
             terrain.mana += increaseAmount
 
-        if not src.gamestate.gamestate.difficulty == "easy":
+        if not src.gamestate.gamestate.difficulty == "tutorial":
             for (godId,god) in src.gamestate.gamestate.gods.items():
                 if ( (god["lastHeartPos"][0] != god["home"][0]) or
                      (god["lastHeartPos"][1] != god["home"][1])):
@@ -7868,7 +7868,7 @@ def showMainMenu(args=None):
     ]
 
     selectedScenario = "mainGame"
-    difficulty = "easy"
+    difficulty = "tutorial"
 
     def fixRoomRender(render):
         for row in render:
@@ -8241,18 +8241,22 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         if submenu == "difficulty":
             printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+21))
-            printUrwidToTcod("| e: easy                                                           |",(offsetX+3+16,offsetY+22))
-            printUrwidToTcod("| easy is easy. Recommended to start with.                          |",(offsetX+3+16,offsetY+23))
-            printUrwidToTcod("| This mode should teach you how the game works.                    |",(offsetX+3+16,offsetY+24))
+            printUrwidToTcod("| t: tutorial                                                       |",(offsetX+3+16,offsetY+22))
+            printUrwidToTcod("| A quick overview over the game.                                   |",(offsetX+3+16,offsetY+23))
+            printUrwidToTcod("| It should take about 5 minutes to complete.                       |",(offsetX+3+16,offsetY+24))
             printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+25))
-            printUrwidToTcod("| m: medium                                                         |",(offsetX+3+16,offsetY+26))
-            printUrwidToTcod("| medium is pretty hard. Recommended after winning an easy run.     |",(offsetX+3+16,offsetY+27))
-            printUrwidToTcod("| Balanced to be challenging after mastering one game mechanic      |",(offsetX+3+16,offsetY+28))
+            printUrwidToTcod("| e: easy                                                           |",(offsetX+3+16,offsetY+26))
+            printUrwidToTcod("| easy is easy. Recommended to start with.                          |",(offsetX+3+16,offsetY+27))
+            printUrwidToTcod("| This mode should teach you how the game works.                    |",(offsetX+3+16,offsetY+28))
             printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+29))
-            printUrwidToTcod("| d: difficult                                                      |",(offsetX+3+16,offsetY+30))
-            printUrwidToTcod("| difficult is really hard. not recomended                          |",(offsetX+3+16,offsetY+31))
-            printUrwidToTcod("| Should be a challenging with full meta knowledge                  |",(offsetX+3+16,offsetY+32))
-            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+33))
+            printUrwidToTcod("| m: medium                                                         |",(offsetX+3+16,offsetY+30))
+            printUrwidToTcod("| medium is pretty hard. Recommended after winning an easy run.     |",(offsetX+3+16,offsetY+31))
+            printUrwidToTcod("| Balanced to be challenging after mastering one game mechanic      |",(offsetX+3+16,offsetY+32))
+            printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+33))
+            printUrwidToTcod("| d: difficult                                                      |",(offsetX+3+16,offsetY+34))
+            printUrwidToTcod("| difficult is really hard. not recomended                          |",(offsetX+3+16,offsetY+35))
+            printUrwidToTcod("| Should be a challenging with full meta knowledge                  |",(offsetX+3+16,offsetY+36))
+            printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+37))
 
         if submenu == "delete":
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#f00", "black"),"+---------------------------------------+"),(offsetX+2,offsetY+21))
@@ -8377,6 +8381,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                             0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
                         )
                     if key == tcod.event.KeySym.ESCAPE:
+                        submenu = None
+                    if key == tcod.event.KeySym.t:
+                        difficulty = "tutorial"
                         submenu = None
                     if key == tcod.event.KeySym.e:
                         difficulty = "easy"

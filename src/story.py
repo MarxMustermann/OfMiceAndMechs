@@ -1490,6 +1490,8 @@ class MainGame(BasicPhase):
         self.takenPositions.append((8,6))
 
         difficultyModifier = 1
+        if self.difficulty == "tutorial":
+            difficultyModifier = 0.5
         if self.difficulty == "easy":
             difficultyModifier = 0.5
         if self.difficulty == "difficult":
@@ -1503,7 +1505,7 @@ class MainGame(BasicPhase):
 
         dungeonPositions = []
         numDungeons = 7
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             numDungeons = 2
 
         while len(dungeonPositions) < numDungeons:
@@ -1513,7 +1515,7 @@ class MainGame(BasicPhase):
             dungeonPositions.append(pos)
             self.takenPositions.append(pos)
 
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
         else:
@@ -1546,15 +1548,21 @@ class MainGame(BasicPhase):
         self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
         src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
 
+        if self.difficulty == "tutorial":
+            mainChar.maxHealth *= 2
+            mainChar.health *= 2
         if self.difficulty == "easy":
             mainChar.maxHealth *= 2
             mainChar.health *= 2
         if self.difficulty == "difficult":
             mainChar.maxHealth = int(mainChar.maxHealth*0.5)
             mainChar.health = int(mainChar.health*0.5)
-        questMenu = src.interaction.QuestMenu(mainChar)
-        questMenu.sidebared = True
-        mainChar.rememberedMenu.append(questMenu)
+
+        if not self.difficulty == "tutorial":
+            questMenu = src.interaction.QuestMenu(mainChar)
+            questMenu.sidebared = True
+            mainChar.rememberedMenu.append(questMenu)
+
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
         if self.preselection == "Colony":
@@ -1682,7 +1690,7 @@ try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until you remember that your whole team died in that dungeon."""))
 
-            if self.difficulty == "easy":
+            if self.difficulty == "tutorial":
                 text = """
 Your task is to take the GlassHeart from this dungeon.
 Go to the center chamber of this dungeon to get it.
@@ -1695,9 +1703,9 @@ Use the wasd keys to move to the center chamber.
                 self.activeStory["mainChar"].macroState["submenue"] = submenu
                 self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
                 self.activeStory["mainChar"].addMessage(text)
-            if self.difficulty == "medium":
+            if self.difficulty in ("easy","medium",):
                 text = """
-The basic game is set up just like on easy difficulty,
+The basic game is set up just like the tutorial,
 but it is tuned to be a bit harder to do.
 This means you have to know more game mechanics to survive.
 
@@ -1723,7 +1731,7 @@ I'll teach you along the way.
             pass
 
     def gotEpochReward(self,extraParam):
-        if self.difficulty == "easy" and "NPC" in extraParam["rewardType"]:
+        if self.difficulty == "tutorial" and "NPC" in extraParam["rewardType"]:
             try:
                 self.showed_npc_respawn_info
             except:
@@ -1763,7 +1771,7 @@ That GlassStatue leads to the next easiest dungeon.
             pass
 
     def deliveredSpecialItem(self,extraParam):
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             try:
                 self.showed_glass_heart_info
             except:
@@ -1843,7 +1851,7 @@ And when you are done then try medium difficulty, much more will be explained th
     def changedTerrain(self,extraParam):
         item = extraParam["character"]
 
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             try:
                 self.showedBaseInfo
             except:
@@ -1868,7 +1876,7 @@ When the GlassHeart is properly set it will show as KK.
 
                     self.showedBaseInfo = True
 
-        if self.difficulty == "medium":
+        if self.difficulty == ("medium","easy",):
             try:
                 self.showedBaseInfo
             except:
@@ -1901,7 +1909,7 @@ a metal worker"""
     def itemPickedUp(self,extraParam):
         item = extraParam[1]
 
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             try:
                 self.showedGlassHeartInfo
             except:
@@ -1925,7 +1933,7 @@ Select the "teleport home" option to get back to base."""
 
                     self.showedGlassHeartInfo = True
                     return
-        if self.difficulty == "medium":
+        if self.difficulty == ("medium","easy",):
             try:
                 self.showedGlassHeartInfo
             except:
@@ -2009,7 +2017,7 @@ So bring it with you to be able to spawn one NPC cheaper.
     def enteredRoom(self,extraParam):
         newRoom = extraParam[1]
 
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             try:
                 self.showedEnemyWarning
             except:
@@ -2104,7 +2112,7 @@ press ? after closing this menu to see what keys you need to use.
                     self.showedStatueExtractInfo = True
                     return
 
-        if self.difficulty == "medium":
+        if self.difficulty == ("medium","easy",):
             foundEnemies = False
             for otherChar in newRoom.characters:
                 if otherChar.faction == extraParam[0].faction:
@@ -2456,6 +2464,8 @@ but they are likely to explode when disturbed.
         currentTerrain.addItem(item,(1,1,0))
 
         currentTerrain.mana = 9
+        if self.difficulty == "easy":
+            currentTerrain.mana = 10
         if self.difficulty == "medium":
             currentTerrain.mana = 4
         if self.difficulty == "difficult":
@@ -3116,7 +3126,7 @@ but they are likely to explode when disturbed.
                 #quest.fail("taken over NPC")
                 quest.autoSolve = False
 
-            if self.difficulty == "easy":
+            if self.difficulty == "tutorial":
                 if candidate.maxHealth < character.maxHealth:
                     candidate.maxHealth = character.maxHealth
                     candidate.health = candidate.maxHealth
@@ -3140,7 +3150,7 @@ but they are likely to explode when disturbed.
 
             if character == src.gamestate.gamestate.mainChar:
                 text = f"You are respawned as one of the NPCs in your base."
-                if self.difficulty == "easy":
+                if self.difficulty == "tutorial":
                     text += "\nSince you are playing on easy your character stats are transfered to that NPC"
                 src.interaction.showInterruptText(text)
                 src.gamestate.gamestate.mainChar = candidate
@@ -3487,6 +3497,8 @@ but they are likely to explode when disturbed.
 
         homeTerrain.maxMana = 100
         homeTerrain.manaRegen = 0
+        if self.difficulty == "tutorial":
+            homeTerrain.mana = 60
         if self.difficulty == "easy":
             homeTerrain.mana = 60
         if self.difficulty == "medium":
@@ -3514,7 +3526,7 @@ but they are likely to explode when disturbed.
         item.itemID = 1
         temple.addItem(item,(2,2,0))
 
-        if not self.difficulty == "easy":
+        if not self.difficulty == "tutorial":
             item = src.items.itemMap["Shrine"]()
             item.god = 2
             temple.addItem(item,(3,2,0))
@@ -3523,7 +3535,7 @@ but they are likely to explode when disturbed.
         item.itemID = 2
         temple.addItem(item,(4,2,0))
 
-        if not self.difficulty == "easy":
+        if not self.difficulty == "tutorial":
             item = src.items.itemMap["Shrine"]()
             item.god = 3
             temple.addItem(item,(7,1,0))
@@ -3591,7 +3603,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["autoCounterAttack"] = False
         mainChar.addListener(self.roguelike_baseLeaderDeath,"died_pre")
 
-        if not self.difficulty == "easy":
+        if not self.difficulty == "tutorial":
             for i in range(0,10):
                 bolt = src.items.itemMap["Bolt"]()
                 mainChar.inventory.append(bolt)
@@ -3958,6 +3970,8 @@ but they are likely to explode when disturbed.
             currentTerrain.addItem(item,pos)
 
         modifier = 1
+        if self.difficulty == "tutorial":
+            modifier = 0.5
         if self.difficulty == "easy":
             modifier = 0.5
         if self.difficulty == "difficult":
@@ -4335,6 +4349,10 @@ but they are likely to explode when disturbed.
         baseHealth = 100
         siegedBaseInfo["baseMovementSpeed"] = 0.8
         self.baseMovementSpeed = 0.8
+        if self.difficulty == "tutorial":
+            numGuards = 5
+            baseHealth = 25
+            siegedBaseInfo["baseMovementSpeed"] = 1.1
         if self.difficulty == "easy":
             numGuards = 5
             baseHealth = 25
@@ -4383,6 +4401,10 @@ but they are likely to explode when disturbed.
         mainChar.baseDamage = 10
         mainChar.health = 100
         mainChar.maxHealth = 100
+        if self.difficulty == "tutorial":
+            mainChar.baseDamage = 15
+            mainChar.health = 200
+            mainChar.maxHealth = 200
         if self.difficulty == "easy":
             mainChar.baseDamage = 15
             mainChar.health = 200
@@ -4589,6 +4611,10 @@ but they are likely to explode when disturbed.
         healingEffect = 50
         healthIncrease = 20
         baseDamageEffect = 2
+        if self.difficulty == "tutorial":
+            healingEffect = 100
+            healthIncrease = 30
+            baseDamageEffect = 3
         if self.difficulty == "easy":
             healingEffect = 100
             healthIncrease = 30
@@ -4626,7 +4652,7 @@ but they are likely to explode when disturbed.
         #mainRoom.addItem(orderArtwork,(9,1,0))
 
         hiveStyles = ["simple","empty","attackHeavy","healthHeavy","single"]
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             hiveStyles = ["empty","empty","empty","empty","empty"]
 
         random.shuffle(hiveStyles)
@@ -4713,7 +4739,7 @@ but they are likely to explode when disturbed.
 
             neighbours = [(pos[0]-1,pos[1]),(pos[0]+1,pos[1]),(pos[0],pos[1]-1),(pos[0],pos[1]+1)]
             fillMaterial = ["EncrustedBush","Bush","Sprout2"]
-            if self.difficulty == "easy":
+            if self.difficulty == "tutorial":
                 fillMaterial = ["Bush","Sprout2","Sprout2"]
             for neighbour in neighbours:
                 architect.doFillWith(neighbour[0],neighbour[1],fillMaterial)
@@ -4730,7 +4756,7 @@ but they are likely to explode when disturbed.
             if farmPlot not in tmpList:
                 continue
             fillMaterial = ["Bush","Bush","EncrustedBush"]
-            if self.difficulty == "easy":
+            if self.difficulty == "tutorial":
                 fillMaterial = ["Bush","Bush","Sprout2"]
             architect.doSpawnItems(farmPlot[0],farmPlot[1],fillMaterial,20,repeat=10)
 
@@ -4741,6 +4767,8 @@ but they are likely to explode when disturbed.
             if farmPlot in hivePositions:
                 continue
 
+            if self.difficulty == "tutorial":
+                amount = int(random.random()*4)+1
             if self.difficulty == "easy":
                 amount = int(random.random()*4)+1
             elif self.difficulty == "difficult":
@@ -4825,7 +4853,7 @@ but they are likely to explode when disturbed.
                     if currentTerrain.getItemByPosition((xPos,yPos,0)):
                         continue
 
-                    if self.difficulty != "easy" and placedMines:
+                    if self.difficulty != "tutorial" and placedMines:
                         landmine = src.items.itemMap["LandMine"]()
                         currentTerrain.addItem(landmine,(xPos,yPos,0))
 
@@ -4834,6 +4862,9 @@ but they are likely to explode when disturbed.
 
                 spawnChance = 0.2
                 maxNumSpawns = 3
+                if self.difficulty == "tutorial":
+                    spawnChance = 0.05
+                    maxNumSpawns = 2
                 if self.difficulty == "easy":
                     spawnChance = 0.05
                     maxNumSpawns = 2
@@ -4863,6 +4894,8 @@ but they are likely to explode when disturbed.
                         enemy.quests.append(quest)
 
         numChasers = 12
+        if self.difficulty == "tutorial":
+            numChasers = 5
         if self.difficulty == "easy":
             numChasers = 5
         if self.difficulty == "difficult":
@@ -4895,7 +4928,7 @@ but they are likely to explode when disturbed.
             enemy.quests.append(quest)
             quest.activate()
 
-        if self.difficulty == "easy":
+        if self.difficulty == "tutorial":
             toClear = [(7,1),(7,13),(1,7),(13,7)]
             for bigX in range(14):
                 for bigY in range(14):
@@ -4903,7 +4936,7 @@ but they are likely to explode when disturbed.
                         currentTerrain.removeItems(currentTerrain.getItemByPosition((bigX*15+x,bigY*15+y,0)))
 
         waypoints = [(5,10),(9,10),(9,4),(5,4)]
-        if self.difficulty != "easy":
+        if self.difficulty != "tutorial":
             for _i in range(1,10):
                 waypoints = waypoints[1:]+[waypoints[0]]
 
@@ -5494,7 +5527,7 @@ press enter to continue"""
         #    numMonsters = self.numRounds-8
         numMonsters = self.numRounds+remainingEnemyCounter
 
-        if self.difficulty == "easy" and self.numRounds < 3:
+        if self.difficulty == "tutorial" and self.numRounds < 3:
             numMonsters = 0
         if self.difficulty == "medium" and self.numRounds == 1:
             numMonsters = 0
@@ -5515,6 +5548,8 @@ press enter to continue"""
             enemy.quests.append(quest)
 
         numLurkers = 10
+        if self.difficulty != "tutorial":
+            numLurkers = 5
         if self.difficulty != "easy":
             numLurkers = 5
         if self.difficulty != "difficult":

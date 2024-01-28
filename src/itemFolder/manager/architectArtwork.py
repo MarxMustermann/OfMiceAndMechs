@@ -1425,15 +1425,16 @@ class ArchitectArtwork(src.items.Item):
         )
         if task["roomType"] in ("EmptyRoom","TrapRoom","WorkshopRoom","ComandCenter","StorageRoom","TeleporterRoom","TempleRoom"):
             entryPoints = []
-            for part in task["doors"].split(" "):
-                entryPointX = int(part.split(",")[0])
-                entryPointY = int(part.split(",")[1])
-                entryPoint = (
-                    entryPointX,
-                    entryPointY,
-                )
+            if task.get("doors"):
+                for part in task["doors"].split(" "):
+                    entryPointX = int(part.split(",")[0])
+                    entryPointY = int(part.split(",")[1])
+                    entryPoint = (
+                        entryPointX,
+                        entryPointY,
+                    )
 
-                entryPoints.append(entryPoint)
+                    entryPoints.append(entryPoint)
 
             if context:
                 context["character"].addMessage(entryPoints)

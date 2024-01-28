@@ -2107,6 +2107,25 @@ XXX
     def doBasicSetup(self):
         self.addPathCross()
 
+    def addDoor(self,direction):
+        pos = None
+        if direction == "north":
+            pos = (6,0,0)
+        if direction == "south":
+            pos = (6,12,0)
+        if direction == "west":
+            pos = (0,6,0)
+        if direction == "east":
+            pos = (12,6,0)
+
+        self.removeItems(self.getItemByPosition(pos))
+        door = src.items.itemMap["Door"]()
+        door.walkable = True
+        self.addItem(door,pos)
+
+        self.walkingAccess.append(pos)
+        self.walkingSpace.add(pos)
+
     def addPathCross(self):
         for x in range(1,12):
             self.walkingSpace.add((x,6,0))
@@ -2462,10 +2481,10 @@ class TrapRoom(EmptyRoom):
         if self.electricalCharges > self.maxElectricalCharges:
             self.electricalCharges = self.maxElectricalCharges
 
-    def moveCharacterDirection(self, character, direction):
+    def moveCharacterDirection(self, character, direction, dash=False):
         oldPos = character.getPosition()
 
-        item = super().moveCharacterDirection(character, direction)
+        item = super().moveCharacterDirection(character, direction, dash=dash)
 
         newPos = character.getPosition()
 

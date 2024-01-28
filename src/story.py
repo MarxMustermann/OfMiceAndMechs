@@ -2475,114 +2475,205 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (7,7),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12",
+                       "doors": None,
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
+
+        mainPath = [(7,7)]
 
         rooms = []
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (7,8),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,0 12,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (8,8),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,0 0,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (8,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,0 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (8,6),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (7,6),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 12,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (6,6),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,12 12,6 0,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (6,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,0 0,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (5,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 12,6 6,0",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (4,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 12,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        rooms.append(room)
+        currentRing = 0
+        extraRooms = []
 
+        numExtraRooms = 2
+        if self.difficulty == "tutorial":
+            numExtraRooms = 0
+
+        possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]
+        direction = random.choice(possibleDirections)
+        nextMainRoomPos = (mainPath[0][0]+direction[0],mainPath[0][1]+direction[1])
+        while len(mainPath) < 10:
+            # add an extra room
+            if currentRing:
+                for i in range(1,1+numExtraRooms):
+                    possiblePostions = []
+                    for x in range(7-currentRing,7+currentRing+1):
+                        for y in range(7-currentRing,7+currentRing+1):
+                            possiblePostions.append((x,y))
+
+                    random.shuffle(possiblePostions)
+
+                    addedRoom = False
+                    for extraPos in possiblePostions:
+                        if extraPos == nextMainRoomPos:
+                            continue
+                        if currentTerrain.getRoomByPosition(extraPos):
+                            continue
+                        possibleNeighbourDirections = [(-1,0),(1,0),(0,-1),(0,1)]
+                        hasNeighbour = False
+                        neighbourPos = None
+                        for direction in possibleNeighbourDirections:
+                            testPos = (extraPos[0]+direction[0],extraPos[1]+direction[1])
+                            if testPos == (7,7):
+                                continue
+                            if not testPos in mainPath:
+                                continue
+                            neighbourPos = testPos
+                            hasNeighbour = True
+                            break
+
+                        if not hasNeighbour:
+                            continue
+
+                        print(f"extra at {extraPos}")
+                        room = architect.doAddRoom(
+                                {
+                                       "coordinate": extraPos,
+                                       "roomType": "EmptyRoom",
+                                       "doors":None,
+                                       "offset": [1,1],
+                                   "size": [13, 13],
+                                },
+                                None,
+                           )
+                        addedRoom = True
+
+                        neighbourRoom = currentTerrain.getRoomByPosition(neighbourPos)[0]
+                        if direction == (1,0):
+                            room.addDoor("east")
+                            neighbourRoom.addDoor("west")
+                        if direction == (-1,0):
+                            room.addDoor("west")
+                            neighbourRoom.addDoor("east")
+                        if direction == (0,1):
+                            room.addDoor("south")
+                            neighbourRoom.addDoor("north")
+                        if direction == (0,-1):
+                            room.addDoor("north")
+                            neighbourRoom.addDoor("south")
+
+                        extraRooms.append(room)
+                        break
+
+                    if not addedRoom:
+                        for extraPos in possiblePostions:
+                            if extraPos == nextMainRoomPos:
+                                continue
+                            if currentTerrain.getRoomByPosition(extraPos):
+                                continue
+                            possibleNeighbourDirections = [(-1,0),(1,0),(0,-1),(0,1)]
+                            hasNeighbour = False
+                            for direction in possibleNeighbourDirections:
+                                neighbourRoom = currentTerrain.getRoomByPosition((extraPos[0]+direction[0],extraPos[1]+direction[1]))
+                                if not neighbourRoom:
+                                    continue
+                                neighbourRoom = neighbourRoom[0]
+                                hasNeighbour = True
+                                break
+
+                            if not hasNeighbour:
+                                continue
+
+                            print(f"extra at {extraPos}")
+                            room = architect.doAddRoom(
+                                    {
+                                           "coordinate": extraPos,
+                                           "roomType": "EmptyRoom",
+                                           "doors":None,
+                                           "offset": [1,1],
+                                       "size": [13, 13],
+                                    },
+                                    None,
+                               )
+
+                            if direction == (1,0):
+                                room.addDoor("east")
+                                neighbourRoom.addDoor("west")
+                            if direction == (-1,0):
+                                room.addDoor("west")
+                                neighbourRoom.addDoor("east")
+                            if direction == (0,1):
+                                room.addDoor("south")
+                                neighbourRoom.addDoor("north")
+                            if direction == (0,-1):
+                                room.addDoor("north")
+                                neighbourRoom.addDoor("south")
+
+                            extraRooms.append(room)
+                            break
+
+            # spawn main rooms
+            pos = nextMainRoomPos
+            room = architect.doAddRoom(
+                    {
+                           "coordinate": pos,
+                           "roomType": "EmptyRoom",
+                           "doors":None,
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None,
+               )
+            print(f"room at {pos}")
+
+            attachmentRoom = currentTerrain.getRoomByPosition(mainPath[-1])[0]
+            if mainPath[-1][0] < pos[0]:
+                room.addDoor("west")
+                attachmentRoom.addDoor("east")
+            if mainPath[-1][0] > pos[0]:
+                room.addDoor("east")
+                attachmentRoom.addDoor("west")
+            if mainPath[-1][1] < pos[1]:
+                room.addDoor("north")
+                attachmentRoom.addDoor("south")
+            if mainPath[-1][1] > pos[1]:
+                room.addDoor("south")
+                attachmentRoom.addDoor("north")
+            rooms.append(room)
+            mainPath.append(pos)
+
+            # calculate next position
+            currentRing = max(abs(pos[0]-7),abs(pos[1]-7))
+
+            possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]
+            candidatePositions = []
+            for direction in possibleDirections:
+                possiblePosition = (pos[0]+direction[0],pos[1]+direction[1])
+                if currentTerrain.getRoomByPosition(possiblePosition):
+                    continue
+                nextRing = max(abs(possiblePosition[0]-7),abs(possiblePosition[1]-7))
+                if nextRing < currentRing:
+                    continue
+                elif nextRing == currentRing:
+                    candidatePositions.append(possiblePosition)
+                    candidatePositions.append(possiblePosition)
+                    candidatePositions.append(possiblePosition)
+                    #candidatePositions.append(possiblePosition)
+                    #candidatePositions.append(possiblePosition)
+                else:
+                    candidatePositions.append(possiblePosition)
+
+            if not candidatePositions:
+                1/0
+
+            nextMainRoomPos = random.choice(candidatePositions)
+
+        attachmentRoom = rooms[-1]
+        if mainPath[-1][0] < nextMainRoomPos[0]:
+            attachmentRoom.addDoor("east")
+        if mainPath[-1][0] > nextMainRoomPos[0]:
+            attachmentRoom.addDoor("west")
+        if mainPath[-1][1] < nextMainRoomPos[1]:
+            attachmentRoom.addDoor("south")
+        if mainPath[-1][1] > nextMainRoomPos[1]:
+            attachmentRoom.addDoor("north")
+        rooms.append(room)
+        mainPath.append(pos)
+
+        """
         extraRooms = []
         room = architect.doAddRoom(
                 {
@@ -2595,12 +2686,14 @@ but they are likely to explode when disturbed.
                 None,
            )
         extraRooms.append(room)
+        """
 
         runModifier = (random.random()-0.5)*0.5
         logger.info(f"runmodifer dungeon {itemID}: {runModifier}")
 
+        # spawn monsters on main path
         counter = 0
-        for room in reversed(rooms):
+        for room in reversed(rooms[:-2]):
 
             if counter == 0:
                 counter += 1
@@ -2646,19 +2739,62 @@ but they are likely to explode when disturbed.
 
             counter += 1
 
+        # spawn monsters on dead ends
+        for room in reversed(extraRooms):
+
+            for _i in range(1):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                statue = src.characters.Statue(4,4)
+                statue.baseDamage = int(5+multiplier)
+                statue.baseDamage = int(statue.baseDamage*(1-runModifier))
+                statue.maxHealth = int((20+10)*multiplier)
+                statue.maxHealth = int(statue.maxHealth*(1+runModifier))
+                statue.health = statue.maxHealth
+                statue.godMode = True
+                statue.movementSpeed = 1.3-0.1*multiplier
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(statue)
+                quest.activate()
+                statue.quests.append(quest)
+
+                room.addCharacter(statue, pos[0], pos[1])
+
+            for _i in range(random.randint(3,8)):
+                pos = (random.randint(1,11),random.randint(1,11),0)
+                statuette = src.characters.Statuette(4,4)
+                statuette.baseDamage = int(2+multiplier)
+                statuette.baseDamage = int(statuette.baseDamage*(1+runModifier))
+                statuette.maxHealth = int(10*multiplier)
+                statuette.maxHealth = int(statuette.maxHealth*(1-runModifier))
+                statuette.health = statuette.maxHealth
+                statuette.godMode = True
+                statuette.movementSpeed = 1.0*0.9**multiplier
+
+                quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                quest.autoSolve = True
+                quest.assignToCharacter(statuette)
+                quest.activate()
+                statuette.quests.append(quest)
+
+                room.addCharacter(statuette, pos[0], pos[1])
+
+        # spawn special items
+        endIndex = len(rooms)-3
         counter = 0
-        for room in rooms:
-            if counter == 7:
+        for room in rooms+extraRooms:
+            if counter == endIndex:
                 item = src.items.itemMap["CoalBurner"]()
                 room.addItem(item,(6,6,0))
 
             if self.difficulty != "difficult":
-                if counter == 8:
+                if counter == endIndex+1:
                     item = src.items.itemMap["Shrine"]()
                     item.god = itemID
                     room.addItem(item,(6,6,0))
 
-            if counter < 7:
+            if counter < endIndex or counter > endIndex+2:
                 if random.random() > 0.5:
                     item = src.items.itemMap["StopStatue"]()
                     room.addItem(item,(6,6,0))
@@ -2668,7 +2804,7 @@ but they are likely to explode when disturbed.
                         item = src.items.itemMap["Wall"]()
                         room.addItem(item,pos)
 
-            if counter < 5:
+            if counter < endIndex-2 or counter > endIndex+2:
                 if random.random() > 0.5:
                     for _i in range(random.randint(2,6)):
                         item = src.items.itemMap["LandMine"]()
@@ -3634,7 +3770,7 @@ but they are likely to explode when disturbed.
         dungeonCrawlInfo["mainChar"] = mainChar
         dungeonCrawlInfo["type"] = "dungeon crawl"
 
-        startRoom = currentTerrain.getRoomByPosition((4,7,0))[0]
+        startRoom = currentTerrain.rooms[-1]
         startRoom.addCharacter(mainChar,1,6)
 
         return dungeonCrawlInfo

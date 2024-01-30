@@ -8206,12 +8206,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"d: difficulty - {difficulty}"),(offsetX+3,offsetY+23))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(d)ifficulty - {difficulty}"),(offsetX+3,offsetY+23))
         color = "#fff"
         if saves[gameIndex]:
             color = "#333"
-        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"s: scenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
-        printUrwidToTcod(f"g: gameslot   - {gameIndex}",(offsetX+3,offsetY+25))
+        printUrwidToTcod((src.interaction.urwid.AttrSpec(color, "black"),f"(s)cenario   - {selectedScenario}"),(offsetX+3,offsetY+24))
+        printUrwidToTcod(f"(g)ameslot   - {gameIndex}",(offsetX+3,offsetY+25))
 
         if submenu == "gameslot":
             printUrwidToTcod("+----------------------+",(offsetX+3+16,offsetY+23))
@@ -8238,19 +8238,19 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         if submenu == "difficulty":
             printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+21))
-            printUrwidToTcod("| t: tutorial                                                       |",(offsetX+3+16,offsetY+22))
+            printUrwidToTcod("| (t)utorial                                                        |",(offsetX+3+16,offsetY+22))
             printUrwidToTcod("| A quick overview over the game.                                   |",(offsetX+3+16,offsetY+23))
             printUrwidToTcod("| It should take about 5 minutes to complete.                       |",(offsetX+3+16,offsetY+24))
             printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+25))
-            printUrwidToTcod("| e: easy                                                           |",(offsetX+3+16,offsetY+26))
+            printUrwidToTcod("| (e)asy                                                            |",(offsetX+3+16,offsetY+26))
             printUrwidToTcod("| easy is easy. Recommended to start with.                          |",(offsetX+3+16,offsetY+27))
             printUrwidToTcod("| This mode should teach you how the game works.                    |",(offsetX+3+16,offsetY+28))
             printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+29))
-            printUrwidToTcod("| m: medium                                                         |",(offsetX+3+16,offsetY+30))
+            printUrwidToTcod("| (m)edium                                                          |",(offsetX+3+16,offsetY+30))
             printUrwidToTcod("| medium is pretty hard. Recommended after winning an easy run.     |",(offsetX+3+16,offsetY+31))
             printUrwidToTcod("| Balanced to be challenging after mastering one game mechanic      |",(offsetX+3+16,offsetY+32))
             printUrwidToTcod("|                                                                   |",(offsetX+3+16,offsetY+33))
-            printUrwidToTcod("| d: difficult                                                      |",(offsetX+3+16,offsetY+34))
+            printUrwidToTcod("| (d)ifficult                                                       |",(offsetX+3+16,offsetY+34))
             printUrwidToTcod("| difficult is really hard. not recomended                          |",(offsetX+3+16,offsetY+35))
             printUrwidToTcod("| Should be a challenging with full meta knowledge                  |",(offsetX+3+16,offsetY+36))
             printUrwidToTcod("+-------------------------------------------------------------------+",(offsetX+3+16,offsetY+37))

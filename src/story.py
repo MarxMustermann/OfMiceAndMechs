@@ -1463,14 +1463,14 @@ class MainGame(BasicPhase):
     You selected no specific starting point.
     Tell me what type of games do you like more?
 
-    c: colony builders
+    colony builders
     (like "Dwarf fortress: fortress mode" or "Rimworld")
 
-    r: roguelikes
+    roguelikes
     (like "nethack" or "brogue")
 
-    press c for colony builders
-    press r for roguelikes
+    press c for (c)olony builders
+    press r for (r)oguelikes
 
 """,["c","r","t"])
 

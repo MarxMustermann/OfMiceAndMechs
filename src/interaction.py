@@ -8194,15 +8194,12 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
         printUrwidToTcod("|",(offsetX+width,offsetY+22+height))
         printUrwidToTcod(src.urwidSpecials.makeRusty(logoText),(offsetX+2,offsetY+1))
 
-        printUrwidToTcod("press p to play",(offsetX+3,offsetY+20))
+        printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+20))
 
+        printUrwidToTcod("press p to (p)lay",(offsetX+3,offsetY+27))
+        printUrwidToTcod("press g to select (g)ameslot",(offsetX+3,offsetY+28))
         if canLoad:
-            printUrwidToTcod("press p to load game",(offsetX+3,offsetY+27))
-        else:
-            printUrwidToTcod("press p to start new game",(offsetX+3,offsetY+27))
-        printUrwidToTcod("press g to select different save slot",(offsetX+3,offsetY+28))
-        if canLoad:
-            printUrwidToTcod("press D to delete savestate",(offsetX+3,offsetY+29))
+            printUrwidToTcod("press D to delete gamestate",(offsetX+3,offsetY+29))
         else:
             printUrwidToTcod("press d/s to edit game settings",(offsetX+3,offsetY+29))
 

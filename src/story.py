@@ -5154,7 +5154,7 @@ but they are likely to explode when disturbed.
         terrain = self.activeStory["terrain"]
         pos = (terrain.xPosition,terrain.yPosition,0)
 
-        god = src.gamestate.gamestate.gods[3]
+        god = src.gamestate.gamestate.gods[1]
         if god["home"] == god["lastHeartPos"]:
             storyText = """
 You reach out to your implant and it answers.

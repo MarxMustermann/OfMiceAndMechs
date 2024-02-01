@@ -2495,7 +2495,11 @@ but they are likely to explode when disturbed.
         possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]
         direction = random.choice(possibleDirections)
         nextMainRoomPos = (mainPath[0][0]+direction[0],mainPath[0][1]+direction[1])
-        while len(mainPath) < 10:
+
+        targetLen = 10
+        if self.difficulty == "tutorial":
+            targetLen = 5
+        while len(mainPath) < targetLen:
             # add an extra room
             if currentRing:
                 for i in range(1,1+numExtraRooms):
@@ -2779,6 +2783,14 @@ but they are likely to explode when disturbed.
                 statuette.quests.append(quest)
 
                 room.addCharacter(statuette, pos[0], pos[1])
+
+            while random.random() > 0.5:
+                item = src.items.itemMap["Bolt"]()
+                room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
+
+            if random.random() > 0.5:
+                item = src.items.itemMap["MoldFeed"]()
+                room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
         # spawn special items
         endIndex = len(rooms)-3

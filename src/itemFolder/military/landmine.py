@@ -58,7 +58,7 @@ This will hit you with 50 more explosion damage.
             self.active = True
 
     def pickUp(self, character):
-        if random.random() < 0.5:
+        if self.active and random.random() < 0.5:
             self.destroy()
         else:
             super().pickUp(character)

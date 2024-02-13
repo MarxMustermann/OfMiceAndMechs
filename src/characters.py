@@ -2050,7 +2050,7 @@ press any other key to attack normally"""
                     break
 
                 if (
-                    isinstance(item, src.items.itemMap["BioMass"] | src.items.itemMap["Bloom"] | src.items.itemMap["PressCake"] | src.items.itemMap["SickBloom"])
+                    isinstance(item, src.items.itemMap["BioMass"]) or isinstance(item, src.items.itemMap["Bloom"]) or (item, src.items.itemMap["PressCake"]) or (item, src.items.itemMap["SickBloom"])
                 ):
                     item.apply(self)
                     self.inventory.remove(item)

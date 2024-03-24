@@ -48,6 +48,9 @@ class MetalWorkingBench(src.items.Item):
         if "type" not in params:
             options = []
             options.append(("Bolt","Bolt"))
+            options.append(("Rod","Rod"))
+            options.append(("Frame","Frame"))
+            options.append(("Case","Case"))
             options.append(("Wall","Wall"))
             options.append(("Door","Door"))
             options.append(("RoomBuilder","RoomBuilder"))
@@ -85,7 +88,7 @@ class MetalWorkingBench(src.items.Item):
             character.addMessage("Not possible. Use a MachiningTable.")
             return
         blackListed = ["GlassHeart","Machine",]
-        if params.get("type") == "Machine":
+        if params.get("type") in blackListed:
             character.addMessage("Not possible.")
             return
 
@@ -122,7 +125,14 @@ class MetalWorkingBench(src.items.Item):
 
         self.lastProduction = params["type"]
 
-        params["productionTime"] = 100
+        timeModifier = 1
+        if params["type"] == "Frame":
+            timeModifier = 2
+        if params["type"] == "Case":
+            timeModifier = 3
+        if params["type"] == "Wall":
+            timeModifier = 4
+        params["productionTime"] = 100*timeModifier
         params["doneProductionTime"] = 0
         self.produceItem_wait(params)
         character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
@@ -236,17 +246,30 @@ class MetalWorkingBench(src.items.Item):
         if "type" not in params:
             options = []
             options.append(("delete","delete"))
+            options.append(("Bolt","Bolt"))
+            options.append(("Rod","Rod"))
+            options.append(("Frame","Frame"))
+            options.append(("Case","Case"))
             options.append(("Wall","Wall"))
-            options.append(("10Wall","10 Walls"))
             options.append(("Door","Door"))
-            options.append(("10Door","10 Doors"))
             options.append(("RoomBuilder","RoomBuilder"))
-            options.append(("10RoomBuilder","10 RoomBuilder"))
             options.append(("Painter","Painter"))
             options.append(("CityPlaner","CityPlaner"))
             options.append(("ScrapCompactor","ScrapCompactor"))
-            options.append(("10ScrapCompactor","10 ScrapCompactor"))
-            options.append(("10Bolt","10 Bolt"))
+            options.append(("Sword","Sword"))
+            options.append(("Armor","Armor"))
+            options.append(("CoalBurner","CoalBurner"))
+            options.append(("Vial","Vial"))
+            options.append(("Statue","Statue"))
+            options.append(("Sheet","Sheet"))
+            options.append(("CorpseAnimator","Corpseanimator"))
+            options.append(("Shrine","Shrine"))
+            options.append(("Throne","Throne"))
+            options.append(("ItemCollector","ItemCollector"))
+            options.append(("PersonnelTracker","PersonnelTracker"))
+            options.append(("ArmorStand","ArmorStand"))
+            options.append(("WeaponRack","WeaponRack"))
+            options.append(("byName","produce by name"))
             submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
@@ -254,14 +277,31 @@ class MetalWorkingBench(src.items.Item):
 
         if params["type"] == "delete":
             self.scheduledItems = []
-        elif params["type"]:
-            amount = 1
-            if params["type"].startswith("10"):
-                params["type"] = params["type"][2:]
-                amount = 10
+            return
 
-            for _i in range(amount):
-                self.scheduledItems.append(params["type"])
+        if params.get("type") == "byName":
+            submenue = src.interaction.InputMenu("Type the name of the item to produce",targetParamName="type")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
+            return
+
+        if "amount" not in params:
+            options = []
+            options.append((1,"1"))
+            options.append((5,"5"))
+            options.append((10,"10"))
+            options.append((50,"50"))
+            options.append((100,"100"))
+            options.append((500,"500"))
+            options.append((1000,"1000"))
+            submenue = src.interaction.SelectionMenu("how many items to shedule?",options,targetParamName="amount")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
+            return
+
+        amount = params["amount"]
+        for _i in range(amount):
+            self.scheduledItems.append(params["type"])
 
         character.addMessage(self.scheduledItems)
 

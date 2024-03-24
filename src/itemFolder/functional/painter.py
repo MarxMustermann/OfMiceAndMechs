@@ -243,10 +243,6 @@ This should be used in cases where you can not place the Painter on the position
                         if inputSlot[0] == pos:
                             room.floorPlan["inputSlots"].remove(inputSlot)
                             break
-                if "resource fetching" not in room.requiredDuties:
-                    room.requiredDuties.append("resource fetching")
-                if self.paintType == "Scrap":
-                    room.requiredDuties.append("resource gathering")
                 character.changed("drew marking",{})
             if self.paintMode == "outputSlot":
                 room.addOutputSlot(pos,self.paintType,self.paintExtraInfo)
@@ -279,8 +275,6 @@ This should be used in cases where you can not place the Painter on the position
                         if buildSite[0] == pos:
                             room.floorPlan["buildSites"].remove(buildSite)
                             break
-                if "machine placing" not in room.requiredDuties:
-                    room.requiredDuties.append("machine placing")
                 character.changed("drew marking",{})
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)

@@ -640,7 +640,6 @@ class StockPlaner(src.items.Item):
 
         room.floorPlan = floorPlan
         room.tag = floorPlanType
-        room.requiredDuties.append("painting")
         params["character"].changed("assigned floor plan",params)
         self.showMap(params["character"], cursor = params["coordinate"])
 

@@ -26,6 +26,7 @@ class Machine(src.items.Item):
         self.level = 1
         self.productionLevel = 1
         self.commands = {}
+        self.disabled = False
 
         super().__init__(display=src.canvas.displayChars.machine, seed=seed)
         self.name = "machine"
@@ -456,6 +457,9 @@ Currently the machine has no charges
         if not self.container:
             return False
 
+        if self.disabled:
+            return False
+
         if not self.bolted:
             return False
 
@@ -492,7 +496,19 @@ Currently the machine has no charges
             options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
+        if self.disabled:
+            options["d"] = ("enable", self.enable)
+        else:
+            options["d"] = ("disable", self.disable)
         return options
+
+    def enable(self,character):
+        character.addMessage("you enable the Machine")
+        self.disabled = False
+
+    def disable(self,character):
+        character.addMessage("you disable the Machine")
+        self.disabled = True
 
     def boltAction(self,character):
         self.bolted = True

@@ -50,7 +50,7 @@ operate the machine on {self.targetPosition}{reason}.
             return True
 
         items = character.container.getItemByPosition(self.targetPosition)
-        if not items or items[0].type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer"):
+        if not items or items[0].type not in ("Machine","ScrapCompactor","MaggotFermenter","BioPress","GooProducer","Electrifier",):
             self.fail()
             return True
 

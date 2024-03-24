@@ -1530,6 +1530,11 @@ class MainGame(BasicPhase):
         if self.preselection == "Colony":
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
             self.activeStory = self.colonyBaseInfos2[1]
+            if self.difficulty == "easy":
+                print(self.activeStory)
+                self.activeStory["terrain"].maxMana += 150
+                self.activeStory["terrain"].mana += 150
+                print(self.activeStory)
         else:
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6)))
 
@@ -2096,7 +2101,7 @@ Try not to step onto them and avoid standing next to them."""
                     text = """
 You reached the central chamber of a dungeon.
 
-Use the GlassStatue to extract the GlassHeart from the Statue (KK).
+Use the GlassStatue to extract the GlassHeart from the GlassStatue (KK).
 Pick up the GlassHeart (!!) afterwards.
 
 press ? after closing this menu to see what keys you need to use.
@@ -2275,8 +2280,8 @@ You can use this to divide enemy groups and kite enemies into traps.
 Another thing you can to is to wait to heal.
 
 When time passes you slowly heal, so you can just wait
-The more hurt you are
-You can use this to divide enemy groups and kite enemies into traps.
+The more hurt you are the faster you heal.
+So this works best when you are near dead.
 """
                     submenu = src.interaction.TextMenu(text+"""
 
@@ -3220,9 +3225,23 @@ but they are likely to explode when disturbed.
 
         positions = [(7,6),(6,7),(7,8),(8,7),]
         positions = [random.choice(positions)]
+        oppositePositions = {(7,6):(7,8),(7,8):(7,6),(6,7):(8,7),(8,7):(6,7)}
         for pos in positions:
             architect.doClearField(pos[0], pos[1])
             architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
+            newRoom = architect.doAddRoom(
+                {
+                       "coordinate": oppositePositions[pos],
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+            )
+            print("added room")
+            print(oppositePositions[pos])
+            1/0
 
         itemsToRemove = []
         for x in range(1,14):
@@ -3925,7 +3944,11 @@ but they are likely to explode when disturbed.
         """
 
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
-        mainRoom.addItem(dutyArtwork,(5,1,0))
+        mainRoom.addItem(dutyArtwork,(3,1,0))
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        mainRoom.addItem(cityPlaner,(4,1,0))
+        personnelTracker = src.items.itemMap["PersonnelTracker"]()
+        mainRoom.addItem(personnelTracker,(5,1,0))
 
         shrine = src.items.itemMap["Shrine"](god=1)
         mainRoom.addItem(shrine,(1,1,0))
@@ -3968,16 +3991,6 @@ but they are likely to explode when disturbed.
             for x in range(1,6):
                 mainRoom.addStorageSlot((x,y,0),None)
 
-        for y in (11,9,):
-            for x in range(7,12):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                mainRoom.addItem(item,(x,y,0))
-            for x in range(1,6):
-                item = src.items.itemMap["Wall"]()
-                item.bolted = False
-                mainRoom.addItem(item,(x,y,0))
-
         item = src.items.itemMap["Door"]()
         item.bolted = False
         mainRoom.addItem(item,(1,7,0))
@@ -3994,6 +4007,21 @@ but they are likely to explode when disturbed.
         item.bolted = False
         mainRoom.addItem(item,(5,7,0))
 
+        item = src.items.itemMap["ManufacturingTable"]()
+        item.bolted = True
+        item.toProduce = "ManufacturingTable"
+        mainRoom.addItem(item,(2,3,0))
+        mainRoom.addInputSlot((1,3,0),"MetalBars")
+        mainRoom.addStorageSlot((3,3,0),"ManufacturingTable")
+        mainRoom.addStorageSlot((4,3,0),"ManufacturingTable",{"desiredState":"filled"})
+        mainRoom.addStorageSlot((5,3,0),"ManufacturingTable",{"desiredState":"filled"})
+        mainRoom.addStorageSlot((5,5,0),"ManufacturingTable",{"desiredState":"filled"})
+        mainRoom.addStorageSlot((4,5,0),"ManufacturingTable",{"desiredState":"filled"})
+        mainRoom.addStorageSlot((3,5,0),"ManufacturingTable",{"desiredState":"filled"})
+        mainRoom.addStorageSlot((2,5,0),"ManufacturingTable",{"desiredState":"filled"})
+        mainRoom.addStorageSlot((1,5,0),"ManufacturingTable",{"desiredState":"filled"})
+
+        """
         item = src.items.itemMap["ProductionArtwork"]()
         item.bolted = True
         item.charges = 1
@@ -4006,6 +4034,7 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["BluePrinter"]()
         item.bolted = True
         mainRoom.addItem(item,(2,4,0))
+        """
 
         for x in range(1,6):
             mainRoom.walkingSpace.add((x,10,0))
@@ -4061,8 +4090,25 @@ but they are likely to explode when disturbed.
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
-        for _i in range(50):
+        numWalls = 50
+        if self.difficulty == "easy":
+            numWalls = 400
+        for _i in range(numWalls):
             item = src.items.itemMap["Wall"]()
+            item.bolted = False
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        numMachines = 0
+        if self.difficulty == "easy":
+            numMachines = 40
+        for _i in range(numMachines):
+            item = src.items.itemMap["Machine"]()
+            item.bolted = False
+            item.setToProduce(random.choice(["Rod","Frame","Case","Wall"]))
+            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,pos)
+        for _i in range(40):
+            item = src.items.itemMap["Door"]()
             item.bolted = False
             pos = (random.randint(15,15*13),random.randint(15,15*13),0)
             currentTerrain.addItem(item,pos)
@@ -4144,39 +4190,41 @@ but they are likely to explode when disturbed.
                 pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
                 currentTerrain.addItem(item,pos)
 
-            for _i in range(random.randint(1,3)):
-                enemy = src.characters.Monster(4,4)
-                enemy.health = 20*modifier
-                enemy.baseDamage = 5
-                enemy.maxHealth = 20*modifier
-                enemy.godMode = True
-                enemy.movementSpeed = 0.8
-                enemy.faction = "guard"
+            if not self.difficulty == "easy":
+                for _i in range(random.randint(1,3)):
+                    enemy = src.characters.Monster(4,4)
+                    enemy.health = 20*modifier
+                    enemy.baseDamage = 5
+                    enemy.maxHealth = 20*modifier
+                    enemy.godMode = True
+                    enemy.movementSpeed = 0.8
+                    enemy.faction = "guard"
 
-                quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
+                    quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
 
-                currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
+                    currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
 
-            if random.random() < 0.5:
-                enemy = src.characters.Statue(4,4)
-                enemy.health = 200*modifier
-                enemy.baseDamage = 10
-                enemy.maxHealth = 200*modifier
-                enemy.godMode = True
-                enemy.movementSpeed = 0.8
-                enemy.faction = "guard"
+            if not self.difficulty == "easy":
+                if random.random() < 0.5:
+                    enemy = src.characters.Statue(4,4)
+                    enemy.health = 200*modifier
+                    enemy.baseDamage = 10
+                    enemy.maxHealth = 200*modifier
+                    enemy.godMode = True
+                    enemy.movementSpeed = 0.8
+                    enemy.faction = "guard"
 
-                quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
+                    quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
 
-                currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
+                    currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
 
         for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
             architect.doClearField(pos[0], pos[1])
@@ -4220,11 +4268,147 @@ but they are likely to explode when disturbed.
             architect.doClearField(pos[0], pos[1])
             architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
 
-        positions = [(7,6),(6,7),(7,8),(8,7),]
-        positions = [random.choice(positions)]
+        basePositions = [(7,6),(6,7),(7,8),(8,7),]
+        positions = [random.choice(basePositions)]
+        oppositePositions = {(7,6):(7,8),(7,8):(7,6),(6,7):(8,7),(8,7):(6,7)}
         for pos in positions:
             architect.doClearField(pos[0], pos[1])
             architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
+
+
+            if self.difficulty == "easy":
+                basePositions.remove(pos)
+                counter = 0
+                for neighbourPos in basePositions:
+                    sideRoom = architect.doAddRoom(
+                            {
+                                   "coordinate": neighbourPos,
+                                   "roomType": "EmptyRoom",
+                                   "doors": "0,6 6,0 12,6 6,12",
+                                   "offset": [1,1],
+                                   "size": [13, 13],
+                            },
+                            None,
+                       )
+
+                    if counter == 2:
+                        """
+                        for y in (2,3,5,7,9,10,):
+                            sideRoom.addInputSlot((2,y,0),"Scrap")
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            item.toProduce = "MetalBars"
+                            sideRoom.addItem(item,(3,y,0))
+                            sideRoom.addStorageSlot((4,y,0),"MetalBars")
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            item.toProduce = "Rod"
+                            sideRoom.addItem(item,(5,y,0))
+                            sideRoom.addStorageSlot((6,y,0),"Rod")
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            item.toProduce = "Frame"
+                            sideRoom.addItem(item,(7,y,0))
+                            sideRoom.addStorageSlot((8,y,0),"Frame")
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            item.toProduce = "Case"
+                            sideRoom.addItem(item,(9,y,0))
+                            sideRoom.addStorageSlot((10,y,0),"Case")
+                        """
+                        for y in (2,3,5,6,8,9,):
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            sideRoom.addItem(item,(3,y,0))
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            sideRoom.addItem(item,(6,y,0))
+                            item = src.items.itemMap["ManufacturingTable"]()
+                            item.bolted = True
+                            sideRoom.addItem(item,(9,y,0))
+                        item = src.items.itemMap["ManufacturingManager"]()
+                        item.bolted = True
+                        sideRoom.addItem(item,(7,11,0))
+
+                    if counter == 1:
+                        for x in range(1,12):
+                            for y in range(1,12):
+                                if y%2 == 1 and not x == 6:
+                                    item = src.items.itemMap["Wall"]()
+                                    item.bolted = False
+
+                                    sideRoom.addItem(item,(x,y,0))
+                                    sideRoom.addStorageSlot((x,y,0),None)
+                                else:
+                                    sideRoom.walkingSpace.add((x,y,0))
+                    if counter == 0:
+                        item = src.items.itemMap["Glassifier"]()
+                        item.bolted = False
+                        sideRoom.addItem(item,(6,6,0))
+
+                        sideRoom.addInputSlot((5,4,0),"Scrap")
+                        sideRoom.addInputSlot((7,4,0),"Scrap")
+                        sideRoom.addInputSlot((5,3,0),"VatMaggot")
+                        sideRoom.addInputSlot((7,3,0),"VatMaggot")
+                        sideRoom.addInputSlot((5,2,0),"MetalBars")
+                        sideRoom.addInputSlot((7,2,0),"MetalBars")
+                        sideRoom.addInputSlot((5,8,0),"Rod")
+                        sideRoom.addInputSlot((7,8,0),"Rod")
+                        sideRoom.addInputSlot((5,9,0),"Bolt")
+                        sideRoom.addInputSlot((7,9,0),"Bolt")
+                        sideRoom.addInputSlot((5,10,0),"LightningRod")
+                        sideRoom.addInputSlot((7,10,0),"LightningRod")
+                        for y in range(1,12):
+                            if y == 6:
+                                continue
+                            sideRoom.addInputSlot((1,y,0),"ManufacturingTable")
+                            sideRoom.addInputSlot((11,y,0),"ManufacturingTable")
+                        for y in range(1,12):
+                            if y == 6:
+                                continue
+                            sideRoom.addInputSlot((3,y,0),"Wall")
+                            sideRoom.addInputSlot((9,y,0),"Wall")
+
+
+                    counter += 1
+            else:
+                sideRoom = architect.doAddRoom(
+                    {
+                           "coordinate": oppositePositions[pos],
+                           "roomType": "EmptyRoom",
+                           "doors": "0,6 6,0 12,6 6,12",
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None,
+                   )
+
+                item = src.items.itemMap["Glassifier"]()
+                item.bolted = False
+                sideRoom.addItem(item,(6,6,0))
+
+                sideRoom.addInputSlot((5,4,0),"Scrap")
+                sideRoom.addInputSlot((7,4,0),"Scrap")
+                sideRoom.addInputSlot((5,3,0),"VatMaggot")
+                sideRoom.addInputSlot((7,3,0),"VatMaggot")
+                sideRoom.addInputSlot((5,2,0),"MetalBars")
+                sideRoom.addInputSlot((7,2,0),"MetalBars")
+                sideRoom.addInputSlot((5,8,0),"Rod")
+                sideRoom.addInputSlot((7,8,0),"Rod")
+                sideRoom.addInputSlot((5,9,0),"Bolt")
+                sideRoom.addInputSlot((7,9,0),"Bolt")
+                sideRoom.addInputSlot((5,10,0),"LightningRod")
+                sideRoom.addInputSlot((7,10,0),"LightningRod")
+                for y in range(1,12):
+                    if y == 6:
+                        continue
+                    sideRoom.addInputSlot((1,y,0),"ManufacturingTable")
+                    sideRoom.addInputSlot((11,y,0),"ManufacturingTable")
+                for y in range(1,12):
+                    if y == 6:
+                        continue
+                    sideRoom.addInputSlot((3,y,0),"Wall")
+                    sideRoom.addInputSlot((9,y,0),"Wall")
 
         itemsToRemove = []
         for x in range(1,14):

@@ -78,11 +78,40 @@ Press control-d to stop your character from moving.
             return
 
         if character.getTerrainPosition() != self.terrainLocation:
-            quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.terrainLocation)
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
+            foundShrine = None
+            if isinstance(character.container, src.rooms.Room):
+                items = character.container.getItemsByType("Shrine")
+                if items:
+                    if character.getDistance(items[0].getPosition()) <= 1:
+                        return
+                    foundShrine = items[0]
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(),reason="get to a shrine",ignoreEndBlocked=True)
+                    self.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    return
+                roomsToSearch = character.container.container.rooms
+            else:
+                roomsToSearch = character.container.rooms
+
+            for room in roomsToSearch:
+                items = room.getItemsByType("Shrine")
+                if not items:
+                    continue
+                foundShrine = items[0]
+
+            if foundShrine:
+                quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=foundShrine.container.getPosition(),reason="get to a shrine")
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                return
+            else:
+                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.terrainLocation)
+                self.addQuest(quest)
+                quest.assignToCharacter(character)
+                quest.activate()
+                return
         if character.getBigPosition() != self.cityLocation:
             quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation,reason="go to the command center")
             self.addQuest(quest)
@@ -109,15 +138,32 @@ Press control-d to stop your character from moving.
         if self.subQuests:
             return self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)
         else:
-            charPos = (character.xPosition%15,character.yPosition%15,0)
-            if charPos in ((0,7,0),(0,6,0)):
-                return "d"
-            if charPos in ((7,14,0),(6,12,0)):
-                return "w"
-            if charPos in ((7,0,0),(6,0,0)):
-                return "s"
-            if charPos in ((14,7,0),(12,6,0)):
-                return "a"
+            if isinstance(character.container, src.rooms.Room):
+                items = character.container.getItemsByType("Shrine")
+                for item in items:
+                    if character.getDistance(item.getPosition()) > 1:
+                        continue
+                    direction = "."
+                    if character.getPosition(offset=(1,0,0)) == item.getPosition():
+                        direction = "d"
+                    if character.getPosition(offset=(-1,0,0)) == item.getPosition():
+                        direction = "a"
+                    if character.getPosition(offset=(0,1,0)) == item.getPosition():
+                        direction = "s"
+                    if character.getPosition(offset=(0,-1,0)) == item.getPosition():
+                        direction = "w"
+                    return "J"+direction+"wj"
+                return None
+            else:
+                charPos = (character.xPosition%15,character.yPosition%15,0)
+                if charPos in ((0,7,0),(0,6,0)):
+                    return "d"
+                if charPos in ((7,14,0),(6,12,0)):
+                    return "w"
+                if charPos in ((7,0,0),(6,0,0)):
+                    return "s"
+                if charPos in ((14,7,0),(12,6,0)):
+                    return "a"
             return None
 
     def getQuestMarkersTile(self,character):

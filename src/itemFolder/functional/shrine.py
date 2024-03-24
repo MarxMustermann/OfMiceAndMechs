@@ -65,7 +65,7 @@ class Shrine(src.items.Item):
 
     def setGod1(self,character):
         options = []
-        options.append((1,"1 - god of fertility"))
+        options.append((1,"1 - god of fertility (15 scrap)"))
         options.append((2,"2 - god of desolution"))
         options.append((3,"3 - god of construction"))
         options.append((4,"4 - god of fighting"))
@@ -86,7 +86,71 @@ class Shrine(src.items.Item):
         }
 
     def setGod2(self,extraInfo):
-        self.god = extraInfo["god"]
+        # convert parameters to local variables
+        godID = extraInfo["god"]
+        character = extraInfo["character"]
+
+        # determine what items are needed
+        needItems = None
+        if godID == 1:
+            needItems = ("Scrap",15)
+        if godID == 2:
+            needItems = ("MetalBars",15)
+
+        # handle the item requirements
+        if needItems:
+            itemType = needItems[0]
+            amount = needItems[1]
+
+            if itemType == "Scrap":
+                ##
+                # handle scrap special case
+
+                # find scrap to take as saccrifice
+                numScrapFound = 0
+                scrap = self.container.getItemsByType("Scrap")
+                for item in scrap:
+                    numScrapFound += item.amount
+
+                # ensure that there is enough scrap around
+                if not numScrapFound >= 15:
+                    character.addMessage("not enough scrap")
+                    return
+
+                # remove the scrap
+                numScrapRemoved = 0
+                for item in scrap:
+                    if item.amount <= amount-numScrapRemoved:
+                        self.container.removeItem(item)
+                        numScrapRemoved += item.amount
+                    else:
+                        item.amount -= amount-numScrapRemoved
+                        item.setWalkable()
+                        numScrapRemoved += amount-numScrapRemoved
+
+                    if numScrapRemoved >= amount:
+                        break
+                character.addMessage(f"you sacrifice {numScrapRemoved} Scrap")
+            else:
+                ##
+                # handle normal items
+
+                # get the items
+                itemsFound = self.container.getItemsByType(itemType,needsUnbolted=True)
+
+                # ensure item requirement can be fullfilled
+                if not len(itemsFound) >= amount:
+                    character.addMessage(f"you need {amount} {itemType}")
+                    return
+
+                # remove items from requirement
+                character.addMessage(f"you sacrifice {amount} {itemType}")
+                while amount > 0:
+                    self.container.removeItem(itemsFound.pop())
+                    amount -= 1
+
+        character.addMessage(f"you set the shrine to god {godID}")
+        self.god = godID
 
     def challenge(self,character):
         if self.god is None:
@@ -117,8 +181,70 @@ class Shrine(src.items.Item):
             character.addMessage(f"your mana increased by {increaseAmount} for building {(numRooms-lastNumRooms)} rooms")
             roomRewardMapByTerrain[terrainPos] = numRooms
             god["roomRewardMapByTerrain"] = roomRewardMapByTerrain
+        elif self.god == 2:
+            options = []
+            options.append((10,"10"))
+            options.append((100,"100"))
+            options.append((1000,"1000"))
+            submenue = src.interaction.SelectionMenu("How log do you want to pray?",options,targetParamName="duration")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"waitPraySelection","params":{"character":character}}
         else:
             character.addMessage("nothing happens - not implemented yet")
+
+    def waitPraySelection(self,extraInfo):
+        duration = extraInfo["duration"]
+        character = extraInfo["character"]
+
+        if not duration:
+            return
+
+        params = {}
+        params["character"] = character
+        params["productionTime"] = duration
+        params["doneProductionTime"] = 0
+        self.waitPrayWait(params)
+
+    def waitPrayWait(self,params):
+        character = params["character"]
+        ticksLeft = params["productionTime"]-params["doneProductionTime"]
+
+        progressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
+
+        progressbarWithNewlines = ""
+
+        counter = 0
+        for char in progressbar:
+            counter += 1
+            progressbarWithNewlines += char
+            if counter%10 == 0:
+                progressbarWithNewlines += "\n"
+        if progressbarWithNewlines[-1] == "\n":
+            progressbarWithNewlines = progressbarWithNewlines[:-1]
+
+        if ticksLeft > 10:
+            character.timeTaken += 10
+            params["doneProductionTime"] += 10
+            submenue = src.interaction.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayWait","params":params}
+        else:
+            character.timeTaken += ticksLeft
+            params["doneProductionTime"] += ticksLeft
+            submenue = src.interaction.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayEnd","params":params}
+        character.runCommandString(".",nativeKey=True)
+
+    def waitPrayEnd(self,extraInfo):
+        character = extraInfo["character"]
+        duration = extraInfo["productionTime"]
+
+        terrain = self.getTerrain()
+        increaseAmount = duration//10
+        terrain.mana += increaseAmount
+
+        character.addMessage(f"you prayed {duration} ticks and gain {increaseAmount} mana")
 
     def showInfo(self,character):
 
@@ -140,6 +266,29 @@ class Shrine(src.items.Item):
             character.addMessage("this god can improve your base damage")
 
     def getCharacterSpawningCost(self,character):
+        baseCost = 30
+        terrain = self.getTerrain()
+
+        numCharacters = 0
+        for otherCharacter in terrain.characters:
+            if otherCharacter.faction != character.faction:
+                continue
+            if otherCharacter.burnedIn:
+                continue
+            numCharacters += 1
+        for room in terrain.rooms:
+            for otherCharacter in room.characters:
+                if otherCharacter.faction != character.faction:
+                    continue
+                if otherCharacter.burnedIn:
+                    continue
+                numCharacters += 1
+
+        baseCost *= 1.05**numCharacters
+        baseCost = math.ceil(baseCost*10)/10
+        return baseCost
+
+    def getBurnedInCharacterSpawningCost(self,character):
         baseCost = 10
         terrain = self.getTerrain()
 
@@ -147,10 +296,14 @@ class Shrine(src.items.Item):
         for otherCharacter in terrain.characters:
             if otherCharacter.faction != character.faction:
                 continue
+            if not otherCharacter.burnedIn:
+                continue
             numCharacters += 1
         for room in terrain.rooms:
             for otherCharacter in room.characters:
                 if otherCharacter.faction != character.faction:
+                    continue
+                if not otherCharacter.burnedIn:
                     continue
                 numCharacters += 1
 
@@ -170,6 +323,8 @@ class Shrine(src.items.Item):
             if otherCharacter.faction != character.faction:
                 continue
             if len(otherCharacter.duties) != 1:
+                continue
+            if not otherCharacter.burnedIn:
                 continue
             dutyMap[otherCharacter.duties[0]] = dutyMap.get(otherCharacter.duties[0],0)+1
 
@@ -201,7 +356,6 @@ class Shrine(src.items.Item):
         if self.god == 1:
             cost = self.getCharacterSpawningCost(character)
             cost *= glassHeartRebate
-            dutyMap = self.getDutyMap(character)
 
             foundFlask = None
             for item in character.inventory:
@@ -213,7 +367,15 @@ class Shrine(src.items.Item):
             if foundFlask:
                 cost /= 2
 
-            duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","machining","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning"]
+            options.append((f"spawn true NPC",f"({cost}) spawn NPC"))
+
+            cost = self.getBurnedInCharacterSpawningCost(character)
+            cost *= glassHeartRebate
+            if foundFlask:
+                cost /= 2
+
+            duties = ["resource gathering","resource fetching","hauling","room building","scrap hammering","metal working","machining","painting","scavenging","machine operation","machine placing","maggot gathering","cleaning","manufacturing"]
+            dutyMap = self.getDutyMap(character)
 
             for duty in duties:
                 specificCost = cost*(dutyMap.get(duty,0)+1)
@@ -334,6 +496,9 @@ class Shrine(src.items.Item):
 
         text = "NIY"
 
+        if extraInfo["rewardType"] == "spawn true NPC":
+            text = "You spawned a clone"
+            self.spawnNPC(character)
         if extraInfo["rewardType"] == "spawn resource gathering NPC":
             text = "You spawned a clone with the duty resource gathering."
             self.spawnBurnedInNPC(character,"resource gathering")
@@ -376,6 +541,9 @@ class Shrine(src.items.Item):
         elif extraInfo["rewardType"] == "spawn cleaning NPC":
             text = "You spawned a clone with the duty cleaning"
             self.spawnBurnedInNPC(character,"cleaning")
+        elif extraInfo["rewardType"] == "spawn manufacturing NPC":
+            text = "You spawned a clone with the duty manufacturing"
+            self.spawnBurnedInNPC(character,"manufacturing")
 
         elif extraInfo["rewardType"] == "spawn scrap":
              self.spawnScrap(character)
@@ -546,8 +714,101 @@ class Shrine(src.items.Item):
         if text:
             character.addMessage(text)
 
-    def spawnBurnedInNPC(self, character, duty):
+    def spawnNPC(self, character):
         cost = self.getCharacterSpawningCost(character)
+        glassHeartRebate = self.get_glass_heart_rebate()
+        mana = self.getTerrain().mana
+
+        foundFlask = None
+        for item in character.inventory:
+            if item.type != "GooFlask":
+                continue
+            if item.uses < 100:
+                continue
+            foundFlask = item
+        if foundFlask:
+            cost /= 2
+        cost *= glassHeartRebate
+
+        text = ""
+        if not mana >= cost:
+            text = "not enough mana"
+        else:
+            self.getTerrain().mana -= cost
+            src.gamestate.gamestate.gods[self.god]["mana"] += cost/2
+
+            npc = src.characters.Character()
+            npc.questsDone = [
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "CollectQuestMeta",
+                "FireFurnaceMeta",
+                "ExamineQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+                "LeaveRoomQuest",
+            ]
+
+            npc.solvers = [
+                "SurviveQuest",
+                "Serve",
+                "NaiveMoveQuest",
+                "MoveQuestMeta",
+                "NaiveActivateQuest",
+                "ActivateQuestMeta",
+                "NaivePickupQuest",
+                "PickupQuestMeta",
+                "DrinkQuest",
+                "ExamineQuest",
+                "FireFurnaceMeta",
+                "CollectQuestMeta",
+                "WaitQuest" "NaiveDropQuest",
+                "NaiveDropQuest",
+                "DropQuestMeta",
+            ]
+
+            room = self.container
+            terrain = self.container.container
+
+            npc.faction = character.faction
+            #npc.rank = 6
+            room.addCharacter(npc,self.xPosition,self.yPosition)
+            npc.flask = src.items.itemMap["GooFlask"]()
+            npc.flask.uses = 100
+
+            npc.duties = []
+            npc.registers["HOMEx"] = 7
+            npc.registers["HOMEy"] = 7
+            npc.registers["HOMETx"] = terrain.xPosition
+            npc.registers["HOMETy"] = terrain.yPosition
+
+            npc.personality["autoFlee"] = False
+            npc.personality["abortMacrosOnAttack"] = False
+            npc.personality["autoCounterAttack"] = False
+
+            quest = src.quests.questMap["BeUsefull"](strict=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(npc)
+            quest.activate()
+            npc.assignQuest(quest,active=True)
+            npc.foodPerRound = 1
+
+            text = f"spawned NPC"
+
+            if foundFlask:
+                character.inventory.remove(foundFlask)
+
+        if character:
+            character.addMessage(text)
+
+
+    def spawnBurnedInNPC(self, character, duty):
+        cost = self.getBurnedInCharacterSpawningCost(character)
         glassHeartRebate = self.get_glass_heart_rebate()
         mana = self.getTerrain().mana
 
@@ -636,6 +897,7 @@ class Shrine(src.items.Item):
             quest.activate()
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
+            npc.burnedIn = True
 
             '''
             numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)

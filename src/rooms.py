@@ -126,10 +126,12 @@ class Room:
             else:
                 function()
 
-    def getItemsByType(self,itemType, needsBolted = False):
+    def getItemsByType(self,itemType, needsBolted = False, needsUnbolted = False):
         result = []
         for item in self.itemsOnFloor:
             if needsBolted and not item.bolted:
+                continue
+            if needsUnbolted and item.bolted:
                 continue
             if item.type != itemType:
                 continue
@@ -1455,6 +1457,9 @@ class Room:
                         item.commands.update(buildSite[2].get("commands"))
                     if buildSite[1] == "DutyBell":
                         item.duty = buildSite[2]["duty"]
+                    if buildSite[1] == "ManufacturingTable":
+                        if "toProduce" in buildSite[2]:
+                            item.toProduce = buildSite[2]["toProduce"]
                     if buildSite[2].get("settings"):
                         if not item.commands:
                             item.settings = {}
@@ -1598,9 +1603,6 @@ class Room:
             direction: the direction to move the character
         """
 
-        if dash and character.exhaustion >= 10:
-            dash = False
-
         # check whether movement is contained in the room
         innerRoomMovement = True
         if direction == "south" and character.yPosition == self.sizeY - 1:
@@ -1650,8 +1652,12 @@ class Room:
                 other.collidedWith(character,actor=character)
                 return None
 
-            if not dash:
+            if not dash or character.exhaustion >= 10:
                 character.timeTaken += character.movementSpeed
+                if not dash:
+                    if character.exhaustion > 0:
+                        character.exhaustion -= min(1,character.exhaustion)
+                        character.timeTaken += 1
             else:
                 character.timeTaken += character.movementSpeed/2
                 character.exhaustion += 5

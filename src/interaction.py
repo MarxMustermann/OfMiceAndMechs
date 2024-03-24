@@ -3517,7 +3517,7 @@ class SelectionMenu(SubMenu):
     does a simple selection and terminates
     """
 
-    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None):
+    def __init__(self, text="", options=None, default=None, targetParamName="selection",extraDescriptions=None, selected=None):
         """
         set up the selection
 
@@ -3534,6 +3534,14 @@ class SelectionMenu(SubMenu):
         self.type = "SelectionMenu"
         super().__init__(default=default,targetParamName=targetParamName)
         self.setOptions(text, options)
+
+        if selected:
+            counter = 0
+            for option in options:
+                counter += 1
+                if option[0] == selected:
+                    self.selectionIndex = counter
+
         self.extraDescriptions = extraDescriptions
 
     def handleKey(self, key, noRender=False, character = None):
@@ -3841,6 +3849,7 @@ class InstructSubordinatesMenu(SubMenu):
                         options = []
                         options.append(("resource gathering","resource gathering"))
                         options.append(("machine operation","machine operation"))
+                        options.append(("manufacturing","manufacturing"))
                         options.append(("trap setting","trap setting"))
                         options.append(("hauling","hauling"))
                         options.append(("resource fetching","resource fetching"))
@@ -3980,6 +3989,7 @@ class InstructNPCMenu(SubMenu):
                         options = []
                         options.append(("resource gathering","resource gathering"))
                         options.append(("machine operation","machine operation"))
+                        options.append(("manufacturing","manufacturing"))
                         options.append(("trap setting","trap setting"))
                         options.append(("hauling","hauling"))
                         options.append(("resource fetching","resource fetching"))
@@ -5880,16 +5890,26 @@ class JobAsMatrixMenu(SubMenu):
 
         terrain = self.dutyArtwork.getTerrain()
         npcs = []
-        npcs.append(src.gamestate.gamestate.mainChar)
         for char in terrain.characters:
+            if char.burnedIn:
+                continue
             if char not in npcs:
                 npcs.append(char)
         for room in terrain.rooms:
             for char in room.characters:
+                if char.burnedIn:
+                    continue
                 if char not in npcs:
                     npcs.append(char)
+        if src.gamestate.gamestate.mainChar in npcs:
+            npcs.remove(src.gamestate.gamestate.mainChar)
 
-        duties = list(reversed(["epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing"]))
+        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing"]))
+
+
+        if key == "C":
+            for npc in npcs:
+                npc.duties = []
         if key == "w" and not self.index[0] < 1:
             self.index[0] -= 1
         if key == "s":

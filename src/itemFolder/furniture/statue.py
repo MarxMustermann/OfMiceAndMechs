@@ -34,7 +34,7 @@ class Statue(src.items.Item):
 
     def pray(self,character):
         options = []
-        options.append((1,"1 - god of fertility"))
+        options.append((1,"1 - god of fertility\n15 scrap"))
         options.append((2,"2 - god of desolution"))
         options.append((3,"3 - god of construction"))
         options.append((4,"4 - god of fighting"))
@@ -54,7 +54,38 @@ class Statue(src.items.Item):
         }
 
     def pray2(self,extraInfo):
-        new = src.items.itemMap["GlassStatue"](itemID=extraInfo["god"])
+        godID = extraInfo["god"]
+        character = extraInfo["character"]
+        if godID == 1:
+
+            # find scrap to take as saccrifice
+            numScrapFound = 0
+            scrap = self.container.getItemsByType("Scrap")
+            for item in scrap:
+                numScrapFound += item.amount
+
+            # ensure that there is enough scrap around
+            if not numScrapFound >= 15:
+                character.addMessage("not enough scrap")
+                return
+
+            # remove the scrap
+            numScrapRemoved = 0
+            for item in scrap:
+                if item.amount <= 15-numScrapRemoved:
+                    self.container.removeItem(item)
+                    numScrapRemoved += item.amount
+                else:
+                    item.amount -= 15-numScrapRemoved
+                    item.setWalkable()
+                    numScrapRemoved += 15-numScrapRemoved
+
+                if numScrapRemoved >= 15:
+                    break
+            character.addMessage("you sacrifice {numScrapRemoved} Scrap")
+
+        character.addMessage("the Statue turns into a GlassStatue")
+        new = src.items.itemMap["GlassStatue"](itemID=godID)
         self.container.addItem(new,self.getPosition())
         self.container.removeItem(self)
 

@@ -202,7 +202,7 @@ Press d to move the cursor and show the subquests description.
                         break
 
                 if not itemFound:
-                    quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=True,tryHard=self.tryHard,reason="have an item to place")
+                    quest = src.quests.questMap["FetchItems"](toCollect=self.itemType,amount=1,takeAnyUnbolted=self.tryHard,tryHard=self.tryHard,reason="have an item to place")
                     return ([quest],None)
 
                 if character.getBigPosition() != self.targetPositionBig:

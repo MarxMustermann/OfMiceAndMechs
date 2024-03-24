@@ -240,6 +240,7 @@ class Character:
 
         self.xPosition = xPosition
         self.yPosition = yPosition
+        self.burnedIn = False
 
     def callIndirect(self, callback, extraParams=None):
         """
@@ -1915,7 +1916,7 @@ press any other key to attack normally"""
             if len(items) == 1:
                 text += "there is an item:\n\n"
             else:
-                text += "there are some items:\n"
+                text += f"there are {len(items)} items:\n"
                 for item in items:
                     text += f"* {item.name}\n"
                 text += "\nOn the top is:\n\n"
@@ -2053,7 +2054,8 @@ press any other key to attack normally"""
                     isinstance(item, src.items.itemMap["BioMass"]) or isinstance(item, src.items.itemMap["Bloom"]) or (item, src.items.itemMap["PressCake"]) or (item, src.items.itemMap["SickBloom"])
                 ):
                     item.apply(self)
-                    self.inventory.remove(item)
+                    if item in self.inventory:
+                        self.inventory.remove(item)
                     break
                 if isinstance(item, src.items.itemMap["Corpse"]):
                     item.apply(self)

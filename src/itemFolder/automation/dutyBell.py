@@ -23,25 +23,44 @@ class DutyBell(src.items.Item):
         self.walkable = False
 
         self.duty = "machine operation"
+        self.duty = None
 
     def apply(self,character):
         if not self.container.isRoom:
             character.addMessage("this items needs to be within a room to be used")
             return
 
-        if self.duty not in self.container.requiredDuties:
-            self.container.requiredDuties.append(self.duty)
+        if self.duty:
+            if self.duty not in self.container.requiredDuties:
+                self.container.requiredDuties.append(self.duty)
 
-        dutySignals = {"machine operation":"MO","resource fetching":"RF","resource gathering":"RG","painting":"PT","machine placing":"MP"}
-        dutySignal = dutySignals.get(self.duty,"##")
+            dutySignals = {"machine operation":"MO","resource fetching":"RF","resource gathering":"RG","painting":"PT","machine placing":"MP"}
+            dutySignal = dutySignals.get(self.duty,"##")
 
-        character.addMessage(f"you ring the duty bell to signal {self.duty} is needed")
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), dutySignal)})
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
-        self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
-        self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
-        self.container.addAnimation(self.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
-        self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+            character.addMessage(f"you ring the duty bell to signal {self.duty} is needed")
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), dutySignal)})
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+            self.container.addAnimation(self.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+            self.container.addAnimation(self.getPosition(offset=(-1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+            self.container.addAnimation(self.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+            self.container.addAnimation(self.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+        else:
+            options = []
+            options.append(("machine operation", "machine operations"))
+            options.append(("resource fetching", "resource fetching"))
+            options.append(("resource gathering", "resource gathering"))
+            options.append(("painting", "painting"))
+            options.append(("machine placing", "machine placing"))
+            options.append(("room building", "room building"))
+
+            submenue = src.interaction.SelectionMenu("select the duty to set",options)
+            character.macroState["submenue"] = submenue
+            params = {"character":character}
+            character.macroState["submenue"].followUp = {"container":self,"method":"setDuty","params":params}
+
+    def ringDuty(self,extraParams):
+        print(extraParams)
+        1/0
 
     def render(self):
         if self.container and self.duty in self.container.requiredDuties:

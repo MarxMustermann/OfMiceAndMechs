@@ -337,15 +337,20 @@ class CityPlaner(src.items.Item):
         if "type" not in params:
             options = []
             options.append(("storage","storage"))
+            options.append(("wallManufacturing","wall manufacturing"))
             options.append(("wallProduction","wall production"))
             options.append(("basicMaterialsProduction","basic material production"))
             options.append(("caseProduction","case production"))
-            options.append(("scrapCompactor","scrap compactor"))
             options.append(("scrapCompactorProduction","scrap compactor production"))
             options.append(("basicRoombuildingItemsProduction","basic room building items production"))
             options.append(("productionRoom","production room"))
             options.append(("gooProcessing","goo processing"))
             options.append(("weaponProduction","weapon production"))
+            options.append(("weaponManufacturing","weapon manufacturing"))
+            options.append(("manufacturingHall","manufacturing hall"))
+            options.append(("machineHall","machine hall"))
+            options.append(("electrifierHall","electrifier hall"))
+            options.append(("scrapCompactor","scrap compactor hall"))
             options.append(("boltProduction","bolt production"))
             options.append(("smokingRoom","smoking room"))
             options.append(("temple","temple"))
@@ -677,20 +682,23 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((9,1,0))
             walkingSpaces.append((5,1,0))
 
-        if floorPlanType == "wallProduction":
+        if floorPlanType in ("wallProduction","wallManufacturing"):
+            productionType = "Machine"
+            if floorPlanType == "wallManufacturing":
+                productionType = "ManufacturingTable"
             for y in (1,6,11,):
                 for x in range(1,12):
                     walkingSpaces.append((x,y,0))
             for y in (2,4,7,9,):
                 walkingSpaces.append((1,y,0))
                 inputSlots.append(((2,y,0),"MetalBars",{}))
-                buildSites.append(((3,y,0),"Machine",{"toProduce":"Rod"}))
+                buildSites.append(((3,y,0),productionType,{"toProduce":"Rod"}))
                 inputSlots.append(((4,y,0),"Rod",{}))
-                buildSites.append(((5,y,0),"Machine",{"toProduce":"Frame"}))
+                buildSites.append(((5,y,0),productionType,{"toProduce":"Frame"}))
                 inputSlots.append(((6,y,0),"Frame",{}))
-                buildSites.append(((7,y,0),"Machine",{"toProduce":"Case"}))
+                buildSites.append(((7,y,0),productionType,{"toProduce":"Case"}))
                 inputSlots.append(((8,y,0),"Case",{}))
-                buildSites.append(((9,y,0),"Machine",{"toProduce":"Wall"}))
+                buildSites.append(((9,y,0),productionType,{"toProduce":"Wall"}))
                 storageSlots.append(((10,y,0),"Wall",{}))
                 walkingSpaces.append((11,y,0))
             for y in (3,8,):
@@ -702,7 +710,10 @@ class CityPlaner(src.items.Item):
             for y in (5,10,):
                 walkingSpaces.append((1,y,0))
                 for x in range(2,11):
-                    storageSlots.append(((x,y,0),"Wall",{"desiredState":"filled"}))
+                    if not x == 9:
+                        storageSlots.append(((x,y,0),"Wall",{"desiredState":"filled"}))
+                    else:
+                        walkingSpaces.append((x,y,0))
                 walkingSpaces.append((11,y,0))
 
         if floorPlanType == "storage":
@@ -755,7 +766,10 @@ class CityPlaner(src.items.Item):
                     continue
                 storageSlots.append(((x,11,0),None,{}))
 
-        if floorPlanType == "weaponProduction":
+        if floorPlanType in ("weaponProduction","weaponManufacturing"):
+            productionType = "Machine"
+            if floorPlanType == "weaponManufacturing":
+                productionType = "ManufacturingTable"
             for y in (1,4,7,10):
                 for x in range(1,12):
                     walkingSpaces.append((x,y,0))
@@ -767,15 +781,56 @@ class CityPlaner(src.items.Item):
                 inputSlots.append(((4,y,0),"MetalBars",{}))
                 walkingSpaces.append((11,y,0))
             for y in (2,3,5,6,):
-                buildSites.append(((5,y,0),"Machine",{"toProduce":"Rod"}))
+                buildSites.append(((5,y,0),productionType,{"toProduce":"Rod"}))
                 inputSlots.append(((6,y,0),"Rod",{}))
-                buildSites.append(((7,y,0),"Machine",{"toProduce":"Sword"}))
+                buildSites.append(((7,y,0),productionType,{"toProduce":"Sword"}))
                 storageSlots.append(((8,y,0),"Sword",{}))
                 storageSlots.append(((9,y,0),"Sword",{"desiredState":"filled"}))
             for y in (8,9,):
-                buildSites.append(((5,y,0),"Machine",{"toProduce":"Armor"}))
+                buildSites.append(((5,y,0),productionType,{"toProduce":"Armor"}))
                 storageSlots.append(((6,y,0),"Armor",{}))
                 storageSlots.append(((7,y,0),"Armor",{"desiredState":"filled"}))
+
+        if floorPlanType == "manufacturingHall":
+            for y in (2,3,5,6,8,9,):
+                walkingSpaces.append((1,y,0))
+                buildSites.append(((3,y,0),"ManufacturingTable",{}))
+                buildSites.append(((6,y,0),"ManufacturingTable",{}))
+                buildSites.append(((9,y,0),"ManufacturingTable",{}))
+                walkingSpaces.append((11,y,0))
+            for y in (1,4,7,10,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            walkingSpaces.append((6,11,0))
+            buildSites.append(((7,11,0),"ManufacturingManager",{}))
+
+        if floorPlanType == "machineHall":
+            for y in (3,6,9,):
+                for x in range(1,12):
+                    if x == 6:
+                        continue
+                    walkingSpaces.append((x,y,0))
+            for y in (1,11,):
+                for x in range(5,10):
+                    if x == 6:
+                        continue
+                    walkingSpaces.append((x,y,0))
+            for y in range(1,12):
+                walkingSpaces.append((6,y,0))
+
+        if floorPlanType == "electrifierHall":
+            for y in (2,3,5,6,8,9,):
+                walkingSpaces.append((1,y,0))
+                for x in (3,6,9):
+                    inputSlots.append(((x-1,y,0),"Rod",{}))
+                    buildSites.append(((x,y,0),"Electrifier",{}))
+                    storageSlots.append(((x+1,y,0),"LightningRod",{}))
+                walkingSpaces.append((11,y,0))
+            for y in (1,4,7,10,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            walkingSpaces.append((6,11,0))
+
 
         floorPlan = {}
         if walkingSpaces:
@@ -791,7 +846,6 @@ class CityPlaner(src.items.Item):
 
         room.floorPlan = floorPlan
         room.tag = floorPlanType
-        room.requiredDuties.append("painting")
         params["character"].changed("assigned floor plan",params)
         self.showMap(params["character"], cursor = params["coordinate"])
 
@@ -868,6 +922,30 @@ class CityPlaner(src.items.Item):
         params["character"].changed("scheduled room",params)
         self.showMap(params["character"], cursor = params["coordinate"])
 
+    def clearRoomFromMap(self,params):
+        terrain = self.getTerrain()
+        room = terrain.getRoomByPosition(params["coordinate"])[0]
+        room.tag = None
+        room.floorPlan = None
+        toKeep = []
+        for walkingSpot in room.walkingSpace:
+            if walkingSpot[0] in (0,12) or walkingSpot[1] in (0,12):
+                toKeep.append(walkingSpot)
+        room.walkingSpace = set(toKeep)
+        room.storageSlots = []
+        room.inputSlots = []
+        room.outputSlots = []
+
+        for item in room.itemsOnFloor[:]:
+            if item.bolted and item.xPosition in (0,12):
+                continue
+            if item.bolted and item.yPosition in (0,12):
+                continue
+
+            room.removeItem(item)
+
+        self.showMap(params["character"], cursor = params["coordinate"])
+
     def clearRoomDesignation(self,params):
         pos = (params["coordinate"][0],params["coordinate"][1],0)
         if pos in self.specialPurposeRooms:
@@ -922,7 +1000,15 @@ class CityPlaner(src.items.Item):
                 }
 
         for room in terrain.rooms:
-            del functionMap[(room.xPosition,room.yPosition)]
+            functionMap[(room.xPosition,room.yPosition)] = {}
+            functionMap[(room.xPosition,room.yPosition)]["c"] = {
+                "function": {
+                    "container":self,
+                    "method":"clearRoomFromMap",
+                    "params":{"character":character},
+                },
+                "description":"clear room",
+            }
 
         for scrapField in terrain.scrapFields:
             del functionMap[(scrapField[0],scrapField[1])]

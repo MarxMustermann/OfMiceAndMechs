@@ -80,9 +80,9 @@ After changing the duties the clones should change their behaviour after complet
         character.macroState["submenue"] = submenue
 
     def showMatrix(self, character):
-        if not character.rank < 4:
-            character.addMessage("you need to have rank 3 to do this. You can see the overview though.")
-            return
+        #if not character.rank < 4:
+        #    character.addMessage("you need to have rank 3 to do this. You can see the overview though.")
+        #    return
         self.submenue = src.interaction.JobAsMatrixMenu(self)
         character.macroState["submenue"] = self.submenue
 

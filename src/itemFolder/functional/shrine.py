@@ -65,7 +65,7 @@ class Shrine(src.items.Item):
 
     def setGod1(self,character):
         options = []
-        options.append((1,"1 - god of fertility (15 scrap)"))
+        options.append((1,"1 - god of fertility"))
         options.append((2,"2 - god of desolution"))
         options.append((3,"3 - god of construction"))
         options.append((4,"4 - god of fighting"))
@@ -96,6 +96,16 @@ class Shrine(src.items.Item):
             needItems = ("Scrap",15)
         if godID == 2:
             needItems = ("MetalBars",15)
+        if godID == 3:
+            needItems = ("VatMaggot",15)
+        if godID == 4:
+            needItems = ("Sword",15)
+        if godID == 5:
+            needItems = ("Armor",15)
+        if godID == 6:
+            needItems = ("GooFlask",15)
+        if godID == 7:
+            needItems = ("MoldFeed",15)
 
         # handle the item requirements
         if needItems:

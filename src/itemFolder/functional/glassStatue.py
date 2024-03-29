@@ -40,6 +40,9 @@ class GlassStatue(src.items.Item):
         self.stable = False
 
     def pray(self,character):
+        if self.charges >= 9:
+            character.addMessage(f"the glass statue has maximum charges now")
+            return
         # determine what items are needed
         needItems = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
 

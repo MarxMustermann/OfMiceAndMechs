@@ -1518,6 +1518,16 @@ class MainGame(BasicPhase):
         if self.difficulty == "tutorial":
             self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
+        elif self.difficulty == "difficult":
+            gods = [1,2,3,4,5,6,7]
+            random.shuffle(gods)
+            self.setUpGlassHeartDungeon(dungeonPositions[0],gods[0],1*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[1],gods[1],1.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[2],gods[2],2*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[3],gods[3],2.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[4],gods[4],3*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],3.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],4*difficultyModifier)
         else:
             self.setUpGlassHeartDungeon(dungeonPositions[0],3,1*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[1],4,1.5*difficultyModifier)
@@ -2455,8 +2465,25 @@ but they are likely to explode when disturbed.
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
+        sacrificeCandidates = [
+                ("Scrap",30),
+                ("Wall",6),
+                ("ScrapCompactor",8),
+                ("MetalBars", 20),
+                ("Vial", 3),
+                ("GooFlask", 5),
+                ("Rod", 15),
+                ("Bolt", 15),
+                ("Tank", 15),
+                ("Case", 10),
+                ("Frame", 12),
+                ("Corpse", 1),
+                ("MoldFeed", 10),
+                ("LightningRod", 5),
+                ("Sheet", 15),
+                ]
         src.gamestate.gamestate.gods[itemID] = {
-                "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,
+                "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":random.choice(sacrificeCandidates)
             }
         if itemID == 1:
             src.gamestate.gamestate.gods[itemID]["roomRewardMapByTerrain"] = {}
@@ -4342,6 +4369,7 @@ but they are likely to explode when disturbed.
                                 else:
                                     sideRoom.walkingSpace.add((x,y,0))
                     if counter == 0:
+                        """
                         item = src.items.itemMap["Glassifier"]()
                         item.bolted = False
                         sideRoom.addItem(item,(6,6,0))
@@ -4369,6 +4397,7 @@ but they are likely to explode when disturbed.
                             sideRoom.addInputSlot((3,y,0),"Wall")
                             sideRoom.addInputSlot((9,y,0),"Wall")
 
+                        """
 
                     counter += 1
             else:
@@ -4382,6 +4411,7 @@ but they are likely to explode when disturbed.
                     },
                     None,
                    )
+                """
 
                 item = src.items.itemMap["Glassifier"]()
                 item.bolted = False
@@ -4409,6 +4439,7 @@ but they are likely to explode when disturbed.
                         continue
                     sideRoom.addInputSlot((3,y,0),"Wall")
                     sideRoom.addInputSlot((9,y,0),"Wall")
+                """
 
         itemsToRemove = []
         for x in range(1,14):

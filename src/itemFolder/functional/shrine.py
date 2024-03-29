@@ -91,21 +91,7 @@ class Shrine(src.items.Item):
         character = extraInfo["character"]
 
         # determine what items are needed
-        needItems = None
-        if godID == 1:
-            needItems = ("Scrap",15)
-        if godID == 2:
-            needItems = ("MetalBars",15)
-        if godID == 3:
-            needItems = ("VatMaggot",15)
-        if godID == 4:
-            needItems = ("Sword",15)
-        if godID == 5:
-            needItems = ("Armor",15)
-        if godID == 6:
-            needItems = ("GooFlask",15)
-        if godID == 7:
-            needItems = ("MoldFeed",15)
+        needItems = src.gamestate.gamestate.gods[godID]["sacrifice"]
 
         # handle the item requirements
         if needItems:
@@ -193,10 +179,10 @@ class Shrine(src.items.Item):
             god["roomRewardMapByTerrain"] = roomRewardMapByTerrain
         elif self.god == 2:
             options = []
-            options.append((10,"10"))
             options.append((100,"100"))
             options.append((1000,"1000"))
-            submenue = src.interaction.SelectionMenu("How log do you want to pray?",options,targetParamName="duration")
+            options.append((10000,"10000"))
+            submenue = src.interaction.SelectionMenu("How long do you want to pray?",options,targetParamName="duration")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPraySelection","params":{"character":character}}
         else:
@@ -219,7 +205,7 @@ class Shrine(src.items.Item):
         character = params["character"]
         ticksLeft = params["productionTime"]-params["doneProductionTime"]
 
-        progressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
+        progressbar = "X"*(params["doneProductionTime"]//100)+"."*(ticksLeft//100)
 
         progressbarWithNewlines = ""
 
@@ -232,9 +218,9 @@ class Shrine(src.items.Item):
         if progressbarWithNewlines[-1] == "\n":
             progressbarWithNewlines = progressbarWithNewlines[:-1]
 
-        if ticksLeft > 10:
-            character.timeTaken += 10
-            params["doneProductionTime"] += 10
+        if ticksLeft > 100:
+            character.timeTaken += 100
+            params["doneProductionTime"] += 100
             submenue = src.interaction.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayWait","params":params}
@@ -251,7 +237,7 @@ class Shrine(src.items.Item):
         duration = extraInfo["productionTime"]
 
         terrain = self.getTerrain()
-        increaseAmount = duration//10
+        increaseAmount = duration//100
         terrain.mana += increaseAmount
 
         character.addMessage(f"you prayed {duration} ticks and gain {increaseAmount} mana")
@@ -341,6 +327,9 @@ class Shrine(src.items.Item):
         return dutyMap
 
     def get_glass_heart_rebate(self):
+        if self.god == None:
+            return 1
+
         if src.gamestate.gamestate.gods[self.god]["lastHeartPos"] == (self.getTerrain().xPosition,self.getTerrain().yPosition):
             return 0.5
         else:

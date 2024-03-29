@@ -34,7 +34,7 @@ class Statue(src.items.Item):
 
     def pray(self,character):
         options = []
-        options.append((1,"1 - god of fertility\n15 scrap"))
+        options.append((1,"1 - god of fertility"))
         options.append((2,"2 - god of desolution"))
         options.append((3,"3 - god of construction"))
         options.append((4,"4 - god of fighting"))
@@ -54,35 +54,65 @@ class Statue(src.items.Item):
         }
 
     def pray2(self,extraInfo):
+        # convert parameters to local variables
         godID = extraInfo["god"]
         character = extraInfo["character"]
-        if godID == 1:
 
-            # find scrap to take as saccrifice
-            numScrapFound = 0
-            scrap = self.container.getItemsByType("Scrap")
-            for item in scrap:
-                numScrapFound += item.amount
+        # determine what items are needed
+        needItems = src.gamestate.gamestate.gods[godID]["sacrifice"]
 
-            # ensure that there is enough scrap around
-            if not numScrapFound >= 15:
-                character.addMessage("not enough scrap")
-                return
+        # handle the item requirements
+        if needItems:
+            itemType = needItems[0]
+            amount = needItems[1]
 
-            # remove the scrap
-            numScrapRemoved = 0
-            for item in scrap:
-                if item.amount <= 15-numScrapRemoved:
-                    self.container.removeItem(item)
-                    numScrapRemoved += item.amount
-                else:
-                    item.amount -= 15-numScrapRemoved
-                    item.setWalkable()
-                    numScrapRemoved += 15-numScrapRemoved
+            if itemType == "Scrap":
+                ##
+                # handle scrap special case
 
-                if numScrapRemoved >= 15:
-                    break
-            character.addMessage("you sacrifice {numScrapRemoved} Scrap")
+                # find scrap to take as saccrifice
+                numScrapFound = 0
+                scrap = self.container.getItemsByType("Scrap")
+                for item in scrap:
+                    numScrapFound += item.amount
+
+                # ensure that there is enough scrap around
+                if not numScrapFound >= 15:
+                    character.addMessage("not enough scrap")
+                    return
+
+                # remove the scrap
+                numScrapRemoved = 0
+                for item in scrap:
+                    if item.amount <= amount-numScrapRemoved:
+                        self.container.removeItem(item)
+                        numScrapRemoved += item.amount
+                    else:
+                        item.amount -= amount-numScrapRemoved
+                        item.setWalkable()
+                        numScrapRemoved += amount-numScrapRemoved
+
+                    if numScrapRemoved >= amount:
+                        break
+                character.addMessage(f"you sacrifice {numScrapRemoved} Scrap")
+            else:
+                ##
+                # handle normal items
+
+                # get the items
+                itemsFound = self.container.getItemsByType(itemType,needsUnbolted=True)
+
+                # ensure item requirement can be fullfilled
+                if not len(itemsFound) >= amount:
+                    character.addMessage(f"you need {amount} {itemType}")
+                    return
+
+                # remove items from requirement
+                character.addMessage(f"you sacrifice {amount} {itemType}")
+                while amount > 0:
+                    self.container.removeItem(itemsFound.pop())
+                    amount -= 1
+
 
         character.addMessage("the Statue turns into a GlassStatue")
         new = src.items.itemMap["GlassStatue"](itemID=godID)

@@ -19,12 +19,14 @@ class GlassStatue(src.items.Item):
         self.applyOptions.extend(
                         [
                                                                 ("showInfo", "show Info"),
+                                                                ("pray", "pray"),
                                                                 ("getSetHeart", "remove/set glass heart"),
                                                                 ("teleport", "teleport to dungeon"),
                         ]
                         )
         self.applyMap = {
                     "showInfo": self.showInfo,
+                    "pray": self.pray,
                     "showChallenges": self.showChallenges,
                     "getExtraChallenge": self.getExtraChallenge,
                     "getReward": self.getReward,
@@ -34,6 +36,66 @@ class GlassStatue(src.items.Item):
         self.itemID = itemID
         self.challenges = []
         self.hasItem = False
+        self.charges = 2
+
+    def pray(self,character):
+        # determine what items are needed
+        needItems = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
+
+        # handle the item requirements
+        if needItems:
+            itemType = needItems[0]
+            amount = needItems[1]
+
+            if itemType == "Scrap":
+                ##
+                # handle scrap special case
+
+                # find scrap to take as saccrifice
+                numScrapFound = 0
+                scrap = self.container.getItemsByType("Scrap")
+                for item in scrap:
+                    numScrapFound += item.amount
+
+                # ensure that there is enough scrap around
+                if not numScrapFound >= 15:
+                    character.addMessage("not enough scrap")
+                    return
+
+                # remove the scrap
+                numScrapRemoved = 0
+                for item in scrap:
+                    if item.amount <= amount-numScrapRemoved:
+                        self.container.removeItem(item)
+                        numScrapRemoved += item.amount
+                    else:
+                        item.amount -= amount-numScrapRemoved
+                        item.setWalkable()
+                        numScrapRemoved += amount-numScrapRemoved
+
+                    if numScrapRemoved >= amount:
+                        break
+                character.addMessage(f"you sacrifice {numScrapRemoved} Scrap")
+            else:
+                ##
+                # handle normal items
+
+                # get the items
+                itemsFound = self.container.getItemsByType(itemType,needsUnbolted=True)
+
+                # ensure item requirement can be fullfilled
+                if not len(itemsFound) >= amount:
+                    character.addMessage(f"you need {amount} {itemType}")
+                    return
+
+                # remove items from requirement
+                character.addMessage(f"you sacrifice {amount} {itemType}")
+                while amount > 0:
+                    self.container.removeItem(itemsFound.pop())
+                    amount -= 1
+
+        self.charges += 1
+        character.addMessage(f"the glass statue has {self.charges} charges now")
 
     def render(self):
         if not self.hasItem:
@@ -45,11 +107,17 @@ class GlassStatue(src.items.Item):
                 if not item.itemID == self.itemID:
                     continue
                 return "kk"
-            return "GG"
+            if self.charges < 5:
+                return "Gg"
+            else:
+                return "GG"
         else:
             return "KK"
 
     def teleport(self,character):
+        if self.charges < 5:
+            character.addMessage(f"not enough charges ({self.charges}/5)")
+            return
         character.addMessage(str(src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]))
 
         (x,y) = src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"]
@@ -60,8 +128,10 @@ class GlassStatue(src.items.Item):
         character.container.removeCharacter(character)
         newTerrain.addCharacter(character,15*bigPos[0]+13,15*bigPos[1]+7)
 
+        self.charges -= 1
+
     def showInfo(self,character):
-        character.addMessage(f"mana: {self.getTerrain().mana}")
+        character.addMessage(f"mana: {self.getTerrain().mana}\ncharges: {self.charges}")
 
         if self.itemID:
             character.addMessage(str(src.gamestate.gamestate.gods[self.itemID]))

@@ -37,6 +37,7 @@ class GlassStatue(src.items.Item):
         self.challenges = []
         self.hasItem = False
         self.charges = 2
+        self.stable = False
 
     def pray(self,character):
         # determine what items are needed
@@ -108,11 +109,25 @@ class GlassStatue(src.items.Item):
                     continue
                 return "kk"
             if self.charges < 5:
-                return "Gg"
+                return f"G{self.charges}"
             else:
                 return "GG"
         else:
             return "KK"
+
+    def handleEpochChange(self):
+        if self.stable:
+            return
+
+        self.charges -= 1
+        if self.charges == 0:
+            self.destroy()
+            return
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(15*15*15-src.gamestate.gamestate.tick%(15*15*15))+10)
+        event.setCallback({"container": self, "method": "handleEpochChange"})
+        self.container.addEvent(event)
+
 
     def teleport(self,character):
         if self.charges < 5:

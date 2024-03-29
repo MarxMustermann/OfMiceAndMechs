@@ -56,6 +56,8 @@ class Statue(src.items.Item):
     def pray2(self,extraInfo):
         # convert parameters to local variables
         godID = extraInfo["god"]
+        if godID is None:
+            return
         character = extraInfo["character"]
 
         # determine what items are needed
@@ -114,10 +116,16 @@ class Statue(src.items.Item):
                     amount -= 1
 
 
+        container = self.container
         character.addMessage("the Statue turns into a GlassStatue")
         new = src.items.itemMap["GlassStatue"](itemID=godID)
-        self.container.addItem(new,self.getPosition())
-        self.container.removeItem(self)
+        container.addItem(new,self.getPosition())
+        container.removeItem(self)
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(15*15*15-src.gamestate.gamestate.tick%(15*15*15))+10)
+        event.setCallback({"container": new, "method": "handleEpochChange"})
+        container.addEvent(event)
+
 
     def boltAction(self,character):
         self.bolted = True

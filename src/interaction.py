@@ -1010,7 +1010,7 @@ def doAdvancedInteraction(params):
                 item.apply(character)
                 break
             if (
-                isinstance(item, src.items.itemMap["BioMass"] | src.items.itemMap["Bloom"] | src.items.itemMap["PressCake"] | src.items.itemMap["SickBloom"])
+                isinstance(item, src.items.itemMap["BioMass"]) or isinstance(item,src.items.itemMap["Bloom"]) or isinstance(item,src.items.itemMap["PressCake"]) or isinstance(item,src.items.itemMap["SickBloom"])
             ):
                 item.apply(character)
                 character.inventory.remove(item)

@@ -81,7 +81,6 @@ class ManufacturingManager(src.items.Item):
                 neighbours.append((tablePos[0]+1,tablePos[1],tablePos[2]))
 
                 for slot in self.container.storageSlots[:]:
-                    print(slot)
                     if slot[0] in neighbours:
                         self.container.storageSlots.remove(slot)
 

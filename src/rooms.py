@@ -143,6 +143,30 @@ class Room:
             return
         self.animations.append([coordinate,animationType,duration,extraInfo])
 
+    """
+    clear all markings from a specific position
+    """
+    def clearMarkings(self,position):
+        # remove input slots
+        for slot in self.inputSlots[:]:
+            if slot[0] == position:
+                self.inputSlots.remove(slot)
+
+        # remove output slots
+        for slot in self.outputSlots[:]:
+            if slot[0] == position:
+                self.outputSlots.remove(slot)
+
+        # remove storage slots
+        for slot in self.storageSlots[:]:
+            if slot[0] == position:
+                self.storageSlots.remove(slot)
+
+        # remove build sites
+        for slot in self.buildSites[:]:
+            if slot[0] == position:
+                self.buildSites.remove(slot)
+
     def addBuildSite(self,position,specification,extraInfo=None):
         if extraInfo is None:
             extraInfo = {}

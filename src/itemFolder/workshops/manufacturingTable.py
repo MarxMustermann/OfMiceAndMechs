@@ -22,11 +22,13 @@ class ManufacturingTable(src.items.Item):
                         [
                                                                 ("produce item", "produce item"),
                                                                 ("configure item", "configure item"),
+                                                                ("draw stockpiles", "draw stockpiles"),
                         ]
                         )
         self.applyMap = {
                     "produce item": self.produceItem,
                     "configure item": self.configureItemHook,
+                    "draw stockpiles": self.drawStockpiles,
                         }
 
         self.ins = [(-1,0,0),(0,-1,0),(0,1,0)]
@@ -36,6 +38,41 @@ class ManufacturingTable(src.items.Item):
         self.numUsed = 0
         self.inUse = False
         self.disabled = False
+
+    def drawStockpiles(self,character):
+        # paint each output
+        for out in self.outs:
+            # calculate position to add the output to
+            stockpilePos = (self.xPosition+out[0],self.yPosition+out[1],self.zPosition)
+
+            # remove old markings
+            self.container.clearMarkings(stockpilePos)
+
+            # add output stockpile
+            self.container.addStorageSlot(stockpilePos,self.toProduce)
+
+        # get the materials needed
+        materialsNeeded = src.items.rawMaterialLookup.get(self.toProduce)
+        if self.toProduce == "MetalBars":
+            materialsNeeded = ["Scrap"]
+        if not materialsNeeded:
+            materialsNeeded = ["MetalBars"]
+
+        # paint inputs for materials needed
+        counter = 0
+        for material in materialsNeeded:
+            # calculate position to add the input to
+            stockpilePos = (self.xPosition+self.ins[counter][0],self.yPosition+self.ins[counter][1],self.zPosition)
+
+            # remove old markings
+            self.container.clearMarkings(stockpilePos)
+
+            # add input stockpile
+            self.container.addInputSlot(stockpilePos,material)
+
+            # prepare next loop round
+            counter += 1
+
 
     def configureItemHook(self,character):
         self.configureItem({"character":character})
@@ -137,13 +174,13 @@ class ManufacturingTable(src.items.Item):
                     break
 
         if not len(materialsNeeded) == len(itemsFound):
-            character.addMessage("You need to put items into the metal working benchs input")
+            character.addMessage(f"You need to put the raw items into the manufacturing tables input\nitems: {materialsNeeded}")
             character.changed("failed manufacturing",{})
             return
 
         dropsSpotsFull = self.checkForDropSpotsFull()
         if dropsSpotsFull:
-            character.addMessage("the workshops output slot is full")
+            character.addMessage("the manufacturing tables output slot is full")
             character.changed("failed manufacturing",{})
             return
 
@@ -325,13 +362,13 @@ class ManufacturingTable(src.items.Item):
 
     def boltAction(self,character):
         self.bolted = True
-        character.addMessage("you bolt down the ScrapCompactor")
+        character.addMessage("you bolt down the ManufacuringTable")
         character.changed("boltedItem",{"character":character,"item":self})
         self.numUsed = 0
 
     def unboltAction(self,character):
         self.bolted = False
-        character.addMessage("you unbolt the ScrapCompactor")
+        character.addMessage("you unbolt the ManufacturingTable")
         character.changed("unboltedItem",{"character":character,"item":self})
         self.numUsed = 0
 

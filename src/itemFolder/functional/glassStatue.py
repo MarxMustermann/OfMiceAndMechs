@@ -121,6 +121,8 @@ class GlassStatue(src.items.Item):
     def handleEpochChange(self):
         if self.stable:
             return
+        if not self.container:
+            return
 
         self.charges -= 1
         if self.charges == 0:
@@ -605,6 +607,7 @@ class GlassStatue(src.items.Item):
             self.removeGlassHeart(character)
         else:
             self.setGlassHeart(character)
+            self.stable = True
 
     def removeGlassHeart(self,character):
         newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15))

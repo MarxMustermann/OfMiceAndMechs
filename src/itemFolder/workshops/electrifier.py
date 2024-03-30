@@ -49,7 +49,7 @@ class Electrifier(src.items.Item):
             character.changed("operated machine",{"character":character,"machine":self})
         else:
             if src.gamestate.gamestate.tick < self.processStartedAt + 1000:
-                character.addMessage(f"the rods are not electrified yet.\nWait till tick {(self.processStartedAt+1000)//(15*15*15)} / {(self.processStartedAt+1000)%(15*15*15)}")
+                character.addMessage(f"the rods are not electrified yet.\nWait till tick {(self.processStartedAt+1000)//(15*15*15)+1} / {(self.processStartedAt+1000)%(15*15*15)}")
                 character.changed("operated machine",{"character":character,"machine":self})
                 return
 
@@ -136,7 +136,35 @@ class Electrifier(src.items.Item):
             options["d"] = ("enable", self.enable)
         else:
             options["d"] = ("disable", self.disable)
+        options["s"] = ("draw stockpiles", self.drawStockpiles)
         return options
+
+    def drawStockpiles(self,character):
+
+        ##
+        # add output
+
+        # calculate position to add the output to
+        stockpilePos = (self.xPosition + 1, self.yPosition, self.zPosition)
+
+        # remove old markings
+        self.container.clearMarkings(stockpilePos)
+
+        # add output stockpile
+        self.container.addStorageSlot(stockpilePos,"LightningRod")
+
+        ##
+        # add input
+
+        # calculate position to add the input to
+        stockpilePos = (self.xPosition - 1, self.yPosition, self.zPosition)
+
+        # remove old markings
+        self.container.clearMarkings(stockpilePos)
+
+        # add output stockpile
+        self.container.addInputSlot(stockpilePos,"Rod")
+
 
     def enable(self,character):
         character.addMessage("you enable the Machine")
@@ -171,7 +199,7 @@ status: idle
 """
         else:
             text += f"""
-ready at: {(self.processStartedAt+1000)//(15*15*15)} / {(self.processStartedAt+1000)%(15*15*15)}
+ready at: {(self.processStartedAt+1000)//(15*15*15)+1} / {(self.processStartedAt+1000)%(15*15*15)}
 """
 
         return text

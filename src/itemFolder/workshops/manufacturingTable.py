@@ -39,6 +39,9 @@ class ManufacturingTable(src.items.Item):
         self.inUse = False
         self.disabled = False
 
+    """
+    auto generate stockpiles
+    """
     def drawStockpiles(self,character):
         # paint each output
         for out in self.outs:
@@ -72,7 +75,6 @@ class ManufacturingTable(src.items.Item):
 
             # prepare next loop round
             counter += 1
-
 
     def configureItemHook(self,character):
         self.configureItem({"character":character})

@@ -60,62 +60,6 @@ class Statue(src.items.Item):
             return
         character = extraInfo["character"]
 
-        # determine what items are needed
-        needItems = src.gamestate.gamestate.gods[godID]["sacrifice"]
-
-        # handle the item requirements
-        if needItems:
-            itemType = needItems[0]
-            amount = needItems[1]
-
-            if itemType == "Scrap":
-                ##
-                # handle scrap special case
-
-                # find scrap to take as saccrifice
-                numScrapFound = 0
-                scrap = self.container.getItemsByType("Scrap")
-                for item in scrap:
-                    numScrapFound += item.amount
-
-                # ensure that there is enough scrap around
-                if not numScrapFound >= 15:
-                    character.addMessage("not enough scrap")
-                    return
-
-                # remove the scrap
-                numScrapRemoved = 0
-                for item in scrap:
-                    if item.amount <= amount-numScrapRemoved:
-                        self.container.removeItem(item)
-                        numScrapRemoved += item.amount
-                    else:
-                        item.amount -= amount-numScrapRemoved
-                        item.setWalkable()
-                        numScrapRemoved += amount-numScrapRemoved
-
-                    if numScrapRemoved >= amount:
-                        break
-                character.addMessage(f"you sacrifice {numScrapRemoved} Scrap")
-            else:
-                ##
-                # handle normal items
-
-                # get the items
-                itemsFound = self.container.getItemsByType(itemType,needsUnbolted=True)
-
-                # ensure item requirement can be fullfilled
-                if not len(itemsFound) >= amount:
-                    character.addMessage(f"you need {amount} {itemType}")
-                    return
-
-                # remove items from requirement
-                character.addMessage(f"you sacrifice {amount} {itemType}")
-                while amount > 0:
-                    self.container.removeItem(itemsFound.pop())
-                    amount -= 1
-
-
         container = self.container
         character.addMessage("the Statue turns into a GlassStatue")
         new = src.items.itemMap["GlassStatue"](itemID=godID)

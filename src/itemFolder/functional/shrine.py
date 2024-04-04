@@ -975,4 +975,25 @@ You can wish for things or other favours.
 This shrine is set to the god {self.god}.
 """
 
+    def render(self):
+        color = "#888"
+        if self.god == 1:
+            color = "#f00"
+        elif self.god == 2:
+            color = "#0f0"
+        elif self.god == 3:
+            color = "#00f"
+        elif self.god == 4:
+            color = "#0ff"
+        elif self.god == 5:
+            color = "#f0f"
+        elif self.god == 6:
+            color = "#ff0"
+        elif self.god == 7:
+            color = "#fff"
+        display = [
+                (src.interaction.urwid.AttrSpec(color, "black"), "\\/"),
+            ]
+        return display
+
 src.items.addType(Shrine)

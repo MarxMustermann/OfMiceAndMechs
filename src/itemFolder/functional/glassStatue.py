@@ -102,21 +102,45 @@ class GlassStatue(src.items.Item):
         character.addMessage(f"the glass statue has {self.charges} charges now")
 
     def render(self):
+        color = "#888"
+        if self.itemID == 1:
+            color = "#f00"
+        elif self.itemID == 2:
+            color = "#0f0"
+        elif self.itemID == 3:
+            color = "#00f"
+        elif self.itemID == 4:
+            color = "#0ff"
+        elif self.itemID == 5:
+            color = "#f0f"
+        elif self.itemID == 6:
+            color = "#ff0"
+        elif self.itemID == 7:
+            color = "#fff"
+        displaychars = "GG"
+
         if not self.hasItem:
             # search for glass hearts in the players inventory
+            if self.charges < 5:
+                displaychars = f"G{self.charges}"
+            else:
+                displaychars = "GG"
+
             mainCharHasItem = False
             for item in src.gamestate.gamestate.mainChar.inventory:
                 if not item.type == "SpecialItem":
                     continue
                 if not item.itemID == self.itemID:
                     continue
-                return "kk"
-            if self.charges < 5:
-                return f"G{self.charges}"
-            else:
-                return "GG"
+                displaychars = "kk"
+                break
         else:
-            return "KK"
+            displaychars = "KK"
+
+        display = [
+                (src.interaction.urwid.AttrSpec(color, "black"), displaychars),
+            ]
+        return display
 
     def handleEpochChange(self):
         if self.stable:

@@ -15,7 +15,7 @@ class GooFlask(src.items.Item):
         self.name = "goo flask"
         self.walkable = True
         self.bolted = False
-        self.description = "A flask holds goo. Goo is nourishment for you"
+        self.description = "A flask that holds goo. Goo is nourishment for you"
         self.level = 1
         self.maxUses = 100
 
@@ -94,10 +94,11 @@ class GooFlask(src.items.Item):
 
         text = super().getLongInfo()
         text += f"""
+You can drink from the GooFlask to gain new satiation.
+If your satiation drops to 0 you will die.
+Equip the GooFlask to drink automatically.
 
-If you do not drink from the flask every 1000 ticks you will starve.
-
-A goo flask can be refilled at a goo dispenser and can hold a maximum of {self.maxUses} charges.
+A GooFlask can be refilled at a GooDispenser and can hold a maximum of {self.maxUses} charges.
 The flask has {self.uses} charges.
 
 this is a level {self.level} item.

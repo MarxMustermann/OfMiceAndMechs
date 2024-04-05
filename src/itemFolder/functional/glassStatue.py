@@ -686,6 +686,19 @@ class GlassStatue(src.items.Item):
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
-        return f"{self.itemID}"
+        return f"""A GlassStatue correspods to a god.
+This status corresponds to god {self.itemID}.
+
+Offer items by praying at the statue to stabilise it.
+If the statue is not stabilised for too long, then it will break.
+Currently the GlassStatue will break in {self.charges} epochs.
+
+You can stabilize the GlassStatue fully, by setting its heart.
+You can get the statues heart from the GlassHeart dungeon.
+Use this GlassStatue to teleport there.
+
+Teleporting to the dungeon requires 5 charges and consumes one charge.
+Currently the GlassStatue has {self.charges} charges.
+"""
 
 src.items.addType(GlassStatue)

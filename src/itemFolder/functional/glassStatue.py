@@ -7,7 +7,7 @@ class GlassStatue(src.items.Item):
     '''
 
     type = "GlassStatue"
-    description = "Used to build rooms."
+    description = "Used to pray to the gods."
     name = "glassStatue"
 
     def __init__(self,itemID=None):
@@ -41,7 +41,9 @@ class GlassStatue(src.items.Item):
 
     def pray(self,character):
         if self.charges >= 9:
-            character.addMessage(f"the glass statue has maximum charges now")
+            text = f"the glass statue has maximum charges now"
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
             return
         # determine what items are needed
         needItems = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
@@ -62,8 +64,10 @@ class GlassStatue(src.items.Item):
                     numScrapFound += item.amount
 
                 # ensure that there is enough scrap around
-                if not numScrapFound >= 15:
-                    character.addMessage("not enough scrap")
+                if not numScrapFound >= amount:
+                    text = "not enough Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
+                    submenue = src.interaction.TextMenu(text)
+                    character.macroState["submenue"] = submenue
                     return
 
                 # remove the scrap
@@ -79,7 +83,7 @@ class GlassStatue(src.items.Item):
 
                     if numScrapRemoved >= amount:
                         break
-                character.addMessage(f"you sacrifice {numScrapRemoved} Scrap")
+                text = f"you sacrifice {numScrapRemoved} Scrap"
             else:
                 ##
                 # handle normal items
@@ -89,17 +93,20 @@ class GlassStatue(src.items.Item):
 
                 # ensure item requirement can be fullfilled
                 if not len(itemsFound) >= amount:
-                    character.addMessage(f"you need {amount} {itemType}")
+                    character.addMessage(f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room.")
                     return
 
                 # remove items from requirement
-                character.addMessage(f"you sacrifice {amount} {itemType}")
+                text = f"you sacrifice {amount} {itemType}"
                 while amount > 0:
                     self.container.removeItem(itemsFound.pop())
                     amount -= 1
 
         self.charges += 1
-        character.addMessage(f"the glass statue has {self.charges} charges now")
+        text += f"\n\nThe glass statue has {self.charges} charges now."
+
+        submenue = src.interaction.TextMenu(text)
+        character.macroState["submenue"] = submenue
 
     def render(self):
         color = "#888"

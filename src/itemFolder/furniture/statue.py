@@ -85,7 +85,7 @@ class Statue(src.items.Item):
 
 It also serves a religious purpose.
 You can pray at a Statue to convert it to a GlassStatue.
-A GlassStatue will allow to interact with the gods.
+A GlassStatue can be used to interact with the gods.
 """
 
 src.items.addType(Statue)

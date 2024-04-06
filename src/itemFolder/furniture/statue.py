@@ -7,7 +7,7 @@ class Statue(src.items.Item):
     '''
 
     type = "Statue"
-    description = "Used to build rooms."
+    description = "Used for decoration and religious purposes"
     name = "statue"
 
     def __init__(self):
@@ -34,7 +34,7 @@ class Statue(src.items.Item):
 
     def pray(self,character):
         options = []
-        options.append((1,"1 - god of fertility"))
+        options.append((1,[(src.interaction.urwid.AttrSpec("#f00","black"),"1 - god of fertility")]))
         options.append((2,"2 - god of desolution"))
         options.append((3,"3 - god of construction"))
         options.append((4,"4 - god of fighting"))
@@ -70,7 +70,6 @@ class Statue(src.items.Item):
         event.setCallback({"container": new, "method": "handleEpochChange"})
         container.addEvent(event)
 
-
     def boltAction(self,character):
         self.bolted = True
         character.addMessage("you bolt down the Statue")
@@ -80,5 +79,13 @@ class Statue(src.items.Item):
         self.bolted = False
         character.addMessage("you unbolt the Statue")
         character.changed("unboltedItem",{"character":character,"item":self})
+
+    def getLongInfo(self):
+        return f"""Statues are mainly of decorative purposes.
+
+It also serves a religious purpose.
+You can pray at a Statue to convert it to a GlassStatue.
+A GlassStatue will allow to interact with the gods.
+"""
 
 src.items.addType(Statue)

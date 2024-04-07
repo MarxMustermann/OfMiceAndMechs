@@ -108,7 +108,9 @@ class GlassStatue(src.items.Item):
                     amount -= 1
 
         self.charges += 1
-        text += f"\n\nThe glass statue has {self.charges} charges now."
+        text += f"\n\nThe GlassStatue has {self.charges} charges now."
+        if self.charges == 5:
+            text += f"\nYou can use the GlassStatue to teleport to the dugeon now."
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue

@@ -44,6 +44,7 @@ class GlassStatue(src.items.Item):
             text = f"the glass statue has maximum charges now"
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
+            character.addMessage(text)
             return
         # determine what items are needed
         needItems = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
@@ -68,6 +69,7 @@ class GlassStatue(src.items.Item):
                     text = "not enough Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
                     submenue = src.interaction.TextMenu(text)
                     character.macroState["submenue"] = submenue
+                    character.addMessage(text)
                     return
 
                 # remove the scrap
@@ -96,6 +98,7 @@ class GlassStatue(src.items.Item):
                     text = f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room."
                     submenue = src.interaction.TextMenu(text)
                     character.macroState["submenue"] = submenue
+                    character.addMessage(text)
                     return
 
                 # remove items from requirement
@@ -109,6 +112,7 @@ class GlassStatue(src.items.Item):
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
+        character.addMessage(text)
 
     def render(self):
         color = "#888"

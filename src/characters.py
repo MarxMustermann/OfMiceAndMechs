@@ -1914,7 +1914,7 @@ press any other key to attack normally"""
         mainItem = None
         if items:
             if len(items) == 1:
-                text += "there is an item:\n\n"
+                text += f"there is a {items[0].name}:\n\n"
             else:
                 text += f"there are {len(items)} items:\n"
                 for item in items:

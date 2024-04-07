@@ -3295,8 +3295,8 @@ class SubMenu:
                 counter += 1
 
         # show question
-        out = "\n"
-        out += self.query + "\n"
+        out = ["\n"]
+        out.extend([self.query, "\n"])
 
         # handle the selection of options
         if not self.lockOptions:
@@ -3343,11 +3343,11 @@ class SubMenu:
             for k, v in self.niceOptions.items():
                 counter += 1
                 if counter == self.selectionIndex:
-                    out += " -> " + str(v) + "\n"
+                    out.extend([" -> ", v, "\n"])
                     if self.extraDescriptions and self.options[k] in self.extraDescriptions:
                         extraDescription = self.extraDescriptions[self.options[k]]+"\n\n"
                 else:
-                    out += "    " + str(v) + "\n"
+                    out.extend(["    ", v, "\n"])
 
             if extraDescription:
                 out += extraDescription
@@ -3358,7 +3358,7 @@ class SubMenu:
                 main.set_text(
                     (
                         urwid.AttrSpec("default", "default"),
-                        self.persistentText + "\n\n" + out,
+                        [self.persistentText , "\n\n" , out],
                     )
                 )
 

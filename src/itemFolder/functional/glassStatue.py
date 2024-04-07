@@ -93,7 +93,9 @@ class GlassStatue(src.items.Item):
 
                 # ensure item requirement can be fullfilled
                 if not len(itemsFound) >= amount:
-                    character.addMessage(f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room.")
+                    text = f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room."
+                    submenue = src.interaction.TextMenu(text)
+                    character.macroState["submenue"] = submenue
                     return
 
                 # remove items from requirement

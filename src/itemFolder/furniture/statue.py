@@ -35,12 +35,12 @@ class Statue(src.items.Item):
     def pray(self,character):
         options = []
         options.append((1,[(src.interaction.urwid.AttrSpec("#f00","black"),"1 - god of fertility")]))
-        options.append((2,"2 - god of desolution"))
-        options.append((3,"3 - god of construction"))
-        options.append((4,"4 - god of fighting"))
-        options.append((5,"5 - god of battle gear"))
-        options.append((6,"6 - god of life"))
-        options.append((7,"7 - god of crushing"))
+        options.append((2,[(src.interaction.urwid.AttrSpec("#0f0","black"),"2 - god of desolution")]))
+        options.append((3,[(src.interaction.urwid.AttrSpec("#00f","black"),"3 - god of construction")]))
+        options.append((4,[(src.interaction.urwid.AttrSpec("#0ff","black"),"4 - god of fighting")]))
+        options.append((5,[(src.interaction.urwid.AttrSpec("#f0f","black"),"5 - god of battle gear")]))
+        options.append((6,[(src.interaction.urwid.AttrSpec("#ff0","black"),"6 - god of life")]))
+        options.append((7,[(src.interaction.urwid.AttrSpec("#fff","black"),"7 - god of crushing")]))
 
         submenu = src.interaction.SelectionMenu(
             "Select what god to pray to", options,
@@ -83,7 +83,7 @@ class Statue(src.items.Item):
     def getLongInfo(self):
         return f"""Statues are mainly of decorative purposes.
 
-It also serves a religious purpose.
+It also serves a religious use.
 You can pray at a Statue to convert it to a GlassStatue.
 A GlassStatue can be used to interact with the gods.
 """

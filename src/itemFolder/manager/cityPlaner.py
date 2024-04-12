@@ -341,6 +341,7 @@ class CityPlaner(src.items.Item):
             options.append(("wallProduction","wall production"))
             options.append(("basicMaterialsProduction","basic material production"))
             options.append(("caseProduction","case production"))
+            options.append(("caseManufacturing","case manufacturing"))
             options.append(("scrapCompactorProduction","scrap compactor production"))
             options.append(("basicRoombuildingItemsProduction","basic room building items production"))
             options.append(("productionRoom","production room"))
@@ -453,6 +454,24 @@ class CityPlaner(src.items.Item):
                 buildSites.append(((7,y,0),"Machine",{"toProduce":"Frame"}))
                 storageSlots.append(((8,y,0),"Frame",{}))
                 buildSites.append(((9,y,0),"Machine",{"toProduce":"Case"}))
+                storageSlots.append(((10,y,0),"Case",{}))
+                walkingSpaces.append((11,y,0))
+            walkingSpaces.append((6,11,0))
+
+        if floorPlanType == "caseManufacturing":
+            for y in (1,4,7,10,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            for y in (2,3,5,6,8,9,):
+                walkingSpaces.append((1,y,0))
+                inputSlots.append(((2,y,0),"Scrap",{}))
+                buildSites.append(((3,y,0),"ScrapCompactor",{}))
+                inputSlots.append(((4,y,0),"MetalBars",{}))
+                buildSites.append(((5,y,0),"ManufacturingTable",{"toProduce":"Rod"}))
+                storageSlots.append(((6,y,0),"Rod",{}))
+                buildSites.append(((7,y,0),"ManufacturingTable",{"toProduce":"Frame"}))
+                storageSlots.append(((8,y,0),"Frame",{}))
+                buildSites.append(((9,y,0),"ManufacturingTable",{"toProduce":"Case"}))
                 storageSlots.append(((10,y,0),"Case",{}))
                 walkingSpaces.append((11,y,0))
             walkingSpaces.append((6,11,0))

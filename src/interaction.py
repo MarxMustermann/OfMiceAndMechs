@@ -176,8 +176,6 @@ def advanceGame():
                         quest.activate()
                         enemy.quests.append(quest)
 
-
-                        bigPos = (random.randint(1,13),random.randint(1,13),0)
                         enemy = src.characters.Monster(6,6)
                         enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
                         enemy.maxHealth = enemy.health
@@ -191,11 +189,21 @@ def advanceGame():
                         enemy.registers["HOMEx"] = 7
                         enemy.registers["HOMEy"] = 7
                         enemy.personality["moveItemsOnCollision"] = False
-                        rooms = terrain.getRoomByPosition(bigPos)
-                        if rooms:
-                            rooms[0].addCharacter(enemy,6,6)
-                        else:
-                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+
+                        numTries = 0
+                        while True:
+                            numTries += 1
+
+                            bigPos = (random.randint(1,13),random.randint(1,13),0)
+                            rooms = terrain.getRoomByPosition(bigPos)
+                            if rooms:
+                                if numTries < 10:
+                                    continue
+                                rooms[0].addCharacter(enemy,6,6)
+                                break
+                            else:
+                                terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                                break
 
                         quest = src.quests.questMap["ClearTerrain"]()
                         quest.autoSolve = True

@@ -143,12 +143,20 @@ def advanceGame():
                         enemy.registers["HOMEy"] = 7
                         enemy.personality["moveItemsOnCollision"] = False
 
-                        bigPos = (random.randint(1,13),random.randint(1,13),0)
-                        rooms = terrain.getRoomByPosition(bigPos)
-                        if rooms:
-                            rooms[0].addCharacter(enemy,6,6)
-                        else:
-                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                        numTries = 0
+                        while True:
+                            numTries += 1
+
+                            bigPos = (random.randint(1,13),random.randint(1,13),0)
+                            rooms = terrain.getRoomByPosition(bigPos)
+                            if rooms:
+                                if numTries < 10:
+                                    continue
+                                rooms[0].addCharacter(enemy,6,6)
+                                break
+                            else:
+                                terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                                break
 
                         quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId)
                         quest.autoSolve = True

@@ -32,6 +32,9 @@ class Statue(src.items.Item):
             options["b"] = ("bolt down", self.boltAction)
         return options
 
+    def apply(self,character):
+        self.pray(character)
+
     def pray(self,character):
         options = []
         options.append((1,[(src.interaction.urwid.AttrSpec("#f00","black"),"1 - god of fertility")]))

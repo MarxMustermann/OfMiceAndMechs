@@ -3015,10 +3015,7 @@ class Guardian(Character):
 
     def render(self):
         """
-        render the monster depending on the evelutionary state
-
-        Returns:
-            what the monster looks like
+        render the monster depending on health and damage
         """
 
         render = src.canvas.displayChars.monster_feeder
@@ -3114,16 +3111,6 @@ class Exploder(Monster):
     ):
         """
         basic state setting
-
-        Parameters:
-            display: what the monster should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
         """
         if quests is None:
             quests = []
@@ -3144,10 +3131,7 @@ class Exploder(Monster):
 
     def render(self):
         """
-        render the monster
-
-        Returns:
-            what the moster looks like
+        render the monster explecitly
         """
         return src.canvas.displayChars.monster_exploder
 
@@ -3169,6 +3153,10 @@ class Exploder(Monster):
         super().die(reason=reason, addCorpse=False)
 
 class Spider(Monster):
+    """
+    A spider
+    should hang out in abandoned room and such
+    """
 
     def __init__(
         self,
@@ -3183,16 +3171,6 @@ class Spider(Monster):
     ):
         """
         basic state setting
-
-        Parameters:
-            display: what the monster should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
         """
         if quests is None:
             quests = []
@@ -3217,14 +3195,23 @@ class Spider(Monster):
         self.defending = None
 
     def render(self):
+        """
+        force static render
+        """
         return "ss"
 
     def startDefending(self):
+        """
+        start waiting for a victim
+        """
         if not isinstance(self.container,src.rooms.Room):
             return
         self.container.addListener(self.test,"entered room")
 
     def hurt(self, damage, reason=None, actor=None):
+        """
+        reverse acid damage and kill when hurt
+        """
         if reason == "acid burns":
             super().heal(damage, reason=reason)
         else:

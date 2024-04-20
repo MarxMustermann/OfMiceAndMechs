@@ -3228,48 +3228,6 @@ class Spider(Monster):
         character.addMessage("skreeeeee")
         self.runCommandString("gg")
 
-class CollectorSpider(Spider):
-
-    def __init__(
-        self,
-        display="🝆~",
-        xPosition=0,
-        yPosition=0,
-        quests=None,
-        automated=True,
-        name="CollectorSpider",
-        creator=None,
-        characterId=None,
-    ):
-        """
-        basic state setting
-
-        Parameters:
-            display: what the monster should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
-        """
-        if quests is None:
-            quests = []
-        super().__init__(
-            display,
-            xPosition,
-            yPosition,
-            quests,
-            automated,
-            name,
-            creator=creator,
-            characterId=characterId,
-        )
-
-    def render(self):
-        return "SS"
-
 class Ghoul(Character):
 
     def __init__(
@@ -3426,7 +3384,6 @@ characterMap = {
     "Exploder": Exploder,
     "Mouse": Mouse,
     "Spider": Spider,
-    "CollectorSpider": CollectorSpider,
     "Ghoul": Ghoul,
     "Maggot": Maggot,
 }

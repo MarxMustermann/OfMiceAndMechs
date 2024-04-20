@@ -1359,8 +1359,10 @@ press any other key to attack normally"""
     def collidedWith(self, other, actor=None):
         """
         handle collision with another character
+
         Parameters:
             other: the other character
+            actor: the character triggering the collision
         """
 
         if other.faction != self.faction:
@@ -1424,11 +1426,21 @@ press any other key to attack normally"""
             return self.terrain
 
     def getActiveQuest(self):
+        """
+        returns the currently active quest
+        Returns:
+            the active quest
+        """
         if self.quests:
             return self.quests[0].getActiveQuest()
         return None
 
     def getActiveQuests(self):
+        """
+        returns the currently active quest and all its parents
+        Returns:
+            a list of the active quest and its parents
+        """
         if self.quests:
             return self.quests[0].getActiveQuests()
         return []
@@ -1448,7 +1460,7 @@ press any other key to attack normally"""
         add an event to the characters event queue
 
         Parameters:
-            event: the event
+            event: the event to add
         """
 
         # get the position for this event
@@ -1492,6 +1504,7 @@ press any other key to attack normally"""
 
         Parameters:
             partner: the chat partner
+
         Returns:
             the chat options
         """
@@ -1702,6 +1715,9 @@ press any other key to attack normally"""
     def applysolver(self, solver=None):
         """
         this wrapper converts a character centered call to a solver centered call
+
+        Parameters:
+            solver: a custom solver to use
         """
 
         if self.disableCommandsOnPlus:
@@ -1726,6 +1742,7 @@ press any other key to attack normally"""
             return
         return
 
+    # bad code: obsolete
     def fallUnconcious(self):
         """
         make the character fall unconcious
@@ -1736,6 +1753,7 @@ press any other key to attack normally"""
             self.addMessage("*thump,snort*")
         self.changed("fallen unconcious", self)
 
+    # bad code: obsolete
     def wakeUp(self):
         """
         wake the character up
@@ -1813,6 +1831,11 @@ press any other key to attack normally"""
                     otherCharacter.changed("character died on tile",{"deadChar":self,"character":otherCharacter})
 
     def canHeal(self):
+        """
+        check if the character can heal right now
+        Returns:
+            wether or not the character can heal right now
+        """
         for item in self.inventory:
             if not isinstance(item,src.items.itemMap["Vial"]):
                 continue
@@ -2073,6 +2096,13 @@ press any other key to attack normally"""
         self.changed("dropped",(self,item))
 
     def examinePosition(self, pos):
+        """
+        examine a position
+        show a menu displaying a description
+
+        Parameters:
+            pos: the position to examine
+        """
         text = f"you are examining the position: {pos}\n\n"
 
         if isinstance(self.container,src.rooms.Room):
@@ -2160,6 +2190,8 @@ press any other key to attack normally"""
     def advance(self,advanceMacros=False):
         """
         advance the character one tick
+        Parameters:
+            advanceMacros: wether or not to advance the character based on macros (True = advance)
         """
 
         if self.stasis or self.dead or self.disabled:
@@ -2343,14 +2375,14 @@ press any other key to attack normally"""
                 listenFunction(info)
 
     def startIdling(self):
-        if not self.personality["doIdleAction"]:
-            self.runCommandString(".")
-            return
-
         """
         run idle actions using the macro automation
         should be called when the character is bored for some reason
         """
+
+        if not self.personality["doIdleAction"]:
+            self.runCommandString(".")
+            return
 
         waitString = str(random.randint(1, self.personality["idleWaitTime"])) + "."
         waitChance = self.personality["idleWaitChance"]
@@ -2457,7 +2489,7 @@ press any other key to attack normally"""
         make the character more hungry
 
         Parameters:
-            amount: how much the character should be hungryier
+            amount: how much hungryier the character should be
         """
 
         self.satiation -= amount
@@ -2469,7 +2501,7 @@ press any other key to attack normally"""
         make the character less hungry
 
         Parameters:
-            amount: how less the character should be hungryier
+            amount: how much the character should be less hungryier
         """
 
         self.addMessage(f"you gain {amount} satiation because you {reason}")
@@ -2623,6 +2655,8 @@ class Monster(Character):
         self.skills.append("fighting")
 
     def getItemWalkable(self,item):
+        """
+        """
         if item.type in ["Bush","EncrustedBush"]:
             return True
         return item.walkable
@@ -2630,11 +2664,7 @@ class Monster(Character):
     # bad code: specific code in generic class
     def die(self, reason=None, addCorpse=True):
         """
-        kill the monster
-
-        Parameters:
-            reason: how the moster was killed
-            addCorpse: a flag determining wether or not a corpse should be added
+        special handle corpse spawning
         """
 
         if not addCorpse:
@@ -2735,11 +2765,7 @@ class Monster(Character):
     # bad code: should listen to itself instead
     def changed(self, tag="default", info=None):
         """
-        call callbacks for events and trigger evolutionary steps
-
-        Parameters:
-            tag: the type of event triggered
-            info: additional information
+        trigger evolutionary steps
         """
 
         if self.phase == 1 and self.satiation > 900:
@@ -2774,9 +2800,6 @@ class Monster(Character):
     def render(self):
         """
         render the monster depending on the evelutionary state
-
-        Returns:
-            what the monster looks like
         """
 
         if self.specialDisplay:
@@ -2862,12 +2885,11 @@ class Monster(Character):
 
         return render
 
-# bad code: animals should not be characters. This means it is possible to chat with a mouse
 class Statue(Monster):
     """
-    the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
+    the class for animated statues
+    intended as temple guards
     """
-
 
     def __init__(
         self,
@@ -2910,15 +2932,16 @@ class Statue(Monster):
         self.specialDisplay = "@@"
 
     def die(self, reason=None, addCorpse=True):
+        """
+        die without leaving a corpse
+        """
         super().die(reason, addCorpse=False)
 
-# bad code: animals should not be characters. This means it is possible to chat with a mouse
 class Statuette(Monster):
     """
-    the class for mice. Intended to be used for manipulating the gamestate used for example to attack the player
+    the class for a small statue
+    is intended as temple guard
     """
-
-
     def __init__(
         self,
         display="st",
@@ -2932,16 +2955,6 @@ class Statuette(Monster):
     ):
         """
         basic state setting
-
-        Parameters:
-            display: how the mouse should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
         """
         if quests is None:
             quests = []
@@ -2981,16 +2994,6 @@ class Guardian(Character):
     ):
         """
         basic state setting
-
-        Parameters:
-            display: what the monster should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
         """
 
         if quests is None:

@@ -3219,6 +3219,12 @@ class Spider(Monster):
         self.runCommandString("gg")
 
     def killVisitor(self,character):
+        """
+        trigger killing visitors
+        is expected to be called from an event
+        Parameters:
+            character: the character entering the room
+        """
         character.addMessage("skreeeeee")
         self.runCommandString("gg")
 

@@ -862,7 +862,7 @@ class Character:
                 flags = []
             else:
                 flags = ["norecord"]
-                flags.extend(extraFlags)
+            flags.extend(extraFlags)
             flags = tuple(flags)
         else:
             if nativeKey:

@@ -128,6 +128,9 @@ def advanceGame():
                         if god["lastHeartPos"] == checkGod["lastHeartPos"]:
                             numGlassHeartsOnPos += 1
 
+                    if numGlassHeartsOnPos == 7:
+                        break
+
                     for _i in range(numSpectres):
                         enemy = src.characters.Monster(6,6)
                         #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)//2+1

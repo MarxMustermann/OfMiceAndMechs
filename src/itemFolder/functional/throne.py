@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class Throne(src.items.Item):
     """
@@ -19,59 +19,218 @@ class Throne(src.items.Item):
         self.bolted = False
         self.name = "throne"
         self.description = """
-A throne. Use it to win the game.
+A throne. Take control over the throne to win the game.
 """
+        self.wavesSpawned = 0
+        self.lastWave = None
+        self.maxWaves = 5
 
     def apply(self,character):
-        hasAllSpecialItems = True
-        currentTerrain = character.getTerrain()
+        self.maxWaves = 5
 
-        terrainPos = (currentTerrain.xPosition,currentTerrain.yPosition)
+        if self.wavesSpawned == 0:
+            hasAllSpecialItems = True
+            currentTerrain = character.getTerrain()
 
-        foundMissingHeart = False
-        for god in src.gamestate.gamestate.gods.values():
-            if god["lastHeartPos"] == terrainPos:
-                continue
-            foundMissingHeart = True
+            terrainPos = (currentTerrain.xPosition,currentTerrain.yPosition)
 
-        if foundMissingHeart:
-            character.addMessage("you need to control all special items")
+            foundMissingHeart = False
+            for god in src.gamestate.gamestate.gods.values():
+                if god["lastHeartPos"] == terrainPos:
+                    continue
+                foundMissingHeart = True
+
+            if foundMissingHeart:
+                character.addMessage("you need to control all GlassHearts")
+                return
+
+            if character == src.gamestate.gamestate.mainChar:
+                text = f"""
+You control all GlassHearts and activate the throne.
+But it does not accept you, yet.
+
+Instead it spawns a wave of enemies.
+Defeat {self.maxWaves} waves of enemies and it will accept you.
+
+If you don't trigger a wave each epoch it will be trigerred automatically.
+Each wave will be stronger than the last.
+
+= press enter to continue =
+"""
+                src.interaction.showInterruptText(text)
+                self.handleEpochChange()
+        elif self.wavesSpawned == self.maxWaves:
+            text = """
+The Throne accept you and take control.
+You hereby win the game congratz.
+
+No more waves are triggered and you reached the end of the main game loop.
+The game will keep running so that you can extend your base and build stuff until the game lags.
+
+You may or may not find experimental content from this point on.
+
+= press enter to continue =
+"""
+            src.interaction.showInterruptText(text)
+        else:
+            enemiesFound = False
+            for otherCharacter in self.getTerrain().characters:
+                if not character.faction == otherCharacter.faction:
+                    enemiesFound = True
+                    break
+
+            for room in self.getTerrain().rooms:
+                for otherCharacter in room.characters:
+                    if not character.faction == otherCharacter.faction:
+                        enemiesFound = True
+                        break
+
+            if enemiesFound:
+                text = "you need to clear all enemies to trigger the next wave"
+                character.showTextMenu(text)
+                return
+
+            self.spawnWave()
+
+            text = """
+A new wave has spawned.
+"""
+            character.showTextMenu(text)
+
+    def spawnWave(self):
+        if self.wavesSpawned == self.maxWaves:
             return
 
-        character.changed("ascended",{"character":character})
-        character.rank = 1
+        self.lastWave = src.gamestate.gamestate.tick
+        self.wavesSpawned += 1
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            if ( (god["lastHeartPos"][0] != god["home"][0]) or
+                 (god["lastHeartPos"][1] != god["home"][1])):
 
-        if character == src.gamestate.gamestate.mainChar:
-            if src.gamestate.gamestate.difficulty == "tutorial":
-                text = """
-You now saw the very basic outline of the game.
+                terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
 
-Do the medium difficulty next. It should offer an actual challenge.
-There are also a lot of features you have not seen.
+                spectreHome = (god["home"][0],god["home"][1],0)
 
-There is an advanced combat system to explore and learn.
-And you'll have to make use of your base to survive.
+                numEnemies = 1
+                numSpectres = 0
+                numSpectres += numEnemies
 
-= press enter to continue =
-"""
-                src.interaction.showInterruptText(text)
-                1/0
-            else:
-                text = """
-You won the game and rule the world now. congratz.
+                numGlassHeartsOnPos = 0
+                for checkGod in src.gamestate.gamestate.gods.values():
+                    if god["lastHeartPos"] == checkGod["lastHeartPos"]:
+                        numGlassHeartsOnPos += 1
 
-I know the ending is cheap, but the game is a shadow of whait it should be.
-I'm currently working on making this thing more fluid and hope to get tha actual game running.
+                for _i in range(numSpectres):
+                    enemy = src.characters.Monster(6,6)
+                    #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)//2+1
+                    enemy.health = int(10*1.2**numGlassHeartsOnPos)
+                    enemy.maxHealth = enemy.health
+                    #enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
+                    enemy.baseDamage = int(5+1*1.1**numGlassHeartsOnPos)
+                    enemy.faction = "spectre"
+                    enemy.tag = "spectre"
+                    enemy.name = "stealerSpectre"
+                    enemy.movementSpeed = 2
+                    enemy.registers["HOMETx"] = spectreHome[0]
+                    enemy.registers["HOMETy"] = spectreHome[1]
+                    enemy.registers["HOMEx"] = 7
+                    enemy.registers["HOMEy"] = 7
+                    enemy.personality["moveItemsOnCollision"] = False
 
-I'd love to get feedback. Do not hestiate to contact me.
+                    numTries = 0
+                    while True:
+                        numTries += 1
 
-The game will continue to run, but there is not further content for you to see.
-The rules changed ab bit, though.
-The game will actually end now as soon as you loose a single glass heart, now.
+                        bigPos = (random.randint(1,13),random.randint(1,13),0)
+                        rooms = terrain.getRoomByPosition(bigPos)
+                        if rooms:
+                            if numTries < 10:
+                                continue
+                            rooms[0].addCharacter(enemy,6,6)
+                            break
+                        else:
+                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                            break
 
-= press enter to continue =
-"""
-                src.interaction.showInterruptText(text)
+                    quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=godId)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+                    quest = src.quests.questMap["GoHome"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+                    quest = src.quests.questMap["Vanish"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+                    enemy = src.characters.Monster(6,6)
+                    #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
+                    enemy.health = int(10*1.5**numGlassHeartsOnPos)
+                    enemy.maxHealth = enemy.health
+                    #enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
+                    enemy.baseDamage = int(5+3*1.1**numGlassHeartsOnPos)
+                    enemy.faction = "spectre"
+                    enemy.tag = "spectre"
+                    enemy.name = "killerSpectre"
+                    enemy.movementSpeed = 1.8
+                    enemy.registers["HOMETx"] = spectreHome[0]
+                    enemy.registers["HOMETy"] = spectreHome[1]
+                    enemy.registers["HOMEx"] = 7
+                    enemy.registers["HOMEy"] = 7
+                    enemy.personality["moveItemsOnCollision"] = False
+
+                    numTries = 0
+                    while True:
+                        numTries += 1
+
+                        bigPos = (random.randint(1,13),random.randint(1,13),0)
+                        rooms = terrain.getRoomByPosition(bigPos)
+                        if rooms:
+                            if numTries < 10:
+                                continue
+                            rooms[0].addCharacter(enemy,6,6)
+                            break
+                        else:
+                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
+                            break
+
+                    quest = src.quests.questMap["ClearTerrain"]()
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+
+    def handleEpochChange(self):
+        if self.wavesSpawned == self.maxWaves:
+            return
+
+        if self.lastWave == None:
+            print("wave spawn")
+            self.spawnWave()
+
+        if (src.gamestate.gamestate.tick-self.lastWave) >= (15*15*15):
+            print("wave spawn")
+            self.spawnWave()
+
+        print("................")
+        print(src.gamestate.gamestate.tick-self.lastWave)
+        print("................")
+        print(src.gamestate.gamestate.tick%(15*15*15))
+        print(src.gamestate.gamestate.tick//(15*15*15))
+        print(self.lastWave)
+        print(self.lastWave//(15*15*15))
+        input("epoch change")
+
+        event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(15*15*15-src.gamestate.gamestate.tick%(15*15*15)))
+        event.setCallback({"container": self, "method": "handleEpochChange"})
+        self.container.addEvent(event)
 
     def getConfigurationOptions(self, character):
         """

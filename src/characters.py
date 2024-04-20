@@ -269,6 +269,11 @@ class Character:
                 function()
 
     def triggerAutoMoveToTile(self,extraParam):
+        """
+        makes the character auto move to a given tile
+        parameters:
+        extraParam["coordinate"]: the coordinate to go to
+        """
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
@@ -281,14 +286,28 @@ class Character:
         self.quests.insert(0,quest)
 
     def getEmergencyHealth(self):
+        """
+        gives the charachter an extra health boost, but reduces the characters max health
+        """
         if self.maxHealth > 10:
             self.maxHealth -= 10
             self.heal(50)
 
     def addGrievance(self,grievance):
+        """
+        stores a grievance for later use
+        paramters:
+        grievance: the grievance to store
+        """
         self.grievances[grievance] = src.gamestate.gamestate.tick
 
     def weightAttack(self,bigPos):
+        """
+        generates a rating for attacking a certain tile
+        parameters:
+        bigPos: the coordinate of the tiles to attack
+        returns: the rating for attack. >0 pro attack <0 against attack
+        """
         enemiesFound = []
 
         terrain = self.getTerrain()
@@ -322,61 +341,140 @@ class Character:
         return -self.health
 
     def learnSkill(self,skill):
+        """
+        adds a skill to the characters skills
+        (not actively used)
+        parameters:
+        skill: the skill to add
+        """
         if skill not in self.skills:
             self.skills.append(skill)
         self.changed("learnedSkill",self)
 
     def getOffset(self,position):
+        """
+        get the offset to a given position
+        parameters:
+        position: the position to get the offset for
+        returns: the offset
+        """
         return (self.xPosition-position[0],self.yPosition-position[1],self.zPosition-position[2])
 
     def getDistance(self,position):
+        """
+        get the distance to a given position
+        parameters:
+        position: the position to get the distance to
+        returns: the distance to the position
+        """
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])+abs(self.zPosition-position[2])
 
     def getBigDistance(self,position):
+        """
+        get the distance to a given tile
+        parameters:
+        position: the tile coordinate to get the distance to
+        returns: the distance to the tile
+        """
         if not isinstance(self.container, src.rooms.Room):
             return abs(self.xPosition//15-position[0])+abs(self.yPosition//15-position[1])+abs(self.zPosition/15-position[2])
         else:
             return abs(self.container.xPosition-position[0])+abs(self.container.yPosition-position[1])+abs(self.container.zPosition-position[2])
 
     def getFreeInventorySpace(self):
+        """
+        get the characters free inventory space
+        returns: the number of free inventory slots
+        """
         return 10-len(self.inventory)
 
     def getItemWalkable(self,item):
+        """
+        returns whether or not a given item is walkable or not for this character
+        (the intention is to overwrite this)
+        returns: whether or not the given item is walkable
+        """
         return item.walkable
 
     def freeWillDecison(self,options,weights,localRandom=random):
-        #if self == src.gamestate.gamestate.mainChar:
-        #    return [input(str(options)+" "+str(weights))]
+        """
+        make a decison ases on the characters personality
+        (not really used)
+        (random choice as placeholder)
+        parameters:
+            options: the possible options to choose from
+            weights: the pre weighting of the options
+            localRandom: a non default RNG to use
+        returns: the chosen option
+        """
         return localRandom.choices(options,weights=weights)
 
     def getTerrain(self):
+        """
+        get the terrain the character is on
+        returns: the terrain the character is on
+        """
+        # handle invalid state
         if not self.container:
             return None
 
+        # get the terrain
         if self.container.isRoom:
             terrain = self.container.container
         else:
             terrain = self.container
 
+        # return the terrain
         return terrain
 
     def getHomeRoom(self):
+        """
+        fetch the home room for the character
+        """
+
+        # get the current terrain
+        # (bug: it should not just take the current terrain)
         terrain = self.getTerrain()
 
+        # get the home room
         homeRoom = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))[0]
+
+        # return the home room
         return homeRoom
 
     def getRoom(self):
+        """
+        get the room the character is in
+        returns: the room
+        """
+
+        # set default
         room = None
+
+        # get containing room
         if isinstance(self.container,src.rooms.Room):
             room = self.container
+
+        # return room
         return room
 
     def startGuarding(self,numTicks):
+        """
+        put the character into guard mode for som ticks
+        parameters:
+            numTicks: the number of ticks the character should guard
+        """
         self.guarding = numTicks
         self.hasOwnAction += 1
 
     def getOwnAction(self):
+        """
+        get an action directly from character state.
+        For example attack when guarding.
+        This is rarely used.
+        This overrides quests,macros and direct keypresses
+        returns: the command to run
+        """
         foundEnemy = None
         commands = []
         command = None
@@ -444,9 +542,16 @@ class Character:
         return command
 
     def getNearbyEnemies(self):
+        """
+        gets enemies near the character
+        returns: a list of nearby enemies
+        """
         return self.container.getEnemiesOnTile(self)
 
     def getBigPosition_test1(self,offset=None):
+        """
+        temporary (lol) structure for performance test
+        """
         if self.container.isRoom:
             if offset:
                 return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
@@ -459,11 +564,20 @@ class Character:
                 return (self.xPosition//15,self.yPosition//15,0)
 
     def getBigPosition_test2(self,offset=(0,0,0)):
+        """
+        temporary (lol) structure for performance test
+        """
         if self.container.isRoom:
             return (self.container.xPosition+offset[0],self.container.yPosition+offset[1],offset[2])
         else:
             return (self.xPosition//15+offset[0],self.yPosition//15+offset[1],offset[2])
+
     def getBigPosition(self,offset=None):
+        """
+        get the coordinate of the tile the character is on
+        parameters:
+            offset: offset to shift the coordinate by
+        """
         if offset:
             self.getBigPosition_test1(offset)
             return self.getBigPosition_test2(offset)
@@ -472,6 +586,11 @@ class Character:
             return self.getBigPosition_test2()
 
     def getTerrainPosition(self,offset=(0,0,0)):
+        """
+        get the coordinate of the terrain the character is on
+        parameters:
+            offset: offset to shift the coordinate by
+        """
         terrain = self.getTerrain()
         if not terrain:
             return None
@@ -479,10 +598,18 @@ class Character:
             return (self.getTerrain().xPosition,self.getTerrain().yPosition,0)
 
     def huntkill(self):
+        """
+        set huntkilling mode
+        not sure this is really used anymore
+        """
         self.addMessage("should start huntkill now")
         self.huntkilling = True
 
     def doHuntKill(self):
+        """
+        not sure, it also seems completly dysfunctional
+        TODO: wipe this
+        """
         targets = []
         for character in self.container.characters:
             if character == self:
@@ -504,6 +631,12 @@ class Character:
         return None
 
     def doRangedAttack(self,direction):
+        """
+        execute a ranged attack
+        parameters:
+            direction: the direction to do the attack in
+        """
+
         shift = None
         if direction == "w":
             shift = (0,-1)
@@ -676,6 +809,16 @@ class Character:
         self.messages.append(str(message))
 
     def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
+        """
+        convert a command sting into a list of commands
+        !!! seems to not be in actual use, see convertCommandString2
+        Parameters:
+            commandString: the command to convert
+            nativeKey: wether or not the keys should be handled as actual keypresses
+            extraFlags: additional extra flags
+        Returns:
+            the list of converted commands
+        """
 
         # convert command to macro data structure
         if nativeKey:
@@ -703,6 +846,15 @@ class Character:
         return convertedCommand
 
     def convertCommandString2(self,commandString,nativeKey=False, extraFlags=None):
+        """
+        convert a command sting into a list of commands
+        Parameters:
+            commandString: the command to convert
+            nativeKey: wether or not the keys should be handled as actual keypresses
+            extraFlags: additional extra flags
+        Returns:
+            the list of converted commands
+        """
 
         # convert command to macro data structure
         if extraFlags:

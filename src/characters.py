@@ -1290,7 +1290,6 @@ press any other key to attack normally"""
             damage = 0
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
-        self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
         target.hurt(damage, reason="attacked", actor=self)
         self.addMessage(

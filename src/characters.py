@@ -242,6 +242,10 @@ class Character:
         self.yPosition = yPosition
         self.burnedIn = False
 
+    def showTextMenu(self,text):
+        submenu = src.interaction.TextMenu(text)
+        self.macroState["submenue"] = submenu
+
     def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format

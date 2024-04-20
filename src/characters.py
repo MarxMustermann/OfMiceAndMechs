@@ -3206,7 +3206,7 @@ class Spider(Monster):
         """
         if not isinstance(self.container,src.rooms.Room):
             return
-        self.container.addListener(self.test,"entered room")
+        self.container.addListener(self.killVisitor,"entered room")
 
     def hurt(self, damage, reason=None, actor=None):
         """
@@ -3216,18 +3216,11 @@ class Spider(Monster):
             super().heal(damage, reason=reason)
         else:
             super().hurt(damage, reason=reason)
-        self.runCommandString("_m")
+        self.runCommandString("gg")
 
-    def test(self,character):
+    def killVisitor(self,character):
         character.addMessage("skreeeeee")
-        #self.runCommandString(":huntkill enemy")
-        self.macroState["macros"]["m"] = list("ope$=aa$=ww$=ss$=ddm_m")
-        self.runCommandString("mmm_m")
-
-    def attack(self, target):
-        super().attack(target)
-        self.runCommandString("m")
-
+        self.runCommandString("gg")
 
 class CollectorSpider(Spider):
 

@@ -3013,19 +3013,6 @@ class Guardian(Character):
         self.solvers.extend(["NaiveMurderQuest"])
         self.charType = "Guardian"
 
-
-    # bad code: specific code in generic class
-    def die(self, reason=None, addCorpse=True):
-        """
-        kill the monster
-
-        Parameters:
-            reason: how the moster was killed
-            addCorpse: a flag determining wether or not a corpse should be added
-        """
-
-        super().die(reason, addCorpse)
-
     def render(self):
         """
         render the monster depending on the evelutionary state

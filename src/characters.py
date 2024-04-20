@@ -893,6 +893,11 @@ class Character:
 
         Parameters:
             commandString: the command
+            clear: wether or not to clear previous commands
+            addBack: wether or not to add the commands to the back off the queue
+            nativeKey: wether or not to register the command as actual keypress
+            extraFlag: extra flags for the keypresses
+            preconverted: wether or not the command is already in the internal format
         """
 
         if preconverted:
@@ -919,6 +924,7 @@ class Character:
     def getCommandString(self):
         """
         returns the character command string
+        probably disused
 
         Returns:
             the command string
@@ -944,16 +950,17 @@ class Character:
         self.runCommandString("Jj.j")
 
     def hurt(self, damage, reason=None, actor=None):
-        if self.disabled:
-            self.disabled = False
-
         """
         hurt the character
 
         Parameters:
             damage: the amount of damage dealt
             reason: the reason damage was dealt
+            actor: the character causing the damage
         """
+
+        if self.disabled:
+            self.disabled = False
 
         if self.addExhaustionOnHurt:
             self.exhaustion += damage//10+1
@@ -1027,6 +1034,10 @@ class Character:
             self.die(reason="you died from injuries")
 
     def getNumMaxPosSubordinates(self):
+        """
+        get the maximum number of subordinates allowed for this character
+        return: the number of subordinates allowed
+        """
         if self.rank == 5:
             return 1
         if self.rank == 4:
@@ -1036,13 +1047,27 @@ class Character:
         return 0
 
     def getNumSubordinates(self):
+        """
+        get the number of subordinates controlled by this character
+        return: the number of subordinates
+        """
         return len(self.subordinates)
 
     def getIsHome(self):
+        """
+        get wether or not this character is at home
+        Returns:
+            wether or not this character is at home
+        """
         charPos = self.getBigPosition()
         return (self.registers.get("HOMEx"), self.registers.get("HOMEy"), 0) == charPos
 
     def selectSpecialAttack(self,target):
+        """
+        spawn the submenu to trigger a special attack
+        Parameters:
+            target: the target of the attack
+        """
 
         attacksOffered = ["h","j","k","l"]
 
@@ -1116,6 +1141,14 @@ press any other key to attack normally"""
         self.runCommandString("~",nativeKey=True)
 
     def doSpecialAttack(self,extraParam):
+        """
+        do a special attack on a target
+        this method assumes to be called by a submenu
+        Parameters:
+            extraParam["target"]: the target of the attack
+            extraParam["KeyPressed"]: the type of the special attack
+        """
+
         target = extraParam["target"]
         if 1==0:
             pass
@@ -1137,7 +1170,6 @@ press any other key to attack normally"""
         elif extraParam["keyPressed"] in ("u","U",):
             self.addMessage("you do a slow attack")
             self.attack(target,slow=True)
-
         elif extraParam["keyPressed"] in ("h","H",):
             self.addMessage("you do a heavy attack")
             self.attack(target,heavy=True)
@@ -1160,6 +1192,16 @@ press any other key to attack normally"""
 
         Parameters:
             target: the target to attack
+            heavy: wether or not the attack should be a heavy attack
+            quick: wether or not the attack should be a quick attack
+            ultraheavy: wether or not the attack should be a ultraheavy attack
+            initial: wether or not the attack should be an initial attack
+            harassing: wether or not the attack should be a harassing attack
+            light: wether or not the attack should be a light attack
+            opportunity: wether or not the attack should be a attack of opportunity
+            gambling: wether or not the attack should be a gambling attack
+            bestial: wether or not the attack should be a bestial attack
+            slow: wether or not the attack should be a slow attack
         """
         if self.dead:
             return

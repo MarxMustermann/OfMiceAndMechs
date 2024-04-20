@@ -100,6 +100,8 @@ class FillFlask(src.quests.MetaQuestSequence):
                 return
 
             for item in character.container.itemsOnFloor:
+                if not item == character.container.getItemByPosition(item.getPosition())[0]:
+                    continue
                 if item.type == "GooDispenser" and item.charges:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo dispenser",ignoreEndBlocked=True)
                     quest.assignToCharacter(character)

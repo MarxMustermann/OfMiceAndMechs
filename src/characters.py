@@ -3229,6 +3229,8 @@ class Spider(Monster):
         self.runCommandString("gg")
 
 class Ghoul(Character):
+    """
+    """
 
     def __init__(
         self,
@@ -3243,16 +3245,6 @@ class Ghoul(Character):
     ):
         """
         basic state setting
-
-        Parameters:
-            display: what the monster should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
         """
         if quests is None:
             quests = []
@@ -3272,16 +3264,30 @@ class Ghoul(Character):
         self.charType = "Ghoul"
 
     def getOwnAction(self):
+        """
+        disable own actions
+        """
         self.hasOwnAction = 0
         return "."
 
     def heal(self, amount, reason=None):
+        """
+        disable healing
+        """
         self.addMessage("ghouls don't heal")
 
     def hurt(self, damage, reason=None, actor=None):
+        """
+        half the damage taken
+        """
         super().hurt(max(1,damage//2),reason=reason,actor=actor)
 
 class Maggot(Character):
+    """
+    A maggot
+    intended as something to be hatched
+    not really used right now
+    """
 
     def __init__(
         self,
@@ -3296,16 +3302,6 @@ class Maggot(Character):
     ):
         """
         basic state setting
-
-        Parameters:
-            display: what the monster should look like
-            xPosition: obsolete, ignore
-            yPosition: obsolete, ignore
-            quests: obsolete, ignore
-            automated: obsolete, ignore
-            name: obsolete, ignore
-            creator: obsolete, ignore
-            characterId: obsolete, ignore
         """
         if quests is None:
             quests = []
@@ -3329,6 +3325,10 @@ class Maggot(Character):
         self.charType = "Maggot"
 
     def advance(self,advanceMacros=False):
+        """
+        overwrite behavior to just kill everything else
+        """
+
         if self.timeTaken > 1:
             return
         if src.gamestate.gamestate.tick % 2 != 0:
@@ -3368,6 +3368,9 @@ class Maggot(Character):
         self.runCommandString(direction+"jm")
 
     def die(self, reason=None, addCorpse=True):
+        """
+        leave a special corpse
+        """
 
         if self.xPosition and self.container:
             new = src.items.itemMap["VatMaggot"]()

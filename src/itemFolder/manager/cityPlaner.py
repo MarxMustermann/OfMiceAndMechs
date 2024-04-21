@@ -641,23 +641,26 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((6,11,0))
 
         if floorPlanType == "temple":
-            buildSites.append(((6,6,0),"Throne",{}))
+            buildSites.append(((6, 6, 0),"Throne",{}))
 
-            buildSites.append(((2,2,0),"GlassStatue",{"god":"1"}))
-            buildSites.append(((1,2,0),"Shrine",{"god":"1"}))
-            buildSites.append(((4,2,0),"GlassStatue",{"god":"2"}))
-            buildSites.append(((3,2,0),"Shrine",{"god":"2"}))
+            buildSites.append(((2, 5, 0),"GlassStatue",{"god":"1"}))
+            inputSlots.append(((1, 5, 0),"Scrap"))
+            buildSites.append(((2, 4, 0),"Shrine",{"god":"1"}))
+            buildSites.append(((2, 7, 0),"GlassStatue",{"god":"2"}))
+            buildSites.append(((2, 8, 0),"Shrine",{"god":"2"}))
 
-            buildSites.append(((7 ,2,0),"GlassStatue",{"god":"3"}))
-            buildSites.append(((7 ,1,0),"Shrine",{"god":"3"}))
-            buildSites.append(((10,2,0),"GlassStatue",{"god":"4"}))
-            buildSites.append(((10,1,0),"Shrine",{"god":"4"}))
-            buildSites.append(((10,5,0),"GlassStatue",{"god":"5"}))
-            buildSites.append(((11,5,0),"Shrine",{"god":"5"}))
-            buildSites.append(((7 ,4,0),"GlassStatue",{"god":"6"}))
-            buildSites.append(((7 ,5,0),"Shrine",{"god":"6"}))
-            buildSites.append(((8 ,5,0),"GlassStatue",{"god":"7"}))
-            buildSites.append(((8 ,4,0),"Shrine",{"god":"7"}))
+            buildSites.append(((5, 10, 0),"GlassStatue",{"god":"3"}))
+            buildSites.append(((4, 10, 0),"Shrine",{"god":"3"}))
+            buildSites.append(((7, 10, 0),"GlassStatue",{"god":"4"}))
+            buildSites.append(((8, 10, 0),"Shrine",{"god":"4"}))
+
+            buildSites.append(((10, 7, 0),"GlassStatue",{"god":"5"}))
+            buildSites.append(((10, 8, 0),"Shrine",{"god":"5"}))
+            buildSites.append(((10 ,5, 0),"GlassStatue",{"god":"6"}))
+            buildSites.append(((10 ,4, 0),"Shrine",{"god":"6"}))
+
+            buildSites.append(((7 ,2, 0),"GlassStatue",{"god":"7"}))
+            buildSites.append(((8 ,2 ,0),"Shrine",{"god":"7"}))
 
         if floorPlanType == "wallProduction2":
             for y in range(1,12):

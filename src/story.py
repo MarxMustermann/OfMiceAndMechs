@@ -2465,6 +2465,8 @@ but they are likely to explode when disturbed.
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
+        # bad code: should be named function: setUpGod
+        # generate a random sacrifice requirement
         sacrificeCandidates = [
                 ("Scrap",30),
                 ("Wall",6),
@@ -2482,19 +2484,45 @@ but they are likely to explode when disturbed.
                 ("LightningRod", 5),
                 ("Sheet", 15),
                 ]
+        sacrificeRequirement = random.choice(sacrificeCandidates)
+
+        # overwrite sacrifice requirement on easy
+        if self.difficulty == "easy":
+            if itemID == 1:
+                sacrificeRequirement = ("Scrap",7)
+            if itemID == 2:
+                sacrificeRequirement = ("MetalBars",7)
+            if itemID == 3:
+                sacrificeRequirement = ("Rod",5)
+            if itemID == 4:
+                sacrificeRequirement = ("Frame",5)
+            if itemID == 5:
+                sacrificeRequirement = ("MoldFeed",5)
+            if itemID == 6:
+                sacrificeRequirement = ("Bolt",10)
+            if itemID == 7:
+                sacrificeRequirement = ("Sword",10)
+
+        # create the god
         src.gamestate.gamestate.gods[itemID] = {
-                "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":random.choice(sacrificeCandidates)
+                "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":sacrificeRequirement
             }
         if itemID == 1:
             src.gamestate.gamestate.gods[itemID]["roomRewardMapByTerrain"] = {}
 
-        #set up dungeons
+
+
+        # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
         item = src.items.itemMap["ArchitectArtwork"]()
         architect = item
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
+        # set mana level
         currentTerrain.mana = 9
         if self.difficulty == "easy":
             currentTerrain.mana = 10
@@ -2503,6 +2531,7 @@ but they are likely to explode when disturbed.
         if self.difficulty == "difficult":
             currentTerrain.mana = 0
 
+        # add center chamber
         mainRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,7),
@@ -2514,25 +2543,30 @@ but they are likely to explode when disturbed.
                 None,
            )
 
+        # set up meta information about dungeon
         mainPath = [(7,7)]
-
         rooms = []
         currentRing = 0
-        extraRooms = []
 
+        # set branching factor
+        extraRooms = []
         numExtraRooms = 2
         if self.difficulty == "tutorial":
             numExtraRooms = 0
 
+        # set targeted length of the main path
+        targetLen = 10
+        if self.difficulty == "tutorial":
+            targetLen = 5
+
+        # add entry point to central chamber from random direction
         possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]
         direction = random.choice(possibleDirections)
         nextMainRoomPos = (mainPath[0][0]+direction[0],mainPath[0][1]+direction[1])
 
-        targetLen = 10
-        if self.difficulty == "tutorial":
-            targetLen = 5
+        # add rooms until desired room length is reached
         while len(mainPath) < targetLen:
-            # add an extra room
+            # add an extra room (room not on main path)
             if currentRing:
                 for i in range(1,1+numExtraRooms):
                     possiblePostions = []
@@ -2641,7 +2675,7 @@ but they are likely to explode when disturbed.
                             extraRooms.append(room)
                             break
 
-            # spawn main rooms
+            # spawn room on main path
             pos = nextMainRoomPos
             room = architect.doAddRoom(
                     {
@@ -2673,7 +2707,6 @@ but they are likely to explode when disturbed.
 
             # calculate next position
             currentRing = max(abs(pos[0]-7),abs(pos[1]-7))
-
             possibleDirections = [(-1,0),(1,0),(0,-1),(0,1)]
             candidatePositions = []
             for direction in possibleDirections:
@@ -2692,11 +2725,14 @@ but they are likely to explode when disturbed.
                 else:
                     candidatePositions.append(possiblePosition)
 
+            # handle invalid state (by crashing and burning, lol)
             if not candidatePositions:
                 1/0
 
+            # schedule next room to add
             nextMainRoomPos = random.choice(candidatePositions)
 
+        # add entry room
         attachmentRoom = rooms[-1]
         if mainPath[-1][0] < nextMainRoomPos[0]:
             attachmentRoom.addDoor("east")
@@ -2709,25 +2745,9 @@ but they are likely to explode when disturbed.
         rooms.append(room)
         mainPath.append(pos)
 
-        """
-        extraRooms = []
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (5,6),
-                       "roomType": "EmptyRoom",
-                       "doors": "6,12 12,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        extraRooms.append(room)
-        """
-
+        # spawn monsters on main path
         runModifier = (random.random()-0.5)*0.5
         logger.info(f"runmodifer dungeon {itemID}: {runModifier}")
-
-        # spawn monsters on main path
         counter = 0
         for room in reversed(rooms[:-2]):
 
@@ -2856,23 +2876,22 @@ but they are likely to explode when disturbed.
 
             counter += 1
 
+        # spawn content of central chamber
         glassHeart = src.items.itemMap["GlassStatue"]()
         glassHeart.hasItem = True
         glassHeart.itemID = itemID
         mainRoom.addItem(glassHeart,(6,6,0))
-
         vial = src.items.itemMap["Vial"]()
         vial.uses = 10
         mainRoom.addItem(vial,(5,6,0))
-
         flask = src.items.itemMap["GooFlask"]()
         flask.uses = 100
         mainRoom.addItem(flask,(6,5,0))
-
         item = src.items.itemMap["Shrine"]()
         item.god = itemID
         mainRoom.addItem(item,(6,2,0))
 
+        # add monsters outside of the dungeon
         for x in range(1,13):
             for y in range(1,13):
                 if currentTerrain.getRoomByPosition((x,y,0)):

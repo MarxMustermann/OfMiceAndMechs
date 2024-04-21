@@ -1486,7 +1486,6 @@ class MainGame(BasicPhase):
             if selection == "t":
                 self.preselection = "Travel"
 
-        self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
         self.takenPositions.append((8,6))
 
         difficultyModifier = 1
@@ -1536,6 +1535,8 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon(dungeonPositions[4],7,3*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[5],2,3.5*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[6],1,4*difficultyModifier)
+
+        self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
 
         if self.preselection == "Colony":
             self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
@@ -4399,8 +4400,9 @@ but they are likely to explode when disturbed.
 
                         # add build sites
                         # bug: walkingSpaces etc should be added, too
-                        for buildSite in sideRoom.floorPlan["buildSites"]:
+                        for buildSite in sideRoom.floorPlan["buildSites"][:]:
                             sideRoom.addBuildSite(buildSite[0],buildSite[1],buildSite[2])
+                            sideRoom.floorPlan["buildSites"].remove(buildSite)
 
                         # add actual items
                         for buildSite in sideRoom.buildSites[:]:

@@ -3855,7 +3855,7 @@ but they are likely to explode when disturbed.
 
     def createColonyBase2(self,pos,mainCharBase=False):
         """
-        USE THIS NOT createColonyBase
+        USE THIS, NOT createColonyBase
         """
         mainChar = src.characters.Character()
         mainChar.addListener(self.createColony_baseLeaderDeath,"died_pre")
@@ -4403,6 +4403,9 @@ but they are likely to explode when disturbed.
                         for buildSite in sideRoom.floorPlan["buildSites"][:]:
                             sideRoom.addBuildSite(buildSite[0],buildSite[1],buildSite[2])
                             sideRoom.floorPlan["buildSites"].remove(buildSite)
+
+                        for inputSlot in sideRoom.floorPlan["inputSlots"][:]:
+                            sideRoom.addInputSlot(inputSlot[0],inputSlot[1],inputSlot[2])
 
                         # add actual items
                         for buildSite in sideRoom.buildSites[:]:

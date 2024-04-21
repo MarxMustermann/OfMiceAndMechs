@@ -668,6 +668,28 @@ class CityPlaner(src.items.Item):
             inputSlots.append(((7, 1, 0),src.gamestate.gamestate.gods[7]["sacrifice"][0],None))
             buildSites.append(((8 ,2 ,0),"Shrine",{"god":"7"}))
 
+            for y in (3,6,9,):
+                for x in range(1,12):
+                    if (x,y) == (6,6):
+                        continue
+                    walkingSpaces.append((x,y,0))
+
+            for x in (3,6,9,):
+                for y in range(1,12):
+                    if y in (3,6,9,):
+                        continue
+                    walkingSpaces.append((x,y,0))
+
+            walkingSpaces.append((5,7,0))
+            walkingSpaces.append((7,7,0))
+            walkingSpaces.append((7,5,0))
+            walkingSpaces.append((5,5,0))
+
+            walkingSpaces.append((2,10,0))
+            walkingSpaces.append((10,2,0))
+            walkingSpaces.append((10,10,0))
+            walkingSpaces.append((2,2,0))
+
         if floorPlanType == "wallProduction2":
             for y in range(1,12):
                 walkingSpaces.append((6,y,0))

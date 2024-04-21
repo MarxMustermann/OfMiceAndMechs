@@ -4407,6 +4407,9 @@ but they are likely to explode when disturbed.
                         for inputSlot in sideRoom.floorPlan["inputSlots"][:]:
                             sideRoom.addInputSlot(inputSlot[0],inputSlot[1],inputSlot[2])
 
+                        for walkingSpace in sideRoom.floorPlan["walkingSpace"][:]:
+                            sideRoom.addWalkingSpace(walkingSpace)
+
                         # add actual items
                         for buildSite in sideRoom.buildSites[:]:
                             item = src.items.itemMap[buildSite[1]]()

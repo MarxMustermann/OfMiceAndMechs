@@ -187,6 +187,9 @@ class Room:
             extraInfo = {}
         self.storageSlots.append((position,itemType,extraInfo))
 
+    def addWalkingSpace(self,position):
+        self.walkingSpace.add(position)
+
     def addRandomItems(self):
         for inputSlot in self.inputSlots:
             if not inputSlot[1]:

@@ -3853,6 +3853,9 @@ but they are likely to explode when disturbed.
         return dungeonCrawlInfo
 
     def createColonyBase2(self,pos,mainCharBase=False):
+        """
+        USE THIS NOT createColonyBase
+        """
         mainChar = src.characters.Character()
         mainChar.addListener(self.createColony_baseLeaderDeath,"died_pre")
         if mainCharBase:
@@ -4005,6 +4008,9 @@ but they are likely to explode when disturbed.
         personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
         personnelArtwork.charges = 10
         mainRoom.addItem(personnelArtwork,(1,8,0))
+
+        item = src.items.itemMap["Painter"]()
+        mainRoom.addItem(item,(1,11,0))
 
         anvilPos = (10,2,0)
         machinemachine = src.items.itemMap["Anvil"]()

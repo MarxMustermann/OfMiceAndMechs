@@ -865,8 +865,9 @@ class CityPlaner(src.items.Item):
 
         room.floorPlan = floorPlan
         room.tag = floorPlanType
-        params["character"].changed("assigned floor plan",params)
-        self.showMap(params["character"], cursor = params["coordinate"])
+        if character:
+            character.changed("assigned floor plan",params)
+            self.showMap(character, cursor = params["coordinate"])
 
     def getConfigurationOptions(self, character):
         """

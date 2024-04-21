@@ -4369,6 +4369,20 @@ but they are likely to explode when disturbed.
                                 else:
                                     sideRoom.walkingSpace.add((x,y,0))
                     if counter == 0:
+                        # set floorplan
+                        cityPlaner.setFloorplanFromMap({"character":None,"type":"temple","coordinate":neighbourPos})
+
+                        # add build sites
+                        # bug: walkingSpaces etc should be added, too
+                        for buildSite in sideRoom.floorPlan["buildSites"]:
+                            sideRoom.addBuildSite(buildSite[0],buildSite[1],buildSite[2])
+
+                        # add actual items
+                        for buildSite in sideRoom.buildSites[:]:
+                            item = src.items.itemMap[buildSite[1]]()
+                            # bug: buildSite[2] is ignored
+                            sideRoom.addItem(item,buildSite[0])
+
                         """
                         item = src.items.itemMap["Glassifier"]()
                         item.bolted = False
@@ -4401,9 +4415,10 @@ but they are likely to explode when disturbed.
 
                     counter += 1
             else:
+                roomPos = oppositePositions[pos]
                 sideRoom = architect.doAddRoom(
                     {
-                           "coordinate": oppositePositions[pos],
+                           "coordinate": roomPos,
                            "roomType": "EmptyRoom",
                            "doors": "0,6 6,0 12,6 6,12",
                            "offset": [1,1],

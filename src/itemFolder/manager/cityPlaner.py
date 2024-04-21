@@ -644,28 +644,28 @@ class CityPlaner(src.items.Item):
             buildSites.append(((6, 6, 0),"Throne",{}))
 
             buildSites.append(((2, 5, 0),"GlassStatue",{"god":"1"}))
-            inputSlots.append(((1, 5, 0),src.gamestate.gamestate.gods[1]["sacrifice"][0]))
+            inputSlots.append(((1, 5, 0),src.gamestate.gamestate.gods[1]["sacrifice"][0],None))
             buildSites.append(((2, 4, 0),"Shrine",{"god":"1"}))
             buildSites.append(((2, 7, 0),"GlassStatue",{"god":"2"}))
-            inputSlots.append(((1, 7, 0),src.gamestate.gamestate.gods[2]["sacrifice"][0]))
+            inputSlots.append(((1, 7, 0),src.gamestate.gamestate.gods[2]["sacrifice"][0],None))
             buildSites.append(((2, 8, 0),"Shrine",{"god":"2"}))
 
             buildSites.append(((5, 10, 0),"GlassStatue",{"god":"3"}))
-            inputSlots.append(((5, 11, 0),src.gamestate.gamestate.gods[3]["sacrifice"][0]))
+            inputSlots.append(((5, 11, 0),src.gamestate.gamestate.gods[3]["sacrifice"][0],None))
             buildSites.append(((4, 10, 0),"Shrine",{"god":"3"}))
             buildSites.append(((7, 10, 0),"GlassStatue",{"god":"4"}))
-            inputSlots.append(((7, 11, 0),src.gamestate.gamestate.gods[4]["sacrifice"][0]))
+            inputSlots.append(((7, 11, 0),src.gamestate.gamestate.gods[4]["sacrifice"][0],None))
             buildSites.append(((8, 10, 0),"Shrine",{"god":"4"}))
 
             buildSites.append(((10, 7, 0),"GlassStatue",{"god":"5"}))
-            inputSlots.append(((11, 7, 0),src.gamestate.gamestate.gods[5]["sacrifice"][0]))
+            inputSlots.append(((11, 7, 0),src.gamestate.gamestate.gods[5]["sacrifice"][0],None))
             buildSites.append(((10, 8, 0),"Shrine",{"god":"5"}))
             buildSites.append(((10 ,5, 0),"GlassStatue",{"god":"6"}))
-            inputSlots.append(((11, 5, 0),src.gamestate.gamestate.gods[6]["sacrifice"][0]))
+            inputSlots.append(((11, 5, 0),src.gamestate.gamestate.gods[6]["sacrifice"][0],None))
             buildSites.append(((10 ,4, 0),"Shrine",{"god":"6"}))
 
             buildSites.append(((7 ,2, 0),"GlassStatue",{"god":"7"}))
-            inputSlots.append(((7, 1, 0),src.gamestate.gamestate.gods[7]["sacrifice"][0]))
+            inputSlots.append(((7, 1, 0),src.gamestate.gamestate.gods[7]["sacrifice"][0],None))
             buildSites.append(((8 ,2 ,0),"Shrine",{"god":"7"}))
 
         if floorPlanType == "wallProduction2":

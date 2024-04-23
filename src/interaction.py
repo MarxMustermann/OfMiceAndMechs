@@ -6408,6 +6408,8 @@ class RoomMenu(SubMenu):
         else:
                 self.persistentText.append("There is no staff assigned.\nassign staff by using the staff artwork (SA)")
 
+        self.persistentText.append(f"\n\nRoompriority: {self.room.priority}")
+
         if self.room.floorPlan:
             self.persistentText.append("\n\nThis room has a floor plan.")
             if "walkingSpaces" in self.room.floorPlan:

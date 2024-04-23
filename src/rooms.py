@@ -63,6 +63,7 @@ class Room:
         self.container = None
 
         # initialize attributes
+        self.priority = 0
         self.health = 40
         self.hidden = True
         self.itemsOnFloor = []

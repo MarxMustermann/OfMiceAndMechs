@@ -1034,7 +1034,7 @@ We should stop watching and do something about that.
     def checkTriggerResourceFetching(self,character,currentRoom):
 
         for trueInput in (True,False):
-            for room in [currentRoom, *character.getTerrain().rooms]:
+            for room in self.getRandomPriotisedRooms(character,currentRoom):
                 checkedTypes = set()
                 emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
 
@@ -1143,7 +1143,7 @@ We should stop watching and do something about that.
                         self.idleCounter = 0
                         return True
 
-        for room in [currentRoom, *character.getTerrain().rooms]:
+        for room in self.getRandomPriotisedRooms(character,currentRoom):
             checkedTypes = set()
             for storageSlot in room.storageSlots:
                 if storageSlot[2].get("desiredState") != "filled":

@@ -1528,13 +1528,13 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],3.5*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],4*difficultyModifier)
         else:
-            self.setUpGlassHeartDungeon(dungeonPositions[0],3,1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],4,1.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],5,2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],6,2.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],7,3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],2,3.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],1,4*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[2],3,2*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[3],4,2.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[4],5,3*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[5],6,3.5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[6],7,4*difficultyModifier)
 
         self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
 

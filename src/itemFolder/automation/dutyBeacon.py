@@ -32,8 +32,10 @@ class DutyBeacon(src.items.Item):
         options.append(("pull", "set to pull"))
         options.append(("push", "set to push"))
         options.append(("neutral", "set tp neutral"))
+        options.append(("increase", "increase priority"))
+        options.append(("decrease", "decrease priority"))
 
-        submenue = src.interaction.SelectionMenu("select the mode for the duty beacon",options)
+        submenue = src.interaction.SelectionMenu(f"select the mode for the duty beacon.\n(current priority: {self.container.priority})",options)
         character.macroState["submenue"] = submenue
         params = {"character":character}
         character.macroState["submenue"].followUp = {"container":self,"method":"setRoomPrio","params":params}
@@ -53,6 +55,10 @@ class DutyBeacon(src.items.Item):
             priority = -1
         if extraParams["selection"] == "neutral":
             priority = 0
+        if extraParams["selection"] == "increase":
+            priority = room.priority+1
+        if extraParams["selection"] == "decrease":
+            priority = room.priority-1
 
 
         room.priority = priority

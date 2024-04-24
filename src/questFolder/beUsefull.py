@@ -757,8 +757,25 @@ We should stop watching and do something about that.
             return None
         return None
 
-    def checkTriggerResourceGathering(self,character,room):
-        for room in [room, *character.getTerrain().rooms]:
+    def getRandomPriotisedRooms(self,character,currentRoom):
+        prioSortedRooms = {}
+
+        for room in character.getTerrain().rooms:
+            if not room.priority in prioSortedRooms:
+                prioSortedRooms[room.priority] = []
+            prioSortedRooms[room.priority].append(room)
+
+        for roomList in prioSortedRooms.values():
+            random.shuffle(roomList)
+
+        resultList = []
+        for key in reversed(sorted(prioSortedRooms.keys())):
+            resultList.extend(prioSortedRooms[key])
+
+        return resultList
+
+    def checkTriggerResourceGathering(self,character,currentRoom):
+        for room in self.getRandomPriotisedRooms(character,currentRoom):
             emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
             if emptyInputSlots:
                 for inputSlot in emptyInputSlots:

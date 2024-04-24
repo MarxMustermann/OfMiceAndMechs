@@ -212,21 +212,10 @@ A new wave has spawned.
             return
 
         if self.lastWave == None:
-            print("wave spawn")
             self.spawnWave()
 
         if (src.gamestate.gamestate.tick-self.lastWave) >= (15*15*15):
-            print("wave spawn")
             self.spawnWave()
-
-        print("................")
-        print(src.gamestate.gamestate.tick-self.lastWave)
-        print("................")
-        print(src.gamestate.gamestate.tick%(15*15*15))
-        print(src.gamestate.gamestate.tick//(15*15*15))
-        print(self.lastWave)
-        print(self.lastWave//(15*15*15))
-        input("epoch change")
 
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+(15*15*15-src.gamestate.gamestate.tick%(15*15*15)))
         event.setCallback({"container": self, "method": "handleEpochChange"})

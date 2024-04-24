@@ -363,11 +363,9 @@ We should stop watching and do something about that.
                     return True
         return None
 
-    def checkTriggerManufacturing(self,character,room):
+    def checkTriggerManufacturing(self,character,currentRoom):
         terrain = character.getTerrain()
-        rooms = terrain.rooms[:]
-        random.shuffle(rooms)
-        for checkRoom in [room, *rooms]:
+        for checkRoom in self.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
             for item in items:
@@ -392,7 +390,7 @@ We should stop watching and do something about that.
                     quest.activate()
                     self.idleCounter = 0
                     return True
-        for checkRoom in [room, *rooms]:
+        for checkRoom in self.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
             for item in items:

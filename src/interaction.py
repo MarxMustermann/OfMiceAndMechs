@@ -131,13 +131,17 @@ def advanceGame():
                     if numGlassHeartsOnPos == 7:
                         break
 
+                    multipliers = (1.2,1.1,1.5,1.1)
+                    if src.gamestate.gamestate.difficulty == "easy":
+                        multipliers = (1.02,1.01,1.05,1.01)
+                    elif src.gamestate.gamestate.difficulty == "difficulty":
+                        multipliers = (1.7,1.5,2,1.5)
+
                     for _i in range(numSpectres):
                         enemy = src.characters.Monster(6,6)
-                        #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)//2+1
-                        enemy.health = int(10*1.2**numGlassHeartsOnPos)
+                        enemy.health = int(10*multipliers[0]**numGlassHeartsOnPos)
                         enemy.maxHealth = enemy.health
-                        #enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
-                        enemy.baseDamage = int(5+1*1.1**numGlassHeartsOnPos)
+                        enemy.baseDamage = int(5+1*multipliers[1]**numGlassHeartsOnPos)
                         enemy.faction = "spectre"
                         enemy.tag = "spectre"
                         enemy.name = "stealerSpectre"
@@ -183,10 +187,10 @@ def advanceGame():
 
                         enemy = src.characters.Monster(6,6)
                         #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
-                        enemy.health = int(10*1.5**numGlassHeartsOnPos)
+                        enemy.health = int(10*multipliers[2]**numGlassHeartsOnPos)
                         enemy.maxHealth = enemy.health
                         #enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
-                        enemy.baseDamage = int(5+3*1.1**numGlassHeartsOnPos)
+                        enemy.baseDamage = int(5+3*multipliers[3]**numGlassHeartsOnPos)
                         enemy.faction = "spectre"
                         enemy.tag = "spectre"
                         enemy.name = "killerSpectre"

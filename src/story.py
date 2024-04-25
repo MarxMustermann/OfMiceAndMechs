@@ -3897,11 +3897,11 @@ but they are likely to explode when disturbed.
 
         if self.difficulty == "easy":
             weapon = src.items.itemMap["Sword"]()
-            weapon.baseDamage = 10
+            weapon.baseDamage = 15
             mainChar.weapon = weapon
 
             armor = src.items.itemMap["Armor"]()
-            armor.armorValue = 1
+            armor.armorValue = 3
             mainChar.armor = armor
 
         if not mainCharBase:

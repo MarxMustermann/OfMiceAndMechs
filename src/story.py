@@ -2869,11 +2869,12 @@ but they are likely to explode when disturbed.
                         item = src.items.itemMap["Wall"]()
                         room.addItem(item,pos)
 
-            if counter < endIndex-2 or counter > endIndex+2:
-                if random.random() > 0.5:
-                    for _i in range(random.randint(2,6)):
-                        item = src.items.itemMap["LandMine"]()
-                        room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
+            if not self.difficulty == "easy":
+                if counter < endIndex-2 or counter > endIndex+2:
+                    if random.random() > 0.5:
+                        for _i in range(random.randint(2,6)):
+                            item = src.items.itemMap["LandMine"]()
+                            room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
             counter += 1
 

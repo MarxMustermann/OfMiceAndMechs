@@ -43,7 +43,7 @@ class ManufacturingManager(src.items.Item):
         if "type" not in params:
             options = []
             options.append((None,f"exit menu"))
-            basicOptions = ["MetalBars","Rod","Frame","Case","Wall","ManufacturingTable","Bolt"]
+            basicOptions = ["MetalBars","Rod","Frame","Case","Sheet","ManufacturingTable","Bolt","Armor","Sword"]
             for option in basicOptions:
                 options.append((option,f"{option} {numActiveTables.get(option,0)}"))
 

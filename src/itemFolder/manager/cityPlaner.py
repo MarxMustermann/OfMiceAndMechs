@@ -668,6 +668,8 @@ class CityPlaner(src.items.Item):
             inputSlots.append(((7, 1, 0),src.gamestate.gamestate.gods[7]["sacrifice"][0],None))
             buildSites.append(((8 ,2 ,0),"Shrine",{"god":"7"}))
 
+            buildSites.append(((7 ,8 ,0),"DutyBeacon",None))
+
             for y in (3,6,9,):
                 for x in range(1,12):
                     if (x,y) == (6,6):

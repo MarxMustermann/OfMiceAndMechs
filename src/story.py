@@ -4424,6 +4424,7 @@ but they are likely to explode when disturbed.
                             item = src.items.itemMap[buildSite[1]]()
                             # bug: buildSite[2] is ignored
                             sideRoom.addItem(item,buildSite[0])
+                            item.bolted = True
 
                         """
                         item = src.items.itemMap["Glassifier"]()

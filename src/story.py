@@ -2798,7 +2798,6 @@ but they are likely to explode when disturbed.
 
         # spawn monsters on dead ends
         for room in reversed(extraRooms):
-
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
                 statue = src.characters.Statue(4,4)
@@ -3895,6 +3894,15 @@ but they are likely to explode when disturbed.
             "NaiveDropQuest",
             "DropQuestMeta",
         ]
+
+        if self.difficulty == "easy":
+            weapon = src.items.itemMap["Sword"]()
+            weapon.baseDamage = 10
+            mainChar.weapon = weapon
+
+            armor = src.items.itemMap["Armor"]()
+            armor.armorValue = 1
+            mainChar.armor = armor
 
         if not mainCharBase:
             quest = src.quests.questMap["BeUsefull"]()

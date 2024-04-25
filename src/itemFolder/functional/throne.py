@@ -92,8 +92,8 @@ You may or may not find experimental content from this point on.
 
             self.spawnWave()
 
-            text = """
-A new wave has spawned.
+            text = f"""
+A new wave has spawned. {self.wavesSpawned}/{self.maxWaves}
 """
             character.showTextMenu(text)
 
@@ -248,4 +248,15 @@ A new wave has spawned.
         character.addMessage("you unbolt the Thone")
         character.changed("unboltedItem",{"character":character,"item":self})
 
+    def getLongInfo(self):
+        if self.wavesSpawned:
+            return f"""The Throne did not attune to you.
+
+Collect all glass hearts and activate it to attune it.
+"""
+        else:
+            return f"""The Throne is attuning to you.
+
+Survive {self.maxWaves-self.wavesSpawned} to complete the attuning proccess.
+"""
 src.items.addType(Throne)

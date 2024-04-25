@@ -686,9 +686,13 @@ class CityPlaner(src.items.Item):
             walkingSpaces.append((5,5,0))
 
             walkingSpaces.append((2,10,0))
+            walkingSpaces.append((2,11,0))
             walkingSpaces.append((10,2,0))
+            walkingSpaces.append((10,1,0))
             walkingSpaces.append((10,10,0))
+            walkingSpaces.append((10,11,0))
             walkingSpaces.append((2,2,0))
+            walkingSpaces.append((2,1,0))
 
         if floorPlanType == "wallProduction2":
             for y in range(1,12):

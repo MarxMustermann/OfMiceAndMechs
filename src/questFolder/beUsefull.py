@@ -1272,6 +1272,8 @@ We should stop watching and do something about that.
                 for storageSlot in storageSlots:
                     if storageSlot[1] or storageSlot[2]:
                         continue
+                    if room.getItemByPosition(storageSlot[0]):
+                        continue
                     quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="designate special storage for basic items",itemType=checkDesireFilledStorageSlot[0],extraInfo={"desiredState":"filled"})
                     self.addQuest(quest)
                     return True

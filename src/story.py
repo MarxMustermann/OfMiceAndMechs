@@ -4354,55 +4354,43 @@ but they are likely to explode when disturbed.
                        )
 
                     if counter == 2:
-                        """
-                        for y in (2,3,5,7,9,10,):
-                            sideRoom.addInputSlot((2,y,0),"Scrap")
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            item.toProduce = "MetalBars"
-                            sideRoom.addItem(item,(3,y,0))
-                            sideRoom.addStorageSlot((4,y,0),"MetalBars")
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            item.toProduce = "Rod"
-                            sideRoom.addItem(item,(5,y,0))
-                            sideRoom.addStorageSlot((6,y,0),"Rod")
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            item.toProduce = "Frame"
-                            sideRoom.addItem(item,(7,y,0))
-                            sideRoom.addStorageSlot((8,y,0),"Frame")
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            item.toProduce = "Case"
-                            sideRoom.addItem(item,(9,y,0))
-                            sideRoom.addStorageSlot((10,y,0),"Case")
-                        """
-                        for y in (2,3,5,6,8,9,):
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            sideRoom.addItem(item,(3,y,0))
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            sideRoom.addItem(item,(6,y,0))
-                            item = src.items.itemMap["ManufacturingTable"]()
-                            item.bolted = True
-                            sideRoom.addItem(item,(9,y,0))
-                        item = src.items.itemMap["ManufacturingManager"]()
-                        item.bolted = True
-                        sideRoom.addItem(item,(7,11,0))
+                        # set floorplan
+                        cityPlaner.setFloorplanFromMap({"character":None,"type":"manufacturingHall","coordinate":neighbourPos})
+                        sideRoom.magic_drawFloorplan()
+                        sideRoom.magic_completeBuildsites()
+
+                        manufacturingManager = sideRoom.getItemByType("ManufacturingManager")
+                        if manufacturingManager:
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Rod","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Rod","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Rod","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Frame","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Frame","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Frame","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Case","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Case","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Case","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Bolt","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Bolt","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Bolt","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Sheet","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Armor","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Sword","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Sheet","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Armor","key":"j"},loop=False)
+                            manufacturingManager.changeProductionLoop({"character":None,"type":"Sword","key":"j"},loop=False)
 
                     if counter == 1:
-                        for x in range(1,12):
-                            for y in range(1,12):
-                                if y%2 == 1 and not x == 6:
-                                    item = src.items.itemMap["Wall"]()
-                                    item.bolted = False
+                        # set floorplan
+                        cityPlaner.setFloorplanFromMap({"character":None,"type":"storage","coordinate":neighbourPos})
+                        sideRoom.magic_drawFloorplan()
 
-                                    sideRoom.addItem(item,(x,y,0))
-                                    sideRoom.addStorageSlot((x,y,0),None)
-                                else:
-                                    sideRoom.walkingSpace.add((x,y,0))
+                        # add walls
+                        for storageSlot in sideRoom.storageSlots:
+                            wall = src.items.itemMap["Wall"]()
+                            wall.bolted = False
+                            sideRoom.addItem(wall,storageSlot[0])
+
                     if counter == 0:
                         # set floorplan
                         cityPlaner.setFloorplanFromMap({"character":None,"type":"temple","coordinate":neighbourPos})
@@ -4415,9 +4403,11 @@ but they are likely to explode when disturbed.
 
                         for inputSlot in sideRoom.floorPlan["inputSlots"][:]:
                             sideRoom.addInputSlot(inputSlot[0],inputSlot[1],inputSlot[2])
+                            sideRoom.floorPlan["inputSlots"].remove(inputSlot)
 
                         for walkingSpace in sideRoom.floorPlan["walkingSpace"][:]:
                             sideRoom.addWalkingSpace(walkingSpace)
+                            sideRoom.floorPlan["walkingSpace"].remove(walkingSpace)
 
                         # add actual items
                         for buildSite in sideRoom.buildSites[:]:
@@ -4426,38 +4416,10 @@ but they are likely to explode when disturbed.
                             sideRoom.addItem(item,buildSite[0])
                             item.bolted = True
 
+                        # set temple to very high priority
                         sideRoom.priority = 2
 
-                        """
-                        item = src.items.itemMap["Glassifier"]()
-                        item.bolted = False
-                        sideRoom.addItem(item,(6,6,0))
-
-                        sideRoom.addInputSlot((5,4,0),"Scrap")
-                        sideRoom.addInputSlot((7,4,0),"Scrap")
-                        sideRoom.addInputSlot((5,3,0),"VatMaggot")
-                        sideRoom.addInputSlot((7,3,0),"VatMaggot")
-                        sideRoom.addInputSlot((5,2,0),"MetalBars")
-                        sideRoom.addInputSlot((7,2,0),"MetalBars")
-                        sideRoom.addInputSlot((5,8,0),"Rod")
-                        sideRoom.addInputSlot((7,8,0),"Rod")
-                        sideRoom.addInputSlot((5,9,0),"Bolt")
-                        sideRoom.addInputSlot((7,9,0),"Bolt")
-                        sideRoom.addInputSlot((5,10,0),"LightningRod")
-                        sideRoom.addInputSlot((7,10,0),"LightningRod")
-                        for y in range(1,12):
-                            if y == 6:
-                                continue
-                            sideRoom.addInputSlot((1,y,0),"ManufacturingTable")
-                            sideRoom.addInputSlot((11,y,0),"ManufacturingTable")
-                        for y in range(1,12):
-                            if y == 6:
-                                continue
-                            sideRoom.addInputSlot((3,y,0),"Wall")
-                            sideRoom.addInputSlot((9,y,0),"Wall")
-
-                        """
-
+                    # prepare next loop round
                     counter += 1
             else:
                 roomPos = oppositePositions[pos]

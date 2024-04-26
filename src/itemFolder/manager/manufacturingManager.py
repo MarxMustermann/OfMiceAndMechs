@@ -29,7 +29,7 @@ class ManufacturingManager(src.items.Item):
     def changeProduction(self,character):
         self.changeProductionLoop({"character":character})
 
-    def changeProductionLoop(self,params,selected=None):
+    def changeProductionLoop(self,params,selected=None,loop=True):
         manufacturingTables = self.container.getItemsByType("ManufacturingTable",needsBolted=True)
         numActiveTables = {}
         numTablesUsed = 0
@@ -60,7 +60,8 @@ class ManufacturingManager(src.items.Item):
                 if table.toProduce:
                     continue
                 table.toProduce = params["type"]
-                character.addMessage("added workshop")
+                if character:
+                    character.addMessage("added workshop")
                 break
             tablePos = table.getPosition()
             self.container.addStorageSlot((tablePos[0]+1,tablePos[1],tablePos[2]),params["type"])
@@ -89,9 +90,11 @@ class ManufacturingManager(src.items.Item):
                         self.container.inputSlots.remove(slot)
 
                 table.toProduce = None
-                character.addMessage("removed workshop")
+                if character:
+                    character.addMessage("removed workshop")
                 break
-        self.changeProductionLoop({"character":character},selected=params["type"])
+        if loop:
+            self.changeProductionLoop({"character":character},selected=params["type"])
 
     def showList(self,character):
         manufacturingTables = self.container.getItemsByType("ManufacturingTable",needsBolted=True)

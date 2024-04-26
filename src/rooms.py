@@ -2088,7 +2088,7 @@ XXX
                 return True
         return None
 
-    def spawnPlaned(self):
+    def magic_drawFloorplan(self):
         if self.floorPlan:
             if "inputSlots" in self.floorPlan:
                 self.inputSlots.extend(self.floorPlan["inputSlots"])
@@ -2106,6 +2106,7 @@ XXX
             self.floorPlan = None
             return
 
+    def magic_completeBuildsites(self):
         if self.buildSites:
             for buildSite in self.buildSites[:]:
                 item = src.items.itemMap[buildSite[1]]()
@@ -2116,6 +2117,16 @@ XXX
                 if buildSite[2].get("settings"):
                     item.settings = buildSite[2].get("settings")
                 self.addItem(item,buildSite[0])
+                item.bolted = True
+            return
+
+    def spawnPlaned(self):
+        if self.floorPlan:
+            self.magic_drawFloorplan()
+            return
+
+        if self.buildSites:
+            self.magic_completeBuildsites()
             return
 
     def spawnGhouls(self,character):

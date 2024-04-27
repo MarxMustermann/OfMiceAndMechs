@@ -1090,12 +1090,10 @@ We should stop watching and do something about that.
                             return True
 
                         if trueInput:
-                            self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched1",allowAny=True))
+                            self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched1",allowAny=True,targetPositionBig=room.getPosition()))
                         else:
                             if hasItem:
-                                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,reason="restock the room with the items fetched2",allowAny=True))
-                                if character.room != room:
-                                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,reason="restock the room with the items fetched2",allowAny=True,targetPositionBig=room.getPosition()))
                                 self.idleCounter = 0
                                 return True
 

@@ -992,6 +992,7 @@ class CityPlaner(src.items.Item):
         room.storageSlots = []
         room.inputSlots = []
         room.outputSlots = []
+        room.buildSites = []
 
         for item in room.itemsOnFloor[:]:
             if item.bolted and item.xPosition in (0,12):

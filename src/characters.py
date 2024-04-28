@@ -242,6 +242,25 @@ class Character:
         self.yPosition = yPosition
         self.burnedIn = False
 
+        self.dutyPriorities = {}
+
+    def getRandomProtisedDuties(self):
+        priotisedDuties = {}
+        for duty in self.duties:
+            priority = self.dutyPriorities.get(duty,1)
+            if not priority in priotisedDuties:
+                priotisedDuties[priority] = []
+            priotisedDuties[priority].append(duty)
+
+        for dutyList in priotisedDuties.values():
+            random.shuffle(dutyList)
+
+        resultList = []
+        for key in reversed(sorted(priotisedDuties.keys())):
+            resultList.extend(priotisedDuties[key])
+
+        return resultList
+
     def showTextMenu(self,text):
         submenu = src.interaction.TextMenu(text)
         self.macroState["submenue"] = submenu

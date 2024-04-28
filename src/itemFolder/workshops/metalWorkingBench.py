@@ -305,4 +305,17 @@ class MetalWorkingBench(src.items.Item):
 
         character.addMessage(self.scheduledItems)
 
+    def readyToUse(self):
+
+        metalBarsFound = []
+        for item in self.getInputItems():
+            if item.type == "MetalBars":
+                metalBarsFound.append(item)
+
+        if metalBarsFound:
+            return True
+        else:
+            return False
+
+
 src.items.addType(MetalWorkingBench)

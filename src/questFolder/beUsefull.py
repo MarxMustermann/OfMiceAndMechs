@@ -440,13 +440,25 @@ We should stop watching and do something about that.
         return None
 
     def checkTriggerMetalWorking(self,character,room):
+        freeMetalWorkingBenches = []
+
         for room in character.getTerrain().rooms:
             for metalWorkingBench in room.getItemsByType("MetalWorkingBench"):
-                if metalWorkingBench.scheduledItems:
-                    self.addQuest(src.quests.questMap["ClearInventory"]())
-                    self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0]))
-                    self.idleCounter = 0
-                    return True
+                if not metalWorkingBench.readyToUse():
+                    continue
+
+                freeMetalWorkingBenches.append(metalWorkingBench)
+
+        random.shuffle(freeMetalWorkingBenches)
+        for metalWorkingBench in freeMetalWorkingBenches:
+            if metalWorkingBench.scheduledItems:
+                self.addQuest(src.quests.questMap["ClearInventory"]())
+                self.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0]))
+                self.idleCounter = 0
+                return True
+
+        if not freeMetalWorkingBenches:
+            return
 
         itemsInStorage = {}
         freeStorage = 0
@@ -1946,7 +1958,7 @@ We should stop watching and do something about that.
                 return
 
         room = character.container
-        for duty in character.duties:
+        for duty in character.getRandomProtisedDuties():
             if duty == "trap setting" and self.checkTriggerTrapSetting(character,room):
                 return
 
@@ -1957,9 +1969,6 @@ We should stop watching and do something about that.
                 return
 
             if duty == "resource gathering" and self.checkTriggerResourceGathering(character,room):
-                return
-
-            if duty == "maggot gathering" and self.checkTriggerMaggotGathering(character,room):
                 return
 
             if duty == "maggot gathering" and self.checkTriggerMaggotGathering(character,room):

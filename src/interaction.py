@@ -5955,15 +5955,26 @@ class JobAsMatrixMenu(SubMenu):
 
                 if rowCounter == self.index[0]:
                     dutyname = duties[self.index[1]]
-                    if dutyname in npc.duties:
-                        npc.duties.remove(dutyname)
-                    else:
-                        if key == "l":
-                            pass
-                        elif key == "j":
+
+                    if key == "l":
+                        pass
+                    elif key == "j":
+                        if not dutyname in npc.duties:
                             npc.duties.append(dutyname)
-                        elif key == "k":
-                            npc.duties.insert(0,dutyname)
+                            npc.dutyPriorities[dutyname] = 1
+                        else:
+                            if not dutyname in npc.dutyPriorities:
+                                npc.dutyPriorities[dutyname] = 1
+                            npc.dutyPriorities[dutyname] += 1
+                    elif key == "k":
+                        if dutyname in npc.duties:
+                            if not dutyname in npc.dutyPriorities:
+                                npc.dutyPriorities[dutyname] = 1
+                            npc.dutyPriorities[dutyname] -= 1
+                            if npc.dutyPriorities[dutyname] < 1:
+                                del npc.dutyPriorities[dutyname]
+                                npc.duties.remove(dutyname)
+
                 rowCounter += 1
 
         text = "press wasd to move cursor"
@@ -6020,7 +6031,7 @@ class JobAsMatrixMenu(SubMenu):
                     text.append((urwid.AttrSpec("default", color),"  "))
 
                 if duty in npc.duties:
-                    text.append(str(npc.duties.index(duty)+1))
+                    text.append(str(npc.dutyPriorities.get(duty,1)))
                 else:
                     color = "default"
                     if rowCounter == self.index[1] or lineCounter == self.index[0]:

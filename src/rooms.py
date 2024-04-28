@@ -2120,6 +2120,10 @@ XXX
                 item.bolted = True
             return
 
+    def magic_fillInputStockpiles(self):
+        for inputSlot in self.inputSlots:
+            print(inputSlot)
+
     def spawnPlaned(self):
         if self.floorPlan:
             self.magic_drawFloorplan()

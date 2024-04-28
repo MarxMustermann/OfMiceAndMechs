@@ -797,6 +797,18 @@ class Shrine(src.items.Item):
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
 
+            npc.duties.append("resource gathering")
+            npc.duties.append("scrap hammering")
+            npc.duties.append("resource fetching")
+            npc.duties.append("hauling")
+            npc.duties.append("metal working")
+            npc.duties.append("machine placing")
+            npc.duties.append("maggot gathering")
+            npc.duties.append("painting")
+            npc.duties.append("cleaning")
+            npc.duties.append("machine operation")
+            npc.duties.append("manufacturing")
+
             text = f"spawned NPC"
 
             if foundFlask:

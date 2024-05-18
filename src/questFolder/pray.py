@@ -4,13 +4,14 @@ import src
 class Pray(src.quests.MetaQuestSequence):
     type = "Pray"
 
-    def __init__(self, description="pray", creator=None, targetPosition=None, targetPositionBig=None,reason=None):
+    def __init__(self, description="pray", creator=None, targetPosition=None, targetPositionBig=None,reason=None,shrine=True):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.targetPosition = targetPosition
         self.targetPositionBig = targetPositionBig
         self.reason = reason
+        self.shrine = shrine
 
     def handlePrayed(self, extraInfo):
         if self.completed:
@@ -34,7 +35,7 @@ class Pray(src.quests.MetaQuestSequence):
         if self.reason:
             reason = f", to {self.reason}"
         return f"""
-operate the machine on {self.targetPosition}{reason}.
+pray on {self.targetPosition}{reason}.
 """
 
     def triggerCompletionCheck(self,character=None):
@@ -84,16 +85,22 @@ operate the machine on {self.targetPosition}{reason}.
             quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get near the machine")
             return ([quest],None)
 
+        if self.shrine:
+            description = "pray at the shrine"
+            activationCommand = "ssj"
+        else:
+            description = "pray at statue"
+            activationCommand = "sj"
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
-            return (None,("jssj","pray at the shrine"))
+            return (None,("j"+activationCommand,description))
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jassj","pray at the shrine"))
+            return (None,("Ja"+activationCommand,description))
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jdssj","pray at the shrine"))
+            return (None,("Jd"+activationCommand,description))
         if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,("Jwssj","pray at the shrine"))
+            return (None,("Jw"+activationCommand,description))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,("Jsssj","pray at the shrine"))
+            return (None,("Js"+activationCommand,description))
         return None
 
     def getSolvingCommandString(self, character, dryRun=True):

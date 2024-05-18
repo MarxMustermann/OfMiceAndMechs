@@ -4421,6 +4421,23 @@ but they are likely to explode when disturbed.
 
                     # prepare next loop round
                     counter += 1
+            elif self.difficulty == "medium":
+                basePositions.remove(pos)
+                counter = 0
+                for neighbourPos in basePositions:
+                    sideRoom = architect.doAddRoom(
+                            {
+                                   "coordinate": neighbourPos,
+                                   "roomType": "EmptyRoom",
+                                   "doors": "0,6 6,0 12,6 6,12",
+                                   "offset": [1,1],
+                                   "size": [13, 13],
+                            },
+                            None,
+                       )
+                    counter += 1
+                    if counter > 1:
+                        break
             else:
                 roomPos = oppositePositions[pos]
                 sideRoom = architect.doAddRoom(
@@ -4433,35 +4450,6 @@ but they are likely to explode when disturbed.
                     },
                     None,
                    )
-                """
-
-                item = src.items.itemMap["Glassifier"]()
-                item.bolted = False
-                sideRoom.addItem(item,(6,6,0))
-
-                sideRoom.addInputSlot((5,4,0),"Scrap")
-                sideRoom.addInputSlot((7,4,0),"Scrap")
-                sideRoom.addInputSlot((5,3,0),"VatMaggot")
-                sideRoom.addInputSlot((7,3,0),"VatMaggot")
-                sideRoom.addInputSlot((5,2,0),"MetalBars")
-                sideRoom.addInputSlot((7,2,0),"MetalBars")
-                sideRoom.addInputSlot((5,8,0),"Rod")
-                sideRoom.addInputSlot((7,8,0),"Rod")
-                sideRoom.addInputSlot((5,9,0),"Bolt")
-                sideRoom.addInputSlot((7,9,0),"Bolt")
-                sideRoom.addInputSlot((5,10,0),"LightningRod")
-                sideRoom.addInputSlot((7,10,0),"LightningRod")
-                for y in range(1,12):
-                    if y == 6:
-                        continue
-                    sideRoom.addInputSlot((1,y,0),"ManufacturingTable")
-                    sideRoom.addInputSlot((11,y,0),"ManufacturingTable")
-                for y in range(1,12):
-                    if y == 6:
-                        continue
-                    sideRoom.addInputSlot((3,y,0),"Wall")
-                    sideRoom.addInputSlot((9,y,0),"Wall")
-                """
 
         itemsToRemove = []
         for x in range(1,14):

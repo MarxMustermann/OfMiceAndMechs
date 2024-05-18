@@ -39,13 +39,7 @@ class GlassStatue(src.items.Item):
         self.charges = 2
         self.stable = False
 
-    def pray(self,character):
-        if self.charges >= 9:
-            text = f"the glass statue has maximum charges now"
-            submenue = src.interaction.TextMenu(text)
-            character.macroState["submenue"] = submenue
-            character.addMessage(text)
-            return
+    def handleItemRequirements(self,removeItems=False,character=None):
         # determine what items are needed
         needItems = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
 
@@ -66,25 +60,27 @@ class GlassStatue(src.items.Item):
 
                 # ensure that there is enough scrap around
                 if not numScrapFound >= amount:
-                    text = "not enough Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
-                    submenue = src.interaction.TextMenu(text)
-                    character.macroState["submenue"] = submenue
-                    character.addMessage(text)
+                    if character:
+                        text = "not enough Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
+                        submenue = src.interaction.TextMenu(text)
+                        character.macroState["submenue"] = submenue
+                        character.addMessage(text)
                     return
 
                 # remove the scrap
-                numScrapRemoved = 0
-                for item in scrap:
-                    if item.amount <= amount-numScrapRemoved:
-                        self.container.removeItem(item)
-                        numScrapRemoved += item.amount
-                    else:
-                        item.amount -= amount-numScrapRemoved
-                        item.setWalkable()
-                        numScrapRemoved += amount-numScrapRemoved
+                if removeItems:
+                    numScrapRemoved = 0
+                    for item in scrap:
+                        if item.amount <= amount-numScrapRemoved:
+                            self.container.removeItem(item)
+                            numScrapRemoved += item.amount
+                        else:
+                            item.amount -= amount-numScrapRemoved
+                            item.setWalkable()
+                            numScrapRemoved += amount-numScrapRemoved
 
-                    if numScrapRemoved >= amount:
-                        break
+                        if numScrapRemoved >= amount:
+                            break
                 text = f"you sacrifice {numScrapRemoved} Scrap"
             else:
                 ##
@@ -95,17 +91,34 @@ class GlassStatue(src.items.Item):
 
                 # ensure item requirement can be fullfilled
                 if not len(itemsFound) >= amount:
-                    text = f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room."
-                    submenue = src.interaction.TextMenu(text)
-                    character.macroState["submenue"] = submenue
-                    character.addMessage(text)
+                    if character:
+                        text = f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room."
+                        submenue = src.interaction.TextMenu(text)
+                        character.macroState["submenue"] = submenue
+                        character.addMessage(text)
                     return
 
                 # remove items from requirement
                 text = f"you sacrifice {amount} {itemType}"
-                while amount > 0:
-                    self.container.removeItem(itemsFound.pop())
-                    amount -= 1
+                if removeItems:
+                    while amount > 0:
+                        self.container.removeItem(itemsFound.pop())
+                        amount -= 1
+        return text
+
+    def pray(self,character):
+        character.changed("prayed",{})
+
+        if self.charges >= 9:
+            text = f"the glass statue has maximum charges now"
+            submenue = src.interaction.TextMenu(text)
+            character.macroState["submenue"] = submenue
+            character.addMessage(text)
+            return
+
+        text = self.handleItemRequirements(removeItems=True,character=character)
+        if not text:
+            return
 
         self.charges += 1
         text += f"\n\nThe GlassStatue has {self.charges} charges now."

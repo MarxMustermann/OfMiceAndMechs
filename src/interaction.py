@@ -5937,7 +5937,7 @@ class JobAsMatrixMenu(SubMenu):
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
 
-        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","flask filling"]))
+        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","flask filling","praying"]))
 
 
         if key == "C":
@@ -5951,7 +5951,7 @@ class JobAsMatrixMenu(SubMenu):
             self.index[1] -= 1
         if key == "d" and not self.index[1] > len(duties)-2:
             self.index[1] += 1
-        if key in ("j","k","l"):
+        if key in ("j","k","l","c"):
             rowCounter = 0
             for npc in npcs:
                 if npc.faction != character.faction:
@@ -5980,6 +5980,9 @@ class JobAsMatrixMenu(SubMenu):
                             if npc.dutyPriorities[dutyname] < 1:
                                 del npc.dutyPriorities[dutyname]
                                 npc.duties.remove(dutyname)
+                    elif key == "c":
+                        npc.duties = []
+                        npc.dutyPriorities = {}
 
                 rowCounter += 1
 

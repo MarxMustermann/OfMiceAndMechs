@@ -1385,6 +1385,27 @@ We should stop watching and do something about that.
             grievance = ("SetUpMachine",extraParam["quest"].itemType,"no machine")
             self.character.addGrievance(grievance)
 
+    def findSource(self,character,currentRoom):
+        source = None
+        for candidateSource in room.sources:
+            if candidateSource[1] != inputSlot[1]:
+                continue
+
+            sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+            if not sourceRoom:
+                continue
+
+            sourceRoom = sourceRoom[0]
+            if sourceRoom == character.container:
+                continue
+            if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=trueInput):
+                continue
+
+            source = candidateSource
+            break
+
+        return source
+
     def checkTriggerMachinePlacing(self,character,room):
         terrain = character.getTerrain()
         rooms = terrain.rooms[:]
@@ -1444,6 +1465,9 @@ We should stop watching and do something about that.
                                 break
 
                         if not source:
+                            continue
+                        """
+                        if not source:
                             if buildSite[1] not in ("Machine","Command") and "metal working" in character.duties:
                                 self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
                                 self.idleCounter = 0
@@ -1455,6 +1479,7 @@ We should stop watching and do something about that.
                                 return True
 
                             continue
+                        """
 
                     if buildSite[1] != "Command":
                         self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
@@ -1472,6 +1497,8 @@ We should stop watching and do something about that.
                         buildSite[2]["reservedTill"] = room.timeIndex+100
                         self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                         #self.addQuest(produceQuest)
+                        self.idleCounter = 0
+                        return True
                     elif source:
                         if not character.getFreeInventorySpace() > 0:
                             quest = src.quests.questMap["ClearInventory"]()
@@ -1486,8 +1513,8 @@ We should stop watching and do something about that.
                         if source[0] != roomPos:
                             self.addQuest(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
                         self.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
-                    self.idleCounter = 0
-                    return True
+                        self.idleCounter = 0
+                        return True
 
         # spawn city planer if there is none
         terrain = character.getTerrain()
@@ -1767,28 +1794,43 @@ We should stop watching and do something about that.
             if foundGooDispenser:
                 break
 
-        if not character.searchInventory("Flask"):
-            self.addQuest(src.quests.questMap["FetchItems"](toCollect="Flask",amount=1))
-            self.idleCounter = 0
-            return True
-
         if foundGooDispenser:
             self.addQuest(src.quests.questMap["ClearInventory"]())
             quest = src.quests.questMap["FillFlask"]()
             self.addQuest(quest)
+            if not character.searchInventory("Flask"):
+                quest = src.quests.questMap["FetchItems"](toCollect="Flask",amount=1)
+                self.addQuest(quest)
             quest.activate()
             quest.assignToCharacter(character)
             self.idleCounter = 0
             return True
         return None
 
-    def checkTriggerPraying(self,character,room):
-        terrain = character.getTerrain()
-        rooms = terrain.rooms[:]
-        random.shuffle(rooms)
-        produceQuest = None
-        for room in [room, *rooms]:
-            shrines = room.getItemsByType("Shrine")
+    def checkTriggerPraying(self,character,currentRoom):
+
+        for checkRoom in self.getRandomPriotisedRooms(character,currentRoom):
+            glassStatues = checkRoom.getItemsByType("GlassStatue")
+            foundStatue = None
+            for checkStatue in glassStatues:
+                if checkStatue.charges >= 5:
+                    continue
+                if not checkStatue.handleItemRequirements():
+                    continue
+                foundStatue = checkStatue
+
+            if not foundStatue:
+                continue
+
+            quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False)
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            self.idleCounter = 0
+            return True
+
+        for checkRoom in self.getRandomPriotisedRooms(character,currentRoom):
+            shrines = checkRoom.getItemsByType("Shrine")
             foundShrine = None
             for checkShrine in shrines:
                 if not checkShrine.isChallengeDone():
@@ -2048,9 +2090,8 @@ We should stop watching and do something about that.
             if duty == "questing" and self.checkTriggerQuesting(character,room):
                 return
 
-            if duty == "praying":
-                if self.checkTriggerPraying(character,room):
-                    return
+            if duty == "praying" and self.checkTriggerPraying(character,room):
+                return
 
             if duty == "tutorial" and character == src.gamestate.gamestate.mainChar:
                 if self.specialTutorialLogic(character,room):

@@ -2532,7 +2532,10 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # move the player
         if key in (commandChars.wait):
             char.timeTaken += 1
-            char.exhaustion = max(0,char.exhaustion-10)
+            if char.exhaustion > 1:
+                char.exhaustion = max(1,char.exhaustion-10)
+            else:
+                char.exhaustion = 0
             char.lastMoveSkipped = True
             return None
         if key in (commandChars.move_north, "up"):

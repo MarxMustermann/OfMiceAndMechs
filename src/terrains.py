@@ -436,7 +436,12 @@ class Terrain:
                     return room.itemByCoordinates[localisedEntry][0]
 
             char.changed("moved", (char, direction))
-            char.timeTaken += char.movementSpeed
+
+            multiplier = 1
+            if char.exhaustion:
+                char.exhaustion -= 1
+                multiplier = 1.2
+            char.timeTaken += char.movementSpeed*multiplier
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -886,7 +891,11 @@ class Terrain:
 
                 char.changed("moved", (char, direction))
                 if not dash:
-                    char.timeTaken += char.movementSpeed
+                    multiplier = 1
+                    if char.exhaustion:
+                        char.exhaustion -= 1
+                        multiplier = 1.2
+                    char.timeTaken += char.movementSpeed*multiplier
                 else:
                     char.timeTaken += char.movementSpeed/2
                     char.exhaustion += 5

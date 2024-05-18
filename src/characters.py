@@ -1367,10 +1367,10 @@ press any other key to attack normally"""
         if not amount:
             return
 
-        if self.reduceExhaustionOnHeal:
-            self.exhaustion = max(0,self.exhaustion-(amount//self.reduceExhaustionDividend+self.reduceExhaustionBonus))
-        if self.removeExhaustionOnHeal:
-            self.exhaustion = 0
+        #if self.reduceExhaustionOnHeal:
+        #    self.exhaustion = max(0,self.exhaustion-(amount//self.reduceExhaustionDividend+self.reduceExhaustionBonus))
+        #if self.removeExhaustionOnHeal:
+        #    self.exhaustion = 0
 
         if self.maxHealth - self.health < amount:
             amount = self.maxHealth - self.health

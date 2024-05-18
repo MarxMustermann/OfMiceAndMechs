@@ -1730,7 +1730,11 @@ class Room:
         if character in self.characters:
             self.removeCharacter(character)
         if not dash:
-            character.timeTaken += character.movementSpeed
+            multiplier = 1
+            if character.exhaustion:
+                character.exhaustion -= 1
+                multiplier = 1.2
+            character.timeTaken += character.movementSpeed*multiplier
         else:
             character.timeTaken += character.movementSpeed/2
             character.exhaustion += 5

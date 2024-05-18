@@ -1564,7 +1564,7 @@ We should stop watching and do something about that.
 
     def checkTriggerFillFlask(self,character,room):
         if character.flask and character.flask.uses < 3:
-            self.addQuest(src.quests.questMap["FillFlask"]())
+            self.addQuest(src.quests.questMap["RefillPersonalFlask"]())
             self.idleCounter = 0
             return True
         return None
@@ -1754,6 +1754,32 @@ We should stop watching and do something about that.
                     return None
                 return None
             return None
+        return None
+
+    def checkTriggerFlaskFilling(self,character,currentRoom):
+        foundGooDispenser = None
+        for room in self.getRandomPriotisedRooms(character,currentRoom):
+            for gooDispenser in room.getItemsByType("GooDispenser"):
+                if not gooDispenser.charges:
+                    continue
+                foundGooDispenser = gooDispenser
+                break
+            if foundGooDispenser:
+                break
+
+        if not character.searchInventory("Flask"):
+            self.addQuest(src.quests.questMap["FetchItems"](toCollect="Flask",amount=1))
+            self.idleCounter = 0
+            return True
+
+        if foundGooDispenser:
+            self.addQuest(src.quests.questMap["ClearInventory"]())
+            quest = src.quests.questMap["FillFlask"]()
+            self.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            self.idleCounter = 0
+            return True
         return None
 
     def checkTriggerPraying(self,character,room):
@@ -1960,6 +1986,9 @@ We should stop watching and do something about that.
         room = character.container
         for duty in character.getRandomProtisedDuties():
             if duty == "trap setting" and self.checkTriggerTrapSetting(character,room):
+                return
+
+            if duty == "flask filling" and self.checkTriggerFlaskFilling(character,room):
                 return
 
             if duty == "machine operation" and self.checkTriggerMachineOperation(character,room):

@@ -1,10 +1,10 @@
 import src
 
 
-class FillFlask(src.quests.MetaQuestSequence):
-    type = "FillFlask"
+class RefillPersonalFlask(src.quests.MetaQuestSequence):
+    type = "RefillPersonalFlask"
 
-    def __init__(self, description="fill flask", creator=None, command=None, lifetime=None):
+    def __init__(self, description="refill flask", creator=None, command=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -17,24 +17,24 @@ class FillFlask(src.quests.MetaQuestSequence):
 
         self.triggerCompletionCheck(extraInfo[0])
 
-    def triggerCompletionCheck(self,character=None):
-        if not character:
-            return
-
-        if not character.searchInventory("Flask"):
-            self.postHandler()
-            return
-        return
-
-    def handleFlaskFilled(self,extraInfo=None):
-        self.triggerCompletionCheck()
+    def handleMoved(self,extraInfo=None):
+        self.subQuestCompleted()
 
     def assignToCharacter(self, character):
         if self.character:
             return
 
-        self.startWatching(character,self.handleFlaskFilled, "filledGooFlask")
+        self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
+
+    def triggerCompletionCheck(self,character=None):
+        if not character:
+            return
+
+        if character.flask and character.flask.uses > 80:
+            self.postHandler()
+            return
+        return
 
     def clearCompletedSubquest(self):
         while self.subQuests and self.subQuests[0].completed:
@@ -46,10 +46,6 @@ class FillFlask(src.quests.MetaQuestSequence):
             self.generateSubquests(self.character)
 
     def getSolvingCommandString(self,character,dryRun=True):
-
-        if self.triggerCompletionCheck(character):
-            return None
-
         offsets = [(0,0,0),(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         for offset in offsets:
             pos = character.getPosition(offset=offset)
@@ -58,22 +54,22 @@ class FillFlask(src.quests.MetaQuestSequence):
                 continue
 
             shouldUse = False
-            if items[0].type in ["GooDispenser"]:
+            if items[0].type in ["GooDispenser","GooFlask"]:
                 shouldUse = True
 
             if not shouldUse:
                 continue
 
             if offset == (0,0,0):
-                return "jsj"
+                return "jj"
             if offset == (1,0,0):
-                return "Jdsj"
+                return "Jdj"
             if offset == (-1,0,0):
-                return "Jasj"
+                return "Jaj"
             if offset == (0,1,0):
-                return "Jssj"
+                return "Jsj"
             if offset == (0,-1,0):
-                return "Jwsj"
+                return "Jwj"
 
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
@@ -93,6 +89,9 @@ class FillFlask(src.quests.MetaQuestSequence):
                 if items[0].type in ["GooDispenser"] and items[0].charges:
                     shouldUse = True
 
+                if items[0].type in ["GooFlask"] and items[0].uses:
+                    shouldUse = True
+
                 if not shouldUse:
                     continue
 
@@ -108,11 +107,20 @@ class FillFlask(src.quests.MetaQuestSequence):
                     self.addQuest(quest)
                     self.startWatching(quest,self.subQuestCompleted,"completed")
                     return
+                if item.type == "GooFlask" and item.uses:
+                    quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo flask",ignoreEndBlocked=True)
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    self.addQuest(quest)
+                    self.startWatching(quest,self.subQuestCompleted,"completed")
+                    return
 
         room = None
         for roomCandidate in character.getTerrain().rooms:
             for item in roomCandidate.itemsOnFloor:
                 if item.type == "GooDispenser" and item.charges:
+                    room = roomCandidate
+                if item.type == "GooFlask" and item.uses:
                     room = roomCandidate
 
         if room:
@@ -144,4 +152,4 @@ class FillFlask(src.quests.MetaQuestSequence):
 
         return super().solver(character)
 
-src.quests.addType(FillFlask)
+src.quests.addType(RefillPersonalFlask)

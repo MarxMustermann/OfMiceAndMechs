@@ -132,16 +132,22 @@ def advanceGame():
                         break
 
                     multipliers = (1.2,1.1,1.5,1.1)
+                    baseHealth = 50
+                    baseDamage = 5
                     if src.gamestate.gamestate.difficulty == "easy":
+                        baseHealth = 10
+                        baseDamage = 3
                         multipliers = (1.02,1.01,1.05,1.01)
                     elif src.gamestate.gamestate.difficulty == "difficulty":
+                        baseHealth = 100
+                        baseDamage = 10
                         multipliers = (1.7,1.5,2,1.5)
 
                     for _i in range(numSpectres):
                         enemy = src.characters.Monster(6,6)
-                        enemy.health = int(10*multipliers[0]**numGlassHeartsOnPos)
+                        enemy.health = int(baseHealth*2*multipliers[0]**numGlassHeartsOnPos)
                         enemy.maxHealth = enemy.health
-                        enemy.baseDamage = int(5+1*multipliers[1]**numGlassHeartsOnPos)
+                        enemy.baseDamage = int(baseDamage+1*multipliers[1]**numGlassHeartsOnPos)
                         enemy.faction = "spectre"
                         enemy.tag = "spectre"
                         enemy.name = "stealerSpectre"
@@ -187,10 +193,10 @@ def advanceGame():
 
                         enemy = src.characters.Monster(6,6)
                         #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
-                        enemy.health = int(10*multipliers[2]**numGlassHeartsOnPos)
+                        enemy.health = int(baseHealth*multipliers[2]**numGlassHeartsOnPos)
                         enemy.maxHealth = enemy.health
                         #enemy.baseDamage = int((5+(src.gamestate.gamestate.tick//(15*15*15))/10)*1.1**numGlassHeartsOnPos)
-                        enemy.baseDamage = int(5+3*multipliers[3]**numGlassHeartsOnPos)
+                        enemy.baseDamage = int(baseDamage+3*multipliers[3]**numGlassHeartsOnPos)
                         enemy.faction = "spectre"
                         enemy.tag = "spectre"
                         enemy.name = "killerSpectre"
@@ -5931,7 +5937,7 @@ class JobAsMatrixMenu(SubMenu):
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
 
-        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing"]))
+        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","flask filling"]))
 
 
         if key == "C":

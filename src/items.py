@@ -1044,7 +1044,7 @@ rawMaterialLookup = {
     "Drill": ["Case", "MetalBars"],
     "Furnace": ["Case", "MetalBars"],
     "ScrapCompactor": ["MetalBars"],
-    "GooFlask": ["Tank"],
+    "Flask": ["Tank"],
     "GooDispenser": ["Case", "MetalBars", "Heater"],
     "MaggotFermenter": ["Case", "MetalBars", "Heater"],
     "BloomShredder": ["Case", "MetalBars", "Heater"],

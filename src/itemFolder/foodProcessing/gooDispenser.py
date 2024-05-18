@@ -35,6 +35,19 @@ Filling a flask will use up a charge from your goo dispenser.
 
         self.description = self.baseName + " (%s charges)" % (self.charges)
 
+        self.applyOptions.extend(
+                        [
+                                                                ("refill_personal_flask", "refill personal flask"),
+                                                                ("fill_empty_flask", "fill empty flasks"),
+                                                                ("refill_flask", "refill flask"),
+                        ]
+                        )
+        self.applyMap = {
+                    "refill_personal_flask": self.refill_personal_flask,
+                    "fill_empty_flask": self.fill_empty_flask,
+                    "refill_flask": self.refill_flask,
+                        }
+
     def getConfigurationOptions(self, character):
         """
         register the configuration options with superclass
@@ -85,7 +98,7 @@ Filling a flask will use up a charge from your goo dispenser.
         """
         self.description = self.baseName + " (%s charges)" % (self.charges)
 
-    def apply(self, character):
+    def fill_empty_flask(self, character):
         """
         handle a character trying to fill goo flask
 
@@ -101,6 +114,29 @@ Filling a flask will use up a charge from your goo dispenser.
         filled = False
         fillAmount = 100 + ((self.level - 1) * 10)
 
+        for item in character.inventory:
+            if isinstance(item, src.items.itemMap["Flask"]):
+                character.inventory.remove(item)
+                gooFlask = src.items.itemMap["GooFlask"]()
+                gooFlask.uses = fillAmount
+                filled = True
+                self.charges -= 1
+                self.description = self.baseName + " (%s charges)" % (self.charges)
+                character.addMessage("you fill the goo flask")
+                character.inventory.append(gooFlask)
+                break
+        if filled:
+            self.runCommand("filled",character)
+            character.addMessage("you fill goo flasks in your inventory")
+            return
+
+        character.changed("filledGooFlask")
+
+        character.addMessage("you have no flask to be filled")
+        self.container.addAnimation(self.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
+
+    def refill_personal_flask(self, character):
         if character.flask and character.flask.uses < fillAmount:
             character.flask.uses = fillAmount
             self.runCommand("filled",character)
@@ -111,8 +147,13 @@ Filling a flask will use up a charge from your goo dispenser.
             character.container.addAnimation(character.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":["o "," o","oo"]})
             return
 
+        character.addMessage("you have no flask to be filled")
+        self.container.addAnimation(self.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+        character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
+
+    def refill_flask(self, character):
         for item in character.inventory:
-            if isinstance(item, src.items.itemMap["GooFlask"]) and not item.uses >= fillAmount:
+            if (isinstance(item, src.items.itemMap["GooFlask"]) and not item.uses >= fillAmount):
                 item.uses = fillAmount
                 filled = True
                 self.charges -= 1

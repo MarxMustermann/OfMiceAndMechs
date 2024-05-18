@@ -33,6 +33,22 @@ class GooFlask(src.items.Item):
         if self.uses <= 0:
             if character.watched:
                 character.addMessage("you drink from your flask, but it is empty")
+
+            flask = src.items.itemMap["Flask"]()
+
+            if self.container:
+                pos = self.getPosition()
+                container = self.container
+
+                container.removeItem(self)
+                container.addItem(flask,pos)
+            elif self in character.inventory:
+                character.inventory.remove(self)
+                character.inventory.append(flask)
+            elif character.flask == self:
+                character.flask = None
+                character.inventory.append(flask)
+
             return
 
         if character.flask and character.flask != self:

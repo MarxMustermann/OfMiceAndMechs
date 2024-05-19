@@ -4436,8 +4436,6 @@ but they are likely to explode when disturbed.
                             None,
                        )
                     counter += 1
-                    if counter > 1:
-                        break
             else:
                 roomPos = oppositePositions[pos]
                 sideRoom = architect.doAddRoom(

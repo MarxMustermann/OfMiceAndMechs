@@ -975,7 +975,11 @@ class CityPlaner(src.items.Item):
         self.showMap(params["character"], cursor = params["coordinate"])
 
     def scheduleRoomFromMap(self,params):
-        self.plannedRooms.append((params["coordinate"][0],params["coordinate"][1],0))
+        schedulingInfo = (params["coordinate"][0],params["coordinate"][1],0)
+        if params.get("appendFront",False):
+            self.plannedRooms.insert(0,schedulingInfo)
+        else:
+            self.plannedRooms.append(schedulingInfo)
         params["character"].changed("scheduled room",params)
         self.showMap(params["character"], cursor = params["coordinate"])
 
@@ -1055,6 +1059,14 @@ class CityPlaner(src.items.Item):
                         "params":{"character":character},
                     },
                     "description":"schedule building a room",
+                }
+                functionMap[(x,y)]["R"] = {
+                    "function": {
+                        "container":self,
+                        "method":"scheduleRoomFromMap",
+                        "params":{"character":character,"appendFront":True},
+                    },
+                    "description":"schedule building a room (high prio)",
                 }
 
         for room in terrain.rooms:

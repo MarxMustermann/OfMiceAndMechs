@@ -5,3 +5,5 @@ import src.itemFolder.automation.dutyBeacon
 import src.itemFolder.automation.jobBoard
 import src.itemFolder.automation.jobOrder
 import src.itemFolder.automation.scratchPlate
+import src.itemFolder.automation.triggerPlate
+import src.itemFolder.automation.motionSensor

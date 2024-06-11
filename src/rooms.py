@@ -1765,12 +1765,14 @@ class Room:
             if len(self.itemByCoordinates[newPosition]) > 15:
                 return self.itemByCoordinates[newPosition][0]
 
-        for item in triggeringItems:
-            item.doStepOnAction(character)
-
         # teleport character to new position
         character.xPosition = newPosition[0]
         character.yPosition = newPosition[1]
+
+        for item in triggeringItems:
+            item.doStepOnAction(character)
+
+        self.changed("character moved",{"character":character})
 
         character.changed()
         return None

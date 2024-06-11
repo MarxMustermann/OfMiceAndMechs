@@ -68,6 +68,7 @@ class Item:
         self.applyMap = {}
         self.settings = {}
         self.charges = 0
+        self.watched = []
 
         self.callInit()
 
@@ -118,6 +119,50 @@ class Item:
                 function(callback["params"])
             else:
                 function()
+
+    def startWatching(self, target, callback, tag=""):
+        """
+        register callback to be notified if an event occours
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
+        if tag == "":
+            1/0
+
+        try:
+            self.watched
+        except:
+            self.watched = []
+        target.addListener(callback, tag)
+        self.watched.append((target, callback,tag))
+
+    def stopWatching(self, target, callback, tag=""):
+        """
+        deregister callback from being notified if an event occurs
+
+        Parameters:
+            target: the thing that is watching
+            callback: the callback to call
+            tag: the type of event to listen for
+        """
+
+        if tag == "":
+            1/0
+
+        target.delListener(callback, tag)
+        self.watched.remove((target, callback, tag))
+
+    def stopWatchingAll(self):
+        try:
+            self.watched
+        except:
+            self.watched = []
+        for listenItem in self.watched[:]:
+            self.stopWatching(listenItem[0], listenItem[1], listenItem[2])
 
     def doStepOnAction(self, character):
         pass
@@ -916,6 +961,9 @@ class Item:
 
         # remove item
         container.removeItem(self)
+
+        # clean up references
+        self.stopWatchingAll()
 
         # generate scrap
         if generateScrap:

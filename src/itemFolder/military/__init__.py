@@ -6,3 +6,5 @@ import src.itemFolder.military.shocker
 import src.itemFolder.military.sword
 import src.itemFolder.military.weaponRack
 import src.itemFolder.military.armorStand
+import src.itemFolder.military.shockPlate
+import src.itemFolder.military.shockTower

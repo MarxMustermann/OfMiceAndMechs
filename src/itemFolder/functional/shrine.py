@@ -24,6 +24,7 @@ class Shrine(src.items.Item):
                                                                 ("showInfo", "show Info"),
                                                                 ("wish", "wish"),
                                                                 ("challenge", "pray"),
+                                                                ("taunt", "taunt"),
                                                                 ("teleport", "telport home"),
                         ]
                         )
@@ -31,8 +32,31 @@ class Shrine(src.items.Item):
                     "showInfo": self.showInfo,
                     "wish": self.getRewards,
                     "challenge": self.challenge,
+                    "taunt": self.taunt,
                     "teleport": self.teleport,
                         }
+
+    def taunt(self,character):
+        if self.godID == 1:
+            options = []
+            options.append((100,"100"))
+            options.append((1000,"1000"))
+            options.append((10000,"10000"))
+            submenue = src.interaction.SelectionMenu("How long do you want to pray?",options,targetParamName="duration")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"waitPraySelection","params":{"character":character}}
+        elif self.godID == 2:
+            # spawn enemies
+            pass
+        elif self.godID == 3:
+            # hurt character
+            pass
+        elif self.godID == 4:
+            # destroy item
+            pass
+        elif self.godID == 5:
+            # destroy item
+            pass
 
     def teleport(self,character):
         x = character.registers["HOMETx"]
@@ -149,6 +173,7 @@ class Shrine(src.items.Item):
         self.god = godID
 
     def challenge(self,character):
+
         if self.god is None:
             self.setGod1(character)
             return
@@ -178,13 +203,7 @@ class Shrine(src.items.Item):
             roomRewardMapByTerrain[terrainPos] = numRooms
             god["roomRewardMapByTerrain"] = roomRewardMapByTerrain
         elif self.god == 2:
-            options = []
-            options.append((100,"100"))
-            options.append((1000,"1000"))
-            options.append((10000,"10000"))
-            submenue = src.interaction.SelectionMenu("How long do you want to pray?",options,targetParamName="duration")
-            character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"waitPraySelection","params":{"character":character}}
+            1/0
         else:
             character.addMessage("nothing happens - not implemented yet")
 

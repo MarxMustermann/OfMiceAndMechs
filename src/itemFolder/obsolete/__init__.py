@@ -24,7 +24,6 @@ import src.itemFolder.obsolete.positioningDevice
 import src.itemFolder.obsolete.reactionChamber
 import src.itemFolder.obsolete.reactionChamber2
 import src.itemFolder.obsolete.simpleRunner
-import src.itemFolder.obsolete.spawner
 import src.itemFolder.obsolete.spray
 import src.itemFolder.obsolete.trailHead
 import src.itemFolder.obsolete.transportContainer

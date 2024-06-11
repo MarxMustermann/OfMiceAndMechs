@@ -38,15 +38,19 @@ class GlassStatue(src.items.Item):
         self.hasItem = False
         self.charges = 2
         self.stable = False
+        self.numSubSacrifices = 0
 
     def handleItemRequirements(self,removeItems=False,character=None):
         # determine what items are needed
+        if self.itemID == None:
+            return
         needItems = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
+        completed = False
 
         # handle the item requirements
         if needItems:
             itemType = needItems[0]
-            amount = needItems[1]
+            amount = needItems[1]-self.numSubSacrifices
 
             if itemType == "Scrap":
                 ##
@@ -59,29 +63,32 @@ class GlassStatue(src.items.Item):
                     numScrapFound += item.amount
 
                 # ensure that there is enough scrap around
-                if not numScrapFound >= amount:
+                if not numScrapFound:
                     if character:
-                        text = "not enough Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
+                        text = "no Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
                         submenue = src.interaction.TextMenu(text)
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
                     return
 
                 # remove the scrap
+                numScrapRemoved = 0
                 if removeItems:
-                    numScrapRemoved = 0
                     for item in scrap:
                         if item.amount <= amount-numScrapRemoved:
                             self.container.removeItem(item)
                             numScrapRemoved += item.amount
+                            self.numSubSacrifices += item.amount
                         else:
                             item.amount -= amount-numScrapRemoved
                             item.setWalkable()
                             numScrapRemoved += amount-numScrapRemoved
+                            self.numSubSacrifices += amount-numScrapRemoved
 
                         if numScrapRemoved >= amount:
+                            completed = True
                             break
-                text = f"you sacrifice {numScrapRemoved} Scrap"
+                text = f"you sacrifice {numScrapRemoved}/{amount} Scrap"
             else:
                 ##
                 # handle normal items
@@ -90,21 +97,25 @@ class GlassStatue(src.items.Item):
                 itemsFound = self.container.getItemsByType(itemType,needsUnbolted=True)
 
                 # ensure item requirement can be fullfilled
-                if not len(itemsFound) >= amount:
+                if not len(itemsFound):
                     if character:
-                        text = f"you need to offer {amount} {itemType}.\n\nPlace the offered items on the floor of this room."
+                        text = f"you need to offer {itemType}.\n\nPlace the offered items on the floor of this room."
                         submenue = src.interaction.TextMenu(text)
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
                     return
 
+                if len(itemsFound) >= amount:
+                    completed = True
+
                 # remove items from requirement
-                text = f"you sacrifice {amount} {itemType}"
+                text = f"you sacrifice {min(amount,len(itemsFound))}/{amount} {itemType}"
                 if removeItems:
-                    while amount > 0:
+                    while amount > 0 and itemsFound:
                         self.container.removeItem(itemsFound.pop())
                         amount -= 1
-        return text
+                        self.numSubSacrifices += 1
+        return (completed,text)
 
     def pray(self,character):
         character.changed("prayed",{})
@@ -116,14 +127,21 @@ class GlassStatue(src.items.Item):
             character.addMessage(text)
             return
 
-        text = self.handleItemRequirements(removeItems=True,character=character)
-        if not text:
+        result = self.handleItemRequirements(removeItems=True,character=character)
+        if not result:
             return
+        text = result[1]
+        completed = result[0]
 
-        self.charges += 1
-        text += f"\n\nThe GlassStatue has {self.charges} charges now."
-        if self.charges == 5:
-            text += f"\nYou can use the GlassStatue to teleport to the dugeon now."
+        if completed:
+            self.charges += 1
+            self.numSubSacrifices = 0
+            text += f"\n\nThe GlassStatue has {self.charges} charges now."
+            if self.charges == 5:
+                text += f"\nYou can use the GlassStatue to teleport to the dugeon now."
+        else:
+            text += f"\n\nyour saccrifice was not enough for another charge"
+
 
         submenue = src.interaction.TextMenu(text)
         character.macroState["submenue"] = submenue
@@ -714,8 +732,12 @@ class GlassStatue(src.items.Item):
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
-        return f"""A GlassStatue correspods to a god.
-This status corresponds to god {self.itemID}.
+        godName = src.gamestate.gamestate.gods[self.itemID]["name"]
+        sacrifice = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
+        return f"""This is a GlassStatue of the god {godName}
+It currenty has {self.charges} charges.
+It currenty has {self.numSubSacrifices}/{sacrifice[1]} sub charges.
+Offer {sacrifice[0]} and pray.
 
 Offer items by praying at the statue to stabilise it.
 If the statue is not stabilised for too long, then it will break.

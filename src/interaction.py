@@ -694,9 +694,10 @@ def handleActivityKeypress(char, header, main, footer, flags):
 
 press key to select action
 
+* w/s/a/d = move one tile north/south/west/east
+* m = move to tile
 * g = run guard mode for 10 ticks
 * h = get emergency heatlh
-* m = move to position
 """
         header.set_text(
             (urwid.AttrSpec("default", "default"), "action menu")
@@ -708,6 +709,28 @@ press key to select action
     char.interactionState["runaction"] = {}
 
 def handleActivitySelection(key,char):
+    if key in ("w","a","s","d"):
+        if isinstance(char.container,src.rooms.Room):
+            charPos = char.container.getPosition()
+        else:
+            charPos = (char.xPosition//15,char.yPosition//15,0)
+
+        if key in ("w",):
+            newPos = (charPos[0],charPos[1]-1,charPos[2])
+        if key in ("s",):
+            newPos = (charPos[0],charPos[1]+1,charPos[2])
+        if key in ("a",):
+            newPos = (charPos[0]-1,charPos[1],charPos[2])
+        if key in ("d",):
+            newPos = (charPos[0]+1,charPos[1],charPos[2])
+
+        quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(char)
+        quest.activate()
+
+        char.quests.insert(0,quest)
+
     if key == "g":
         char.startGuarding(1)
     if key == "h":
@@ -733,7 +756,7 @@ def handleActivitySelection(key,char):
         for x in range(1,14):
             for y in range(1,14):
                 functionMap[(x,y)] = {}
-                functionMap[(x,y)]["m"] = {
+                functionMap[(x,y)]["j"] = {
                     "function": {
                         "container":char,
                         "method":"triggerAutoMoveToTile",
@@ -2609,30 +2632,6 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     if charState["itemMarkedLast"]:
                         handleCollision(char,charState)
                 return None
-
-            """
-            if isinstance(char.container,src.rooms.Room):
-                charPos = char.container.getPosition()
-            else:
-                charPos = (char.xPosition//15,char.yPosition//15,0)
-
-            if key in ("W",):
-                newPos = (charPos[0],charPos[1]-1,charPos[2])
-            if key in ("S",):
-                newPos = (charPos[0],charPos[1]+1,charPos[2])
-            if key in ("A",):
-                newPos = (charPos[0]-1,charPos[1],charPos[2])
-            if key in ("D",):
-                newPos = (charPos[0]+1,charPos[1],charPos[2])
-
-            quest = src.quests.questMap["GoToTile"](targetPosition=newPos,paranoid=True)
-            #quest.selfAssigned = True
-            quest.autoSolve = True
-            quest.assignToCharacter(char)
-            quest.activate()
-
-            char.quests.insert(0,quest)
-            """
 
         """
         if key in ("M",):
@@ -6261,8 +6260,7 @@ class OneKeystrokeMenu(SubMenu):
         # show info
         if not noRender:
             header.set_text((urwid.AttrSpec("default", "default"), ""))
-            self.persistentText = ""
-            self.persistentText += self.text
+            self.persistentText = self.text
             main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu

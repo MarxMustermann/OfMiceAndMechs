@@ -24,6 +24,7 @@ class TriggerPlate(src.items.Item):
 
         self.active = True
         self.target = None
+        self.faction = None
 
     def toggleActive(self,character):
         if self.active:
@@ -42,7 +43,10 @@ class TriggerPlate(src.items.Item):
         else:
             return "_~"
 
-    def trigger(self, character):
+    def apply(self, character):
+        self.trigger(character,checkFaction=False)
+
+    def trigger(self, character, checkFaction=True):
         """
         handle a character trying to use this item
         by starting to explode
@@ -51,14 +55,23 @@ class TriggerPlate(src.items.Item):
             character: the character trying to use the item
         """
 
+        if checkFaction and self.faction == character.faction:
+            return
+
         if not self.target:
             return
+
+        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"tt"})
+        self.container.addAnimation(self.target,"showchar",1,{"char":"TT"})
 
         items = self.container.getItemByPosition(self.target)
         if not items:
             return
 
-        items[0].remoteActivate()
+        try:
+            items[0].remoteActivate()
+        except:
+            pass
 
     def getConfigurationOptions(self, character):
         """
@@ -67,6 +80,9 @@ class TriggerPlate(src.items.Item):
         Parameters:
             character: the character trying to conigure the machine
         """
+
+        self.faction = character.faction
+        print(self.faction)
 
         options = super().getConfigurationOptions(character)
         if self.bolted:

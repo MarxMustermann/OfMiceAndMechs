@@ -8,3 +8,6 @@ import src.itemFolder.military.weaponRack
 import src.itemFolder.military.armorStand
 import src.itemFolder.military.shockPlate
 import src.itemFolder.military.shockTower
+import src.itemFolder.military.poissonTower
+import src.itemFolder.military.boltTower
+import src.itemFolder.military.rodTower

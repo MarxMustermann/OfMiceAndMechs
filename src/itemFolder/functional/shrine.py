@@ -1,5 +1,5 @@
 import random
-
+import re
 import src
 import math
 
@@ -514,59 +514,21 @@ class Shrine(src.items.Item):
 
         text = "NIY"
 
+        spawning_result = None
+
         if extraInfo["rewardType"] == "spawn true NPC":
             text = "You spawned a clone"
-            self.spawnNPC(character)
-        if extraInfo["rewardType"] == "spawn resource gathering NPC":
-            text = "You spawned a clone with the duty resource gathering."
-            self.spawnBurnedInNPC(character,"resource gathering")
-        elif extraInfo["rewardType"] == "spawn machine operation NPC":
-            text = "You spawned a clone with the duty machine operation."
-            self.spawnBurnedInNPC(character,"machine operation")
-        elif extraInfo["rewardType"] == "spawn resource fetching NPC":
-            text = "You spawned a clone with the duty resource fetching."
-            self.spawnBurnedInNPC(character,"resource fetching")
-        elif extraInfo["rewardType"] == "spawn hauling NPC":
-            text = "You spawned a clone with the duty hauling."
-            self.spawnBurnedInNPC(character,"hauling")
-        elif extraInfo["rewardType"] == "spawn painting NPC":
-            text = "You spawned a clone with the duty painting."
-            self.spawnBurnedInNPC(character,"painting")
-        elif extraInfo["rewardType"] == "spawn machine placing NPC":
-            text = "You spawned a clone with the duty machine placing."
-            self.spawnBurnedInNPC(character,"machine placing")
-        elif extraInfo["rewardType"] == "spawn room building NPC":
-            text = "You spawned a clone with the duty room building."
-            self.spawnBurnedInNPC(character,"room building")
-        elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
-            text = "You spawned a clone with the duty maggot gathering."
-            self.spawnBurnedInNPC(character,"maggot gathering")
-        elif extraInfo["rewardType"] == "spawn scavenging NPC":
-            text = "You spawned a clone with the duty scavenging."
-            self.spawnBurnedInNPC(character,"scavenging")
-        elif extraInfo["rewardType"] == "spawn scrap hammering NPC":
-            text = "You spawned a clone with the scrap hammering"
-            self.spawnBurnedInNPC(character,"scrap hammering")
-        elif extraInfo["rewardType"] == "spawn metal working NPC":
-            text = "You spawned a clone with the duty metal working"
-            self.spawnBurnedInNPC(character,"metal working")
-        elif extraInfo["rewardType"] == "spawn machining NPC":
-            text = "You spawned a clone with the duty machining"
-            self.spawnBurnedInNPC(character,"machining")
-        elif extraInfo["rewardType"] == "spawn maggot gathering NPC":
-            text = "You spawned a clone with the duty maggot gathering"
-            self.spawnBurnedInNPC(character,"maggot gathering")
-        elif extraInfo["rewardType"] == "spawn cleaning NPC":
-            text = "You spawned a clone with the duty cleaning"
-            self.spawnBurnedInNPC(character,"cleaning")
-        elif extraInfo["rewardType"] == "spawn manufacturing NPC":
-            text = "You spawned a clone with the duty manufacturing"
-            self.spawnBurnedInNPC(character,"manufacturing")
+            spawning_result = self.spawnNPC(character)
 
-        elif extraInfo["rewardType"] == "spawn scrap":
-             self.spawnScrap(character)
-             text = None
+        regex = r"^spawn (.+) NPC$"
+        reg_out = re.match(regex,extraInfo["rewardType"])
+        if reg_out != None:
+            text = "You spawned a clone with the duty " + reg_out.group(1)
+            spawning_result = self.spawnNPC(character,True,reg_out)
 
+        if extraInfo["rewardType"] == "spawn scrap":
+                     self.spawnScrap(character)
+                     text = None
         elif extraInfo['rewardType'] == "upgrade weapon":
             foundWeapon = None
             for item in character.inventory:
@@ -730,9 +692,12 @@ class Shrine(src.items.Item):
 
         character.changed("got epoch reward",{"rewardType":extraInfo["rewardType"]})
         if text:
-            character.addMessage(text)
+            if spawning_result is None or spawning_result == True:
+                character.addMessage(text)
+            else:
+                character.addMessage("Not Enough Mana For Spawning Npc")
 
-    def spawnNPC(self, character):
+    def spawnNPC(self, character, IsBurnedIn: bool = False, duty: str = "") -> bool:
         cost = self.getCharacterSpawningCost(character)
         glassHeartRebate = self.get_glass_heart_rebate()
         mana = self.getTerrain().mana
@@ -748,9 +713,11 @@ class Shrine(src.items.Item):
             cost /= 2
         cost *= glassHeartRebate
 
-        text = ""
+        if(IsBurnedIn):
+            dutyMap = self.getDutyMap(character)
+            cost = cost*dutyMap.get(duty,1)
         if not mana >= cost:
-            text = "not enough mana"
+            return False
         else:
             self.getTerrain().mana -= cost
             src.gamestate.gamestate.gods[self.god]["mana"] += cost/2
@@ -815,141 +782,29 @@ class Shrine(src.items.Item):
             quest.activate()
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
+            if(IsBurnedIn):
+                if duty:
+                    npc.duties.append(duty)
+                npc.burnedIn = True
+            else:
+                npc.duties.append("resource gathering")
+                npc.duties.append("scrap hammering")
+                npc.duties.append("resource fetching")
+                npc.duties.append("hauling")
+                npc.duties.append("metal working")
+                npc.duties.append("machine placing")
+                npc.duties.append("maggot gathering")
+                npc.duties.append("painting")
+                npc.duties.append("cleaning")
+                npc.duties.append("machine operation")
+                npc.duties.append("manufacturing")
 
-            npc.duties.append("resource gathering")
-            npc.duties.append("scrap hammering")
-            npc.duties.append("resource fetching")
-            npc.duties.append("hauling")
-            npc.duties.append("metal working")
-            npc.duties.append("machine placing")
-            npc.duties.append("maggot gathering")
-            npc.duties.append("painting")
-            npc.duties.append("cleaning")
-            npc.duties.append("machine operation")
-            npc.duties.append("manufacturing")
-
-            text = f"spawned NPC"
 
             if foundFlask:
                 character.inventory.remove(foundFlask)
 
-        if character:
-            character.addMessage(text)
+            return True
 
-
-    def spawnBurnedInNPC(self, character, duty):
-        cost = self.getBurnedInCharacterSpawningCost(character)
-        glassHeartRebate = self.get_glass_heart_rebate()
-        mana = self.getTerrain().mana
-
-        foundFlask = None
-        for item in character.inventory:
-            if item.type != "GooFlask":
-                continue
-            if item.uses < 100:
-                continue
-            foundFlask = item
-        if foundFlask:
-            cost /= 2
-        cost *= glassHeartRebate
-
-        dutyMap = self.getDutyMap(character)
-        cost = cost*dutyMap.get(duty,1)
-
-        text = ""
-        if not mana >= cost:
-            text = "not enough mana"
-        else:
-            self.getTerrain().mana -= cost
-            src.gamestate.gamestate.gods[self.god]["mana"] += cost/2
-
-            npc = src.characters.Character()
-            npc.questsDone = [
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "CollectQuestMeta",
-                "FireFurnaceMeta",
-                "ExamineQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-                "LeaveRoomQuest",
-            ]
-
-            npc.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest" "NaiveDropQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-            ]
-
-            room = self.container
-            terrain = self.container.container
-
-            npc.faction = character.faction
-            #npc.rank = 6
-            room.addCharacter(npc,self.xPosition,self.yPosition)
-            npc.flask = src.items.itemMap["GooFlask"]()
-            npc.flask.uses = 100
-
-            npc.duties = []
-            #duty = random.choice(("hauling","resource fetching","maggot gathering","resource gathering","machine operation","hauling","resource fetching","cleaning","machine placing","maggot gathering"))
-            #duty = random.choice(("maggot gathering",))
-            if duty:
-                npc.duties.append(duty)
-            npc.registers["HOMEx"] = 7
-            npc.registers["HOMEy"] = 7
-            npc.registers["HOMETx"] = terrain.xPosition
-            npc.registers["HOMETy"] = terrain.yPosition
-
-            npc.personality["autoFlee"] = False
-            npc.personality["abortMacrosOnAttack"] = False
-            npc.personality["autoCounterAttack"] = False
-
-            quest = src.quests.questMap["BeUsefull"](strict=True)
-            quest.autoSolve = True
-            quest.assignToCharacter(npc)
-            quest.activate()
-            npc.assignQuest(quest,active=True)
-            npc.foodPerRound = 1
-            npc.burnedIn = True
-
-            '''
-            numNewRooms = len(terrain.rooms)-state.get("lastNumRooms",1)
-            while numNewRooms > 0:
-                itemType = random.choice([("personelArtwork","DutyArtwork","OrderArtwork")])
-                item = itemMap
-                item = src.items.
-                text = """
-You have build a new room. you are rewarded with an extra item:
-
-The item will appear in your inventory.
-
-press enter to continue"""%(npc.name,duty,terrain)
-                src.interaction.showInterruptText(text)
-            '''
-            text = f"spawning burned in NPC ({duty})"
-
-            if foundFlask:
-                character.inventory.remove(foundFlask)
-
-        if character:
-            character.addMessage(text)
 
     def spawnScrap(self, character):
         cost = self.getCost("spawn scrap",character)

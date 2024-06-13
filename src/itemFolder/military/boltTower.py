@@ -18,17 +18,82 @@ class BoltTower(src.items.Item):
         self.charges = 7
         self.faction = None
 
-    def apply(self, character=None):
+    def apply(self, character):
+        self.showTargetingHud({"character":character})
+
+    def showTargetingHud(self,params):
+        character = params["character"]
+
+        extraText = "\n"
+        key = params.get("keyPressed")
+        if key:
+            if key in ("enter","esc","lESC","rESC"):
+                return
+            if key == "w":
+                character.timeTaken += 1
+                self.shoot({"character":character,"direction":(0,-1,0)})
+                extraText = "you shoot\n"
+            if key == "a":
+                character.timeTaken += 1
+                self.shoot({"character":character,"direction":(-1,0,0)})
+                extraText = "you shoot\n"
+            if key == "s":
+                character.timeTaken += 1
+                self.shoot({"character":character,"direction":(0,1,0)})
+                extraText = "you shoot\n"
+            if key == "d":
+                character.timeTaken += 1
+                self.shoot({"character":character,"direction":(1,0,0)})
+                extraText = "you shoot\n"
+            if key == ".":
+                character.timeTaken += 1
+
+        def rerender():
+            roomRender = self.container.render(advanceAnimations=False)
+
+            for line in roomRender:
+                line.append("\n")
+
+            return [roomRender,extraText,"\npress wasd to shoot       \npress . to wait"]
+
+        submenue = src.interaction.OneKeystrokeMenu(rerender())
+        submenue.rerenderFunction = rerender
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"showTargetingHud","params":params}
+
+    def shoot(self, extraParams=None):
+        character = None
+        if extraParams:
+            character = extraParams.get("character")
+
         if self.charges < 1:
             if character:
                 character.addMessage("no charges")
             return
 
-        direction = (0,1,0)
-        if character:
+        direction = None
+        if extraParams:
+            direction = extraParams.get("direction")
+
+        if not direction and character:
             characterPos = character.getPosition()
             ownPos = self.getPosition()
             direction = (ownPos[0]-characterPos[0],ownPos[1]-characterPos[1],ownPos[2]-characterPos[2])
+
+        if not direction and extraParams:
+            targetPos = extraParams.get("pos")
+            if targetPos:
+                ownPos = self.getPosition()
+                direction = (ownPos[0]-targetPos[0],ownPos[1]-targetPos[1],ownPos[2]-targetPos[2])
+                if abs(direction[0]) > 0 and direction[1] == 0:
+                    direction = (-int(direction[0]/abs(direction[0])),0,0)
+                elif abs(direction[1]) > 0 and direction[0] == 0:
+                    direction = (0,-int(direction[1]/abs(direction[1])),0)
+                else:
+                    return
+
+        if not direction:
+            1/0
 
         currentPos = self.getPosition()
         while True:
@@ -41,7 +106,6 @@ class BoltTower(src.items.Item):
                 break
 
             self.container.addAnimation(currentPos,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "##")]})
-            print(currentPos)
 
             currentPos = (currentPos[0]+direction[0],currentPos[1]+direction[1],currentPos[2]+direction[2])
 
@@ -54,29 +118,9 @@ class BoltTower(src.items.Item):
             if currentPos[0] <= 0:
                 break
         return
-        1/0
 
-        foundChars = []
-        for checkChar in self.container.characters:
-            if checkChar.faction == self.faction:
-                continue
-
-            foundChars.append(checkChar)
-
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
-        self.charges -= 1
-
-        if not foundChars:
-            if character:
-                character.addMessage("no valid targets found")
-            return
-
-        while self.charges and foundChars:
-            target = foundChars.pop()
-            self.shock(target,character=character)
-
-    def remoteActivate(self):
-        self.apply()
+    def remoteActivate(self,extraParams=None):
+        self.shoot(extraParams=extraParams)
 
     def configure(self, character):
         """

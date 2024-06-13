@@ -16,48 +16,77 @@ class ShockTower(src.items.Item):
 
         super().__init__(display="/\\")
         self.charges = 7
-        self.faction = None
 
-    def apply(self, character=None):
+    def apply(self,character):
+        self.showTargetingHud({"character":character})
+
+    def showTargetingHud(self,params):
+        pos = params.get("pos")
+        if not pos:
+            pos = self.getPosition()
+        character = params["character"]
+
+        cursorSymbol = "XX"
+        extraText = "\n"
+        key = params.get("keyPressed")
+        if key:
+            if key in ("enter","esc","lESC","rESC"):
+                return
+            if key == "w":
+                pos = (pos[0],pos[1]-1,0)
+            if key == "a":
+                pos = (pos[0]-1,pos[1],0)
+            if key == "s":
+                pos = (pos[0],pos[1]+1,0)
+            if key == "d":
+                pos = (pos[0]+1,pos[1],0)
+            if key == ".":
+                character.timeTaken += 1
+            if key == "j":
+                character.timeTaken += 1
+                extraText = "You trigger the shock tower\n"
+                self.shock(pos,character)
+        params["pos"] = pos
+
+        def rerender():
+            roomRender = self.container.render(advanceAnimations=False)
+            if not self.container.animations:
+                roomRender[pos[1]][pos[0]] = cursorSymbol
+
+            for line in roomRender:
+                line.append("\n")
+
+            return [roomRender,extraText,"\npress wasd to move cursor\npress j to shock coordinate\npress . to wait"]
+
+        submenue = src.interaction.OneKeystrokeMenu(rerender())
+        submenue.rerenderFunction = rerender
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"showTargetingHud","params":params}
+
+    def remoteActivate(self,extraParams=None):
+        if extraParams and extraParams.get("pos"):
+            pos = extraParams.get("pos")
+            self.shock(pos)
+
+    def shock(self,targetPos,character=None):
         if self.charges < 1:
             if character:
                 character.addMessage("no charges")
             return
 
-        foundChars = []
-        for checkChar in self.container.characters:
-            if checkChar.faction == self.faction:
-                continue
-
-            foundChars.append(checkChar)
-
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
+        character.addMessage(f"you shock the coordinate {targetPos}")
         self.charges -= 1
-
-        if not foundChars:
-            if character:
-                character.addMessage("no valid targets found")
-            return
-
-        while self.charges and foundChars:
-            target = foundChars.pop()
-            self.shock(target,character=character)
-
-    def remoteActivate(self):
-        self.apply()
-
-    def shock(self,target,character=None):
-        if self.charges < 1:
-            return
-
         damage = 50
-        self.charges -= 1
-        target.hurt(damage,reason="shocked")
-        self.container.addAnimation(target.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
-        self.container.addAnimation(target.getPosition(),"smoke",damage,{})
+        self.container.addAnimation(targetPos,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})
 
-        if character:
-            character.addMessage("the shock tower shocks an enemy")
+        targets = self.container.getCharactersOnPosition(targetPos)
+        if targets:
+            for target in targets:
+                target.hurt(damage,reason="shocked")
+                self.container.addAnimation(target.getPosition(),"smoke",10,{})
+
+                if character:
+                    character.addMessage("an enemy is getting shocked")
 
     def configure(self, character):
         """
@@ -65,11 +94,6 @@ class ShockTower(src.items.Item):
         Parameters:
             character: the character trying to use the item
         """
-
-        if not self.faction == character.faction:
-            self.faction = character.faction
-            character.addMessage("you set the faction for the ShockTower")
-            return
 
         compressorFound = None
         for item in character.inventory:

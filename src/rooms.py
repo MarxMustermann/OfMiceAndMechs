@@ -874,7 +874,7 @@ class Room:
                 return item
         return None
 
-    def render(self):
+    def render(self,advanceAnimations=True):
         """
         render the room
 
@@ -1233,7 +1233,8 @@ class Room:
                 usedAnimationSlots.add(pos)
 
                 if pos[0] == None:
-                    self.animations.remove(animation)
+                    if advanceAnimations:
+                        self.animations.remove(animation)
                     continue
 
                 if animationType == "attack":
@@ -1253,7 +1254,8 @@ class Room:
                     if duration > 10:
                         animation[2] -= 10
                     else:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("hurt","shielded",):
                     display = "++"
                     if animationType == "hurt":
@@ -1270,9 +1272,11 @@ class Room:
                             xDistance = random.randint(-distance,distance)
                             offset = (xDistance,random.choice([distance-abs(xDistance),-(distance-abs(xDistance))]))
                             newPos = (animation[0][0]+offset[0],animation[0][1]+offset[1],animation[0][2])
-                            self.addAnimation(newPos,"splatter",int(10*(duration/extraInfo["maxHealth"]))+1,{"mainChar":extraInfo["mainChar"]})
+                            if advanceAnimations:
+                                self.addAnimation(newPos,"splatter",int(10*(duration/extraInfo["maxHealth"]))+1,{"mainChar":extraInfo["mainChar"]})
                     else:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("splatter",):
                     if "display" not in extraInfo:
                         letters = ["*","+",".",",","'","~"]
@@ -1291,7 +1295,8 @@ class Room:
 
                     animation[2] -= 1
                     if duration < 1:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("scrapChange",):
                     letters = ["*","+","#",";","%"]
                     character = random.choice(letters)+random.choice(letters)
@@ -1304,7 +1309,8 @@ class Room:
                     animation[2] -= 1
 
                     if duration < 1:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("explosion",):
                     display = "##"
                     display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
@@ -1314,7 +1320,8 @@ class Room:
                     animation[2] -= 1
 
                     if duration < 1:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("showchar",):
                     display = extraInfo["char"]
 
@@ -1327,7 +1334,8 @@ class Room:
                     animation[2] -= 1
 
                     if duration < 1:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("charsequence",):
                     display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
@@ -1336,7 +1344,8 @@ class Room:
                     animation[2] -= 1
 
                     if duration < 1:
-                        self.animations.remove(animation)
+                        if advanceAnimations:
+                            self.animations.remove(animation)
                 elif animationType in ("smoke",):
                     display = (src.interaction.urwid.AttrSpec("#555", "black"), "##")
 
@@ -1351,9 +1360,10 @@ class Room:
                     animation[2] -= 1
 
 
-                    self.animations.remove(animation)
-                    if duration > 0:
-                        self.addAnimation((animation[0][0]+direction[0],animation[0][1]+direction[1],animation[0][2]+direction[2],),animation[1],animation[2],extraInfo)
+                    if advanceAnimations:
+                        self.animations.remove(animation)
+                        if duration > 0:
+                            self.addAnimation((animation[0][0]+direction[0],animation[0][1]+direction[1],animation[0][2]+direction[2],),animation[1],animation[2],extraInfo)
                 else:
                     display = "??"
                     chars[pos[1]][pos[0]] = display

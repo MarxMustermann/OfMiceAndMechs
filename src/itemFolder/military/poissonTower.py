@@ -31,7 +31,7 @@ class PoissonTower(src.items.Item):
             target.hurt(70,reason="poission")
         self.destroy()
 
-    def remoteActivate(self):
+    def remoteActivate(self,extraParams=None):
         self.apply()
 
     def render(self):

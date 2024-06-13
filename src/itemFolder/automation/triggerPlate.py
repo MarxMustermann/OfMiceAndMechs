@@ -34,7 +34,6 @@ class TriggerPlate(src.items.Item):
 
     def doStepOnAction(self, character):
         if self.active:
-            character.addMessage("you step on a trigger plate")
             self.trigger(character)
 
     def render(self):
@@ -58,6 +57,8 @@ class TriggerPlate(src.items.Item):
         if checkFaction and self.faction == character.faction:
             return
 
+        character.addMessage("you step on a trigger plate")
+
         if not self.target:
             return
 
@@ -69,9 +70,10 @@ class TriggerPlate(src.items.Item):
             return
 
         try:
-            items[0].remoteActivate()
+            items[0].remoteActivate
         except:
-            pass
+            return
+        items[0].remoteActivate(extraParams={"pos":self.getPosition()})
 
     def getConfigurationOptions(self, character):
         """
@@ -102,7 +104,7 @@ class TriggerPlate(src.items.Item):
     def configureTargetPosition(self,params):
         key = params.get("keyPressed")
         if key:
-            if key in ("enter","esc","lESC","rESC"):
+            if key in ("j","k","enter","esc","lESC","rESC"):
                 return
             if key == "w":
                 self.target = (self.target[0],self.target[1]-1,0)

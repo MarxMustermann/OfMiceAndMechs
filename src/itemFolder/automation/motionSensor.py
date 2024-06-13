@@ -52,7 +52,7 @@ class MotionSensor(src.items.Item):
                 character.addMessage("no items to trigger")
             return
 
-        items[0].remoteActivate()
+        items[0].remoteActivate(extraParams={"pos":character.getPosition()})
 
     def getConfigurationOptions(self, character):
         """

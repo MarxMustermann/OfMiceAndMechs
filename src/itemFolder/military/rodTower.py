@@ -41,7 +41,7 @@ class RodTower(src.items.Item):
             for target in targets:
                 target.hurt(20,reason="hit by rod")
 
-    def remoteActivate(self):
+    def remoteActivate(self,extraParams=None):
         self.apply()
 
     def render(self):

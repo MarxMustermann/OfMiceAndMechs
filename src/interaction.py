@@ -3213,6 +3213,9 @@ class SubMenu:
 
         self.escape = False
 
+    def rerender(self):
+        pass
+
     def callIndirect(self, callback, extraParams=None):
         """
         call a callback that is stored in a savable format
@@ -6245,6 +6248,12 @@ class OneKeystrokeMenu(SubMenu):
         self.keyPressed = ""
         self.done = False
         self.targetParamName = targetParamName
+        self.counter = 0
+        self.rerenderFunction = None
+
+    def rerender(self):
+        if self.rerenderFunction:
+            main.set_text((urwid.AttrSpec("default", "default"), self.rerenderFunction()))
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -7490,6 +7499,9 @@ def renderGameDisplay(renderChar=None):
     else:
         thisTerrain = char.terrain
 
+    submenue = char.macroState.get("submenue")
+    if submenue:
+        submenue.rerender()
 
     global lastTerrain
     if thisTerrain:
@@ -7497,6 +7509,7 @@ def renderGameDisplay(renderChar=None):
     else:
         thisTerrain = lastTerrain
 
+    #bug: this fucks up performance
     def stringifyUrwid(inData):
         outData = ""
         for item in inData:

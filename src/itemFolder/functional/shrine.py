@@ -695,7 +695,7 @@ class Shrine(src.items.Item):
             if spawning_result is None or spawning_result == True:
                 character.addMessage(text)
             else:
-                character.addMessage("Not Enough Mana For Spawning Npc")
+                character.addMessage("not enough mana for spawning npc")
 
     def spawnNPC(self, character, isBurnedIn: bool = False, duty: str = "") -> bool:
         cost = self.getCharacterSpawningCost(character)

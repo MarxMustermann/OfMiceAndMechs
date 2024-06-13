@@ -21,11 +21,11 @@ class Shrine(src.items.Item):
 
         self.applyOptions.extend(
                         [
-                                                                ("showInfo", "show Info"),
-                                                                ("wish", "wish"),
-                                                                ("challenge", "pray"),
-                                                                ("taunt", "taunt"),
-                                                                ("teleport", "telport home"),
+                    ("showInfo", "show Info"),
+                    ("wish", "wish"),
+                    ("challenge", "pray"),
+                    ("taunt", "taunt"),
+                    ("teleport", "telport home"),
                         ]
                         )
         self.applyMap = {
@@ -527,8 +527,8 @@ class Shrine(src.items.Item):
             spawning_result = self.spawnNPC(character,True,reg_out)
 
         if extraInfo["rewardType"] == "spawn scrap":
-                     self.spawnScrap(character)
-                     text = None
+             self.spawnScrap(character)
+             text = None
         elif extraInfo['rewardType'] == "upgrade weapon":
             foundWeapon = None
             for item in character.inventory:
@@ -697,7 +697,7 @@ class Shrine(src.items.Item):
             else:
                 character.addMessage("Not Enough Mana For Spawning Npc")
 
-    def spawnNPC(self, character, IsBurnedIn: bool = False, duty: str = "") -> bool:
+    def spawnNPC(self, character, isBurnedIn: bool = False, duty: str = "") -> bool:
         cost = self.getCharacterSpawningCost(character)
         glassHeartRebate = self.get_glass_heart_rebate()
         mana = self.getTerrain().mana
@@ -713,7 +713,7 @@ class Shrine(src.items.Item):
             cost /= 2
         cost *= glassHeartRebate
 
-        if(IsBurnedIn):
+        if(isBurnedIn):
             dutyMap = self.getDutyMap(character)
             cost = cost*dutyMap.get(duty,1)
         if not mana >= cost:
@@ -782,7 +782,7 @@ class Shrine(src.items.Item):
             quest.activate()
             npc.assignQuest(quest,active=True)
             npc.foodPerRound = 1
-            if(IsBurnedIn):
+            if(isBurnedIn):
                 if duty:
                     npc.duties.append(duty)
                 npc.burnedIn = True
@@ -804,7 +804,6 @@ class Shrine(src.items.Item):
                 character.inventory.remove(foundFlask)
 
             return True
-
 
     def spawnScrap(self, character):
         cost = self.getCost("spawn scrap",character)

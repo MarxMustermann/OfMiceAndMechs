@@ -95,6 +95,7 @@ class BoltTower(src.items.Item):
         if not direction:
             1/0
 
+        self.charges -= 1
         currentPos = self.getPosition()
         while True:
             targets = self.container.getCharactersOnPosition(currentPos)

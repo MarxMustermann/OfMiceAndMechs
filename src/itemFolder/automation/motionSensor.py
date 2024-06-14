@@ -81,7 +81,7 @@ class MotionSensor(src.items.Item):
     def configureTargetPosition(self,params):
         key = params.get("keyPressed")
         if key:
-            if key in ("enter","esc","lESC","rESC"):
+            if key in ("j","k","enter","esc","lESC","rESC"):
                 return
             if key == "w":
                 self.target = (self.target[0],self.target[1]-1,0)
@@ -110,7 +110,7 @@ class MotionSensor(src.items.Item):
     def motionDetected(self,extraParams):
         if extraParams["character"].faction == self.faction:
             return
-        self.trigger()
+        self.trigger(extraParams["character"])
 
     def boltAction(self,character):
         if self.bolted:

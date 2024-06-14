@@ -74,7 +74,8 @@ class ShockTower(src.items.Item):
                 character.addMessage("no charges")
             return
 
-        character.addMessage(f"you shock the coordinate {targetPos}")
+        if character:
+            character.addMessage(f"you shock the coordinate {targetPos}")
         self.charges -= 1
         damage = 50
         self.container.addAnimation(targetPos,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})

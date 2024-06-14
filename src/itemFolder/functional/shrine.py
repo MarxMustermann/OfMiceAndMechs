@@ -524,7 +524,7 @@ class Shrine(src.items.Item):
         reg_out = re.match(regex,extraInfo["rewardType"])
         if reg_out != None:
             text = "You spawned a clone with the duty " + reg_out.group(1)
-            spawning_result = self.spawnNPC(character,True,reg_out)
+            spawning_result = self.spawnNPC(character,True,reg_out.group(1))
 
         if extraInfo["rewardType"] == "spawn scrap":
              self.spawnScrap(character)
@@ -698,7 +698,11 @@ class Shrine(src.items.Item):
                 character.addMessage("not enough mana for spawning npc")
 
     def spawnNPC(self, character, isBurnedIn: bool = False, duty: str = "") -> bool:
-        cost = self.getCharacterSpawningCost(character)
+        if isBurnedIn:
+            cost = self.getBurnedInCharacterSpawningCost(character)
+        else:
+            cost = self.getCharacterSpawningCost(character)
+
         glassHeartRebate = self.get_glass_heart_rebate()
         mana = self.getTerrain().mana
 

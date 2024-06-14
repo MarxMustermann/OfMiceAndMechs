@@ -33,13 +33,13 @@ class ShockTower(src.items.Item):
             if key in ("enter","esc","lESC","rESC"):
                 return
             if key == "w":
-                pos = (pos[0],pos[1]-1,0)
+                pos = self.Constrain_Within_Room((pos[0],pos[1]-1,0))
             if key == "a":
-                pos = (pos[0]-1,pos[1],0)
+                pos = self.Constrain_Within_Room((pos[0]-1,pos[1],0))
             if key == "s":
-                pos = (pos[0],pos[1]+1,0)
+                pos = self.Constrain_Within_Room((pos[0],pos[1]+1,0))
             if key == "d":
-                pos = (pos[0]+1,pos[1],0)
+                pos = self.Constrain_Within_Room((pos[0]+1,pos[1],0))
             if key == ".":
                 character.timeTaken += 1
             if key == "j":

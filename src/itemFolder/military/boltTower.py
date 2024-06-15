@@ -23,27 +23,23 @@ class BoltTower(src.items.Item):
     def showTargetingHud(self,params):
         character = params["character"]
 
-        extraText = "\n"
+        extraText = ""
         key = params.get("keyPressed")
         if key:
             if key in ("enter","esc","lESC","rESC"):
                 return
             if key == "w":
                 character.timeTaken += 1
-                self.shoot({"character":character,"direction":(0,-1,0)})
-                extraText = "you shoot\n"
+                extraText = self.shoot({"character":character,"direction":(0,-1,0)})
             if key == "a":
                 character.timeTaken += 1
-                self.shoot({"character":character,"direction":(-1,0,0)})
-                extraText = "you shoot\n"
+                extraText = self.shoot({"character":character,"direction":(-1,0,0)})
             if key == "s":
                 character.timeTaken += 1
-                self.shoot({"character":character,"direction":(0,1,0)})
-                extraText = "you shoot\n"
+                extraText = self.shoot({"character":character,"direction":(0,1,0)})
             if key == "d":
                 character.timeTaken += 1
-                self.shoot({"character":character,"direction":(1,0,0)})
-                extraText = "you shoot\n"
+                extraText = self.shoot({"character":character,"direction":(1,0,0)})
             if key == ".":
                 character.timeTaken += 1
 
@@ -60,7 +56,7 @@ class BoltTower(src.items.Item):
                 charges_text = self.charges
             else:
                 charges_text = "no"
-            return [rendering,extraText,f"you have {charges_text} shots left","\npress wasd to shoot       \npress . to wait"]
+            return [rendering,"\n",extraText,"\n\n",f"you have {charges_text} shots left","\npress wasd to shoot       \npress . to wait"]
 
         submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender
@@ -75,7 +71,7 @@ class BoltTower(src.items.Item):
         if self.charges < 1:
             if character:
                 character.addMessage("no charges")
-            return
+            return "no charges"
 
         direction = None
         if extraParams:
@@ -130,7 +126,7 @@ class BoltTower(src.items.Item):
                 break
             if currentPos[0]%15 <= 0:
                 break
-        return
+        return "you shoot"
 
     def remoteActivate(self,extraParams=None):
         self.shoot(extraParams=extraParams)

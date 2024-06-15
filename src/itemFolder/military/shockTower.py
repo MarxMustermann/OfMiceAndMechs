@@ -44,8 +44,7 @@ class ShockTower(src.items.Item):
                 character.timeTaken += 1
             if key == "j":
                 character.timeTaken += 1
-                extraText = "You trigger the shock tower\n"
-                self.shock(pos,character)
+                extraText = self.shock(pos,character)
         params["pos"] = pos
 
         def rerender():
@@ -76,7 +75,7 @@ class ShockTower(src.items.Item):
         if self.charges < 1:
             if character:
                 character.addMessage("no charges")
-            return
+            return "no charges"
 
         if character:
             character.addMessage(f"you shock the coordinate {targetPos}")
@@ -92,6 +91,8 @@ class ShockTower(src.items.Item):
 
                 if character:
                     character.addMessage("an enemy is getting shocked")
+
+        return "you trigger the shock tower"
 
     def configure(self, character):
         """

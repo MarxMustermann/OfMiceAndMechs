@@ -15,7 +15,7 @@ class RodTower(src.items.Item):
         """
 
         super().__init__(display="/\\")
-        self.charges = 7
+        self.charges = 0
         self.faction = None
 
     def apply(self, character=None):

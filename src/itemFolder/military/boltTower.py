@@ -1,4 +1,5 @@
 import src
+from src.rooms import Room
 
 
 class BoltTower(src.items.Item):
@@ -17,7 +18,7 @@ class BoltTower(src.items.Item):
         super().__init__(display="/\\")
         self.charges = 7
         self.faction = None
-
+        self.pos
     def apply(self, character):
         self.showTargetingHud({"character":character})
 
@@ -49,12 +50,19 @@ class BoltTower(src.items.Item):
                 character.timeTaken += 1
 
         def rerender():
-            roomRender = self.container.render(advanceAnimations=False)
+            if isinstance(self.container,Room) :
+                roomRender = self.container.render(advanceAnimations = False)
+            else:
+                roomRender = self.container.render(size=(12,12),coordinateOffset = ((self.getTerrainPosition()[0] + 2)* 15 + 1 ,(self.getTerrainPosition()[1])* 15 + 1))
 
             for line in roomRender:
                 line.append("\n")
 
-            return [roomRender,extraText,"\npress wasd to shoot       \npress . to wait"]
+            if self.charges>0:
+                charges_text = self.charges
+            else:
+                charges_text = "no"
+            return [roomRender,extraText,f"you have {charges_text} shots left","\npress wasd to shoot       \npress . to wait"]
 
         submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender

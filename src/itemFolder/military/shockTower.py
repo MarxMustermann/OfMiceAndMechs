@@ -68,18 +68,18 @@ class ShockTower(src.items.Item):
         params["pos"] = pos
 
         def rerender():
-            roomRender = self.container.render(advanceAnimations=False)
+            rendering = self.container.render(advanceAnimations=False)
             if not self.container.animations:
-                roomRender[pos[1]][pos[0]] = cursorSymbol
+                rendering[pos[1]][pos[0]] = cursorSymbol
 
-            for line in roomRender:
+            for line in rendering:
                 line.append("\n")
 
             if self.charges > 0:
                 charges_text = self.charges
             else:
                 charges_text = "no"
-            return [roomRender,"\n",extraText,"\n\n",f"you have {charges_text} charges left","""
+            return [rendering,"\n",extraText,"\n\n",f"you have {charges_text} charges left","""
 press wasd to move cursor
 press j to shock coordinate
 press r to reload from nearby fields

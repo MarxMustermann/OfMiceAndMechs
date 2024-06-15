@@ -56,7 +56,11 @@ class ShockTower(src.items.Item):
             for line in roomRender:
                 line.append("\n")
 
-            return [roomRender,extraText,"\npress wasd to move cursor\npress j to shock coordinate\npress . to wait"]
+            if self.charges>0:
+                charges_text = self.charges
+            else:
+                charges_text = "no"
+            return [roomRender,"\n",extraText,"\n\n",f"you have {charges_text} shots left","\npress wasd to move cursor\npress j to shock coordinate\npress . to wait"]
 
         submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender

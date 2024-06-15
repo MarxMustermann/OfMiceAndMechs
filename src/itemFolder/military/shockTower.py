@@ -51,13 +51,13 @@ class ShockTower(src.items.Item):
             if key in ("enter","esc","lESC","rESC"):
                 return
             if key == "w":
-                pos = self.Constrain_Within_Room((pos[0],pos[1]-1,0))
+                pos = self.constrain_within_room((pos[0],pos[1]-1,0))
             if key == "a":
-                pos = self.Constrain_Within_Room((pos[0]-1,pos[1],0))
+                pos = self.constrain_within_room((pos[0]-1,pos[1],0))
             if key == "s":
-                pos = self.Constrain_Within_Room((pos[0],pos[1]+1,0))
+                pos = self.constrain_within_room((pos[0],pos[1]+1,0))
             if key == "d":
-                pos = self.Constrain_Within_Room((pos[0]+1,pos[1],0))
+                pos = self.constrain_within_room((pos[0]+1,pos[1],0))
             if key == "r":
                 extraText = self.loadNearbyAmmo()
             if key == ".":

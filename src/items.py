@@ -984,15 +984,16 @@ class Item:
 
             # place scrap
             container.addItems([(newItem,pos)])
-    def Constrain_Within_Room(self, pos):
-        def clamp(n, min, max): 
-            if n < min: 
+
+    def constrain_within_room(self, pos):
+        def clamp(n, min, max):
+            if n < min:
                 return min
-            elif n > max: 
+            elif n > max:
                 return max
-            else: 
-                return n 
-            
+            else:
+                return n
+
         x = clamp(pos[0],1,11)
         y = clamp(pos[1],1,11)
         return x,y,pos[2]

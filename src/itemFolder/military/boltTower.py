@@ -1,5 +1,5 @@
 import src
-
+from src.rooms import Room
 
 class BoltTower(src.items.Item):
     """
@@ -49,12 +49,19 @@ class BoltTower(src.items.Item):
                 character.timeTaken += 1
 
         def rerender():
-            roomRender = self.container.render(advanceAnimations=False)
+            if isinstance(self.container,Room) :
+                roomRender = self.container.render(advanceAnimations = False)
+            else:
+                roomRender = self.container.render(size=(12,12),coordinateOffset = ((self.getPosition()[1]//15)* 15 + 1 ,(self.getPosition()[0]//15)* 15 + 1))
 
             for line in roomRender:
                 line.append("\n")
 
-            return [roomRender,extraText,"\npress wasd to shoot       \npress . to wait"]
+            if self.charges>0:
+                charges_text = self.charges
+            else:
+                charges_text = "no"
+            return [roomRender,extraText,f"you have {charges_text} shots left","\npress wasd to shoot       \npress . to wait"]
 
         submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender
@@ -95,6 +102,12 @@ class BoltTower(src.items.Item):
         if not direction:
             1/0
 
+        if isinstance(self.container,Room):
+            containerSize = 11
+        else:
+            containerSize = 13
+
+
         self.charges -= 1
         currentPos = self.getPosition()
         while True:
@@ -110,13 +123,13 @@ class BoltTower(src.items.Item):
 
             currentPos = (currentPos[0]+direction[0],currentPos[1]+direction[1],currentPos[2]+direction[2])
 
-            if currentPos[1] >= 12:
+            if currentPos[1]%15 > containerSize:
                 break
-            if currentPos[1] <= 0:
+            if currentPos[1]%15 <= 0:
                 break
-            if currentPos[0] >= 12:
+            if currentPos[0]%15 > containerSize:
                 break
-            if currentPos[0] <= 0:
+            if currentPos[0]%15 <= 0:
                 break
         return
 

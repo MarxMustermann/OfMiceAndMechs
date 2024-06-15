@@ -47,7 +47,7 @@ class BoltTower(src.items.Item):
             if isinstance(self.container,Room) :
                 rendering = self.container.render(advanceAnimations = False)
             else:
-                rendering = self.container.render(size=(12,12),coordinateOffset = ((self.getPosition()[1]//15)* 15 + 1 ,(self.getPosition()[0]//15)* 15 + 1))
+                rendering = self.container.render(size=(14,14),coordinateOffset = ((self.getPosition()[1]//15)* 15 ,(self.getPosition()[0]//15)* 15 ))
 
             for line in rendering:
                 line.append("\n")
@@ -56,7 +56,7 @@ class BoltTower(src.items.Item):
                 charges_text = self.charges
             else:
                 charges_text = "no"
-            return [rendering,"\n",extraText,"\n\n",f"you have {charges_text} shots left","\npress wasd to shoot       \npress . to wait"]
+            return [rendering,"\n",extraText,"\n\n",f"you have {charges_text} shots left","\npress wasd to shoot            \npress . to wait"]
 
         submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender

@@ -17,7 +17,6 @@ class BoltTower(src.items.Item):
         super().__init__(display="/\\")
         self.charges = 7
         self.faction = None
-
     def apply(self, character):
         self.showTargetingHud({"character":character})
 
@@ -52,7 +51,7 @@ class BoltTower(src.items.Item):
             if isinstance(self.container,Room) :
                 roomRender = self.container.render(advanceAnimations = False)
             else:
-                roomRender = self.container.render(size=(12,12),coordinateOffset = ((self.getPosition()[1]//15)* 15 + 1 ,(self.getPosition()[0]//15)* 15 + 1))
+                roomRender = self.container.render(size=(12,12),coordinateOffset = ((self.getTerrainPosition()[0] + 2)* 15 + 1 ,(self.getTerrainPosition()[1])* 15 + 1))
 
             for line in roomRender:
                 line.append("\n")

@@ -18,7 +18,6 @@ class BoltTower(src.items.Item):
         super().__init__(display="/\\")
         self.charges = 7
         self.faction = None
-        self.pos
     def apply(self, character):
         self.showTargetingHud({"character":character})
 

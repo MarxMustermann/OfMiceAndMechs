@@ -20,6 +20,24 @@ class ShockTower(src.items.Item):
     def apply(self,character):
         self.showTargetingHud({"character":character})
 
+    def loadNearbyAmmo(self):
+        ammoDropSpots = [(0,1,0),(0,-1,0),(1,0,0),(-1,0,0)]
+        numLoaded = 0
+        for dropSpot in ammoDropSpots:
+            items = self.container.getItemByPosition(self.getPosition(offset=dropSpot))
+            if not items:
+                continue
+
+            while items and items[-1].type == "LightningRod":
+                self.charges += 1
+                self.container.removeItem(items[-1])
+                numLoaded += 1
+
+        if numLoaded:
+            return f"you load {numLoaded} lightningRods"
+        else:
+            return f"no lightningRods found"
+
     def showTargetingHud(self,params):
         pos = params.get("pos")
         if not pos:
@@ -27,7 +45,7 @@ class ShockTower(src.items.Item):
         character = params["character"]
 
         cursorSymbol = "XX"
-        extraText = "\n"
+        extraText = ""
         key = params.get("keyPressed")
         if key:
             if key in ("enter","esc","lESC","rESC"):
@@ -40,6 +58,8 @@ class ShockTower(src.items.Item):
                 pos = self.Constrain_Within_Room((pos[0],pos[1]+1,0))
             if key == "d":
                 pos = self.Constrain_Within_Room((pos[0]+1,pos[1],0))
+            if key == "r":
+                extraText = self.loadNearbyAmmo()
             if key == ".":
                 character.timeTaken += 1
             if key == "j":
@@ -55,11 +75,15 @@ class ShockTower(src.items.Item):
             for line in roomRender:
                 line.append("\n")
 
-            if self.charges>0:
+            if self.charges > 0:
                 charges_text = self.charges
             else:
                 charges_text = "no"
-            return [roomRender,"\n",extraText,"\n\n",f"you have {charges_text} shots left","\npress wasd to move cursor\npress j to shock coordinate\npress . to wait"]
+            return [roomRender,"\n",extraText,"\n\n",f"you have {charges_text} charges left","""
+press wasd to move cursor
+press j to shock coordinate
+press r to reload from nearby fields
+press . to wait"""]
 
         submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender
@@ -67,9 +91,12 @@ class ShockTower(src.items.Item):
         character.macroState["submenue"].followUp = {"container":self,"method":"showTargetingHud","params":params}
 
     def remoteActivate(self,extraParams=None):
-        if extraParams and extraParams.get("pos"):
-            pos = extraParams.get("pos")
-            self.shock(pos)
+        if self.charges:
+            if extraParams and extraParams.get("pos"):
+                pos = extraParams.get("pos")
+                self.shock(pos)
+        else:
+            self.loadNearbyAmmo()
 
     def shock(self,targetPos,character=None):
         if self.charges < 1:
@@ -79,6 +106,7 @@ class ShockTower(src.items.Item):
 
         if character:
             character.addMessage(f"you shock the coordinate {targetPos}")
+
         self.charges -= 1
         damage = 50
         self.container.addAnimation(targetPos,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "%%")]})

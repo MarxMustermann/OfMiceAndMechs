@@ -16,20 +16,12 @@ class RodTower(src.items.Item):
 
         super().__init__(display="/\\")
         self.charges = 0
-        self.faction = None
 
     def apply(self, character=None):
         if self.charges < 1:
             if character:
                 character.addMessage("no charges")
             return
-
-        foundChars = []
-        for checkChar in self.container.characters:
-            if checkChar.faction == self.faction:
-                continue
-
-            foundChars.append(checkChar)
 
         neighbours = []
         for offset in ((1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):

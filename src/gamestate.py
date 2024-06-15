@@ -1,5 +1,6 @@
 
 import json
+import zlib
 
 import src.canvas
 import src.characters
@@ -160,7 +161,8 @@ class GameState:
             pass
 
         with open(f"gamestate/gamestate_{self.gameIndex}", 'wb') as file:
-            pickle.dump(self, file)
+            compressed = zlib.compress(pickle.dumps(self),9)
+            file.write(compressed)
 
         try:
             # register the save
@@ -198,7 +200,7 @@ class GameState:
 
         import pickle
         with open(f"gamestate/gamestate_{gameIndex}", 'rb') as file:
-            newSelf = pickle.load(file)
+            newSelf = pickle.loads(zlib.decompress(file.read()))
 
         return newSelf
 

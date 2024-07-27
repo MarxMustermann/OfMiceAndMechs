@@ -1498,6 +1498,24 @@ class Room:
                     if buildSite[1] == "ManufacturingTable":
                         if "toProduce" in buildSite[2]:
                             item.toProduce = buildSite[2]["toProduce"]
+                    if buildSite[1] == "MotionSensor":
+                        if "target" in buildSite[2]:
+                            splitted = buildSite[2].split(",")
+                            if len(splitted) == 2:
+                                splitted.append("0")
+
+                            if len(splitted) == 3:
+                                try:
+                                    x = int(splitted[0])
+                                    y = int(splitted[1])
+                                    z = int(splitted[2])
+                                except:
+                                    x = -1
+                                    y = -1
+                                    z = -1
+
+                                if (x > 0 and x < 12 and y > 0 and y < 12 and z >= 0):
+                                    item.target = (x,y,z)
                     if buildSite[2].get("settings"):
                         if not item.commands:
                             item.settings = {}

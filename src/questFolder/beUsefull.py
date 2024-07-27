@@ -335,6 +335,9 @@ We should stop watching and do something about that.
             return True
         return None
 
+    def checkTriggerTurretLoading(self,character,room):
+        return None
+
     def checkTriggerMachineOperation(self,character,room):
         terrain = character.getTerrain()
         rooms = terrain.rooms
@@ -2028,6 +2031,9 @@ We should stop watching and do something about that.
         room = character.container
         for duty in character.getRandomProtisedDuties():
             if duty == "trap setting" and self.checkTriggerTrapSetting(character,room):
+                return
+
+            if duty == "turret loading" and self.checkTriggerTurretLoading(character,room):
                 return
 
             if duty == "flask filling" and self.checkTriggerFlaskFilling(character,room):

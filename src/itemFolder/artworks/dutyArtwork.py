@@ -21,12 +21,14 @@ class DutyArtwork(src.items.Item):
                                                 [
                                                     ("showOverview", "show overview"),
                                                     ("showMatrix", "show matrix based"),
+                                                    ("changeOwnDuties", "change own duties"),
                                                 ]
                                 )
 
         self.applyMap = {
                                     "showMatrix": self.showMatrix,
                                     "showOverview": self.showOverview,
+                                    "changeOwnDuties": self.changeOwnDuties,
                                 }
 
         self.description = """
@@ -36,6 +38,28 @@ This will change what work the clones are doing when told to be useful."""
         self.usageInfo = """
 Use it by activating it and selecting in what mode you want to set the duties.
 After changing the duties the clones should change their behaviour after completing their current task."""
+
+    def changeOwnDuties(self,character):
+        self.changeOwnDuties_real({"character":character})
+
+    def changeOwnDuties_real(self,params):
+        character = params["character"]
+
+        if params.get("duty") == "None":
+            return
+        return
+
+        options = []
+        options.append(("None","exit menu"))
+        options.append(("duty by name","duty by name"))
+        options.append(("duty1","duty1"))
+        options.append(("duty2","duty2"))
+
+        submenue = src.interaction.SelectionMenu("select duty to toggle\n",options,targetParamName="duty")
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"changeOwnDuties_real","params":params}
+
+        pass
 
     def changeCharges(self,delta):
         self.charges += delta
@@ -80,6 +104,7 @@ After changing the duties the clones should change their behaviour after complet
         character.macroState["submenue"] = submenue
 
     def showMatrix(self, character):
+
         #if not character.rank < 4:
         #    character.addMessage("you need to have rank 3 to do this. You can see the overview though.")
         #    return

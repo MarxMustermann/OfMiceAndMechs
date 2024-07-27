@@ -9775,7 +9775,7 @@ You """+"."*stageState["substep"]+"""
                 stageState = {"lastChange":time.time(),"substep":0,"animationStep":0}
 
             text1 = """
-But despite all the unknowns, you have that voice in your head, that tells you:"""
+But despite all the unknowns, you have that voice in your head. It tells you:"""
 
             text2 = """
 "You will rule the world someday, but first

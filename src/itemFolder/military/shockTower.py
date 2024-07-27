@@ -153,6 +153,29 @@ The shocker has %s charges
             self.charges
         )
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        options["a"] = ("toggle active", self.toggleActive)
+        options["t"] = ("configure target", self.configureTargetHook)
+        return options
+
+    def configureTargetHook(self,character):
+        self.configureTarget({"character":character})
+
+    def configureTarget(self,params):
+        self.configureTargetPosition(params)
+
 
 
 src.items.addType(ShockTower)

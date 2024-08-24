@@ -6,13 +6,14 @@ import src
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
         self.targetTerrain = targetTerrain
         self.itemID = itemID
         self.storyText = storyText
+        self.directSendback = directSendback
 
     def generateTextDescription(self):
         text = ""
@@ -122,7 +123,10 @@ After fetching the glass heart return the glass heart to your base and set it in
                         directionCommand = "a"
                     if character.getPosition(offset=(0,-1,0)) == foundGlassStatue.getPosition():
                         directionCommand = "w"
-                    return (None,(directionCommand+"cg","get special item"))
+                    if self.directSendback:
+                        return (None,(directionCommand+"cr","return special item"))
+                    else:
+                        return (None,(directionCommand+"cg","get special item"))
 
                 if not dryRun:
                     self.fail("no glassStatue found")

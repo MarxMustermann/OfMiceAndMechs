@@ -114,7 +114,13 @@ Filling a flask will use up a charge from your goo dispenser.
         filled = False
         fillAmount = 100 + ((self.level - 1) * 10)
 
-        for item in character.inventory:
+        character.changed("filledGooFlask")
+
+        for item in character.inventory[:]:
+            if not self.charges:
+                character.addMessage("no charges left")
+                return
+
             if isinstance(item, src.items.itemMap["Flask"]):
                 character.inventory.remove(item)
                 gooFlask = src.items.itemMap["GooFlask"]()
@@ -124,19 +130,22 @@ Filling a flask will use up a charge from your goo dispenser.
                 self.description = self.baseName + " (%s charges)" % (self.charges)
                 character.addMessage("you fill the goo flask")
                 character.inventory.append(gooFlask)
-                break
         if filled:
             self.runCommand("filled",character)
             character.addMessage("you fill goo flasks in your inventory")
             return
-
-        character.changed("filledGooFlask")
 
         character.addMessage("you have no flask to be filled")
         self.container.addAnimation(self.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
         character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
 
     def refill_personal_flask(self, character):
+        if not self.charges:
+            character.addMessage("no charges")
+            self.container.addAnimation(self.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+            return
+
+        fillAmount = 100
         if character.flask and character.flask.uses < fillAmount:
             character.flask.uses = fillAmount
             self.runCommand("filled",character)
@@ -152,14 +161,23 @@ Filling a flask will use up a charge from your goo dispenser.
         character.container.addAnimation(character.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"[]")})
 
     def refill_flask(self, character):
+        if not self.charges:
+            character.addMessage("no charges")
+            self.container.addAnimation(self.getPosition(),"showchar",2,{"char":(src.interaction.urwid.AttrSpec("#740", "black"),"XX")})
+            return
+
+        filled = False
+        fillAmount = 100
         for item in character.inventory:
+            if not self.charges:
+                character.addMessage("no charges left")
+                return
             if (isinstance(item, src.items.itemMap["GooFlask"]) and not item.uses >= fillAmount):
                 item.uses = fillAmount
                 filled = True
                 self.charges -= 1
                 self.description = self.baseName + " (%s charges)" % (self.charges)
                 character.addMessage("you fill the goo flask")
-                break
         if filled:
             self.runCommand("filled",character)
             character.addMessage("you fill goo flasks in your inventory")

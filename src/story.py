@@ -1423,6 +1423,15 @@ class MainGame(BasicPhase):
         self.preselection = preselection
         super().__init__("MainGame", seed=seed)
 
+    def get_free_position(self,tag):
+        pos = random.choice(self.available_positions)
+        self.available_positions.remove(pos)
+
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = tag
+
+        return pos
+
     def start(self, seed=0, difficulty=None):
         """
         set up terrain and spawn main character
@@ -1435,12 +1444,25 @@ class MainGame(BasicPhase):
         self.factionCounter = 1
 
         self.specialItemMap = {}
-        self.takenPositions = []
+        self.available_positions = []
+        for x in range(1,14):
+            for y in range(1,14):
+                self.available_positions.append((x,y))
+
+        for pos in ((1,1),(13,1),(1,13),(13,13)):
+            print(pos)
+            currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+            currentTerrain.tag = "corner terrain"
+            self.available_positions.remove(pos)
+            self.setUpShrine(pos)
+
+        pos = (7,7)
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "center terrain"
+        self.setUpShrine(pos)
 
         self.difficulty = difficulty
         self.productionBaseInfos = []
-        positions = [(7,6,0),(7,8,0),(6,7,0),(8,7,0),(7,7,0),(8,8,0)]
-        positions = [(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0),(12,12,0)]
         #self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
 
         self.siegedBaseInfos = []
@@ -1457,6 +1479,9 @@ class MainGame(BasicPhase):
 
         self.dungeonCrawlInfos = []
 
+        # reserve center position for throne room
+        self.available_positions.remove((7,7))
+
         while self.preselection is None:
             selection =self.preselection = src.interaction.showInterruptChoice("""
 
@@ -1471,22 +1496,18 @@ class MainGame(BasicPhase):
 
     press c for (c)olony builders
     press r for (r)oguelikes
+    press s for (s)tory
 
-""",["c","r","t"])
-
-            """
-    r: roguelikes
-    (like "cataclysm:dda" or "Project zomboid")
-"""
+""",["c","r","t","s"])
 
             if selection == "c":
                 self.preselection = "Colony"
             if selection == "r":
                 self.preselection = "Dungeon"
+            if selection == "s":
+                self.preselection = "Story"
             if selection == "t":
                 self.preselection = "Travel"
-
-        self.takenPositions.append((8,6))
 
         difficultyModifier = 1
         if self.difficulty == "tutorial":
@@ -1496,23 +1517,17 @@ class MainGame(BasicPhase):
         if self.difficulty == "difficult":
             difficultyModifier = 2
 
-        self.takenPositions.append((6,6))
-        self.takenPositions.append((4,5))
-        self.takenPositions.append((1,1))
-
         src.gamestate.gamestate.difficulty = self.difficulty
 
-        dungeonPositions = []
         numDungeons = 7
         if self.difficulty == "tutorial":
             numDungeons = 2
 
-        while len(dungeonPositions) < numDungeons:
-            pos = (random.randint(1,13),random.randint(1,13))
-            if pos in self.takenPositions:
-                continue
-            dungeonPositions.append(pos)
-            self.takenPositions.append(pos)
+        dungeonPositions = []
+        dungeon_counter = 0
+        while dungeon_counter < numDungeons:
+            dungeonPositions.append(self.get_free_position("dungeon"))
+            dungeon_counter += 1
 
         if self.difficulty == "tutorial":
             self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
@@ -1536,10 +1551,25 @@ class MainGame(BasicPhase):
             self.setUpGlassHeartDungeon(dungeonPositions[5],6,3.5*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[6],7,4*difficultyModifier)
 
-        self.colonyBaseInfos2.append(self.createColonyBase2((8,6)))
+            dungeonPositions.append(self.get_free_position("dungeon2"))
 
+        self.colonyBaseInfos2.append(self.createColonyBase2(self.get_free_position("colonybase")))
+
+        for _i in range(1,20):
+            self.get_free_position("nothingness")
+
+        for _i in range(1,40):
+            self.setUpShrine(self.get_free_position("shrine"))
+
+        for _i in range(1,15):
+            self.setUpFactoryRemains(self.get_free_position("factory"))
+
+        for _i in range(1,2):
+            for itemID in [1,2,3,4,5,6,7]:
+                self.setUpStatueRoom(self.get_free_position("statue room"),itemID)
+            
         if self.preselection == "Colony":
-            self.colonyBaseInfos2.append(self.createColonyBase2((6,6),mainCharBase=True))
+            self.colonyBaseInfos2.append(self.createColonyBase2(self.get_free_position("colonybase2"),mainCharBase=True))
             self.activeStory = self.colonyBaseInfos2[1]
             if self.difficulty == "easy":
                 print(self.activeStory)
@@ -1547,10 +1577,14 @@ class MainGame(BasicPhase):
                 self.activeStory["terrain"].mana += 150
                 print(self.activeStory)
         else:
-            self.colonyBaseInfos2.append(self.createColonyBase2((6,6)))
+            self.colonyBaseInfos2.append(self.createColonyBase2(self.get_free_position("colonybase3")))
 
         if self.preselection == "Dungeon":
             self.dungeonCrawlInfos.append(self.createDungeonCrawl(dungeonPositions[0]))
+            self.activeStory = self.dungeonCrawlInfos[0]
+
+        if self.preselection == "Story":
+            self.dungeonCrawlInfos.append(self.createStoryStart(self.get_free_position("story1"),self.get_free_position("story2")))
             self.activeStory = self.dungeonCrawlInfos[0]
 
         if self.preselection == "Travel":
@@ -1594,6 +1628,12 @@ class MainGame(BasicPhase):
             mainChar.rememberedMenu.insert(0,combatMenu)
         mainChar.disableCommandsOnPlus = True
 
+        print("len(self.available_positions)")
+        print(len(self.available_positions))
+
+        while self.available_positions:
+            self.setUpRuin(self.get_free_position("ruin"))
+
         self.numRounds = 1
         self.startRound()
 
@@ -1605,7 +1645,6 @@ class MainGame(BasicPhase):
         containerQuest.activate()
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
-
 
         src.gamestate.gamestate.mainChar.messages = []
 
@@ -1694,6 +1733,17 @@ You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
+        elif self.activeStory["type"] == "story start":
+            if len(self.activeStory["mainChar"].messages) == 0:
+                text = """
+You.
+You see walls made out of solid steel
+and feel the touch of the cold hard floor.
+The room is filled with various items.
+You recognise your hostile suroundings and
+try to remember how you got here ..."""
+                self.activeStory["mainChar"].messages.insert(0,(text))
+            self.activeStory["mainChar"].messages.insert(0,("""until you notice a statue move."""))
         elif self.activeStory["type"] == "dungeon crawl":
             if len(self.activeStory["mainChar"].messages) == 0:
                 text = """
@@ -2464,6 +2514,159 @@ but they are likely to explode when disturbed.
                     for _j in range(2):
                         scrap = src.items.itemMap["Scrap"](amount=20)
                         currentTerrain.addItem(scrap,(x*15+random.randint(1,12),y*15+random.randint(1,12),0))
+
+    def setUpStatueRoom(self,pos,itemID=None):
+        if itemID is None:
+            itemID = rendom.choice([1,2,3,4,5,6,7])
+
+        # get basic info
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "statue room"
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        # add random amount of loot 
+        statue = src.items.itemMap["GlassStatue"](itemID=itemID)
+        statue.charges = 5
+        room.addItem(statue,(6,6,0))
+
+    def setUpFactoryRemains(self,pos):
+        # get basic info
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "abbandoned Factory"
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        # add random amount of loot 
+        positions = [(4,9,0),(3,3,0),(9,4,0),(2,11,0),(11,11,0),(6,6,0),(5,4,0),(6,9,0),(8,9,0)]
+        random.shuffle(positions)
+        production_candidates = ["Sword","Armor","Wall","Case","Frame","Rod","Sheet","Bolt","Flask","Tank"]
+        to_produce = random.choice(production_candidates)
+        for _i in range(1,random.randint(2,8)):
+            pos = positions.pop()
+            machine = src.items.itemMap["Machine"]()
+            machine.setToProduce(to_produce)
+            room.addItem(machine,pos)
+
+    def setUpShrine(self,pos):
+        # get basic info
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "shrine"
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        # add random amount of loot 
+        mana_crystal = src.items.itemMap["Shrine"]()
+        room.addItem(mana_crystal,(6,6,0))
+
+    def setUpRuin(self,pos):
+        # get basic info
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        # decide between mixed or pure loot room
+        loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable"]
+        if random.random() > 0.5:
+            loot_types = [random.choice(loot_types)]
+
+        # add random amount of loot 
+        for i in range(0,random.randint(1,6)):
+            # add loot
+            if random.random() < 0.5:
+                mana_crystal = src.items.itemMap["ManaCrystal"]()
+                room.addItem(mana_crystal,(6,6,0))
+            else:
+                positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(13,11,0),(5,5,0)]
+                item = src.items.itemMap[random.choice(loot_types)]()
+                if item.type == "GooFlask":
+                    item.uses = 100
+                if item.type == "Vial":
+                    item.uses = 10
+                room.addItem(item,random.choice(positions))
+
+            # give one free loot
+            if i == 0:
+                continue
+
+            # add monster
+            pos = (random.randint(1,11),random.randint(1,11),0)
+            statue = src.characters.Statue()
+            statue.godMode = True
+            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+            quest.autoSolve = True
+            quest.assignToCharacter(statue)
+            quest.activate()
+            statue.quests.append(quest)
+            room.addCharacter(statue, pos[0], pos[1])
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod
@@ -3414,6 +3617,9 @@ but they are likely to explode when disturbed.
                 if candidate.faction != faction:
                     candidates.remove(candidate)
                     continue
+                if candidate.burnedIn:
+                    candidates.remove(candidate)
+                    continue
                 if candidate == extraParam["character"]:
                     candidates.remove(candidate)
                     continue
@@ -3642,6 +3848,187 @@ but they are likely to explode when disturbed.
                     currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
 
         return travelInfo
+
+    def createStoryStart(self, startPos, homePos):
+        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        homeTerrain.addItem(item,(1,1,0))
+
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+
+        startTerrain = src.gamestate.gamestate.terrainMap[startPos[1]][startPos[0]]
+
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        startTerrain.addItem(item,(1,1,0))
+
+        startRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        shrine = src.items.itemMap["Shrine"]()
+        shrine.bolted = True
+        startRoom.addItem(shrine,(6,6,0))
+
+        # spawn the moving statues
+        monsterPositions = [(2,2,0),(10,2,0),(10,10,0),(2,10,0)]
+        counter = 0
+        for monsterPosition in monsterPositions:
+            enemy = src.characters.Statue()
+            enemy.godMode = True
+            enemy.timeTaken = 1+(5*counter)
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(7,7,0),strict=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            startRoom.addCharacter(enemy, monsterPosition[0], monsterPosition[1])
+
+            counter += 1
+
+        # spawn the static statues
+        monsterPositions = [(6,7,0),(7,6,0),(6,5,0),(5,6,0)]
+        counter = 0
+        for monsterPosition in monsterPositions:
+            enemy = src.characters.Statue()
+            enemy.godMode = True
+
+            startRoom.addCharacter(enemy, monsterPosition[0], monsterPosition[1])
+
+            counter += 1
+
+        # add extra rooms
+        positions = [(7,8),(8,7),(7,6),(6,7)]
+        extraRooms = []
+        for position in positions:
+            room = architect.doAddRoom(
+                    {
+                           "coordinate": position,
+                           "roomType": "EmptyRoom",
+                           "doors": "0,6 6,0 12,6 6,12",
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None,
+               )
+            extraRooms.append(room)
+
+            enemy = src.characters.Statue()
+            enemy.godMode = True
+            enemy.timeTaken = 50
+
+            quest = src.quests.questMap["SecureTile"](toSecure=(position[0],position[1],0),strict=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+
+            room.addCharacter(enemy, 6,6)
+
+        # add treasure rooms
+        positions = [(5,5),(9,5),(5,9),(9,9),(3,3),(11,3),(3,11),(11,11)]
+        treasureRooms = []
+        counter = 0
+        for position in positions:
+            room = architect.doAddRoom(
+                    {
+                           "coordinate": position,
+                           "roomType": "EmptyRoom",
+                           "doors": "0,6 6,0 12,6 6,12",
+                           "offset": [1,1],
+                           "size": [13, 13],
+                    },
+                    None,
+               )
+            treasureRooms.append(room)
+
+            pos = (7,7,0)
+
+            if counter == 0:
+                item = src.items.itemMap["Sword"]()
+                item.bolted = False
+                item.baseDamage = 10
+                room.addItem(item,pos)
+
+            if counter == 1:
+                item = src.items.itemMap["Armor"]()
+                item.bolted = False
+                item.armorValue = 2
+                room.addItem(item,pos)
+
+            if counter > 1:
+                for pos in ((7,3,0),(3,4,0),(2,2,0),(9,4,0),(3,7,0)):
+                    item = src.items.itemMap["Bolt"]()
+                    item.bolted = False
+                    room.addItem(item,pos)
+
+            counter += 1
+
+        mainChar = src.characters.Character()
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 100
+        mainChar.duties = ["praying","city planning","clone spawning","questing"]
+        mainChar.rank = 6
+
+        thisFactionId = self.factionCounter
+        mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
+
+        mainChar.registers["HOMETx"] = homePos[0]
+        mainChar.registers["HOMETy"] = homePos[1]
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+        mainChar.addListener(self.roguelike_baseLeaderDeath,"died_pre")
+
+        storyStartInfo = {}
+        storyStartInfo["terrain"] = homeTerrain
+        storyStartInfo["mainChar"] = mainChar
+        storyStartInfo["type"] = "story start"
+
+        startRoom.addCharacter(mainChar,6,4)
+
+        """
+        # scatter Bolts around
+        counter = 0
+        for x in range(1,14):
+            for y in range(1,14):
+                if counter > 1000:
+                    continue
+
+                item = src.items.itemMap["Bolt"]()
+                item.bolted = False
+                pos = (7+15*x,7+15*y,0)
+                startTerrain.addItem(item,pos)
+                counter += 1
+        """
+
+        return storyStartInfo
 
     def createDungeonCrawl(self, pos):
         homePos = (4,5,0)
@@ -4130,36 +4517,36 @@ but they are likely to explode when disturbed.
         for _i in range(20):
             item = src.items.itemMap["ScrapCompactor"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(75):
             item = src.items.itemMap["Case"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(200):
             item = src.items.itemMap["MetalBars"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(25):
             item = src.items.itemMap["Frame"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(25):
             item = src.items.itemMap["Rod"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         numWalls = 50
         if self.difficulty == "easy":
             numWalls = 400
         for _i in range(numWalls):
             item = src.items.itemMap["Wall"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         numMachines = 0
         if self.difficulty == "easy":
             numMachines = 40
@@ -4167,63 +4554,71 @@ but they are likely to explode when disturbed.
             item = src.items.itemMap["Machine"]()
             item.bolted = False
             item.setToProduce(random.choice(["Rod","Frame","Case","Wall"]))
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(40):
             item = src.items.itemMap["Door"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(40):
             item = src.items.itemMap["Door"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         if not self.difficulty == "difficult":
             for i in range(10):
-                pos = (random.randint(15,15*13),random.randint(15,15*13),0)
+                itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
 
                 if i < 2:
                     item = src.items.itemMap["Vial"]()
                     item.bolted = False
-                    currentTerrain.addItem(item,pos)
+                    currentTerrain.addItem(item,itemPos)
                 if i < 4:
                     item = src.items.itemMap["Armor"]()
                     item.bolted = False
-                    currentTerrain.addItem(item,pos)
+                    currentTerrain.addItem(item,itemPos)
                 if i < 6:
                     item = src.items.itemMap["Sword"]()
                     item.bolted = False
-                    currentTerrain.addItem(item,pos)
+                    currentTerrain.addItem(item,itemPos)
                 if i < 8:
                     item = src.items.itemMap["GooFlask"]()
                     item.bolted = False
-                    currentTerrain.addItem(item,pos)
+                    item.uses = 100
+                    currentTerrain.addItem(item,itemPos)
 
                 item = src.items.itemMap["Corpse"]()
                 item.bolted = False
-                currentTerrain.addItem(item,pos)
+                currentTerrain.addItem(item,itemPos)
 
             for _i in range(4):
                 item = src.items.itemMap["Sword"]()
                 item.bolted = False
-                pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-                currentTerrain.addItem(item,pos)
+                itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+                currentTerrain.addItem(item,itemPos)
             for _i in range(4):
                 item = src.items.itemMap["Armor"]()
                 item.bolted = False
-                pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-                currentTerrain.addItem(item,pos)
+                itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+                currentTerrain.addItem(item,itemPos)
+        for _i in range(10):
+            item = src.items.itemMap["ManaCrystal"]()
+            item.bolted = False
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(10):
             item = src.items.itemMap["Vial"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+            currentTerrain.addItem(item,itemPos)
         for _i in range(10):
             item = src.items.itemMap["GooFlask"]()
             item.bolted = False
-            pos = (random.randint(15,15*13),random.randint(15,15*13),0)
-            currentTerrain.addItem(item,pos)
+            if random.random() < 0.5:
+                item.uses = 100
+                itemPos = (random.randint(15,15*13),random.randint(15,15*13),0)
+                currentTerrain.addItem(item,itemPos)
 
         modifier = 1
         if self.difficulty == "tutorial":
@@ -4237,10 +4632,10 @@ but they are likely to explode when disturbed.
         for _i in range(20):
             bigPos = None
             for _j in range(10):
-                pos = (random.randint(1,13),random.randint(1,13),0)
-                if (pos[0] < 11 and pos[0] > 4) and (pos[1] < 11 and pos[1] > 4):
+                itemPos = (random.randint(1,13),random.randint(1,13),0)
+                if (itemPos[0] < 11 and itemPos[0] > 4) and (itemPos[1] < 11 and itemPos[1] > 4):
                     continue
-                bigPos = pos
+                bigPos = itemPos
                 break
 
             if not bigPos:
@@ -4249,8 +4644,8 @@ but they are likely to explode when disturbed.
             for _i in range(20):
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
-                pos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
-                currentTerrain.addItem(item,pos)
+                itemPos = (random.randint(bigPos[0]*15+1,bigPos[0]*15+14),random.randint(bigPos[1]*15+1,bigPos[1]*15+14),0)
+                currentTerrain.addItem(item,itemPos)
 
             if not self.difficulty == "easy":
                 for _i in range(random.randint(1,3)):
@@ -4273,11 +4668,7 @@ but they are likely to explode when disturbed.
             if not self.difficulty == "easy":
                 if random.random() < 0.5:
                     enemy = src.characters.Statue(4,4)
-                    enemy.health = 200*modifier
-                    enemy.baseDamage = 10
-                    enemy.maxHealth = 200*modifier
                     enemy.godMode = True
-                    enemy.movementSpeed = 0.8
                     enemy.faction = "guard"
 
                     quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
@@ -4288,8 +4679,8 @@ but they are likely to explode when disturbed.
 
                     currentTerrain.addCharacter(enemy, bigPos[0]*15+random.randint(1,13), bigPos[1]*15+random.randint(1,13))
 
-        for pos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
-            architect.doClearField(pos[0], pos[1])
+        for itemPos in ((6,7,0),(7,6,0),(8,7,0),(7,8,0)):
+            architect.doClearField(itemPos[0], itemPos[1])
 
         """
         # spawn enemies
@@ -4317,29 +4708,29 @@ but they are likely to explode when disturbed.
                 currentTerrain.addCharacter(enemy, x*15+7, y*15+7)
         """
 
-        pos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
-        architect.doClearField(pos[0], pos[1])
+        itemPos = random.choice([(6,6,0),(8,6,0),(8,8,0),(6,8,0)])
+        architect.doClearField(itemPos[0], itemPos[1])
         tree = src.items.itemMap["Tree"]()
         tree.numMaggots = tree.maxMaggot
-        currentTerrain.addItem(tree,(pos[0]*15+7,pos[1]*15+7,0))
-        currentTerrain.forests.append(pos)
+        currentTerrain.addItem(tree,(itemPos[0]*15+7,itemPos[1]*15+7,0))
+        currentTerrain.forests.append(itemPos)
 
         positions = [(7,4),(8,5),(9,6),(10,7),(9,8),(8,9),(7,10),(6,9),(5,8),(5,6),(6,5),(7,4)]
         positions = [random.choice(positions)]
-        for pos in positions:
-            architect.doClearField(pos[0], pos[1])
-            architect.doAddScrapfield(pos[0], pos[1], 100,leavePath=True)
+        for placement in positions:
+            architect.doClearField(placement[0], placement[1])
+            architect.doAddScrapfield(placement[0], placement[1], 100,leavePath=True)
 
         basePositions = [(7,6),(6,7),(7,8),(8,7),]
         positions = [random.choice(basePositions)]
         oppositePositions = {(7,6):(7,8),(7,8):(7,6),(6,7):(8,7),(8,7):(6,7)}
-        for pos in positions:
-            architect.doClearField(pos[0], pos[1])
-            architect.doAddScrapfield(pos[0], pos[1], 20,leavePath=True)
+        for placement in positions:
+            architect.doClearField(placement[0], placement[1])
+            architect.doAddScrapfield(placement[0], placement[1], 20,leavePath=True)
 
 
             if self.difficulty == "easy":
-                basePositions.remove(pos)
+                basePositions.remove(placement)
                 counter = 0
                 for neighbourPos in basePositions:
                     sideRoom = architect.doAddRoom(
@@ -4422,7 +4813,7 @@ but they are likely to explode when disturbed.
                     # prepare next loop round
                     counter += 1
             elif self.difficulty == "medium":
-                basePositions.remove(pos)
+                basePositions.remove(placement)
                 counter = 0
                 for neighbourPos in basePositions:
                     sideRoom = architect.doAddRoom(
@@ -4437,7 +4828,7 @@ but they are likely to explode when disturbed.
                        )
                     counter += 1
             else:
-                roomPos = oppositePositions[pos]
+                roomPos = oppositePositions[placement]
                 sideRoom = architect.doAddRoom(
                     {
                            "coordinate": roomPos,
@@ -4456,6 +4847,8 @@ but they are likely to explode when disturbed.
                 for clearPosition in clearPositions:
                     itemsToRemove.extend(currentTerrain.getItemByPosition((x*15+clearPosition[0],y*15+clearPosition[1],0)))
         currentTerrain.removeItems(itemsToRemove)
+
+        src.gamestate.gamestate.gods[1]["roomRewardMapByTerrain"][pos] = len(currentTerrain.rooms)
 
         return colonyBaseInfo
 

@@ -666,8 +666,9 @@ class GlassStatue(src.items.Item):
             options["b"] = ("unbolt", self.unboltAction)
             if not self.hasItem:
                 options["g"] = ("set glass heart", self.setGlassHeart)
-            if self.hasItem:
+            else:
                 options["g"] = ("remove glass heart", self.removeGlassHeart)
+                options["r"] = ("release glass heart", self.releaseGlassHeart)
         else:
             options["b"] = ("bolt down", self.boltAction)
         return options
@@ -678,6 +679,12 @@ class GlassStatue(src.items.Item):
         else:
             self.setGlassHeart(character)
             self.stable = True
+
+    def releaseGlassHeart(self,character):
+        if self.hasItem:
+            src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = src.gamestate.gamestate.gods[self.itemID]["home"]
+            print(src.gamestate.gamestate.gods[self.itemID])
+            self.hasItem = False
 
     def removeGlassHeart(self,character):
         newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15))

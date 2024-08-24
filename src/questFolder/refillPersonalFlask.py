@@ -98,6 +98,8 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                 return
 
             for item in character.container.itemsOnFloor:
+                if not character.container.getItemByPosition(item.getPosition()):
+                    continue
                 if not item == character.container.getItemByPosition(item.getPosition())[0]:
                     continue
                 if item.type == "GooDispenser" and item.charges:

@@ -28,6 +28,12 @@ class Sword(src.items.Item):
         else:
             self.baseDamage = int(random.triangular(10,25,15))
 
+    def degrade(self,multiplier=1,character=None):
+        if random.random()*self.baseDamage*multiplier > 200:
+            self.baseDamage -= 1
+            if character:
+                character.addMessage(f"your weapon degrades and now has {self.baseDamage} damage")
+
     def getLongInfo(self):
         """
         return a longer than normal description text

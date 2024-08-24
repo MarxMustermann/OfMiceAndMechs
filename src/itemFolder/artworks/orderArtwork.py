@@ -45,9 +45,9 @@ So they will start to run it as soon as their command queue is empty.
 That should usually be around 10-20 ticks."""
 
     def apply(self,character):
-        if not character.rank < 4:
-            character.addMessage("you need to have rank 3 to use this machine")
-            return
+        #if not character.rank < 4:
+        #    character.addMessage("you need to have rank 3 to use this machine")
+        #    return
         super().apply(character)
 
     def assignQuestFromMenu(self, character):

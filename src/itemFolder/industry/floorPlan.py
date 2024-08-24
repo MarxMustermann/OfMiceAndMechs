@@ -56,6 +56,10 @@ class FloorPlan(src.items.Item):
                 extra = {"toProduce":item.toProduce}
             if item.type == "DutyBell":
                 extra = {"duty":item.duty}
+            if item.type == "TriggerPlate":
+                extra = {"targets":str(item.targets)}
+                if item.getPosition() in room.walkingSpace:
+                    extra["floor"] = "walkingSpace"
             self.buildSites.append((item.getPosition(),item.type,extra))
 
         for walkingSpace in self.walkingSpace:

@@ -17,6 +17,7 @@ class BoltTower(src.items.Item):
         super().__init__(display="/\\")
         self.charges = 7
         self.faction = None
+
     def apply(self, character):
         self.showTargetingHud({"character":character})
 
@@ -137,6 +138,8 @@ class BoltTower(src.items.Item):
         Parameters:
             character: the character trying to use the item
         """
+
+        self.bolted = True
 
         if not self.faction == character.faction:
             self.faction = character.faction

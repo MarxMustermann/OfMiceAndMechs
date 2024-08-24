@@ -128,6 +128,7 @@ press . to wait"""]
         Parameters:
             character: the character trying to use the item
         """
+        self.bolted = True
 
         compressorFound = None
         for item in character.inventory:

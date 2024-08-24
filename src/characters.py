@@ -291,6 +291,10 @@ class Character:
             else:
                 function()
 
+    def triggerAutoMoveFixedTarget(self,extraParam):
+        extraParam["coordinate"] = extraParam["targetCoordinate"]
+        self.triggerAutoMoveToTile(extraParam)
+
     def triggerAutoMoveToTile(self,extraParam):
         """
         makes the character auto move to a given tile
@@ -711,6 +715,10 @@ class Character:
         newPos[1] += shift[1]
 
         while newPos[0]//15 == self.xPosition//15 and newPos[1]//15 == self.yPosition//15:
+            if self.container.isRoom and (newPos[0] > 12 or newPos[1] > 12):
+                break
+
+            self.container.addAnimation(tuple(newPos),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"++")})
 
             for item in self.container.getItemByPosition(tuple(newPos)):
                 if not item.walkable:
@@ -1269,6 +1277,12 @@ press any other key to attack normally"""
 
         if self.weapon:
             baseDamage += self.weapon.baseDamage
+            modifier = 1
+            if heavy:
+                modifier += 10
+            if ultraheavy:
+                modifier += 20
+            self.weapon.degrade(multiplier=modifier,character=self)
 
         if self.exhaustion > 10:
             baseDamage = baseDamage//2
@@ -2953,6 +2967,7 @@ class Statue(Monster):
         )
         self.charType = "Statue"
         self.specialDisplay = "@@"
+        self.baseDamage = 10
 
     def die(self, reason=None, addCorpse=True):
         """

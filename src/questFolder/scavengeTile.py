@@ -63,6 +63,10 @@ This quest will end when the target tile has no items left."""
                 character.runCommandString("Hjsssssj")
                 return
 
+            if character.getTerrain().alarm:
+                self.fail("alarm")
+                return
+
             if not character.getFreeInventorySpace() > 0:
                 if self.endOnFullInventory:
                     self.postHandler()

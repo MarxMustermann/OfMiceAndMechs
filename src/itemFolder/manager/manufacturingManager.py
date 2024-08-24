@@ -25,8 +25,22 @@ class ManufacturingManager(src.items.Item):
                     "showList": self.showList,
                     "changeProduction": self.changeProduction,
                         }
+        self.basicOptions = ["MetalBars","Rod","Frame","Case","Sheet","ManufacturingTable","Bolt","Armor","Sword"]
 
     def changeProduction(self,character):
+        self.changeProductionLoop({"character":character})
+
+    def addItemType(self,params):
+        character = params["character"]
+
+        if "name" not in params:
+            submenue = src.interaction.InputMenu("Type the name of the item to produce",targetParamName="name")
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"addItemType","params":params}
+            return
+
+        if params["name"]:
+            self.basicOptions.append(params["name"])
         self.changeProductionLoop({"character":character})
 
     def changeProductionLoop(self,params,selected=None,loop=True):
@@ -44,8 +58,11 @@ class ManufacturingManager(src.items.Item):
             options = []
             options.append((None,f"exit menu"))
             options.append(("addItemType",f"add item type"))
-            basicOptions = ["MetalBars","Rod","Frame","Case","Sheet","ManufacturingTable","Bolt","Armor","Sword"]
-            for option in basicOptions:
+            try:
+                self.basicOptions
+            except:
+                self.basicOptions = ["MetalBars","Rod","Frame","Case","Sheet","ManufacturingTable","Bolt","Armor","Sword"]
+            for option in self.basicOptions:
                 options.append((option,f"{option} {numActiveTables.get(option,0)}"))
 
             submenue = src.interaction.SelectionMenu(f"Manufacturingtables {numTablesUsed}/{len(manufacturingTables)}:\n(select and press j to increase)\n(select and press k to decrease)\n",options,targetParamName="type",selected=selected)
@@ -55,24 +72,34 @@ class ManufacturingManager(src.items.Item):
 
         if params["type"] == None:
             return
+        if params["type"] == "addItemType":
+            self.addItemType({"character":params["character"]})
+            return
 
         if params["key"] == "j":
+            foundTable = False
             for table in manufacturingTables:
                 if table.toProduce:
                     continue
                 table.toProduce = params["type"]
                 if character:
                     character.addMessage("added workshop")
+                foundTable = True
                 break
-            tablePos = table.getPosition()
-            self.container.addStorageSlot((tablePos[0]+1,tablePos[1],tablePos[2]),params["type"])
-            materialsNeeded = src.items.rawMaterialLookup.get(params["type"])
-            if params["type"] == "MetalBars":
-                materialsNeeded = ["Scrap"]
-            if not materialsNeeded:
-                materialsNeeded = ["MetalBars"]
-            self.container.addInputSlot((tablePos[0]-1,tablePos[1],tablePos[2]),materialsNeeded[0])
+
+            if not foundTable:
+                character.addMessage("no free workshop found")
+            else:
+                tablePos = table.getPosition()
+                self.container.addStorageSlot((tablePos[0]+1,tablePos[1],tablePos[2]),params["type"])
+                materialsNeeded = src.items.rawMaterialLookup.get(params["type"])
+                if params["type"] == "MetalBars":
+                    materialsNeeded = ["Scrap"]
+                if not materialsNeeded:
+                    materialsNeeded = ["MetalBars"]
+                self.container.addInputSlot((tablePos[0]-1,tablePos[1],tablePos[2]),materialsNeeded[0])
         if params["key"] == "k":
+            workshop_found = False
             for table in manufacturingTables:
                 if not table.toProduce == params["type"]:
                     continue
@@ -93,7 +120,12 @@ class ManufacturingManager(src.items.Item):
                 table.toProduce = None
                 if character:
                     character.addMessage("removed workshop")
+                workshop_found = True
                 break
+
+            # do shortcut to remove workshop when going below 0
+            if not workshop_found:
+                self.basicOptions.remove(params["type"])
         if loop:
             self.changeProductionLoop({"character":character},selected=params["type"])
 

@@ -46,6 +46,7 @@ class Room:
             seed: the rng seed
 
         """
+        self.alarm = False
         self.isRoom = True
         self.walkingSpace = set()
         self.inputSlots = []
@@ -945,7 +946,11 @@ class Room:
                 if item.yPosition == None:
                     logger.error("drawing non positioned item")
                     continue
-                chars[item.yPosition][item.xPosition] = display
+                try:
+                    chars[item.yPosition][item.xPosition] = display
+                except:
+                    logger.error(f"item placed outside of room {pos}")
+                    continue
 
             # draw characters
             viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
@@ -1212,6 +1217,23 @@ class Room:
                                 chars[pos[1]][pos[0]] = newDisplay
                 else:
                     logger.debug("character is rendered outside of room")
+
+            try:
+                self.alarm
+            except:
+                self.alarm = False
+            if self.alarm:
+                for x in range(0,13):
+                    if x == 6:
+                        continue
+                    if x == 0 or x ==12:
+                        for y in range(0,13):
+                            if y == 6:
+                                continue
+                            chars[y][x] = "++"
+                    else:
+                        chars[0][x] = "++"
+                        chars[12][x] = "++"
 
             # draw main char
             if src.gamestate.gamestate.mainChar in self.characters:
@@ -1495,6 +1517,20 @@ class Room:
                         item.commands.update(buildSite[2].get("commands"))
                     if buildSite[1] == "DutyBell":
                         item.duty = buildSite[2]["duty"]
+                    if buildSite[1] == "TriggerPlate":
+                        targets = buildSite[2].get("targets","[]")
+                        item.targets = []
+                        print(targets)
+                        if targets != "[]":
+                            targets = targets[2:-2]
+                            print(targets)
+                            for target in targets.split("), ("):
+                                print(target)
+                                target = target.split(", ")
+                                print(target)
+                                item.targets.append((int(target[0]),int(target[1]),int(target[2])))
+                        if buildSite[2].get("floor") == "walkingSpace":
+                            self.walkingSpace.add(pos)
                     if buildSite[1] == "ManufacturingTable":
                         if "toProduce" in buildSite[2]:
                             item.toProduce = buildSite[2]["toProduce"]

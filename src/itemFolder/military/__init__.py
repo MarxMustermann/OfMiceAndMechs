@@ -11,3 +11,4 @@ import src.itemFolder.military.shockTower
 import src.itemFolder.military.poissonTower
 import src.itemFolder.military.boltTower
 import src.itemFolder.military.rodTower
+import src.itemFolder.military.alarmBell

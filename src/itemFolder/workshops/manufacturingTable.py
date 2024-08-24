@@ -233,6 +233,9 @@ class ManufacturingTable(src.items.Item):
         if params["type"] in badListed:
             character.addMessage("producing this item here will result in a low quality item")
             new = src.items.itemMap[params["type"]](badQuality=True)
+        if not params["type"] in src.items.itemMap:
+            self.inUse = False
+            return
         else:
             new = src.items.itemMap[params["type"]]()
         new.bolted = False

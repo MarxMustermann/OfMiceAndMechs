@@ -57,7 +57,7 @@ class GameState:
 
         self.uiElements = [
                         {"type":"gameMap","offset":(19,6)},
-                        {"type":"miniMap","offset":(2,2)},
+                        {"type":"miniMap","offset":(2,1)},
                         {"type":"healthInfo","offset":(40,2),"width":82},
                         {"type":"indicators","offset":(40,3),"width":82},
                         {"type":"text","offset":(74,4), "text":[src.interaction.ActionMeta(content="press ? for help",payload="z")]},

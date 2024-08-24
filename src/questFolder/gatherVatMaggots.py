@@ -136,7 +136,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             self.addQuest(quest)
             return None
 
-        125/0
+        self.fail(reason="no tree")
         return None
 
 src.quests.addType(GatherVatMaggots)

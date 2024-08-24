@@ -35,6 +35,7 @@ class MachiningTable(src.items.Item):
         self.ins = [(1,0,0),(-1,0,0),]
         self.outs = [(0,-1,0),]
         self.scheduledItems = []
+        self.default_item_types = ["Rod","Frame","Case","Wall","Sheet","Sword","Armor","Bolt","ScrapCompactor"]
 
     def produceItemHook(self,character):
         self.produceItem({"character":character})
@@ -44,15 +45,8 @@ class MachiningTable(src.items.Item):
 
         if "type" not in params:
             options = []
-            options.append(("Rod","Rod Machine"))
-            options.append(("Frame","Frame Machine"))
-            options.append(("Case","Case Machine"))
-            options.append(("Wall","Wall Machine"))
-            options.append(("Sheet","Sheet"))
-            options.append(("Sword","Sword"))
-            options.append(("Armor","Armor"))
-            options.append(("Bolt","Bolt"))
-            options.append(("ScrapCompactor","ScrapCompactor Machine"))
+            for item_type in self.default_item_types:
+                options.append((item_type,item_type))
             options.append(("byName","produce by name"))
             submenue = src.interaction.SelectionMenu("Produce machine for what item?",options,targetParamName="type")
             submenue.tag = "machiningProductSelection"
@@ -206,13 +200,8 @@ class MachiningTable(src.items.Item):
         if "type" not in params:
             options = []
             options.append(("delete","delete"))
-            options.append(("Wall","Wall"))
-            options.append(("Case","Case"))
-            options.append(("Frame","Frame"))
-            options.append(("Rod","Rod"))
-            options.append(("Sheet","Sheet"))
-            options.append(("Sword","Sword"))
-            options.append(("Armor","Armor"))
+            for item_type in self.default_item_types:
+                options.append((item_type,item_type))
             options.append(("Bolt","Bolt"))
             submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue

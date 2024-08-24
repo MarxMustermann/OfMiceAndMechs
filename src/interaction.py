@@ -114,6 +114,9 @@ def advanceGame():
             for (godId,god) in src.gamestate.gamestate.gods.items():
                 if ( (god["lastHeartPos"][0] != god["home"][0]) or
                      (god["lastHeartPos"][1] != god["home"][1])):
+                    print("god found")
+                    print(godId)
+                    print(god)
 
                     terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
 
@@ -764,6 +767,46 @@ def handleActivitySelection(key,char):
                     },
                     "description":"move to tile",
                 }
+                functionMap[(x,y)]["c"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTarget",
+                        "params":{"targetCoordinate":(7,7,0)},
+                    },
+                    "description":"move to center",
+                }
+                functionMap[(x,y)]["W"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTarget",
+                        "params":{"targetCoordinate":(7,1,0)},
+                    },
+                    "description":"move to north crossing",
+                }
+                functionMap[(x,y)]["A"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTarget",
+                        "params":{"targetCoordinate":(1,7,0)},
+                    },
+                    "description":"move to west crossing",
+                }
+                functionMap[(x,y)]["S"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTarget",
+                        "params":{"targetCoordinate":(7,13,0)},
+                    },
+                    "description":"move to south crossing",
+                }
+                functionMap[(x,y)]["D"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveFixedTarget",
+                        "params":{"targetCoordinate":(13,7,0)},
+                    },
+                    "description":"move to east crossing",
+                }
 
         for scrapField in terrain.scrapFields:
             mapContent[scrapField[1]][scrapField[0]] = "ss"
@@ -779,7 +822,7 @@ def handleActivitySelection(key,char):
 
         extraText = "\n\n"
 
-        submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
+        submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
     del char.interactionState["runaction"]
@@ -4862,6 +4905,8 @@ class CharacterInfoMenu(SubMenu):
         text += f"big position: {char.getBigPosition()}\n"
         text += f"terrain position: {char.getTerrainPosition()}\n"
         text += f"grievances: {char.grievances}\n"
+        text += f"registers: {char.registers}\n"
+        text += f"terrainName: %s\n" % char.getTerrain().tag
 
         return text
 
@@ -7639,8 +7684,10 @@ def renderGameDisplay(renderChar=None):
                             displayChars=src.canvas.displayChars,
                             tileMapping=None,
                         )
-                        canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
-                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1],warning=warning)
+                        canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
+                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
+                        position_string = str(src.gamestate.gamestate.mainChar.getTerrainPosition())+" // "+str(src.gamestate.gamestate.mainChar.getBigPosition())
+                        printUrwidToTcod(position_string,(uiElement["offset"][0]+5,uiElement["offset"][1]))
 
                     if uiElement["type"] == "healthInfo":
                         if src.gamestate.gamestate.dragState:

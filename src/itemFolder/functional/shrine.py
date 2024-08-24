@@ -37,7 +37,7 @@ class Shrine(src.items.Item):
                         }
 
     def taunt(self,character):
-        if self.godID == 1:
+        if self.itemID == 1:
             options = []
             options.append((100,"100"))
             options.append((1000,"1000"))
@@ -45,16 +45,16 @@ class Shrine(src.items.Item):
             submenue = src.interaction.SelectionMenu("How long do you want to pray?",options,targetParamName="duration")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPraySelection","params":{"character":character}}
-        elif self.godID == 2:
+        elif self.itemID == 2:
             # spawn enemies
             pass
-        elif self.godID == 3:
+        elif self.itemID == 3:
             # hurt character
             pass
-        elif self.godID == 4:
+        elif self.itemID == 4:
             # destroy item
             pass
-        elif self.godID == 5:
+        elif self.itemID == 5:
             # destroy item
             pass
 
@@ -280,8 +280,7 @@ class Shrine(src.items.Item):
         if self.god == 7:
             character.addMessage("this god can improve your base damage")
 
-    def getCharacterSpawningCost(self,character):
-        baseCost = 30
+    def getNumTrueCharacters(self,character):
         terrain = self.getTerrain()
 
         numCharacters = 0
@@ -290,6 +289,8 @@ class Shrine(src.items.Item):
                 continue
             if otherCharacter.burnedIn:
                 continue
+            if otherCharacter == character:
+                continue
             numCharacters += 1
         for room in terrain.rooms:
             for otherCharacter in room.characters:
@@ -297,7 +298,17 @@ class Shrine(src.items.Item):
                     continue
                 if otherCharacter.burnedIn:
                     continue
+                if otherCharacter == character:
+                    continue
                 numCharacters += 1
+
+        return numCharacters
+
+    def getCharacterSpawningCost(self,character):
+        baseCost = 30
+        terrain = self.getTerrain()
+
+        numCharacters = self.getNumTrueCharacters(character)
 
         baseCost *= 1.05**numCharacters
         baseCost = math.ceil(baseCost*10)/10
@@ -385,7 +396,8 @@ class Shrine(src.items.Item):
             if foundFlask:
                 cost /= 2
 
-            options.append((f"spawn true NPC",f"({cost}) spawn NPC"))
+            numCharacters = self.getNumTrueCharacters(character)
+            options.append((f"spawn true NPC",f"({cost}) {numCharacters} spawn NPC"))
 
             cost = self.getBurnedInCharacterSpawningCost(character)
             cost *= glassHeartRebate
@@ -411,10 +423,8 @@ class Shrine(src.items.Item):
         elif self.god == 4:
             cost = 10
             cost *= glassHeartRebate
-            if character.attackSpeed <= 0.5:
-                character.addMessage("you can't improve your attack speed further")
-                return
-            options.append(("upgrade attack speed",f"({cost}) upgrade attack speed"))
+            if character.attackSpeed > 0.5:
+                options.append(("upgrade attack speed",f"({cost}) upgrade attack speed"))
             options.append(("upgrade movement speed",f"({cost}) upgrade movement speed"))
 
         elif self.god == 5:
@@ -464,11 +474,9 @@ class Shrine(src.items.Item):
             if foundVial:
                 cost /= 2
 
-            if character.maxHealth >= 500:
-                character.addMessage("you can't improve your health further")
-                return
             cost *= glassHeartRebate
-            options.append(("improve your max health",f"({cost}) improve your max health"))
+            if character.maxHealth < 500:
+                options.append(("improve your max health",f"({cost}) improve your max health"))
 
             cost = 5
             cost *= glassHeartRebate
@@ -477,11 +485,11 @@ class Shrine(src.items.Item):
             #options.append(("healingModifier","(10) improve your healing amount"))
 
         elif self.god == 7:
-            if character.baseDamage >= 10:
-                character.addMessage("you can't improve your base damage further")
-                return
+            cost = 10
+            cost *= glassHeartRebate
 
-            options.append(("improve base damage","(10) improve your base damage"))
+            if character.baseDamage < 10:
+                options.append(("improve base damage",f"({cost}) improve your base damage"))
 
         else:
             options.append(("spawn personnel tracker","(0) spawn personnel tracker"))
@@ -522,7 +530,7 @@ class Shrine(src.items.Item):
 
         regex = r"^spawn (.+) NPC$"
         reg_out = re.match(regex,extraInfo["rewardType"])
-        if reg_out != None:
+        if reg_out != None and reg_out.group(1) != "true":
             text = "You spawned a clone with the duty " + reg_out.group(1)
             spawning_result = self.spawnNPC(character,True,reg_out.group(1))
 
@@ -643,13 +651,15 @@ class Shrine(src.items.Item):
                 character.addMessage(f"the mana is used up")
 
         elif extraInfo['rewardType'] == "improve base damage":
-            if self.getTerrain().mana >= 10:
+            cost = 10
+            cost *= glassHeartRebate
+            if self.getTerrain().mana >= cost:
                 text = "increasing base damage"
                 increaseValue = 2
                 increaseValue = min(10-character.baseDamage,increaseValue)
                 character.baseDamage += increaseValue
                 character.addMessage(f"your base damage is increased by {increaseValue} to {character.baseDamage}")
-                self.getTerrain().mana -= 10
+                self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")
 
@@ -802,6 +812,7 @@ class Shrine(src.items.Item):
                 npc.duties.append("cleaning")
                 npc.duties.append("machine operation")
                 npc.duties.append("manufacturing")
+                npc.duties.append("praying")
 
 
             if foundFlask:

@@ -353,7 +353,9 @@ class CityPlaner(src.items.Item):
             options.append(("electrifierHall","electrifier hall"))
             options.append(("scrapCompactor","scrap compactor hall"))
             options.append(("boltProduction","bolt production"))
+            options.append(("rodProduction","rod production"))
             options.append(("smokingRoom","smoking room"))
+            options.append(("trapRoom","trap room"))
             options.append(("temple","temple"))
             options.append(("exit","exit menu"))
             submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
@@ -542,7 +544,7 @@ class CityPlaner(src.items.Item):
             for y in (1,4,6,8,11,):
                 for x in range(1,12):
                     walkingSpaces.append((x,y,0))
-            for y in (2,3,5,7,9,10,):
+            for y in (2,3,5,7,9,):
                 for x in (1,7,):
                     inputSlots.append( ((x  ,y,0),"Scrap",{}))
                     buildSites.append( ((x+1,y,0),"ScrapCompactor",{}))
@@ -550,7 +552,21 @@ class CityPlaner(src.items.Item):
                     buildSites.append( ((x+3,y,0),"Machine",{"toProduce":"Bolt"}))
                     storageSlots.append(((x+4,y,0),"Bolt",{}))
                 walkingSpaces.append((6,y,0))
-            walkingSpaces.append((6,11,0))
+            walkingSpaces.append((6,10,0))
+
+        if floorPlanType == "rodProduction":
+            for y in (1,4,6,8,11,):
+                for x in range(1,12):
+                    walkingSpaces.append((x,y,0))
+            for y in (2,3,5,7,9,):
+                for x in (1,7,):
+                    inputSlots.append( ((x  ,y,0),"Scrap",{}))
+                    buildSites.append( ((x+1,y,0),"ScrapCompactor",{}))
+                    inputSlots.append(((x+2,y,0),"MetalBars",{}))
+                    buildSites.append( ((x+3,y,0),"Machine",{"toProduce":"Rod"}))
+                    storageSlots.append(((x+4,y,0),"Rod",{}))
+                walkingSpaces.append((6,y,0))
+            walkingSpaces.append((6,10,0))
 
         if floorPlanType == "basicRoombuildingItemsProduction":
             for y in (3,6,10,):
@@ -627,10 +643,63 @@ class CityPlaner(src.items.Item):
                 walkingSpaces.append((1,y,0))
                 walkingSpaces.append((11,y,0))
 
-        if floorPlanType == "scrapCompactor":
-            for y in (1,4,7,10,):
+        if floorPlanType == "trapRoom":
+            for y in (4,8):
                 for x in range(1,12):
                     walkingSpaces.append((x,y,0))
+            for x in (4,8):
+                for y in range(1,12):
+                    if y in (4,8):
+                        continue
+                    walkingSpaces.append((x,y,0))
+            for x in range(1,4):
+                print((x,6,0))
+                walkingSpaces.append((x,6,0))
+            for x in range(9,12):
+                print((x,6,0))
+                walkingSpaces.append((x,6,0))
+            for y in range(1,4):
+                print((6,y,0))
+                walkingSpaces.append((6,y,0))
+            for y in range(9,12):
+                print((6,y,0))
+                walkingSpaces.append((6,y,0))
+
+            buildSites.append(((6, 5, 0),"BoltTower",{}))
+            inputSlots.append(((5, 7, 0),"Bolt",{}))
+            buildSites.append(((6, 7, 0),"BoltTower",{}))
+            inputSlots.append(((7, 7, 0),"Bolt",{}))
+            buildSites.append(((5, 6, 0),"BoltTower",{}))
+            inputSlots.append(((7, 5, 0),"Bolt",{}))
+            buildSites.append(((7, 6, 0),"BoltTower",{}))
+            inputSlots.append(((5, 5, 0),"Bolt",{}))
+            for x in range(1,12):
+                if x > 3 and x < 9:
+                    continue
+
+                if x < 6:
+                    boltPos = (5,6,0)
+                else:
+                    boltPos = (7,6,0)
+                buildSites.append(((x, 5, 0),"RodTower",{}))
+                buildSites.append(((x, 6, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(x,5,0),(x,7,0),boltPos])}))
+                buildSites.append(((x, 7, 0),"RodTower",{}))
+            for y in range(1,12):
+                if y > 3 and y < 9:
+                    continue
+                if y < 6:
+                    boltPos = (6,5,0)
+                else:
+                    boltPos = (6,7,0)
+                buildSites.append(((5, y, 0),"RodTower",{}))
+                buildSites.append(((6, y, 0),"TriggerPlate",{"floor":"walkingSpace","targets":str([(5,y,0),(7,y,0),boltPos])}))
+                buildSites.append(((7, y, 0),"RodTower",{}))
+
+
+
+        if floorPlanType == "scrapCompactor":
+            #for y in (1,4,7,10,):
+            #        walkingSpaces.append((x,y,0))
             for y in (2,3,5,6,8,9,):
                 walkingSpaces.append((1,y,0))
                 for x in (3,6,9,):

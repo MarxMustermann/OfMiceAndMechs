@@ -23,7 +23,7 @@ class TriggerPlate(src.items.Item):
         super().__init__(display=src.canvas.displayChars.landmine)
 
         self.active = True
-        self.target = None
+        self.targets = []
         self.faction = None
 
     def toggleActive(self,character):
@@ -57,23 +57,33 @@ class TriggerPlate(src.items.Item):
         if checkFaction and self.faction == character.faction:
             return
 
+        items = self.container.getItemByPosition(self.getPosition())
+        if not (items[0] == self):
+            return
+
         character.addMessage("you step on a trigger plate")
 
-        if not self.target:
-            return
-
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"tt"})
-        self.container.addAnimation(self.target,"showchar",1,{"char":"TT"})
-
-        items = self.container.getItemByPosition(self.target)
-        if not items:
-            return
-
         try:
-            items[0].remoteActivate
+            self.targets
         except:
+            self.targets = []
+
+        if not self.targets:
             return
-        items[0].remoteActivate(extraParams={"pos":self.getPosition()})
+
+        for target in self.targets:
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"tt"})
+            self.container.addAnimation(target,"showchar",1,{"char":"TT"})
+
+            items = self.container.getItemByPosition(target)
+            if not items:
+                return
+
+            try:
+                items[0].remoteActivate
+            except:
+                return
+            items[0].remoteActivate(extraParams={"pos":self.getPosition()})
 
     def getConfigurationOptions(self, character):
         """
@@ -92,7 +102,7 @@ class TriggerPlate(src.items.Item):
         else:
             options["b"] = ("bolt down", self.boltAction)
         options["a"] = ("toggle active", self.toggleActive)
-        options["t"] = ("configure target", self.configureTargetHook)
+        options["t"] = ("configure targets", self.configureTargetHook)
         return options
 
     def configureTargetHook(self,character):
@@ -102,31 +112,49 @@ class TriggerPlate(src.items.Item):
         self.configureTargetPosition(params)
 
     def configureTargetPosition(self,params):
+        try:
+            self.targets
+        except:
+            self.targets = []
+
+        if not "cursor" in params:
+            params["cursor"] = self.getPosition()
+        cursor = params["cursor"]
+
         key = params.get("keyPressed")
         if key:
-            if key in ("j","k","enter","esc","lESC","rESC"):
+            if key in ("esc","lESC","rESC"):
                 return
+            if key in ("j","k","enter"):
+                if cursor in self.targets:
+                    self.targets.remove(cursor)
+                else:
+                    self.targets.append(cursor)
             if key == "w":
-                self.target = (self.target[0],self.target[1]-1,0)
+                cursor = (cursor[0],cursor[1]-1,0)
+                params["cursor"] = cursor
             if key == "a":
-                self.target = (self.target[0]-1,self.target[1],0)
+                cursor = (cursor[0]-1,cursor[1],0)
+                params["cursor"] = cursor
             if key == "s":
-                self.target = (self.target[0],self.target[1]+1,0)
+                cursor = (cursor[0],cursor[1]+1,0)
+                params["cursor"] = cursor
             if key == "d":
-                self.target = (self.target[0]+1,self.target[1],0)
+                cursor = (cursor[0]+1,cursor[1],0)
+                params["cursor"] = cursor
 
         character = params["character"]
         roomRender = self.container.render()
 
-        if not self.target:
-            self.target = self.getPosition()
-        pos = self.target
-        roomRender[pos[1]][pos[0]] = "XX"
+        roomRender[cursor[1]][cursor[0]] = "XX"
+
+        for target in self.targets:
+            roomRender[target[1]][target[0]] = "OO"
 
         for line in roomRender:
             line.append("\n")
 
-        submenue = src.interaction.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor"])
+        submenue = src.interaction.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor\npress j to add/remove target"])
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configureTargetPosition","params":params}
 

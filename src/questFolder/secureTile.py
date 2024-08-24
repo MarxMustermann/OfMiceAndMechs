@@ -123,6 +123,11 @@ Try luring enemies into landmines or detonating some bombs."""
                         else:
                             quest = src.quests.questMap["Fight"]()
                             return ([quest],None)
+            else:
+                enemies = character.getNearbyEnemies()
+                if enemies:
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
 
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 

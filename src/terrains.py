@@ -67,6 +67,8 @@ class Terrain:
 
         super().__init__()
 
+        self.tag = None
+
         self.isRoom = False
         # store terrain content
         self.characters = []
@@ -83,7 +85,8 @@ class Terrain:
         self.events = []
         self.biomeInfo = {"moisture": 1}
         self.hidden = True
-        self.minimapOverride = {(7,7,0):"CC"}
+        #self.minimapOverride = {(7,7,0):"CC"}
+        self.minimapOverride = {}
         self.animations = []
         self.pathfinderCache = {}
 
@@ -102,6 +105,8 @@ class Terrain:
         self.zPosition = None
 
         self.lastRender = None
+
+        self.alarm = False
 
     def callIndirect(self, callback, extraParams=None):
         """
@@ -225,8 +230,11 @@ class Terrain:
         self.handleEvents()
 
         if src.gamestate.gamestate.tick%(15*15*15) == 0:
-            increaseAmount = min(self.manaRegen,self.maxMana-self.mana)
-            self.mana += increaseAmount
+            self.add_mana(self.manaRegen)
+
+    def add_mana(self, amount):
+        increaseAmount = min(amount,self.maxMana-self.mana)
+        self.mana += increaseAmount
 
     def randomAddItems(self, items):
         for item in items:
@@ -1671,6 +1679,15 @@ class Terrain:
             # mapHidden = False
             self.hidden = mapHidden
 
+            # select color for force field 
+            try:
+                self.alarm
+            except:
+                self.alarm = False
+            forceField = src.canvas.displayChars.forceField
+            if self.alarm:
+                forceField = "++"
+
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
             for x in range(225):
@@ -1679,9 +1696,9 @@ class Terrain:
 
                 for y in range(16):
                     if not (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
-                        chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                        chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = forceField
                     if not (y+14*15-1 < coordinateOffset[0] or y+14*15-1 > coordinateOffset[0]+size[0]):
-                        chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                        chars[y-coordinateOffset[0] + 14 * 15 - 1][x-coordinateOffset[1]] = forceField
 
             for y in range(225):
                 if (y < coordinateOffset[0] or y > coordinateOffset[0]+size[0]):
@@ -1689,9 +1706,9 @@ class Terrain:
 
                 for x in range(16):
                     if not (x < coordinateOffset[1] or x > coordinateOffset[1]+size[1]):
-                        chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = src.canvas.displayChars.forceField
+                        chars[y-coordinateOffset[0]][x-coordinateOffset[1]] = forceField
                     if not (x + 14 * 15 - 1 < coordinateOffset[1] or x + 14 * 15 - 1 > coordinateOffset[1]+size[1]):
-                        chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = src.canvas.displayChars.forceField
+                        chars[y-coordinateOffset[0]][x-coordinateOffset[1] + 14 * 15 - 1] = forceField
 
             # show/hide rooms
             for room in self.rooms:
@@ -1721,25 +1738,25 @@ class Terrain:
                                     bigY*15 < coordinateOffset[0] or bigY*15 > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + 0 - coordinateOffset[0]][
                                     bigX * 15 + x - coordinateOffset[1]
-                                ] = src.canvas.displayChars.forceField
+                                ] = forceField
 
                             if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
                                     bigY*15+14 < coordinateOffset[0] or bigY*15+14 > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + 14 - coordinateOffset[0]][
                                     bigX * 15 + x - coordinateOffset[1]
-                                ] = src.canvas.displayChars.forceField
+                                ] = forceField
 
                             if not (bigX*15 < coordinateOffset[1] or bigX*15 > coordinateOffset[1]+size[1] or
                                     bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + y - coordinateOffset[0]][
                                     bigX * 15 + 0 - coordinateOffset[1]
-                                ] = src.canvas.displayChars.forceField
+                                ] = forceField
 
                             if not (bigX*15+14 < coordinateOffset[1] or bigX*15+14 > coordinateOffset[1]+size[1] or
                                     bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + y - coordinateOffset[0]][
                                     bigX * 15 + 14 - coordinateOffset[1]
-                                ] = src.canvas.displayChars.forceField
+                                ] = forceField
 
             # calculate room visibility
             if not mapHidden:

@@ -19,3 +19,4 @@ import src.itemFolder.artworks.tradingArtwork
 import src.itemFolder.artworks.tradingArtwork2
 import src.itemFolder.artworks.stockTracker
 import src.itemFolder.artworks.glassifier
+import src.itemFolder.artworks.adventureArtwork

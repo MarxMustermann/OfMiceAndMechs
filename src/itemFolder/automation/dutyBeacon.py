@@ -16,7 +16,6 @@ class DutyBeacon(src.items.Item):
         super().__init__(display="DB")
 
         self.name = "dutyBeacon"
-        self.priority = 0
 
         self.bolted = False
         self.walkable = False
@@ -48,7 +47,7 @@ class DutyBeacon(src.items.Item):
         if extraParams["selection"] == "abort":
             return
 
-        priority = 0
+        priority = None
         if extraParams["selection"] == "pull":
             priority = 1
         if extraParams["selection"] == "push":
@@ -61,8 +60,9 @@ class DutyBeacon(src.items.Item):
             priority = room.priority-1
 
 
-        room.priority = priority
-        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
+        if priority is not None:
+            room.priority = priority
+            self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#fff", "#000"), "##")})
 
     def render(self):
         return (src.interaction.urwid.AttrSpec("#aaa", "black"), "DB")
@@ -100,7 +100,7 @@ class DutyBeacon(src.items.Item):
 
         text = super().getLongInfo()
 
-        text += f"the duty beacon is set to:\n{self.priority}"
+        text += f"the duty beacon is set to:\n{self.container.priority}"
 
         return text
 

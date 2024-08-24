@@ -54,6 +54,7 @@ Just clear the whole terrain tile for tile.
             return
 
         (nextQuests,nextCommand) = self.getNextStep(character)
+        character.addMessage(((nextQuests,nextCommand)))
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -62,6 +63,7 @@ Just clear the whole terrain tile for tile.
         if nextCommand:
             character.runCommandString(nextCommand[0])
             return
+        character.addMessage("super solver")
         super().solver(character)
 
     def getNextStep(self,character=None,ignoreCommands=False):

@@ -94,7 +94,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason and reason.startswith("no source for item ") and "resource gathering" in self.character.duties:
+        if reason and reason.startswith("no source for item ") and "resource gathering" in self.character.duties and not self.character.getTerrain().alarm:
             newQuest = src.quests.questMap["GatherScrap"](reason="have some scrap to hammer")
             self.addQuest(newQuest)
             self.startWatching(quest,self.handleQuestFailure,"failed")

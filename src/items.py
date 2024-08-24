@@ -405,6 +405,9 @@ class Item:
 
         return [self.__vanillaPickUp]
 
+    def degrade(self):
+        return
+
     def pickUp(self, character):
         """
         handles getting picked up by a character

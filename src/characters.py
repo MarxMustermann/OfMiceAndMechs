@@ -2296,7 +2296,7 @@ press any other key to attack normally"""
             return
 
         if self.health < self.maxHealth and (
-                int(self.health) and src.gamestate.gamestate.tick%int(self.health) < self.healingThreashold):
+                int(self.health) and (src.gamestate.gamestate.tick+10000)%int(self.health) < self.healingThreashold):
             self.heal(1,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):

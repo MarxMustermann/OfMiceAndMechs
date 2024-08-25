@@ -131,9 +131,6 @@ def advanceGame():
                         if god["lastHeartPos"] == checkGod["lastHeartPos"]:
                             numGlassHeartsOnPos += 1
 
-                    if numGlassHeartsOnPos == 7:
-                        break
-
                     multipliers = (1.2,1.1,1.5,1.1)
                     baseHealth = 50
                     baseDamage = 5
@@ -9968,7 +9965,7 @@ starts to burn your flesh.                                                \n\
                 subStep2 += 1
                 time.sleep(0.03)
             else:
-                stage += 1
+                stage += 2 # skip one stage
                 subStep = 0
                 subStep2 = 0
         elif stage == 1:
@@ -10254,6 +10251,12 @@ to feel around"""
 suggested action:
 press enter
 to look around"""
+            elif subStep == 3:
+                text = """
+suggested action:
+press enter
+to orient yourself"""
+
             else:
                 text = """
 suggested action:

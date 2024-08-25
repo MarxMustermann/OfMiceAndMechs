@@ -973,7 +973,7 @@ class Item:
             amount = 1
             if not self.walkable:
                 amount = 20
-            newItem = src.items.itemMap["Scrap"](amount=1)
+            newItem = src.items.itemMap["Scrap"](amount=amount)
 
             toRemove = []
             for item in container.getItemByPosition(pos):

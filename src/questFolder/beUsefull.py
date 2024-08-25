@@ -542,7 +542,7 @@ We should stop watching and do something about that.
                 return True
         return None
 
-    def checkTriggerCloneSpawning(self,character,room):
+    def checkTriggerCloneSpawning(self,character,currentRoom):
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
 

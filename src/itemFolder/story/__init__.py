@@ -6,3 +6,5 @@ import src.itemFolder.story.specialItemSlot
 import src.itemFolder.story.sunScreen
 import src.itemFolder.story.waterCondenser
 import src.itemFolder.story.waterPump
+import src.itemFolder.story.sternsContraption
+import src.itemFolder.story.contraption

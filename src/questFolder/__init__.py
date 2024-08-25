@@ -91,3 +91,4 @@ import src.questFolder.waitQuest
 import src.questFolder.escapeAmbushStory
 import src.questFolder.manufacture
 import src.questFolder.refillPersonalFlask
+import src.questFolder.story.escapeLab

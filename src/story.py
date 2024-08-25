@@ -1555,6 +1555,9 @@ class MainGame(BasicPhase):
 
         self.colonyBaseInfos2.append(self.createColonyBase2(self.get_free_position("colonybase")))
 
+        self.sternsBasePosition = self.get_free_position("sterns base")
+        self.setUpSternsBase(self.sternsBasePosition)
+
         for _i in range(1,20):
             self.get_free_position("nothingness")
 
@@ -1584,7 +1587,7 @@ class MainGame(BasicPhase):
             self.activeStory = self.dungeonCrawlInfos[0]
 
         if self.preselection == "Story":
-            self.dungeonCrawlInfos.append(self.createStoryStart(self.get_free_position("story1"),self.get_free_position("story2")))
+            self.dungeonCrawlInfos.append(self.createStoryStart())
             self.activeStory = self.dungeonCrawlInfos[0]
 
         if self.preselection == "Travel":
@@ -1743,7 +1746,8 @@ The room is filled with various items.
 You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
-            self.activeStory["mainChar"].messages.insert(0,("""until you notice a statue move."""))
+            self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
+            self.activeStory["sternsContraption"].startMeltdown()
         elif self.activeStory["type"] == "dungeon crawl":
             if len(self.activeStory["mainChar"].messages) == 0:
                 text = """
@@ -2546,6 +2550,92 @@ but they are likely to explode when disturbed.
         statue = src.items.itemMap["GlassStatue"](itemID=itemID)
         statue.charges = 5
         room.addItem(statue,(6,6,0))
+
+    def setUpSternsBase(self,pos):
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "sterns base"
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        anvilPos = (10,2,0)
+        machinemachine = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        metalWorkBenchPos = (8,3,0)
+        machinemachine = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+        mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+        mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+        trapRoom1 = architect.doAddRoom(
+                {
+                       "coordinate": (6,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        trapRoom2 = architect.doAddRoom(
+                {
+                       "coordinate": (5,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+
+        startRoom = architect.doAddRoom(
+                {
+                       "coordinate": (3,9),
+                       "roomType": "EmptyRoom",
+                       "doors": "6,0",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        startRoom.tag = "sternslab"
+        
+        for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
+                    (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
+            startRoom.addWalkingSpace(pos)
+        for pos in [(5,6,0),(7,6,0),(5,7,0),(6,7,0),(7,7,0),
+                    (9,9,0),(10,9,0),(8,9,0),(9,8,0),(9,10,0),
+                    (3,9,0),(2,9,0),(4,9,0),(3,8,0),(3,10,0),
+                    (9,3,0),(9,2,0),(9,4,0),(8,3,0),(10,3,0),
+                    (3,3,0),(4,3,0),(2,3,0),(3,2,0),(3,4,0),]:
+            item = src.items.itemMap["Contraption"]()
+            item.display = "OT"
+            startRoom.addItem(item,pos)
 
     def setUpFactoryRemains(self,pos):
         # get basic info
@@ -3849,155 +3939,23 @@ but they are likely to explode when disturbed.
 
         return travelInfo
 
-    def createStoryStart(self, startPos, homePos):
-        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
-
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        homeTerrain.addItem(item,(1,1,0))
-
-        mainRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-
-        startTerrain = src.gamestate.gamestate.terrainMap[startPos[1]][startPos[0]]
-
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        startTerrain.addItem(item,(1,1,0))
-
-        startRoom = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-        shrine = src.items.itemMap["Shrine"]()
-        shrine.bolted = True
-        startRoom.addItem(shrine,(6,6,0))
-
-        # spawn the moving statues
-        monsterPositions = [(2,2,0),(10,2,0),(10,10,0),(2,10,0)]
-        counter = 0
-        for monsterPosition in monsterPositions:
-            enemy = src.characters.Statue()
-            enemy.godMode = True
-            enemy.timeTaken = 1+(5*counter)
-
-            quest = src.quests.questMap["SecureTile"](toSecure=(7,7,0),strict=True)
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
-
-            startRoom.addCharacter(enemy, monsterPosition[0], monsterPosition[1])
-
-            counter += 1
-
-        # spawn the static statues
-        monsterPositions = [(6,7,0),(7,6,0),(6,5,0),(5,6,0)]
-        counter = 0
-        for monsterPosition in monsterPositions:
-            enemy = src.characters.Statue()
-            enemy.godMode = True
-
-            startRoom.addCharacter(enemy, monsterPosition[0], monsterPosition[1])
-
-            counter += 1
-
-        # add extra rooms
-        positions = [(7,8),(8,7),(7,6),(6,7)]
-        extraRooms = []
-        for position in positions:
-            room = architect.doAddRoom(
-                    {
-                           "coordinate": position,
-                           "roomType": "EmptyRoom",
-                           "doors": "0,6 6,0 12,6 6,12",
-                           "offset": [1,1],
-                           "size": [13, 13],
-                    },
-                    None,
-               )
-            extraRooms.append(room)
-
-            enemy = src.characters.Statue()
-            enemy.godMode = True
-            enemy.timeTaken = 50
-
-            quest = src.quests.questMap["SecureTile"](toSecure=(position[0],position[1],0),strict=True)
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
-
-            room.addCharacter(enemy, 6,6)
-
-        # add treasure rooms
-        positions = [(5,5),(9,5),(5,9),(9,9),(3,3),(11,3),(3,11),(11,11)]
-        treasureRooms = []
-        counter = 0
-        for position in positions:
-            room = architect.doAddRoom(
-                    {
-                           "coordinate": position,
-                           "roomType": "EmptyRoom",
-                           "doors": "0,6 6,0 12,6 6,12",
-                           "offset": [1,1],
-                           "size": [13, 13],
-                    },
-                    None,
-               )
-            treasureRooms.append(room)
-
-            pos = (7,7,0)
-
-            if counter == 0:
-                item = src.items.itemMap["Sword"]()
-                item.bolted = False
-                item.baseDamage = 10
-                room.addItem(item,pos)
-
-            if counter == 1:
-                item = src.items.itemMap["Armor"]()
-                item.bolted = False
-                item.armorValue = 2
-                room.addItem(item,pos)
-
-            if counter > 1:
-                for pos in ((7,3,0),(3,4,0),(2,2,0),(9,4,0),(3,7,0)):
-                    item = src.items.itemMap["Bolt"]()
-                    item.bolted = False
-                    room.addItem(item,pos)
-
-            counter += 1
+    def createStoryStart(self):
+        homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
 
         mainChar = src.characters.Character()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
         mainChar.duties = ["praying","city planning","clone spawning","questing"]
         mainChar.rank = 6
+        mainChar.timeTaken = 1
+        mainChar.runCommandString(".",nativeKey=True)
 
         thisFactionId = self.factionCounter
         mainChar.faction = f"city #{thisFactionId}"
         self.factionCounter += 1
 
-        mainChar.registers["HOMETx"] = homePos[0]
-        mainChar.registers["HOMETy"] = homePos[1]
+        mainChar.registers["HOMETx"] = self.sternsBasePosition[0]
+        mainChar.registers["HOMETy"] = self.sternsBasePosition[1]
         mainChar.registers["HOMEx"] = 7
         mainChar.registers["HOMEy"] = 7
 
@@ -4011,22 +3969,12 @@ but they are likely to explode when disturbed.
         storyStartInfo["mainChar"] = mainChar
         storyStartInfo["type"] = "story start"
 
-        startRoom.addCharacter(mainChar,6,4)
+        startRoom = homeTerrain.getRoomByPosition((3,9,0))[0]
+        startRoom.addCharacter(mainChar,6,5)
 
-        """
-        # scatter Bolts around
-        counter = 0
-        for x in range(1,14):
-            for y in range(1,14):
-                if counter > 1000:
-                    continue
-
-                item = src.items.itemMap["Bolt"]()
-                item.bolted = False
-                pos = (7+15*x,7+15*y,0)
-                startTerrain.addItem(item,pos)
-                counter += 1
-        """
+        contraption = src.items.itemMap["SternsContraption"]()
+        startRoom.addItem(contraption,(6,6,0))
+        storyStartInfo["sternsContraption"] = contraption
 
         return storyStartInfo
 
@@ -5766,8 +5714,28 @@ but they are likely to explode when disturbed.
         if self.activeStory["type"] == "travel":
             self.openedQuestsTravel()
             return
+        if self.activeStory["type"] == "story start":
+            self.openedQuestsStory()
+            return
         1/0
 
+    def openedQuestsStory(self):
+        mainChar = self.activeStory["mainChar"]
+        
+        if mainChar.container.tag == "sternslab":
+            quest = src.quests.questMap["EscapeLab"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        quest = src.quests.questMap["GoHome"]()
+        quest.assignToCharacter(mainChar)
+        quest.activate()
+        mainChar.assignQuest(quest,active=True)
+        quest.endTrigger = {"container": self, "method": "reachImplant"}
+        
     def openedQuestsTravel(self):
         mainChar = self.activeStory["mainChar"]
         quest = src.quests.questMap["GoHome"]()

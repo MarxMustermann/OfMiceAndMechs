@@ -113,7 +113,8 @@ class SternsContraption(src.items.Item):
             if self.meltdownLevel == 1:
                 contraptions = self.container.getItemsByType("Contraption")
                 for contraption in contraptions:
-                    contraption.startMeltdown()
+                    if random.random() < 0.5:
+                        contraption.startMeltdown()
 
             if self.meltdownLevel > 4:
                 for character in self.container.characters[:]:

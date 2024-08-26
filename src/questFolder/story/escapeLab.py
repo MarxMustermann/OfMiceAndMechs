@@ -94,13 +94,12 @@ For now ignore the options below and press esc to continue.
         if not character:
             return False
 
-        if character.container.tag == "sternslab":
+        for room in character.getTerrain().rooms:
+            if not room.tag == "sternslab":
+                continue
             return False
 
         if character.yPosition%15 in (0,14):
-            return False
-
-        if character.yPosition%15 > 10:
             return False
 
         self.postHandler()

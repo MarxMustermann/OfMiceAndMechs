@@ -26,6 +26,8 @@ class Contraption(src.items.Item):
         self.handleTick()
 
     def handleTick(self):
+        if not self.container:
+            return
 
         for i in range(1,self.meltdownLevel):
             self.container.addAnimation(self.getPosition(),"smoke",i,{})

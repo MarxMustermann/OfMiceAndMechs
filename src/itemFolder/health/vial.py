@@ -65,7 +65,7 @@ class Vial(src.items.Item):
             src.canvas.displayChars.vial_part4,
             src.canvas.displayChars.vial_full,
         ]
-        return displayByUses[self.uses // 2]
+        return displayByUses[(self.uses+1) // 2]
 
 
     def getDetailedInfo(self):

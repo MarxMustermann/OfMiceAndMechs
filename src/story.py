@@ -2673,12 +2673,15 @@ but they are likely to explode when disturbed.
             motionSensor.boltAction(None)
             motionSensor.faction = faction
             shocktower = src.items.itemMap["ShockTower"]()
-            shocktower.charges = 10
             throneRoom.addItem(shocktower,(basePos[0],basePos[1],basePos[2]))
             throneRoom.addInputSlot((basePos[0],basePos[1]+1,basePos[2]),"LightningRod")
+
             for i in range(1,10):
                 lightningRod = src.items.itemMap["LightningRod"]()
                 throneRoom.addItem(lightningRod,(basePos[0],basePos[1]+1,basePos[2]))
+
+            if basePos == (1,2,0):
+                shocktower.charges = 10
 
         trapRoom1 = architect.doAddRoom(
                 {

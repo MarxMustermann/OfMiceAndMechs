@@ -53,6 +53,33 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=armor.getPosition(),reason="be able to equip the armor",description="go to a armor")
                 return ([quest],None)
 
+        if character.health < character.maxHealth - 10:
+            if character.container.isRoom:
+                items = character.container.getItemsByType("CoalBurner")
+                validCoalBurners = []
+                for item in items:
+                    if not item.getMoldFeed(character):
+                        continue
+                    validCoalBurners.append(item)
+
+                for item in validCoalBurners:
+                    if character.getDistance(item.getPosition()) > 1:
+                        continue
+                    direction = "."
+                    if character.getPosition(offset=(1,0,0)) == item.getPosition():
+                        direction = "d"
+                    if character.getPosition(offset=(-1,0,0)) == item.getPosition():
+                        direction = "a"
+                    if character.getPosition(offset=(0,1,0)) == item.getPosition():
+                        direction = "s"
+                    if character.getPosition(offset=(0,-1,0)) == item.getPosition():
+                        direction = "w"
+
+                    return (None,("J"+direction,"heal"))
+
+                quest = src.quests.questMap["GoToPosition"](targetPosition=validCoalBurners[0].getPosition(),reason="be able to heal",description="go to a coal burner",ignoreEndBlocked=True)
+                return ([quest],None)
+
         return (None,None)
 
     def solver(self, character):
@@ -109,6 +136,13 @@ Get yourself a Sword and a piece of Armor.
         if not character.armor and character.container.getItemsByType("Armor"):
             return False
 
+        if character.health < character.maxHealth-10:
+            if character.container.isRoom:
+                items = character.container.getItemsByType("CoalBurner")
+                for item in items:
+                    if not item.getMoldFeed(character):
+                        continue
+                    return False
         self.postHandler()
 
 src.quests.addType(GetCombatReady)

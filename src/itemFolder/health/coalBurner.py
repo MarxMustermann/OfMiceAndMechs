@@ -41,15 +41,7 @@ or use this item with MoldFeed in your inventory.
 """
         return text
 
-    # abstraction: super class functionality should be used
-    def apply(self, character):
-        """
-        handle a character trying to use this item
-
-        Parameters:
-            character: the character trying to use this item
-        """
-
+    def getMoldFeed(self,character):
         moldFeed = None
 
         for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:
@@ -69,6 +61,16 @@ or use this item with MoldFeed in your inventory.
                 moldFeed = item
                 break
 
+        return moldFeed
+
+    def apply(self, character):
+        """
+        handle a character trying to use this item
+
+        Parameters:
+            character: the character trying to use this item
+        """
+        moldFeed = self.getMoldFeed(character)
         if not moldFeed:
             character.addMessage("you need to have a MoldFeed in your inventory or nearby")
             return

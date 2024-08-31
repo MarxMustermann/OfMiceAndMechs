@@ -2640,6 +2640,18 @@ but they are likely to explode when disturbed.
                 None,
            )
 
+        for x in (2,10,):
+            for y in range(1,12):
+                throneRoom.walkingSpace.add((x,y,0))
+        for x in range(3,10):
+            for y in (3,6,):
+                throneRoom.walkingSpace.add((x,y,0))
+        for x in range(5,8):
+            for y in range(7,12):
+                if (x,y) in ((6,9)):
+                    continue
+                throneRoom.walkingSpace.add((x,y,0))
+
         for godId in range(1,8):
             shrine = src.items.itemMap["Shrine"]()
             shrine.god = godId
@@ -4147,9 +4159,13 @@ but they are likely to explode when disturbed.
             for item in room.itemsOnFloor:
                 if not item.type == "GlassStatue":
                     continue
+                if item.itemID == 1:
+                    continue
                 item.hasItem = True
 
-        for god in src.gamestate.gamestate.gods.values():
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            if godId == 1:
+                continue
             god["lastHeartPos"] = self.sternsBasePosition
 
         startRoom = None

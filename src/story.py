@@ -2654,6 +2654,20 @@ but they are likely to explode when disturbed.
         throne.bolted = True
         throneRoom.addItem(throne,(6,9,0))
 
+        for basePos in [(1,2,0),(11,2,0),(1,10,0),(11,10,0)]:
+            motionSensor = src.items.itemMap["MotionSensor"]()
+            motionSensor.target = (basePos[0],basePos[1],basePos[2])
+            throneRoom.addItem(motionSensor,(basePos[0],basePos[1]-1,basePos[2]))
+            motionSensor.boltAction(None)
+            motionSensor.faction = faction
+            shocktower = src.items.itemMap["ShockTower"]()
+            shocktower.charges = 10
+            throneRoom.addItem(shocktower,(basePos[0],basePos[1],basePos[2]))
+            throneRoom.addInputSlot((basePos[0],basePos[1]+1,basePos[2]),"LightningRod")
+            for i in range(1,10):
+                lightningRod = src.items.itemMap["LightningRod"]()
+                throneRoom.addItem(lightningRod,(basePos[0],basePos[1]+1,basePos[2]))
+
         trapRoom1 = architect.doAddRoom(
                 {
                        "coordinate": (6,7),
@@ -2669,11 +2683,19 @@ but they are likely to explode when disturbed.
         sword.baseDamage = 25
         sword.bolted = False
         trapRoom1.addItem(sword,(11,3,0))
-
         armor = src.items.itemMap["Armor"]()
         armor.armorValue = 5
         armor.bolted = False
         trapRoom1.addItem(armor,(11,4,0))
+
+        sword = src.items.itemMap["Sword"]()
+        sword.baseDamage = 25
+        sword.bolted = False
+        trapRoom1.addItem(sword,(11,1,0))
+        armor = src.items.itemMap["Armor"]()
+        armor.armorValue = 5
+        armor.bolted = False
+        trapRoom1.addItem(armor,(11,2,0))
 
         coalBurner = src.items.itemMap["CoalBurner"]()
         trapRoom1.addItem(coalBurner,(11,8,0))

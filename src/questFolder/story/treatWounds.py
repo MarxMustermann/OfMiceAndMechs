@@ -45,7 +45,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
             return (None,None)
 
         if character.macroState["submenue"]:
-            return (None,(("esc",),"to close the menu"))
+            return (None,(["esc",],"to close the menu"))
 
         if character.health < 80:
             # make completion smooth

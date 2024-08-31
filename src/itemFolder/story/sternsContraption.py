@@ -159,6 +159,13 @@ class SternsContraption(src.items.Item):
                 for bigPos in enemySpawns:
                     for i in range(1,4):
                         enemy = src.characters.Statue()
+
+                        quest = src.quests.questMap["SecureTile"](toSecure=bigPos)
+                        quest.autoSolve = True
+                        quest.assignToCharacter(enemy)
+                        quest.activate()
+                        enemy.quests.append(quest)
+
                         terrain.addCharacter(enemy,bigPos[0]*15+random.randint(2,13),bigPos[1]*15+random.randint(2,13))
 
                 self.container.destroy()

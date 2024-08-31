@@ -9943,11 +9943,9 @@ You see """,".",".",".",""" nothing
 ""","You remember ",".",".",".",""" nothing
 ""","You feel ",".",".",".",""" A sharp pain burrowing through you mind.     \n\
 You remember how tendrils of pain grew from from your implant.     \n\
-They played your thoughts and burried them.                           \n\
-They dug up your memories and ripped them apart.     \n\
 You know that something is wrong within your implant.     \n\
 
-The pain ate your mind and           \n\
+It eats your mind and           \n\
 starts to burn your flesh.                                                \n\
 """]
             if not noFlicker and not subStep < len(textBase)-1:

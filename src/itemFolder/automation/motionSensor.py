@@ -117,15 +117,17 @@ class MotionSensor(src.items.Item):
             return
         self.startWatching(self.container,self.motionDetected, "character moved")
         self.bolted = True
-        character.addMessage("you bolt down the Statue")
-        character.changed("boltedItem",{"character":character,"item":self})
+        if character:
+            character.addMessage("you bolt down the Statue")
+            character.changed("boltedItem",{"character":character,"item":self})
 
     def unboltAction(self,character):
         if not self.bolted:
             return
         self.stopWatching(self.container,self.motionDetected, "character moved")
         self.bolted = False
-        character.addMessage("you unbolt the Statue")
-        character.changed("unboltedItem",{"character":character,"item":self})
+        if character:
+            character.addMessage("you unbolt the Statue")
+            character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(MotionSensor)

@@ -1039,6 +1039,9 @@ class Character:
 
             self.health -= damage
             self.frustration += 10 * damage
+            message = "you took " + str(damage) + f" damage. You have {self.health}/{self.maxHealth} health left"
+            if reason:
+                message += f"\nreason: {reason}"
             self.addMessage("you took " + str(damage) + f" damage. You have {self.health}/{self.maxHealth} health left")
 
             if self.combatMode == "defensive":
@@ -1047,8 +1050,6 @@ class Character:
                 #self.addMessage("you stager")
                 self.staggered += damage // staggerThreshold
 
-            if reason:
-                self.addMessage(f"reason: {reason}")
 
             """
             if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):

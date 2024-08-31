@@ -38,6 +38,9 @@ class GameState:
         self.waitedForInputThisTurn = False
         self.gods = {
                     }
+        self.theOldOne = {
+                "throneTaken":False
+                    }
         self.difficulty = None
 
         self.multi_chars = set()

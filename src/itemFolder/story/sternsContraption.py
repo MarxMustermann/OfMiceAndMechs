@@ -155,6 +155,12 @@ class SternsContraption(src.items.Item):
                         terrain.addItem(scrap,(bigX*15+x,bigY*15+y,0))
                         terrain.scrapFields.append((bigX,bigY,0))
 
+                enemySpawns = [(4,6,0),(4,8,0),(3,9,0)]
+                for bigPos in enemySpawns:
+                    for i in range(1,4):
+                        enemy = src.characters.Statue()
+                        terrain.addCharacter(enemy,bigPos[0]*15+random.randint(2,13),bigPos[1]*15+random.randint(2,13))
+
                 self.container.destroy()
                 return
             self.meltdownLevel += 1

@@ -54,6 +54,8 @@ class TriggerPlate(src.items.Item):
             character: the character trying to use the item
         """
 
+        print(self.faction)
+        print(character.faction)
         if checkFaction and self.faction == character.faction:
             return
 

@@ -44,7 +44,6 @@ import src.questFolder.goHome
 import src.questFolder.goToPosition
 import src.questFolder.goToTerrain
 import src.questFolder.goToTile
-import src.questFolder.goToTileStory
 import src.questFolder.heal
 import src.questFolder.huntdown
 import src.questFolder.initialLeaveRoomStory
@@ -92,3 +91,9 @@ import src.questFolder.escapeAmbushStory
 import src.questFolder.manufacture
 import src.questFolder.refillPersonalFlask
 import src.questFolder.story.escapeLab
+import src.questFolder.story.treatWounds
+import src.questFolder.story.reachSafety
+import src.questFolder.story.goToTileStory
+import src.questFolder.story.crossTrapRoom
+import src.questFolder.story.resetFaction
+import src.questFolder.story.getCombatReady

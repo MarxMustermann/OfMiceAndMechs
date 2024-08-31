@@ -59,6 +59,8 @@ I'll try to keep things interesting, but you reached official end of content now
 = press enter to continue =
 """
             src.interaction.showInterruptText(text)
+            character.rank = 1
+            character.changed("ascended")
 
     def getConfigurationOptions(self, character):
         """

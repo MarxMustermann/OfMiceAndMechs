@@ -173,7 +173,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     if character.getPosition(offset=direction[0]) == self.targetPosition:
                         return (None,("L"+direction[1]+"cb","place the machine"))
 
-            for room in terrain.rooms:
+            for room in character.getTerrain().rooms:
                 items = room.getItemsByType("Machine")
                 for item in items:
                     if item.bolted:

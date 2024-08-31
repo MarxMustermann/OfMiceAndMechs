@@ -10,7 +10,7 @@ class Ascend(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
 
-    def handleAscended(self, extraInfo):
+    def handleAscended(self):
         if self.completed:
             1/0
         if not self.active:
@@ -30,7 +30,10 @@ class Ascend(src.quests.MetaQuestSequence):
         if not character:
             return False
 
-        return False
+        if character.rank != 1:
+            return False
+
+        self.postHandler()
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):
         if self.subQuests:
@@ -47,8 +50,8 @@ class Ascend(src.quests.MetaQuestSequence):
                 self.fail("no throne")
             return (None,None)
 
-        if character.container != room:
-            quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),reason="get to the temple")
+        if character.container != throne.container:
+            quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition(),reason="get to the temple")
             return ([quest],None)
 
         pos = character.getPosition()

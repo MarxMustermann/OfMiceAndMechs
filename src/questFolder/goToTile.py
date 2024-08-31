@@ -231,6 +231,15 @@ The target tile is {direction[4:]}
                 return ([quest],None)
             return None
         else:
+            if character.xPosition%15 == 7 and character.yPosition%15 == 14:
+                return (None,("w","enter the tile"))
+            if character.xPosition%15 == 7 and character.yPosition%15 == 0:
+                return (None,("s","enter the tile"))
+            if character.xPosition%15 == 14 and character.yPosition%15 == 7:
+                return (None,("a","enter the tile"))
+            if character.xPosition%15 == 0 and character.yPosition%15 == 7:
+                return (None,("d","enter the tile"))
+
             # TODO: reenable random
             if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
                 if character.container.getEnemiesOnTile(character):
@@ -242,14 +251,6 @@ The target tile is {direction[4:]}
                 else:
                     quest = src.quests.questMap["Fight"]()
                     return ([quest],None)
-            if character.xPosition%15 == 7 and character.yPosition%15 == 14:
-                return (None,("w","enter the tile"))
-            if character.xPosition%15 == 7 and character.yPosition%15 == 0:
-                return (None,("s","enter the tile"))
-            if character.xPosition%15 == 14 and character.yPosition%15 == 7:
-                return (None,("a","enter the tile"))
-            if character.xPosition%15 == 0 and character.yPosition%15 == 7:
-                return (None,("d","enter the tile"))
 
             if not self.isPathSane(character):
                 self.generatePath(character)
@@ -297,7 +298,7 @@ The target tile is {direction[4:]}
         return nextStep[1]
 
     def generatePath(self,character):
-        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character)
+        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True)
 
     def solver(self, character):
         if not self.path:

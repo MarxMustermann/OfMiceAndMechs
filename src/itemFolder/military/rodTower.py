@@ -29,7 +29,7 @@ class RodTower(src.items.Item):
         except:
             self.coolDown = 10
 
-        if not (src.gamestate.gamestate.tick - self.lastUsed) > self.coolDown:
+        if self.isInCoolDown():
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "black"), "XX")]})
             return
 
@@ -50,6 +50,12 @@ class RodTower(src.items.Item):
     def remoteActivate(self,extraParams=None):
         self.apply()
 
+    def isInCoolDown(self):
+        if not (src.gamestate.gamestate.tick - self.lastUsed) > self.coolDown:
+            return True
+        else:
+            return False
+
     def render(self):
         try:
             self.lastUsed
@@ -60,7 +66,7 @@ class RodTower(src.items.Item):
         except:
             self.coolDown = 10
 
-        if not (src.gamestate.gamestate.tick - self.lastUsed) > self.coolDown:
+        if self.isInCoolDown():
             return (src.interaction.urwid.AttrSpec("#444", "#000"), "RT")
         else:
             return (src.interaction.urwid.AttrSpec("#fff", "#000"), "RT")

@@ -80,6 +80,31 @@ kill,kill,kill!
             if submenue:
                 return (None,(["esc"],"exit the menu"))
 
+        # check for direct attacks
+        directEnemies = []
+        for foundEnemy in character.getNearbyEnemies():
+            if character.getDistance(foundEnemy.getPosition()) <= 1:
+                directEnemies.append(foundEnemy)
+        commands = []
+        for enemy in directEnemies:
+            direction = (enemy.xPosition-character.xPosition,enemy.yPosition-character.yPosition,enemy.zPosition-character.zPosition)
+
+            directionCommand = None
+            if direction == (1,0,0):
+                directionCommand = "d"
+            if direction == (-1,0,0):
+                directionCommand = "a"
+            if direction == (0,1,0):
+                directionCommand = "s"
+            if direction == (0,-1,0):
+                directionCommand = "w"
+
+            if not directionCommand:
+                return (None,("m","attack enemy (below you)"))
+
+            return (None,(directionCommand,"attack enemy"))
+
+        # move toward enemies
         commands = []
         command = None
         for foundEnemy in character.getNearbyEnemies():

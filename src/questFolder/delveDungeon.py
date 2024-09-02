@@ -6,7 +6,7 @@ import src
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
-    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False):
+    def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False):
         questList = []
         super().__init__(questList, creator=None)
         self.metaDescription = description
@@ -14,6 +14,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.itemID = itemID
         self.storyText = storyText
         self.directSendback = directSendback
+        self.suicidal = suicidal
 
     def generateTextDescription(self):
         text = ""
@@ -89,12 +90,13 @@ After fetching the glass heart return the glass heart to your base and set it in
             if character.health < character.maxHealth//5 and character.getNearbyEnemies():
                 quest = src.quests.questMap["Flee"]()
                 return ([quest],None)
-            if character.health < character.maxHealth*0.75:
+            if not self.suicidal and character.health < character.maxHealth*0.75:
                 if character.getNearbyEnemies():
                     quest = src.quests.questMap["Fight"]()
                     return ([quest],None)
                 #if character.health > character.maxHealth*0.5 and character.health < character.maxHealth:
                 #    return (None,("..............","wait to heal"))
+
                 if not dryRun:
                     self.fail("too hurt")
                 return (None,None)

@@ -71,6 +71,19 @@ After fetching the glass heart return the glass heart to your base and set it in
 
         if not hasSpecialItem:
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
+                # check for glass statues
+                if self.itemID:
+                    for room in terrain.rooms:
+                        items = room.getItemsByType("GlassStatue")
+                        for item in items:
+                            if item.itemID != self.itemID:
+                                continue
+                            if item.charges < 5:
+                                continue
+
+                            quest = src.quests.questMap["ActivateGlassStatue"](targetPositionBig=room.getPosition(),targetPosition=item.getPosition())
+                            return ([quest],None)
+
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=(self.targetTerrain[0],self.targetTerrain[1],0))
                 return ([quest],None)
             if character.health < character.maxHealth//5 and character.getNearbyEnemies():

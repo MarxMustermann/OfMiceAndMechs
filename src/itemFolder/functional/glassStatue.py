@@ -220,6 +220,8 @@ class GlassStatue(src.items.Item):
 
         self.charges -= 1
 
+        character.changed("glass statue used",{})
+
     def showInfo(self,character):
         character.addMessage(f"mana: {self.getTerrain().mana}\ncharges: {self.charges}")
 

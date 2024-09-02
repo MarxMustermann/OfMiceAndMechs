@@ -5964,6 +5964,17 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):
+                continue
+
+            quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
         if mainChar.rank != 1:
             quest = src.quests.questMap["Ascend"]()
             quest.assignToCharacter(mainChar)

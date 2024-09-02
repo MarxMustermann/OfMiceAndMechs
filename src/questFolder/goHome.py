@@ -122,6 +122,10 @@ Press control-d to stop your character from moving.
     def solver(self, character):
         if self.completed:
             7/0
+
+        if self.triggerCompletionCheck(character):
+            return False
+
         if self.generateSubquests(character):
             return False
 

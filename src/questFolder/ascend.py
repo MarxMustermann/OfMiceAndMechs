@@ -26,6 +26,15 @@ class Ascend(src.quests.MetaQuestSequence):
 
         return super().assignToCharacter(character)
 
+    def generateTextDescription(self):
+        text = ["""
+You reach out to your implant and it answers.
+
+You can take over the throne and rule the world now.
+
+"""]
+        return text
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
@@ -51,13 +60,13 @@ class Ascend(src.quests.MetaQuestSequence):
             return (None,None)
 
         if character.container != throne.container:
-            quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition(),reason="get to the temple")
+            quest = src.quests.questMap["GoToTile"](targetPosition=throne.container.getPosition(),reason="get to the temple", description="go to temple")
             return ([quest],None)
 
         pos = character.getPosition()
         targetPosition = throne.getPosition()
         if targetPosition not in (pos,(pos[0],pos[1]+1,pos[2]),(pos[0]-1,pos[1],pos[2]),(pos[0]+1,pos[1],pos[2]),(pos[0],pos[1]-1,pos[2])):
-            quest = src.quests.questMap["GoToPosition"](targetPosition=targetPosition,ignoreEndBlocked=True,reason="get near the throne")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=targetPosition,ignoreEndBlocked=True,reason="get near the throne", description="go to throne")
             return ([quest],None)
 
         if (pos[0],pos[1],pos[2]) == targetPosition:

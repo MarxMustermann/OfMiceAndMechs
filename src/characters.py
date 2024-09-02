@@ -2970,6 +2970,11 @@ class Statue(Monster):
         self.specialDisplay = "@@"
         self.baseDamage = 10
 
+    def changed(self, tag="default", info=None):
+        if tag == "pickup bolted fail":
+            info["item"].destroy()
+        super().changed(tag, info)
+
     def die(self, reason=None, addCorpse=True):
         """
         die without leaving a corpse
@@ -3010,6 +3015,11 @@ class Statuette(Monster):
         )
         self.charType = "Statuette"
         self.specialDisplay = "st"
+
+    def changed(self, tag="default", info=None):
+        if tag == "pickup bolted fail":
+            info["item"].destroy()
+        super().changed(tag, info)
 
     def die(self, reason=None, addCorpse=True):
         super().die(reason, addCorpse=False)

@@ -65,21 +65,16 @@ class ResetFaction(src.quests.MetaQuestSequence):
         super().solver(character)
 
     def generateTextDescription(self):
-        door = src.items.itemMap["Door"]()
-        door.open = True
-        door.walkable = True
-        door.blocked = False
-
         return ["""
 You are safe for now, but there is a deeper problem with the base.
-Many devices fail to detect you as part of their faction.
+It fails to detect you as part of their faction.
 Maybe your faction marker got corrupted during the meltdown. 
 
 We need to reset it or we can't make use of this base.
 Reset your faction marker to solve this.
 
-Use the bases infrastructure to do this.
-It has a FactionSetter to integrate new clones.
+The base has infrastructure for this.
+New clones are integrated using a FactionSetter.
 Use it to reset your faction marker.
 
 """]

@@ -12,7 +12,7 @@ class GoToTileStory(src.quests.questMap["GoToTile"]):
 
         reasonString = ""
         if self.reason:
-            reasonString += ", to"+self.reason
+            reasonString += ", to "+self.reason
         
 
         return [f"""
@@ -20,12 +20,11 @@ Go to the base entrance located on tile {self.targetPosition}{reasonString}.
 Avoid fighting with the insects, you are not equipped for it.
 
 The insects are shown as: """,(src.interaction.urwid.AttrSpec("#fff", "#f00"), "<-"),"""
-Enemies are shown with a red background. The insects are 
+Enemies are shown with a red background.
 
-This quest is part of the quest to reach the base.
-This quest ends and the main quest will take back control when you do that.
+This quest is part of the quest to secure the base.
 
-Press a to move the quest cursor back to the main quest
+Press a to show the main quest again.
 """]
 
 src.quests.addType(GoToTileStory)

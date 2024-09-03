@@ -104,8 +104,9 @@ A quick way to heal is to use Vials.
 You started with a Vial in your inventory. Use it to heal yourself.
 
 
-Try to collect more vials and other useful things. You can access the inventory menu by pressing i.
-For convenience your inventory is now shown on the top right side of the screen.
+Try to collect more vials and other useful things.
+Your inventory is now shown on the top right side of the screen.
+You can access the inventory menu by pressing i.
 
 
 Right now you are looking at the quest menu.

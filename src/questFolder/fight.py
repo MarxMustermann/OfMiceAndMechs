@@ -6,17 +6,30 @@ import src
 class Fight(src.quests.MetaQuestSequence):
     type = "Fight"
 
-    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False):
+    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.weaponOnly = weaponOnly
+        self.reason = reason
 
         self.shortCode = "f"
 
     def generateTextDescription(self):
-        return ["""
-kill,kill,kill!
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+        return [f"""
+Fight the enemies{reasonString}.
+
+For simple attacks just bump into the enemies.
+You will hit them and hopefully do some damage.
+
+Advanced attacks are used by bumping into enemies while holding shift.
+
+So if an enemy is to directly east of you:
+* press d to do a normal attack
+* press D to do a special attack
 """]
 
     def triggerCompletionCheck(self,character=None):

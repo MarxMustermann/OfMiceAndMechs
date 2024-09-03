@@ -77,17 +77,16 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
         super().solver(character)
 
     def generateTextDescription(self):
-        door = src.items.itemMap["Door"]()
-        door.open = True
-        door.walkable = True
-        door.blocked = False
+        triggerPlate = src.items.itemMap["TriggerPlate"]()
+        rodTower = src.items.itemMap["RodTower"]()
 
         return ["""
 The bases defence seems to be working,
 but they seem to register us as threat.
+We need to circumvent the defenses.
 
-We need to circumvent the defenses. The design is pretty old:
-The TriggerPlates ( _~ ) are cennected to the RodTowers ( RT ).
+The design is pretty old:
+The TriggerPlates """,triggerPlate.render(),""" are cennected to the RodTowers """,rodTower.render(),""".
 So if you step on the TriggerPlate the RodTower whacks you.
 
 There are two ways you can bypass those traps:
@@ -97,7 +96,7 @@ That prevents them from triggering and you can savely step on them.
 
 2. Activate the TriggerPlates from the sides.
 That makes the RodTowers hit the air and they will not work for some time.
-During that time you can step onto the TriggerPlate without getting hit.
+During that time you can step onto the TriggerPlate without getting harmed.
 """]
 
     def assignToCharacter(self, character):

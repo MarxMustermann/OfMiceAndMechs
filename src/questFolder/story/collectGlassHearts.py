@@ -91,7 +91,11 @@ This will give you 3 advantages:
         if not character:
             return False
 
-        return False
+        for (godId,god) in src.gamestate.gamestate.gods.items():
+            if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):
+                continue
+
+            return False
 
         self.postHandler()
 

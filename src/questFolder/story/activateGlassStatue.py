@@ -83,6 +83,15 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
                 self.addQuest(quest)
             return
 
+    def generateTextDescription(self):
+        text = ["""
+The GlassStatues are connected to the heart of their god. 
+Pray at the GlassStatue to be teleported to the terrain the heart is on.
+
+Expect combat after the teleport.
+"""]
+        return text
+
     def solver(self, character):
         (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
         if nextQuests:

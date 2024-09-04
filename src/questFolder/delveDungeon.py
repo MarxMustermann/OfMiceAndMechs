@@ -19,15 +19,18 @@ class DelveDungeon(src.quests.MetaQuestSequence):
     def generateTextDescription(self):
         text = ""
 
+        godname = src.gamestate.gamestate.gods[self.itemID]["name"]
+
         if self.storyText:
             text += f"""
 {self.storyText}
 """
-        text += f"Delve the dungeon on tile {self.targetTerrain}."
+        text += f"Delve the dungeon on tile {self.targetTerrain} and retieve a GlassHeart.\n"
 
         if self.itemID:
             text += f"""
-Fetch the glass heart of god {self.itemID}
+This dungeon is home of the god {godname} and holds its heart.
+Remove the heart from the GlassStatue holding it.
 """
         else:
             text += """

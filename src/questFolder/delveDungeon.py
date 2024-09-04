@@ -123,11 +123,11 @@ After fetching the glass heart return the glass heart to your base and set it in
 
                 if foundGlassStatue:
                     if character.container != foundGlassStatue.container:
-                        quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.75)
+                        quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.75,description="go to temple",reason="reach the GlassHeart")
                         return ([quest],None)
 
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:
-                        quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True)
+                        quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
                         return ([quest],None)
 
                     directionCommand = None
@@ -142,18 +142,18 @@ After fetching the glass heart return the glass heart to your base and set it in
                     if character.getPosition(offset=(0,-1,0)) == foundGlassStatue.getPosition():
                         directionCommand = "w"
                     if self.directSendback:
-                        return (None,(directionCommand+"cr","return special item"))
+                        return (None,(directionCommand+"cr","return GlassHeart"))
                     else:
-                        return (None,(directionCommand+"cg","get special item"))
+                        return (None,(directionCommand+"cg","eject GlassHeart"))
 
                 if not dryRun:
-                    self.fail("no glassStatue found")
+                    self.fail("no GlassStatue found")
                 return (None,None)
 
             if character.getPosition() != foundGlassHeart.getPosition():
-                quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition())
+                quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")
                 return ([quest],None)
-            return (None,("k","pick up special item"))
+            return (None,("k","pick up GlassHeart"))
 
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"](reason="go to your home territory")
@@ -177,11 +177,11 @@ After fetching the glass heart return the glass heart to your base and set it in
             return (None,None)
 
         if foundGlassStatue.container != character.container:
-            quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition())
+            quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),description="go to temple",reason="be able to set the GlassHeart")
             return ([quest],None)
 
         if character.getDistance(glassStatue.getPosition()) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=glassStatue.getPosition(),ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=glassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlassStatue",reason="be able to set the GlassHeart")
             return ([quest],None)
         directionCommand = None
         if character.getPosition(offset=(0,0,0)) == glassStatue.getPosition():

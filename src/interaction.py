@@ -9892,6 +9892,246 @@ FOLLOW YOUR ORDERS
         if not stageState:
             stage += 1
 
+def showRunOutro():
+
+    def fixRoomRender(render):
+        for row in render:
+            row.append("\n")
+        return render
+
+    stage = 0
+    stageState = None
+    room = None
+    subStep = 0
+    subStep2 = 1
+    addedText = False
+    sleepAmountGrow = 0.125
+    painPositions = []
+    while 1:
+        tcodConsole.clear()
+
+        if stage == 0:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+
+"""
+            printUrwidToTcod(text,(40,14))
+            textBase = ["""
+You take the crown and put it on your head.      """+"""
+It latches on firmly and you grid your teeth.       """+"""
+The crowns connectors bite through your skull and reach your implant.
+                        """+"""
+It connects and is ready to merge with you.
+                                           """+""""""]
+            text = "".join(textBase[0:subStep])
+            if not subStep < len(textBase)-1:
+                text += textBase[-1][0:subStep2]
+            printUrwidToTcod(text,(45,17))
+
+            if not subStep2 < len(textBase[-1]):
+                printUrwidToTcod("press enter to merge with the throne",(45,27))
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.05)
+            else:
+                time.sleep(0.1)
+        elif stage == 1:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+
+"""
+            printUrwidToTcod(text,(40,14))
+            textBase = ["""
+You merge with the Throne.
+The gods bow and
+
+        you rule the world now."""]
+            text = "".join(textBase[0:subStep])
+            if not subStep < len(textBase)-1:
+                text += textBase[-1][0:subStep2]
+            printUrwidToTcod(text,(45,17))
+
+            if not subStep2 < len(textBase[-1]):
+                printUrwidToTcod("press enter to reach out to implant",(45,27))
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.05)
+            else:
+                time.sleep(0.1)
+        elif stage == 2:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+
+"""
+            printUrwidToTcod(text,(40,14))
+            textBase = ["""
+You reach out to your implant and it answers:
+
+No advice can be rendered to a true leader.
+You rule this world now and your responsibility.
+
+
+
+
+
+press enter to run credits"""]
+            text = "".join(textBase[0:subStep])
+            if not subStep < len(textBase)-1:
+                text += textBase[-1][0:subStep2]
+            printUrwidToTcod(text,(45,17))
+
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.05)
+            else:
+                time.sleep(0.1)
+        elif stage == 3:
+            if stageState is None:
+                stageState = {"substep":1,"lastChange":time.time()}
+            text = """
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+  |                                                                         |
+--+-------------------------------------------------------------------------+--
+  |                                                                         |
+
+"""
+            printUrwidToTcod(text,(40,14))
+            textBase = ["""
+credits:
+
+MarxMustermann
+
+
+
+
+
+
+press enter"""]
+            text = "".join(textBase[0:subStep])
+            if not subStep < len(textBase)-1:
+                text += textBase[-1][0:subStep2]
+            printUrwidToTcod(text,(45,17))
+
+            tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
+            if subStep < len(textBase)-1:
+                time.sleep(0.5)
+                subStep += 1
+            elif subStep2 < len(textBase[-1]):
+                subStep2 += 1
+                time.sleep(0.05)
+            else:
+                time.sleep(0.1)
+        else:
+            break
+
+        events = tcod.event.get()
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                src.interaction.stop_playing_music()
+                raise SystemExit()
+            if isinstance(event, tcod.event.WindowResized):
+                checkResetWindowSize(event.width,event.height)
+            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
+                src.interaction.stop_playing_music()
+                raise SystemExit()
+            if isinstance(event,tcod.event.KeyDown):
+                key = event.sym
+                if key == tcod.event.KeySym.F11:
+                    fullscreen = tcod.lib.SDL_GetWindowFlags(tcodContext.sdl_window_p) & (
+                        tcod.lib.SDL_WINDOW_FULLSCREEN | tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP
+                    )
+                    tcod.lib.SDL_SetWindowFullscreen(
+                        tcodContext.sdl_window_p,
+                        0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
+                    )
+                if key == tcod.event.KeySym.ESCAPE:
+                    stage = 7
+                if key == tcod.event.KeySym.RETURN:
+                    stage += 1
+                    subStep = 0
 
 def showRunIntro():
 

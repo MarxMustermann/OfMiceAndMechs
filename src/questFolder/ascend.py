@@ -28,10 +28,15 @@ class Ascend(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         text = ["""
-You reach out to your implant and it answers.
+You reach out to your implant and it answers:
 
-You can take over the throne and rule the world now.
+You obtained all GlassHearts and fully control the GlassStatues now.
+But you are under constant attack by your enemies.
+They envy your status and try to steal it from you.
 
+Show your enemies who rules this world by stepping to the throne and taking the crown.
+This will permanently bond the GlassHearts and your enemies will see reason.
+Rule the world and put an end to those attacks!
 """]
         return text
 

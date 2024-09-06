@@ -148,7 +148,7 @@ class Eat(src.quests.MetaQuestSequence):
                     quest.assignToCharacter(character)
                     self.addQuest(quest)
                     return
-                1/0
+                
                 self.fail(reason="no source for food")
                 return
 

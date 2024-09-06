@@ -1,4 +1,5 @@
 import src
+import config
 
 
 class GrowthTank(src.items.Item):
@@ -141,7 +142,6 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             if seed2 is None:
                 seed2 = seed1 + (seed1 // 5)
 
-            """
             firstName = config.names.characterFirstNames[
                 seed1 % len(config.names.characterFirstNames)
             ]
@@ -150,8 +150,6 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             ]
 
             name = "%s %s"%(firstName,lastName,)
-            """
-            name = "worker"
 
             return name
 
@@ -183,6 +181,9 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 "NaiveDropQuest",
                 "DropQuestMeta",
             ]
+
+        flask = src.items.itemMap["GooFlask"]()
+        character.flask = flask
 
         # inhabit character
         # character.fallUnconcious()

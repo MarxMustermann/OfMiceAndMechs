@@ -730,6 +730,17 @@ class GlassStatue(src.items.Item):
         character.movementSpeed = character.movementSpeed/2
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
+        submenue = src.interaction.TextMenu("""
+You insert the GlassHeart into the GlassStatue and make it whole.
+
+The GlassHeart scream and its agony takes physical form.
+
+A wave of enemies is approaching to steal the GlassHeart.
+""")
+        character.macroState["submenue"] = submenue
+
+        src.magic.spawnWaves()
+
     def boltAction(self,character):
         self.bolted = True
         character.addMessage("you bolt down the Statue")

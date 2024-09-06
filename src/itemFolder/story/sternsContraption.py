@@ -32,7 +32,7 @@ class SternsContraption(src.items.Item):
         if not self.meltdownLevel:
             if tick == 1:
                 for character in self.container.characters[:]:
-                    character.hurt(60,reason="shrapnel")
+                    character.hurt(20,reason="shrapnel")
                 for i in range(1,20):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -53,7 +53,7 @@ class SternsContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             if tick == 5:
                 for character in self.container.characters[:]:
-                    character.hurt(30,reason="shrapnel")
+                    character.hurt(25,reason="shrapnel")
                 for i in range(1,2):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -70,7 +70,7 @@ class SternsContraption(src.items.Item):
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
             if tick == 15:
                 for character in self.container.characters[:]:
-                    character.hurt(10,reason="shrapnel")
+                    character.hurt(30,reason="shrapnel")
                 for i in range(1,3):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -88,7 +88,7 @@ class SternsContraption(src.items.Item):
 
             if tick == 20:
                 for character in self.container.characters[:]:
-                    character.hurt(50,reason="shrapnel")
+                    character.hurt(10,reason="shrapnel")
                 for i in range(1,5):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})

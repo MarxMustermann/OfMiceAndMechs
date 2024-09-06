@@ -37,7 +37,7 @@ class TriggerPlate(src.items.Item):
             self.trigger(character)
 
     def render(self):
-        if self.active:
+        if self.active and self.faction != src.gamestate.gamestate.mainChar.faction:
             return self.display
         else:
             return "_~"

@@ -1150,7 +1150,8 @@ class CityPlaner(src.items.Item):
             }
 
         for scrapField in terrain.scrapFields:
-            del functionMap[(scrapField[0],scrapField[1])]
+            if (scrapField[0],scrapField[1]) in functionMap:
+                del functionMap[(scrapField[0],scrapField[1])]
             mapContent[scrapField[1]][scrapField[0]] = "ss"
 
         for forest in terrain.forests:

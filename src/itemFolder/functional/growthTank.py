@@ -189,9 +189,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         # character.hasFloorPermit = False
         self.container.addCharacter(character, self.xPosition + 1, self.yPosition)
         # character.revokeReputation(amount=4,reason="being helpless")
-        # character.runCommandString("j")
-        character.macroState["macros"]["j"] = "Jf"
-        self.runCommand("born", character=character)
+        character.runCommandString("j")
+        #self.runCommand("born", character=character)
 
         return character
 

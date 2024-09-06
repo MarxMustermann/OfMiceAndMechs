@@ -32,6 +32,7 @@ class Integrator(src.items.Item):
 
         duties = [ "resource gathering",
                    "scrap hammering",
+                   "resource fetching",
                    "hauling",
                    "metal working",
                    "machine placing",

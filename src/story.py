@@ -2655,7 +2655,7 @@ but they are likely to explode when disturbed.
         for godId in range(1,8):
             shrine = src.items.itemMap["Shrine"]()
             shrine.god = godId
-            throneRoom.addItem(shrine,(godId+2,4,0))
+            throneRoom.addItem(shrine,(godId+2,2,0))
 
             statue = src.items.itemMap["GlassStatue"]()
             statue.itemID = godId
@@ -2695,20 +2695,20 @@ but they are likely to explode when disturbed.
            )
 
         sword = src.items.itemMap["Sword"]()
-        sword.baseDamage = 25
+        sword.baseDamage = 10
         sword.bolted = False
         trapRoom1.addItem(sword,(11,3,0))
         armor = src.items.itemMap["Armor"]()
-        armor.armorValue = 5
+        armor.armorValue = 1
         armor.bolted = False
         trapRoom1.addItem(armor,(11,4,0))
 
         sword = src.items.itemMap["Sword"]()
-        sword.baseDamage = 25
+        sword.baseDamage = 10
         sword.bolted = False
         trapRoom1.addItem(sword,(11,1,0))
         armor = src.items.itemMap["Armor"]()
-        armor.armorValue = 5
+        armor.armorValue = 1
         armor.bolted = False
         trapRoom1.addItem(armor,(11,2,0))
 
@@ -4157,19 +4157,6 @@ but they are likely to explode when disturbed.
         storyStartInfo["terrain"] = homeTerrain
         storyStartInfo["mainChar"] = mainChar
         storyStartInfo["type"] = "story start"
-
-        for room in homeTerrain.rooms:
-            for item in room.itemsOnFloor:
-                if not item.type == "GlassStatue":
-                    continue
-                if item.itemID == 1:
-                    continue
-                item.hasItem = True
-
-        for (godId,god) in src.gamestate.gamestate.gods.items():
-            if godId == 1:
-                continue
-            god["lastHeartPos"] = self.sternsBasePosition
 
         startRoom = None
         for room in homeTerrain.rooms:
@@ -5968,7 +5955,7 @@ but they are likely to explode when disturbed.
             if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):
                 continue
 
-            quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId,suicidal=True)
+            quest = src.quests.questMap["CollectGlassHearts"]()
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)
@@ -5980,7 +5967,6 @@ but they are likely to explode when disturbed.
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
     def openedQuestsTravel(self):

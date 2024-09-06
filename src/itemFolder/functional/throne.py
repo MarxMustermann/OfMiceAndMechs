@@ -41,15 +41,7 @@ A throne. Take control over the throne to win the game.
             return
 
         if character == src.gamestate.gamestate.mainChar:
-            text = f"""
-You control all GlassHearts and activate the throne.
-
-The council acceps you as new leader.
-The attacks on your base will stop now.
-
-= press enter to continue =
-"""
-            src.interaction.showInterruptText(text)
+            src.interaction.showRunOutro()
             text = f"""
 You won the game! congratulations
 

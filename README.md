@@ -20,8 +20,9 @@ There is an extensive help system, to get you started.
 
 # be part of it
 
+discord: https://discord.gg/uUMWHbS
+mail: marxmustermann@riseup.net
+
 * [credits](CREDITS.md)
 * [website](http://ofmiceandmechs.com/)
 
-discord: https://discord.gg/uUMWHbS
-mail: marxmustermann@riseup.net

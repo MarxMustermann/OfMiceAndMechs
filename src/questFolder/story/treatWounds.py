@@ -47,7 +47,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
         if character.macroState["submenue"]:
             return (None,(["esc",],"to close the menu"))
 
-        if character.health < 80:
+        if character.health < (character.maxHealth-10):
             # make completion smooth
             if character.interactionState.get("advancedInteraction") == {}:
                 return (None,("H","drink the whole Vial"))
@@ -134,7 +134,7 @@ For now ignore the options below and press esc to continue.
         if not character:
             return False
 
-        if character.health < 80:
+        if character.health < (character.maxHealth-10):
             hasInventoryVial = self.characterHasVial(character)
             if hasInventoryVial:
                 return False

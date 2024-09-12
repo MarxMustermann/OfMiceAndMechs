@@ -27,6 +27,9 @@ class ResetFaction(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
             return ([quest],None)
 
+        if not character.container.isRoom:
+            return (None,None)
+
         factionSetter = character.container.getItemByType("FactionSetter")
         if not factionSetter:
             self.fail(reason="no faction setter found")

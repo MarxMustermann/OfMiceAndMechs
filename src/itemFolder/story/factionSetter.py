@@ -23,4 +23,12 @@ class FactionSetter(src.items.Item):
         character.addMessage(f"your faction was changed to {self.faction}")
         character.changed("set faction")
 
+        text = f"""
+You insert your head into the machine.
+It claws into your head and connects to you implant.
+
+It changes your implant and sets your faction marker to {self.faction}.
+"""
+        character.macroState["submenue"] = src.interaction.TextMenu(text)
+
 src.items.addType(FactionSetter)

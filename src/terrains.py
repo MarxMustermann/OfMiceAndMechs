@@ -480,6 +480,23 @@ class Terrain:
             direction: the direction to move the character in
         """
 
+        if char.xPosition > 207:
+            if self.xPosition >= 13:
+                char.xPosition -= 1
+                return None
+        if char.xPosition < 17:
+            if self.xPosition <= 1:
+                char.xPosition += 1
+                return None
+        if char.yPosition > 207:
+            if self.yPosition >= 13:
+                char.yPosition -= 1
+                return None
+        if char.yPosition < 17:
+            if self.yPosition <= 1:
+                char.yPosition += 1
+                return None
+
         if dash and char.exhaustion >= 10:
             dash = False
 
@@ -801,9 +818,9 @@ class Terrain:
                     char.xPosition -= 1
 
                 if char.yPosition < 1:
-                    y = 0
 
                     pos = None
+                    y = 0
                     for row in src.gamestate.gamestate.terrainMap:
                         x = 0
                         for terrain in row:
@@ -811,10 +828,9 @@ class Terrain:
                                 pos = (x,y)
                             x += 1
                         y +=1
-
-
                     if pos[1]-1 < 1:
                         return None
+
                     newTerrain = src.gamestate.gamestate.terrainMap[pos[1]-1][pos[0]]
 
                     char.addMessage(f"you moved from terrain {pos[0]}/{pos[1]} to terrain {pos[0]}/{pos[1]-1}")

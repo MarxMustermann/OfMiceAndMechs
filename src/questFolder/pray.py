@@ -62,8 +62,12 @@ pray on {self.targetPosition}{reason}.
             if rewardIndex == 0:
                 counter = 1
                 for option in submenue.options.items():
-                    if option[1] == "challenge":
-                        break
+                    if self.shrine:
+                        if option[1] == "challenge":
+                            break
+                    else:
+                        if option[1] == "pray":
+                            break
                     counter += 1
                 rewardIndex = counter
 

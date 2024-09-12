@@ -99,3 +99,4 @@ import src.questFolder.story.resetFaction
 import src.questFolder.story.getCombatReady
 import src.questFolder.story.activateGlassStatue
 import src.questFolder.story.collectGlassHearts
+import src.questFolder.story.spawnClone

@@ -89,6 +89,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
 
         if self.filled:
             self.eject()
+            character.changed("spawned clone")
+            character.timeTaken += 2
         else:
             self.refill(character)
 
@@ -101,14 +103,24 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         """
 
         flask = None
-        for item in character.inventory:
-            if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
-                flask = item
+        for offset in [(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]:
+            for item in self.container.getItemByPosition(self.getPosition(offset=offset)):
+                if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
+                    flask = item
+        if not flask:
+            for item in character.inventory:
+                if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
+                    flask = item
+
         if flask:
-            flask.uses = 0
-            flask.changed()
             self.filled = True
-            self.changed()
+            if flask in character.inventory:
+                character.inventory.remove(flask)
+                character.inventory.append(src.items.itemMap["Flask"]())
+            else:
+                pos = flask.getPosition()
+                self.container.removeItem(flask)
+                self.container.addItem(src.items.itemMap["Flask"](),pos)
         else:
             character.addMessage(
                 "you need to have a full goo flask to refill the growth tank"

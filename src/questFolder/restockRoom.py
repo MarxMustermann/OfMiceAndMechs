@@ -141,12 +141,7 @@ Place the items in the correct input or storage stockpile.
             fullyEmpty = not character.inventory[-1].walkable
             inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=False,fullyEmpty=fullyEmpty)
             if not inputSlots:
-                character.addMessage("checcckk")
-                character.addMessage(self.toRestock)
-                character.addMessage(self.allowAny)
-                character.addMessage(fullyEmpty)
                 inputSlots = room.getEmptyInputslots(itemType=self.toRestock,allowAny=self.allowAny,allowStorage=True,fullyEmpty=fullyEmpty)
-            character.addMessage(inputSlots)
             random.shuffle(inputSlots)
 
             if self.targetPosition:
@@ -207,7 +202,6 @@ Place the items in the correct input or storage stockpile.
                         return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
 
             foundNeighbour = None
-            character.addMessage(inputSlots)
             for slot in inputSlots:
                 if len(slot[0]) < 3:
                     slot = ((slot[0][0],slot[0][1],0),slot[1],slot[2])

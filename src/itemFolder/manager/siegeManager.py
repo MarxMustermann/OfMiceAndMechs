@@ -237,17 +237,19 @@ class SiegeManager(src.items.Item):
         currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
         currentTerrain.addEvent(event)
 
-    def boltAction(self,character):
+    def boltAction(self,character=None):
         self.bolted = True
-        character.addMessage("you bolt down the ScrapCompactor")
-        character.changed("boltedItem",{"character":character,"item":self})
+        if character:
+            character.addMessage("you bolt down the ScrapCompactor")
+            character.changed("boltedItem",{"character":character,"item":self})
         self.numUsed = 0
         self.handleTick()
 
-    def unboltAction(self,character):
+    def unboltAction(self,character=None):
         self.bolted = False
-        character.addMessage("you unbolt the ScrapCompactor")
-        character.changed("unboltedItem",{"character":character,"item":self})
+        if character:
+            character.addMessage("you unbolt the ScrapCompactor")
+            character.changed("unboltedItem",{"character":character,"item":self})
         self.numUsed = 0
 
 

@@ -10,3 +10,4 @@ import src.itemFolder.story.sternsContraption
 import src.itemFolder.story.contraption
 import src.itemFolder.story.factionSetter
 import src.itemFolder.story.integrator
+import src.itemFolder.story.promoter

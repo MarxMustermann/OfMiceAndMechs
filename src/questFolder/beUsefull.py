@@ -755,13 +755,13 @@ We should stop watching and do something about that.
 
         # assign basic floor plans
         if cityPlaner and cityPlaner.getAvailableRooms():
-            floorPlansToSet = ["gooProcessing","weaponProduction","smokingRoom","temple","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction","basicMaterialsProduction"]
+            floorPlansToSet = ["gooProcessing","manufacturingHall","weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction","basicMaterialsProduction"]
             for room in terrain.rooms:
                 if room.tag in floorPlansToSet:
                     floorPlansToSet.remove(room.tag)
             if floorPlansToSet:
                 for room in cityPlaner.getAvailableRooms():
-                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=floorPlansToSet[0],reason="start the process of making the room useful")
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=random.choice(floorPlansToSet),reason="start the process of making the room useful")
                     self.addQuest(quest)
                     return True
                 return None
@@ -1566,6 +1566,7 @@ We should stop watching and do something about that.
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
 
+        """
         if not cityPlaner:
             itemsInStorage = {}
             freeStorage = 0
@@ -1581,6 +1582,7 @@ We should stop watching and do something about that.
                 quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="have it to plan the city with")
                 self.addQuest(quest)
                 return True
+        """
 
         # spawn basic items, if not there
         foundPlacedItems = {}

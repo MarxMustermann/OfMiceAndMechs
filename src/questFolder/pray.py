@@ -55,30 +55,38 @@ pray on {self.targetPosition}{reason}.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
-
+        if character.macroState["submenue"] and not ignoreCommands:
             submenue = character.macroState["submenue"]
-            rewardIndex = 0
-            if rewardIndex == 0:
-                counter = 1
-                for option in submenue.options.items():
-                    if self.shrine:
-                        if option[1] == "challenge":
-                            break
-                    else:
-                        if option[1] == "pray":
-                            break
-                    counter += 1
-                rewardIndex = counter
+            if isinstance(submenue,src.interaction.SelectionMenu):
+                foundOption = False
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if self.shrine:
+                            if option[1] == "challenge":
+                                foundOption = True
+                                break
+                        else:
+                            if option[1] == "pray":
+                                foundOption = True
+                                break
+                        counter += 1
+                    rewardIndex = counter
 
-            offset = rewardIndex-submenue.selectionIndex
-            command = ""
-            if offset > 0:
-                command += "s"*offset
+                if not foundOption:
+                    return (None,(["esc"],"to close menu"))
+
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"pray for favour"))
             else:
-                command += "w"*(-offset)
-            command += "j"
-            return (None,(command,"pray for favour"))
+                return (None,(["esc"],"to close menu"))
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
             quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get to the tile the machine is on")

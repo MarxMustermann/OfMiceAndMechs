@@ -143,7 +143,17 @@ This will allow you to focus on other tasks.
 
         pos = character.getBigPosition()
 
-        if pos == (7,7,0):
+        roomPos = None
+        for room in character.getTerrain().rooms:
+            if room.tag != "temple":
+                continue
+            roomPos = room.getPosition()
+
+        if not roomPos:
+            self.fail("no temple found")
+            return (None,None)
+
+        if pos == roomPos:
             if not character.container.isRoom:
                 quest = src.quests.questMap["EnterRoom"]()
                 return ([quest],None)
@@ -176,7 +186,7 @@ This will allow you to focus on other tasks.
             quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
             return ([quest],None)
 
-        quest = src.quests.questMap["GoHome"](description="go to command centre")
+        quest = src.quests.questMap["GoToTile"](description="go to temple",targetPosition=roomPos)
         return ([quest],None)
 
     def handleGotEpochReward(self, extraInfo):

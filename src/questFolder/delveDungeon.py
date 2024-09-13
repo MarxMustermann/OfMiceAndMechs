@@ -123,7 +123,7 @@ After fetching the glass heart return the glass heart to your base and set it in
 
                 if foundGlassStatue:
                     if character.container != foundGlassStatue.container:
-                        quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.75,description="go to temple",reason="reach the GlassHeart")
+                        quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0,description="go to temple",reason="reach the GlassHeart")
                         return ([quest],None)
 
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:

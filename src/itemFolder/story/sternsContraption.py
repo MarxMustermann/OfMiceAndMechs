@@ -158,9 +158,9 @@ class SternsContraption(src.items.Item):
                 enemySpawns = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,9,0),(6,9,0)]
                 for bigPos in enemySpawns:
                     for i in range(1,random.randint(2,6)):
-                        enemy = src.characters.Statue()
+                        enemy = src.characters.Spider()
 
-                        quest = src.quests.questMap["SecureTile"](toSecure=bigPos)
+                        quest = src.quests.questMap["SecureTile"](toSecure=bigPos,alwaysHuntDown=True)
                         quest.autoSolve = True
                         quest.assignToCharacter(enemy)
                         quest.activate()

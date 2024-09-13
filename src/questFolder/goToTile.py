@@ -165,7 +165,7 @@ The target tile is {direction[4:]}
 
         if character.health < character.maxHealth*self.abortHealthPercentage:
             if not dryRun:
-                self.fail()
+                self.fail("low health")
             return (None,None)
 
         if not self.path:

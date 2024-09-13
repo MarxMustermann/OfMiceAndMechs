@@ -99,7 +99,7 @@ Place the items in the correct input or storage stockpile.
         numDrops = 0
         for item in reversed(character.inventory):
             if item.type != self.toRestock:
-                break
+                continue
             numDrops += 1
         return numDrops
 
@@ -176,19 +176,30 @@ Place the items in the correct input or storage stockpile.
                         spaceTaken = len(dropContent)
                     numToDrop = min(maxSpace-spaceTaken,self.getNumDrops(character))
                     if numToDrop > 0:
-                        if not character.inventory[-1].walkable:
+                        item = character.inventory[-1]
+                        counter = -1
+                        while item.type != self.toRestock:
+                            counter += 1
+                            item = character.inventory[counter]
+
+                        if not item.walkable:
+                            numToDrop = 1
+    
+                        inventoryCommand = ""
+                        if counter > -1:
+                            inventoryCommand += "i"+"s"*counter
                             numToDrop = 1
 
                         if foundDirectDrop[1] == (-1,0):
-                            return (None,("La"*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+"La")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):
-                            return (None,("Ld"*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+"Ld")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,-1):
-                            return (None,("Lw."*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+"Lw")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,1):
-                            return (None,("Ls"*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+"Ls")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,0):
-                            return (None,("l"*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
                 else:
                     if foundDirectDrop[1] == (-1,0):
                         return (None,("Ja"*10,"put scrap on scrap pile"))

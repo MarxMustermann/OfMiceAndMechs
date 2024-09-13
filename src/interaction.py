@@ -4333,11 +4333,16 @@ class InventoryMenu(SubMenu):
         self.drop = False
         self.char = char
         self.sidebared = False
+        self.cursor = 0
         super().__init__()
         self.footerText = "press j to activate, press l to drop, press esc to exit"
 
     def render(self,char=None):
-        return renderInventory(character=char,sidebared=self.sidebared)
+        try:
+            self.cursor
+        except:
+            self.cursor = 0
+        return renderInventory(character=char,sidebared=self.sidebared,cursor=self.cursor)
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -4352,67 +4357,30 @@ class InventoryMenu(SubMenu):
 
         if self.subMenu:
             self.subMenu.handleKey(key, noRender=noRender, character=character)
-            if self.subMenu.getSelection() is not None:
-                if self.activate:
-                    text = (
-                        "you activate the "
-                        + self.char.inventory[self.subMenu.getSelection()].name
-                    )
-                    self.persistentText = (
-                        urwid.AttrSpec("default", "default"),
-                        text,
-                    )
-                    if not noRender:
-                        main.set_text(
-                            (
-                                urwid.AttrSpec("default", "default"),
-                                self.persistentText,
-                            )
-                        )
-                    self.char.addMessage(text)
-                    self.char.inventory[self.subMenu.getSelection()].apply(
-                        self.char
-                    )
-                    self.char.timeTaken += self.char.movementSpeed
-                    self.activate = False
-                    self.subMenu = None
-                    return True
-                if self.drop:
-                    if "NaiveDropQuest" not in self.char.solvers and not char.godMode:
-                        self.persistentText = (
-                            urwid.AttrSpec("default", "default"),
-                            "you do not have the nessecary solver yet (acivate)",
-                        )
-                        main.set_text(
-                            (urwid.AttrSpec("default", "default"), self.persistentText)
-                        )
-                    else:
-                        text = (
-                            "you drop the "
-                            + self.char.inventory[self.subMenu.getSelection()].name
-                        )
-                        self.persistentText = (
-                            urwid.AttrSpec("default", "default"),
-                            text,
-                        )
-                        if not noRender:
-                            main.set_text(
-                                (
-                                    urwid.AttrSpec("default", "default"),
-                                    self.persistentText,
-                                )
-                            )
-                        self.char.addMessage(text)
-                        self.char.drop(self.char.inventory[self.subMenu.getSelection()])
-                        self.char.timeTaken += self.char.movementSpeed
-                    self.drop = False
-                    self.subMenu = None
-                    return True
+            if self.drop:
+                direction = self.subMenu.keyPressed
+                if direction == "w":
+                    pos = (self.char.xPosition, self.char.yPosition - 1, self.char.zPosition)
+                elif direction == "s":
+                    pos = (self.char.xPosition, self.char.yPosition + 1, self.char.zPosition)
+                elif direction == "d":
+                    pos = (self.char.xPosition + 1, self.char.yPosition + 0, self.char.zPosition)
+                elif direction == "a":
+                    pos = (self.char.xPosition - 1, self.char.yPosition + 0, self.char.zPosition)
+                else:
+                    pos = (self.char.xPosition, self.char.yPosition, self.char.zPosition)
+
+                item = self.char.inventory[self.cursor]
+                self.char.addMessage(f"you drop a {item.type}")
+                self.char.drop(self.char.inventory[self.cursor],pos)
+                self.char.timeTaken += self.char.movementSpeed
+
+                self.drop = False
                 self.subMenu = None
-                self.skipKeypress = True
-                return False
-            else:
-                return False
+                return True
+            self.subMenu = None
+            self.skipKeypress = True
+            return False
 
         if self.skipKeypress:
             self.skipKeypress = False
@@ -4429,33 +4397,38 @@ class InventoryMenu(SubMenu):
                 self.sidebared = True
                 return True
 
+            # do activation
             if key == "j":
-                if not len(self.char.inventory):
-                    return True
+                item = self.char.inventory[self.cursor]
+                self.char.addMessage(f"you activate the {item.type}")
+                item.apply(self.char)
+                self.char.timeTaken += self.char.movementSpeed
 
-                options = []
-                counter = 0
-                for item in self.char.inventory:
-                    options.append([counter, item.name])
-                    counter += 1
-                self.subMenu = SelectionMenu("activate what?", options)
-                self.subMenu.handleKey(".", noRender=noRender,character=character)
-                self.activate = True
-                return False
-
+            # do drop
             if key == "l":
-                if not len(self.char.inventory):
-                    return True
+                item = self.char.inventory[self.cursor]
+                self.char.addMessage(f"you drop a {item.type}")
+                self.char.drop(self.char.inventory[self.cursor])
+                self.char.timeTaken += self.char.movementSpeed
 
-                options = []
-                counter = 0
-                for item in self.char.inventory:
-                    options.append([counter, item.name])
-                    counter += 1
-                self.subMenu = SelectionMenu("drop what?", options)
-                self.subMenu.handleKey(".", noRender=noRender, character=character)
+            # do drop
+            if key == "L":
+                self.subMenu = OneKeystrokeMenu("Drop where?\n\n w - north\n s - south\n a - left\n d - right")
+                self.subMenu.handleKey("~", noRender=noRender,character=character)
                 self.drop = True
                 return False
+
+            # handle cursor movement
+            if key == "w":
+                self.cursor -= 1
+            if key == "s":
+                self.cursor += 1
+
+            # handle out of bounds cursor
+            if self.cursor > len(self.char.inventory)-1:
+                self.cursor = 0
+            if self.cursor < 0:
+                self.cursor = len(self.char.inventory)-1
 
         if not noRender:
             header.set_text(
@@ -5491,7 +5464,7 @@ def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebare
 
 #bad code: global function
 #bad code: should be abstracted
-def renderInventory(character=None,sidebared=False):
+def renderInventory(character=None,sidebared=False,cursor=None):
     """
     render the inventory of the player into a string
 
@@ -5504,11 +5477,13 @@ def renderInventory(character=None,sidebared=False):
     else:
         char = character
 
-    txt = []
+    txt = ["your inventory:\n\n"]
     if len(char.inventory):
         counter = 0
         for item in char.inventory:
             counter += 1
+            if not sidebared and counter == cursor+1:
+                txt.extend([ "-> "])
             if isinstance(item.render(), int):
                 txt.extend(
                     [
@@ -5518,7 +5493,7 @@ def renderInventory(character=None,sidebared=False):
                         " - ",
                         item.name,
                         "\n"])
-                if not sidebared:
+                if not sidebared and counter == cursor+1:
                     txt.extend([
                             item.getDetailedInfo(),
                             "\n\n",
@@ -5533,15 +5508,16 @@ def renderInventory(character=None,sidebared=False):
                         " - ",
                         item.name,
                         "\n"])
-                if not sidebared:
+                if not sidebared and counter == cursor+1:
                     txt.extend([
                         item.getDetailedInfo(),
                         "\n\n",
                         ]
                     )
-        txt.extend("\n")
+        txt.append("\n")
+        txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\n")
     else:
-        txt = "empty Inventory\n\n"
+        txt.append("empty Inventory")
     return txt
 
 # bad code: uses global function to render

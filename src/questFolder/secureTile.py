@@ -6,7 +6,7 @@ import src
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False):
         super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
@@ -14,6 +14,7 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         self.rewardText = rewardText
         self.huntdownCooldown = 0
         self.strict = strict
+        self.alwaysHuntDown = alwaysHuntDown
 
     def generateTextDescription(self):
         text  = f"""
@@ -108,13 +109,16 @@ Try luring enemies into landmines or detonating some bombs."""
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
             if character.health < character.maxHealth - 20 and character.canHeal():
-                return (None,"JH","heal")
+                return (None,("JH","heal"))
 
             if not self.strict:
                 self.huntdownCooldown -= 1
                 if self.huntdownCooldown < 0:
                     enemies = character.getNearbyEnemies()
                     if enemies:
+                        if self.alwaysHuntDown:
+                            quest = src.quests.questMap["Huntdown"](target=random.choice(enemies))
+                            return ([quest],None)
                         if not dryRun:
                             self.huntdownCooldown = 100
                         if random.random() < 0.3:

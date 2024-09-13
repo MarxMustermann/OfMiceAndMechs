@@ -118,6 +118,9 @@ Press d to move the cursor and show the subquests description.
                 break
 
         if not benchNearBy:
+            if not benches:
+                self.fail("no bench found")
+                return (None,None)
             quest = src.quests.questMap["GoToPosition"](targetPosition=benches[0].getPosition(),ignoreEndBlocked=True,reason="go to a MetalWorkingBench")
             return ([quest],None)
 

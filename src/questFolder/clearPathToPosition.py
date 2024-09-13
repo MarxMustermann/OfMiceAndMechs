@@ -96,14 +96,15 @@ Pick up and unbolt items that are in the way.
                 self.path.remove((x,y,0))
 
             offset = None
-            if (x-1,y  ,0) == self.path[0]:
-                offset = (-1, 0,0)
-            if (x+1,y  ,0) == self.path[0]:
-                offset = ( 1, 0,0)
-            if (x  ,y-1,0) == self.path[0]:
-                offset = ( 0,-1,0)
-            if (x  ,y+1,0) == self.path[0]:
-                offset = ( 0, 1,0)
+            if self.path:
+                if (x-1,y  ,0) == self.path[0]:
+                    offset = (-1, 0,0)
+                if (x+1,y  ,0) == self.path[0]:
+                    offset = ( 1, 0,0)
+                if (x  ,y-1,0) == self.path[0]:
+                    offset = ( 0,-1,0)
+                if (x  ,y+1,0) == self.path[0]:
+                    offset = ( 0, 1,0)
 
             if not offset:
                 self.path = None

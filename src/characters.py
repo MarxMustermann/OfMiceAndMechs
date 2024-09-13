@@ -3209,7 +3209,7 @@ class Spider(Monster):
 
     def __init__(
         self,
-        display="🝆~",
+        display="SP",
         xPosition=0,
         yPosition=0,
         quests=None,
@@ -3234,6 +3234,12 @@ class Spider(Monster):
             characterId=characterId,
         )
 
+        self.charType = "Spider"
+        self.specialDisplay = "SP"
+        self.baseDamage = 3
+        self.health = 50
+        self.maxHealth = 50
+
         self.solvers = [
             "NaiveActivateQuest",
             "ActivateQuestMeta",
@@ -3247,35 +3253,7 @@ class Spider(Monster):
         """
         force static render
         """
-        return "ss"
-
-    def startDefending(self):
-        """
-        start waiting for a victim
-        """
-        if not isinstance(self.container,src.rooms.Room):
-            return
-        self.container.addListener(self.killVisitor,"entered room")
-
-    def hurt(self, damage, reason=None, actor=None):
-        """
-        reverse acid damage and kill when hurt
-        """
-        if reason == "acid burns":
-            super().heal(damage, reason=reason)
-        else:
-            super().hurt(damage, reason=reason)
-        self.runCommandString("gg")
-
-    def killVisitor(self,character):
-        """
-        trigger killing visitors
-        is expected to be called from an event
-        Parameters:
-            character: the character entering the room
-        """
-        character.addMessage("skreeeeee")
-        self.runCommandString("gg")
+        return "SP"
 
 class Ghoul(Character):
     """

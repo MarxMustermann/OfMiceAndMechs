@@ -102,6 +102,9 @@ Set the floor plan: {self.floorPlanType}
             quest = src.quests.questMap["GoHome"](description="go to command centre")
             return ([quest],None)
 
+        if not character.container.isRoom:
+            return (None,None)
+
         cityPlaner = character.container.getItemsByType("CityPlaner")[0]
         command = None
         if character.getPosition(offset=(1,0,0)) == cityPlaner.getPosition():

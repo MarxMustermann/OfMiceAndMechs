@@ -5477,7 +5477,9 @@ def renderInventory(character=None,sidebared=False,cursor=None):
     else:
         char = character
 
-    txt = ["your inventory:\n\n"]
+    txt = []
+    if not sidebared:
+        txt.append("your inventory:\n\n")
     if len(char.inventory):
         counter = 0
         for item in char.inventory:
@@ -5515,7 +5517,8 @@ def renderInventory(character=None,sidebared=False,cursor=None):
                         ]
                     )
         txt.append("\n")
-        txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\n")
+        if not sidebared:
+            txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\n")
     else:
         txt.append("empty Inventory")
     return txt

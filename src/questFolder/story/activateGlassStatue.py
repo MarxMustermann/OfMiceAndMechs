@@ -44,6 +44,9 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         if self.subQuests:
             return (None,None)
 
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"to close menu"))
+
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)

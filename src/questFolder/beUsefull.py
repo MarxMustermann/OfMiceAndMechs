@@ -544,7 +544,6 @@ We should stop watching and do something about that.
 
     def checkTriggerCloneSpawning(self,character,currentRoom):
         terrain = character.getTerrain()
-        cityCore = terrain.getRoomByPosition((7,7,0))[0]
 
         foundShrine = None
         for room in self.getRandomPriotisedRooms(character,currentRoom):
@@ -559,6 +558,8 @@ We should stop watching and do something about that.
         # gather npc duties
         npcDuties = {}
         for otherChar in terrain.characters:
+            if not otherChar.burnedIn:
+                continue
             for duty in otherChar.duties:
                 if otherChar == character:
                     continue
@@ -567,6 +568,8 @@ We should stop watching and do something about that.
                 npcDuties[duty].append(otherChar)
         for checkRoom in character.getTerrain().rooms:
             for otherChar in checkRoom.characters:
+                if not otherChar.burnedIn:
+                    continue
                 if otherChar == character:
                     continue
                 for duty in otherChar.duties:
@@ -576,13 +579,27 @@ We should stop watching and do something about that.
 
         chargesUsed = 0
         quests = []
-        for duty in ["resource gathering","scrap hammering","hauling","metal working","resource fetching","room building","painting","machining","machine placing","machine operation","maggot gathering","cleaning"]:
+        for duty in ["room building","cleaning","resource gathering","scrap hammering","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
 
-            if duty not in npcDuties and character.getTerrain().mana >= foundShrine.getCharacterSpawningCost(character)+chargesUsed:
-                quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
-                chargesUsed += 10
-                quests.append(quest)
-                break
+            if duty not in npcDuties:
+                cost = foundShrine.getBurnedInCharacterSpawningCost(character)
+                cost *= foundShrine.get_glass_heart_rebate()
+                foundFlask = None
+                for item in character.inventory:
+                    if item.type != "GooFlask":
+                        continue
+                    if item.uses < 100:
+                        continue
+                    foundFlask = item
+                if foundFlask:
+                    cost /= 2
+                cost += chargesUsed
+
+                if character.getTerrain().mana >= cost:
+                    quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
+                    chargesUsed += 10
+                    quests.append(quest)
+                    break
 
         for quest in reversed(quests):
             self.addQuest(quest)

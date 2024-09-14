@@ -5520,7 +5520,7 @@ def renderInventory(character=None,sidebared=False,cursor=None):
         if not sidebared:
             txt.append("press ws to move cursor\npress L to drop item nearby\npress l to drop item\n")
     else:
-        txt.append("empty Inventory")
+        txt.append("empty Inventory\n\n")
     return txt
 
 # bad code: uses global function to render

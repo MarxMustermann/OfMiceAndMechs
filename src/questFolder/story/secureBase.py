@@ -1,10 +1,10 @@
 import src
 
 
-class ReachSafety(src.quests.MetaQuestSequence):
-    type = "ReachSafety"
+class SecureBase(src.quests.MetaQuestSequence):
+    type = "SecureBase"
 
-    def __init__(self, description="reach safety", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
+    def __init__(self, description="secure base", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
@@ -113,4 +113,4 @@ To make things easier this quest splits into subquests.
 
         self.postHandler()
 
-src.quests.addType(ReachSafety)
+src.quests.addType(SecureBase)

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class BeUsefull(src.quests.MetaQuestSequence):
     type = "BeUsefull"
 
-    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None):
+    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -23,6 +23,7 @@ class BeUsefull(src.quests.MetaQuestSequence):
 
         self.checkedRoomPositions = []
         self.reason = reason
+        self.endOnIdle = endOnIdle
 
     def generateTextDescription(self):
         reason = ""
@@ -2171,6 +2172,10 @@ We should stop watching and do something about that.
             if duty == "tutorial" and character == src.gamestate.gamestate.mainChar:
                 if self.specialTutorialLogic(character,room):
                     return
+
+        if self.endOnIdle:
+            self.postHandler()
+            return
 
         for room in character.getTerrain().rooms:
             if room.tag == "temple":

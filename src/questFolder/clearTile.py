@@ -63,107 +63,109 @@ Remove all items from the walkways."""
         return super().setParameters(parameters)
 
     def solver(self, character):
-        if self.triggerCompletionCheck(character=character):
+        if self.triggerCompletionCheck(character):
             return
 
-        if not self.subQuests:
-            if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:
-                if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
-                    quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                    self.addQuest(quest)
-                    return
-
-                if not isinstance(character.container,src.rooms.Room):
-                    if character.yPosition%15 == 14:
-                        character.runCommandString("w")
-                        return
-                    if character.yPosition%15 == 0:
-                        character.runCommandString("s")
-                        return
-                    if character.xPosition%15 == 14:
-                        character.runCommandString("a")
-                        return
-                    if character.xPosition%15 == 0:
-                        character.runCommandString("d")
-                        return
-
-                quest = src.quests.questMap["WaitQuest"](lifetime=200, creator=self)
-                quest.assignToCharacter(character)
+        (nextQuests,nextCommand) = self.getNextStep(character)
+        if nextQuests:
+            for quest in nextQuests:
                 self.addQuest(quest)
-                quest = src.quests.questMap["RunCommand"](command="roc"+9*"s"+"j",description="send clones to clean tile")
-                quest.activate()
-                quest.assignToCharacter(character)
-                self.addQuest(quest)
+            return
 
-                self.timesDelegated += 1
-                return
-            if not character.getFreeInventorySpace() > 0:
-                quest = src.quests.questMap["ClearInventory"]()
-                self.addQuest(quest)
-                return
-            if not isinstance(character.container,src.rooms.Room):
-                if character.yPosition%15 == 14:
-                    character.runCommandString("w")
-                    return
-                if character.yPosition%15 == 0:
-                    character.runCommandString("s")
-                    return
-                if character.xPosition%15 == 14:
-                    character.runCommandString("a")
-                    return
-                if character.xPosition%15 == 0:
-                    character.runCommandString("d")
-                    return
+        if nextCommand:
+            character.runCommandString(nextCommand[0])
+            return
+        super().solver(character)
 
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep == (None,None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
+
+    def getNextStep(self,character=None,ignoreCommands=False):
+        if self.subQuests:
+            return (None,None)
+
+        if not character:
+            return (None,None)
+
+        if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:
             if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                self.addQuest(quest)
-                return
+                return ([quest],None)
 
-            charPos = character.getPosition()
+            if not isinstance(character.container,src.rooms.Room):
+                if character.yPosition%15 == 14:
+                    return (None,("w","enter tile"))
+                if character.yPosition%15 == 0:
+                    return (None,("s","enter tile"))
+                if character.xPosition%15 == 14:
+                    return (None,("a","enter tile"))
+                if character.xPosition%15 == 0:
+                    return (None,("d","enter tile"))
 
-            offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
-            foundOffset = None
-            foundItems = None
-            for offset in offsets:
-                checkPos = (charPos[0]+offset[0],charPos[1]+offset[1],charPos[2]+offset[2])
-                if checkPos not in character.container.walkingSpace:
-                    continue
-                items = character.container.getItemByPosition(checkPos)
-                if not items:
-                    continue
-                if items[0].bolted:
-                    continue
-                foundOffset = offset
-                foundItems = items
+            quest1 = src.quests.questMap["WaitQuest"](lifetime=200, creator=self)
+            quest2 = src.quests.questMap["RunCommand"](command="roc"+9*"s"+"j",description="send clones to clean tile")
+            self.timesDelegated += 1
+            return ([quest2,quest1],None)
+        if not character.getFreeInventorySpace() > 0:
+            quest = src.quests.questMap["ClearInventory"]()
+            return ([quest],None)
+        if not isinstance(character.container,src.rooms.Room):
+            if character.yPosition%15 == 14:
+                return (None,("w","enter tile"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter tile"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter tile"))
+            if character.xPosition%15 == 0:
+                return (None,("d","enter tile"))
 
-            if foundOffset:
-                if foundOffset == (0,0,0):
-                    command = "k"
-                elif foundOffset == (1,0,0):
-                    command = "Kd"
-                elif foundOffset == (-1,0,0):
-                    command = "Ka"
-                elif foundOffset == (0,1,0):
-                    command = "Ks"
-                elif foundOffset == (0,-1,0):
-                    command = "Kw"
+        if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+            return ([quest],None)
 
-                quest = src.quests.questMap["RunCommand"](command=command*len(foundItems))
-                quest.activate()
-                quest.assignToCharacter(character)
-                self.addQuest(quest)
-                return
+        charPos = character.getPosition()
 
-            items = self.getLeftoverItems(character)
-            if items:
-                item = random.choice(items)
+        offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
+        foundOffset = None
+        foundItems = None
+        for offset in offsets:
+            checkPos = (charPos[0]+offset[0],charPos[1]+offset[1],charPos[2]+offset[2])
+            if checkPos not in character.container.walkingSpace:
+                continue
+            items = character.container.getItemByPosition(checkPos)
+            if not items:
+                continue
+            if items[0].bolted:
+                continue
+            foundOffset = offset
 
-                quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
-                self.addQuest(quest)
-                return
+            foundItems = items
 
-        super().solver(character)
+        if foundOffset:
+            if foundOffset == (0,0,0):
+                command = "k"
+            elif foundOffset == (1,0,0):
+                command = "Kd"
+            elif foundOffset == (-1,0,0):
+                command = "Ka"
+            elif foundOffset == (0,1,0):
+                command = "Ks"
+            elif foundOffset == (0,-1,0):
+                command = "Kw"
+
+            return (None,(command*len(foundItems),"clear spot"))
+
+        items = self.getLeftoverItems(character)
+        if items:
+            item = random.choice(items)
+
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
+            return ([quest],None)
+
+        return (None,None)
 
     def getLeftoverItems(self,character):
 

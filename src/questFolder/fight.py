@@ -146,6 +146,9 @@ So if an enemy is to directly east of you:
         if not command and commands:
             command = random.choice(commands)
 
+        if random.random() < 0.1:
+            command = random.choice(["w","a","s","d"])
+
         if command == "d":
             pos = character.getPosition()
             if not character.container.getPositionWalkable((pos[0]+1,pos[1],pos[2]),character=character):

@@ -122,6 +122,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 self.container.removeItem(flask)
                 self.container.addItem(src.items.itemMap["Flask"](),pos)
         else:
+            character.changed("no flask",{})
             character.addMessage(
                 "you need to have a full goo flask to refill the growth tank"
             )

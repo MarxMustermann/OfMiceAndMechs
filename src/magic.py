@@ -2,14 +2,14 @@ import src
 
 import random
 
+def spawnRoom(terrain,roomType):
+
+    pass
+
 def spawnWaves():
-    print("spawnWaves")
     for (godId,god) in src.gamestate.gamestate.gods.items():
         if ( (god["lastHeartPos"][0] != god["home"][0]) or
              (god["lastHeartPos"][1] != god["home"][1])):
-            print("god found")
-            print(godId)
-            print(god)
 
             terrain = src.gamestate.gamestate.terrainMap[god["lastHeartPos"][1]][god["lastHeartPos"][0]]
 

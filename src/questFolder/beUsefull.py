@@ -580,7 +580,7 @@ We should stop watching and do something about that.
 
         chargesUsed = 0
         quests = []
-        for duty in ["room building","cleaning","resource gathering","scrap hammering","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
+        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
 
             if duty not in npcDuties:
                 cost = foundShrine.getBurnedInCharacterSpawningCost(character)

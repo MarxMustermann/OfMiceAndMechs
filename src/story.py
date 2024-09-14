@@ -2698,8 +2698,16 @@ but they are likely to explode when disturbed.
         ####
         # create manufacturing hall
         ##
-
-        #8,7
+        manufacturingHall = architect.doAddRoom(
+                {
+                       "coordinate": (8,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
 
         ####
         # create storage room
@@ -2976,16 +2984,6 @@ but they are likely to explode when disturbed.
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
         
-        manufacturingHall = architect.doAddRoom(
-                {
-                       "coordinate": (8,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
         """
         # scatter cocoons
         for x in range(1,14):

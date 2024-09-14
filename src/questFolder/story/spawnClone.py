@@ -86,7 +86,11 @@ Spawn a clone to have a backup in case of emergencies.
             return
 
         self.startWatching(character,self.handleSpawn, "spawned clone")
+        self.startWatching(character,self.noFlask, "no flask")
         super().assignToCharacter(character)
+
+    def noFlask(self,extraInfo=None):
+        self.fail("no flask")
 
     def handleSpawn(self,extraInfo=None):
         if self.completed:

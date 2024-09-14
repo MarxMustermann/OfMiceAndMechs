@@ -2906,6 +2906,7 @@ but they are likely to explode when disturbed.
             triggerPlate.faction = faction
             triggerPlate.bolted = True
             trapRoom2.addItem(triggerPlate,(x,6,0))
+            trapRoom2.addWalkingSpace((x,6,0))
             for y in (5,7):
                 if x not in (5,7,):
                     rodTower = src.items.itemMap["RodTower"]()

@@ -4,7 +4,7 @@ import src
 class MetalWorking(src.quests.MetaQuestSequence):
     type = "MetalWorking"
 
-    def __init__(self, description="metal working", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False):
+    def __init__(self, description="metal working", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description + " " + str(toProduce)
@@ -13,6 +13,7 @@ class MetalWorking(src.quests.MetaQuestSequence):
         self.amount = amount
         self.amountDone = 0
         self.produceToInventory = produceToInventory
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         reason = ""
@@ -162,7 +163,7 @@ Press d to move the cursor and show the subquests description.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason and reason.startswith("no source for item ") and "scrap hammering" in self.character.duties:
+        if reason and reason.startswith("no source for item ") and (self.tryHard or "scrap hammering" in self.character.duties):
             newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True)
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")

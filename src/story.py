@@ -1629,7 +1629,7 @@ class MainGame(BasicPhase):
             combatMenu = src.interaction.CombatInfoMenu(mainChar)
             combatMenu.sidebared = True
             mainChar.rememberedMenu.insert(0,combatMenu)
-        mainChar.disableCommandsOnPlus = True
+        #mainChar.disableCommandsOnPlus = True
 
         print("len(self.available_positions)")
         print(len(self.available_positions))
@@ -2566,18 +2566,23 @@ but they are likely to explode when disturbed.
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
+        ####
+        # create the control room
+        ##
+
         # create the basic room
         mainRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,7),
                        "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 6,12",
+                       "doors": "0,6 6,0 6,12 12,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
 
+        # place anvil
         anvilPos = (10,2,0)
         machinemachine = src.items.itemMap["Anvil"]()
         mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
@@ -2586,6 +2591,7 @@ but they are likely to explode when disturbed.
         mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
         mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
 
+        # place metal working bench
         metalWorkBenchPos = (8,3,0)
         machinemachine = src.items.itemMap["MetalWorkingBench"]()
         mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
@@ -2594,6 +2600,87 @@ but they are likely to explode when disturbed.
         mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
         mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
 
+        # add walking space cross
+        for y in range(1,12):
+            mainRoom.walkingSpace.add((6,y,0))
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,6,0))
+
+        # add storage section
+        mainRoom.walkingSpace.add((11,6,0))
+        for y in (11,9,8,6):
+            for x in range(7,12):
+                if (x,y) == (11,6):
+                    continue
+                mainRoom.addStorageSlot((x,y,0),None,{})
+                if y == 11:
+                    scrap = src.items.itemMap["Scrap"](amount=20)
+                    mainRoom.addItem(scrap,(x,y,0))
+                if y == 9 and x in (8,9,):
+                    flask = src.items.itemMap["GooFlask"]()
+                    flask.uses = 100
+                    mainRoom.addItem(flask,(x,y,0))
+
+        # add walking space in storage section
+        for y in (10,7,5):
+            for x in range(7,12):
+                mainRoom.walkingSpace.add((x,y,0))
+        for y in (8,11):
+            for x in range(1,8):
+                mainRoom.walkingSpace.add((x,y,0))
+
+        # add items
+        painter = src.items.itemMap["Painter"]()
+        mainRoom.addItem(painter,(7,8,0))
+
+        # add mini wall production
+        mainRoom.addInputSlot((1,7,0),"MetalBars")
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Rod"
+        mainRoom.addItem(manufacturingTable,(2,7,0))
+        mainRoom.addStorageSlot((3,7,0),"Rod",{"desiredState":"filled"})
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Frame"
+        mainRoom.addItem(manufacturingTable,(4,7,0))
+        mainRoom.addStorageSlot((5,7,0),"Frame",{"desiredState":"filled"})
+        mainRoom.addInputSlot((1,10,0),"Frame",None)
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Case"
+        mainRoom.addItem(manufacturingTable,(2,10,0))
+        mainRoom.addStorageSlot((3,10,0),"Case",{"desiredState":"filled"})
+        mainRoom.addInputSlot((4,9,0),"MetalBars")
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Wall"
+        mainRoom.addItem(manufacturingTable,(4,10,0))
+        mainRoom.addStorageSlot((5,10,0),"Wall")
+
+        # add scrap compactor
+        mainRoom.addInputSlot((1,9,0),"Scrap")
+        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+        scrapCompactor.bolted = True
+        mainRoom.addItem(scrapCompactor,(2,9,0))
+        mainRoom.addStorageSlot((3,9,0),"MetalBars",None)
+
+        # add management items
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        cityPlaner.bolted = True
+        mainRoom.addItem(cityPlaner,(2,2,0))
+        promoter = src.items.itemMap["Promoter"]()
+        promoter.bolted = True
+        mainRoom.addItem(promoter,(4,2,0))
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        dutyArtwork.bolted = True
+        mainRoom.addItem(dutyArtwork,(2,4,0))
+        siegeManager = src.items.itemMap["SiegeManager"]()
+        siegeManager.bolted = True
+        mainRoom.addItem(siegeManager,(4,4,0))
+        siegeManager.handleTick()
+
+        # spawn npc
         actualCharacter = src.characters.Character()
         sword = src.items.itemMap["Sword"]()
         sword.baseDamage = 10
@@ -2601,12 +2688,28 @@ but they are likely to explode when disturbed.
         actualCharacter.faction = faction
         mainRoom.addCharacter(actualCharacter,6,6)
 
+        # make npc protect the room
         quest = src.quests.questMap["SecureTile"](toSecure=mainRoom.getPosition())
         quest.autoSolve = True
         quest.assignToCharacter(actualCharacter)
         quest.activate()
         actualCharacter.quests.append(quest)
 
+        ####
+        # create manufacturing hall
+        ##
+
+        #8,7
+
+        ####
+        # create storage room
+        ##
+
+        #8,8
+
+        ####
+        # create spawn room
+        ##
         spawnRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,8),
@@ -2622,12 +2725,30 @@ but they are likely to explode when disturbed.
         factionChanger.faction = faction
         spawnRoom.addItem(factionChanger,(5,3,0))
 
+        for y in range(1,10):
+            spawnRoom.walkingSpace.add((6,y,0))
+        for x in range(1,12):
+            for y in (9,4,):
+                if x == 6:
+                    continue
+                spawnRoom.walkingSpace.add((x,y,0))
+
+        integrator = src.items.itemMap["Integrator"]()
+        spawnRoom.addItem(integrator,(7,3,0))
+
+        spawnRoom.addStorageSlot((2,3,0),"GooFlask",{"desiredState":"filled"})
         growthTank = src.items.itemMap["GrowthTank"]()
         spawnRoom.addItem(growthTank,(3,3,0))
 
+        command = src.items.itemMap["Command"]()
+        command.command = list("dj")+["enter"]+list("sdddJwaaaw")
+        spawnRoom.addItem(command,(4,3,0))
+
         flask = src.items.itemMap["GooFlask"]()
         flask.uses = 100
-        spawnRoom.addItem(flask,(3,4,0))
+        spawnRoom.addItem(flask,(2,3,0))
+
+        spawnRoom.addStorageSlot((10,8,0),"Flask",{"desiredState":"filled"})
 
         throneRoom = architect.doAddRoom(
                 {
@@ -2639,6 +2760,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
+        throneRoom.tag = "temple"
 
         for x in (2,10,):
             for y in range(1,12):
@@ -2648,7 +2770,7 @@ but they are likely to explode when disturbed.
                 throneRoom.walkingSpace.add((x,y,0))
         for x in range(5,8):
             for y in range(7,12):
-                if (x,y) in ((6,9)):
+                if (x,y) in ((6,9),(6,8)):
                     continue
                 throneRoom.walkingSpace.add((x,y,0))
 
@@ -2659,12 +2781,13 @@ but they are likely to explode when disturbed.
 
             statue = src.items.itemMap["GlassStatue"]()
             statue.itemID = godId
-            statue.charges = 10
             throneRoom.addItem(statue,(godId+2,5,0))
+
+            throneRoom.addInputSlot((godId+2,4,0),src.gamestate.gamestate.gods[godId]["sacrifice"][0],{})
 
         throne = src.items.itemMap["Throne"]()
         throne.bolted = True
-        throneRoom.addItem(throne,(6,9,0))
+        throneRoom.addItem(throne,(6,8,0))
 
         for basePos in [(1,2,0),(11,2,0),(1,10,0),(11,10,0)]:
             motionSensor = src.items.itemMap["MotionSensor"]()
@@ -2695,26 +2818,44 @@ but they are likely to explode when disturbed.
            )
 
         sword = src.items.itemMap["Sword"]()
-        sword.baseDamage = 10
+        sword.baseDamage = 15
+        if self.difficulty == "easy":
+            sword.baseDamage = 25
+        if self.difficulty == "difficult":
+            sword.baseDamage = 10
         sword.bolted = False
         trapRoom1.addItem(sword,(11,3,0))
         armor = src.items.itemMap["Armor"]()
-        armor.armorValue = 1
+        armor.armorValue = 3
+        if self.difficulty == "easy":
+            armor.armorValue = 5
+        if self.difficulty == "difficult":
+            armor.armorValue = 1
         armor.bolted = False
         trapRoom1.addItem(armor,(11,4,0))
 
         sword = src.items.itemMap["Sword"]()
-        sword.baseDamage = 10
+        sword.baseDamage = 15
+        if self.difficulty == "easy":
+            sword.baseDamage = 25
+        if self.difficulty == "difficult":
+            sword.baseDamage = 10
         sword.bolted = False
         trapRoom1.addItem(sword,(11,1,0))
         armor = src.items.itemMap["Armor"]()
-        armor.armorValue = 1
+        armor.armorValue = 3
+        if self.difficulty == "easy":
+            armor.armorValue = 5
+        if self.difficulty == "difficult":
+            armor.armorValue = 1
         armor.bolted = False
         trapRoom1.addItem(armor,(11,2,0))
 
         coalBurner = src.items.itemMap["CoalBurner"]()
+        coalBurner.bolted = True
         trapRoom1.addItem(coalBurner,(11,8,0))
 
+        trapRoom1.addInputSlot((11,9,0),"MoldFeed",{})
         moldFeed = src.items.itemMap["MoldFeed"]()
         trapRoom1.addItem(moldFeed,(11,9,0))
         moldFeed = src.items.itemMap["MoldFeed"]()
@@ -2732,6 +2873,8 @@ but they are likely to explode when disturbed.
 
         for x in range(1,12):
             for y in range(1,12):
+                if (x,y) in ((11,9),(11,8)):
+                    continue
                 trapRoom1.walkingSpace.add((x,y,0))
 
         trapRoom2 = architect.doAddRoom(
@@ -2807,6 +2950,42 @@ but they are likely to explode when disturbed.
             item.display = "OT"
             startRoom.addItem(item,pos)
 
+        specialSpots = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,9,0),(6,9,0)]
+        for specialSpot in specialSpots:
+            flask = src.items.itemMap["GooFlask"]()
+            flask.uses = 100
+            currentTerrain.addItem(flask,(15*specialSpot[0]+random.randint(2,11),15*specialSpot[1]+random.randint(2,11),0))
+            vial = src.items.itemMap["Vial"]()
+            vial.uses = 5
+            currentTerrain.addItem(vial,(15*specialSpot[0]+random.randint(2,11),15*specialSpot[1]+random.randint(2,11),0))
+
+        # scatter walls
+        for x in range(1,14):
+            for y in range(1,14):
+                if (x,y) in ((3,11),):
+                    continue
+                if currentTerrain.itemsByBigCoordinate.get((x,y,0),[]):
+                    continue
+                if currentTerrain.charactersByTile.get((x,y),[]):
+                    continue
+                if (x,y,0) in specialSpots:
+                    continue
+                for i in range(1,random.randint(1,4)):
+                    wall = src.items.itemMap["Wall"]()
+                    wall.bolted = False
+                    currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+        
+        manufacturingHall = architect.doAddRoom(
+                {
+                       "coordinate": (8,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+        """
         # scatter cocoons
         for x in range(1,14):
             for y in range(1,14):
@@ -2816,11 +2995,12 @@ but they are likely to explode when disturbed.
                     continue
                 if currentTerrain.charactersByTile.get((x,y),[]):
                     continue
-                if (x,y,0) in [(4,6,0),(4,8,0),(3,9,0)]:
+                if (x,y,0) in specialSpots:
                     continue
                 for i in range(1,4):
                     coocon = src.items.itemMap["Cocoon"]()
                     currentTerrain.addItem(coocon,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+        """
 
     def setUpFactoryRemains(self,pos):
         # get basic info
@@ -4057,7 +4237,7 @@ but they are likely to explode when disturbed.
         mainChar = src.characters.Character()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["praying","city planning","clone spawning","questing"]
+        mainChar.duties = ["praying","city planning","clone spawning","questing","metal working","resource gathering"]
         mainChar.rank = 6
 
         thisFactionId = self.factionCounter
@@ -4130,7 +4310,7 @@ but they are likely to explode when disturbed.
         mainChar = src.characters.Character()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["praying","city planning","clone spawning","questing"]
+        mainChar.duties = ["praying","city planning","clone spawning",]
         mainChar.rank = 6
         mainChar.timeTaken = 1
         mainChar.runCommandString(".",nativeKey=True)
@@ -4326,7 +4506,7 @@ but they are likely to explode when disturbed.
         mainChar = src.characters.Character()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
-        mainChar.duties = ["praying","city planning","clone spawning","questing"]
+        mainChar.duties = ["praying","city planning","clone spawning","questing","metal working"]
         mainChar.rank = 6
 
 
@@ -5915,6 +6095,7 @@ but they are likely to explode when disturbed.
     def openedQuestsStory(self):
         mainChar = self.activeStory["mainChar"]
         
+        # flee initial room
         if mainChar.container.tag == "sternslab":
             quest = src.quests.questMap["EscapeLab"]()
             quest.assignToCharacter(mainChar)
@@ -5923,27 +6104,38 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        if mainChar.health < 20:
-            inventoryMenu = src.interaction.InventoryMenu(mainChar)
-            inventoryMenu.sidebared = True
-            mainChar.rememberedMenu2.append(inventoryMenu)
+        # heal
+        # triggers at any time
+        if mainChar.health < mainChar.maxHealth - 10:
+            if len(mainChar.rememberedMenu2) > 1:
+                inventoryMenu = src.interaction.InventoryMenu(mainChar)
+                inventoryMenu.sidebared = True
+                mainChar.rememberedMenu2.append(inventoryMenu)
 
-            quest = src.quests.questMap["TreatWounds"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
+            for item in mainChar.inventory:
+                if item.type != "Vial":
+                    continue
+                if not item.uses:
+                    continue
+                quest = src.quests.questMap["TreatWounds"]()
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
 
-        if (mainChar.faction != "city #2") and (mainChar.getBigPosition() != (7,7,0)):
-            quest = src.quests.questMap["ReachSafety"]()
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
+        # assimilate into base
+        if mainChar.faction != "city #2":
+            # get to control room
+            if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
+                quest = src.quests.questMap["ReachSafety"]()
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
 
-        if (mainChar.faction != "city #2"):
+            # steal faction id
             quest = src.quests.questMap["ResetFaction"]()
             quest.assignToCharacter(mainChar)
             quest.activate()
@@ -5951,6 +6143,59 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # count the number of enemies/allies
+        npcCount = 0
+        enemyCount = 0
+        terrain = mainChar.getTerrain()
+        for character in terrain.characters:
+            if character.faction != "city #2":
+                enemyCount += 1
+            else:
+                npcCount += 1
+        for room in terrain.rooms:
+            for character in room.characters:
+                if character.faction != "city #2":
+                    enemyCount += 1
+                else:
+                    npcCount += 1
+
+        # remove all enemies from terrain
+        # ? should that only mean hunters ?
+        if enemyCount > 0:
+            quest = src.quests.questMap["ClearTerrain"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        # ensure there is a backup NPC
+        if npcCount < 2:
+            terrain = character.getTerrain()
+            items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))
+            for item in items:
+                if item.type != "GooFlask":
+                    continue
+                if item.uses < 100:
+                    continue
+
+                quest = src.quests.questMap["SpawnClone"]()
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
+        # get promoted to base commander
+        if mainChar.rank > 2:
+            quest = src.quests.questMap["GetPromotion"](targetRank=mainChar.rank-1)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        # collect all glass heart
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):
                 continue
@@ -5962,6 +6207,7 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # ascend to be supreme leader
         if mainChar.rank != 1:
             quest = src.quests.questMap["Ascend"]()
             quest.assignToCharacter(mainChar)

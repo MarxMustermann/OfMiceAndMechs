@@ -1,4 +1,5 @@
 import src
+import random
 
 # equip
 # rest
@@ -153,6 +154,8 @@ After fetching the glass heart return the glass heart to your base and set it in
             if character.getPosition() != foundGlassHeart.getPosition():
                 quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassHeart.getPosition(),description="go to GlassHeart",reason="be able to pick up the GlassHeart")
                 return ([quest],None)
+            if len(character.inventory) > 9:
+                return (None,("L"+random.choice(["w","a","s","d"]),"clear inventory"))
             return (None,("k","pick up GlassHeart"))
 
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:

@@ -6143,6 +6143,21 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # keep trap rooms clean
+        homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
+        room = homeTerrain.getRoomByPosition((5,7,0))[0]
+        for walkingSpace in room.walkingSpace:
+            items = room.getItemByPosition(walkingSpace)
+            for item in items:
+                if item.bolted:
+                    continue
+                quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0

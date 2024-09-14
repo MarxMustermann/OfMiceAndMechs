@@ -6107,7 +6107,7 @@ but they are likely to explode when disturbed.
         # heal
         # triggers at any time
         if mainChar.health < mainChar.maxHealth - 10:
-            if len(mainChar.rememberedMenu2) > 1:
+            if len(mainChar.rememberedMenu2) < 2:
                 inventoryMenu = src.interaction.InventoryMenu(mainChar)
                 inventoryMenu.sidebared = True
                 mainChar.rememberedMenu2.append(inventoryMenu)

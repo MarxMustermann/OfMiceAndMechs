@@ -166,7 +166,7 @@ class SternsContraption(src.items.Item):
                         quest.activate()
                         enemy.quests.append(quest)
 
-                        terrain.addCharacter(enemy,bigPos[0]*15+random.randint(2,13),bigPos[1]*15+random.randint(2,13))
+                        terrain.addCharacter(enemy,bigPos[0]*15+random.randint(3,12),bigPos[1]*15+random.randint(3,12))
 
                 self.container.destroy()
                 return

@@ -23,14 +23,58 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        # count the number of enemies/allies
+        npcCount = 0
+        enemyCount = 0
+        terrain = character.getTerrain()
+        for otherChar in terrain.characters:
+            if otherChar.faction != character.faction:
+                enemyCount += 1
+            else:
+                npcCount += 1
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction != character.faction:
+                    enemyCount += 1
+                else:
+                    npcCount += 1
+
+        # remove all enemies from terrain
+        # ? should that only mean hunters ?
+        if enemyCount > 0:
+            quest = src.quests.questMap["ClearTerrain"]()
+            return ([quest],None)
+
+        # ensure there is a backup NPC
+        if npcCount < 2:
+            items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))
+            for item in items:
+                if item.type != "GooFlask":
+                    continue
+                if item.uses < 100:
+                    continue
+                quest = src.quests.questMap["SpawnClone"]()
+                return ([quest],None)
+
+        readyStatues = {}
+        for room in character.getTerrain().rooms:
+            for item in room.itemsOnFloor:
+                if not (item.type == "GlassStatue"):
+                    continue
+                if not (item.charges > 4):
+                    continue
+                readyStatues[item.itemID] = item
+
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):
                 continue
 
-            quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId,suicidal=True)
-            return ([quest],None)
+            if godId in readyStatues:
+                quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId,suicidal=True)
+                return ([quest],None)
 
-        return (None,None)
+        quest = src.quests.questMap["AppeaseAGod"]()
+        return ([quest],None)
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):
@@ -64,7 +108,7 @@ Obtain their GlassHeart and make them whole.
 This will give you 3 advantages:
 1. you will get a immediate mana boost
 2. the GlassStatues will generate extra mana each epoch
-1. the cost for using magic will be halfed
+3. the cost for using magic will be halfed
 
 """]
         if not self.subQuests:

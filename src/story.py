@@ -1629,7 +1629,7 @@ class MainGame(BasicPhase):
             combatMenu = src.interaction.CombatInfoMenu(mainChar)
             combatMenu.sidebared = True
             mainChar.rememberedMenu.insert(0,combatMenu)
-        #mainChar.disableCommandsOnPlus = True
+        mainChar.disableCommandsOnPlus = True
 
         print("len(self.available_positions)")
         print(len(self.available_positions))

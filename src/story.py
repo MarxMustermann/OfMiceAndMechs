@@ -6157,6 +6157,31 @@ but they are likely to explode when disturbed.
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 return
 
+        # check for spider lairs
+        terrain = mainChar.getTerrain()
+        spider_lairs_found = []
+        for x in range(1,14):
+            for y in range(1,14):
+                for otherChar in terrain.charactersByTile.get((x,y,0),[]):
+                    
+                    numSpiders = 0
+                    if otherChar.charType == "Spider":
+                        numSpiders += 1
+
+                    if numSpiders:
+                        spider_lairs_found.append(((x,y,0),numSpiders))
+
+        # clear spiders
+        if spider_lairs_found:
+            spider_lair_pos = spider_lairs_found[0][0]
+                
+            quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0

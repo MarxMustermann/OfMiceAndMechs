@@ -1050,7 +1050,8 @@ class Character:
                 #self.addMessage("you stager")
                 self.staggered += damage // staggerThreshold
 
-
+            self.changed("hurt")
+            
             """
             if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):
                 self.addMessage("you are hurt you should heal")

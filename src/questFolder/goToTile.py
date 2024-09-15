@@ -179,21 +179,22 @@ The target tile is {direction[4:]}
 
         if isinstance(character.container,src.rooms.Room):
             # TODO: reenable random
-            if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
+            if not self.paranoid:
+                if random.random() < 1.5 and "fighting" in self.character.skills:
+                    for otherCharacter in character.container.characters:
+                        if otherCharacter.faction == character.faction:
+                            continue
+                        return (None,("gg","guard the room"))
+
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
                         continue
-                    return (None,("gg","guard the room"))
-
-            for otherCharacter in character.container.characters:
-                if otherCharacter.faction == character.faction:
-                    continue
-                if character.health < character.maxHealth//5:
-                    quest = src.quests.questMap["Flee"]()
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["Fight"]()
-                    return ([quest],None)
+                    if character.health < character.maxHealth//5:
+                        quest = src.quests.questMap["Flee"]()
+                        return ([quest],None)
+                    else:
+                        quest = src.quests.questMap["Fight"]()
+                        return ([quest],None)
 
             if not self.isPathSane(character):
                 self.generatePath(character)
@@ -241,16 +242,18 @@ The target tile is {direction[4:]}
                 return (None,("d","enter the tile"))
 
             # TODO: reenable random
-            if not self.paranoid and random.random() < 1.5 and "fighting" in self.character.skills:
-                if character.container.getEnemiesOnTile(character):
-                    return (None,("gg","guard the tile"))
-            if character.container.getEnemiesOnTile(character):
-                if character.health < character.maxHealth//5:
-                    quest = src.quests.questMap["Flee"]()
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["Fight"]()
-                    return ([quest],None)
+            if not self.paranoid:
+                if random.random() < 1.5 and "fighting" in self.character.skills:
+                    if character.container.getEnemiesOnTile(character):
+                        return (None,("gg","guard the tile"))
+
+                    if character.container.getEnemiesOnTile(character):
+                        if character.health < character.maxHealth//5:
+                            quest = src.quests.questMap["Flee"]()
+                            return ([quest],None)
+                        else:
+                            quest = src.quests.questMap["Fight"]()
+                            return ([quest],None)
 
             if not self.isPathSane(character):
                 self.generatePath(character)

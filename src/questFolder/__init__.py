@@ -101,3 +101,4 @@ import src.questFolder.story.activateGlassStatue
 import src.questFolder.story.collectGlassHearts
 import src.questFolder.story.spawnClone
 import src.questFolder.story.appeaseAGod
+import src.questFolder.story.baitSpiders

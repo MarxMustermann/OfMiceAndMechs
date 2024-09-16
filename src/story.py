@@ -2521,7 +2521,7 @@ but they are likely to explode when disturbed.
 
     def setUpStatueRoom(self,pos,itemID=None):
         if itemID is None:
-            itemID = rendom.choice([1,2,3,4,5,6,7])
+            itemID = random.choice([1,2,3,4,5,6,7])
 
         # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]

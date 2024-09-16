@@ -26,10 +26,13 @@ class BaitSpiders(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"to close menu"))
+
         phase = self.phase
 
         if phase == "bait":
-            if character.getPosition() != self.targetPositionBig:
+            if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="be able to bait the spiders",description="go to spiders")
                 return ([quest],None)
 
@@ -51,43 +54,6 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     self.phase = phase
                 return ([quest],None)
         return (None,None)
-
-        baseCommand = "d"
-        nextPos = (character.xPosition+1,character.yPosition,0)
-        if character.yPosition < 6:
-            baseCommand = "s"
-            nextPos = (character.xPosition,character.yPosition+1,0)
-        elif character.yPosition > 6:
-            baseCommand = "w"
-            nextPos = (character.xPosition,character.yPosition-1,0)
-
-        items = character.container.getItemByPosition(nextPos)
-        
-        # save to move
-        if (not items) or (items[0].type != "TriggerPlate"):
-            return (None,(baseCommand,"move"))
-
-        # block trigger plates
-        if character.inventory:
-            return (None,("L"+baseCommand,"block TrickerPlate"))
-
-        # check of traps are in cooldown
-        foundActiveTrap = False
-        for offset in ((1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):
-            checkPos = (nextPos[0]+offset[0],nextPos[1]+offset[1],nextPos[2]+offset[2])
-
-            for item in character.container.getItemByPosition(checkPos):
-                if item.type != "RodTower":
-                    continue
-                if item.isInCoolDown():
-                    continue
-                foundActiveTrap = True
-                break
-
-        if not foundActiveTrap:
-            return (None,(baseCommand,"step on trap"))
-        
-        return (None,("J"+baseCommand,"trigger trap"))
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):
@@ -121,6 +87,8 @@ The base is prepared to withstand the attack.
 Guard the arena behind the trap room to ensure no spider slips through.
 
 """]
+        result.append(f"phase: {self.phase}\n")
+        result.append(f"target position: {self.targetPositionBig}\n")
         if self.phase == "wait":
             result.append(f"The last known spider positions are:\n{self.spiderPositions}")
         return result
@@ -161,6 +129,17 @@ Guard the arena behind the trap room to ensure no spider slips through.
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
+
+        if self.phase == "bait" and not self.subQuests:
+            foundEnemy = False
+            for otherChar in self.character.getTerrain().charactersByTile.get(self.targetPositionBig,[]):
+                if otherChar.faction == character.faction:
+                    continue
+                foundEnemy = True
+                break
+            if not foundEnemy:
+                self.postHandler()
+                return True
 
         if self.phase == "end" and not self.subQuests:
             self.postHandler()

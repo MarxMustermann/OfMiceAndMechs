@@ -131,8 +131,12 @@ Guard the arena behind the trap room to ensure no spider slips through.
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
         self.startWatching(character,self.changedTile, "changedTile")
+        self.startWatching(character,self.hurt, "hurt")
         super().assignToCharacter(character)
 
+    def hurt(self, extraInfo=None):
+        if self.phase == "wait":
+            self.phase = "run"
 
     def changedTile(self, extraInfo=None):
         if self.phase == "bait":

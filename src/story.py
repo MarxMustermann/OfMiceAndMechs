@@ -2626,7 +2626,7 @@ but they are likely to explode when disturbed.
             for x in range(7,12):
                 mainRoom.walkingSpace.add((x,y,0))
         for y in (8,11):
-            for x in range(1,8):
+            for x in range(1,7):
                 mainRoom.walkingSpace.add((x,y,0))
 
         # add items

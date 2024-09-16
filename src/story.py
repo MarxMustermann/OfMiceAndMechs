@@ -2702,12 +2702,18 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (8,7),
                        "roomType": "EmptyRoom",
-                       "doors": "0,6",
+                       "doors": "0,6 6,0 12,6 6,12",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
+        for item in manufacturingHall.itemsOnFloor:
+            if item.type != "Door":
+                continue
+            if item.getPosition() == (0,6,0):
+                continue
+            item.walkable = False
 
         ####
         # create storage room
@@ -2722,12 +2728,18 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (7,8),
                        "roomType": "EmptyRoom",
-                       "doors": "6,0",
+                       "doors": "0,6 6,0 12,6 6,12",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
+        for item in spawnRoom.itemsOnFloor:
+            if item.type != "Door":
+                continue
+            if item.getPosition() == (6,0,0):
+                continue
+            item.walkable = False
 
         factionChanger = src.items.itemMap["FactionSetter"]()
         factionChanger.faction = faction
@@ -2762,13 +2774,19 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (7,6),
                        "roomType": "EmptyRoom",
-                       "doors": "6,12",
+                       "doors": "0,6 6,0 12,6 6,12",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
         throneRoom.tag = "temple"
+        for item in throneRoom.itemsOnFloor:
+            if item.type != "Door":
+                continue
+            if item.getPosition() == (6,12,0):
+                continue
+            item.walkable = False
 
         for x in (2,10,):
             for y in range(1,12):

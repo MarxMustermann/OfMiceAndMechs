@@ -190,6 +190,8 @@ Place the items in the correct input or storage stockpile.
                             inventoryCommand += "i"+"s"*counter
                             numToDrop = 1
 
+                        numToDrop = 1
+
                         if foundDirectDrop[1] == (-1,0):
                             return (None,((inventoryCommand+"La")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):

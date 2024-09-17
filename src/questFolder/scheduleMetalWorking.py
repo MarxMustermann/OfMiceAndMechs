@@ -140,4 +140,4 @@ do some metal working
             return
         super().solver(character)
 
-src.quests.addType(MetalWorking)
+src.quests.addType(ScheduleMetalWorking)

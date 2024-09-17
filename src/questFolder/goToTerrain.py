@@ -20,7 +20,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return True
         return False
 
-    def getNextStep(self,character):
+    def getNextStep(self,character,ignoreCommands=False):
         if self.subQuests:
             return (None,None)
 

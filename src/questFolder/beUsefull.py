@@ -2025,79 +2025,79 @@ Press d to move the cursor and show the subquests description.
 
         room = character.container
         for duty in character.getRandomProtisedDuties():
-            if duty == "trap setting" and self.checkTriggerTrapSetting(character,room):
-                return
-
-            if duty == "turret loading" and self.checkTriggerTurretLoading(character,room):
-                return
-
-            if duty == "flask filling" and self.checkTriggerFlaskFilling(character,room):
-                return
-
-            if duty == "machine operation" and self.checkTriggerMachineOperation(character,room):
-                return
-
-            if duty == "manufacturing" and self.checkTriggerManufacturing(character,room):
-                return
-
-            if duty == "resource gathering" and self.checkTriggerResourceGathering(character,room):
-                return
-
-            if duty == "maggot gathering" and self.checkTriggerMaggotGathering(character,room):
-                return
-
-            if duty == "scratch checking" and self.checkTriggerScratchChecking(character,room):
-                return
-
-            if duty == "cleaning" and self.checkTriggerCleaning(character,room):
-                return
-
-            if duty == "hauling" and self.checkTriggerHauling(character,room):
-                return
-
-            if duty == "resource fetching" and self.checkTriggerResourceFetching(character,room):
-                return
-
-            if duty == "painting" and self.checkTriggerPainting(character,room):
-                return
-
-            if duty == "machine placing" and self.checkTriggerMachinePlacing(character,room):
-                return
-
-            if duty == "room building" and self.checkTriggerRoomBuilding(character,room):
-                return
-
-            if duty == "scavenging" and self.checkTriggerScavenging(character,room):
-                return
-
-            if duty == "scrap hammering" and self.checkTriggerScrapHammering(character,room):
-                return
-
-            if duty == "metal working" and self.checkTriggerMetalWorking(character,room):
-                return
-
-            if duty == "machining" and self.checkTriggerMachining(character,room):
-                return
-
-            if duty == "city planning" and self.checkTriggerCityPlaning(character,room):
-                return
-
-            if duty == "clone spawning" and self.checkTriggerCloneSpawning(character,room):
-                return
-
-            if duty == "epoch questing" and self.checkTriggerEpochQuesting(character,room):
-                return
-
-            if duty == "questing" and self.checkTriggerQuesting(character,room):
-                return
-
-            if duty == "praying" and self.checkTriggerPraying(character,room):
-                return
-
-            if duty == "tutorial" and character == src.gamestate.gamestate.mainChar:
-                if self.specialTutorialLogic(character,room):
-                    return
-
+            match (duty):
+                case "trap setting":
+                    if self.checkTriggerTrapSetting(character,room):
+                        return
+                case "turret loading":
+                    if self.checkTriggerTurretLoading(character,room):
+                        return
+                case "flask filling":
+                    if self.checkTriggerFlaskFilling(character,room):
+                        return
+                case "machine operation":
+                    if self.checkTriggerMachineOperation(character,room):
+                        return
+                case "manufacturing":
+                    if self.checkTriggerManufacturing(character,room):
+                        return
+                case "resource gathering":
+                    if self.checkTriggerResourceGathering(character,room):
+                        return
+                case "maggot gathering":
+                    if self.checkTriggerMaggotGathering(character,room):
+                        return
+                case "scratch checking":
+                    if self.checkTriggerScratchChecking(character,room):
+                        return
+                case "cleaning":
+                    if self.checkTriggerCleaning(character,room):
+                        return
+                case "hauling":
+                    if self.checkTriggerHauling(character,room):
+                        return
+                case "resource fetching":
+                    if self.checkTriggerResourceFetching(character,room):
+                        return
+                case "painting":
+                    if self.checkTriggerPainting(character,room):
+                        return
+                case "machine placing":
+                    if self.checkTriggerMachinePlacing(character,room):
+                        return
+                case "room building":
+                    if self.checkTriggerRoomBuilding(character,room):
+                        return
+                case "scavenging":
+                    if self.checkTriggerScavenging(character,room):
+                        return
+                case "scrap hammering":
+                    if self.checkTriggerScrapHammering(character,room):
+                        return
+                case "metal working":
+                    if self.checkTriggerMetalWorking(character,room):
+                        return
+                case "machining":
+                    if self.checkTriggerMachining(character,room):
+                        return
+                case "city planning":
+                    if self.checkTriggerCityPlaning(character,room):
+                        return
+                case "clone spawning":
+                    if self.checkTriggerCloneSpawning(character,room):
+                        return
+                case "epoch questing":
+                    if self.checkTriggerEpochQuesting(character,room):
+                        return
+                case "questing":
+                    if self.checkTriggerQuesting(character,room):
+                        return
+                case "praying":
+                    if self.checkTriggerPraying(character,room):
+                        return
+                case "tutorial":
+                    if character == src.gamestate.gamestate.mainChar and self.specialTutorialLogic(character,room):
+                        return
         if self.endOnIdle:
             self.postHandler()
             return

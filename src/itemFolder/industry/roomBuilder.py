@@ -197,6 +197,56 @@ The room has to be a rectangle.
         room.reconfigure(roomLeft + roomRight + 1, roomTop + roomBottom + 1, items,doorPos=doorPos)
         room.timeIndex = src.gamestate.gamestate.tick
 
+        # auto add the correct connections
+        ## close all doors
+        for item in room.itemsOnFloor:
+            if item.type != "Door":
+                continue
+            item.walkable = False
+
+        terrain = character.getTerrain()
+        bigPos = character.getBigPosition()
+        westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
+        if westNeighbours:
+            for item in room.getItemByPosition((0,6,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+            for item in westNeighbours[0].getItemByPosition((12,6,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+        eastNeighbours = terrain.getRoomByPosition((bigPos[0]+1,bigPos[1],0))
+        if eastNeighbours:
+            for item in room.getItemByPosition((12,6,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+            for item in eastNeighbours[0].getItemByPosition((0,6,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+        northNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]-1,0))
+        if northNeighbours:
+            for item in room.getItemByPosition((6,0,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+            for item in northNeighbours[0].getItemByPosition((6,12,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+        southNeighbours = terrain.getRoomByPosition((bigPos[0],bigPos[1]+1,0))
+        if southNeighbours:
+            for item in room.getItemByPosition((6,12,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+            for item in southNeighbours[0].getItemByPosition((6,0,0)):
+                if item.type != "Door":
+                    continue
+                item.walkable = True
+
         xOffset = character.xPosition - self.xPosition
         yOffset = character.yPosition - self.yPosition
 

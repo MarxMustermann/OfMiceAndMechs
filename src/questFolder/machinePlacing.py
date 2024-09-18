@@ -132,4 +132,4 @@ class MachinePlacing(src.quests.MetaQuestSequence):
             return
         super().solver(character)
 
-src.quests.addType(DrawFloorPlan)
+src.quests.addType(MachinePlacing)

@@ -101,13 +101,6 @@ Press d to move the cursor and show the subquests description.
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
     def getNextStep(self,character=None,ignoreCommands=False):
         terrain = character.getTerrain()
         if terrain.alarm:

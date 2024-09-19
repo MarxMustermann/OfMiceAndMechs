@@ -11,6 +11,7 @@ class BaitSpiders(src.quests.MetaQuestSequence):
         self.reason = reason
         self.targetPositionBig = targetPositionBig
         self.phase = "bait"
+        self.spiderPositions = []
 
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character)
@@ -35,10 +36,17 @@ class BaitSpiders(src.quests.MetaQuestSequence):
             if character.getBigPosition() != self.targetPositionBig:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="be able to bait the spiders",description="go to spiders")
                 return ([quest],None)
+            phase = "wait"
+
+            if not dryRun:
+                self.spiderPositions = []
+                for enemy in self.character.getNearbyEnemies():
+                    self.spiderPositions.append(enemy.getSpacePosition())
+                self.phase = phase
 
         if phase == "wait":
             for enemy in self.character.getNearbyEnemies():
-                if not (enemy.getSpacePosition() in self.spiderPositions):
+                if self.spiderPositions and not (enemy.getSpacePosition() in self.spiderPositions):
                     phase = "run"
                     if not dryRun:
                         self.phase = phase
@@ -99,10 +107,10 @@ Guard the arena behind the trap room to ensure no spider slips through.
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
         self.startWatching(character,self.changedTile, "changedTile")
-        self.startWatching(character,self.hurt, "hurt")
+        self.startWatching(character,self.attacked, "attacked")
         super().assignToCharacter(character)
 
-    def hurt(self, extraInfo=None):
+    def attacked(self, extraInfo=None):
         if self.phase == "wait":
             self.phase = "run"
 

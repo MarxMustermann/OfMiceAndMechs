@@ -23,6 +23,17 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        terrain = character.getTerrain()
+
+        if character.health < character.maxHealth*0.75:
+            if not (terrain.xPosition == character.registers["HOMETx"] and
+                    terrain.yPosition == character.registers["HOMETy"]):
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1)
+                return ([quest],None)
+
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0

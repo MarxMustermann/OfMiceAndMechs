@@ -63,7 +63,7 @@ class Huntdown(src.quests.MetaQuestSequence):
                 quest.activate()
                 return
 
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](suicidal=True)
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()

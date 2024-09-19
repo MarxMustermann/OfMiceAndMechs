@@ -6,12 +6,13 @@ import src
 class Fight(src.quests.MetaQuestSequence):
     type = "Fight"
 
-    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None):
+    def __init__(self, description="fight", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, suicidal=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.weaponOnly = weaponOnly
         self.reason = reason
+        self.suicidal = suicidal
 
         self.shortCode = "f"
 
@@ -84,7 +85,11 @@ So if an enemy is to directly east of you:
         if character.health < character.maxHealth//5 and character.canHeal():
             return (None,("JH","heal"))
 
-        if character.health < character.maxHealth//5:
+        try:
+            self.suicidal
+        except:
+            self.suicidal = False
+        if (not self.suicidal) and (character.health < character.maxHealth//5):
             self.fail()
             return (None,None)
 

@@ -1253,6 +1253,8 @@ press any other key to attack normally"""
             logger.error("killed ghost")
             return
 
+        target.changed("attacked",{})
+
         if initial and self.exhaustion > 0:
             self.addMessage("you are too exhausted to do an initial attack")
             initial = False

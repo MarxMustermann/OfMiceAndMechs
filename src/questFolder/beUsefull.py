@@ -8,13 +8,15 @@ logger = logging.getLogger(__name__)
 class BeUsefull(src.quests.MetaQuestSequence):
     type = "BeUsefull"
 
-    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False):
+    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
 
         self.targetPosition = None
         self.idleCounter = 0
+        self.numTasksToDo = numTasksToDo
+        self.numTasksDone = 0
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
 
@@ -2022,6 +2024,20 @@ Press d to move the cursor and show the subquests description.
                 quest.activate()
                 self.idleCounter = 0
                 return
+
+        try:
+            self.numTasksDone
+        except:
+            self.numTasksDone = 0
+        try:
+            self.numTasksToDo
+        except:
+            self.numTasksToDo = None
+
+        self.numTasksDone += 1
+        if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
+            self.postHandler()
+            return
 
         room = character.container
         for duty in character.getRandomProtisedDuties():

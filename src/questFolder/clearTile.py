@@ -45,6 +45,16 @@ Clean the room on tile {self.targetPosition}.
 Remove all items from the walkways."""
         return text
 
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.wrapedTriggerCompletionCheck, "itemPickedUp")
+        super().assignToCharacter(character)
+
+    def wrapedTriggerCompletionCheck(self,extraInfo=None):
+        self.triggerCompletionCheck(extraInfo[0])
+
     def triggerCompletionCheck(self,character=None):
 
         if not character:

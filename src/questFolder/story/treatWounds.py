@@ -120,6 +120,8 @@ For now ignore the options below and press esc to continue.
             return
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
+        self.startWatching(character,self.wrapedTriggerCompletionCheck, "healed")
+        self.startWatching(character,self.wrapedTriggerCompletionCheck, "itemPickedUp")
         super().assignToCharacter(character)
 
     def wrapedTriggerCompletionCheck(self, extraInfo):
@@ -127,8 +129,8 @@ For now ignore the options below and press esc to continue.
             1/0
         if not self.active:
             return
-
-        self.triggerCompletionCheck(extraInfo[0])
+    
+        self.triggerCompletionCheck(self.character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:

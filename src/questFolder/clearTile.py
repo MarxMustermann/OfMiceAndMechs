@@ -153,11 +153,17 @@ Remove all items from the walkways that are not bolted down."""
             items = character.container.getItemByPosition(checkPos)
             if not items:
                 continue
+
             if items[0].bolted:
                 continue
+
             foundOffset = offset
 
-            foundItems = items
+            foundItems = []
+            for item in items:
+                if item.bolted:
+                    break
+                foundItems.append(item)
 
         if foundOffset:
             if foundOffset == (0,0,0):

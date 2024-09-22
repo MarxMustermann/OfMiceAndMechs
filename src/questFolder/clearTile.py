@@ -164,6 +164,7 @@ Remove all items from the walkways that are not bolted down."""
                 if item.bolted:
                     break
                 foundItems.append(item)
+            break
 
         if foundOffset:
             if foundOffset == (0,0,0):

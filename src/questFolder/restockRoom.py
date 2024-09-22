@@ -32,8 +32,14 @@ class RestockRoom(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f",\nto {self.reason}"
+        roomString = "a room"
+        if self.targetPositionBig:
+            roomString += f"the room on tile {self.targetPositionBig}"
+        typeString = "any items"
+        if self.toRestock:
+            typeString = self.toRestock
         text = f"""
-Restock the room {self.targetPositionBig} with items from your inventory{reason}.
+Restock {roomString} with {typeString} from your inventory{reason}.
 
 Place the items in the correct input or storage stockpile.
 """

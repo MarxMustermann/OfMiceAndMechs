@@ -22,5 +22,6 @@ class Promoter(src.items.Item):
         if character.rank > 2:
             character.rank = character.rank-1
         character.addMessage(f"you were promoted to rank {character.rank}")
+        character.changed("got promotion",{})
 
 src.items.addType(Promoter)

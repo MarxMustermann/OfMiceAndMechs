@@ -6,11 +6,12 @@ import src
 class ClearTile(src.quests.MetaQuestSequence):
     type = "ClearTile"
 
-    def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False):
+    def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
+        self.reason = reason
 
         self.timesDelegated = 0
 
@@ -20,6 +21,10 @@ class ClearTile(src.quests.MetaQuestSequence):
         self.noDelegate = noDelegate
 
     def generateTextDescription(self):
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
+
         if self.character.rank == 3:
             text = f"""
 Ensure that the trap room on {self.targetPosition} is cleaned.
@@ -40,9 +45,9 @@ If the task is not completed after some time, reload the trap room yourself.
 Use the shockers in the trap room for this."""
         else:
             text = f"""
-Clean the room on tile {self.targetPosition}.
+Clean the room on tile {self.targetPosition}{reasonString}.
 
-Remove all items from the walkways."""
+Remove all items from the walkways that are not bolted down."""
         return text
 
     def assignToCharacter(self, character):

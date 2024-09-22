@@ -4,29 +4,20 @@ import src
 class GetPromotion(src.quests.MetaQuestSequence):
     type = "GetPromotion"
 
-    def __init__(self, targetRank, description="get promotion"):
+    def __init__(self, targetRank, description="get promotion", reason=None):
         super().__init__()
         self.metaDescription = description
         self.targetRank = targetRank
+        self.reason = reason
 
     def generateTextDescription(self):
-        text = """
-You have gained enough reputation to be promoted.
-Promotions are handled by the assimilator.
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
 
-Getting promoted has several advantages:
-
-* Your implant will be upgraded and you will be faster and hit harder.
-* You can take on more duties. Each extra duty gives you some extra reputation."""
-        if self.character.rank == 6:
-            text += """
-* You will be able to get subordinates."""
-        else:
-            text += f"""
-* You will be able to handle more subordinates.
-
-Use the assimilator to fetch your promotion.
-You need to reach rank {self.character.rank-1} to complete the quest.
+        text = f"""
+Rise in the hierarchy and get a Promotion{reasonString}.
+Use the Promotor to do this.
 """
 
         return text
@@ -111,7 +102,7 @@ You need to reach rank {self.character.rank-1} to complete the quest.
                 return
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
                 return
-            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to assimilator ")
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
             quest.active = True
             quest.assignToCharacter(character)
             self.addQuest(quest)

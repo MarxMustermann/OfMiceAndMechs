@@ -125,7 +125,7 @@ Remove all items from the walkways that are not bolted down."""
             self.timesDelegated += 1
             return ([quest2,quest1],None)
         if not character.getFreeInventorySpace() > 0:
-            quest = src.quests.questMap["ClearInventory"]()
+            quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items")
             return ([quest],None)
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:

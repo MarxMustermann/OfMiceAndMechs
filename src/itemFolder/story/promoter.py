@@ -22,6 +22,14 @@ class Promoter(src.items.Item):
         if character.rank > 2:
             character.rank = 2
             character.addMessage(f"you were promoted to base commander")
+            submenu = src.interaction.TextMenu("""
+You put your head into the machine.
+
+Its tendrils reach out and touch your implant.
+
+It is upgraded to rank 2.""")
+            character.macroState["submenue"] = submenu
+            character.runCommandString("~",nativeKey=True)
         character.changed("got promotion",{})
 
 src.items.addType(Promoter)

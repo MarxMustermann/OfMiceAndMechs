@@ -31,6 +31,13 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
             else:
+                for room in terrain.rooms:
+                    items = room.getItemsByType("CoalBurner",needsBolted=True)
+                    for item in items:
+                        if not item.getMoldFeed(character):
+                            continue
+                        quest = src.quests.questMap["Heal"]()
+                        return ([quest],None)
                 quest = src.quests.questMap["BeUsefull"](numTasksToDo=1)
                 return ([quest],None)
 

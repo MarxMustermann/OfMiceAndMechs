@@ -10427,8 +10427,13 @@ to remember"""
                     stage = 7
                 if key == tcod.event.KeySym.RETURN:
                     if stage != 3:
+                        # move to next stage
                         stage += 1
                         subStep = 0
+
+                        # skip stage 2
+                        if stage == 1:
+                            stage += 1
                     else:
                         subStep += 1
 

@@ -4761,7 +4761,7 @@ class CharacterInfoMenu(SubMenu):
         text += f"grievances: {char.grievances}\n"
         text += f"registers: {char.registers}\n"
         text += f"terrainName: %s\n" % char.getTerrain().tag
-        text += f"disableCommandOnPlus: %s\n" % char.disableCommandOnPlus
+        text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
 
         return text
 

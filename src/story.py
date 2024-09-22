@@ -5821,7 +5821,7 @@ but they are likely to explode when disturbed.
 
         # get promoted to base commander
         if mainChar.rank > 2:
-            quest = src.quests.questMap["GetPromotion"](targetRank=mainChar.rank-1)
+            quest = src.quests.questMap["GetPromotion"](targetRank=mainChar.rank-1,reason="gain the rank of a base commmander")
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)

@@ -1394,6 +1394,7 @@ press any other key to attack normally"""
             amount = self.maxHealth - self.health
 
         self.health += amount
+        self.changed("healed",{})
         self.addMessage(f"you heal for {amount} and have {self.health} health")
 
     # bad code: only works in a certain room type

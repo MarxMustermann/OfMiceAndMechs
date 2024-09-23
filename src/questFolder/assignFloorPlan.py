@@ -1,7 +1,7 @@
 import src
 
 
-class AssignFloorPlan(src.quests.MetaQuestSequence):
+class AssignFloorPlan(src.quests.MetaQuestSequenceV2):
     type = "AssignFloorPlan"
 
     def __init__(self, description="assign floor plan", creator=None, roomPosition=None, floorPlanType=None, reason=None):
@@ -145,27 +145,6 @@ Set the floor plan: {self.floorPlanType}
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def handleAssignFloorPlan(self,extraParams):
         self.triggerCompletionCheck(extraParams["character"])

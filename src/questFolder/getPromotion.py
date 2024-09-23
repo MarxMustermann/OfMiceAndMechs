@@ -1,7 +1,7 @@
 import src
 
 
-class GetPromotion(src.quests.MetaQuestSequence):
+class GetPromotion(src.quests.MetaQuestSequenceV2):
     type = "GetPromotion"
 
     def __init__(self, targetRank, description="get promotion", reason=None):
@@ -42,52 +42,19 @@ Use the Promotor to do this.
             return True
         return False
 
-    def getSolvingCommandString(self,character,dryRun=True):
+    def getNextStep(self, character=None, ignoreCommands=False):
         if self.subQuests:
-            return None
+            return (None,None)
 
-        submenue = character.macroState.get("submenue")
-        if submenue:
-            if isinstance(submenue,src.interaction.SelectionMenu):
-                return ["enter"]
-            return ["esc"]
-
-        room = character.container
-        if not isinstance(character.container, src.rooms.Room):
-            return None
-
-        for item in room.itemsOnFloor:
-            if not item.bolted:
-                continue
-            if item.type != "Promoter":
-                continue
-
-            if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return "Ja"
-            if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return "Jd"
-            if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return "Jw"
-            if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return "Js"
-        return super().getSolvingCommandString(character,dryRun=dryRun)
-
-    def generateSubquests(self,character):
-        if not self.active:
-            return
-
-        if self.subQuests:
-            return
+        if not character:
+            return (None,None)
 
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
             quest = src.quests.questMap["GoHome"](description="go to command centre")
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
+            return  ([quest],None)
+        
         for item in room.itemsOnFloor:
             if not item.bolted:
                 continue
@@ -95,37 +62,19 @@ Use the Promotor to do this.
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return
+                return (None,("Ja","get promotion"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return
+                return (None,("Jd","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return
+                return (None,("Jw","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return
+                return (None,("Js","get promotion"))
+            
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
-            quest.active = True
-            quest.assignToCharacter(character)
-            self.addQuest(quest)
-            return
+            return  ([quest],None)
+        
         quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to command centre")
-        self.addQuest(quest)
-        quest.assignToCharacter(character)
-        quest.activate()
-        return
+        return  ([quest],None)
 
-    def solver(self,character):
-        self.triggerCompletionCheck(character)
-        if not self.subQuests:
-            self.generateSubquests(character)
-
-            if self.subQuests:
-                return
-
-            command = self.getSolvingCommandString(character,dryRun=False)
-            if command:
-                character.runCommandString(command)
-                return
-
-        super().solver(character)
 
 src.quests.addType(GetPromotion)

@@ -5,6 +5,7 @@ quests and quest related code
 
 import random
 import time
+from abc import ABC, abstractmethod
 
 import src.cinematics
 import src.events
@@ -710,7 +711,7 @@ class MetaQuestSequence(Quest):
 
         # smooth over impossible state
         if not self.active:
-            return
+            return True
 
         self.generateSubquests()
 
@@ -721,6 +722,8 @@ class MetaQuestSequence(Quest):
         # wrap up when out of subquests
         if not len(self.subQuests):
             self.postHandler()
+            return True
+        return False
 
     """
     ensure first quest is active
@@ -828,6 +831,39 @@ class MetaQuestSequence(Quest):
             if commandString:
                 return commandString
         return super().getSolvingCommandString(character)
+
+
+class MetaQuestSequenceV2(MetaQuestSequence, ABC):
+    @abstractmethod
+    def getNextStep(self, character=None, ignoreCommands=False): ...
+
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character)
+        if nextStep is None or nextStep == (None, None):
+            return super().getSolvingCommandString(character)
+        return self.getNextStep(character)[1]
+
+    def solver(self, character):
+        if self.triggerCompletionCheck(character):
+            return
+        NextStep = self.getNextStep(character)
+        if NextStep is not None:
+            (nextQuests, nextCommand) = NextStep
+            if nextQuests:
+                for quest in nextQuests:
+                    self.addQuest(quest)
+                return
+
+            if nextCommand:
+                character.runCommandString(nextCommand[0])
+                return
+        super().solver(character)
+    def generateSubquests(self, character=None):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
 
 # map strings to Classes
 questMap = {

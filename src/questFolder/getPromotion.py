@@ -42,36 +42,6 @@ Use the Promotor to do this.
             return True
         return False
 
-    def getSolvingCommandString(self,character,dryRun=True):
-        if self.subQuests:
-            return None
-
-        submenue = character.macroState.get("submenue")
-        if submenue:
-            if isinstance(submenue,src.interaction.SelectionMenu):
-                return ["enter"]
-            return ["esc"]
-
-        room = character.container
-        if not isinstance(character.container, src.rooms.Room):
-            return None
-
-        for item in room.itemsOnFloor:
-            if not item.bolted:
-                continue
-            if item.type != "Promoter":
-                continue
-
-            if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return "Ja"
-            if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return "Jd"
-            if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return "Jw"
-            if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return "Js"
-        return super().getSolvingCommandString(character,dryRun=dryRun)
-
     def getNextStep(self, character=None, ignoreCommands=False):
         if self.subQuests:
             return (None,None)
@@ -92,13 +62,13 @@ Use the Promotor to do this.
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return None
+                return (None,("Ja","get promotion"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return None
+                return (None,("Jd","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return None
+                return (None,("Jw","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return None
+                return (None,("Js","get promotion"))
             
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
             return  ([quest],None)

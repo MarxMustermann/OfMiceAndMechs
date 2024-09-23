@@ -86,11 +86,5 @@ Rule the world and put an end to those attacks!
             return (None,("Js","activate the Throne"))
         return None
 
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
 src.quests.addType(Ascend)

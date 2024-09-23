@@ -1,7 +1,7 @@
 import src
 
 
-class GetPromotion(src.quests.MetaQuestSequence):
+class GetPromotion(src.quests.MetaQuestSequenceV2):
     type = "GetPromotion"
 
     def __init__(self, targetRank, description="get promotion", reason=None):
@@ -72,22 +72,19 @@ Use the Promotor to do this.
                 return "Js"
         return super().getSolvingCommandString(character,dryRun=dryRun)
 
-    def generateSubquests(self,character):
-        if not self.active:
-            return
-
+    def getNextStep(self, character=None, ignoreCommands=False):
         if self.subQuests:
-            return
+            return (None,None)
+
+        if not character:
+            return (None,None)
 
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):
             quest = src.quests.questMap["GoHome"](description="go to command centre")
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
+            return  ([quest],None)
+        
         for item in room.itemsOnFloor:
             if not item.bolted:
                 continue
@@ -95,37 +92,19 @@ Use the Promotor to do this.
                 continue
 
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return
+                return None
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return
+                return None
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return
+                return None
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return
+                return None
+            
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
-            quest.active = True
-            quest.assignToCharacter(character)
-            self.addQuest(quest)
-            return
+            return  ([quest],None)
+        
         quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to command centre")
-        self.addQuest(quest)
-        quest.assignToCharacter(character)
-        quest.activate()
-        return
+        return  ([quest],None)
 
-    def solver(self,character):
-        self.triggerCompletionCheck(character)
-        if not self.subQuests:
-            self.generateSubquests(character)
-
-            if self.subQuests:
-                return
-
-            command = self.getSolvingCommandString(character,dryRun=False)
-            if command:
-                character.runCommandString(command)
-                return
-
-        super().solver(character)
 
 src.quests.addType(GetPromotion)

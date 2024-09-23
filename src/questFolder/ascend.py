@@ -1,7 +1,7 @@
 import src
 
 
-class Ascend(src.quests.MetaQuestSequence):
+class Ascend(src.quests.MetaQuestSequenceV2):
     type = "Ascend"
 
     def __init__(self, description="ascend", creator=None, reason=None):
@@ -86,29 +86,11 @@ Rule the world and put an end to those attacks!
             return (None,("Js","activate the Throne"))
         return None
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
     def generateSubquests(self, character=None):
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
             return
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
 src.quests.addType(Ascend)

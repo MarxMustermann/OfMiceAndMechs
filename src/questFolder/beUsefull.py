@@ -539,12 +539,6 @@ Press d to move the cursor and show the subquests description.
         terrain = character.getTerrain()
         cityCore = terrain.getRoomByPosition((7,7,0))[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
-        #epochArtwork = cityCore.getItemByType("EpochArtwork",needsBolted=True)
-
-        #if epochArtwork.recalculateGlasstears(character,dryRun=True):
-        #    quest = src.quests.questMap["GetEpochEvaluation"](reason="collect the glass tears you earned")
-        #    self.addQuest(quest)
-        #    return True
 
         # do inventory of scrap fields
         numItemsScrapfield = 0

@@ -3,7 +3,6 @@ import src.itemFolder.artworks.assimilator
 import src.itemFolder.artworks.basicTrainer
 import src.itemFolder.artworks.blueBrintingArtwork
 import src.itemFolder.artworks.dutyArtwork
-import src.itemFolder.artworks.epochArtwork
 import src.itemFolder.artworks.gooFaucet
 import src.itemFolder.artworks.orderArtwork
 import src.itemFolder.artworks.performanceTester

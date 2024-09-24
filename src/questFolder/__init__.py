@@ -35,7 +35,6 @@ import src.questFolder.flee
 import src.questFolder.gatherScrap
 import src.questFolder.gatherVatMaggots
 import src.questFolder.getBodyGuards
-import src.questFolder.getEpochEvaluation
 import src.questFolder.getEpochReward
 import src.questFolder.getPromotion
 import src.questFolder.getQuestFromQuestArtwork

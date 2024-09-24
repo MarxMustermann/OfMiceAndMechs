@@ -2314,6 +2314,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
                ("changeFaction", "changeFaction"),
                ("toggleQuestExpanding", "toggleQuestExpanding"),
+               ("toggleCommandOnPlus", "toggleCommandOnPlus"),
                ("change personality settings", "change personality settings"),]
     submenu = SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
@@ -2372,6 +2373,8 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             pass
         elif selection == "toggleQuestExpanding":
             char.autoExpandQuests = not char.autoExpandQuests
+        elif selection == "toggleCommandOnPlus":
+            char.disableCommandsOnPlus = not char.disableCommandsOnPlus
         elif selection == "changeFaction":
             if char.faction == "player":
                 char.faction = "monster"

@@ -5663,14 +5663,8 @@ but they are likely to explode when disturbed.
         return siegedBaseInfo
 
     def openedQuests(self):
-        if self.activeStory["type"] == "siegedBase":
-            self.openedQuestsSieged()
-            return
         if self.activeStory["type"] == "raidBase":
             self.openedQuestsRaid()
-            return
-        if self.activeStory["type"] == "productionBase":
-            self.openedQuestsProduction()
             return
         if self.activeStory["type"] == "colonyBase":
             self.openedQuestsColonyBase()
@@ -5937,115 +5931,6 @@ This should get you up and running in no time""")
         containerQuest.generateSubquests(mainChar)
         containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
         return
-
-    def openedQuestsProduction(self):
-        mainChar = self.activeStory["mainChar"]
-        pos = mainChar.getBigPosition()
-        rooms = mainChar.getTerrain().getRoomByPosition(pos)
-        if not rooms:
-            storyText = """
-There is a base in the center of this terrain.
-Go there to find out what is happening here.
-So far nothing suggests trouble on the way.
-
-The entry of the base is located to the north of the base.
-Enter the base that way."""
-            containerQuest = src.quests.questMap["ReachBase"](storyText=storyText)
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        if rooms[0].tag == "farm":
-            offset = (1,0,0)
-            direction = "east"
-            mainChar.addMessage("press z to see the movement keys")
-            mainChar.addMessage("leave room to the "+direction)
-            containerQuest = src.quests.questMap["InitialLeaveRoomStory"](description="leave room to the "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generatePath(mainChar)
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        if not mainChar.registers.get("baseCommander"):
-            storyText = """
-You reached the base. The trap rooms are not charged and there are no other signs of activity.
-
-This may be a bad thing.
-Find the commander of this base to find out what is happening."""
-            containerQuest = src.quests.questMap["ActivateEpochArtwork"](epochArtwork=self.activeStory["epochArtwork"],storyText=storyText)
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        storyText = """
-There is no commander. That explains the inactivity.
-
-This is a bit of a bad thing.
-You are safe and you wont starve.
-But you will be unable to leave.
-
-You are in no hurry, but there is only one choice.
-Integrate as the only worker into the base.
-When you rise in rank you will be able to build a way out of here."""
-        containerQuest = src.quests.questMap["TakeOverBase"](description="join base",storyText=storyText)
-        mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(mainChar)
-        containerQuest.activate()
-        containerQuest.generateSubquests(mainChar)
-
-    def openedQuestsSieged(self):
-        mainChar = self.activeStory["mainChar"]
-        pos = mainChar.getBigPosition()
-        rooms = mainChar.getTerrain().getRoomByPosition(pos)
-        if not rooms:
-            containerQuest = src.quests.questMap["ReachBase"]()
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        if rooms[0].tag == "cargo":
-            offset = (-1,0,0)
-            direction = "west"
-            if mainChar.getBigPosition()[0] == 6:
-                offset = (0,-1,0)
-                direction = "north"
-            mainChar.addMessage("press z to see the movement keys")
-            mainChar.addMessage("flee room to the "+direction)
-            containerQuest = src.quests.questMap["EscapeAmbushStory"](description="flee room "+direction,targetPosition=mainChar.getBigPosition(offset=offset),direction=direction)
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generatePath(mainChar)
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        if not mainChar.registers.get("baseCommander"):
-            containerQuest = src.quests.questMap["ActivateEpochArtwork"](epochArtwork=self.activeStory["epochArtwork"])
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        containerQuest = src.quests.questMap["TakeOverBase"](description="join base")
-        mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(mainChar)
-        containerQuest.activate()
-        containerQuest.generateSubquests(mainChar)
 
     def reachImplant(self):
         containerQuest = src.quests.questMap["ReachOutStory"]()

@@ -64,18 +64,6 @@ After changing the duties the clones should change their behaviour after complet
     def changeCharges(self,delta):
         self.charges += delta
 
-    def fetchCityleader(self):
-        personnelArtwork = None
-        for item in self.container.itemsOnFloor:
-            if item.type != "PersonnelArtwork":
-                continue
-            personnelArtwork = item
-
-        if not personnelArtwork:
-            return None
-
-        return personnelArtwork.cityLeader
-
     def showOverview(self, character):
         text = ""
 

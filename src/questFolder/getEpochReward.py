@@ -183,7 +183,7 @@ This will allow you to focus on other tasks.
             if command:
                 return (None,("J"+command,"start praying at the shrine"))
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to epoch artwork",ignoreEndBlocked=True)
+            quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to shrine",ignoreEndBlocked=True)
             return ([quest],None)
 
         quest = src.quests.questMap["GoToTile"](description="go to temple",targetPosition=roomPos)

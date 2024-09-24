@@ -1,7 +1,7 @@
 import src
 
 
-class GoHome(src.quests.MetaQuestSequence):
+class GoHome(src.quests.MetaQuestSequenceV2):
     type = "GoHome"
 
     def __init__(self, description="go home", creator=None, paranoid=False,reason=None):
@@ -71,12 +71,14 @@ Press control-d to stop your character from moving.
     def setHomeLocation(self,character):
         self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"],0)
         self.terrainLocation = (character.registers["HOMETx"],character.registers["HOMETy"],0)
-        self.metaDescription = self.baseDescription+" {}/{} on {}/{}".format(self.cityLocation[0],self.cityLocation[1],self.terrainLocation[0],self.terrainLocation[1],)
+        self.metaDescription = self.baseDescription+f" {self.cityLocation[0]}/{self.cityLocation[1]} on {self.terrainLocation[0]}/{self.terrainLocation[1]}"
 
-    def generateSubquests(self,character):
+    def getNextStep(self, character=None, ignoreCommands=False):
         if self.subQuests:
-            return
+            return (None,None)
 
+        if not character:
+            return (None,None)
         if character.getTerrainPosition() != self.terrainLocation:
             foundShrine = None
             if isinstance(character.container, src.rooms.Room):
@@ -86,10 +88,7 @@ Press control-d to stop your character from moving.
                         return
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(),reason="get to a shrine",ignoreEndBlocked=True)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    return
+                    return  ([quest],None)
                 roomsToSearch = character.container.container.rooms
             else:
                 roomsToSearch = character.container.rooms
@@ -102,42 +101,16 @@ Press control-d to stop your character from moving.
 
             if foundShrine:
                 quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=foundShrine.container.getPosition(),reason="get to a shrine")
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
+                return  ([quest],None)
             else:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.terrainLocation)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
+                return  ([quest],None)
+
         if character.getBigPosition() != self.cityLocation:
             quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation,reason="go to the command center")
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
-    def solver(self, character):
-        if self.completed:
-            7/0
-
-        if self.triggerCompletionCheck(character):
-            return False
-
-        if self.generateSubquests(character):
-            return False
-
-        if self.subQuests:
-            return super().solver(character)
-
-        command = self.getSolvingCommandString(character,dryRun=False)
-        if command:
-            character.runCommandString(command)
-            return None
-        return False
-
+            return  ([quest],None)
+        
+        return (None,None)
     def getSolvingCommandString(self,character,dryRun=True):
         if self.subQuests:
             return self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)

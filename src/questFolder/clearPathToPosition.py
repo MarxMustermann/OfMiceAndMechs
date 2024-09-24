@@ -3,7 +3,7 @@ import random
 import src
 
 
-class ClearPathToPosition(src.quests.MetaQuestSequence):
+class ClearPathToPosition(src.quests.MetaQuestSequenceV2):
     type = "ClearPathToPosition"
 
     def __init__(self, description="clear path to position", creator=None, targetPosition=None, tryHard=False,reason=None):
@@ -37,34 +37,6 @@ Pick up and unbolt items that are in the way.
             self.postHandler()
             return True
         return None
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
     def getNextStep(self,character=None,ignoreCommands=False):
         if not self.subQuests:

@@ -790,24 +790,6 @@ class Room:
         path = src.gameMath.calculatePath(x, y, dstX, dstY, walkingPath)
         return path
 
-    def handleAddActionSelection(self,extraInfo):
-
-        quest = src.quests.questMap["RunCommand"](command=extraInfo["selected"])
-        quest.autoSolve = True
-        quest.activate()
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-
-        quest = src.quests.questMap["GoToPosition"](targetPosition=(src.gamestate.gamestate.dragState["start"]["pos"]))
-        quest.autoSolve = True
-        quest.activate()
-        quest.assignToCharacter(src.gamestate.gamestate.mainChar)
-        src.gamestate.gamestate.mainChar.quests[0].addQuest(quest)
-
-        src.gamestate.gamestate.mainChar.runCommandString("~")
-
-        src.gamestate.gamestate.dragState = {}
-
     def handleFloorClick(self,extraInfo):
         if not src.gamestate.gamestate.mainChar.quests:
             return
@@ -1400,12 +1382,6 @@ class Room:
                     chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
                     chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
                     chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-
-                    chars[pos[1]-1][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"e"}},content="ee")
-                    chars[pos[1]-1][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"j"}},content="jj")
-                    chars[pos[1]-1][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"k"}},content="kk")
-                    chars[pos[1]-1][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"l"}},content="ll")
-                    chars[pos[1]-1][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleAddActionSelection","params": {"selected":"."}},content="..")
 
         # show dummy of the room
         else:

@@ -124,7 +124,7 @@ Press control-d to stop your character from moving.
                     direction = "s"
                 if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
                     direction = "w"
-                return (None,("J" + direction + "wj","Move to Shrine"))
+                return (None,("J" + direction + "wj","activate the Shrine"))
         else:
             charPos = (character.xPosition % 15, character.yPosition % 15, 0)
             if charPos in ((0, 7, 0), (0, 6, 0)):
@@ -136,7 +136,7 @@ Press control-d to stop your character from moving.
             if charPos in ((14, 7, 0), (12, 6, 0)):
                 move = "a"
             if move:
-                return (None,(move,"Move to Shrine"))
+                return (None,(move,"move into room"))
         return (None,None)
     
     def getQuestMarkersTile(self,character):

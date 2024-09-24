@@ -84,25 +84,6 @@ Remove all items from the walkways that are not bolted down."""
         if not character:
             return (None,None)
 
-        if (not self.noDelegate) and character.rank == 3 and self.timesDelegated < 2:
-            if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                return ([quest],None)
-
-            if not isinstance(character.container,src.rooms.Room):
-                if character.yPosition%15 == 14:
-                    return (None,("w","enter tile"))
-                if character.yPosition%15 == 0:
-                    return (None,("s","enter tile"))
-                if character.xPosition%15 == 14:
-                    return (None,("a","enter tile"))
-                if character.xPosition%15 == 0:
-                    return (None,("d","enter tile"))
-
-            quest1 = src.quests.questMap["WaitQuest"](lifetime=200, creator=self)
-            quest2 = src.quests.questMap["RunCommand"](command="roc"+9*"s"+"j",description="send clones to clean tile")
-            self.timesDelegated += 1
-            return ([quest2,quest1],None)
         if not character.getFreeInventorySpace() > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)

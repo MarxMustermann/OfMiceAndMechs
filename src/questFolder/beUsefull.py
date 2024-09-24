@@ -1869,17 +1869,6 @@ Press d to move the cursor and show the subquests description.
         if not character.container:
             return
 
-        if (character.rank == 5 and character.getNumSubordinates() < 1) or (character.rank == 4 and character.getNumSubordinates() < 2) or (character.rank == 3 and character.getNumSubordinates() < 3):
-            homeRoom = character.getHomeRoom()
-            if homeRoom:
-                personelArtwork = homeRoom.getItemByType("PersonnelArtwork")
-                if personelArtwork and personelArtwork.charges:
-                    quest = src.quests.questMap["GetBodyGuards"]()
-                    self.addQuest(quest)
-                    quest.activate()
-                    quest.assignToCharacter(character)
-                    return
-
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
                 character.runCommandString("w")
@@ -1908,18 +1897,6 @@ Press d to move the cursor and show the subquests description.
             return
 
         room = character.container
-
-        #if character.rank == 3:
-        #    self.addQuest(src.quests.questMap["ManageBase"]())
-        #    return
-
-        #if not self.strict and (self.idleCounter > 15 or (character.rank == 6 and len(character.duties) < 1) or (character.rank == 5 and len(character.duties) < 2) or (character.rank == 4 and len(character.duties) < 3) or (character.rank == 3 and len(character.duties) < 4)):
-        #    quest = src.quests.questMap["ChangeJob"]()
-        #    self.addQuest(quest)
-        #    quest.activate()
-        #    quest.assignToCharacter(character)
-        #    self.idleCounter = 0
-        #    return
 
         if character.health < character.maxHealth//2:
             foundItem = None

@@ -4713,9 +4713,6 @@ but they are likely to explode when disturbed.
         return colonyBaseInfo
 
     def openedQuests(self):
-        if self.activeStory["type"] == "colonyBase":
-            self.openedQuestsColonyBase()
-            return
         if self.activeStory["type"] == "dungeon crawl":
             self.openedQuestsDungeonCrawl()
             return
@@ -4933,29 +4930,6 @@ Once you understand things try to find better solutions.
             quest.activate()
             mainChar.assignQuest(quest,active=True)
             quest.endTrigger = {"container": self, "method": "reachImplant"}
-
-
-    def openedQuestsColonyBase(self):
-        mainChar = self.activeStory["mainChar"]
-        storyText = """
-You reach out to your implant and it answers:
-
-Katze Your task is to set up a base.
-For this purpose you were given the colony core and its machines.
-The whole process can be somewhat complicated, but you have guidance in this task.
-
-This quest system will help you by breaking up the task.
-You will get very detailed instructions, but you do not have to follow them closely.
-The EpochArtwork will reward you for progress.
-
-"""
-        containerQuest = src.quests.questMap["BeUsefull"](reason="""build the base.\n\n
-Follow the instructions on the left side of the screen.
-This should get you up and running in no time""")
-        mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(mainChar)
-        containerQuest.activate()
-        containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
 
     def reachImplant(self):
         containerQuest = src.quests.questMap["ReachOutStory"]()

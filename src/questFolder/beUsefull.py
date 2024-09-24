@@ -1851,11 +1851,6 @@ Press d to move the cursor and show the subquests description.
 
         self.triggerCompletionCheck(character)
 
-        """
-        if not self.idleCounter:
-            self.checkedRoomPositions = []
-        """
-
         if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
             self.addQuest(quest)
@@ -1873,29 +1868,6 @@ Press d to move the cursor and show the subquests description.
 
         if not character.container:
             return
-
-        """
-        if not character.superior and character.rank == 6 and character.reputation >= 300:
-            quest = src.quests.questMap["GetPromotion"](5)
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
-
-        if not character.superior and character.rank == 5 and character.reputation >= 500:
-            quest = src.quests.questMap["GetPromotion"](4)
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
-
-        if not character.superior and character.rank == 4 and character.reputation >= 750:
-            quest = src.quests.questMap["GetPromotion"](3)
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
-        """
 
         if (character.rank == 5 and character.getNumSubordinates() < 1) or (character.rank == 4 and character.getNumSubordinates() < 2) or (character.rank == 3 and character.getNumSubordinates() < 3):
             homeRoom = character.getHomeRoom()

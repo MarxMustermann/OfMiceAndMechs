@@ -110,39 +110,35 @@ Press control-d to stop your character from moving.
             quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation,reason="go to the command center")
             return  ([quest],None)
         
-        return (None,None)
-    def getSolvingCommandString(self,character,dryRun=True):
-        if self.subQuests:
-            return self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)
+        if isinstance(character.container, src.rooms.Room):
+            items = character.container.getItemsByType("Shrine")
+            for item in items:
+                if character.getDistance(item.getPosition()) > 1:
+                    continue
+                direction = "."
+                if character.getPosition(offset=(1, 0, 0)) == item.getPosition():
+                    direction = "d"
+                if character.getPosition(offset=(-1, 0, 0)) == item.getPosition():
+                    direction = "a"
+                if character.getPosition(offset=(0, 1, 0)) == item.getPosition():
+                    direction = "s"
+                if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
+                    direction = "w"
+                return (None,("J" + direction + "wj","Move to Shrine"))
         else:
-            if isinstance(character.container, src.rooms.Room):
-                items = character.container.getItemsByType("Shrine")
-                for item in items:
-                    if character.getDistance(item.getPosition()) > 1:
-                        continue
-                    direction = "."
-                    if character.getPosition(offset=(1,0,0)) == item.getPosition():
-                        direction = "d"
-                    if character.getPosition(offset=(-1,0,0)) == item.getPosition():
-                        direction = "a"
-                    if character.getPosition(offset=(0,1,0)) == item.getPosition():
-                        direction = "s"
-                    if character.getPosition(offset=(0,-1,0)) == item.getPosition():
-                        direction = "w"
-                    return "J"+direction+"wj"
-                return None
-            else:
-                charPos = (character.xPosition%15,character.yPosition%15,0)
-                if charPos in ((0,7,0),(0,6,0)):
-                    return "d"
-                if charPos in ((7,14,0),(6,12,0)):
-                    return "w"
-                if charPos in ((7,0,0),(6,0,0)):
-                    return "s"
-                if charPos in ((14,7,0),(12,6,0)):
-                    return "a"
-            return None
-
+            charPos = (character.xPosition % 15, character.yPosition % 15, 0)
+            if charPos in ((0, 7, 0), (0, 6, 0)):
+                move = "d"
+            if charPos in ((7, 14, 0), (6, 12, 0)):
+                move = "w"
+            if charPos in ((7, 0, 0), (6, 0, 0)):
+                move = "s"
+            if charPos in ((14, 7, 0), (12, 6, 0)):
+                move = "a"
+            if move:
+                return (None,(move,"Move to Shrine"))
+        return (None,None)
+    
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
         result.append(((self.cityLocation[0],self.cityLocation[1]),"target"))

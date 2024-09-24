@@ -3670,7 +3670,6 @@ class InstructSubordinatesMenu(SubMenu):
             if not self.commandType:
                 if not self.subMenu:
                     options = []
-                    options.append(("supportAttack","support attack"))
                     options.append(("defendTile","defend tile"))
                     options.append(("attackNorth","attack north"))
                     options.append(("attackWest","attack west"))
@@ -3777,15 +3776,6 @@ class InstructSubordinatesMenu(SubMenu):
 
                 for npc in character.subordinates:
                     quest = src.quests.questMap["ScavengeTile"](targetPosition=pos)
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=self.addFront)
-
-                self.subMenu = None
-            if self.commandType in ("supportAttack",):
-                pos = character.getBigPosition()
-
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["SupportAttack"]()
                     quest.autoSolve = True
                     npc.assignQuest(quest,active=self.addFront)
 

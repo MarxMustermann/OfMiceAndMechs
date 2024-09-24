@@ -34,7 +34,6 @@ import src.questFolder.heal
 import src.questFolder.huntdown
 import src.questFolder.machining
 import src.questFolder.metalWorking
-import src.questFolder.obtainSpecialItem
 import src.questFolder.operateMachine
 import src.questFolder.placeItem
 import src.questFolder.pray
@@ -57,7 +56,6 @@ import src.questFolder.secureTile
 import src.questFolder.secureTiles
 import src.questFolder.setUpMachine
 import src.questFolder.setUpProductionLine
-import src.questFolder.supportAttack
 import src.questFolder.trainSkill
 import src.questFolder.vanish
 import src.questFolder.waitQuest

@@ -1033,8 +1033,6 @@ class MainGame(BasicPhase):
         self.setUpShrine(pos)
 
         self.difficulty = difficulty
-        self.productionBaseInfos = []
-        #self.productionBaseInfos.append(self.createProductiondBase(positions.pop()))
 
         self.colonyBaseInfos = []
         #self.colonyBaseInfos.append(self.createColonyBase(positions.pop()))
@@ -1359,8 +1357,6 @@ I'll teach you along the way.
             self.activeStory["mainChar"].addListener(self.changedTerrain,"changedTerrain")
             self.activeStory["mainChar"].addListener(self.deliveredSpecialItem,"deliveredSpecialItem")
             self.activeStory["mainChar"].addListener(self.gotEpochReward,"got epoch reward")
-        elif self.activeStory["type"] == "productionBase":
-            self.kickoffProduction()
         else:
             pass
 
@@ -1983,36 +1979,6 @@ but they are likely to explode when disturbed.
 
                         self.showedLandMineCollectingInfo = True
                         return
-
-    def kickoffProduction(self):
-        self.activeStory["playerActivatedEpochArtwork"] = False
-        self.activeStory["mainChar"].messages.insert(0,("""but see nothing that could directly harm you."""))
-
-        for character in self.activeStory["terrain"].characters[:]:
-            if character != self.activeStory["mainChar"]:
-                character.die(reason="sudden death")
-
-        for room in self.activeStory["terrain"].rooms:
-            if isinstance(room, src.rooms.TrapRoom):
-                room.electricalCharges = 0
-            for character in room.characters[:]:
-                if character != self.activeStory["mainChar"]:
-                    character.die(reason="sudden death")
-            for item in room.itemsOnFloor[:]:
-                if item.bolted:
-                    continue
-                room.removeItem(item)
-
-    def advanceProductionBase(self,state):
-        """
-        personnelArtwork = state["personnelArtwork"]
-        mainChar = state["mainChar"]
-
-        amountNPCs = 2
-        personnelArtwork.charges += amountNPCs*2
-        for i in range(0,amountNPCs):
-            npc = personnelArtwork.spawnIndependentClone(mainChar)
-        """
 
     def setUpDungeon(self,pos):
         #set up dungeons

@@ -3212,7 +3212,6 @@ but they are likely to explode when disturbed.
 
         if not mainCharBase:
             quest = src.quests.questMap["BeUsefull"]()
-            #quest = src.quests.questMap["ExtendBase"]()
             quest.autoSolve = True
             quest.assignToCharacter(mainChar)
             quest.activate()
@@ -4209,7 +4208,6 @@ but they are likely to explode when disturbed.
 
         if not mainCharBase:
             quest = src.quests.questMap["BeUsefull"]()
-            #quest = src.quests.questMap["ExtendBase"]()
             quest.autoSolve = True
             quest.assignToCharacter(mainChar)
             quest.activate()
@@ -5891,7 +5889,6 @@ Once you understand things try to find better solutions.
 
     def openedQuestsColonyBase(self):
         mainChar = self.activeStory["mainChar"]
-        #containerQuest = src.quests.questMap["ExtendBase"]()
         storyText = """
 You reach out to your implant and it answers:
 
@@ -5904,8 +5901,6 @@ You will get very detailed instructions, but you do not have to follow them clos
 The EpochArtwork will reward you for progress.
 
 """
-        #containerQuest = src.quests.questMap["EpochQuest"](storyText=storyText)
-        #containerQuest = src.quests.questMap["ExtendBase"]()
         containerQuest = src.quests.questMap["BeUsefull"](reason="""build the base.\n\n
 Follow the instructions on the left side of the screen.
 This should get you up and running in no time""")
@@ -5995,200 +5990,6 @@ This should get you up and running in no time""")
 
         room = random.choice(terrain.rooms)
 
-        '''
-        if not src.gamestate.gamestate.tick < 100:
-            if state["mainChar"] == src.gamestate.gamestate.mainChar:
-                text = f"""
-An epoch has passed. You currently control {len(hasSpecialItems)} special items.
-You are rewarded with the following:
-
-"""
-
-                if not len(hasSpecialItems):
-                    text += """
-no reward.
-
-"""
-
-                if len(hasSpecialItems):
-                    npc = src.characters.Character()
-                    npc.questsDone = [
-                        "NaiveMoveQuest",
-                        "MoveQuestMeta",
-                        "NaiveActivateQuest",
-                        "ActivateQuestMeta",
-                        "NaivePickupQuest",
-                        "PickupQuestMeta",
-                        "DrinkQuest",
-                        "CollectQuestMeta",
-                        "FireFurnaceMeta",
-                        "ExamineQuest",
-                        "NaiveDropQuest",
-                        "DropQuestMeta",
-                        "LeaveRoomQuest",
-                    ]
-
-                    npc.solvers = [
-                        "SurviveQuest",
-                        "Serve",
-                        "NaiveMoveQuest",
-                        "MoveQuestMeta",
-                        "NaiveActivateQuest",
-                        "ActivateQuestMeta",
-                        "NaivePickupQuest",
-                        "PickupQuestMeta",
-                        "DrinkQuest",
-                        "ExamineQuest",
-                        "FireFurnaceMeta",
-                        "CollectQuestMeta",
-                        "WaitQuest" "NaiveDropQuest",
-                        "NaiveDropQuest",
-                        "DropQuestMeta",
-                    ]
-
-                    npc.faction = state["mainChar"].faction
-                    #npc.rank = 6
-                    room.addCharacter(npc,6,6)
-                    npc.flask = src.items.itemMap["GooFlask"]()
-                    npc.flask.uses = 100
-
-                    npc.duties = []
-                    duty = random.choice(("resource gathering","machine operation","hauling","resource fetching","maggot gathering","cleaning","machine placing","room building","scavenging"))
-                    #duty = random.choice(("maggot gathering",))
-                    npc.duties.append(duty)
-                    npc.registers["HOMEx"] = 7
-                    npc.registers["HOMEy"] = 7
-                    npc.registers["HOMETx"] = terrain.xPosition
-                    npc.registers["HOMETy"] = terrain.yPosition
-
-                    npc.personality["autoFlee"] = False
-                    npc.personality["abortMacrosOnAttack"] = False
-                    npc.personality["autoCounterAttack"] = False
-
-                    quest = src.quests.questMap["BeUsefull"](strict=True)
-                    #quest = src.quests.questMap["ExtendBase"]()
-                    quest.autoSolve = True
-                    quest.assignToCharacter(npc)
-                    quest.activate()
-                    npc.assignQuest(quest,active=True)
-                    npc.foodPerRound = 1
-
-                    text += f"""
-1 burned in clone named {npc.name} with duty {duty},
-for controlling at least 1 special item.
-
-"""
-
-                text += """
-press enter to continue"""
-                src.interaction.showInterruptText(text)
-        '''
-
-        '''
-        if not src.gamestate.gamestate.tick < 100:
-            if state["mainChar"] == src.gamestate.gamestate.mainChar:
-                text = f"""
-An epoch has passed. You currently control {len(hasSpecialItems)} special items.
-You are cursed with the following:
-
-"""
-
-                if not len(hasSpecialItems):
-                    text += """
-no curse.
-
-"""
-                if len(hasSpecialItems):
-                    for j in range(4):
-                        bigPos = (random.randint(1,13),random.randint(1,13),0)
-                        numEnemies = 3
-
-                        for i in range(numEnemies):
-                            enemy = src.characters.Monster(4,4)
-                            enemy.health = 20
-                            enemy.baseDamage = 5
-                            enemy.maxHealth = 20
-                            enemy.godMode = True
-                            enemy.movementSpeed = 0.8
-
-                            quest = src.quests.questMap["SecureTile"](toSecure=(bigPos[0],bigPos[1],0))
-                            quest.autoSolve = True
-                            quest.assignToCharacter(enemy)
-                            quest.activate()
-                            enemy.quests.append(quest)
-
-                            rooms = terrain.getRoomByPosition(bigPos)
-                            if rooms:
-                                rooms[0].addCharacter(enemy,6,6)
-                            else:
-                                terrain.addCharacter(enemy,15*bigPos[0]+random.randint(1,13),15*bigPos[1]+random.randint(1,13))
-
-                    text += """
-4 groups of insects appear, waiting for careless victim,
-for controlling at least 1 glass heart.
-
-"""
-
-                numSpectres = 0
-                for specialItemSlot in hasSpecialItems:
-                    if not specialItemSlot.itemID in (3,4,5,6,7,):
-                        continue
-
-                    spectreHome = (7,7+2-specialItemSlot.itemID)
-
-                    numEnemies = (specialItemSlot.itemID-2)**2
-                    numSpectres += numEnemies
-
-                    for i in range(numEnemies):
-                        bigPos = (random.randint(1,13),random.randint(1,13),0)
-                        enemy = src.characters.Monster(6,6)
-                        enemy.health = 200
-                        enemy.baseDamage = 10
-                        enemy.faction = "spectre"
-                        enemy.tag = "spectre"
-                        enemy.movementSpeed = 2
-                        enemy.registers["HOMETx"] = spectreHome[0]
-                        enemy.registers["HOMETy"] = spectreHome[1]
-                        enemy.registers["HOMEx"] = 7
-                        enemy.registers["HOMEy"] = 7
-                        rooms = terrain.getRoomByPosition(bigPos)
-                        if rooms:
-                            rooms[0].addCharacter(enemy,6,6)
-                        else:
-                            terrain.addCharacter(enemy,15*bigPos[0]+7,15*bigPos[1]+7)
-
-                        quest = src.quests.questMap["DelveDungeon"](targetTerrain=(terrain.xPosition,terrain.yPosition,0),itemID=specialItemSlot.itemID)
-                        quest.autoSolve = True
-                        quest.assignToCharacter(enemy)
-                        quest.activate()
-                        enemy.quests.append(quest)
-
-                        quest = src.quests.questMap["GoHome"]()
-                        quest.autoSolve = True
-                        quest.assignToCharacter(enemy)
-                        quest.activate()
-                        enemy.quests.append(quest)
-
-                        quest = src.quests.questMap["Vanish"]()
-                        quest.autoSolve = True
-                        quest.assignToCharacter(enemy)
-                        quest.activate()
-                        enemy.quests.append(quest)
-
-                        #src.gamestate.gamestate.mainChar = enemy
-
-                if numSpectres:
-                    text += f"""
-{numSpectres} static spectres apeared, craving to reclaim their glass heart,
-for controlling at least 1 special item.
-
-"""
-
-                text += """
-press enter to continue"""
-                src.interaction.showInterruptText(text)
-        '''
-
     def advanceSiegedBase(self,state):
         terrain = state["terrain"]
 
@@ -6204,21 +6005,6 @@ press enter to continue"""
                     continue
                 remainingEnemyCounter += 1
 
-        """
-        counter = 0
-        while counter < remainingEnemyCounter:
-            if terrain.rooms:
-                room = random.choice(terrain.rooms)
-                room.damage()
-            counter += 1
-        """
-
-        """
-        if not self.numRounds == 1:
-            self.personnelArtwork.charges += 2
-            npc = self.personnelArtwork.spawnIndependentFighter(src.gamestate.gamestate.mainChar)
-            npc = self.personnelArtwork.spawnIndependentWorker(src.gamestate.gamestate.mainChar)
-        """
 
         if src.gamestate.gamestate.mainChar.rank != 3:
             if not state["epochArtwork"].leader or state["pochArtwork"].leader.dead:
@@ -6236,26 +6022,7 @@ press enter to continue"""
             return
 
         monsterStartRoom = random.choice(spawnerRooms)
-        """
-        while counter < remainingEnemyCounter:
-            enemy = src.characters.Monster(6,6)
-            enemy.faction = "invader"
-            enemy.tag = "wave"
-            enemy.specialDisplay = "<c"
-            monsterStartRoom.addCharacter(enemy, 6, 6)
 
-            quest = src.quests.questMap["DestroyRooms"]()
-            quest.autoSolve = True
-            quest.assignToCharacter(enemy)
-            quest.activate()
-            enemy.quests.append(quest)
-
-            counter += 1
-        """
-
-        #numMonsters = 1
-        #if self.numRounds > 8:
-        #    numMonsters = self.numRounds-8
         numMonsters = self.numRounds+remainingEnemyCounter
 
         if self.difficulty == "tutorial" and self.numRounds < 3:

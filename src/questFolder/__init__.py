@@ -38,7 +38,6 @@ import src.questFolder.operateMachine
 import src.questFolder.placeItem
 import src.questFolder.pray
 import src.questFolder.produceItem
-import src.questFolder.protectSuperior
 import src.questFolder.reachBase
 import src.questFolder.reachOutStory
 import src.questFolder.reduceFoodConsumption

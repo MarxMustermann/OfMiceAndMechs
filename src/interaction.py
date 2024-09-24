@@ -5023,7 +5023,6 @@ class AdvancedQuestMenu(SubMenu):
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))
                     options.append(("BeUsefullOnTile", "BeUsefullOnTile"))
-                    options.append(("ProtectSuperior", "ProtectSuperior"))
                     options.append(("Equip", "Equip"))
                     options.append(("Eat", "Eat"))
                     options.append(("FillFlask", "FillFlask"))

@@ -4,7 +4,6 @@ import src.questFolder.beUsefull
 import src.questFolder.beUsefullOnTile
 import src.questFolder.buildRoom
 import src.questFolder.cleanSpace
-import src.questFolder.cleanTraps
 import src.questFolder.clearInventory
 import src.questFolder.clearPathToPosition
 import src.questFolder.clearTerrain
@@ -12,7 +11,6 @@ import src.questFolder.clearTile
 import src.questFolder.deleteMarking
 import src.questFolder.delveDungeon
 import src.questFolder.designateRoom
-import src.questFolder.discardInventory
 import src.questFolder.drawBuildSite
 import src.questFolder.drawFloorPlan
 import src.questFolder.drawStockpile
@@ -41,14 +39,12 @@ import src.questFolder.killGuards
 import src.questFolder.killPatrolers
 import src.questFolder.lootRoom
 import src.questFolder.machining
-import src.questFolder.manageBase
 import src.questFolder.metalWorking
 import src.questFolder.obtainSpecialItem
 import src.questFolder.operateMachine
 import src.questFolder.patrolQuest
 import src.questFolder.placeItem
 import src.questFolder.pray
-import src.questFolder.prepareAttack
 import src.questFolder.produceItem
 import src.questFolder.protectSuperior
 import src.questFolder.reachBase

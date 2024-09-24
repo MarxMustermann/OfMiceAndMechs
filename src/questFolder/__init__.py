@@ -4,7 +4,6 @@ import src.questFolder.assimilate
 import src.questFolder.beUsefull
 import src.questFolder.beUsefullOnTile
 import src.questFolder.buildRoom
-import src.questFolder.changeJob
 import src.questFolder.cleanSpace
 import src.questFolder.cleanTraps
 import src.questFolder.clearInventory

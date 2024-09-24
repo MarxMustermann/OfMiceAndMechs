@@ -3128,7 +3128,7 @@ but they are likely to explode when disturbed.
                 return
 
         # assimilate into base
-        if mainChar.faction != "city #2":
+        if mainChar.faction != "city #1":
             # get to control room
             if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
                 quest = src.quests.questMap["ReachSafety"]()
@@ -3191,13 +3191,13 @@ but they are likely to explode when disturbed.
         enemyCount = 0
         terrain = mainChar.getTerrain()
         for character in terrain.characters:
-            if character.faction != "city #2":
+            if character.faction != "city #1":
                 enemyCount += 1
             else:
                 npcCount += 1
         for room in terrain.rooms:
             for character in room.characters:
-                if character.faction != "city #2":
+                if character.faction != "city #1":
                     enemyCount += 1
                 else:
                     npcCount += 1

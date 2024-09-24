@@ -101,7 +101,7 @@ Use it to reset your faction marker.
         if not character:
             return False
 
-        if not character.faction == "city #2":
+        if not character.faction == "city #1":
             return False
 
         self.postHandler()

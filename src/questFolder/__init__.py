@@ -17,7 +17,6 @@ import src.questFolder.designateRoom
 import src.questFolder.destroySpawner
 import src.questFolder.destroySpawners
 import src.questFolder.discardInventory
-import src.questFolder.doEpochChallenge
 import src.questFolder.drawBuildSite
 import src.questFolder.drawFloorPlan
 import src.questFolder.drawStockpile
@@ -27,7 +26,6 @@ import src.questFolder.enterRoom
 import src.questFolder.epochQuest
 import src.questFolder.equip
 import src.questFolder.equip2
-import src.questFolder.extendBase
 import src.questFolder.fetchItems
 import src.questFolder.fight
 import src.questFolder.fillFlask

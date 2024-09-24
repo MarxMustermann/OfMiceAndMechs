@@ -33,7 +33,6 @@ import src.questFolder.gatherVatMaggots
 import src.questFolder.getBodyGuards
 import src.questFolder.getEpochReward
 import src.questFolder.getPromotion
-import src.questFolder.getQuestFromQuestArtwork
 import src.questFolder.goHome
 import src.questFolder.goToPosition
 import src.questFolder.goToTerrain

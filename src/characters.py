@@ -66,6 +66,7 @@ class Character:
         self.attackSpeed = 1 # the speed characters attack with
 
         self.disableCommandsOnPlus = False
+        self.autoExpandQuests = False
         self.charType = "Character"
         self.disabled = False
         self.superior = None

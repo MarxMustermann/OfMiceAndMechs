@@ -1201,6 +1201,7 @@ class MainGame(BasicPhase):
             combatMenu.sidebared = True
             mainChar.rememberedMenu.insert(0,combatMenu)
         mainChar.disableCommandsOnPlus = True
+        mainChar.autoExpandQuests = True
 
         print("len(self.available_positions)")
         print(len(self.available_positions))

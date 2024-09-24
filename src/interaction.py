@@ -4762,6 +4762,7 @@ class CharacterInfoMenu(SubMenu):
         text += f"registers: {char.registers}\n"
         text += f"terrainName: %s\n" % char.getTerrain().tag
         text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
+        text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
 
         return text
 
@@ -10728,6 +10729,8 @@ def advanceChar(char,render=True):
             rerender = True
             char.runCommandString("+")
             skipNextRender = False
+        elif char.autoExpandQuests and not (char.getActiveQuest().getSolvingCommandString(char)):
+            char.runCommandString("+",nativeKey=True)
         else:
             if (char == src.gamestate.gamestate.mainChar):
                 if getTcodEvents():

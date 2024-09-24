@@ -1292,8 +1292,6 @@ class MainGame(BasicPhase):
     def kickoff(self):
         if self.activeStory["type"] == "siegedBase":
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
-        elif self.activeStory["type"] == "raidBase":
-            self.activeStory["mainChar"].messages.insert(0,("""until you notice eneryone looking at you expectingly."""))
         elif self.activeStory["type"] == "colonyBase":
             if len(self.activeStory["mainChar"].messages) == 0:
                 text = """
@@ -5414,9 +5412,6 @@ but they are likely to explode when disturbed.
         return siegedBaseInfo
 
     def openedQuests(self):
-        if self.activeStory["type"] == "raidBase":
-            self.openedQuestsRaid()
-            return
         if self.activeStory["type"] == "colonyBase":
             self.openedQuestsColonyBase()
             return
@@ -5661,25 +5656,6 @@ This should get you up and running in no time""")
         containerQuest.activate()
         containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
 
-    def openedQuestsRaid(self):
-        mainChar = self.activeStory["mainChar"]
-        if mainChar.armor is None or mainChar.weapon is None:
-            containerQuest = src.quests.questMap["Equip"]()
-            mainChar.quests.append(containerQuest)
-            containerQuest.assignToCharacter(mainChar)
-            containerQuest.activate()
-            containerQuest.generateSubquests(mainChar)
-            containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
-
-        containerQuest = src.quests.questMap["EpochQuest"]()
-        mainChar.quests.append(containerQuest)
-        containerQuest.assignToCharacter(mainChar)
-        containerQuest.activate()
-        containerQuest.generateSubquests(mainChar)
-        containerQuest.endTrigger = {"container": self, "method": "reachImplant"}
-        return
-
     def reachImplant(self):
         containerQuest = src.quests.questMap["ReachOutStory"]()
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
@@ -5840,10 +5816,6 @@ class MainGameProduction(MainGame):
     def __init__(self, seed=0):
         super().__init__(seed,"Production")
 
-class MainGameRaid(MainGame):
-    def __init__(self, seed=0):
-        super().__init__(seed,"Raid")
-
 ###############################################################
 #
 #    the glue to be able to call the phases from configs etc
@@ -5865,5 +5837,4 @@ def registerPhases():
     phasesByName["MainGame"] = MainGame
     phasesByName["MainGameSieged"] = MainGameSieged
     phasesByName["MainGameProduction"] = MainGameProduction
-    phasesByName["MainGameRaid"] = MainGameRaid
     phasesByName["PrefabDesign"] = PrefabDesign

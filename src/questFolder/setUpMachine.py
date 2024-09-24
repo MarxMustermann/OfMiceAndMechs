@@ -333,10 +333,6 @@ If you don't find a {self.itemType} blueprint, research it.
                     return ([quest],None)
                 return (None,("k","pick up blueprint"))
 
-            if self.tryHard:
-                quest = src.quests.questMap["ResearchBluePrint"](itemType=self.itemType,tryHard=self.tryHard,reason="have a blueprint to load into the MachineMachine")
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-                return ([quest], None)
             if "machining" in character.duties:
                 newQuest = src.quests.questMap["Machining"](toProduce=self.itemType,amount=1,reason=f"construct a machine that produces {self.itemType}",produceToInventory=True)
                 return ([newQuest],None)

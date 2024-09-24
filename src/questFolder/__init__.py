@@ -32,7 +32,6 @@ import src.questFolder.goToTerrain
 import src.questFolder.goToTile
 import src.questFolder.heal
 import src.questFolder.huntdown
-import src.questFolder.killGuards
 import src.questFolder.killPatrolers
 import src.questFolder.lootRoom
 import src.questFolder.machining

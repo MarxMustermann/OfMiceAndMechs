@@ -2379,6 +2379,7 @@ but they are likely to explode when disturbed.
 
             statue = src.items.itemMap["GlassStatue"]()
             statue.itemID = godId
+            statue.charges = 4
             throneRoom.addItem(statue,(godId+2,5,0))
 
             throneRoom.addInputSlot((godId+2,4,0),src.gamestate.gamestate.gods[godId]["sacrifice"][0],{})

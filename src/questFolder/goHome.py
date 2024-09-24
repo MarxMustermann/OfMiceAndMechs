@@ -85,7 +85,7 @@ Press control-d to stop your character from moving.
                 items = character.container.getItemsByType("Shrine")
                 if items:
                     if character.getDistance(items[0].getPosition()) <= 1:
-                        return
+                        return (None,None)
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(),reason="get to a shrine",ignoreEndBlocked=True)
                     return  ([quest],None)

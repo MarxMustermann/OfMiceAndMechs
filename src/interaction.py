@@ -7921,22 +7921,6 @@ def showMainMenu(args=None):
     produtionArtwork = src.items.itemMap["ProductionArtwork"]()
     mainRoom.addItem(produtionArtwork,(3,11,0))
 
-    personnelArtwork = src.items.itemMap["PersonnelArtwork"]()
-    mainRoom.addItem(personnelArtwork,(9,1,0))
-    personnelArtwork.spawnRank3(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank5(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank6(src.gamestate.gamestate.mainChar)
-    personnelArtwork.spawnRank4(src.gamestate.gamestate.mainChar)
-
     mainRoom.removeCharacter(src.gamestate.gamestate.mainChar)
 
     startGame = False

@@ -4983,8 +4983,6 @@ This should get you up and running in no time""")
             currentTerrain.addEvent(event)
 
     def startRound(self):
-        for productionBaseInfo in self.productionBaseInfos:
-            self.advanceProductionBase(productionBaseInfo)
 
         for colonyBaseInfo in self.colonyBaseInfos:
             self.advanceColonyBase(colonyBaseInfo)

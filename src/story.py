@@ -1034,10 +1034,6 @@ class MainGame(BasicPhase):
 
         self.difficulty = difficulty
 
-        self.colonyBaseInfos = []
-
-        self.colonyBaseInfos2 = []
-
         self.dungeonCrawlInfos = []
 
         # reserve center position for throne room
@@ -1158,17 +1154,6 @@ class MainGame(BasicPhase):
 
         messagesMenu = src.interaction.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
-        if self.preselection == "Colony":
-            inventoryMenu = src.interaction.InventoryMenu(mainChar)
-            inventoryMenu.sidebared = True
-            mainChar.rememberedMenu2.append(inventoryMenu)
-        elif self.preselection == "Dungeon":
-            inventoryMenu = src.interaction.InventoryMenu(mainChar)
-            inventoryMenu.sidebared = True
-            mainChar.rememberedMenu2.append(inventoryMenu)
-            combatMenu = src.interaction.CombatInfoMenu(mainChar)
-            combatMenu.sidebared = True
-            mainChar.rememberedMenu.insert(0,combatMenu)
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests = True
 
@@ -1198,84 +1183,11 @@ class MainGame(BasicPhase):
     def mainCharacterDeath(self,extraParam):
         if not src.gamestate.gamestate.mainChar.dead:
             return
-
-        if self.activeStory["type"] == "colonyBase":
-            text = f"""
-    You died.
-
-    you were playing the scenario: {self.activeStory["type"]}
-
-    - press enter to continue -
-"""
-        else:
-            text = f"""
-    You died.
-
-    you were playing the scenario: {self.activeStory["type"]}
-
-    - press enter to continue -
-"""
-        src.interaction.showInterruptText(text)
-
-        if self.activeStory["type"] == "colonyBase":
-            characterPool = []
-            terrain = self.activeStory["terrain"]
-            characterPool.extend(terrain.characters)
-
-            for room in terrain.rooms:
-                characterPool.extend(room.characters)
-
-            for character in characterPool[:]:
-                if character.faction != self.activeStory["mainChar"].faction:
-                    characterPool.remove(character)
-                    continue
-                if isinstance(character,src.characters.Ghoul):
-                    characterPool.remove(character)
-                    continue
-                if not character.rank:
-                    characterPool.remove(character)
-                    continue
-
-            if not characterPool:
-                text = """
-    no remainder of your faction found. You lost the game.
-
-    - press enter to exit the game -
-"""
-                src.interaction.showInterruptText(text)
-                raise src.interaction.EndGame("faction died")
-
-            text = """
-    You respawn as another member of your faction.
-"""
-            src.interaction.showInterruptText(text)
-
-            newChar = random.choice(characterPool)
-            src.gamestate.gamestate.mainChar = newChar
-            newChar.addListener(self.mainCharacterDeath,"died")
-
-            newChar.runCommandString("",clear=True)
-            for quest in newChar.quests:
-                quest.autoSolve = False
-            newChar.disableCommandsOnPlus = True
         else:
             raise src.interaction.EndGame("character died")
 
     def kickoff(self):
-        if self.activeStory["type"] == "siegedBase":
-            self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
-        elif self.activeStory["type"] == "colonyBase":
-            if len(self.activeStory["mainChar"].messages) == 0:
-                text = """
-You.
-You see walls made out of solid steel
-and feel the touch of the cold hard floor.
-The room is filled with various items.
-You recognise your hostile suroundings and
-try to remember how you got here ..."""
-                self.activeStory["mainChar"].messages.insert(0,(text))
-            self.activeStory["mainChar"].messages.insert(0,("""until you remember that you are supposed to set up a new base."""))
-        elif self.activeStory["type"] == "story start":
+        if self.activeStory["type"] == "story start":
             if len(self.activeStory["mainChar"].messages) == 0:
                 text = """
 You.
@@ -1287,55 +1199,6 @@ try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
             self.activeStory["sternsContraption"].startMeltdown()
-        elif self.activeStory["type"] == "dungeon crawl":
-            if len(self.activeStory["mainChar"].messages) == 0:
-                text = """
-You.
-You see walls made out of solid steel
-and feel the touch of the cold hard floor.
-The room is filled with various items.
-You recognise your hostile suroundings and
-try to remember how you got here ..."""
-                self.activeStory["mainChar"].messages.insert(0,(text))
-            self.activeStory["mainChar"].messages.insert(0,("""until you remember that your whole team died in that dungeon."""))
-
-            if self.difficulty == "tutorial":
-                text = """
-Your task is to take the GlassHeart from this dungeon.
-Go to the center chamber of this dungeon to get it.
-Use the wasd keys to move to the center chamber.
-"""
-                submenu = src.interaction.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-            if self.difficulty in ("easy","medium",):
-                text = """
-The basic game is set up just like the tutorial,
-but it is tuned to be a bit harder to do.
-This means you have to know more game mechanics to survive.
-
-So bring the GlassHearts to your base.
-I'll teach you along the way.
-"""
-                submenu = src.interaction.TextMenu(text+"""
-
-= press esc to close this menu =
-""")
-                self.activeStory["mainChar"].macroState["submenue"] = submenu
-                self.activeStory["mainChar"].runCommandString("~",nativeKey=True)
-                self.activeStory["mainChar"].addMessage(text)
-
-            self.activeStory["mainChar"].addListener(self.enteredRoom,"entered room")
-            self.activeStory["mainChar"].addListener(self.itemPickedUp,"itemPickedUp")
-            self.activeStory["mainChar"].addListener(self.changedTerrain,"changedTerrain")
-            self.activeStory["mainChar"].addListener(self.deliveredSpecialItem,"deliveredSpecialItem")
-            self.activeStory["mainChar"].addListener(self.gotEpochReward,"got epoch reward")
-        else:
-            pass
 
     def gotEpochReward(self,extraParam):
         if self.difficulty == "tutorial" and "NPC" in extraParam["rewardType"]:

@@ -9,7 +9,6 @@ import src.itemFolder.artworks.performanceTester
 import src.itemFolder.artworks.personnelArtwork
 import src.itemFolder.artworks.personnelTracker
 import src.itemFolder.artworks.productionArtwork
-import src.itemFolder.artworks.questArtwork
 import src.itemFolder.artworks.resourceTerminal
 import src.itemFolder.artworks.siren
 import src.itemFolder.artworks.staffArtwork

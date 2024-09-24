@@ -1039,32 +1039,7 @@ class MainGame(BasicPhase):
         # reserve center position for throne room
         self.available_positions.remove((7,7))
 
-        while self.preselection is None:
-            selection =self.preselection = src.interaction.showInterruptChoice("""
-
-    You selected no specific starting point.
-    Tell me what type of games do you like more?
-
-    colony builders
-    (like "Dwarf fortress: fortress mode" or "Rimworld")
-
-    roguelikes
-    (like "nethack" or "brogue")
-
-    press c for (c)olony builders
-    press r for (r)oguelikes
-    press s for (s)tory
-
-""",["c","r","t","s"])
-
-            if selection == "c":
-                self.preselection = "Colony"
-            if selection == "r":
-                self.preselection = "Dungeon"
-            if selection == "s":
-                self.preselection = "Story"
-            if selection == "t":
-                self.preselection = "Travel"
+        self.preselection = "Story"
 
         difficultyModifier = 1
         if self.difficulty == "tutorial":

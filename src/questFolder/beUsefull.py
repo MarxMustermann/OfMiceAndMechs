@@ -2037,9 +2037,6 @@ Press d to move the cursor and show the subquests description.
                 case "clone spawning":
                     if self.checkTriggerCloneSpawning(character,room):
                         return
-                case "epoch questing":
-                    if self.checkTriggerEpochQuesting(character,room):
-                        return
                 case "questing":
                     if self.checkTriggerQuesting(character,room):
                         return

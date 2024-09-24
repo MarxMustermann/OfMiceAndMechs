@@ -32,13 +32,10 @@ import src.questFolder.goToTerrain
 import src.questFolder.goToTile
 import src.questFolder.heal
 import src.questFolder.huntdown
-import src.questFolder.killPatrolers
-import src.questFolder.lootRoom
 import src.questFolder.machining
 import src.questFolder.metalWorking
 import src.questFolder.obtainSpecialItem
 import src.questFolder.operateMachine
-import src.questFolder.patrolQuest
 import src.questFolder.placeItem
 import src.questFolder.pray
 import src.questFolder.produceItem

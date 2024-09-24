@@ -253,16 +253,6 @@ Press d to move the cursor and show the subquests description.
 
         super().solver(character)
 
-    def checkTriggerTrapSetting(self,character,room):
-        if hasattr(room,"electricalCharges") and room.electricalCharges < room.maxElectricalCharges:
-
-            quest = src.quests.questMap["ReloadTraproom"](targetPosition=room.getPosition())
-            self.addQuest(quest)
-            quest.activate()
-            self.idleCounter = 0
-            return True
-        return None
-
     def checkTriggerTurretLoading(self,character,room):
         return None
 
@@ -1969,9 +1959,6 @@ Press d to move the cursor and show the subquests description.
         room = character.container
         for duty in character.getRandomProtisedDuties():
             match (duty):
-                case "trap setting":
-                    if self.checkTriggerTrapSetting(character,room):
-                        return
                 case "turret loading":
                     if self.checkTriggerTurretLoading(character,room):
                         return

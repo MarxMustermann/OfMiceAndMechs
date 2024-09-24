@@ -3275,12 +3275,6 @@ but they are likely to explode when disturbed.
         item.itemID = 2
         mainRoom.addItem(item,(2,3,0))
 
-        #epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
-        #colonyBaseInfo["epochArtwork"] = epochArtwork
-        #epochArtwork.leader = mainChar
-        #epochArtwork.epochSurvivedRewardAmount = 0
-        #epochArtwork.changeCharges(60)
-        #mainRoom.addItem(epochArtwork,(3,3,0))
         mainChar.rank = 3
         """
         quest = src.quests.questMap["EpochQuest"]()
@@ -4286,12 +4280,6 @@ but they are likely to explode when disturbed.
             mainChar, 6, 6
         )
 
-        #epochArtwork = src.items.itemMap["EpochArtwork"](self.epochLength,rewardSet="colony")
-        #colonyBaseInfo["epochArtwork"] = epochArtwork
-        #epochArtwork.leader = mainChar
-        #epochArtwork.epochSurvivedRewardAmount = 0
-        #epochArtwork.changeCharges(60)
-        #mainRoom.addItem(epochArtwork,(3,1,0))
         mainChar.rank = 6
         """
         quest = src.quests.questMap["EpochQuest"]()

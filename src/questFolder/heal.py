@@ -105,4 +105,19 @@ Press JH to auto heal.
             return
         super().solver(character)
 
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.wrapedTriggerCompletionCheck, "healed")
+        super().assignToCharacter(character)
+
+    def wrapedTriggerCompletionCheck(self, extraInfo):
+        if self.completed:
+            1/0
+        if not self.active:
+            return
+    
+        self.triggerCompletionCheck(self.character)
+
 src.quests.addType(Heal)

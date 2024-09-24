@@ -45,7 +45,6 @@ import src.questFolder.scavenge
 import src.questFolder.scavengeTile
 import src.questFolder.scheduleRoomBuilding
 import src.questFolder.scrapHammering
-import src.questFolder.secureCargo
 import src.questFolder.secureTile
 import src.questFolder.secureTiles
 import src.questFolder.setUpMachine

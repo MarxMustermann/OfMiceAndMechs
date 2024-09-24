@@ -39,8 +39,6 @@ import src.questFolder.placeItem
 import src.questFolder.pray
 import src.questFolder.produceItem
 import src.questFolder.reachOutStory
-import src.questFolder.reloadTraproom
-import src.questFolder.reloadTraps
 import src.questFolder.researchBlueprint
 import src.questFolder.restockRoom
 import src.questFolder.runCommand

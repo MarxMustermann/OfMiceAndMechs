@@ -5035,7 +5035,6 @@ class AdvancedQuestMenu(SubMenu):
                     options.append(("BeUsefullOnTile", "BeUsefullOnTile"))
                     options.append(("ProtectSuperior", "ProtectSuperior"))
                     options.append(("Equip", "Equip"))
-                    options.append(("Assimilate", "Assimilate"))
                     options.append(("Eat", "Eat"))
                     options.append(("FillFlask", "FillFlask"))
                     self.setOptions("what type of quest: (press N for quest by name)", options)

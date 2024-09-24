@@ -1,6 +1,5 @@
 import src.questFolder.ascend
 import src.questFolder.assignFloorPlan
-import src.questFolder.assimilate
 import src.questFolder.beUsefull
 import src.questFolder.beUsefullOnTile
 import src.questFolder.buildRoom
@@ -52,10 +51,6 @@ import src.questFolder.pray
 import src.questFolder.prepareAttack
 import src.questFolder.produceItem
 import src.questFolder.protectSuperior
-import src.questFolder.raidTutorial
-import src.questFolder.raidTutorial2
-import src.questFolder.raidTutorial3
-import src.questFolder.raidTutorial4
 import src.questFolder.reachBase
 import src.questFolder.reachOutStory
 import src.questFolder.reduceFoodConsumption

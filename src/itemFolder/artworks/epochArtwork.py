@@ -732,7 +732,7 @@ Extend the base by building new rooms and spawning clones.
             submenue = src.interaction.TextMenu(text)
             character.macroState["submenue"] = submenue
 
-            quest = src.quests.questMap["ExtendBase"]()
+            #quest = src.quests.questMap["ExtendBase"]()
             quest.active = True
             quest.assignToCharacter(character)
 

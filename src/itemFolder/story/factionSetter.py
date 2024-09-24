@@ -25,7 +25,7 @@ class FactionSetter(src.items.Item):
 
         text = f"""
 You insert your head into the machine.
-It claws into your head and connects to you implant.
+It claws into your head and connects to your implant.
 
 It changes your implant and sets your faction marker to {self.faction}.
 """

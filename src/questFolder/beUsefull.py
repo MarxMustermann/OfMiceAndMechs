@@ -1671,7 +1671,7 @@ Press d to move the cursor and show the subquests description.
                 return True
 
         if not character.weapon or not character.armor:
-            quest = src.quests.questMap["Equip2"]()
+            quest = src.quests.questMap["Equip"]()
             self.addQuest(quest)
             quest.assignToCharacter(character)
             quest.activate()
@@ -1729,7 +1729,7 @@ Press d to move the cursor and show the subquests description.
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
 
-                    quest = src.quests.questMap["Equip2"]()
+                    quest = src.quests.questMap["Equip"]()
                     self.addQuest(quest)
                     quest.assignToCharacter(character)
                     quest.activate()
@@ -1766,7 +1766,7 @@ Press d to move the cursor and show the subquests description.
                         self.addQuest(quest)
                         quest.assignToCharacter(character)
 
-                        quest = src.quests.questMap["Equip2"]()
+                        quest = src.quests.questMap["Equip"]()
                         self.addQuest(quest)
                         quest.assignToCharacter(character)
                         quest.activate()

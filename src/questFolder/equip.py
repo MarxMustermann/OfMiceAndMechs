@@ -48,14 +48,51 @@ Swords can range from 10 to 25 damage per hit.
         self.startWatching(character,self.handleMoved, "moved")
         super().assignToCharacter(character)
 
+    def findBestEquipment(self,character):
+        bestArmor = None
+        bestSword = None
+        for room in self.character.getTerrain().rooms:
+            for item in room.getItemsByType("Armor"):
+                if item != room.getItemByPosition(item.getPosition())[0]:
+                    continue
+                if not bestArmor:
+                    bestArmor = item
+                    continue
+                if bestArmor.armorValue > item.armorValue:
+                    continue
+                bestArmor = item
+            for item in room.getItemsByType("Sword"):
+                if item != room.getItemByPosition(item.getPosition())[0]:
+                    continue
+                if not bestSword:
+                    bestSword = item
+                    continue
+                if bestSword.baseDamage > item.baseDamage:
+                    continue
+                bestSword = item
+
+        if bestArmor and character.armor and bestArmor.armorValue <= character.armor.armorValue:
+            bestArmor = None
+        if bestSword and character.weapon and bestSword.baseDamage <= character.weapon.baseDamage:
+            bestSword = None
+        return (bestSword,bestArmor)
+
     def triggerCompletionCheck(self,character=None):
         if not character:
             return
 
-        if (character.armor or self.weaponOnly) and character.weapon:
-            self.postHandler()
+        (bestSword,bestArmor) = self.findBestEquipment(character)
+
+        if bestSword and character.weapon and bestSword.baseDamage > character.weapon.baseDamage:
             return
 
+        if bestArmor and character.armor and bestArmor.armorValue > character.armor.armorValue:
+            return
+
+        if "metal working" in character.duties and (not character.weapon or not character.armor):
+            return
+
+        self.postHandler()
         return
 
     def clearCompletedSubquest(self):
@@ -96,104 +133,57 @@ Swords can range from 10 to 25 damage per hit.
             return
 
     def getNextStep(self,character=None,ignoreCommands=False):
-        if not self.subQuests:
-            if not ignoreCommands:
-                submenue = character.macroState.get("submenue")
-                if submenue:
-                    return (None,(["esc"],"exit the menu"))
-            toSearchFor = []
-            if not character.armor and not self.weaponOnly:
-                toSearchFor.append("Armor")
+        if self.subQuests:
+            return (None,None)
+
+        (bestSword,bestArmor) = self.findBestEquipment(character)
+        if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
+            if character.container != bestSword.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=bestSword.container.getPosition())
+                return ([quest],None)
+
+            if character.getDistance(bestSword.getPosition()) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=bestSword.getPosition(),ignoreEndBlocked=True)
+                return ([quest],None)
+
+            offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
+            for offset in offsets:
+                if character.getPosition(offset=offset[0]) == bestSword.getPosition():
+                    return (None,("J"+offset[1],"equip the item"))
+            1/0
+
+        if bestArmor and (not character.armor or bestArmor.armorValue > character.armor.armorValue):
+            if character.container != bestArmor.container:
+                quest = src.quests.questMap["GoToTile"](targetPosition=bestArmor.container.getPosition())
+                return ([quest],None)
+
+            if character.getDistance(bestArmor.getPosition()) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=bestArmor.getPosition(),ignoreEndBlocked=True)
+                return ([quest],None)
+
+            offsets = [((1,0,0),"d"),((-1,0,0),"a"),((0,1,0),"s"),((0,-1,0),"w"),((0,0,0),".")]
+            for offset in offsets:
+                if character.getPosition(offset=offset[0]) == bestArmor.getPosition():
+                    return (None,("J"+offset[1],"equip the item"))
+            2/0
+
+        if "metal working" in character.duties:
             if not character.weapon:
-                toSearchFor.append("Sword")
-                toSearchFor.append("Rod")
-            if not toSearchFor:
-                return (None,None)
+                quests = []
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quests.append(quest)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Sword",produceToInventory=False)
+                quests.append(quest)
+                return (quests,None)
 
-            if not isinstance(character.container,src.rooms.Room):
-                if character.yPosition%15 == 14 or character.yPosition%15 == 0 or character.xPosition%15 == 14 or character.xPosition%15 == 0:
-                    quest = src.quests.questMap["EnterRoom"]()
-                    return ([quest],None)
+            if not character.armor:
+                quests = []
+                quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+                quests.append(quest)
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce="Armor",produceToInventory=False)
+                quests.append(quest)
+                return (quests,None)
 
-                quest = src.quests.questMap["GoHome"]()
-                return ([quest],None)
-            room = character.container
-
-            for itemType in toSearchFor:
-                sourceSlots = room.getNonEmptyOutputslots(itemType=itemType)
-                if sourceSlots:
-                    break
-
-            if not sourceSlots:
-                source = None
-                for itemType in toSearchFor:
-                    for candidate in room.sources:
-                        if candidate[1] != itemType:
-                            continue
-
-                        sourceRoom = room.container.getRoomByPosition(candidate[0])
-                        if not sourceRoom:
-                            continue
-
-                        sourceRoom = sourceRoom[0]
-                        sourceSlots = sourceRoom.getNonEmptyOutputslots(itemType=itemType)
-                        if not sourceSlots:
-                            continue
-
-                        source = candidate
-                        break
-                    if source:
-                        break
-                if not source:
-                    for itemType in toSearchFor:
-                        for room in character.getTerrain().rooms:
-                            sourceSlots = room.getNonEmptyOutputslots(itemType=itemType)
-                            if not sourceSlots:
-                                continue
-                            source = (room.getPosition(),itemType)
-                            break
-                        if source:
-                            break
-
-                if not source:
-                    #character.runCommandString(".14.")
-                    if "metal working" in character.duties:
-                        for itemType in toSearchFor:
-                            quests = []
-                            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
-                            quests.append(quest)
-                            quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=itemType,produceToInventory=False)
-                            quests.append(quest)
-                            return (quests,None)
-                    self.fail(reason="no source for equipment")
-                    return (None,None)
-
-                description="go to weapon production "
-                if source[0] == (8,9,0):
-                    description="go storage room "
-
-                quest = src.quests.questMap["GoToTile"](targetPosition=source[0],description=description)
-                return ([quest],None)
-
-            characterPos = character.getPosition()
-            command = None
-            if sourceSlots[0][0] == (characterPos[0],characterPos[1],characterPos[2]):
-                command = "j"
-            elif sourceSlots[0][0] == (characterPos[0]-1,characterPos[1],characterPos[2]):
-                command = "Ja"
-            elif sourceSlots[0][0] == (characterPos[0],characterPos[1]-1,characterPos[2]):
-                command = "Jw"
-            elif sourceSlots[0][0] == (characterPos[0],characterPos[1]+1,characterPos[2]):
-                command = "Js"
-            elif sourceSlots[0][0] == (characterPos[0]+1,characterPos[1],characterPos[2]):
-                command = "Jd"
-
-            if command:
-                return (None,(command,"equip the weapon"))
-
-            else:
-                quest = src.quests.questMap["GoToPosition"](targetPosition=sourceSlots[0][0],description="go to "+itemType,ignoreEndBlocked=True)
-                return ([quest],None)
         return (None,None)
 
 src.quests.addType(Equip)

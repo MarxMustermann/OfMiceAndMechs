@@ -6,7 +6,6 @@ import src.itemFolder.artworks.dutyArtwork
 import src.itemFolder.artworks.gooFaucet
 import src.itemFolder.artworks.orderArtwork
 import src.itemFolder.artworks.performanceTester
-import src.itemFolder.artworks.personnelArtwork
 import src.itemFolder.artworks.personnelTracker
 import src.itemFolder.artworks.productionArtwork
 import src.itemFolder.artworks.resourceTerminal

@@ -1921,14 +1921,6 @@ Press d to move the cursor and show the subquests description.
                     self.idleCounter = 0
                     return
 
-        if character.isMilitary or "guarding" in character.duties:
-            if not character.weapon or not character.armor:
-                quest = src.quests.questMap["Equip"](lifetime=1000)
-                quest.assignToCharacter(character)
-                self.addQuest(quest)
-                self.idleCounter = 0
-                return
-
         if self.targetPosition:
             if not (self.targetPosition[0] == room.xPosition and self.targetPosition[1] == room.yPosition):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)

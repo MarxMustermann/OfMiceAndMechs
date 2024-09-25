@@ -77,7 +77,7 @@ Remove all items from the walkways that are not bolted down."""
             self.metaDescription = self.baseDescription+" "+str(self.targetPosition)
         return super().setParameters(parameters)
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 

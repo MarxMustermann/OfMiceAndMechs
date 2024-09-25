@@ -42,7 +42,7 @@ Use the Promotor to do this.
             return True
         return False
 
-    def getNextStep(self, character=None, ignoreCommands=False):
+    def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 

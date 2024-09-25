@@ -84,19 +84,18 @@ Press control-d to stop your character from moving.
             if isinstance(character.container, src.rooms.Room):
                 items = character.container.getItemsByType("Shrine")
                 if items:
-                    if character.getDistance(items[0].getPosition()) <= 1:
-                        item = items[0]
-
-                        direction = "."
-                        if character.getPosition(offset=(1, 0, 0)) == item.getPosition():
-                            direction = "d"
-                        if character.getPosition(offset=(-1, 0, 0)) == item.getPosition():
-                            direction = "a"
-                        if character.getPosition(offset=(0, 1, 0)) == item.getPosition():
-                            direction = "s"
-                        if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
-                            direction = "w"
-                        return (None, ("J" + direction + "wj", "activate the Shrine"))
+                    for item in items:
+                        if character.getDistance(item.getPosition()) <= 1:
+                            direction = "."
+                            if character.getPosition(offset=(1, 0, 0)) == item.getPosition():
+                                direction = "d"
+                            if character.getPosition(offset=(-1, 0, 0)) == item.getPosition():
+                                direction = "a"
+                            if character.getPosition(offset=(0, 1, 0)) == item.getPosition():
+                                direction = "s"
+                            if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
+                                direction = "w"
+                            return (None, ("J" + direction + "wj", "activate the Shrine"))
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](
                         targetPosition=foundShrine.getPosition(), reason="get to a shrine", ignoreEndBlocked=True

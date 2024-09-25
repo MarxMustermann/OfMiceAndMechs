@@ -73,7 +73,7 @@ Press control-d to stop your character from moving.
         self.terrainLocation = (character.registers["HOMETx"],character.registers["HOMETy"],0)
         self.metaDescription = self.baseDescription+f" {self.cityLocation[0]}/{self.cityLocation[1]} on {self.terrainLocation[0]}/{self.terrainLocation[1]}"
 
-    def getNextStep(self, character=None, ignoreCommands=False):
+    def getNextStep(self, character=None, ignoreCommands=False, dryRun=True):
         if self.subQuests:
             return (None,None)
 
@@ -85,10 +85,38 @@ Press control-d to stop your character from moving.
                 items = character.container.getItemsByType("Shrine")
                 if items:
                     if character.getDistance(items[0].getPosition()) <= 1:
-                        return (None,None)
+                        if isinstance(character.container, src.rooms.Room):
+                            items = character.container.getItemsByType("Shrine")
+                            for item in items:
+                                if character.getDistance(item.getPosition()) > 1:
+                                    continue
+                                direction = "."
+                                if character.getPosition(offset=(1, 0, 0)) == item.getPosition():
+                                    direction = "d"
+                                if character.getPosition(offset=(-1, 0, 0)) == item.getPosition():
+                                    direction = "a"
+                                if character.getPosition(offset=(0, 1, 0)) == item.getPosition():
+                                    direction = "s"
+                                if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
+                                    direction = "w"
+                                return (None, ("J" + direction + "wj", "activate the Shrine"))
+                        else:
+                            charPos = (character.xPosition % 15, character.yPosition % 15, 0)
+                            if charPos in ((0, 7, 0), (0, 6, 0)):
+                                move = "d"
+                            if charPos in ((7, 14, 0), (6, 12, 0)):
+                                move = "w"
+                            if charPos in ((7, 0, 0), (6, 0, 0)):
+                                move = "s"
+                            if charPos in ((14, 7, 0), (12, 6, 0)):
+                                move = "a"
+                            if move:
+                                return (None, (move, "move into room"))
                     foundShrine = items[0]
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(),reason="get to a shrine",ignoreEndBlocked=True)
-                    return  ([quest],None)
+                    quest = src.quests.questMap["GoToPosition"](
+                        targetPosition=foundShrine.getPosition(), reason="get to a shrine", ignoreEndBlocked=True
+                    )
+                    return ([quest], None)
                 roomsToSearch = character.container.container.rooms
             else:
                 roomsToSearch = character.container.rooms
@@ -100,46 +128,23 @@ Press control-d to stop your character from moving.
                 foundShrine = items[0]
 
             if foundShrine:
-                quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=foundShrine.container.getPosition(),reason="get to a shrine")
-                return  ([quest],None)
+                quest = src.quests.questMap["GoToTile"](
+                    paranoid=self.paranoid, targetPosition=foundShrine.container.getPosition(), reason="get to a shrine"
+                )
+                return ([quest], None)
             else:
                 quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.terrainLocation)
-                return  ([quest],None)
+                return ([quest], None)
 
         if character.getBigPosition() != self.cityLocation:
-            quest = src.quests.questMap["GoToTile"](paranoid=self.paranoid,targetPosition=self.cityLocation,reason="go to the command center")
-            return  ([quest],None)
-        
-        if isinstance(character.container, src.rooms.Room):
-            items = character.container.getItemsByType("Shrine")
-            for item in items:
-                if character.getDistance(item.getPosition()) > 1:
-                    continue
-                direction = "."
-                if character.getPosition(offset=(1, 0, 0)) == item.getPosition():
-                    direction = "d"
-                if character.getPosition(offset=(-1, 0, 0)) == item.getPosition():
-                    direction = "a"
-                if character.getPosition(offset=(0, 1, 0)) == item.getPosition():
-                    direction = "s"
-                if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
-                    direction = "w"
-                return (None,("J" + direction + "wj","activate the Shrine"))
-        else:
-            charPos = (character.xPosition % 15, character.yPosition % 15, 0)
-            if charPos in ((0, 7, 0), (0, 6, 0)):
-                move = "d"
-            if charPos in ((7, 14, 0), (6, 12, 0)):
-                move = "w"
-            if charPos in ((7, 0, 0), (6, 0, 0)):
-                move = "s"
-            if charPos in ((14, 7, 0), (12, 6, 0)):
-                move = "a"
-            if move:
-                return (None,(move,"move into room"))
-        return (None,None)
-    
-    def getQuestMarkersTile(self,character):
+            quest = src.quests.questMap["GoToTile"](
+                paranoid=self.paranoid, targetPosition=self.cityLocation, reason="go to the command center"
+            )
+            return ([quest], None)
+
+        return (None, None)
+
+    def getQuestMarkersTile(self, character):
         result = super().getQuestMarkersTile(character)
         result.append(((self.cityLocation[0],self.cityLocation[1]),"target"))
         return result

@@ -835,18 +835,18 @@ class MetaQuestSequence(Quest):
 
 class MetaQuestSequenceV2(MetaQuestSequence, ABC):
     @abstractmethod
-    def getNextStep(self, character=None, ignoreCommands=False): ...
+    def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
 
     def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
+        nextStep = self.getNextStep(character,dryRun= dryRun)
         if nextStep is None or nextStep == (None, None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
+            return super().getSolvingCommandString(character, dryRun= dryRun)
+        return nextStep[1]
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
-        NextStep = self.getNextStep(character)
+        NextStep = self.getNextStep(character, dryRun=False)
         if NextStep is not None:
             (nextQuests, nextCommand) = NextStep
             if nextQuests:

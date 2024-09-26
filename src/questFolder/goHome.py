@@ -127,6 +127,7 @@ Press control-d to stop your character from moving.
             return ([quest], None)
 
         charPos = (character.xPosition % 15, character.yPosition % 15, 0)
+        move = ""
         if charPos in ((0, 7, 0), (0, 6, 0)):
             move = "d"
         if charPos in ((7, 14, 0), (6, 12, 0)):
@@ -135,7 +136,7 @@ Press control-d to stop your character from moving.
             move = "s"
         if charPos in ((14, 7, 0), (12, 6, 0)):
             move = "a"
-        if move:
+        if move != "":
             return (None, (move, "move into room"))
 
         return (None, None)

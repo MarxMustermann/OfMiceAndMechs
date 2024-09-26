@@ -38,7 +38,7 @@ Pick up and unbolt items that are in the way.
             return True
         return None
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
             if not self.path:
                 x = character.xPosition%15
@@ -55,8 +55,8 @@ Pick up and unbolt items that are in the way.
                     y += offset[1]
 
                     path.append((x,y,0))
-
-                self.path = path
+                if not dryRun:
+                    self.path = path
 
             if not self.path:
                 return (None,None)

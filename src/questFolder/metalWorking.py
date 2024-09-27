@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class MetalWorking(src.quests.MetaQuestSequence):
     type = "MetalWorking"
@@ -225,5 +225,63 @@ Press d to move the cursor and show the subquests description.
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        freeMetalWorkingBenches = []
+
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            for metalWorkingBench in room.getItemsByType("MetalWorkingBench"):
+                if not metalWorkingBench.readyToUse():
+                    continue
+
+                freeMetalWorkingBenches.append(metalWorkingBench)
+
+        random.shuffle(freeMetalWorkingBenches)
+        for metalWorkingBench in freeMetalWorkingBenches:
+            if metalWorkingBench.scheduledItems:
+                beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
+                beUsefull.addQuest(src.quests.questMap["MetalWorking"](amount=1,toProduce=metalWorkingBench.scheduledItems[0]))
+                beUsefull.idleCounter = 0
+                return True
+
+        if not freeMetalWorkingBenches:
+            return
+
+        itemsInStorage = {}
+        freeStorage = 0
+        for room in character.getTerrain().rooms:
+            for storageSlot in room.storageSlots:
+                items = room.getItemByPosition(storageSlot[0])
+                if not items:
+                    freeStorage += 1
+                for item in items:
+                    itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
+            for outputSlot in room.outputSlots:
+                items = room.getItemByPosition(outputSlot[0])
+                for item in items:
+                    itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
+
+        if freeStorage:
+
+            for room in character.getTerrain().rooms:
+                for buildSite in room.buildSites:
+                    if buildSite[1] == "Machine":
+                        continue
+                    if buildSite[1] in itemsInStorage:
+                        continue
+                    beUsefull.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
+                    newQuest = src.quests.questMap["MetalWorking"](toProduce=buildSite[1],amount=1,produceToInventory=False)
+                    beUsefull.addQuest(newQuest)
+                    return True
+
+            checkItems = [("RoomBuilder",1,1),("Door",1,1),("Wall",1,1),("Painter",1,1),("ScrapCompactor",1,1),("Case",1,1),("Frame",1,1),("Rod",1,1),("MaggotFermenter",1,1),("Sword",1,1),("Armor",1,1),("Bolt",10,5),("Vial",1,1),("CoalBurner",1,1),("BioPress",1,1),("GooProducer",1,1),("GooDispenser",1,1),("VialFiller",1,1),("Door",4,1),("Painter",2,1),("Wall",10,3),("ScrapCompactor",2,1)]
+            for checkItem in checkItems:
+                if itemsInStorage.get(checkItem[0],0) < checkItem[1]:
+                    beUsefull.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
+                    beUsefull.addQuest(src.quests.questMap["MetalWorking"](amount=checkItem[2],toProduce=checkItem[0]))
+                    beUsefull.idleCounter = 0
+                    return True
+            return None
+        return None
 
 src.quests.addType(MetalWorking)

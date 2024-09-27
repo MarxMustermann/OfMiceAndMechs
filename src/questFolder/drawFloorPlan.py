@@ -280,5 +280,114 @@ Draw a floor plan assigned to a room{reason}.
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if room.floorPlan:
+                beUsefull.addQuest(src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition()))
+                beUsefull.idleCounter = 0
+                return True
+
+        terrain = character.getTerrain()
+        numFreeStorage = 0
+        for room in terrain.rooms:
+            for storageSlot in room.storageSlots:
+                items = room.getItemByPosition(storageSlot[0])
+                if items:
+                    continue
+                if storageSlot[1] is not None:
+                    continue
+                if storageSlot[2] != {}:
+                    continue
+                numFreeStorage += 1
+
+        if numFreeStorage < 10:
+            cityPlaner = None
+            rooms = terrain.getRoomByPosition((7,7,0))
+            if rooms:
+                room = rooms[0]
+                cityPlaner = room.getItemByType("CityPlaner")
+
+            if cityPlaner:
+                for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+
+                    terrain = beUsefull.character.getTerrain()
+                    room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+                    counter = 1
+                    quests = []
+                    for y in (1,3,5,7,9,11):
+                        for x in range(1,12):
+                            if x == 6:
+                                continue
+                            if counter > 15:
+                                continue
+
+                            if room.getItemByPosition((x,y,0)):
+                                continue
+
+                            if (x,y,0) in room.walkingSpace:
+                                continue
+
+                            blockedSpot = False
+                            for storageSlot in room.storageSlots:
+                                if storageSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for outputSlot in room.outputSlots:
+                                if outputSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for inputSlot in room.inputSlots:
+                                if inputSlot[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            for buildSite in room.buildSites:
+                                if buildSite[0] == (x,y,0):
+                                    blockedSpot = True
+                                    break
+                            if blockedSpot:
+                                continue
+
+                            counter += 1
+                            quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
+                            quests.append(quest)
+
+                    for quest in reversed(quests):
+                        beUsefull.addQuest(quest)
+                    if quests:
+                        return True
+
+        # get storage stockpiles that have the filled tag
+        desireFilledStorageSlots = {}
+        for room in character.getTerrain().rooms:
+            if room.tag != "storage":
+                continue
+            for storageSlot in room.storageSlots:
+                if storageSlot[2].get("desiredState") == "filled":
+                    if storageSlot[1] not in desireFilledStorageSlots:
+                        desireFilledStorageSlots[storageSlot[1]] = 0
+                    desireFilledStorageSlots[storageSlot[1]] += 1
+
+
+        # check rules to add more to be filled storage slots
+        checkDesireFilledStorageSlots = [("Wall",10),("Door",5),("MetalBars",3)]
+        for checkDesireFilledStorageSlot in checkDesireFilledStorageSlots:
+            if desireFilledStorageSlots.get(checkDesireFilledStorageSlot[0],0) >= checkDesireFilledStorageSlot[1]:
+                continue
+
+            for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                if room.tag != "storage":
+                    continue
+                storageSlots = room.storageSlots[:]
+                random.shuffle(storageSlots)
+                for storageSlot in storageSlots:
+                    if storageSlot[1] or storageSlot[2]:
+                        continue
+                    if room.getItemByPosition(storageSlot[0]):
+                        continue
+                    quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="designate special storage for basic items",itemType=checkDesireFilledStorageSlot[0],extraInfo={"desiredState":"filled"})
+                    beUsefull.addQuest(quest)
+                    return True
+        return None
 
 src.quests.addType(DrawFloorPlan)

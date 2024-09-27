@@ -143,5 +143,29 @@ class FillFlask(src.quests.MetaQuestSequence):
                 return None
 
         return super().solver(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        foundGooDispenser = None
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            for gooDispenser in room.getItemsByType("GooDispenser"):
+                if not gooDispenser.charges:
+                    continue
+                foundGooDispenser = gooDispenser
+                break
+            if foundGooDispenser:
+                break
+
+        if foundGooDispenser:
+            beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
+            quest = src.quests.questMap["FillFlask"]()
+            beUsefull.addQuest(quest)
+            if not character.searchInventory("Flask"):
+                quest = src.quests.questMap["FetchItems"](toCollect="Flask",amount=1)
+                beUsefull.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            beUsefull.idleCounter = 0
+            return True
+        return None
 
 src.quests.addType(FillFlask)

@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class GatherVatMaggots(src.quests.MetaQuestSequence):
     type = "GatherVatMaggots"
@@ -137,6 +137,44 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
             return None
 
         self.fail(reason="no tree")
+        return None
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        terrain = character.getTerrain()
+        if terrain.alarm:
+            return None
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            emptyInputSlots = room.getEmptyInputslots(itemType="VatMaggot")
+            if emptyInputSlots:
+                for inputSlot in emptyInputSlots:
+                    if inputSlot[1] != "VatMaggot":
+                        continue
+
+                    source = None
+                    if room.sources:
+                        for potentialSource in random.sample(list(room.sources),len(room.sources)):
+                            if potentialSource[1] == "rawVatMaggots":
+                                source = potentialSource
+                                break
+
+                    if source is None and not character.getTerrain().forests:
+                        continue
+
+                    if beUsefull.triggerClearInventory(character,room):
+                        beUsefull.idleCounter = 0
+                        return True
+
+                    if source:
+                        pos = source[0]
+                    else:
+                        pos = random.choice(character.getTerrain().forests)
+
+                    beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock="VatMaggot"))
+                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
+                    beUsefull.addQuest(src.quests.questMap["GatherVatMaggots"](targetPosition=pos))
+                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
+                    beUsefull.idleCounter = 0
+                    return True
         return None
 
 src.quests.addType(GatherVatMaggots)

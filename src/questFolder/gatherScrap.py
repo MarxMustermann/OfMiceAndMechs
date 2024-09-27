@@ -186,5 +186,47 @@ Scrapfields are shown on the minimap as white ss"""]
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=(foundScrap[1][0]%15,foundScrap[1][1]%15,0),description="go to scrap",reason="go to scrap",ignoreEndBlocked=True)
         return ([quest],None)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        terrain = character.getTerrain()
+        try:
+            terrain.alarm
+        except:
+            terrain.alarm = False
+        if terrain.alarm:
+            return None
+
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            emptyInputSlots = room.getEmptyInputslots(itemType="Scrap")
+            if emptyInputSlots:
+                for inputSlot in emptyInputSlots:
+                    if inputSlot[1] != "Scrap":
+                        continue
+
+                    source = None
+                    if room.sources:
+                        for potentialSource in random.sample(list(room.sources),len(room.sources)):
+                            if potentialSource[1] == "rawScrap":
+                                source = potentialSource
+                                break
+
+                    if source is None and not character.getTerrain().scrapFields:
+                        continue
+                    if src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room):
+                        beUsefull.idleCounter = 0
+                        return True
+
+                    if source:
+                        pos = source[0]
+                    else:
+                        pos = random.choice(character.getTerrain().scrapFields)
+
+                    beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock="Scrap",reason="fill scrap inputs"))
+                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
+                    beUsefull.addQuest(src.quests.questMap["GatherScrap"](targetPosition=pos))
+                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
+                    beUsefull.idleCounter = 0
+                    return True
+        return None
 
 src.quests.addType(GatherScrap)

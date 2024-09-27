@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class MachinePlacing(src.quests.MetaQuestSequence):
     type = "MachinePlacing"
@@ -131,5 +131,187 @@ class MachinePlacing(src.quests.MetaQuestSequence):
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        terrain = character.getTerrain()
+        produceQuest = None
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if (not room.floorPlan) and room.buildSites:
+                checkedMaterial = set()
+                for buildSite in random.sample(room.buildSites,len(room.buildSites)):
+                    if buildSite[1] in checkedMaterial:
+                        continue
+                    checkedMaterial.add(buildSite[1])
 
+                    if buildSite[1] == "Machine":
+                        lastCheck = character.grievances.get(("SetUpMachine",buildSite[2]["toProduce"],"no machine"),0)
+                        if lastCheck+10 > src.gamestate.gamestate.tick:
+                            continue
+
+                    neededItem = buildSite[1]
+                    if buildSite[1] == "Command":
+                        neededItem = "Sheet"
+                    hasItem = False
+                    source = None
+                    if character.inventory and character.inventory[-1].type == neededItem:
+                        hasItem = True
+
+                    if buildSite[1] == "Machine":
+                        quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0])
+                        beUsefull.addQuest(quest)
+                        beUsefull.startWatching(quest,beUsefull.registerDutyFail,"failed")
+                        beUsefull.idleCounter = 0
+                        return True
+
+
+                    if not hasItem:
+                        for candidateSource in room.sources:
+                            if candidateSource[1] != neededItem:
+                                continue
+
+                            sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                            if not sourceRoom:
+                                continue
+
+                            sourceRoom = sourceRoom[0]
+                            if not sourceRoom.getNonEmptyOutputslots(itemType=neededItem):
+                                continue
+
+                            source = candidateSource
+                            break
+
+                        if not source:
+                            for checkRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
+                                if not checkRoom.getNonEmptyOutputslots(itemType=neededItem):
+                                    continue
+
+                                source = (checkRoom.getPosition(),neededItem)
+                                break
+
+                        if not source:
+                            continue
+                        """
+                        if not source:
+                            if buildSite[1] not in ("Machine","Command") and "metal working" in character.duties:
+                                self.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
+                                self.idleCounter = 0
+                                return True
+
+                            if buildSite[1] == "Machine":
+                                self.addQuest(src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0]))
+                                self.idleCounter = 0
+                                return True
+
+                            continue
+                        """
+
+                    if buildSite[1] != "Command":
+                        beUsefull.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
+                        beUsefull.idleCounter = 0
+                        return True
+
+                    if hasItem:
+                        if buildSite[1] == "Command":
+                            if "command" in buildSite[2]:
+                                beUsefull.addQuest(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
+                            else:
+                                beUsefull.addQuest(src.quests.questMap["RunCommand"](command="jjssj.\n"))
+                        beUsefull.addQuest(src.quests.questMap["RunCommand"](command="lcb"))
+                        beUsefull.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
+                        buildSite[2]["reservedTill"] = room.timeIndex+100
+                        beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                        #self.addQuest(produceQuest)
+                        beUsefull.idleCounter = 0
+                        return True
+                    elif source:
+                        if not character.getFreeInventorySpace() > 0:
+                            quest = src.quests.questMap["ClearInventory"]()
+                            beUsefull.addQuest(quest)
+                            quest.assignToCharacter(character)
+                            quest.activate()
+                            beUsefull.idleCounter = 0
+                            return True
+
+                        roomPos = (room.xPosition,room.yPosition)
+
+                        if source[0] != roomPos:
+                            beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
+                        beUsefull.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
+                        beUsefull.idleCounter = 0
+                        return True
+
+        # spawn city planer if there is none
+        terrain = character.getTerrain()
+        cityCore = terrain.getRoomByPosition((7,7,0))[0]
+        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
+
+        """
+        if not cityPlaner:
+            itemsInStorage = {}
+            freeStorage = 0
+            for room in character.getTerrain().rooms:
+                for storageSlot in room.storageSlots:
+                    items = room.getItemByPosition(storageSlot[0])
+                    if not items:
+                        freeStorage += 1
+                    for item in items:
+                        itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
+
+            if itemsInStorage.get("CityPlaner") or "metal working" in character.duties:
+                quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="have it to plan the city with")
+                self.addQuest(quest)
+                return True
+        """
+
+        # spawn basic items, if not there
+        foundPlacedItems = {}
+        foundPlacedMachines = {}
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            for item in room.itemsOnFloor:
+                if not item.bolted:
+                    continue
+
+                if item.type not in foundPlacedItems:
+                    foundPlacedItems[item.type] = []
+                foundPlacedItems[item.type].append(item)
+
+        if cityPlaner:
+            checkItems = ["ScrapCompactor","MaggotFermenter","BioPress","GooProducer"]
+            checkItems = ["ScrapCompactor"]
+            for checkItem in checkItems:
+                if checkItem in foundPlacedItems:
+                    continue
+
+                for generalPurposeRoom in cityPlaner.generalPurposeRooms:
+
+                    terrain = beUsefull.character.getTerrain()
+                    room = terrain.getRoomByPosition(generalPurposeRoom)[0]
+
+                    validTargetPosition = False
+                    terrain = character.getTerrain()
+                    counter = 0
+                    while not validTargetPosition and counter < 10:
+                        counter += 1
+                        targetPosition = (random.randint(3,9),random.randint(3,9),0)
+
+                        offsetBlocked = False
+                        for offset in [(-1,0,0),(1,0,0),(0,-1,0),(0,1,0),(0,0,0)]:
+                            checkPos = (targetPosition[0]+offset[0],targetPosition[1]+offset[1],0)
+                            if room.getItemByPosition(checkPos) or room.getPaintedByPosition(checkPos):
+                                offsetBlocked = True
+                                break
+
+                        if offsetBlocked:
+                            continue
+
+                        validTargetPosition = True
+                        break
+
+                    if validTargetPosition:
+                        quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="have at least one scrpa compactor")
+                        beUsefull.addQuest(quest)
+                        return True
+            return None
+        return None
 src.quests.addType(MachinePlacing)

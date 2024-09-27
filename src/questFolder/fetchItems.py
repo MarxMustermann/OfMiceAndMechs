@@ -328,5 +328,147 @@ Press d to move the cursor and show the subquests description.
         if nextStep == (None,None):
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
 
+        for trueInput in (True,False):
+            for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                checkedTypes = set()
+                emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
+
+                if emptyInputSlots:
+
+                    for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
+                        if inputSlot[1] is None:
+                            items = room.getItemByPosition(inputSlot[0])
+                            if items:
+                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
+                        if inputSlot[1] in checkedTypes:
+                            continue
+                        checkedTypes.add(inputSlot[1])
+
+                        hasItem = False
+                        if character.inventory and (character.inventory[-1].type == inputSlot[1] or not inputSlot[1]):
+                            hasItem = True
+
+                        if not hasItem:
+                            allowStorage = trueInput
+                            if inputSlot[2].get("desiredState") == "filled":
+                                allowStorage = True
+
+                            source = None
+                            for candidateSource in room.sources:
+                                if candidateSource[1] != inputSlot[1]:
+                                    continue
+
+                                sourceRoom = room.container.getRoomByPosition(candidateSource[0])
+                                if not sourceRoom:
+                                    continue
+
+                                sourceRoom = sourceRoom[0]
+                                if sourceRoom == character.container:
+                                    continue
+                                if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage):
+                                    continue
+
+                                source = candidateSource
+                                break
+
+                            if not source:
+                                for otherRoom in random.sample(character.getTerrain().rooms,len(character.getTerrain().rooms)):
+                                    if otherRoom == room:
+                                        continue
+
+                                    outputSlots = otherRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,)
+                                    if not outputSlots:
+                                        continue
+
+                                    source = (otherRoom.getPosition(),inputSlot[1],outputSlots)
+                                    break
+
+                            if not source:
+                                continue
+
+                        if not hasItem and beUsefull.triggerClearInventory(character,room):
+                            beUsefull.idleCounter = 0
+                            return True
+
+                        if trueInput:
+                            beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],reason="restock the room with the items fetched1",allowAny=True,targetPositionBig=room.getPosition()))
+                        else:
+                            if hasItem:
+                                beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,reason="restock the room with the items fetched2",allowAny=True,targetPositionBig=room.getPosition()))
+                                beUsefull.idleCounter = 0
+                                return True
+
+                        if not hasItem:
+                            if trueInput:
+                                amountToFetch = None
+                                if src.gamestate.gamestate.mainChar == character:
+                                    walkable = False
+                                    if inputSlot[1] in src.items.itemMap:
+                                        walkable = src.items.itemMap[inputSlot[1]]().walkable
+                                    amountNeeded = 0
+                                    for checkInputSlot in emptyInputSlots:
+                                        if checkInputSlot[1] == inputSlot[1]:
+                                            if walkable:
+                                                amountNeeded += 20-len(room.getItemByPosition(inputSlot[0]))
+                                            else:
+                                                amountNeeded += 1
+
+                                    if amountNeeded < character.maxInventorySpace:
+                                        amountToFetch = amountNeeded
+
+                                roomPos = (room.xPosition,room.yPosition,0)
+                                if source[0] != roomPos:
+                                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+
+                                beUsefull.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1], amount=amountToFetch))
+                                if source[0] != roomPos:
+                                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=(source[0])))
+
+                                if character.inventory and (not amountToFetch or amountToFetch > character.getFreeInventorySpace()):
+                                    beUsefull.addQuest(src.quests.questMap["ClearInventory"](returnToTile=False))
+                            else:
+                                roomPos = (room.xPosition,room.yPosition,0)
+                                if source[0] != roomPos:
+                                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=roomPos))
+
+                                beUsefull.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=source[0],targetPosition=source[2][0][0]))
+                                beUsefull.idleCounter = 0
+                                return True
+
+
+
+                        beUsefull.idleCounter = 0
+                        return True
+
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            checkedTypes = set()
+            for storageSlot in room.storageSlots:
+                if storageSlot[2].get("desiredState") != "filled":
+                    continue
+
+                items = room.getItemByPosition(storageSlot[0])
+                if items and (not items[0].walkable or len(items) >= 20):
+                    continue
+
+                for otherRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+                    if otherRoom == room:
+                        continue
+                    for checkStorageSlot in otherRoom.storageSlots:
+                        if checkStorageSlot[1] == storageSlot[1] or not checkStorageSlot[1]:
+                            items = otherRoom.getItemByPosition(checkStorageSlot[0])
+                            if checkStorageSlot[2].get("desiredState") == "filled":
+                                continue
+                            if not items or items[0].type != storageSlot[1]:
+                                continue
+
+                            beUsefull.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
+                            beUsefull.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=otherRoom.getPosition(),targetPosition=checkStorageSlot[0],reason="fill a storage stockpile designated to be filled",abortOnfullInventory=True))
+                            if character.inventory:
+                                beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
+                            beUsefull.idleCounter = 0
+                            return True
+        return None
 src.quests.addType(FetchItems)

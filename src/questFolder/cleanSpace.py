@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
@@ -145,5 +145,74 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        if len(character.inventory):
+            quest = src.quests.questMap["ClearInventory"]()
+            beUsefull.addQuest(quest)
+            beUsefull.idleCounter = 0
+            return True
 
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            foundEnemy = False
+            for otherChar in room.characters:
+                if not otherChar.faction == character.faction:
+                    foundEnemy = True
+                    break
+            if foundEnemy:
+                continue
+
+            if not room.floorPlan:
+                for position in random.sample(list(room.walkingSpace),len(room.walkingSpace)):
+                    items = room.getItemByPosition(position)
+
+                    if not items:
+                        continue
+                    if items[0].bolted:
+                        continue
+
+                    if character.getFreeInventorySpace() <= 0:
+                        quest = src.quests.questMap["ClearInventory"]()
+                        beUsefull.addQuest(quest)
+                        beUsefull.idleCounter = 0
+                        return True
+
+                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    beUsefull.addQuest(quest)
+                    quest.assignToCharacter(character)
+                    quest.activate()
+                    beUsefull.idleCounter = 0
+                    return True
+
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            foundEnemy = False
+            for otherChar in room.characters:
+                if not otherChar.faction == character:
+                    foundEnemy = True
+                    break
+            if foundEnemy:
+                continue
+
+            slots = room.inputSlots+room.outputSlots+room.storageSlots
+            random.shuffle(slots)
+            for slot in slots:
+                if not slot[1]:
+                    continue
+                items = room.getItemByPosition(slot[0])
+                if not items:
+                    continue
+
+                misplacmentFound = False
+                for item in items:
+                    if not item.type == slot[1]:
+                        misplacmentFound = True
+
+                if not misplacmentFound:
+                    continue
+
+                beUsefull.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=slot[0]))
+                beUsefull.idleCounter = 0
+                return True
+
+        return None
 src.quests.addType(CleanSpace)

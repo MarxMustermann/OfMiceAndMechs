@@ -129,12 +129,13 @@ operate the machine on {self.targetPosition}{reason}.
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         terrain = character.getTerrain()
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
-            beUsefull.shuffle(items)
+            random.shuffle(items)
             for item in items:
                 #if not item.bolted:
                 #    continue

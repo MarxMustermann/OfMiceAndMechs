@@ -78,6 +78,7 @@ Press JH to auto heal.
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
+        self.fail("no way to heal")
         return (None,None)
 
     def triggerCompletionCheck(self,character=None):

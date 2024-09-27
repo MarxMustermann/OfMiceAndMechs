@@ -71,6 +71,8 @@ Pick up and unbolt items that are in the way.
 
             if path[0] == (x,y,0):
                 path.remove((x,y,0))
+                if not dryRun:
+                    self.path = path
 
             offset = None
             if path:

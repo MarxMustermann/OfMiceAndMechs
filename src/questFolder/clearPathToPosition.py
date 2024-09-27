@@ -40,7 +40,9 @@ Pick up and unbolt items that are in the way.
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
-            if not self.path:
+            path = self.path
+
+            if not path:
                 x = character.xPosition%15
                 y = character.yPosition%15
                 path = []
@@ -55,31 +57,35 @@ Pick up and unbolt items that are in the way.
                     y += offset[1]
 
                     path.append((x,y,0))
+
                 if not dryRun:
                     self.path = path
 
-            if not self.path:
+            if not path:
                 return (None,None)
+
+            path = path[:]
 
             x = character.xPosition%15
             y = character.yPosition%15
 
-            if self.path[0] == (x,y,0):
-                self.path.remove((x,y,0))
+            if path[0] == (x,y,0):
+                path.remove((x,y,0))
 
             offset = None
-            if self.path:
-                if (x-1,y  ,0) == self.path[0]:
+            if path:
+                if (x-1,y  ,0) == path[0]:
                     offset = (-1, 0,0)
-                if (x+1,y  ,0) == self.path[0]:
+                if (x+1,y  ,0) == path[0]:
                     offset = ( 1, 0,0)
-                if (x  ,y-1,0) == self.path[0]:
+                if (x  ,y-1,0) == path[0]:
                     offset = ( 0,-1,0)
-                if (x  ,y+1,0) == self.path[0]:
+                if (x  ,y+1,0) == path[0]:
                     offset = ( 0, 1,0)
 
             if not offset:
-                self.path = None
+                if not dryRun:
+                    self.path = None
                 return (None,None)
 
             if not character.container.getPositionWalkable(character.getPosition(offset=offset)):

@@ -2945,28 +2945,13 @@ but they are likely to explode when disturbed.
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
     def roguelike_baseLeaderDeath(self,extraParam):
+        text = ""
+
         character = extraParam["character"]
         faction = character.faction
-        if character == src.gamestate.gamestate.mainChar:
-            text = f"You died, try keeping your HP over 0"
-            src.interaction.showInterruptText(text)
 
         homePos = (character.registers["HOMETx"],character.registers["HOMETy"],0)
         homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
-
-        if character == src.gamestate.gamestate.mainChar:
-            filledStatues = []
-            for room in homeTerrain.rooms:
-                for item in room.itemsOnFloor:
-                    if not item.type == "GlassStatue":
-                        continue
-                    if not item.hasItem:
-                        continue
-                    filledStatues.append(item)
-
-            if filledStatues:
-                text = f"Your faction controls {len(filledStatues)} glass hearts"
-                src.interaction.showInterruptText(text)
 
         candidates = homeTerrain.characters[:]
         for room in homeTerrain.rooms:
@@ -3007,9 +2992,10 @@ but they are likely to explode when disturbed.
             candidate.addListener(self.roguelike_baseLeaderDeath,"died_pre")
 
             if character == src.gamestate.gamestate.mainChar:
-                text = f"You are respawned as one of the NPCs in your base."
-                if self.difficulty == "tutorial":
-                    text += "\nSince you are playing on easy your character stats are transfered to that NPC"
+                text += f"The last bit of your life force leaves and you die.\n"
+                text += f"But something else leaves your implant as well.\n"
+                text += f"It takes over another clone from your base.\n"
+                text += f"\n- press enter to respawn -"
                 src.interaction.showInterruptText(text)
                 src.gamestate.gamestate.mainChar = candidate
 
@@ -3025,6 +3011,8 @@ but they are likely to explode when disturbed.
                 combatMenu.sidebared = True
                 candidate.rememberedMenu.insert(0,combatMenu)
                 candidate.disableCommandsOnPlus = True
+
+            candidate.
 
             candidate.addListener(self.enteredRoom,"entered room")
             candidate.addListener(self.itemPickedUp,"itemPickedUp")
@@ -3161,6 +3149,41 @@ but they are likely to explode when disturbed.
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 return
 
+        # count the number of enemies/allies
+        npcCount = 0
+        enemyCount = 0
+        terrain = mainChar.getTerrain()
+        for character in terrain.characters:
+            if character.faction != "city #1":
+                enemyCount += 1
+            else:
+                npcCount += 1
+        for room in terrain.rooms:
+            for character in room.characters:
+                if character.faction != "city #1":
+                    enemyCount += 1
+                else:
+                    npcCount += 1
+
+        # TODO: kill hunters
+
+        # ensure there is a backup NPC
+        if npcCount < 2:
+            terrain = character.getTerrain()
+            items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))
+            for item in items:
+                if item.type != "GooFlask":
+                    continue
+                if item.uses < 100:
+                    continue
+
+                quest = src.quests.questMap["SpawnClone"]()
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
         # check for spider lairs
         terrain = mainChar.getTerrain()
         spider_lairs_found = []
@@ -3186,24 +3209,7 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        # count the number of enemies/allies
-        npcCount = 0
-        enemyCount = 0
-        terrain = mainChar.getTerrain()
-        for character in terrain.characters:
-            if character.faction != "city #1":
-                enemyCount += 1
-            else:
-                npcCount += 1
-        for room in terrain.rooms:
-            for character in room.characters:
-                if character.faction != "city #1":
-                    enemyCount += 1
-                else:
-                    npcCount += 1
-
         # remove all enemies from terrain
-        # ? should that only mean hunters ?
         if enemyCount > 0:
             quest = src.quests.questMap["ClearTerrain"]()
             quest.assignToCharacter(mainChar)
@@ -3211,23 +3217,6 @@ but they are likely to explode when disturbed.
             mainChar.assignQuest(quest,active=True)
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
-
-        # ensure there is a backup NPC
-        if npcCount < 2:
-            terrain = character.getTerrain()
-            items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))
-            for item in items:
-                if item.type != "GooFlask":
-                    continue
-                if item.uses < 100:
-                    continue
-
-                quest = src.quests.questMap["SpawnClone"]()
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
-                return
 
         # get promoted to base commander
         if mainChar.rank > 2:

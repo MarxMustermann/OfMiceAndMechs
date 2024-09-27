@@ -257,71 +257,6 @@ Press d to move the cursor and show the subquests description.
         return None
 
 
-    def checkTriggerCloneSpawning(self,character,currentRoom):
-        terrain = character.getTerrain()
-
-        foundShrine = None
-        for room in self.getRandomPriotisedRooms(character,currentRoom):
-            for checkShrine in room.getItemsByType("Shrine"):
-                if checkShrine.god != 1:
-                    continue
-                foundShrine = checkShrine
-
-        if not foundShrine:
-            return False
-
-        # gather npc duties
-        npcDuties = {}
-        for otherChar in terrain.characters:
-            if not otherChar.burnedIn:
-                continue
-            for duty in otherChar.duties:
-                if otherChar == character:
-                    continue
-                if duty not in npcDuties:
-                    npcDuties[duty] = []
-                npcDuties[duty].append(otherChar)
-        for checkRoom in character.getTerrain().rooms:
-            for otherChar in checkRoom.characters:
-                if not otherChar.burnedIn:
-                    continue
-                if otherChar == character:
-                    continue
-                for duty in otherChar.duties:
-                    if duty not in npcDuties:
-                        npcDuties[duty] = []
-                    npcDuties[duty].append(otherChar)
-
-        chargesUsed = 0
-        quests = []
-        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
-
-            if duty not in npcDuties:
-                cost = foundShrine.getBurnedInCharacterSpawningCost(character)
-                cost *= foundShrine.get_glass_heart_rebate()
-                foundFlask = None
-                for item in character.inventory:
-                    if item.type != "GooFlask":
-                        continue
-                    if item.uses < 100:
-                        continue
-                    foundFlask = item
-                if foundFlask:
-                    cost /= 2
-                cost += chargesUsed
-
-                if character.getTerrain().mana >= cost:
-                    quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
-                    chargesUsed += 10
-                    quests.append(quest)
-                    break
-
-        for quest in reversed(quests):
-            self.addQuest(quest)
-        if quests:
-            return True
-        return None
-
     def getRandomPriotisedRooms(self,character,currentRoom):
         prioSortedRooms = {}
 
@@ -358,129 +293,6 @@ Press d to move the cursor and show the subquests description.
                 self.idleCounter = 0
                 return
 
-
-    def checkTriggerHauling(self,character,currentRoom):
-        checkedTypes = set()
-        rooms = character.getTerrain().rooms[:]
-        random.shuffle(rooms)
-
-        for trueInput in (True,False):
-            for room in self.getRandomPriotisedRooms(character,currentRoom):
-                emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
-                random.shuffle(emptyInputSlots)
-
-                if emptyInputSlots:
-                    for inputSlot in emptyInputSlots:
-                        if inputSlot[1] is None:
-                            items = room.getItemByPosition(inputSlot[0])
-                            if items:
-                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
-                        if inputSlot[1] in checkedTypes:
-                            continue
-                        checkedTypes.add(inputSlot[1])
-
-                        hasItem = False
-                        if character.inventory and (character.inventory[-1].type == inputSlot[1] or not inputSlot[1]):
-                            hasItem = True
-
-                        if not hasItem:
-                            allowStorage = trueInput
-                            if inputSlot[2].get("desiredState") == "filled":
-                                allowStorage = True
-                            sources = room.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,allowDesiredFilled=trueInput)
-                            if not sources:
-                                continue
-
-                        reason = "finish hauling"
-                        if inputSlot[1]:
-                            self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason,targetPosition=inputSlot[0]))
-                            if character.container != room:
-                                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
-                        else:
-                            if hasItem:
-                                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason,targetPosition=inputSlot[0]))
-                                if character.container != room:
-                                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
-                                self.idleCounter = 0
-                                return True
-
-                        if not hasItem:
-                            if trueInput:
-                                self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
-                                self.idleCounter = 0
-                                return True
-                            else:
-                                self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0]))
-                                self.idleCounter = 0
-                                return True
-
-        for trueInput in (True,False):
-            for room in self.getRandomPriotisedRooms(character,currentRoom):
-                emptyInputSlots = room.getEmptyInputslots(allowStorage=(not trueInput),allowAny=True)
-
-                if emptyInputSlots:
-                    for inputSlot in random.sample(list(emptyInputSlots),len(emptyInputSlots)):
-                        if inputSlot[1] is None:
-                            items = room.getItemByPosition(inputSlot[0])
-                            if items:
-                                inputSlot = (inputSlot[0],items[0].type,inputSlot[2])
-                        if inputSlot[1] in checkedTypes:
-                            continue
-                        checkedTypes.add(inputSlot[1])
-
-                        hasItem = False
-                        if character.inventory and (character.inventory[-1].type == inputSlot[1] or not inputSlot[1]):
-                            hasItem = True
-
-                        if not hasItem:
-                            sources = room.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=trueInput)
-                            if not sources:
-                                continue
-
-                        reason = "finish hauling"
-                        if inputSlot[1]:
-                            self.addQuest(src.quests.questMap["RestockRoom"](toRestock=inputSlot[1],allowAny=True,reason=reason))
-                        else:
-                            if hasItem:
-                                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type,allowAny=True,reason=reason))
-                                self.idleCounter = 0
-                                return True
-
-
-                        if not hasItem:
-                            if trueInput:
-                                self.addQuest(src.quests.questMap["FetchItems"](toCollect=inputSlot[1]))
-                                self.idleCounter = 0
-                                return True
-                            else:
-                                self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=sources[0][0]))
-                                self.idleCounter = 0
-                                return True
-
-        for room in self.getRandomPriotisedRooms(character,currentRoom):
-            for storageSlot in room.storageSlots:
-                if storageSlot[2].get("desiredState") != "filled":
-                    continue
-
-                items = room.getItemByPosition(storageSlot[0])
-                if items and (not items[0].walkable or len(items) >= 20):
-                    continue
-                if items and items[0].type != storageSlot[1]:
-                    continue
-
-                for checkStorageSlot in room.storageSlots:
-                    if checkStorageSlot[1] == storageSlot[1] or not checkStorageSlot[1]:
-                        items = room.getItemByPosition(checkStorageSlot[0])
-                        if checkStorageSlot[2].get("desiredState") == "filled":
-                            continue
-                        if not items or items[0].type != storageSlot[1] or not items[0].walkable:
-                            continue
-
-                        self.addQuest(src.quests.questMap["RestockRoom"](targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],allowAny=True,toRestock=items[0].type,reason="fill a storage stockpile designated to be filled"))
-                        self.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=checkStorageSlot[0],reason="to get the items to fill a storage stockpile designated to be filled",abortOnfullInventory=True))
-                        self.idleCounter = 0
-                        return True
-        return None
 
     def registerDutyFail(self,extraParam):
         if isinstance(extraParam["quest"],src.quests.questMap["SetUpMachine"]):
@@ -800,7 +612,7 @@ Press d to move the cursor and show the subquests description.
                     if src.quests.questMap["CleanSpace"].generateDutyQuest(self,character,room):
                         return
                 case "hauling":
-                    if self.checkTriggerHauling(character,room):
+                    if src.quests.questMap["RestockRoom"].generateDutyQuest(self,character,room):
                         return
                 case "resource fetching":
                     if src.quests.questMap["FetchItems"].generateDutyQuest(self,character,room):
@@ -830,7 +642,7 @@ Press d to move the cursor and show the subquests description.
                     if src.quests.questMap["AssignFloorPlan"].generateDutyQuest(self,character,room):
                         return
                 case "clone spawning":
-                    if self.checkTriggerCloneSpawning(character,room):
+                    if src.quests.questMap["GetEpochReward"].generateDutyQuest(self,character,room):
                         return
                 case "questing":
                     if self.checkTriggerQuesting(character,room):

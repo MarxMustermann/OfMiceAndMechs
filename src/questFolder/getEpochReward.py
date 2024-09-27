@@ -239,6 +239,70 @@ This will allow you to focus on other tasks.
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        terrain = character.getTerrain()
 
+        foundShrine = None
+        for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            for checkShrine in room.getItemsByType("Shrine"):
+                if checkShrine.god != 1:
+                    continue
+                foundShrine = checkShrine
+
+        if not foundShrine:
+            return False
+
+        # gather npc duties
+        npcDuties = {}
+        for otherChar in terrain.characters:
+            if not otherChar.burnedIn:
+                continue
+            for duty in otherChar.duties:
+                if otherChar == character:
+                    continue
+                if duty not in npcDuties:
+                    npcDuties[duty] = []
+                npcDuties[duty].append(otherChar)
+        for checkRoom in character.getTerrain().rooms:
+            for otherChar in checkRoom.characters:
+                if not otherChar.burnedIn:
+                    continue
+                if otherChar == character:
+                    continue
+                for duty in otherChar.duties:
+                    if duty not in npcDuties:
+                        npcDuties[duty] = []
+                    npcDuties[duty].append(otherChar)
+
+        chargesUsed = 0
+        quests = []
+        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
+
+            if duty not in npcDuties:
+                cost = foundShrine.getBurnedInCharacterSpawningCost(character)
+                cost *= foundShrine.get_glass_heart_rebate()
+                foundFlask = None
+                for item in character.inventory:
+                    if item.type != "GooFlask":
+                        continue
+                    if item.uses < 100:
+                        continue
+                    foundFlask = item
+                if foundFlask:
+                    cost /= 2
+                cost += chargesUsed
+
+                if character.getTerrain().mana >= cost:
+                    quest = src.quests.questMap["GetEpochReward"](rewardType="spawn "+duty+" NPC",reason="spawn another clone to help you out")
+                    chargesUsed += 10
+                    quests.append(quest)
+                    break
+
+        for quest in reversed(quests):
+            beUsefull.addQuest(quest)
+        if quests:
+            return True
+        return None
 
 src.quests.addType(GetEpochReward)

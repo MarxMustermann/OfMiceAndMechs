@@ -3011,6 +3011,8 @@ but they are likely to explode when disturbed.
                 combatMenu.sidebared = True
                 candidate.rememberedMenu.insert(0,combatMenu)
                 candidate.disableCommandsOnPlus = True
+                candidate.autoExpandQuests = True
+                candidate.personality["autoCounterAttack"] = True
 
             for quest in candidate.quests[:]:
                 quest.fail("aborted")

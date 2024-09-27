@@ -3017,6 +3017,7 @@ but they are likely to explode when disturbed.
             candidate.quests = []
             self.reachImplant()
             self.activeStory["mainChar"] = candidate
+            candidate.rank = 6
 
             candidate.addListener(self.enteredRoom,"entered room")
             candidate.addListener(self.itemPickedUp,"itemPickedUp")

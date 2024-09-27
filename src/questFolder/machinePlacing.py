@@ -131,6 +131,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         terrain = character.getTerrain()
@@ -314,4 +315,5 @@ class MachinePlacing(src.quests.MetaQuestSequence):
                         return True
             return None
         return None
+
 src.quests.addType(MachinePlacing)

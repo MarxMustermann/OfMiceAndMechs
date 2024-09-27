@@ -50,6 +50,7 @@ import src.questFolder.setUpMachine
 import src.questFolder.vanish
 import src.questFolder.waitQuest
 import src.questFolder.manufacture
+import src.questFolder.machinePlacing
 import src.questFolder.refillPersonalFlask
 import src.questFolder.story.escapeLab
 import src.questFolder.story.treatWounds

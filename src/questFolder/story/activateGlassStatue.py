@@ -44,6 +44,20 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
         if self.subQuests:
             return (None,None)
 
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+
+            targetIndex = 4
+
+            offset = targetIndex-submenue.selectionIndex
+            command = ""
+            if offset > 0:
+                command += "s"*offset
+            else:
+                command += "w"*(-offset)
+            command += "j"
+            return (None,(command,"teleport to dungeon"))
+
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
 

@@ -3012,7 +3012,11 @@ but they are likely to explode when disturbed.
                 candidate.rememberedMenu.insert(0,combatMenu)
                 candidate.disableCommandsOnPlus = True
 
-            candidate.
+            for quest in candidate.quests[:]:
+                quest.fail("aborted")
+            candidate.quests = []
+            self.reachImplant()
+            self.activeStory["mainChar"] = candidate
 
             candidate.addListener(self.enteredRoom,"entered room")
             candidate.addListener(self.itemPickedUp,"itemPickedUp")

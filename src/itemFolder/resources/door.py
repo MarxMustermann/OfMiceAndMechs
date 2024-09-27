@@ -35,6 +35,10 @@ class Door(src.items.Item):
             options["x"] = ("block door", self.blockDoor)
         else:
             options["x"] = ("unblock door", self.unblockDoor)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
         return options
 
     def blockDoor(self,character):
@@ -42,6 +46,16 @@ class Door(src.items.Item):
 
     def unblockDoor(self,character):
         self.walkable = True
+
+    def boltAction(self,character):
+        self.bolted = True
+        character.addMessage("you bolt down the Door")
+        character.changed("boltedItem",{"character":character,"item":self})
+
+    def unboltAction(self,character):
+        self.bolted = False
+        character.addMessage("you unbolt the Door")
+        character.changed("unboltedItem",{"character":character,"item":self})
 
     def render(self):
         """

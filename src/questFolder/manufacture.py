@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class Manufacture(src.quests.MetaQuestSequence):
     type = "Manufacture"
@@ -132,6 +132,58 @@ use the manufacturing table on {self.targetPosition}{reason}.
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        terrain = character.getTerrain()
+        for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            items = checkRoom.itemsOnFloor[:]
+            random.shuffle(items)
+            for item in items:
+                if not item.bolted:
+                    continue
+                if item.type not in ("ManufacturingTable",):
+                    continue
+                if not item.readyToUse():
+                    continue
+                if not item.isOutputEmpty():
+                    continue
+
+                if checkRoom == character.container:
+                    quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
+                    beUsefull.addQuest(quest)
+                    quest.activate()
+                    beUsefull.idleCounter = 0
+                    return True
+                else:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
+                    beUsefull.addQuest(quest)
+                    quest.activate()
+                    beUsefull.idleCounter = 0
+                    return True
+        for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            items = checkRoom.itemsOnFloor[:]
+            random.shuffle(items)
+            for item in items:
+                if not item.bolted:
+                    continue
+                if item.type not in ("ManufacturingTable",):
+                    continue
+                if not item.readyToUse():
+                    continue
+
+                if checkRoom == character.container:
+                    quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
+                    beUsefull.addQuest(quest)
+                    quest.activate()
+                    beUsefull.idleCounter = 0
+                    return True
+                else:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
+                    beUsefull.addQuest(quest)
+                    quest.activate()
+                    beUsefull.idleCounter = 0
+                    return True
+        return None    
 
 
 src.quests.addType(Manufacture)

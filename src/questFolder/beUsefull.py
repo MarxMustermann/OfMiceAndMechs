@@ -524,43 +524,6 @@ Press d to move the cursor and show the subquests description.
             return True
         return None
 
-    def triggerClearInventory(self,character,room):
-        if len(character.inventory) > 9:
-            self.addQuest(src.quests.questMap["ClearInventory"]())
-            self.idleCounter = 0
-            return True
-        # clear inventory local
-        if len(character.inventory) > 1 and character.container.isRoom:
-            emptyInputSlots = character.container.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
-            if emptyInputSlots:
-                self.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True,reason="clear your inventory"))
-                self.idleCounter = 0
-                return True
-
-        # go to garbage stockpile and unload
-        if len(character.inventory) > 6:
-            if "HOMEx" not in character.registers:
-                self.idleCounter = 0
-                return True
-            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
-            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                return False
-
-            quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.idleCounter = 0
-            return True
-        if len(character.inventory) > 9:
-            quest = src.quests.questMap["ClearInventory"]()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.idleCounter = 0
-            return True
-        return False
-
     def checkTriggerQuesting(self,character,room):
         if character.rank and character.rank != 1:
             terrainPos = (character.registers["HOMETx"],character.registers["HOMETy"])

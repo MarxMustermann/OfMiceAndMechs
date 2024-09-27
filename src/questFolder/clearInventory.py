@@ -157,5 +157,41 @@ To see your items open the your inventory by pressing i."""
         if "returnToTile" in parameters and "returnToTile" in parameters:
             self.returnToTile = parameters["returnToTile"]
         return super().setParameters(parameters)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,room):
+        if len(character.inventory) > 9:
+            beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
+            beUsefull.idleCounter = 0
+            return True
+        # clear inventory local
+        if len(character.inventory) > 1 and character.container.isRoom:
+            emptyInputSlots = character.container.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
+            if emptyInputSlots:
+                beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True,reason="clear your inventory"))
+                beUsefull.idleCounter = 0
+                return True
 
+        # go to garbage stockpile and unload
+        if len(character.inventory) > 6:
+            if "HOMEx" not in character.registers:
+                beUsefull.idleCounter = 0
+                return True
+            homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
+            if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
+                return False
+
+            quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
+            beUsefull.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            beUsefull.idleCounter = 0
+            return True
+        if len(character.inventory) > 9:
+            quest = src.quests.questMap["ClearInventory"]()
+            beUsefull.addQuest(quest)
+            quest.assignToCharacter(character)
+            quest.activate()
+            beUsefull.idleCounter = 0
+            return True
+        return False
 src.quests.addType(ClearInventory)

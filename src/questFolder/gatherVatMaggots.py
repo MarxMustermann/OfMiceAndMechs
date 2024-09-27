@@ -160,7 +160,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                     if source is None and not character.getTerrain().forests:
                         continue
 
-                    if beUsefull.triggerClearInventory(character,room):
+                    if src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room):
                         beUsefull.idleCounter = 0
                         return True
 

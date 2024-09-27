@@ -389,7 +389,7 @@ Press d to move the cursor and show the subquests description.
                             if not source:
                                 continue
 
-                        if not hasItem and beUsefull.triggerClearInventory(character,room):
+                        if not hasItem and src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room):
                             beUsefull.idleCounter = 0
                             return True
 

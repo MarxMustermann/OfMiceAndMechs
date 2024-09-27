@@ -253,10 +253,6 @@ Press d to move the cursor and show the subquests description.
 
         super().solver(character)
 
-    def checkTriggerTurretLoading(self,character,room):
-        return None
-
-
     def getRandomPriotisedRooms(self,character,currentRoom):
         prioSortedRooms = {}
 

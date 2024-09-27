@@ -10199,7 +10199,7 @@ def advanceChar(char,render=True):
             rerender = True
             char.runCommandString("+")
             skipNextRender = False
-        elif char.autoExpandQuests and not (char.getActiveQuest().getSolvingCommandString(char)):
+        elif char.autoExpandQuests and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
             char.runCommandString("+",nativeKey=True)
         else:
             if (char == src.gamestate.gamestate.mainChar):

@@ -276,20 +276,6 @@ Press d to move the cursor and show the subquests description.
 
         return resultList
 
-
-    def checkTriggerScratchChecking(self,character,room):
-        for item in random.sample(list(room.itemsOnFloor),len(room.itemsOnFloor)):
-            if not item.bolted:
-                continue
-            if item.type == "ScratchPlate":
-                if item.hasScratch():
-                    continue
-                self.addQuest(src.quests.questMap["RunCommand"](command="jsj"))
-                self.addQuest(src.quests.questMap["GoToPosition"](targetPosition=item.getPosition()))
-                self.idleCounter = 0
-                return
-
-
     def registerDutyFail(self,extraParam):
         if isinstance(extraParam["quest"],src.quests.questMap["SetUpMachine"]):
             grievance = ("SetUpMachine",extraParam["quest"].itemType,"no machine")
@@ -330,131 +316,6 @@ Press d to move the cursor and show the subquests description.
             self.addQuest(src.quests.questMap["Eat"]())
             self.idleCounter = 0
             return True
-        return None
-
-    def checkTriggerQuesting(self,character,room):
-        if character.rank and character.rank != 1:
-            terrainPos = (character.registers["HOMETx"],character.registers["HOMETy"])
-
-            foundMissingHeart = False
-            for god in src.gamestate.gamestate.gods.values():
-                if god["lastHeartPos"] == terrainPos:
-                    continue
-                foundMissingHeart = True
-
-            if not foundMissingHeart:
-                quest = src.quests.questMap["Ascend"]()
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                self.idleCounter = 0
-                return True
-
-        if not character.weapon or not character.armor:
-            quest = src.quests.questMap["Equip"]()
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.idleCounter = 0
-            return True
-
-        if character.health == character.maxHealth:
-
-            terrain = character.getTerrain()
-            toCheck = terrain.characters[:]
-            for room in terrain.rooms:
-                toCheck.extend(room.characters)
-
-            numNPCs = 0
-            numNPCsWithSameDuties = {}
-            for duty in character.duties:
-                numNPCsWithSameDuties[duty] = 0
-            foundEnemies = []
-            for char in toCheck:
-                if char.faction == character.faction:
-                    if len(char.duties) > 1:
-                        continue
-                    if char == character:
-                        continue
-                    numNPCs += 1
-                    for duty in character.duties:
-                        if duty in char.duties:
-                            numNPCsWithSameDuties[duty] += 1
-                else:
-                    if not char.dead:
-                        foundEnemies.append(char)
-
-            if "questing" not in character.duties:
-                for duty in character.duties:
-                    if not numNPCsWithSameDuties[duty] > 0:
-                        return None
-
-            if numNPCs < 5:
-                return None
-
-            if foundEnemies:
-                random.shuffle(foundEnemies)
-                for enemy in foundEnemies:
-                    weight = character.weightAttack(enemy.getBigPosition())
-
-                    quest = src.quests.questMap["ClearInventory"]()
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-
-                    quest = src.quests.questMap["ScavengeTile"](targetPosition=enemy.getBigPosition(),endOnFullInventory=True)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-
-                    quest = src.quests.questMap["SecureTile"](toSecure=enemy.getBigPosition(),endWhenCleared=True)
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-
-                    quest = src.quests.questMap["Equip"]()
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    self.idleCounter = 0
-                    return True
-
-            if foundEnemies:
-                grievance = ("fighting","bad equipment")
-                self.character.addGrievance(grievance)
-                return None
-
-            if numNPCs < 9:
-                return None
-
-            hasTemple = False
-            for room in terrain.rooms:
-                if room.tag != "temple":
-                    continue
-                hasTemple = True
-
-            if hasTemple:
-                target = None
-                for (godId,god) in src.gamestate.gamestate.gods.items():
-                    if god["home"] != god["lastHeartPos"]:
-                        continue
-                    target = (godId,god)
-                    break
-
-                if target:
-                    pos = target[1]["lastHeartPos"]
-
-                    if not (character.registers["HOMETx"] == pos[0] and character.registers["HOMETy"] == pos[1]):
-                        quest = src.quests.questMap["DelveDungeon"](targetTerrain=pos)
-                        self.addQuest(quest)
-                        quest.assignToCharacter(character)
-
-                        quest = src.quests.questMap["Equip"]()
-                        self.addQuest(quest)
-                        quest.assignToCharacter(character)
-                        quest.activate()
-                        self.idleCounter = 0
-                        return True
-                    return None
-                return None
-            return None
         return None
 
     def generateSubquests(self,character):
@@ -601,9 +462,6 @@ Press d to move the cursor and show the subquests description.
                 case "maggot gathering":
                     if src.quests.questMap["GatherVatMaggots"].generateDutyQuest(self,character,room):
                         return
-                case "scratch checking":
-                    if self.checkTriggerScratchChecking(character,room):
-                        return
                 case "cleaning":
                     if src.quests.questMap["CleanSpace"].generateDutyQuest(self,character,room):
                         return
@@ -640,9 +498,6 @@ Press d to move the cursor and show the subquests description.
                 case "clone spawning":
                     if src.quests.questMap["GetEpochReward"].generateDutyQuest(self,character,room):
                         return
-                case "questing":
-                    if self.checkTriggerQuesting(character,room):
-                        return
                 case "praying":
                     if src.quests.questMap["Pray"].generateDutyQuest(self,character,room):
                         return
@@ -660,9 +515,6 @@ Press d to move the cursor and show the subquests description.
                     self.idleCounter += 1
                     self.addQuest(quest)
                     return
-                if self.idleCounter > 15 and self.checkTriggerQuesting(character,room):
-                    self.idleCounter = 0
-                    return
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
                 self.idleCounter += 1
                 self.addQuest(quest)
@@ -675,9 +527,6 @@ Press d to move the cursor and show the subquests description.
                 quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to meeting hall")
                 self.idleCounter += 1
                 self.addQuest(quest)
-                return
-            if self.idleCounter > 15 and self.checkTriggerQuesting(character,room):
-                self.idleCounter = 0
                 return
             quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
             self.idleCounter += 1

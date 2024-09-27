@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class AssignFloorPlan(src.quests.MetaQuestSequenceV2):
     type = "AssignFloorPlan"
@@ -161,5 +161,176 @@ Set the floor plan: {self.floorPlanType}
         self.startWatching(character,self.handleAssignFloorPlan, "assigned floor plan")
 
         return super().assignToCharacter(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        terrain = character.getTerrain()
+        cityCore = terrain.getRoomByPosition((7,7,0))[0]
+        cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
 
+        # do inventory of scrap fields
+        numItemsScrapfield = 0
+        for scrapField in terrain.scrapFields:
+            numItemsScrapfield += len(terrain.itemsByBigCoordinate.get(scrapField,[]))
+
+        if numItemsScrapfield < 100 and terrain.mana >= 20:
+            quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+            beUsefull.addQuest(quest)
+
+            if numItemsScrapfield < 50 and terrain.mana >= 40:
+                quest = src.quests.questMap["GetEpochReward"](rewardType="spawn scrap",reason="ensure enough scrap is available")
+                beUsefull.addQuest(quest)
+            return True
+
+        if not cityPlaner:
+            quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="be able to plan city expansion")
+            beUsefull.addQuest(quest)
+            return True
+
+        numEmptyRooms = 0
+        for room in terrain.rooms:
+            if room.tag:
+                continue
+            if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
+                continue
+            numEmptyRooms += 1
+
+        numRoomsNeeded = cityPlaner.autoExtensionThreashold-len(cityPlaner.getAvailableRooms())-len(cityPlaner.plannedRooms)+len(cityPlaner.scheduledFloorPlans)-numEmptyRooms
+        if numRoomsNeeded > 0:
+            quests = []
+            targets = []
+            counter = 0
+            for checkRoom in terrain.rooms:
+                roomPos = checkRoom.getPosition()
+                for offset in ((1,0,0),(-1,0,0),(0,1,0),(0,-1,0)):
+                    newPos = (roomPos[0]+offset[0],roomPos[1]+offset[1],0)
+                    if newPos in terrain.forests:
+                        continue
+                    if (newPos[0],newPos[1]) in terrain.scrapFields:
+                        continue
+                    if newPos in terrain.scrapFields:
+                        continue
+                    if terrain.getRoomByPosition(newPos):
+                        continue
+                    if newPos in cityPlaner.plannedRooms:
+                        continue
+                    if newPos in targets:
+                        continue
+                    targets.append(newPos)
+
+                    quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=newPos,reason="extend to base")
+                    quests.append(quest)
+                    if len(quests) >= numRoomsNeeded:
+                        break
+                if len(quests) >= numRoomsNeeded:
+                    break
+            if quests:
+                for quest in quests:
+                    beUsefull.addQuest(quest)
+                return True
+
+        # assign scheduled floor plans
+        if cityPlaner and cityPlaner.getAvailableRooms():
+            if cityPlaner.scheduledFloorPlans:
+                for room in cityPlaner.getAvailableRooms():
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=cityPlaner.scheduledFloorPlans[0],reason="set a scheduled floor plan",)
+                    beUsefull.addQuest(quest)
+                    return True
+
+        # ensure there is a general purpose room
+        if cityPlaner and not cityPlaner.generalPurposeRooms:
+            for room in terrain.rooms:
+                if room.getPosition() == (7,0,0):
+                    continue
+                if room.getPosition() in cityPlaner.specialPurposeRooms:
+                    continue
+                if room.getPosition() in cityPlaner.generalPurposeRooms:
+                    continue
+                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
+                    continue
+
+                quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
+                beUsefull.addQuest(quest)
+                return True
+
+        # add storage room if needed
+        if cityPlaner and cityPlaner.getAvailableRooms():
+            # count empty storage slots
+            numFreeStorage = 0
+            for room in terrain.rooms:
+                for storageSlot in room.storageSlots:
+                    if storageSlot[1] is not None:
+                        continue
+                    items = room.getItemByPosition(storageSlot[0])
+                    if items:
+                        continue
+                    numFreeStorage += 1
+
+            if numFreeStorage < 20:
+                quest = src.quests.questMap["AssignFloorPlan"](roomPosition=cityPlaner.getAvailableRooms()[0].getPosition(),floorPlanType="storage",reason="increase storage")
+                beUsefull.addQuest(quest)
+                return True
+
+        if cityPlaner and not cityPlaner.generalPurposeRooms:
+            for room in terrain.rooms:
+                if room.getPosition() == (7,0,0):
+                    continue
+                if room.getPosition() in cityPlaner.specialPurposeRooms:
+                    continue
+                if room.getPosition() in cityPlaner.generalPurposeRooms:
+                    continue
+                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
+                    continue
+
+                quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
+                beUsefull.addQuest(quest)
+                return True
+
+        foundEnemies = False
+        for checkCharacter in terrain.characters:
+            if checkCharacter.faction == character.faction:
+                continue
+            foundEnemies = True
+
+        if not foundEnemies:
+            hasTemple = False
+            for room in terrain.rooms:
+                if room.tag != "temple":
+                    continue
+                hasTemple = True
+
+            if not hasTemple:
+                for room in cityPlaner.getAvailableRooms():
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType="temple",reason="have a temple to place glass hearts")
+                    beUsefull.addQuest(quest)
+                    return True
+
+        """
+        #set special purpose room
+        foundMeetingHall = False
+        for room in terrain.rooms:
+            if room.tag == "meetingHall":
+                foundMeetingHall = True
+
+        if cityPlaner and cityPlaner.getAvailableRooms():
+            if not foundMeetingHall:
+                for room in cityPlaner.getAvailableRooms():
+                    quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="specialPurposeRoom",roomTag="meetingHall",reason="have a place where idle NPCs meet")
+                    self.addQuest(quest)
+                    return True
+        """
+
+        # assign basic floor plans
+        if cityPlaner and cityPlaner.getAvailableRooms():
+            floorPlansToSet = ["gooProcessing","manufacturingHall","weaponProduction","smokingRoom","wallProduction","scrapCompactor","caseProduction","basicRoombuildingItemsProduction","basicMaterialsProduction"]
+            for room in terrain.rooms:
+                if room.tag in floorPlansToSet:
+                    floorPlansToSet.remove(room.tag)
+            if floorPlansToSet:
+                for room in cityPlaner.getAvailableRooms():
+                    quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=random.choice(floorPlansToSet),reason="start the process of making the room useful")
+                    beUsefull.addQuest(quest)
+                    return True
+                return None
+            return None
+        return None    
 src.quests.addType(AssignFloorPlan)

@@ -218,5 +218,32 @@ This quest will end when your inventory is full."""
                     result.append((item.getPosition(),"target"))
 
         return result
+    
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,room):
+        terrain = character.getTerrain()
+        try:
+            terrain.alarm
+        except:
+            terrain.alarm = False
+        if terrain.alarm:
+            return None
+
+        if not character.getFreeInventorySpace():
+            beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
+            beUsefull.idleCounter = 0
+            return True
+
+        terrain = character.getTerrain()
+        while terrain.collectionSpots:
+            if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
+                terrain.collectionSpots.pop()
+                continue
+            beUsefull.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1])))
+            beUsefull.idleCounter = 0
+            return True
+        beUsefull.addQuest(src.quests.questMap["Scavenge"]())
+        beUsefull.idleCounter = 0
+        return True
 
 src.quests.addType(Scavenge)

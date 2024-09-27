@@ -1,5 +1,5 @@
 import src
-
+import random
 
 class BuildRoom(src.quests.MetaQuestSequence):
     type = "BuildRoom"
@@ -213,5 +213,102 @@ Press d to move the cursor and show the subquests description.
         result = super().getQuestMarkersTile(character)
         result.append((self.targetPosition,"target"))
         return result
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        #src.gamestate.gamestate.mainChar = character
+        terrain = character.getTerrain()
+        try:
+            terrain.alarm
+        except:
+            terrain.alarm = False
+        if terrain.alarm:
+            return None
+
+        for x in range(1,13):
+            for y in range(1,13):
+                items = terrain.getItemByPosition((x*15+7,y*15+7,0))
+                if items and items[0].type == "RoomBuilder":
+                    beUsefull.addQuest(src.quests.questMap["BuildRoom"](targetPosition=(x,y,0)))
+                    beUsefull.idleCounter = 0
+                    return True
+
+        rooms = terrain.getRoomByPosition((7,7,0))
+        if rooms:
+            room = rooms[0]
+            cityPlaner = room.getItemByType("CityPlaner")
+            if cityPlaner:
+                for candidate in cityPlaner.plannedRooms:
+                    items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
+                    if items and items[-1].type == "RoomBuilder":
+                        quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                        beUsefull.addQuest(quest)
+                        beUsefull.idleCounter = 0
+                        return True
+
+                while cityPlaner.plannedRooms:
+                    if terrain.getRoomByPosition(cityPlaner.plannedRooms[0]):
+                        cityPlaner.plannedRooms.remove(cityPlaner.plannedRooms[0])
+                        continue
+
+                    beUsefull.addQuest(src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0]))
+                    beUsefull.idleCounter = 0
+                    return True
+
+        if not cityPlaner or cityPlaner.autoExtensionThreashold > 0:
+            # do not build more rooms when there is an empty room
+            numEmptyRooms = 0
+            for room in terrain.rooms:
+                if room.tag:
+                    continue
+                if (len(room.itemsOnFloor) > 13+13+11+11 or room.floorPlan or room.storageSlots or len(room.walkingSpace) > 4 or room.inputSlots or room.buildSites):
+                    continue
+                numEmptyRooms += 1
+
+            threashold = 1
+            if cityPlaner:
+                threashold = cityPlaner.autoExtensionThreashold
+
+            if numEmptyRooms >= threashold:
+                return None
+
+            baseNeighbours = []
+            offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
+            for room in terrain.rooms:
+                pos = room.getPosition()
+                for offset in offsets:
+                    checkPos = (pos[0]+offset[0],pos[1]+offset[1],0)
+                    if terrain.getRoomByPosition(checkPos):
+                        continue
+                    if checkPos in baseNeighbours:
+                        continue
+                    baseNeighbours.append(checkPos)
+            random.shuffle(baseNeighbours)
+
+            possibleBuildSites = []
+            for candidate in baseNeighbours:
+                if (candidate not in terrain.scrapFields) and (candidate not in terrain.forests):
+                    possibleBuildSites.append(candidate)
+
+            for candidate in possibleBuildSites:
+                items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
+                if items and items[-1].type == "RoomBuilder":
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                    beUsefull.addQuest(quest)
+                    beUsefull.idleCounter = 0
+                    return True
+
+            for candidate in possibleBuildSites:
+                if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                    beUsefull.addQuest(quest)
+                    beUsefull.idleCounter = 0
+                    return True
+            for candidate in possibleBuildSites:
+                quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
+                beUsefull.addQuest(quest)
+                beUsefull.idleCounter = 0
+                return True
+            return None
+        return None
 
 src.quests.addType(BuildRoom)

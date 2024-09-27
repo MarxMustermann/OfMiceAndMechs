@@ -139,5 +139,45 @@ pray on {self.targetPosition}{reason}.
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            glassStatues = checkRoom.getItemsByType("GlassStatue")
+            foundStatue = None
+            for checkStatue in glassStatues:
+                if checkStatue.charges >= 5:
+                    continue
+                if not checkStatue.handleItemRequirements():
+                    continue
+                foundStatue = checkStatue
+
+            if not foundStatue:
+                continue
+
+            quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False)
+            beUsefull.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            beUsefull.idleCounter = 0
+            return True
+
+        for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            shrines = checkRoom.getItemsByType("Shrine")
+            foundShrine = None
+            for checkShrine in shrines:
+                if not checkShrine.isChallengeDone():
+                    continue
+                foundShrine = checkShrine
+
+            if not foundShrine:
+                continue
+
+            quest = src.quests.questMap["Pray"](targetPosition=foundShrine.getPosition(),targetPositionBig=foundShrine.getBigPosition())
+            beUsefull.addQuest(quest)
+            quest.activate()
+            quest.assignToCharacter(character)
+            beUsefull.idleCounter = 0
+            return True
+        return None
 
 src.quests.addType(Pray)

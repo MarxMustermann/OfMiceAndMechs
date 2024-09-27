@@ -2997,6 +2997,13 @@ but they are likely to explode when disturbed.
                 text += f"It takes over another clone from your base.\n"
                 text += f"\n- press enter to respawn -"
                 src.interaction.showInterruptText(text)
+
+                candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
+                candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
+                candidate.personality["autoCounterAttack"] = src.gamestate.gamestate.mainChar.personality["autoCounterAttack"]
+                candidate.personality["viewChar"] = src.gamestate.gamestate.mainChar.personality["viewChar"]
+                candidate.personality["viewColour"] = src.gamestate.gamestate.mainChar.personality["viewColour"]
+
                 src.gamestate.gamestate.mainChar = candidate
 
                 questMenu = src.interaction.QuestMenu(candidate)
@@ -3010,9 +3017,6 @@ but they are likely to explode when disturbed.
                 combatMenu = src.interaction.CombatInfoMenu(candidate)
                 combatMenu.sidebared = True
                 candidate.rememberedMenu.insert(0,combatMenu)
-                candidate.disableCommandsOnPlus = True
-                candidate.autoExpandQuests = True
-                candidate.personality["autoCounterAttack"] = True
 
             for quest in candidate.quests[:]:
                 quest.fail("aborted")

@@ -86,6 +86,12 @@ Swords can range from 10 to 25 damage per hit.
 
         (bestSword,bestArmor) = self.findBestEquipment(character)
 
+        if bestSword and not character.weapon:
+            return
+
+        if bestArmor and not character.armor:
+            return
+
         if bestSword and character.weapon and bestSword.baseDamage > character.weapon.baseDamage:
             return
 

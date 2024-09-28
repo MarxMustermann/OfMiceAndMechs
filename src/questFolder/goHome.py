@@ -79,6 +79,7 @@ Press control-d to stop your character from moving.
 
         if not character:
             return (None,None)
+
         if character.getTerrainPosition() != self.terrainLocation:
             foundShrine = None
             if isinstance(character.container, src.rooms.Room):
@@ -86,6 +87,21 @@ Press control-d to stop your character from moving.
                 if items:
                     for item in items:
                         if character.getDistance(item.getPosition()) <= 1:
+
+                            if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
+                                submenue = character.macroState["submenue"]
+
+                                targetIndex = 5
+
+                                offset = targetIndex-submenue.selectionIndex
+                                command = ""
+                                if offset > 0:
+                                    command += "s"*offset
+                                else:
+                                    command += "w"*(-offset)
+                                command += "j"
+                                return (None,(command,"teleport home"))
+
                             direction = "."
                             if character.getPosition(offset=(1, 0, 0)) == item.getPosition():
                                 direction = "d"

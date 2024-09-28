@@ -303,21 +303,6 @@ Press d to move the cursor and show the subquests description.
         return source
 
 
-    def checkTriggerFillFlask(self,character,room):
-        if character.flask and character.flask.uses < 3:
-            self.addQuest(src.quests.questMap["RefillPersonalFlask"]())
-            self.idleCounter = 0
-            return True
-        return None
-
-
-    def checkTriggerEat(self,character,room):
-        if character.satiation < 200:
-            self.addQuest(src.quests.questMap["Eat"]())
-            self.idleCounter = 0
-            return True
-        return None
-
     def generateSubquests(self,character):
 
         for quest in self.subQuests:
@@ -405,11 +390,10 @@ Press d to move the cursor and show the subquests description.
                 quest.activate()
                 return
 
-        if self.checkTriggerFillFlask(character,room):
-            return
-
-        if self.checkTriggerEat(character,room):
-            return
+        if src.quests.questMap["RefillPersonalFlask"].generateDutyQuest(self,character,room):
+                        return
+        if src.quests.questMap["Eat"].generateDutyQuest(self,character,room):
+                        return
 
         terrain = character.getTerrain()
         for checkRoom in terrain.rooms:

@@ -183,7 +183,7 @@ Press d to move the cursor and show the subquests description.
                     break
                 numItemsCollected += 1
             if (numItemsCollected+character.getFreeInventorySpace()) < 5:
-                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False)
                 if not dryRun:
                     self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest],None)
@@ -196,7 +196,7 @@ Press d to move the cursor and show the subquests description.
                 numItemsCollected += 1
 
             if character.getFreeInventorySpace() < self.amount-numItemsCollected:
-                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items")
+                quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False)
                 if not dryRun:
                     self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest],None)

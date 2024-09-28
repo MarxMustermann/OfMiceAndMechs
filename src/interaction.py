@@ -229,8 +229,8 @@ def checkResetWindowSize(width,height):
     tileHeight = height//51//2*2
     if tileHeight < 6:
         tileHeight = 6
-    if tileHeight > 14:
-        tileHeight = 14
+    if tileHeight > 20:
+        tileHeight = 20
 
     newHeight = height//tileHeight
     newWidth  = (width//tileHeight)*2

@@ -4,21 +4,24 @@ import src
 class Equip(src.quests.MetaQuestSequence):
     type = "Equip"
 
-    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False):
+    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
         self.weaponOnly = weaponOnly
 
         self.shortCode = "e"
+        self.reason = reason
 
     def generateTextDescription(self):
+        reasonString = ""
+        if self.reason:
+            reasonString = ", to "+self.reason
         sword = src.items.itemMap["Sword"]()
         armor = src.items.itemMap["Armor"]()
-        return ["""
-The world is a dangerous place.
-You need to be able to defend yourself.
-Equip yourself with weapons preferably a sword (""",sword.render(),""") and armor (""",armor.render(),""").
+        return [f"""
+Equip yourself{reasonString}.
+A Aword (""",sword.render(),""") and Armor (""",armor.render(),""") are good equipment.
 
 You can try to find equipment in storage.
 Alternatively fetch your equipment directly from the production line.

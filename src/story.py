@@ -3000,9 +3000,9 @@ but they are likely to explode when disturbed.
 
                 candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
                 candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
-                candidate.personality["autoCounterAttack"] = src.gamestate.gamestate.mainChar.personality["autoCounterAttack"]
-                candidate.personality["viewChar"] = src.gamestate.gamestate.mainChar.personality["viewChar"]
-                candidate.personality["viewColour"] = src.gamestate.gamestate.mainChar.personality["viewColour"]
+                candidate.personality = src.gamestate.gamestate.mainChar.personality
+                candidate.duties = src.gamestate.gamestate.mainChar.duties
+                candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
 
                 src.gamestate.gamestate.mainChar = candidate
 

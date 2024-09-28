@@ -3160,10 +3160,32 @@ but they are likely to explode when disturbed.
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 return
 
+        # get the players environment
+        terrain = mainChar.getTerrain()
+
+        # ensure basic equipment
+        if not mainChar.armor:
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots(itemType="Armor",allowStorage=True,allowDesiredFilled=True):
+                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+        if not mainChar.weapon:
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots(itemType="Sword",allowStorage=True,allowDesiredFilled=True):
+                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0
-        terrain = mainChar.getTerrain()
         for character in terrain.characters:
             if character.faction != "city #1":
                 enemyCount += 1

@@ -200,5 +200,11 @@ class Eat(src.quests.MetaQuestSequence):
                 return None
 
         return super().solver(character)
-
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom):
+        if character.satiation < 200:
+            beUsefull.addQuest(src.quests.questMap["Eat"]())
+            beUsefull.idleCounter = 0
+            return True
+        return None
 src.quests.addType(Eat)

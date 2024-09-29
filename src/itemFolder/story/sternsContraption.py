@@ -31,8 +31,6 @@ class SternsContraption(src.items.Item):
 
         if not self.meltdownLevel:
             if tick == 1:
-                for character in self.container.characters[:]:
-                    character.hurt(20,reason="shrapnel")
                 for i in range(1,20):
                     pos = (random.randint(1,13),random.randint(1,13),0)
                     self.container.addAnimation(pos,"smoke",6,{})
@@ -47,6 +45,10 @@ class SternsContraption(src.items.Item):
 
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
+
+            if tick == 2:
+                for character in self.container.characters[:]:
+                    character.hurt(20,reason="shrapnel")
 
             if tick > 5:
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})

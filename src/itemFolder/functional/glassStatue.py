@@ -138,7 +138,7 @@ class GlassStatue(src.items.Item):
             self.numSubSacrifices = 0
             text += f"\n\nThe GlassStatue has {self.charges} charges now."
             if self.charges == 5:
-                text += f"\nYou can use the GlassStatue to teleport to the dugeon now."
+                text += f"\nYou can use the GlassStatue to teleport to the dungeon now."
         else:
             text += f"\n\nyour saccrifice was not enough for another charge"
 

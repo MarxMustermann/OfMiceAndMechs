@@ -120,7 +120,27 @@ So if an enemy is to directly east of you:
             if not directionCommand:
                 return (None,("m","attack enemy (below you)"))
 
-            return (None,(directionCommand,"attack enemy"))
+            if not character.hasSpecialAttacks:
+                return (None,(directionCommand,"attack enemy"))
+
+            specialAttack = None
+            if character.exhaustion == 0:
+                specialAttack = "k"
+            elif character.exhaustion < 10:
+                specialAttack = "h"
+            if not specialAttack:
+                return (None,(directionCommand,"attack enemy"))
+
+            if directionCommand == "d":
+                directionCommand = "D"
+            if directionCommand == "a":
+                directionCommand = "A"
+            if directionCommand == "s":
+                directionCommand = "S"
+            if directionCommand == "w":
+                directionCommand = "W"
+
+            return (None,(directionCommand+specialAttack,"attack enemy"))
 
         # move toward enemies
         commands = []

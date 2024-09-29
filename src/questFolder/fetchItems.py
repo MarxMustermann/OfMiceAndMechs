@@ -316,8 +316,8 @@ Press d to move the cursor and show the subquests description.
                 return (None,None)
         return (None,None)
 
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+    def generateSubquests(self, character=None,dryRun=True):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=dryRun)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -327,7 +327,8 @@ Press d to move the cursor and show the subquests description.
         nextStep = self.getNextStep(character)
         if nextStep == (None,None):
             return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
+        return self.getNextStep(character,dryRun=dryRun)[1]
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
 

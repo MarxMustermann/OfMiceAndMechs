@@ -77,6 +77,8 @@ class Character:
         self.implantLoad = 0
         self.hasFreeWill = False
 
+        self.hasSpecialAttacks = False
+
         self.showThinking = False
         self.showGotCommand = False
         self.showGaveCommand = False
@@ -1104,11 +1106,13 @@ class Character:
             target: the target of the attack
         """
 
-        attacksOffered = ["h","j","k","l"]
+        text = "no special attacks available"
+        attacksOffered = []
+        if self.hasSpecialAttacks:
+            text = ""
+            attacksOffered = ["h","j","k","l"]
+            attacksOffered.append(random.choice(["u","i","o","g","b"]))
 
-        attacksOffered.append(random.choice(["u","i","o","g","b"]))
-
-        text = ""
         if "o" in attacksOffered:
             text += """
 press o/O for attack of opportunity
@@ -1172,7 +1176,7 @@ press any other key to attack normally"""
         submenu = src.interaction.OneKeystrokeMenu(text)
 
         self.macroState["submenue"] = submenu
-        self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target}}
+        self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)
 
     def doSpecialAttack(self,extraParam):
@@ -1185,6 +1189,12 @@ press any other key to attack normally"""
         """
 
         target = extraParam["target"]
+
+        if not extraParam["keyPressed"] in extraParam["attacksOffered"]:
+            self.addMessage("you do a normal attack")
+            self.attack(target)
+            return
+
         if 1==0:
             pass
         elif extraParam["keyPressed"] in ("o","O",):

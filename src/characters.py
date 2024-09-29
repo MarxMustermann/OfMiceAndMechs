@@ -3242,7 +3242,7 @@ class Spider(Monster):
 
         self.charType = "Spider"
         self.specialDisplay = "SP"
-        self.baseDamage = 3
+        self.baseDamage = 10
         self.health = 50
         self.maxHealth = 50
 

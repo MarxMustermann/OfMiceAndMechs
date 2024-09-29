@@ -67,6 +67,7 @@ class Character:
 
         self.disableCommandsOnPlus = False
         self.autoExpandQuests = False
+        self.autoExpandQuests2 = False
         self.charType = "Character"
         self.disabled = False
         self.superior = None

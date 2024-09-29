@@ -2314,6 +2314,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("macros", "macros"), ("help", "help"), ("keybinding", "keybinding"),
                ("changeFaction", "changeFaction"),
                ("toggleQuestExpanding", "toggleQuestExpanding"),
+               ("toggleQuestExpanding2", "toggleQuestExpanding2"),
                ("toggleCommandOnPlus", "toggleCommandOnPlus"),
                ("change personality settings", "change personality settings"),]
     submenu = SelectionMenu("What do you want to do?", options)
@@ -2373,6 +2374,8 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             pass
         elif selection == "toggleQuestExpanding":
             char.autoExpandQuests = not char.autoExpandQuests
+        elif selection == "toggleQuestExpanding2":
+            char.autoExpandQuests2 = not char.autoExpandQuests2
         elif selection == "toggleCommandOnPlus":
             char.disableCommandsOnPlus = not char.disableCommandsOnPlus
         elif selection == "changeFaction":
@@ -10199,6 +10202,8 @@ def advanceChar(char,render=True):
             rerender = True
             char.runCommandString("+")
             skipNextRender = False
+        elif char.autoExpandQuests2 and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
+            char.getActiveQuest().generateSubquests(char,dryRun=False)
         elif char.autoExpandQuests and char.getActiveQuest() and not (char.getActiveQuest().getSolvingCommandString(char)):
             char.runCommandString("+",nativeKey=True)
         else:

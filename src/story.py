@@ -2999,6 +2999,7 @@ but they are likely to explode when disturbed.
                 src.interaction.showInterruptText(text)
 
                 candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
+                candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
                 candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
                 candidate.personality = src.gamestate.gamestate.mainChar.personality
                 candidate.duties = src.gamestate.gamestate.mainChar.duties

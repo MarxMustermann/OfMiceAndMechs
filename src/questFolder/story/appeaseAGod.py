@@ -17,7 +17,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
         if self.subQuests:
             return (None,None)

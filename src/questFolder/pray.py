@@ -51,7 +51,7 @@ pray on {self.targetPosition}{reason}.
 
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False, dryRun=True):
         if self.subQuests:
             return (None,None)
 
@@ -121,8 +121,8 @@ pray on {self.targetPosition}{reason}.
             return super().getSolvingCommandString(character)
         return self.getNextStep(character)[1]
 
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+    def generateSubquests(self, character=None, dryRun=True):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=dryRun)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
@@ -139,6 +139,7 @@ pray on {self.targetPosition}{reason}.
             character.runCommandString(nextCommand[0])
             return
         super().solver(character)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):

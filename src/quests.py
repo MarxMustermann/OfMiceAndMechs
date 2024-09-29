@@ -147,7 +147,7 @@ class Quest:
     def getActiveQuests(self):
         return [self]
 
-    def generateSubquests(self,character=None):
+    def generateSubquests(self,character=None,dryRun=True):
         pass
 
     def startWatching(self, target, callback, tag=""):
@@ -832,6 +832,12 @@ class MetaQuestSequence(Quest):
                 return commandString
         return super().getSolvingCommandString(character)
 
+    def generateSubquests(self, character=None, dryRun = True):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True, dryRun=dryRun)
+        if nextQuests:
+            for quest in nextQuests:
+                self.addQuest(quest)
+            return
 
 class MetaQuestSequenceV2(MetaQuestSequence, ABC):
     @abstractmethod
@@ -858,8 +864,9 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
                 character.runCommandString(nextCommand[0])
                 return
         super().solver(character)
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
+
+    def generateSubquests(self, character=None, dryRun = True):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True, dryRun=dryRun)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

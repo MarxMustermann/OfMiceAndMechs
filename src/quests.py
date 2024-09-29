@@ -832,12 +832,12 @@ class MetaQuestSequence(Quest):
                 return commandString
         return super().getSolvingCommandString(character)
 
-    def generateSubquests(self, character=None, dryRun = True):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True, dryRun=dryRun)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
+    #def generateSubquests(self, character=None, dryRun = True):
+    #    (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True, dryRun=dryRun)
+    #    if nextQuests:
+    #        for quest in nextQuests:
+    #            self.addQuest(quest)
+    #        return
 
 class MetaQuestSequenceV2(MetaQuestSequence, ABC):
     @abstractmethod

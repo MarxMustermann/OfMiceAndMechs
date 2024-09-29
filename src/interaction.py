@@ -4762,6 +4762,7 @@ class CharacterInfoMenu(SubMenu):
         text += f"terrainName: %s\n" % char.getTerrain().tag
         text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
         text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
+        text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
 
         return text
 

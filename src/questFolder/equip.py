@@ -1,7 +1,7 @@
 import src
 
 
-class Equip(src.quests.MetaQuestSequence):
+class Equip(src.quests.MetaQuestSequenceV2):
     type = "Equip"
 
     def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None):
@@ -113,35 +113,7 @@ Swords can range from 10 to 25 damage per hit.
         if not self.subQuests:
             self.generateSubquests(self.character)
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return nextStep[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 

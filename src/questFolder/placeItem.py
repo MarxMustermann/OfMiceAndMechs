@@ -1,7 +1,7 @@
 import src
 
 
-class PlaceItem(src.quests.MetaQuestSequence):
+class PlaceItem(src.quests.MetaQuestSequenceV2):
     type = "PlaceItem"
 
     def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None):
@@ -128,38 +128,10 @@ Press d to move the cursor and show the subquests description.
                     if not self.boltDown or item.bolted:
                         self.postHandler()
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
             if not ignoreCommands:
                 submenue = character.macroState.get("submenue")

@@ -2,7 +2,7 @@ import random
 import src
 
 
-class OperateMachine(src.quests.MetaQuestSequence):
+class OperateMachine(src.quests.MetaQuestSequenceV2):
     type = "OperateMachine"
 
     def __init__(self, description="operate machine", creator=None, targetPosition=None, targetPositionBig=None,reason=None):
@@ -57,7 +57,7 @@ operate the machine on {self.targetPosition}{reason}.
 
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 
@@ -81,31 +81,6 @@ operate the machine on {self.targetPosition}{reason}.
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,("Js","activate machine"))
         return None
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

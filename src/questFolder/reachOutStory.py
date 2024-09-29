@@ -1,25 +1,13 @@
 import src
 
 
-class ReachOutStory(src.quests.MetaQuestSequence):
+class ReachOutStory(src.quests.MetaQuestSequenceV2):
     type = "ReachOutStory"
 
     def __init__(self, description="reach out to implant", creator=None):
         questList = []
         super().__init__(creator=creator)
         self.metaDescription = description
-
-    def solver(self,character):
-        self.triggerCompletionCheck()
-        self.generateSubquests()
-
-        if not self.subQuests:
-            command = self.getSolvingCommandString(character)
-            if command:
-                character.runCommandString(command[0])
-                return
-
-        super().solver(character)
 
     def triggerCompletionCheck(self,character=None):
         return
@@ -34,10 +22,10 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         self.startWatching(character,self.handleQuestsOpened,"opened quest menu")
         return super().assignToCharacter(character)
 
-    def getSolvingCommandString(self,character,dryRun=True):
-        if character.macroState.get("submenue"):
-            return (["esc"],"close submenu")
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None, (["esc"],"close submenu"))
         else:
-            return ("q","reach implant")
+            return (None, ("q","reach implant"))
 
 src.quests.addType(ReachOutStory)

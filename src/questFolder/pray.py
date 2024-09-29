@@ -1,7 +1,7 @@
 import src
 
 
-class Pray(src.quests.MetaQuestSequence):
+class Pray(src.quests.MetaQuestSequenceV2):
     type = "Pray"
 
     def __init__(self, description="pray", creator=None, targetPosition=None, targetPositionBig=None,reason=None,shrine=True):
@@ -114,31 +114,6 @@ pray on {self.targetPosition}{reason}.
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             return (None,("Js"+activationCommand,description))
         return None
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None, dryRun=True):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=dryRun)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):

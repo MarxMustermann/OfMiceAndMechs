@@ -16,7 +16,7 @@ class Huntdown(src.quests.MetaQuestSequence):
             return True
         return False
 
-    def solver(self,character):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         self.triggerCompletionCheck()
 
         if not self.subQuests:
@@ -26,8 +26,7 @@ class Huntdown(src.quests.MetaQuestSequence):
                 charPos = (character.xPosition//15,character.yPosition//15,0)
 
             if not self.target.container:
-                character.runCommandString("10.")
-                return
+                return (None,("10.","wait"))
 
             if isinstance(self.target.container, src.rooms.Room):
                 targetPos = (self.target.container.xPosition,self.target.container.yPosition,0)
@@ -35,40 +34,27 @@ class Huntdown(src.quests.MetaQuestSequence):
                 targetPos = (self.target.xPosition//15,self.target.yPosition//15,0)
 
             if targetPos == (0,0,0):
-                return
+                return (None,None)
 
             if character.yPosition%15 == 0:
-                character.runCommandString("s")
-                return
+                return (None,("s","move toward target"))
             if character.yPosition%15 == 14:
-                character.runCommandString("w")
-                return
+                return (None,("w","move toward target"))
             if character.xPosition%15 == 0:
-                character.runCommandString("d")
-                return
+                return (None,("d","move toward target"))
             if character.xPosition%15 == 14:
-                character.runCommandString("a")
-                return
+                return (None,("a","move toward target"))
 
             if charPos != targetPos:
                 if abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                     newPos = targetPos
                 else:
                     self.fail()
-                    return
+                    return (None,None)
 
                 quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
-
+                return ([quest],None)
             quest = src.quests.questMap["Fight"](suicidal=True)
-            self.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            return
-
-        super().solver(character)
-
+            return ([quest],None)
+        return (None,None)
 src.quests.addType(Huntdown)

@@ -3,7 +3,7 @@ import random
 import src
 
 
-class ScavengeTile(src.quests.MetaQuestSequence):
+class ScavengeTile(src.quests.MetaQuestSequenceV2):
     type = "ScavengeTile"
 
     def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False):
@@ -50,7 +50,7 @@ This quest will end when the target tile has no items left."""
 
         return
 
-    def solver(self, character):
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         self.triggerCompletionCheck(character=character)
 
         if not self.subQuests:
@@ -60,25 +60,23 @@ This quest will end when the target tile has no items left."""
                     hasIdleSubordinate = True
 
             if hasIdleSubordinate:
-                character.runCommandString("Hjsssssj")
-                return
+                return (None,("Hjsssssj","make subordinate scavenge"))
 
             if character.getTerrain().alarm:
                 self.fail("alarm")
-                return
+                return (None,None)
 
             if not character.getFreeInventorySpace() > 0:
                 if self.endOnFullInventory:
                     self.postHandler()
-                    return
+                    return (None,None)
                 quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items")
-                self.addQuest(quest)
-                return
+                return ([quest],None)
 
             if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition,reason="go to target tile")
-                self.addQuest(quest)
-                return
+                return ([quest],None)
+
 
             items = self.getLeftoverItems(character)
             if items:
@@ -86,11 +84,9 @@ This quest will end when the target tile has no items left."""
                 item = random.choice(items)
 
                 quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items")
-                self.addQuest(quest)
-                return
-
-        super().solver(character)
-
+                return ([quest],None)
+        return (None,None)
+    
     def getLeftoverItems(self,character):
         terrain = character.getTerrain()
         leftOverItems = []

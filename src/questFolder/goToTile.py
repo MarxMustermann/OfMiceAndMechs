@@ -3,7 +3,7 @@ import random
 import src
 
 
-class GoToTile(src.quests.MetaQuestSequence):
+class GoToTile(src.quests.MetaQuestSequenceV2):
     type = "GoToTile"
 
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0):
@@ -287,37 +287,9 @@ The target tile is {direction[4:]}
                 return ([quest],None)
             return None
 
-    def generateSubquests(self, character=None,dryRun=True):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=dryRun)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return nextStep[1]
 
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True)
-
-    def solver(self, character):
-        if not self.path:
-            self.generatePath(character)
-
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def unhandledSubQuestFail(self,extraParam):
         if extraParam["quest"] not in self.subQuests:

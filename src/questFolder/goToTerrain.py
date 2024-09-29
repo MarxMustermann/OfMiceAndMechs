@@ -1,7 +1,7 @@
 import src
 
 
-class GoToTerrain(src.quests.MetaQuestSequence):
+class GoToTerrain(src.quests.MetaQuestSequenceV2):
     type = "GoToTerrain"
 
     def __init__(self, description="go to terrain", creator=None, targetTerrain=None):
@@ -20,7 +20,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return True
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 
@@ -63,31 +63,6 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
         quest = src.quests.questMap["TeleportToTerrain"](targetPosition=self.targetTerrain)
         return ([quest],None)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def handleChangedTerrain(self,extraInfo):
         self.triggerCompletionCheck(extraInfo["character"])

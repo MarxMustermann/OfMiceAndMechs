@@ -82,29 +82,6 @@ Try luring enemies into landmines or detonating some bombs."""
 
         return False
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        if not self.subQuests:
-            if character.getBigPosition() == self.targetPosition:
-                enemies = character.getNearbyEnemies()
-                if not enemies and not self.endWhenCleared:
-                    return "10."
-        return super().getSolvingCommandString(character,dryRun=dryRun)
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
             if character.health < character.maxHealth - 20 and character.canHeal():
@@ -131,7 +108,10 @@ Try luring enemies into landmines or detonating some bombs."""
                 if enemies:
                     quest = src.quests.questMap["Fight"]()
                     return ([quest],None)
-
+            if character.getBigPosition() == self.targetPosition:
+                enemies = character.getNearbyEnemies()
+                if not enemies and not self.endWhenCleared:
+                    return (None, ("10.","wait"))
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 
 src.quests.addType(SecureTile)

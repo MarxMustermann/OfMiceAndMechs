@@ -3,7 +3,7 @@ import random
 import src
 
 
-class Flee(src.quests.MetaQuestSequence):
+class Flee(src.quests.MetaQuestSequenceV2):
     type = "Flee"
 
     def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False):
@@ -29,35 +29,7 @@ run,run,run!!!
 
         return None
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return nextStep[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if self.subQuests:
             return (None,None)
 

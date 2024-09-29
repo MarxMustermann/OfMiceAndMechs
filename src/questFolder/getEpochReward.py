@@ -1,7 +1,7 @@
 import src
 
 
-class GetEpochReward(src.quests.MetaQuestSequence):
+class GetEpochReward(src.quests.MetaQuestSequenceV2):
     type = "GetEpochReward"
 
     def __init__(self, description="get epoch reward", creator=None,rewardType=None,reason=None):
@@ -76,7 +76,7 @@ This will allow you to focus on other tasks.
         out.append(text)
         return out
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         while self.subQuests:
             if not self.subQuests[-1].completed:
@@ -212,33 +212,6 @@ This will allow you to focus on other tasks.
     def triggerCompletionCheck(self,character=None):
         return False
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         terrain = character.getTerrain()

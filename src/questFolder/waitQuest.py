@@ -3,7 +3,7 @@ import random
 import src
 
 
-class WaitQuest(src.quests.Quest):
+class WaitQuest(src.quests.MetaQuestSequenceV2):
     type = "WaitQuest"
 
     def __init__(
@@ -32,18 +32,10 @@ This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} 
             return True
         return False
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        if self.lifetimeEvent:
-            return str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+"."
-        return "10."
-
-    def solver(self, character):
-        commandString = self.getSolvingCommandString(character,dryRun=False)
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         self.randomSeed = random.random()
-
-        if commandString:
-            character.runCommandString(commandString)
-            return False
-        return True
+        if self.lifetimeEvent:
+            return (None,(str(self.lifetimeEvent.tick - src.gamestate.gamestate.tick)+".","wait"))
+        return (None,("10.","wait"))
 
 src.quests.addType(WaitQuest)

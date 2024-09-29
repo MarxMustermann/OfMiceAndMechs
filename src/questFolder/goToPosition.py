@@ -271,5 +271,4 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
         return False
 
-
 src.quests.addType(GoToPosition)

@@ -88,8 +88,7 @@ Try luring enemies into landmines or detonating some bombs."""
                 enemies = character.getNearbyEnemies()
                 if not enemies and not self.endWhenCleared:
                     return "10."
-            return super().getSolvingCommandString(character,dryRun=dryRun)
-        return None
+        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def solver(self, character):
         if self.triggerCompletionCheck(character):

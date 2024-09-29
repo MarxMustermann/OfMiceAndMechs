@@ -2132,6 +2132,7 @@ but they are likely to explode when disturbed.
             if item.getPosition() == (6,12,0):
                 continue
             item.walkable = False
+        throneRoom.priority = 5
 
         for x in (2,10,):
             for y in range(1,12):
@@ -2160,6 +2161,9 @@ but they are likely to explode when disturbed.
         throne = src.items.itemMap["Throne"]()
         throne.bolted = True
         throneRoom.addItem(throne,(6,8,0))
+        dutyBeacon = src.items.itemMap["DutyBeacon"]()
+        dutyBeacon.bolted = True
+        throneRoom.addItem(dutyBeacon,(6,9,0))
 
         for basePos in [(1,2,0),(11,2,0),(1,10,0),(11,10,0)]:
             motionSensor = src.items.itemMap["MotionSensor"]()

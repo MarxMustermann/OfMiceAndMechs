@@ -287,8 +287,8 @@ The target tile is {direction[4:]}
                 return ([quest],None)
             return None
 
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)
+    def generateSubquests(self, character=None,dryRun=True):
+        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=dryRun)
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)

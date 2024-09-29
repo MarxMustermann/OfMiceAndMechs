@@ -27,9 +27,11 @@ You put your head into the machine.
 
 Its tendrils reach out and touch your implant.
 
-It is upgraded to rank 2.""")
+It is upgraded to rank 2.
+This means you can do special attacks now.""")
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
+            character.hasSpecialAttacks = True
         character.changed("got promotion",{})
 
 src.items.addType(Promoter)

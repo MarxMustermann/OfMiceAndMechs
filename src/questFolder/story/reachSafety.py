@@ -1,7 +1,7 @@
 import src
 
 
-class ReachSafety(src.quests.MetaQuestSequence):
+class ReachSafety(src.quests.MetaQuestSequenceV2):
     type = "ReachSafety"
 
     def __init__(self, description="reach safety", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
@@ -9,13 +9,8 @@ class ReachSafety(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
             return (None,None)
@@ -51,20 +46,6 @@ class ReachSafety(src.quests.MetaQuestSequence):
         quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance")
         return ([quest],None)
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         door = src.items.itemMap["Door"]()

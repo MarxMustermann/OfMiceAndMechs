@@ -15,7 +15,7 @@ class MachinePlacing(src.quests.MetaQuestSequenceV2):
         if not character:
             return
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
 
             if not isinstance(character.container,src.rooms.Room):

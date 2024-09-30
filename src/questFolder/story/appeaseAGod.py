@@ -1,7 +1,7 @@
 import src
 import random
 
-class AppeaseAGod(src.quests.MetaQuestSequence):
+class AppeaseAGod(src.quests.MetaQuestSequenceV2):
     type = "AppeaseAGod"
 
     def __init__(self, description="apease a god", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,targetNumGods=None):
@@ -10,12 +10,6 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
         self.targetNumGods = targetNumGods
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -100,20 +94,6 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
 
         return (None,("...........","wait for something to happen"))
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         return ["""

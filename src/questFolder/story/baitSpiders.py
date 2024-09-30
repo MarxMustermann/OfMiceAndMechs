@@ -1,7 +1,7 @@
 import src
 
 
-class BaitSpiders(src.quests.MetaQuestSequence):
+class BaitSpiders(src.quests.MetaQuestSequenceV2):
     type = "BaitSpiders"
 
     def __init__(self, description="bait spiders", creator=None, lifetime=None, targetPositionBig=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
@@ -13,11 +13,6 @@ class BaitSpiders(src.quests.MetaQuestSequence):
         self.phase = "bait"
         self.spiderPositions = []
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun=True):
 
@@ -62,21 +57,6 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     self.phase = phase
                 return ([quest],None)
         return (None,None)
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character, dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         triggerPlate = src.items.itemMap["TriggerPlate"]()

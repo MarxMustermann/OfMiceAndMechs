@@ -1,21 +1,14 @@
 import src
 
 
-class CollectGlassHearts(src.quests.MetaQuestSequence):
+class CollectGlassHearts(src.quests.MetaQuestSequenceV2):
     type = "CollectGlassHearts"
 
     def __init__(self, description="collect glass hearts", creator=None, lifetime=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
             return (None,None)
@@ -94,20 +87,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         quest = src.quests.questMap["AppeaseAGod"]()
         return ([quest],None)
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         text = ["""

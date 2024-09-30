@@ -2,7 +2,7 @@ import src
 import random
 
 
-class GetCombatReady(src.quests.MetaQuestSequence):
+class GetCombatReady(src.quests.MetaQuestSequenceV2):
     type = "GetCombatReady"
 
     def __init__(self, description="get combat ready", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
@@ -10,13 +10,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
         if self.subQuests:
             return (None,None)
@@ -81,21 +75,6 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         return (None,None)
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         return ["""

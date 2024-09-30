@@ -1,7 +1,7 @@
 import src
 
 
-class DrawStockpile(src.quests.MetaQuestSequence):
+class DrawStockpile(src.quests.MetaQuestSequenceV2):
     type = "DrawStockpile"
 
     def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):
@@ -116,35 +116,6 @@ Try as hard as you can to achieve this.
 
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
     def handleQuestFailure(self,extraParam):
         self.fail(extraParam["reason"])

@@ -1,7 +1,7 @@
 import src
 import random
 
-class BuildRoom(src.quests.MetaQuestSequence):
+class BuildRoom(src.quests.MetaQuestSequenceV2):
     type = "BuildRoom"
 
     def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None, takeAnyUnbolted=False):
@@ -80,28 +80,7 @@ Press d to move the cursor and show the subquests description.
                 return
         self.fail(reason)
 
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.handleQuestFailure,"failed")
-            character.timeTaken += 1
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            character.timeTaken += 1
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         terrain = character.getTerrain()
         if terrain.alarm:
             self.fail("alarm")
@@ -193,13 +172,6 @@ Press d to move the cursor and show the subquests description.
                     return (None, (command,"activate the RoomBuilder"))
             1/0
         return (None,None)
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
     def triggerCompletionCheck(self,character=None):
         if not character:

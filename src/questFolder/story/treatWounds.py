@@ -2,7 +2,7 @@ import src
 import random
 
 
-class TreatWounds(src.quests.MetaQuestSequence):
+class TreatWounds(src.quests.MetaQuestSequenceV2):
     type = "TreatWounds"
 
     def __init__(self, description="treat wounds", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
@@ -10,11 +10,6 @@ class TreatWounds(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
     def getTileVials(self,character):
         terrain = character.getTerrain()
@@ -36,7 +31,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
             return True
         return False
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,):
 
         if self.subQuests:
             return (None,None)
@@ -72,21 +67,6 @@ class TreatWounds(src.quests.MetaQuestSequence):
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=tileVials[0].getSmallPosition(),reason="be able to pick up the vial",description="go to the next Vial")
         return ([quest],None)
-
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         door = src.items.itemMap["Door"]()

@@ -1,7 +1,7 @@
 import src
 
 
-class ActivateGlassStatue(src.quests.MetaQuestSequence):
+class ActivateGlassStatue(src.quests.MetaQuestSequenceV2):
     type = "ActivateGlassStatue"
 
     def __init__(self, description="activate glass statue", creator=None, targetPosition=None, targetPositionBig=None, reason=None):
@@ -87,19 +87,6 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
             direction = "s"
         return (None,("J"+direction+"wj","activate the GlassStatue"))
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
     def generateTextDescription(self):
         text = ["""
 The GlassStatues are connected to the heart of their god. 
@@ -109,16 +96,5 @@ Expect combat after the teleport.
 """]
         return text
 
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
 src.quests.addType(ActivateGlassStatue)

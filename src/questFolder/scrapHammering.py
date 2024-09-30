@@ -1,7 +1,7 @@
 import src
 
 
-class ScrapHammering(src.quests.MetaQuestSequence):
+class ScrapHammering(src.quests.MetaQuestSequenceV2):
     type = "ScrapHammering"
 
     def __init__(self, description="scrap hammering", creator=None, reason=None, amount=None,produceToInventory=False):
@@ -29,7 +29,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 
@@ -72,18 +72,6 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
         return (None,None)
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
@@ -100,20 +88,6 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return
         self.fail(reason)
-
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.handleQuestFailure,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def handleHammeredScrap(self, extraInfo):
         if self.completed:

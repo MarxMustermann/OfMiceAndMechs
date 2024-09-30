@@ -1,7 +1,7 @@
 import src
 
 
-class ClearInventory(src.quests.MetaQuestSequence):
+class ClearInventory(src.quests.MetaQuestSequenceV2):
     type = "ClearInventory"
 
     def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None):
@@ -72,24 +72,6 @@ To see your items open the your inventory by pressing i."""
             self.postHandler()
             return
         return
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand)
-            return
-        super().solver(character)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if self.returnToTile and not self.tileToReturnTo:

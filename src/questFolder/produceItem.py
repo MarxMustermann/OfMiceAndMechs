@@ -1,7 +1,7 @@
 import src
 
 
-class ProduceItem(src.quests.MetaQuestSequence):
+class ProduceItem(src.quests.MetaQuestSequenceV2):
     type = "ProduceItem"
 
     def __init__(self, description="produce item", creator=None, command=None, lifetime=None, targetPosition=None, itemType=None,tryHard=False,reason=None):
@@ -52,35 +52,10 @@ If you don't find a {self.itemType} machine needed, build it.
         if extraInfo["item"].type == self.itemType:
             self.postHandler()
 
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
             if self.itemType == "MetalBars":
                 foundRoom = None

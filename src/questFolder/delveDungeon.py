@@ -4,7 +4,7 @@ import random
 # equip
 # rest
 
-class DelveDungeon(src.quests.MetaQuestSequence):
+class DelveDungeon(src.quests.MetaQuestSequenceV2):
     type = "DelveDungeon"
 
     def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False):
@@ -206,30 +206,5 @@ After fetching the glass heart return the glass heart to your base and set it in
         if character.getPosition(offset=(0,-1,0)) == glassStatue.getPosition():
             directionCommand = "w"
         return (None,(directionCommand+"cg","insert glass heart"))
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
 src.quests.addType(DelveDungeon)

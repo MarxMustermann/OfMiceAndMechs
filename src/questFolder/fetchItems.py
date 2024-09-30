@@ -3,7 +3,7 @@ import random
 import src
 
 
-class FetchItems(src.quests.MetaQuestSequence):
+class FetchItems(src.quests.MetaQuestSequenceV2):
     type = "FetchItems"
 
     def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):
@@ -157,22 +157,8 @@ Press d to move the cursor and show the subquests description.
             return None
         return None
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
 
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getNextStep(self, character,dryRun=True,ignoreCommands=False):
+    def getNextStep(self, character,ignoreCommands=False,dryRun=True):
         if self.subQuests:
             return (None,None)
 
@@ -315,19 +301,6 @@ Press d to move the cursor and show the subquests description.
                     self.fail(reason=f"no source for item {self.toCollect}")
                 return (None,None)
         return (None,None)
-
-    def generateSubquests(self, character=None,dryRun=True):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True,dryRun=dryRun)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character,dryRun=dryRun)[1]
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):

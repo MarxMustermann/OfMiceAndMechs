@@ -1,7 +1,7 @@
 import src
 import random
 
-class MetalWorking(src.quests.MetaQuestSequence):
+class MetalWorking(src.quests.MetaQuestSequenceV2):
     type = "MetalWorking"
 
     def __init__(self, description="metal working", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False,tryHard=False):
@@ -140,20 +140,6 @@ Press d to move the cursor and show the subquests description.
             return (None,("sjj","start metal working"))
 
         return (None,None)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
             return
@@ -213,18 +199,6 @@ Press d to move the cursor and show the subquests description.
 
         return super().assignToCharacter(character)
 
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character, dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.handleQuestFailure,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         freeMetalWorkingBenches = []

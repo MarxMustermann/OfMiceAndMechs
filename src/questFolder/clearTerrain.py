@@ -3,7 +3,7 @@ import random
 import src
 
 
-class ClearTerrain(src.quests.MetaQuestSequence):
+class ClearTerrain(src.quests.MetaQuestSequenceV2):
     type = "ClearTerrain"
 
     def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):
@@ -43,28 +43,8 @@ Just clear the whole terrain tile for tile.
         super().triggerCompletionCheck()
         return False
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return nextStep[1]
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
             if character.yPosition%15 == 14:
                 return (None,("w","enter tile"))

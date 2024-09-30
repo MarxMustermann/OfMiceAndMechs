@@ -1,7 +1,7 @@
 import src
 import random
 
-class GatherVatMaggots(src.quests.MetaQuestSequence):
+class GatherVatMaggots(src.quests.MetaQuestSequenceV2):
     type = "GatherVatMaggots"
 
     def __init__(self, description="gather vat maggots", creator=None, targetPosition=None,lifetime=None):
@@ -55,16 +55,13 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
 
         self.postHandler()
 
-    def solver(self, character):
+    def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
 
         self.triggerCompletionCheck(character)
 
-        if self.subQuests:
-            return super().solver(character)
-
         if character.getFreeInventorySpace() < 1 and character.inventory[-1].type != "VatMaggot":
-            self.addQuest(src.quests.questMap["ClearInventory"]())
-            return None
+           quest = src.quests.questMap["ClearInventory"]()
+           return ([quest],None)
 
         foundDirectPickup = None
         for direction in ((-1,0),(1,0),(0,-1),(0,1),(0,0)):
@@ -85,8 +82,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                 command = "Ks"
             if foundDirectPickup[1] == (0,0):
                 command = "k"
-            character.runCommandString(command)
-            return None
+            return (None,(command,"pickup maggot"))
 
         items = character.container.getNearbyItems(character)
         maggotFound = None
@@ -100,10 +96,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
 
         if maggotFound:
             quest = src.quests.questMap["GoToPosition"](targetPosition=maggotFound.getSmallPosition(),ignoreEndBlocked=True)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-            return None
+            return ([quest],None)
 
         if treeFound:
             foundDirectTree = None
@@ -127,17 +120,13 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                     command = "j"
                 if treeFound.numMaggots == 0:
                     command = "500."+command
-                character.runCommandString(command)
-                return None
+                return (None,(command,"pickup maggot"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=treeFound.getSmallPosition(),ignoreEndBlocked=True)
-            quest.assignToCharacter(character)
-            quest.activate()
-            self.addQuest(quest)
-            return None
+            return ([quest],None)
 
         self.fail(reason="no tree")
-        return None
+        return (None,None)
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         terrain = character.getTerrain()

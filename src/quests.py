@@ -843,6 +843,11 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
     @abstractmethod
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
 
+    def subQuestCompleted(self,extraInfo=None):
+        pass
+    def handleQuestFailure(self,extraParam):
+        pass
+    
     def getSolvingCommandString(self, character, dryRun=True):
         nextStep = self.getNextStep(character,dryRun= dryRun)
         if nextStep is None or nextStep == (None, None):
@@ -858,10 +863,14 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
             if nextQuests:
                 for quest in nextQuests:
                     self.addQuest(quest)
+                    self.startWatching(quest,self.subQuestCompleted,"completed")
+                    self.startWatching(quest,self.handleQuestFailure,"failed")
+                    character.timeTaken += 0.01
                 return
 
             if nextCommand:
                 character.runCommandString(nextCommand[0])
+                character.timeTaken += 0.01
                 return
         super().solver(character)
 
@@ -870,6 +879,9 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
         if nextQuests:
             for quest in nextQuests:
                 self.addQuest(quest)
+                self.startWatching(quest,self.subQuestCompleted,"completed")
+                self.startWatching(quest,self.handleQuestFailure,"failed")
+
             return
 
 # map strings to Classes

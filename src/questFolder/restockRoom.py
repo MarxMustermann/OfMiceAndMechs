@@ -3,7 +3,7 @@ import random
 import src
 
 
-class RestockRoom(src.quests.MetaQuestSequence):
+class RestockRoom(src.quests.MetaQuestSequenceV2):
     type = "RestockRoom"
 
     def __init__(self, description="restock room", creator=None, targetPositionBig=None,toRestock=None,allowAny=False,reason=None,targetPosition=None):
@@ -282,26 +282,6 @@ Place the items in the correct input or storage stockpile.
             self.fail()
         return (None,None)
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

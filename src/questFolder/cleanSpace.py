@@ -1,7 +1,7 @@
 import src
 import random
 
-class CleanSpace(src.quests.MetaQuestSequence):
+class CleanSpace(src.quests.MetaQuestSequenceV2):
     type = "CleanSpace"
 
     def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True):
@@ -27,18 +27,6 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
 
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.unhandledSubQuestFail,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def triggerCompletionCheck(self,character=None):
         if not character:
@@ -118,12 +106,6 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
         self.startWatching(character,self.pickedUpItem, "itemPickedUp")
         return super().assignToCharacter(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)

@@ -1,7 +1,7 @@
 import src
 
 
-class EscapeLab(src.quests.MetaQuestSequence):
+class EscapeLab(src.quests.MetaQuestSequenceV2):
     type = "EscapeLab"
 
     def __init__(self, description="escape lab", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):
@@ -9,13 +9,8 @@ class EscapeLab(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
-    def getNextStep(self,character=None,ignoreCommands=False):
+    def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
         if self.subQuests:
             return (None,None)
@@ -35,20 +30,6 @@ class EscapeLab(src.quests.MetaQuestSequence):
         quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),reason="reach the door",description="reach the door")
         return ([quest],None)
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def generateTextDescription(self):
         door = src.items.itemMap["Door"]()

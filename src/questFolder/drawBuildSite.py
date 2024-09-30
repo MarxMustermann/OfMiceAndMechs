@@ -1,7 +1,7 @@
 import src
 
 
-class DrawBuildSite(src.quests.MetaQuestSequence):
+class DrawBuildSite(src.quests.MetaQuestSequenceV2):
     type = "DrawBuildSite"
 
     def __init__(self, description="draw buildsite", creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):
@@ -51,30 +51,6 @@ Try as hard as you can to achieve this.
 
         return text
 
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:

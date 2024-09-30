@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class GoToPosition(src.quests.MetaQuestSequence):
+class GoToPosition(src.quests.MetaQuestSequenceV2):
     type = "GoToPosition"
 
     def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None):
@@ -143,43 +143,6 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         self.generatePath(character)
 
         super().assignToCharacter(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-
-        if character.macroState.get("submenue"):
-            return (["esc"],"exit submenu")
-
-        if not self.path:
-            return None
-
-        if character.xPosition%15 == 0:
-            return ("d","enter tile")
-        if character.xPosition%15 == 14:
-            return ("a","enter tile")
-        if character.yPosition%15 == 0:
-            return ("s","enter tile")
-        if character.yPosition%15 == 14:
-            return ("w","enter tile")
-        if not self.targetPosition:
-            return (".12..","wait")
-
-        if self.ignoreEndBlocked and len(self.path) == 1:
-            return None
-
-        command  = ""
-        movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
-        pos = list(character.getPosition())
-        for step in self.path:
-            pos[0] += step[0]
-            pos[1] += step[1]
-
-            items = character.container.getItemByPosition(tuple(pos))
-            if items and items[0].type == "Bush":
-                command += "J"+movementMap[step]
-
-            command += movementMap[step]
-        return (command,"go to target position")
-
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
             return False
@@ -221,32 +184,49 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             self.ignoreEndBlocked = parameters["ignoreEndBlocked"]
         return super().setParameters(parameters)
 
-    def solver(self, character):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.triggerCompletionCheck(character):
-            return
+            return (None,None)
 
         if not self.path:
             self.generatePath(character,dryRun=False)
-            return
 
         if not self.isPathSane(character):
             self.generatePath(character,dryRun=False)
             if not self.path:
                 character.addMessage("moving failed - no path found (solver)")
                 self.fail("no path found")
-                return
+                return (None,None)
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
+        
+        if character.xPosition%15 == 0:
+            return (None,("d","enter tile"))
+        if character.xPosition%15 == 14:
+            return (None,("a","enter tile"))
+        if character.yPosition%15 == 0:
+            return (None,("s","enter tile"))
+        if character.yPosition%15 == 14:
+            return (None,("w","enter tile"))
+        if not self.targetPosition:
+            return (None,(".12..","wait"))
 
-        if not self.subQuests:
-            self.generateSubquests(character)
-            if self.subQuests:
-                return
+        if self.ignoreEndBlocked and len(self.path) == 1:
+            return (None,None)
 
-        command = self.getSolvingCommandString(character,dryRun=False)
-        if command:
-            character.runCommandString(command[0])
-            return
+        command  = ""
+        movementMap = {(1,0):"d",(-1,0):"a",(0,1):"s",(0,-1):"w"}
+        pos = list(character.getPosition())
+        for step in self.path:
+            pos[0] += step[0]
+            pos[1] += step[1]
 
-        super().solver(character)
+            items = character.container.getItemByPosition(tuple(pos))
+            if items and items[0].type == "Bush":
+                command += "J"+movementMap[step]
+
+            command += movementMap[step]
+        return (None,(command,"go to target position"))
 
     def getRequiredParameters(self):
         parameters = super().getRequiredParameters()

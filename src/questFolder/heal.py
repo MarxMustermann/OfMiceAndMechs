@@ -1,7 +1,7 @@
 import src
 import random
 
-class Heal(src.quests.MetaQuestSequence):
+class Heal(src.quests.MetaQuestSequenceV2):
     type = "Heal"
 
     def __init__(self, description="heal"):
@@ -18,12 +18,6 @@ Press JH to auto heal.
 
 """
         return text
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -91,20 +85,6 @@ Press JH to auto heal.
         self.postHandler()
         return True
 
-    def solver(self, character):
-        if self.triggerCompletionCheck(character):
-            return
-
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
 
     def assignToCharacter(self, character):
         if self.character:

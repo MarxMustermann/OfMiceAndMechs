@@ -43,16 +43,10 @@ good luck!
 
         return
 
-    def getSolvingCommandString(self,character,dryRun=True):
-        return self.command
-
-    def solver(self, character):
-        self.activate()
-        self.triggerCompletionCheck(character)
-
-        if not self.ranCommand:
-            character.runCommandString(self.command)
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+        if not dryRun:
             self.ranCommand = True
-        self.triggerCompletionCheck(character)
+        return (None,(self.command,"Running Command"))
+
 
 src.quests.addType(RunCommand)

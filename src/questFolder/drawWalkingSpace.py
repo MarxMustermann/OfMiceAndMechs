@@ -1,7 +1,7 @@
 import src
 
 
-class DrawWalkingSpace(src.quests.MetaQuestSequence):
+class DrawWalkingSpace(src.quests.MetaQuestSequenceV2):
     type = "DrawWalkingSpace"
 
     def __init__(self, description="draw walking space", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
@@ -44,31 +44,6 @@ Try as hard as you can to achieve this.
 """
 
         return text
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character,dryRun=False)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
-
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun=True):
         if not self.subQuests:

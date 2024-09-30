@@ -1,7 +1,7 @@
 import src
 import random
 
-class Machining(src.quests.MetaQuestSequence):
+class Machining(src.quests.MetaQuestSequenceV2):
     type = "Machining"
 
     def __init__(self, description="machining", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False):
@@ -42,7 +42,7 @@ Press d to move the cursor and show the subquests description.
 
         return False
 
-    def getNextStep(self,character,ignoreCommands=False):
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 
@@ -139,19 +139,6 @@ Press d to move the cursor and show the subquests description.
 
         return (None,None)
 
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character)
-        if nextStep == (None,None):
-            return super().getSolvingCommandString(character)
-        return self.getNextStep(character)[1]
-
-    def generateSubquests(self, character=None):
-        (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-            return
-
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
             return
@@ -207,19 +194,6 @@ Press d to move the cursor and show the subquests description.
         self.startWatching(character,self.handleNoMetalBars, "no metalBars error")
 
         return super().assignToCharacter(character)
-
-    def solver(self, character):
-        (nextQuests,nextCommand) = self.getNextStep(character)
-        if nextQuests:
-            for quest in nextQuests:
-                self.addQuest(quest)
-                self.startWatching(quest,self.handleQuestFailure,"failed")
-            return
-
-        if nextCommand:
-            character.runCommandString(nextCommand[0])
-            return
-        super().solver(character)
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):

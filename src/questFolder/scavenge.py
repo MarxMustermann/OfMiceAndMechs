@@ -3,7 +3,7 @@ import random
 import src
 
 
-class Scavenge(src.quests.MetaQuestSequence):
+class Scavenge(src.quests.MetaQuestSequenceV2):
     type = "Scavenge"
 
     def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None):
@@ -42,7 +42,7 @@ This quest will end when your inventory is full."""
             return True
         return False
 
-    def solver(self, character):
+    def getNextStep(self,character,ignoreCommands=False, dryRun = True):
 
         if self.triggerCompletionCheck(character=character):
             return
@@ -76,10 +76,10 @@ This quest will end when your inventory is full."""
                         hasIdleSubordinate = True
 
                 if hasIdleSubordinate:
-                    character.runCommandString("Hjsssssj")
+                    return (None,("Hjsssssj","make subordinate scavenge"))
                 else:
-                    self.addQuest(src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory"))
-                    return
+                    quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory")
+                    return ([quest],None)
 
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
 
@@ -125,8 +125,8 @@ This quest will end when your inventory is full."""
                         continue
 
                     self.lastMoveDirection = offset
-                    self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot"))
-                    return
+                    quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move to a scavenging spot")
+                    return ([quest],None)
 
             for offset in offsets:
 
@@ -148,8 +148,9 @@ This quest will end when your inventory is full."""
 
 
                 self.lastMoveDirection = offset
-                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
-                return
+                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
+                return ([quest],None)
+
 
             for offset in offsets:
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
@@ -165,14 +166,15 @@ This quest will end when your inventory is full."""
                     continue
 
                 self.lastMoveDirection = offset
-                self.addQuest(src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items"))
-                return
+                quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
+                return ([quest],None)
+
 
             bigPos = (random.randint(1,13),random.randint(1,13),0)
-            self.addQuest(src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items"))
-            return
+            quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random point to search for items")
+            return ([quest],None)
 
-        super().solver(character)
+        return (None,None)
 
     def pickedUpItem(self,extraInfo):
         self.triggerCompletionCheck(extraInfo[0])

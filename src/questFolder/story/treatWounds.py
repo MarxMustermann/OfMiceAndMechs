@@ -31,7 +31,7 @@ class TreatWounds(src.quests.MetaQuestSequenceV2):
             return True
         return False
 
-    def getNextStep(self,character=None,ignoreCommands=False,):
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
             return (None,None)

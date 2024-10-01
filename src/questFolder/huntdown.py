@@ -1,7 +1,7 @@
 import src
 
 
-class Huntdown(src.quests.MetaQuestSequence):
+class Huntdown(src.quests.MetaQuestSequenceV2):
     type = "Huntdown"
 
     def __init__(self, description="huntdown", target=None, lifetime=None):
@@ -49,7 +49,8 @@ class Huntdown(src.quests.MetaQuestSequence):
                 if abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                     newPos = targetPos
                 else:
-                    self.fail()
+                    if not dryRun:
+                        self.fail()                     
                     return (None,None)
 
                 quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos)

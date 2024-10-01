@@ -107,7 +107,8 @@ class RefillPersonalFlask(src.quests.MetaQuestSequenceV2):
             return ([quest],None)
 
         character.addMessage("found no source for goo")
-        self.fail()
+        if not dryRun:
+            self.fail()
         return (None,None)
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom):

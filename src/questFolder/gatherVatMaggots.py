@@ -57,8 +57,6 @@ class GatherVatMaggots(src.quests.MetaQuestSequenceV2):
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
 
-        self.triggerCompletionCheck(character)
-
         if character.getFreeInventorySpace() < 1 and character.inventory[-1].type != "VatMaggot":
            quest = src.quests.questMap["ClearInventory"]()
            return ([quest],None)

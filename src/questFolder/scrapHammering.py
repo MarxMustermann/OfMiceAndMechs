@@ -129,13 +129,14 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
         return super().assignToCharacter(character)
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             for anvil in room.getItemsByType("Anvil"):
                 if anvil.scheduledItems:
-                    beUsefull.addQuest(src.quests.questMap["ScrapHammering"](amount=min(10,len(anvil.scheduledItems))))
-                    beUsefull.idleCounter = 0
-                    return True
+                    quest = src.quests.questMap["ScrapHammering"](amount=min(10,len(anvil.scheduledItems)))
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
 
         itemsInStorage = {}
         freeStorage = 0
@@ -148,8 +149,9 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                     itemsInStorage[item.type] = itemsInStorage.get(item.type,0)+1
 
         if freeStorage and itemsInStorage.get("MetalBars",0) < 40:
-            beUsefull.addQuest(src.quests.questMap["ScrapHammering"](amount=10))
-            beUsefull.idleCounter = 0
-            return True
-        return None
+            quest = src.quests.questMap["ScrapHammering"](amount=10)
+            if not dryRun:
+                        beUsefull.idleCounter = 0
+            return ([quest],None)
+        return (None,None)
 src.quests.addType(ScrapHammering)

@@ -857,6 +857,11 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
+        if len(self.subQuests):
+            self.subQuests[0].triggerCompletionCheck(character)
+            if len(self.subQuests):
+                self.subQuests[0].solver(character)
+            return
         NextStep = self.getNextStep(character, dryRun=False)
         if NextStep is not None:
             (nextQuests, nextCommand) = NextStep

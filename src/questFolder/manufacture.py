@@ -108,7 +108,7 @@ use the manufacturing table on {self.targetPosition}{reason}.
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
@@ -125,16 +125,14 @@ use the manufacturing table on {self.targetPosition}{reason}.
 
                 if checkRoom == character.container:
                     quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
-                    beUsefull.addQuest(quest)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
                 else:
                     quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    beUsefull.addQuest(quest)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
             random.shuffle(items)
@@ -148,17 +146,15 @@ use the manufacturing table on {self.targetPosition}{reason}.
 
                 if checkRoom == character.container:
                     quest = src.quests.questMap["Manufacture"](targetPosition=item.getPosition())
-                    beUsefull.addQuest(quest)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
                 else:
                     quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    beUsefull.addQuest(quest)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
-        return None    
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
+        return (None,None)    
 
 
 src.quests.addType(Manufacture)

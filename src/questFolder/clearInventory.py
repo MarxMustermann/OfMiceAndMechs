@@ -140,40 +140,39 @@ To see your items open the your inventory by pressing i."""
             self.returnToTile = parameters["returnToTile"]
         return super().setParameters(parameters)
     @staticmethod
-    def generateDutyQuest(beUsefull,character,room):
+    def generateDutyQuest(beUsefull,character,room, dryRun):
         if len(character.inventory) > 9:
-            beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
-            beUsefull.idleCounter = 0
-            return True
+            quest = src.quests.questMap["ClearInventory"]()
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([quest],None)
         # clear inventory local
         if len(character.inventory) > 1 and character.container.isRoom:
             emptyInputSlots = character.container.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
             if emptyInputSlots:
-                beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True,reason="clear your inventory"))
-                beUsefull.idleCounter = 0
-                return True
+                quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True,reason="clear your inventory")
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
 
         # go to garbage stockpile and unload
         if len(character.inventory) > 6:
             if "HOMEx" not in character.registers:
-                beUsefull.idleCounter = 0
-                return True
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return (None,None)
             homeRoom = room.container.getRoomByPosition((character.registers["HOMEx"],character.registers["HOMEy"]))[0]
             if not hasattr(homeRoom,"storageRooms") or not homeRoom.storageRooms:
-                return False
+                return (None,None)
 
             quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0))
-            beUsefull.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            beUsefull.idleCounter = 0
-            return True
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([quest],None)
         if len(character.inventory) > 9:
             quest = src.quests.questMap["ClearInventory"]()
-            beUsefull.addQuest(quest)
-            quest.assignToCharacter(character)
-            quest.activate()
-            beUsefull.idleCounter = 0
-            return True
-        return False
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([quest],None)
+        return (None,None)
 src.quests.addType(ClearInventory)

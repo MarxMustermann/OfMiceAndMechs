@@ -107,7 +107,7 @@ class MachinePlacing(src.quests.MetaQuestSequenceV2):
 
 
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
         produceQuest = None
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
@@ -133,10 +133,9 @@ class MachinePlacing(src.quests.MetaQuestSequenceV2):
 
                     if buildSite[1] == "Machine":
                         quest = src.quests.questMap["SetUpMachine"](itemType=buildSite[2]["toProduce"],targetPositionBig=room.getPosition(),targetPosition=buildSite[0])
-                        beUsefull.addQuest(quest)
-                        beUsefull.startWatching(quest,beUsefull.registerDutyFail,"failed")
-                        beUsefull.idleCounter = 0
-                        return True
+                        if not dryRun:
+                            beUsefull.idleCounter = 0
+                        return ([quest],None)
 
 
                     if not hasItem:
@@ -181,39 +180,41 @@ class MachinePlacing(src.quests.MetaQuestSequenceV2):
                         """
 
                     if buildSite[1] != "Command":
-                        beUsefull.addQuest(src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True))
-                        beUsefull.idleCounter = 0
-                        return True
+                        quest = src.quests.questMap["PlaceItem"](itemType=buildSite[1],targetPositionBig=room.getPosition(),targetPosition=buildSite[0],boltDown=True)
+                        if not dryRun:
+                            beUsefull.idleCounter = 0
+                        return ([quest],None)
 
                     if hasItem:
+                        quests = []
                         if buildSite[1] == "Command":
                             if "command" in buildSite[2]:
-                                beUsefull.addQuest(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
+                                quests.append(src.quests.questMap["RunCommand"](command="jjssj%s\n"%(buildSite[2]["command"])))
                             else:
-                                beUsefull.addQuest(src.quests.questMap["RunCommand"](command="jjssj.\n"))
-                        beUsefull.addQuest(src.quests.questMap["RunCommand"](command="lcb"))
-                        beUsefull.addQuest(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
+                                quests.append(src.quests.questMap["RunCommand"](command="jjssj.\n"))
+                        quests.append(src.quests.questMap["RunCommand"](command="lcb"))
+                        quests.append(src.quests.questMap["GoToPosition"](targetPosition=buildSite[0]))
                         buildSite[2]["reservedTill"] = room.timeIndex+100
-                        beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
+                        quests.append(src.quests.questMap["GoToTile"](targetPosition=room.getPosition()))
                         #self.addQuest(produceQuest)
-                        beUsefull.idleCounter = 0
-                        return True
+                        if not dryRun:
+                            beUsefull.idleCounter = 0
+                        return (quests,None)
                     elif source:
                         if not character.getFreeInventorySpace() > 0:
                             quest = src.quests.questMap["ClearInventory"]()
-                            beUsefull.addQuest(quest)
-                            quest.assignToCharacter(character)
-                            quest.activate()
-                            beUsefull.idleCounter = 0
-                            return True
+                            if not dryRun:
+                                beUsefull.idleCounter = 0
+                            return ([quest],None)
 
                         roomPos = (room.xPosition,room.yPosition)
-
+                        quests = []
                         if source[0] != roomPos:
-                            beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
-                        beUsefull.addQuest(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
-                        beUsefull.idleCounter = 0
-                        return True
+                            quests.append(src.quests.questMap["GoToTile"](targetPosition=(roomPos[0],roomPos[1],0)))
+                        quests.append(src.quests.questMap["FetchItems"](toCollect=neededItem,amount=1))
+                        if not dryRun:
+                            beUsefull.idleCounter = 0
+                        return (quests,None)
 
         # spawn city planer if there is none
         terrain = character.getTerrain()
@@ -285,9 +286,8 @@ class MachinePlacing(src.quests.MetaQuestSequenceV2):
 
                     if validTargetPosition:
                         quest = src.quests.questMap["PlaceItem"](targetPositionBig=room.getPosition(),targetPosition=targetPosition,itemType=checkItem,boltDown=True,reason="have at least one scrpa compactor")
-                        beUsefull.addQuest(quest)
-                        return True
-            return None
-        return None
+                        return ([quest],None)
+            return (None,None)
+        return (None,None)
 
 src.quests.addType(MachinePlacing)

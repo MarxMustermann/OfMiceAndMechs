@@ -255,12 +255,13 @@ Draw a floor plan assigned to a room{reason}.
         return (None,None)
 
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             if room.floorPlan:
-                beUsefull.addQuest(src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition()))
-                beUsefull.idleCounter = 0
-                return True
+                quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition())
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
 
         terrain = character.getTerrain()
         numFreeStorage = 0
@@ -325,11 +326,8 @@ Draw a floor plan assigned to a room{reason}.
                             counter += 1
                             quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
                             quests.append(quest)
-
-                    for quest in reversed(quests):
-                        beUsefull.addQuest(quest)
-                    if quests:
-                        return True
+                    quests.reverse()
+                    return (quests,None)
 
         # get storage stockpiles that have the filled tag
         desireFilledStorageSlots = {}
@@ -360,8 +358,7 @@ Draw a floor plan assigned to a room{reason}.
                     if room.getItemByPosition(storageSlot[0]):
                         continue
                     quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="designate special storage for basic items",itemType=checkDesireFilledStorageSlot[0],extraInfo={"desiredState":"filled"})
-                    beUsefull.addQuest(quest)
-                    return True
-        return None
+                    return ([quest],None)
+        return (None,None)
 
 src.quests.addType(DrawFloorPlan)

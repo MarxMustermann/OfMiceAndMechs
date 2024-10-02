@@ -181,7 +181,7 @@ Set the floor plan: {self.floorPlanType}
 
         if not cityPlaner:
             quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="be able to plan city expansion")
-            return (quest,None)
+            return ([quest],None)
 
         numEmptyRooms = 0
         for room in terrain.rooms:
@@ -228,7 +228,7 @@ Set the floor plan: {self.floorPlanType}
             if cityPlaner.scheduledFloorPlans:
                 for room in cityPlaner.getAvailableRooms():
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=cityPlaner.scheduledFloorPlans[0],reason="set a scheduled floor plan",)
-                    return (quest,None)
+                    return ([quest],None)
 
         # ensure there is a general purpose room
         if cityPlaner and not cityPlaner.generalPurposeRooms:
@@ -243,7 +243,7 @@ Set the floor plan: {self.floorPlanType}
                     continue
 
                 quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
-                return (quest,None)
+                return ([quest],None)
 
         # add storage room if needed
         if cityPlaner and cityPlaner.getAvailableRooms():
@@ -260,7 +260,7 @@ Set the floor plan: {self.floorPlanType}
 
             if numFreeStorage < 20:
                 quest = src.quests.questMap["AssignFloorPlan"](roomPosition=cityPlaner.getAvailableRooms()[0].getPosition(),floorPlanType="storage",reason="increase storage")
-                return (quest,None)
+                return ([quest],None)
 
         if cityPlaner and not cityPlaner.generalPurposeRooms:
             for room in terrain.rooms:
@@ -274,7 +274,7 @@ Set the floor plan: {self.floorPlanType}
                     continue
 
                 quest = src.quests.questMap["DesignateRoom"](roomPosition=room.getPosition(),roomType="generalPurposeRoom",reason="reserve some room for unforeseen needs")
-                return (quest,None)
+                return ([quest],None)
 
         foundEnemies = False
         for checkCharacter in terrain.characters:
@@ -292,7 +292,7 @@ Set the floor plan: {self.floorPlanType}
             if not hasTemple:
                 for room in cityPlaner.getAvailableRooms():
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType="temple",reason="have a temple to place glass hearts")
-                    return (quest,None)
+                    return ([quest],None)
 
         """
         #set special purpose room
@@ -318,7 +318,7 @@ Set the floor plan: {self.floorPlanType}
             if floorPlansToSet:
                 for room in cityPlaner.getAvailableRooms():
                     quest = src.quests.questMap["AssignFloorPlan"](roomPosition=room.getPosition(),floorPlanType=random.choice(floorPlansToSet),reason="start the process of making the room useful")
-                    return (quest,None)
+                    return ([quest],None)
                 return (None,None)
             return (None,None)
         return (None,None)

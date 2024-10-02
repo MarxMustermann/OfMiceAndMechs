@@ -271,8 +271,8 @@ Press d to move the cursor and show the subquests description.
             submenue = character.macroState.get("submenue")
             if submenue:
                 if isinstance(submenue,src.interaction.SelectionMenu):
-                    return (None,("esc","Exit Menu"))
-                return (None,("esc","Exit Menu"))
+                    return (None,(["esc"],"exit submenu"))
+                return (None,(["esc"],"exit submenu"))
 
         if character.health > character.maxHealth//5:
             if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():

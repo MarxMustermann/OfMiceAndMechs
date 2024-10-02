@@ -145,10 +145,10 @@ class Eat(src.quests.MetaQuestSequenceV2):
         quest = src.quests.questMap["GoToPosition"](targetPosition=sourceSlots[0][0],description="go to "+itemType,ignoreEndBlocked=True)
         return ([quest],None)
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if character.satiation < 200:
-            beUsefull.addQuest(src.quests.questMap["Eat"]())
-            beUsefull.idleCounter = 0
-            return True
-        return None
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([src.quests.questMap["Eat"]()],None)
+        return (None,None)
 src.quests.addType(Eat)

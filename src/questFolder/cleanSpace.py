@@ -128,12 +128,12 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if len(character.inventory):
             quest = src.quests.questMap["ClearInventory"]()
-            beUsefull.addQuest(quest)
-            beUsefull.idleCounter = 0
-            return True
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([quest],None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             foundEnemy = False
@@ -155,16 +155,12 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
 
                     if character.getFreeInventorySpace() <= 0:
                         quest = src.quests.questMap["ClearInventory"]()
-                        beUsefull.addQuest(quest)
                         beUsefull.idleCounter = 0
-                        return True
-
+                        return ([quest],None)
                     quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
-                    beUsefull.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             foundEnemy = False
@@ -192,9 +188,9 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                 if not misplacmentFound:
                     continue
 
-                beUsefull.addQuest(src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=slot[0]))
-                beUsefull.idleCounter = 0
-                return True
-
-        return None
+                quest = src.quests.questMap["CleanSpace"](targetPositionBig=room.getPosition(),targetPosition=slot[0])
+                if not dryRun:
+                    beUsefull.idleCounter = 0
+                return ([quest],None)
+        return (None,None)
 src.quests.addType(CleanSpace)

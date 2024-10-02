@@ -126,10 +126,14 @@ class GatherVatMaggots(src.quests.MetaQuestSequenceV2):
         self.fail(reason="no tree")
         return (None,None)
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
+        try:
+            terrain.alarm
+        except:
+            terrain.alarm = False
         if terrain.alarm:
-            return None
+            return (None,None)
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             emptyInputSlots = room.getEmptyInputslots(itemType="VatMaggot")
             if emptyInputSlots:
@@ -147,21 +151,24 @@ class GatherVatMaggots(src.quests.MetaQuestSequenceV2):
                     if source is None and not character.getTerrain().forests:
                         continue
 
-                    if src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room):
-                        beUsefull.idleCounter = 0
-                        return True
+                    step =  src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room)
+                    if step != (None,None):    
+                        if not dryRun:
+                            beUsefull.idleCounter = 0
+                        return step
 
                     if source:
                         pos = source[0]
                     else:
                         pos = random.choice(character.getTerrain().forests)
 
-                    beUsefull.addQuest(src.quests.questMap["RestockRoom"](toRestock="VatMaggot"))
-                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)))
-                    beUsefull.addQuest(src.quests.questMap["GatherVatMaggots"](targetPosition=pos))
-                    beUsefull.addQuest(src.quests.questMap["GoToTile"](targetPosition=pos))
-                    beUsefull.idleCounter = 0
-                    return True
-        return None
+                    quests = [src.quests.questMap["RestockRoom"](toRestock="VatMaggot"),
+                    src.quests.questMap["GoToTile"](targetPosition=(room.xPosition,room.yPosition)),
+                    src.quests.questMap["GatherVatMaggots"](targetPosition=pos),
+                    src.quests.questMap["GoToTile"](targetPosition=pos)]
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return (quests,None)
+        return (None,None)
 
 src.quests.addType(GatherVatMaggots)

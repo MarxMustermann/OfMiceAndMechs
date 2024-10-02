@@ -186,7 +186,7 @@ Press d to move the cursor and show the subquests description.
         result.append((self.targetPosition,"target"))
         return result
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         #src.gamestate.gamestate.mainChar = character
         terrain = character.getTerrain()
         try:
@@ -194,15 +194,16 @@ Press d to move the cursor and show the subquests description.
         except:
             terrain.alarm = False
         if terrain.alarm:
-            return None
+            return (None,None)
 
         for x in range(1,13):
             for y in range(1,13):
                 items = terrain.getItemByPosition((x*15+7,y*15+7,0))
                 if items and items[0].type == "RoomBuilder":
-                    beUsefull.addQuest(src.quests.questMap["BuildRoom"](targetPosition=(x,y,0)))
-                    beUsefull.idleCounter = 0
-                    return True
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(x,y,0))
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
 
         rooms = terrain.getRoomByPosition((7,7,0))
         if rooms:
@@ -213,18 +214,19 @@ Press d to move the cursor and show the subquests description.
                     items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                     if items and items[-1].type == "RoomBuilder":
                         quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
-                        beUsefull.addQuest(quest)
-                        beUsefull.idleCounter = 0
-                        return True
+                        if not dryRun:
+                            beUsefull.idleCounter = 0
+                        return ([quest],None)
 
                 while cityPlaner.plannedRooms:
                     if terrain.getRoomByPosition(cityPlaner.plannedRooms[0]):
                         cityPlaner.plannedRooms.remove(cityPlaner.plannedRooms[0])
                         continue
 
-                    beUsefull.addQuest(src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0]))
-                    beUsefull.idleCounter = 0
-                    return True
+                    quest= src.quests.questMap["BuildRoom"](targetPosition=cityPlaner.plannedRooms[0])
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
 
         if not cityPlaner or cityPlaner.autoExtensionThreashold > 0:
             # do not build more rooms when there is an empty room
@@ -241,7 +243,7 @@ Press d to move the cursor and show the subquests description.
                 threashold = cityPlaner.autoExtensionThreashold
 
             if numEmptyRooms >= threashold:
-                return None
+                return (None,None)
 
             baseNeighbours = []
             offsets = ((0,1,0),(1,0,0),(0,-1,0),(-1,0,0))
@@ -265,22 +267,22 @@ Press d to move the cursor and show the subquests description.
                 items = terrain.itemsByCoordinate.get((candidate[0]*15+7,candidate[1]*15+7,0))
                 if items and items[-1].type == "RoomBuilder":
                     quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
-                    beUsefull.addQuest(quest)
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
 
             for candidate in possibleBuildSites:
                 if len(terrain.itemsByBigCoordinate.get(candidate,[])) < 5:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
-                    beUsefull.addQuest(quest)
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
             for candidate in possibleBuildSites:
                 quest = src.quests.questMap["BuildRoom"](targetPosition=candidate)
-                beUsefull.addQuest(quest)
-                beUsefull.idleCounter = 0
-                return True
-            return None
-        return None
+                if not dryRun:
+                        beUsefull.idleCounter = 0
+                return ([quest],None)
+            return (None,None)
+        return (None,None)
 
 src.quests.addType(BuildRoom)

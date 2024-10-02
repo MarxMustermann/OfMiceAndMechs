@@ -106,7 +106,7 @@ operate the machine on {self.targetPosition}{reason}.
         return result
 
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
         for checkRoom in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             items = checkRoom.itemsOnFloor[:]
@@ -120,17 +120,15 @@ operate the machine on {self.targetPosition}{reason}.
                     continue
                 if checkRoom == character.container:
                     quest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition())
-                    beUsefull.addQuest(quest)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
                 else:
                     quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a machine room")
-                    beUsefull.addQuest(quest)
-                    quest.activate()
-                    beUsefull.idleCounter = 0
-                    return True
-        return None
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return ([quest],None)
+        return (None,None)
 
 
 src.quests.addType(OperateMachine)

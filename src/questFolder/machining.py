@@ -195,14 +195,15 @@ Press d to move the cursor and show the subquests description.
 
         return super().assignToCharacter(character)
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             for machiningTable in room.getItemsByType("MachiningTable"):
                 if machiningTable.scheduledItems:
-                    beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
-                    beUsefull.addQuest(src.quests.questMap["Machining"](amount=1,toProduce=machiningTable.scheduledItems[0]))
-                    beUsefull.idleCounter = 0
-                    return True
+                    quests = [src.quests.questMap["ClearInventory"](),
+                              src.quests.questMap["Machining"](amount=1,toProduce=machiningTable.scheduledItems[0])]
+                    if not dryRun:
+                        beUsefull.idleCounter = 0
+                    return (quests,None)
 
         machinesInStorage = {}
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
@@ -225,17 +226,15 @@ Press d to move the cursor and show the subquests description.
                     continue
                 if buildSite[2]["toProduce"] in machinesInStorage:
                     continue
-                beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
-                newQuest = src.quests.questMap["Machining"](toProduce=buildSite[2]["toProduce"],amount=1,produceToInventory=False)
-                beUsefull.addQuest(newQuest)
-                return True
+                quests = [src.quests.questMap["ClearInventory"](),
+                          src.quests.questMap["Machining"](toProduce=buildSite[2]["toProduce"],amount=1,produceToInventory=False)]
+                return (quests,None)
 
         itemsToCheck = ["Wall","Case","Frame","Rod","Door","RoomBuilder","ScrapCompactor","Sword","Armor"]
         for itemType in itemsToCheck:
             if itemType not in machinesInStorage:
-                beUsefull.addQuest(src.quests.questMap["ClearInventory"]())
-                newQuest = src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)
-                beUsefull.addQuest(newQuest)
-                return True
-        return None
+                quests = [src.quests.questMap["ClearInventory"](),
+                          src.quests.questMap["Machining"](toProduce=itemType,amount=1,produceToInventory=False)]
+                return (quests,None)
+        return (None,None)
 src.quests.addType(Machining)

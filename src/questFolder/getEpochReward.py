@@ -213,7 +213,7 @@ This will allow you to focus on other tasks.
         return False
 
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
 
         foundShrine = None
@@ -224,7 +224,7 @@ This will allow you to focus on other tasks.
                 foundShrine = checkShrine
 
         if not foundShrine:
-            return False
+            return (None,None)
 
         # gather npc duties
         npcDuties = {}
@@ -272,10 +272,9 @@ This will allow you to focus on other tasks.
                     quests.append(quest)
                     break
 
-        for quest in reversed(quests):
-            beUsefull.addQuest(quest)
         if quests:
-            return True
-        return None
+            quests.reverse()
+            return (quests,None)
+        return (None,None)
 
 src.quests.addType(GetEpochReward)

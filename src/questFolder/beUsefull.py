@@ -5,7 +5,7 @@ import src
 
 logger = logging.getLogger(__name__)
 
-class BeUsefull(src.quests.MetaQuestSequence):
+class BeUsefull(src.quests.MetaQuestSequenceV2):
     type = "BeUsefull"
 
     def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None):
@@ -101,14 +101,6 @@ Press d to move the cursor and show the subquests description.
 """))
         return out
 
-    def getSolvingCommandString(self,character,dryRun=True):
-        if not self.subQuests:
-            submenue = character.macroState.get("submenue")
-            if submenue:
-                if isinstance(submenue,src.interaction.SelectionMenu):
-                    return ["esc"]
-                return ["esc"]
-        return super().getSolvingCommandString(character,dryRun=dryRun)
 
     def awardnearbyKillReputation(self,extraInfo):
         if extraInfo["deadChar"].faction != self.character.faction:
@@ -224,35 +216,6 @@ Press d to move the cursor and show the subquests description.
             self.targetPosition = parameters["targetPosition"]
         return super().setParameters(parameters)
 
-    def solver(self, character):
-
-        if character.health > character.maxHealth//5:
-            if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
-                quest = src.quests.questMap["Fight"]()
-                self.addQuest(quest)
-                quest.activate()
-                quest.assignToCharacter(character)
-                return
-
-        character.timeTaken += 0.1
-        for quest in self.subQuests[:]:
-            if quest.completed:
-                self.subQuests.remove(quest)
-
-        if not self.subQuests:
-            command = self.getSolvingCommandString(character)
-            if command:
-                character.runCommandString(command)
-                character.timeTaken += 1
-                return
-
-            self.generateSubquests(character)
-            if self.subQuests:
-                character.timeTaken += 1
-                return
-
-        super().solver(character)
-
     def getRandomPriotisedRooms(self,character,currentRoom):
         prioSortedRooms = {}
 
@@ -303,60 +266,49 @@ Press d to move the cursor and show the subquests description.
         return source
 
 
-    def generateSubquests(self,character):
+    def getNextStep(self, character=None, ignoreCommands=False, dryRun = True):
+        if not self.subQuests:
+            submenue = character.macroState.get("submenue")
+            if submenue:
+                if isinstance(submenue,src.interaction.SelectionMenu):
+                    return (None,("esc","Exit Menu"))
+                return (None,("esc","Exit Menu"))
 
-        for quest in self.subQuests:
-            if quest.completed:
-                self.subQuests.remove(quest)
-                break
-
-        self.triggerCompletionCheck(character)
-
+        if character.health > character.maxHealth//5:
+            if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"]()
+                return ([quest],None)
         if (not len(self.subQuests) or not isinstance(self.subQuests[0],src.quests.questMap["Fight"])) and character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"]()
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
+            return ([quest],None)
+
 
         terrain = character.getTerrain()
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
-            self.addQuest(quest)
-            quest.activate()
-            quest.assignToCharacter(character)
-            return
+            return ([quest],None)
 
         if not character.container:
-            return
+            return (None,None)
 
         if not isinstance(character.container,src.rooms.Room):
             if character.yPosition%15 == 14:
-                character.runCommandString("w")
-                return
+                return (None,("w","enter room"))
             if character.yPosition%15 == 0:
-                character.runCommandString("s")
-                return
+                return (None,("s","enter room"))
             if character.xPosition%15 == 14:
-                character.runCommandString("a")
-                return
+                return (None,("a","enter room"))
             if character.xPosition%15 == 0:
-                character.runCommandString("d")
-                return
+                return (None,("d","enter room"))
 
         if not isinstance(character.container,src.rooms.Room):
             if self.targetPosition:
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                self.addQuest(quest)
-                quest.activate()
-                quest.assignToCharacter(character)
+                return ([quest],None)
             else:
                 quest = src.quests.questMap["GoHome"]()
-                self.addQuest(quest)
-                quest.activate()
-                quest.assignToCharacter(character)
-            return
-
+                return ([quest],None)
+            
         room = character.container
 
         if character.health < character.maxHealth//2:
@@ -370,30 +322,25 @@ Press d to move the cursor and show the subquests description.
 
             if foundItem:
                 quest = src.quests.questMap["Heal"]()
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
+                return ([quest],None)
 
         if "guarding" in character.duties:
             for otherCharacter in room.characters:
                 if otherCharacter.faction != character.faction:
-                    character.runCommandString("gg")
-                    self.idleCounter = 0
-                    return
+                    if not dryRun:
+                        self.idleCounter = 0
+                    return (None,("gg","guard"))
 
         if self.targetPosition:
             if not (self.targetPosition[0] == room.xPosition and self.targetPosition[1] == room.yPosition):
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                return
-
-        if src.quests.questMap["RefillPersonalFlask"].generateDutyQuest(self,character,room):
-                        return
-        if src.quests.questMap["Eat"].generateDutyQuest(self,character,room):
-                        return
+                return ([quest],None)
+        step = src.quests.questMap["RefillPersonalFlask"].generateDutyQuest(self,character,room,dryRun)
+        if step != (None,None):
+            return step
+        step = src.quests.questMap["Eat"].generateDutyQuest(self,character,room,dryRun)
+        if step != (None,None):
+                        return step
 
         terrain = character.getTerrain()
         for checkRoom in terrain.rooms:
@@ -407,11 +354,7 @@ Press d to move the cursor and show the subquests description.
                 checkRoom.requiredDuties.remove(duty)
 
                 quest = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition())
-                self.addQuest(quest)
-                quest.activate()
-                self.idleCounter = 0
-                return
-
+                return ([quest],None)
         try:
             self.numTasksDone
         except:
@@ -424,137 +367,76 @@ Press d to move the cursor and show the subquests description.
         self.numTasksDone += 1
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
             self.postHandler()
-            return
+            return (None,None)
 
         room = character.container
         for duty in character.getRandomProtisedDuties():
             match (duty):
-                case "turret loading":
-                    pass #TODO create a quest
                 case "flask filling":
-                    if src.quests.questMap["FillFlask"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["FillFlask"].generateDutyQuest(self,character,room,dryRun)
                 case "machine operation":
-                    if src.quests.questMap["OperateMachine"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["OperateMachine"].generateDutyQuest(self,character,room,dryRun)
                 case "manufacturing":
-                    if src.quests.questMap["Manufacture"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["Manufacture"].generateDutyQuest(self,character,room,dryRun)
                 case "resource gathering":
-                    if src.quests.questMap["GatherScrap"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["GatherScrap"].generateDutyQuest(self,character,room,dryRun)
                 case "maggot gathering":
-                    if src.quests.questMap["GatherVatMaggots"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["GatherVatMaggots"].generateDutyQuest(self,character,room,dryRun)
                 case "cleaning":
-                    if src.quests.questMap["CleanSpace"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["CleanSpace"].generateDutyQuest(self,character,room,dryRun)
                 case "hauling":
-                    if src.quests.questMap["RestockRoom"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["RestockRoom"].generateDutyQuest(self,character,room,dryRun)
                 case "resource fetching":
-                    if src.quests.questMap["FetchItems"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["FetchItems"].generateDutyQuest(self,character,room,dryRun)
                 case "painting":
-                    if src.quests.questMap["DrawFloorPlan"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["DrawFloorPlan"].generateDutyQuest(self,character,room,dryRun)
                 case "machine placing":
-                    if src.quests.questMap["MachinePlacing"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["MachinePlacing"].generateDutyQuest(self,character,room,dryRun)
                 case "room building":
-                    if src.quests.questMap["BuildRoom"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["BuildRoom"].generateDutyQuest(self,character,room,dryRun)
                 case "scavenging":
-                    if src.quests.questMap["Scavenge"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["Scavenge"].generateDutyQuest(self,character,room,dryRun)
                 case "scrap hammering":
-                    if src.quests.questMap["ScrapHammering"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["ScrapHammering"].generateDutyQuest(self,character,room,dryRun)
                 case "metal working":
-                    if src.quests.questMap["MetalWorking"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["MetalWorking"].generateDutyQuest(self,character,room,dryRun)
                 case "machining":
-                    if src.quests.questMap["Machining"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["Machining"].generateDutyQuest(self,character,room,dryRun)
                 case "city planning":
-                    if src.quests.questMap["AssignFloorPlan"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["AssignFloorPlan"].generateDutyQuest(self,character,room,dryRun)
                 case "clone spawning":
-                    if src.quests.questMap["GetEpochReward"].generateDutyQuest(self,character,room):
-                        return
+                    step = src.quests.questMap["GetEpochReward"].generateDutyQuest(self,character,room,dryRun)
                 case "praying":
-                    if src.quests.questMap["Pray"].generateDutyQuest(self,character,room):
-                        return
-                case "tutorial":
-                    if character == src.gamestate.gamestate.mainChar and self.specialTutorialLogic(character,room):
-                        return
+                    step = src.quests.questMap["Pray"].generateDutyQuest(self,character,room,dryRun)
+            if step != (None,None):
+                return step
         if self.endOnIdle:
             self.postHandler()
-            return
+            return (None,None)
 
         for room in character.getTerrain().rooms:
             if room.tag == "temple":
                 if room != character.container:
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition(),description="go to temple")
-                    self.idleCounter += 1
-                    self.addQuest(quest)
-                    return
+                    if not dryRun:
+                        self.idleCounter += 1
+                    return ([quest],None)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
-                self.idleCounter += 1
-                self.addQuest(quest)
-                character.timeTaken += self.idleCounter
-                return
-
-        if 1 == 1:
-            room = character.getTerrain().getRoomByPosition((7,7,0))[0]
-            if room != character.container:
-                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to meeting hall")
-                self.idleCounter += 1
-                self.addQuest(quest)
-                return
-            quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
-            self.idleCounter += 1
-            self.addQuest(quest)
-            character.timeTaken += self.idleCounter
-            return
-
-
-        if not self.targetPosition:
-            self.checkedRoomPositions.append(character.getBigPosition())
-
-            directions = [(-1,0),(1,0),(0,-1),(0,1)]
-            random.shuffle(directions)
-            for direction in directions:
-                newPos = (room.xPosition+direction[0],room.yPosition+direction[1],0)
-                if newPos in self.checkedRoomPositions:
-                    continue
-                if room.container.getRoomByPosition(newPos):
-                    quest = src.quests.questMap["GoToTile"](targetPosition=newPos,description="look for job on tile ")
+                if not dryRun:
                     self.idleCounter += 1
-                    self.addQuest(quest)
-                    quest.assignToCharacter(character)
-                    quest.activate()
-                    character.runCommandString(f"{self.idleCounter}.")
-                    return
+                character.timeTaken += self.idleCounter
+                return ([quest],None)
 
-            for room in terrain.rooms:
-                newPos = room.getPosition()
-                if newPos in self.checkedRoomPositions:
-                    continue
-                quest = src.quests.questMap["GoToTile"](targetPosition=newPos,description="look for job on tile ")
-                self.idleCounter += 3
-                self.addQuest(quest)
-                quest.assignToCharacter(character)
-                quest.activate()
-                character.runCommandString(f"{self.idleCounter}.")
-                return
-
-            self.checkedRoomPositions = []
-            self.idleCounter += 10
-            character.runCommandString("20.")
-            return
-
-        self.idleCounter += 5
-        character.runCommandString("20.")
+        room = character.getTerrain().getRoomByPosition((7,7,0))[0]
+        if room != character.container:
+            quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to meeting hall")
+            if not dryRun:
+                self.idleCounter += 1
+            return ([quest],None)
+        quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
+        if not dryRun:
+            self.idleCounter += 1
+        character.timeTaken += self.idleCounter
+        return ([quest],None)
 
 src.quests.addType(BeUsefull)

@@ -111,10 +111,10 @@ class RefillPersonalFlask(src.quests.MetaQuestSequenceV2):
             self.fail()
         return (None,None)
     @staticmethod
-    def generateDutyQuest(beUsefull,character,currentRoom):
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if character.flask and character.flask.uses < 3:
-            beUsefull.addQuest(src.quests.questMap["RefillPersonalFlask"]())
-            beUsefull.idleCounter = 0
-            return True
-        return None
+            if not dryRun:
+                beUsefull.idleCounter = 0
+            return ([src.quests.questMap["RefillPersonalFlask"]()],None)
+        return (None,None)
 src.quests.addType(RefillPersonalFlask)

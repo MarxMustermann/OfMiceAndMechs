@@ -3,7 +3,7 @@ import random
 import src
 
 
-class RestockRoom(src.quests.MetaQuestSequenceV2):
+class RestockRoom(src.quests.MetaQuestSequence):
     type = "RestockRoom"
 
     def __init__(self, description="restock room", creator=None, targetPositionBig=None,toRestock=None,allowAny=False,reason=None,targetPosition=None):

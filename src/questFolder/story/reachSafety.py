@@ -1,7 +1,7 @@
 import src
 
 
-class ReachSafety(src.quests.MetaQuestSequenceV2):
+class ReachSafety(src.quests.MetaQuestSequence):
     type = "ReachSafety"
 
     def __init__(self, description="reach safety", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):

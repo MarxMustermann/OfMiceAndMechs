@@ -1,7 +1,7 @@
 import src
 import random
 
-class MetalWorking(src.quests.MetaQuestSequenceV2):
+class MetalWorking(src.quests.MetaQuestSequence):
     type = "MetalWorking"
 
     def __init__(self, description="metal working", creator=None, reason=None, toProduce=None, amount=None, produceToInventory=False,tryHard=False):

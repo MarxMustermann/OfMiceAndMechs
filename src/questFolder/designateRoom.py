@@ -1,7 +1,7 @@
 import src
 
 
-class DesignateRoom(src.quests.MetaQuestSequenceV2):
+class DesignateRoom(src.quests.MetaQuestSequence):
     type = "DesignateRoom"
 
     def __init__(self, description="designate room", creator=None, roomPosition=None, roomType="generalPurposeRoom", roomTag="",reason=None):

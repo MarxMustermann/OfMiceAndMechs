@@ -3,7 +3,7 @@ import random
 import src
 
 
-class Scavenge(src.quests.MetaQuestSequenceV2):
+class Scavenge(src.quests.MetaQuestSequence):
     type = "Scavenge"
 
     def __init__(self, description="scavenge", creator=None, toCollect=None, lifetime=None, reason=None):

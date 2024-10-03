@@ -1,7 +1,7 @@
 import src
 
 
-class DrawWalkingSpace(src.quests.MetaQuestSequenceV2):
+class DrawWalkingSpace(src.quests.MetaQuestSequence):
     type = "DrawWalkingSpace"
 
     def __init__(self, description="draw walking space", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):

@@ -1,7 +1,7 @@
 import src
 
 
-class ScheduleRoomBuilding(src.quests.MetaQuestSequenceV2):
+class ScheduleRoomBuilding(src.quests.MetaQuestSequence):
     type = "ScheduleRoomBuilding"
 
     def __init__(self, description="schedule room building", creator=None, roomPosition=None,reason=None):

@@ -1,7 +1,7 @@
 import src
 
 
-class ProduceItem(src.quests.MetaQuestSequenceV2):
+class ProduceItem(src.quests.MetaQuestSequence):
     type = "ProduceItem"
 
     def __init__(self, description="produce item", creator=None, command=None, lifetime=None, targetPosition=None, itemType=None,tryHard=False,reason=None):

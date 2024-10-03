@@ -1,7 +1,7 @@
 import src
 
 
-class PlaceItem(src.quests.MetaQuestSequenceV2):
+class PlaceItem(src.quests.MetaQuestSequence):
     type = "PlaceItem"
 
     def __init__(self, description="place item", creator=None, lifetime=None, targetPosition=None, targetPositionBig=None, itemType=None, tryHard=False, boltDown=False,reason=None):

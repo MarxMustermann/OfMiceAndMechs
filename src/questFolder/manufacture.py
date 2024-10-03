@@ -1,7 +1,7 @@
 import src
 import random
 
-class Manufacture(src.quests.MetaQuestSequenceV2):
+class Manufacture(src.quests.MetaQuestSequence):
     type = "Manufacture"
 
     def __init__(self, description="manufacture", creator=None, targetPosition=None, targetPositionBig=None,reason=None):

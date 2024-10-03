@@ -1,7 +1,7 @@
 import src
 
 
-class SecureBase(src.quests.MetaQuestSequenceV2):
+class SecureBase(src.quests.MetaQuestSequence):
     type = "SecureBase"
 
     def __init__(self, description="secure base", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):

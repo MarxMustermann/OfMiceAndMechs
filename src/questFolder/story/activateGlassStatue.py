@@ -1,7 +1,7 @@
 import src
 
 
-class ActivateGlassStatue(src.quests.MetaQuestSequenceV2):
+class ActivateGlassStatue(src.quests.MetaQuestSequence):
     type = "ActivateGlassStatue"
 
     def __init__(self, description="activate glass statue", creator=None, targetPosition=None, targetPositionBig=None, reason=None):

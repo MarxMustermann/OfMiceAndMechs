@@ -1,7 +1,7 @@
 import src
 
 
-class CollectGlassHearts(src.quests.MetaQuestSequenceV2):
+class CollectGlassHearts(src.quests.MetaQuestSequence):
     type = "CollectGlassHearts"
 
     def __init__(self, description="collect glass hearts", creator=None, lifetime=None):

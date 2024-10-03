@@ -1,7 +1,7 @@
 import src
 
 
-class BaitSpiders(src.quests.MetaQuestSequenceV2):
+class BaitSpiders(src.quests.MetaQuestSequence):
     type = "BaitSpiders"
 
     def __init__(self, description="bait spiders", creator=None, lifetime=None, targetPositionBig=None, paranoid=False, showCoordinates=True,direction=None,reason=None):

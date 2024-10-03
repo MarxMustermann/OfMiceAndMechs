@@ -1,7 +1,7 @@
 import src
 
 
-class ScrapHammering(src.quests.MetaQuestSequenceV2):
+class ScrapHammering(src.quests.MetaQuestSequence):
     type = "ScrapHammering"
 
     def __init__(self, description="scrap hammering", creator=None, reason=None, amount=None,produceToInventory=False):

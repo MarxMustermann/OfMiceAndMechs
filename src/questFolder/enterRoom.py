@@ -1,7 +1,7 @@
 import src
 
 
-class EnterRoom(src.quests.MetaQuestSequenceV2):
+class EnterRoom(src.quests.MetaQuestSequence):
     type = "EnterRoom"
 
     def __init__(self, description="enter room", creator=None, command=None, lifetime=None):

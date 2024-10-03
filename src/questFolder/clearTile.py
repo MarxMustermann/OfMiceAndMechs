@@ -3,7 +3,7 @@ import random
 import src
 
 
-class ClearTile(src.quests.MetaQuestSequenceV2):
+class ClearTile(src.quests.MetaQuestSequence):
     type = "ClearTile"
 
     def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None):

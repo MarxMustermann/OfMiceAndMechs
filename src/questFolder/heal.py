@@ -1,7 +1,7 @@
 import src
 import random
 
-class Heal(src.quests.MetaQuestSequenceV2):
+class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
 
     def __init__(self, description="heal"):

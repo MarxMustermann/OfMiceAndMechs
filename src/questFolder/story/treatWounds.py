@@ -2,7 +2,7 @@ import src
 import random
 
 
-class TreatWounds(src.quests.MetaQuestSequenceV2):
+class TreatWounds(src.quests.MetaQuestSequence):
     type = "TreatWounds"
 
     def __init__(self, description="treat wounds", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):

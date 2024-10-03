@@ -1,7 +1,7 @@
 import src
 
 
-class FillFlask(src.quests.MetaQuestSequenceV2):
+class FillFlask(src.quests.MetaQuestSequence):
     type = "FillFlask"
 
     def __init__(self, description="fill flask", creator=None, command=None, lifetime=None):

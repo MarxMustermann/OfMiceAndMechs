@@ -1,6 +1,6 @@
 import src
 
-class ResetFaction(src.quests.MetaQuestSequenceV2):
+class ResetFaction(src.quests.MetaQuestSequence):
     type = "ResetFaction"
 
     def __init__(self, description="reset faction", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):

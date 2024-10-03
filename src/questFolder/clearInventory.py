@@ -1,7 +1,7 @@
 import src
 
 
-class ClearInventory(src.quests.MetaQuestSequenceV2):
+class ClearInventory(src.quests.MetaQuestSequence):
     type = "ClearInventory"
 
     def __init__(self, description="clear inventory", creator=None, targetPosition=None, returnToTile=True,tryHard=False,reason=None):

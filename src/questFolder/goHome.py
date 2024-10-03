@@ -1,7 +1,7 @@
 import src
 
 
-class GoHome(src.quests.MetaQuestSequenceV2):
+class GoHome(src.quests.MetaQuestSequence):
     type = "GoHome"
 
     def __init__(self, description="go home", creator=None, paranoid=False,reason=None):

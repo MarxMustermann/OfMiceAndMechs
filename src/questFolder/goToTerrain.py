@@ -1,7 +1,7 @@
 import src
 
 
-class GoToTerrain(src.quests.MetaQuestSequenceV2):
+class GoToTerrain(src.quests.MetaQuestSequence):
     type = "GoToTerrain"
 
     def __init__(self, description="go to terrain", creator=None, targetTerrain=None):

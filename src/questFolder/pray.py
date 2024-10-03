@@ -1,7 +1,7 @@
 import src
 
 
-class Pray(src.quests.MetaQuestSequenceV2):
+class Pray(src.quests.MetaQuestSequence):
     type = "Pray"
 
     def __init__(self, description="pray", creator=None, targetPosition=None, targetPositionBig=None,reason=None,shrine=True):

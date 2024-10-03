@@ -1,7 +1,7 @@
 import src
 import random
 
-class CleanSpace(src.quests.MetaQuestSequenceV2):
+class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
     def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True):

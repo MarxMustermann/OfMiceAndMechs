@@ -1,7 +1,7 @@
 import src
 
 
-class EscapeLab(src.quests.MetaQuestSequenceV2):
+class EscapeLab(src.quests.MetaQuestSequence):
     type = "EscapeLab"
 
     def __init__(self, description="escape lab", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None):

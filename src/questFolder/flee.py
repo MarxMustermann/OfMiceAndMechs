@@ -3,7 +3,7 @@ import random
 import src
 
 
-class Flee(src.quests.MetaQuestSequenceV2):
+class Flee(src.quests.MetaQuestSequence):
     type = "Flee"
 
     def __init__(self, description="Flee", creator=None, command=None, lifetime=None, weaponOnly=False):

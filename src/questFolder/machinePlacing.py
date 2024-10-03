@@ -1,7 +1,7 @@
 import src
 import random
 
-class MachinePlacing(src.quests.MetaQuestSequenceV2):
+class MachinePlacing(src.quests.MetaQuestSequence):
     type = "MachinePlacing"
 
     def __init__(self, description="place machines", creator=None, targetPosition=None,toRestock=None,allowAny=None):

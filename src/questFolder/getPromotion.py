@@ -1,7 +1,7 @@
 import src
 
 
-class GetPromotion(src.quests.MetaQuestSequenceV2):
+class GetPromotion(src.quests.MetaQuestSequence):
     type = "GetPromotion"
 
     def __init__(self, targetRank, description="get promotion", reason=None):

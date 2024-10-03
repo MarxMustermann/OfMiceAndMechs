@@ -1,7 +1,7 @@
 import src
 
 
-class Ascend(src.quests.MetaQuestSequenceV2):
+class Ascend(src.quests.MetaQuestSequence):
     type = "Ascend"
 
     def __init__(self, description="ascend", creator=None, reason=None):

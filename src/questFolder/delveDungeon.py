@@ -4,7 +4,7 @@ import random
 # equip
 # rest
 
-class DelveDungeon(src.quests.MetaQuestSequenceV2):
+class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 
     def __init__(self, description="delve dungeon",targetTerrain=None,itemID=None,storyText=None, directSendback=False, suicidal=False):

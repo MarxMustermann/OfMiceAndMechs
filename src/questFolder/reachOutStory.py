@@ -1,7 +1,7 @@
 import src
 
 
-class ReachOutStory(src.quests.MetaQuestSequenceV2):
+class ReachOutStory(src.quests.MetaQuestSequence):
     type = "ReachOutStory"
 
     def __init__(self, description="reach out to implant", creator=None):

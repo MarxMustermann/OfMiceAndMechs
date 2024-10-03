@@ -1,7 +1,7 @@
 import src
 
 
-class Vanish(src.quests.MetaQuestSequenceV2):
+class Vanish(src.quests.MetaQuestSequence):
     type = "Vanish"
 
     def __init__(self, description="vanish", creator=None, reason=None):

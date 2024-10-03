@@ -1,7 +1,7 @@
 import src
 import random
 
-class AssignFloorPlan(src.quests.MetaQuestSequenceV2):
+class AssignFloorPlan(src.quests.MetaQuestSequence):
     type = "AssignFloorPlan"
 
     def __init__(self, description="assign floor plan", creator=None, roomPosition=None, floorPlanType=None, reason=None):

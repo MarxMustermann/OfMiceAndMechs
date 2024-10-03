@@ -2,7 +2,7 @@ import random
 import src
 
 
-class OperateMachine(src.quests.MetaQuestSequenceV2):
+class OperateMachine(src.quests.MetaQuestSequence):
     type = "OperateMachine"
 
     def __init__(self, description="operate machine", creator=None, targetPosition=None, targetPositionBig=None,reason=None):

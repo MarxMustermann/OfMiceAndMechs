@@ -2,7 +2,7 @@ import src
 import random
 
 
-class GetCombatReady(src.quests.MetaQuestSequenceV2):
+class GetCombatReady(src.quests.MetaQuestSequence):
     type = "GetCombatReady"
 
     def __init__(self, description="get combat ready", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):

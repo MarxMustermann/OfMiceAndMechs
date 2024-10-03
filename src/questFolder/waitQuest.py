@@ -3,7 +3,7 @@ import random
 import src
 
 
-class WaitQuest(src.quests.MetaQuestSequenceV2):
+class WaitQuest(src.quests.MetaQuestSequence):
     type = "WaitQuest"
 
     def __init__(

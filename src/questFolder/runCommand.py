@@ -1,7 +1,7 @@
 import src
 
 
-class RunCommand(src.quests.MetaQuestSequenceV2):
+class RunCommand(src.quests.MetaQuestSequence):
     type = "RunCommand"
 
     def __init__(self, description="press ", creator=None, command=None):

@@ -3,7 +3,7 @@ import random
 import src
 
 
-class GatherScrap(src.quests.MetaQuestSequenceV2):
+class GatherScrap(src.quests.MetaQuestSequence):
     type = "GatherScrap"
 
     def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None,amount=None):

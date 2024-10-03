@@ -559,7 +559,7 @@ class Quest:
     def getSolvingCommandString(self,character,dryRun=True):
         return None
 
-class MetaQuestSequence(Quest):
+class MetaQuestSequence(Quest,ABC):
     """
     state initialization
     bad code: quest parameter does not work anymore and should be removed
@@ -791,32 +791,6 @@ class MetaQuestSequence(Quest):
         super().activate()
 
     """
-    forward solver from first subquest
-    """
-
-    def solver(self, character):
-        # remove completed quests
-        while self.subQuests and self.subQuests[0].completed:
-            self.subQuests.remove(self.subQuests[0])
-
-        if self.triggerCompletionCheck(character):
-            return
-
-        if self.subQuests:
-            subQuest = self.subQuests[0]
-            if not subQuest.active:
-                subQuest.activate()
-                return
-            if subQuest.character != character:
-                subQuest.assignToCharacter(character)
-                return
-            self.subQuests[0].solver(character)
-        else:
-            command = self.getSolvingCommandString(character)
-            if command:
-                character.runCommandString(command)
-
-    """
     deactivate self and first subquest
     """
 
@@ -825,35 +799,9 @@ class MetaQuestSequence(Quest):
             self.subQuests[0].deactivate()
         super().deactivate()
 
-    def getSolvingCommandString(self,character,dryRun=True):
-        if self.subQuests:
-            commandString = self.subQuests[0].getSolvingCommandString(character,dryRun=dryRun)
-            if commandString:
-                return commandString
-        return super().getSolvingCommandString(character)
-
-    #def generateSubquests(self, character=None, dryRun = True):
-    #    (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True, dryRun=dryRun)
-    #    if nextQuests:
-    #        for quest in nextQuests:
-    #            self.addQuest(quest)
-    #        return
-
-class MetaQuestSequenceV2(MetaQuestSequence, ABC):
-    @abstractmethod
-    def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
-
-    def subQuestCompleted(self,extraInfo=None):
-        pass
-    def handleQuestFailure(self,extraParam):
-        pass
-    
-    def getSolvingCommandString(self, character, dryRun=True):
-        nextStep = self.getNextStep(character,dryRun= dryRun)
-        if nextStep is None or nextStep == (None, None):
-            return super().getSolvingCommandString(character, dryRun= dryRun)
-        return nextStep[1]
-
+    """
+    forward solver from first subquest
+    """
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
@@ -877,8 +825,20 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
                 character.runCommandString(nextCommand[0])
                 character.timeTaken += 0.01
                 return
-        super().solver(character)
+    @abstractmethod
+    def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
 
+    def subQuestCompleted(self,extraInfo=None):
+        pass
+    def handleQuestFailure(self,extraParam):
+        pass
+    
+    def getSolvingCommandString(self, character, dryRun=True):
+        nextStep = self.getNextStep(character,dryRun= dryRun)
+        if nextStep is None or nextStep == (None, None):
+            return None
+        return nextStep[1]
+    
     def generateSubquests(self, character=None, dryRun = True):
         (nextQuests,nextCommand) = self.getNextStep(character,ignoreCommands=True, dryRun=dryRun)
         if nextQuests:
@@ -888,7 +848,6 @@ class MetaQuestSequenceV2(MetaQuestSequence, ABC):
                 self.startWatching(quest,self.handleQuestFailure,"failed")
 
             return
-
 # map strings to Classes
 questMap = {
     "Quest": Quest,

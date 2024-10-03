@@ -1,7 +1,7 @@
 import src
 import random
 
-class AppeaseAGod(src.quests.MetaQuestSequenceV2):
+class AppeaseAGod(src.quests.MetaQuestSequence):
     type = "AppeaseAGod"
 
     def __init__(self, description="apease a god", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,targetNumGods=None):

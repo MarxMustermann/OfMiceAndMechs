@@ -1,7 +1,7 @@
 import src
 import random
 
-class BuildRoom(src.quests.MetaQuestSequenceV2):
+class BuildRoom(src.quests.MetaQuestSequence):
     type = "BuildRoom"
 
     def __init__(self, description="build room", creator=None, command=None, lifetime=None, targetPosition=None,tryHard=False, reason=None, takeAnyUnbolted=False):

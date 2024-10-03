@@ -3,7 +3,7 @@ import random
 import src
 
 
-class GoToTile(src.quests.MetaQuestSequenceV2):
+class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
 
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0):

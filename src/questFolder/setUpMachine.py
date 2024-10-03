@@ -3,7 +3,7 @@ import random
 import src
 
 
-class SetUpMachine(src.quests.MetaQuestSequenceV2):
+class SetUpMachine(src.quests.MetaQuestSequence):
     type = "SetUpMachine"
 
     def __init__(self, description="set up machine", creator=None, command=None, lifetime=None, itemType=None,tryHard=False,targetPosition=None,targetPositionBig=None,room=None,reason=None):

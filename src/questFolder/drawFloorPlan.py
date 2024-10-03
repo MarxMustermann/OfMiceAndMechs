@@ -3,7 +3,7 @@ import random
 import src
 
 
-class DrawFloorPlan(src.quests.MetaQuestSequenceV2):
+class DrawFloorPlan(src.quests.MetaQuestSequence):
     type = "DrawFloorPlan"
 
     def __init__(self, description="draw floor plan", creator=None, targetPosition=None,reason=None):

@@ -3,7 +3,7 @@ import random
 import src
 
 
-class ClearPathToPosition(src.quests.MetaQuestSequenceV2):
+class ClearPathToPosition(src.quests.MetaQuestSequence):
     type = "ClearPathToPosition"
 
     def __init__(self, description="clear path to position", creator=None, targetPosition=None, tryHard=False,reason=None):

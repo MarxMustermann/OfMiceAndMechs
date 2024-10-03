@@ -1,7 +1,7 @@
 import src
 
 
-class Huntdown(src.quests.MetaQuestSequenceV2):
+class Huntdown(src.quests.MetaQuestSequence):
     type = "Huntdown"
 
     def __init__(self, description="huntdown", target=None, lifetime=None):

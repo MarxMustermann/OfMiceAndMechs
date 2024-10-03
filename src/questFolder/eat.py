@@ -3,7 +3,7 @@ import random
 import src
 
 
-class Eat(src.quests.MetaQuestSequenceV2):
+class Eat(src.quests.MetaQuestSequence):
     type = "Eat"
 
     def __init__(self, description="eat", creator=None, command=None, lifetime=None):

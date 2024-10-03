@@ -1,6 +1,6 @@
 import src
 
-class SpawnClone(src.quests.MetaQuestSequenceV2):
+class SpawnClone(src.quests.MetaQuestSequence):
     type = "SpawnClone"
 
     def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):

@@ -1,7 +1,7 @@
 import src
 import random
 
-class GatherVatMaggots(src.quests.MetaQuestSequenceV2):
+class GatherVatMaggots(src.quests.MetaQuestSequence):
     type = "GatherVatMaggots"
 
     def __init__(self, description="gather vat maggots", creator=None, targetPosition=None,lifetime=None):

@@ -3,7 +3,7 @@ import random
 import src
 
 
-class ClearTerrain(src.quests.MetaQuestSequenceV2):
+class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"
 
     def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):

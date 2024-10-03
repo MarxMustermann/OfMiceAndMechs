@@ -1,7 +1,7 @@
 import src
 
 
-class CrossTrapRoom(src.quests.MetaQuestSequenceV2):
+class CrossTrapRoom(src.quests.MetaQuestSequence):
     type = "CrossTrapRoom"
 
     def __init__(self, description="cross trap room", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):

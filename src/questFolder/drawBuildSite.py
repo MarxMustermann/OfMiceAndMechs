@@ -1,7 +1,7 @@
 import src
 
 
-class DrawBuildSite(src.quests.MetaQuestSequenceV2):
+class DrawBuildSite(src.quests.MetaQuestSequence):
     type = "DrawBuildSite"
 
     def __init__(self, description="draw buildsite", creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):

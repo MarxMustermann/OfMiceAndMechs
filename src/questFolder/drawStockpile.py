@@ -1,7 +1,7 @@
 import src
 
 
-class DrawStockpile(src.quests.MetaQuestSequenceV2):
+class DrawStockpile(src.quests.MetaQuestSequence):
     type = "DrawStockpile"
 
     def __init__(self, description=None, creator=None, targetPosition=None, targetPositionBig=None,itemType=None,stockpileType=None,tryHard=False,reason=None,extraInfo=None):

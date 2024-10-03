@@ -1,7 +1,7 @@
 import src
 
 
-class Equip(src.quests.MetaQuestSequenceV2):
+class Equip(src.quests.MetaQuestSequence):
     type = "Equip"
 
     def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None):

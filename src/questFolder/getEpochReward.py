@@ -1,7 +1,7 @@
 import src
 
 
-class GetEpochReward(src.quests.MetaQuestSequenceV2):
+class GetEpochReward(src.quests.MetaQuestSequence):
     type = "GetEpochReward"
 
     def __init__(self, description="get epoch reward", creator=None,rewardType=None,reason=None):

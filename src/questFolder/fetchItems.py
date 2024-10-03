@@ -3,7 +3,7 @@ import random
 import src
 
 
-class FetchItems(src.quests.MetaQuestSequenceV2):
+class FetchItems(src.quests.MetaQuestSequence):
     type = "FetchItems"
 
     def __init__(self, description="fetch items", creator=None, toCollect=None, amount=None, returnToTile=True,lifetime=None,takeAnyUnbolted=False,tryHard=False,reason=None):

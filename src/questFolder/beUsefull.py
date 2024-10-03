@@ -5,7 +5,7 @@ import src
 
 logger = logging.getLogger(__name__)
 
-class BeUsefull(src.quests.MetaQuestSequenceV2):
+class BeUsefull(src.quests.MetaQuestSequence):
     type = "BeUsefull"
 
     def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None):

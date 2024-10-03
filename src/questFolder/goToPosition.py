@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class GoToPosition(src.quests.MetaQuestSequenceV2):
+class GoToPosition(src.quests.MetaQuestSequence):
     type = "GoToPosition"
 
     def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None):

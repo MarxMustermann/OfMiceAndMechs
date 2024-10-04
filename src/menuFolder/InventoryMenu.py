@@ -2,9 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import header, main, urwid
-from src.menuFolder.OneKeystrokeMenu import OneKeystrokeMenu
-
 
 # bad code: should be abstracted
 # bad code: uses global functions to render
@@ -105,7 +102,7 @@ class InventoryMenu(SubMenu):
 
             # do drop
             if key == "L":
-                self.subMenu = OneKeystrokeMenu("Drop where?\n\n w - north\n s - south\n a - left\n d - right")
+                self.subMenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu("Drop where?\n\n w - north\n s - south\n a - left\n d - right")
                 self.subMenu.handleKey("~", noRender=noRender, character=character)
                 self.drop = True
                 return False
@@ -123,16 +120,16 @@ class InventoryMenu(SubMenu):
                 self.cursor = len(self.char.inventory) - 1
 
         if not noRender:
-            header.set_text((urwid.AttrSpec("default", "default"), "\ninventory overview\n\n"))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ninventory overview\n\n"))
 
             # bad code: uses global function
             self.persistentText = (
-                urwid.AttrSpec("default", "default"),
+                src.interaction.urwid.AttrSpec("default", "default"),
                 self.render(self.char),
             )
 
             # show the render
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
 

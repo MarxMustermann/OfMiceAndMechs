@@ -2278,7 +2278,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("toggleCommandOnPlus", "toggleCommandOnPlus"),
                ("change personality settings", "change personality settings"),
                ("change setting", "change setting")]
-    submenu = SelectionMenu("What do you want to do?", options)
+    submenu = src.menuFolder.SelectionMenu.SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
 
     def trigger():
@@ -2306,7 +2306,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
 
                 if settingName is None:
                     return
-                submenu3 = InputMenu("input value")
+                submenu3 = src.menuFolder.InputMenu.InputMenu("input value")
                 char.macroState["submenue"] = submenu3
                 char.macroState["submenue"].followUp = setValue
                 return
@@ -2314,7 +2314,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             options = []
             for (key, value) in char.personality.items():
                 options.append((key, f"{key}: {value}"))
-            submenu2 = SelectionMenu("select personality setting", options)
+            submenu2 = src.menuFolder.SelectionMenu.SelectionMenu("select personality setting", options)
             char.macroState["submenue"] = submenu2
             char.macroState["submenue"].followUp = getValue
             return
@@ -2348,12 +2348,11 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                 char.faction = "player"
             pass
         elif selection == "help":
-            charState["submenue"] = HelpMenu()
+            charState["submenue"] = src.menuFolder.HelpMenu.HelpMenu()
         elif selection == "keybinding":
             pass
         elif selection == "change setting":
-            from src.menuFolder.SettingMenu import SettingMenu
-            charState["submenue"] = SettingMenu() 
+            charState["submenue"] = src.menuFolder.SettingMenu.SettingMenu() 
         elif selection == "main menu":
             char.macroState["submenue"] = None
             char.specialRender = False
@@ -2440,7 +2439,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # open the debug menue
         if key in ("´",):
             if debug:
-                charState["submenue"] = DebugMenu()
+                charState["submenue"] = src.menuFolder.DebugMenu.DebugMenu()
             else:
                 char.addMessage("debug not enabled")
 
@@ -2812,13 +2811,13 @@ press key for advanced drop
 
         # open chat partner selection
         if key in (commandChars.hail,):
-            charState["submenue"] = ChatPartnerselection()
+            charState["submenue"] = src.menuFolder.ChatPartnerselection.ChatPartnerselection()
 
         if key in ("H",):
-            charState["submenue"] = InstructSubordinatesMenu()
+            charState["submenue"] = src.menuFolder.InstructSubordinatesMenu.InstructSubordinatesMenu()
 
         if key in ("r",) and char.room:
-            charState["submenue"] = RoomMenu(char.room)
+            charState["submenue"] = src.menuFolder.RoomMenu.RoomMenu(char.room)
 
         """
         # recalculate the questmarker since it could be tainted
@@ -2850,37 +2849,37 @@ press key for advanced drop
 
     # open quest menu
     if key in (commandChars.show_quests,):
-        charState["submenue"] = QuestMenu()
+        charState["submenue"] = src.menuFolder.QuestMenu.QuestMenu()
         char.changed("opened quest menu",(char,))
 
     # open help menu
     if key in (commandChars.show_help,"z"):
-        charState["submenue"] = HelpMenu()
+        charState["submenue"] = src.menuFolder.HelpMenu.HelpMenu()
         char.changed("openedHelp")
 
     # open inventory
     if key in (commandChars.show_inventory,):
-        charState["submenue"] = InventoryMenu(char)
+        charState["submenue"] = src.menuFolder.InventoryMenu.InventoryMenu(char)
 
     # open the menu for giving quests
     if key in (commandChars.show_quests_detailed,):
-        charState["submenue"] = AdvancedQuestMenu(char)
+        charState["submenue"] = src.menuFolder.InventoryMenu.AdvancedQuestMenu(char)
 
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):
-        charState["submenue"] = CharacterInfoMenu(char=char)
+        charState["submenue"] = src.menuFolder.CharacterInfoMenu.CharacterInfoMenu(char=char)
 
     # open the character information
     if key in ("o",):
-        charState["submenue"] = CombatInfoMenu(char=char)
+        charState["submenue"] = src.menuFolder.CombatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
     if key in ("t",):
-        charState["submenue"] = ChangeViewsMenu()
+        charState["submenue"] = src.menuFolder.ChangeViewsMenu.ChangeViewsMenu()
 
     # open the character information
     if key in ("x",):
-        charState["submenue"] = MessagesMenu(char=char)
+        charState["submenue"] = src.menuFolder.MessagesMenu.MessagesMenu(char=char)
 
     # open the help screen
     if key in (commandChars.show_help,):
@@ -3085,7 +3084,7 @@ def renderHeader(character):
     return ""
 
     # render the sections to display
-    questSection = QuestMenu.renderQuests(maxQuests=2)
+    questSection = src.menuFolder.QuestMenu.QuestMenu.renderQuests(maxQuests=2)
     messagesSection = renderMessages(character)
 
     # calculate the size of the elements

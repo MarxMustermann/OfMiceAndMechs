@@ -1,6 +1,6 @@
 import urwid
 
-landmine = (AttrSpec("#f00", "black"), "_~")
+landmine = (urwid.AttrSpec("#f00", "black"), "_~")
 sunScreen = (urwid.AttrSpec("#420", "black"), "oo")
 healingStation = (urwid.AttrSpec("#f00", "black"), "HS")
 forceField2 = (urwid.AttrSpec("#373", "black"), "##")

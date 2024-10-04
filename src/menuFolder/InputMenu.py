@@ -1,8 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import footer, header, main, urwid
-
+import src
 
 class InputMenu(SubMenu):
     """
@@ -90,16 +89,16 @@ class InputMenu(SubMenu):
             text = "█"
 
         if not noRender:
-            header.set_text((urwid.AttrSpec("default", "default"), "\ntext input\n\n"))
-            footer.set_text((urwid.AttrSpec("default", "default"), "\ntext input\n\n"))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ntext input\n\n"))
+            src.interaction.footer.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ntext input\n\n"))
 
             self.persistentText = (
-                urwid.AttrSpec("default", "default"),
+                src.interaction.urwid.AttrSpec("default", "default"),
                 "\n" + self.query + "\n\n" + text,
             )
 
             # show the render
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         if self.firstHit:
             self.firstHit = False

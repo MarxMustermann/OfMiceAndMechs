@@ -57,7 +57,7 @@ pray on {self.targetPosition}{reason}.
 
         if character.macroState["submenue"] and not ignoreCommands:
             submenue = character.macroState["submenue"]
-            if isinstance(submenue,src.interaction.SelectionMenu):
+            if isinstance(submenue,src.menuFolder.SelectionMenu.SelectionMenu):
                 foundOption = False
                 rewardIndex = 0
                 if rewardIndex == 0:

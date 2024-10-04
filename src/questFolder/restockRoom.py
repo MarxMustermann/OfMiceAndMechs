@@ -130,7 +130,7 @@ Place the items in the correct input or storage stockpile.
             return (None,None)
 
         if character.macroState["submenue"] and not ignoreCommands:
-            if not isinstance(character.macroState["submenue"],src.interaction.InventoryMenu):
+            if not isinstance(character.macroState["submenue"],src.menuFolder.InventoryMenu.InventoryMenu):
                 return (None,(["esc"],"close the menu"))
 
         if self.targetPositionBig and character.getBigPosition() != self.targetPositionBig:
@@ -200,7 +200,7 @@ Place the items in the correct input or storage stockpile.
                             submenue = character.macroState["submenue"]
                             if not submenue:
                                 inventoryCommand += "i"+"s"*counter
-                            if isinstance(submenue,src.interaction.InventoryMenu):
+                            if isinstance(submenue,src.menuFolder.InventoryMenu.InventoryMenu):
                                 if counter > submenue.cursor:
                                     inventoryCommand += "s"*(counter-submenue.cursor)
                                 else:

@@ -270,7 +270,7 @@ Press d to move the cursor and show the subquests description.
         if not self.subQuests:
             submenue = character.macroState.get("submenue")
             if submenue:
-                if isinstance(submenue,src.interaction.SelectionMenu):
+                if isinstance(submenue,src.menuFolder.SelectionMenu.SelectionMenu):
                     return (None,(["esc"],"exit submenu"))
                 return (None,(["esc"],"exit submenu"))
 

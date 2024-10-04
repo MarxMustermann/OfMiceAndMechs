@@ -32,7 +32,7 @@ Set the floor plan: {self.floorPlanType}
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.MapMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.MapMenu.MapMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             command = ""
             if submenue.cursor[0] > self.roomPosition[0]:
@@ -57,7 +57,7 @@ Set the floor plan: {self.floorPlanType}
             command += "f"
             return (None,(command,"set a floor plan"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "floorplanSelection":
                 counter = 1

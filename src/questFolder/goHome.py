@@ -88,7 +88,7 @@ Press control-d to stop your character from moving.
                     for item in items:
                         if character.getDistance(item.getPosition()) <= 1:
 
-                            if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.interaction.SelectionMenu) and not ignoreCommands:
+                            if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
                                 submenue = character.macroState["submenue"]
 
                                 targetIndex = 5

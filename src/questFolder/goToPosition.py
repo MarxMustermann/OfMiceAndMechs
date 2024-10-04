@@ -143,6 +143,7 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         self.generatePath(character)
 
         super().assignToCharacter(character)
+
     def triggerCompletionCheck(self, character=None):
         if not self.targetPosition:
             return False

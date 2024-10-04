@@ -2,7 +2,8 @@
 import SubMenu
 
 from src.interaction import logger, main, urwid
-from src.menuFolder import RoomDutyMenu, RoomSourceMenu
+from src.menuFolder.RoomDutyMenu import RoomDutyMenu
+from src.menuFolder.RoomSourceMenu import RoomSourceMenu
 
 
 class RoomMenu(SubMenu):

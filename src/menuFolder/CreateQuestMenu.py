@@ -4,7 +4,7 @@ import SubMenu
 
 import src
 from src.interaction import header, main, urwid, commandChars
-from src.menuFolder import SelectionMenu
+from src.menuFolder.SelectionMenu import SelectionMenu
 
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"

@@ -4,7 +4,7 @@ import SubMenu
 
 import src
 from src.interaction import header, main, urwid
-from src.menuFolder import CreateQuestMenu
+from src.menuFolder.CreateQuestMenu import CreateQuestMenu
 
 
 class AdvancedQuestMenu(SubMenu):

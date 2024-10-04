@@ -4,7 +4,7 @@ import SubMenu
 
 import src
 from src.interaction import commandChars, header, main, urwid
-from src.menuFolder import SelectionMenu
+from src.menuFolder.SelectionMenu import SelectionMenu
 
 
 class DebugMenu(SubMenu):

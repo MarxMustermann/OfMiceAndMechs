@@ -1,7 +1,7 @@
 
 import SubMenu
 
-from src.menuFolder import InputMenu
+from src.menuFolder.InputMenu import InputMenu
 
 
 class NameGhoulMenu(SubMenu):

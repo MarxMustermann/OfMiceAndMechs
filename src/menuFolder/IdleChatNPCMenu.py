@@ -2,7 +2,7 @@
 import SubMenu
 
 import src
-from src.menuFolder import SelectionMenu
+from src.menuFolder.SelectionMenu import SelectionMenu
 
 
 class IdleChatNPCMenu(SubMenu):

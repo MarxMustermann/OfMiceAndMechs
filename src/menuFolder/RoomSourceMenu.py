@@ -2,7 +2,7 @@
 import SubMenu
 
 from src.interaction import main, urwid
-from src.menuFolder import InputMenu
+from src.menuFolder.InputMenu import InputMenu
 
 
 class RoomSourceMenu(SubMenu):

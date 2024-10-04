@@ -3,7 +3,7 @@ import SubMenu
 
 import src
 from src.interaction import header, main, urwid
-from src.menuFolder import OneKeystrokeMenu
+from src.menuFolder.OneKeystrokeMenu import OneKeystrokeMenu
 
 
 # bad code: should be abstracted

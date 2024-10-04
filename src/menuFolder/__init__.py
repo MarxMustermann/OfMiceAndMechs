@@ -28,3 +28,4 @@ import src.menuFolder.SettingMenu
 import src.menuFolder.StaffAsMatrixMenu
 import src.menuFolder.TextMenu
 import src.menuFolder.ViewNPCsMenu
+import src.menuFolder.MessagesMenu

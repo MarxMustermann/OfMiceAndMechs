@@ -1,9 +1,7 @@
 import collections
 
+import src
 from src.menuFolder.SubMenu import SubMenu
-
-from src.interaction import main, urwid
-
 
 class ChangeViewsMenu(SubMenu):
     type = "ChangeViewsMenu"
@@ -44,34 +42,34 @@ class ChangeViewsMenu(SubMenu):
             color = "#f00"
         if viewColour == "activity":
             color = "#0f0"
-        self.persistentText.append((urwid.AttrSpec(color, "default"), "press a/A to show NPC activity marking\n"))
+        self.persistentText.append((src.interaction.urwid.AttrSpec(color, "default"), "press a/A to show NPC activity marking\n"))
 
         color = "#fff"
         if viewChar == "rank":
             color = "#f00"
         if viewColour == "rank":
             color = "#0f0"
-        self.persistentText.append((urwid.AttrSpec(color, "default"), "press r/R to rank marking\n"))
+        self.persistentText.append((src.interaction.urwid.AttrSpec(color, "default"), "press r/R to rank marking\n"))
         color = "#fff"
         if viewChar == "health":
             color = "#f00"
         if viewColour == "health":
             color = "#0f0"
-        self.persistentText.append((urwid.AttrSpec(color, "default"), "press h/H to show health marking\n"))
+        self.persistentText.append((src.interaction.urwid.AttrSpec(color, "default"), "press h/H to show health marking\n"))
         color = "#fff"
         if viewChar == "name":
             color = "#f00"
         if viewColour == "name":
             color = "#0f0"
-        self.persistentText.append((urwid.AttrSpec(color, "default"), "press n/N to show name marking\n"))
+        self.persistentText.append((src.interaction.urwid.AttrSpec(color, "default"), "press n/N to show name marking\n"))
         color = "#fff"
         if viewChar == "faction":
             color = "#f00"
         if viewColour == "faction":
             color = "#0f0"
-        self.persistentText.append((urwid.AttrSpec(color, "default"), "press f/F to show faction indicator\n"))
+        self.persistentText.append((src.interaction.urwid.AttrSpec(color, "default"), "press f/F to show faction indicator\n"))
         self.persistentText.append("\n\nsmall letters for display color, big letters for display char")
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu
         if key in ("esc",):

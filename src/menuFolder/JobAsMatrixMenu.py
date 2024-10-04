@@ -2,8 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import header, main, urwid
-
 
 class JobAsMatrixMenu(SubMenu):
     type = "JobAsMatrixMenu"
@@ -106,7 +104,7 @@ class JobAsMatrixMenu(SubMenu):
             if rowCounter == self.index[1]:
                 color = "#555"
             text.append("|")
-            text.append((urwid.AttrSpec("default", color)," "+duty+" "))
+            text.append((src.interaction.urwid.AttrSpec("default", color)," "+duty+" "))
             rowCounter += 1
             dutyCounter += 1
             if dutyCounter == 6:
@@ -135,7 +133,7 @@ class JobAsMatrixMenu(SubMenu):
                 color = "#333"
             else:
                 color = "default"
-            text.append((urwid.AttrSpec("default", color),f"{convertName(npc.name)}: "))
+            text.append((src.interaction.urwid.AttrSpec("default", color),f"{convertName(npc.name)}: "))
             rowCounter = 0
             for duty in duties:
                 if lineCounter == self.index[0] and rowCounter == self.index[1]:
@@ -144,7 +142,7 @@ class JobAsMatrixMenu(SubMenu):
                     color = "default"
                     if rowCounter == self.index[1] or lineCounter == self.index[0]:
                         color = "#333"
-                    text.append((urwid.AttrSpec("default", color),"  "))
+                    text.append((src.interaction.urwid.AttrSpec("default", color),"  "))
 
                 if duty in npc.duties:
                     text.append(str(npc.dutyPriorities.get(duty,1)))
@@ -152,14 +150,14 @@ class JobAsMatrixMenu(SubMenu):
                     color = "default"
                     if rowCounter == self.index[1] or lineCounter == self.index[0]:
                         color = "#333"
-                    text.append((urwid.AttrSpec("default", color)," "))
+                    text.append((src.interaction.urwid.AttrSpec("default", color)," "))
                 text.append("|")
                 rowCounter += 1
             lineCounter += 1
 
         # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
         self.persistentText = text
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False

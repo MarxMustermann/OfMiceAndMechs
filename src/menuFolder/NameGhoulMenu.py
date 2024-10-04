@@ -1,9 +1,6 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.menuFolder.InputMenu import InputMenu
-
-
 class NameGhoulMenu(SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
@@ -23,7 +20,7 @@ class NameGhoulMenu(SubMenu):
             return True
 
         if not self.subMenu:
-            self.subMenu = InputMenu("enter the new name for this Ghoul")
+            self.subMenu = src.menuFolder.InputMenu.InputMenu("enter the new name for this Ghoul")
             self.handleKey("~", noRender=noRender, character=character)
             return False
         self.npc.name = self.subMenu.text

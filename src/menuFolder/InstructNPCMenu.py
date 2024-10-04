@@ -2,8 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.menuFolder.SelectionMenu import SelectionMenu
-
 
 class InstructNPCMenu(SubMenu):
     def __init__(self,npc=None):
@@ -31,7 +29,7 @@ class InstructNPCMenu(SubMenu):
                 options = []
                 options.append(("command selection","select from a list of commands"))
                 options.append(("createQuest","create and issue quest"))
-                self.subMenu = SelectionMenu("how do you want to give the instruction?", options)
+                self.subMenu = src.menuFolder.SelectionMenu.SelectionMenu("how do you want to give the instruction?", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
             self.instructionType = self.subMenu.selection
@@ -61,7 +59,7 @@ class InstructNPCMenu(SubMenu):
                     options.append(("beUsefulHere","be useful here"))
                     options.append(("doDuty","do duty"))
                     options.append(("doDutyHere","do duty here"))
-                    self.subMenu = SelectionMenu("what command do you want to give?", options)
+                    self.subMenu = src.menuFolder.SelectionMenu.SelectionMenu("what command do you want to give?", options)
                     self.handleKey("~", noRender=noRender, character=character)
                     return False
                 self.commandType = self.subMenu.selection
@@ -127,7 +125,7 @@ class InstructNPCMenu(SubMenu):
                         options.append(("resource fetching","resource fetching"))
                         options.append(("cleaning","cleaning"))
                         options.append(("machine placing","machine placing"))
-                        self.subMenu = SelectionMenu("What duty should be done?", options)
+                        self.subMenu = src.menuFolder.SelectionMenu.SelectionMenu("What duty should be done?", options)
                         self.handleKey("~", noRender=noRender, character=character)
                         return False
                     self.dutyType = self.subMenu.selection

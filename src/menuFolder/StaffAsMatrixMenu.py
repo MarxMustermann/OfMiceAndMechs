@@ -1,8 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import header, main, urwid
-
+import src
 
 class StaffAsMatrixMenu(SubMenu):
     type = "StaffAsMatrixMenu"
@@ -60,22 +59,22 @@ class StaffAsMatrixMenu(SubMenu):
             color = "#fff"
             if counter == self.index[1] and self.index[0] == 0:
                 color = "#f00"
-            text.append((urwid.AttrSpec(color, "default"),f"{roomType}"))
+            text.append((src.interaction.urwid.AttrSpec(color, "default"),f"{roomType}"))
             roomCounter = 1
             for room in self.staffArtwork.container.container.rooms:
                 if room.objType == roomType:
                     color = "#fff"
                     if counter == self.index[1] and roomCounter == self.index[0]:
                         color = "#f00"
-                    text.append((urwid.AttrSpec(color, "default")," %s"%(len(room.staff))))
+                    text.append((src.interaction.urwid.AttrSpec(color, "default")," %s"%(len(room.staff))))
                     roomCounter += 1
             text.append("\n")
             counter += 1
 
         # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
         self.persistentText = text
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
 

@@ -2,8 +2,7 @@ import collections
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import commandChars, header, main, urwid
-
+import src
 
 # bad code: this does nothing the Submenu doesn't do
 class ListActionMenu(SubMenu):
@@ -45,7 +44,7 @@ class ListActionMenu(SubMenu):
                 self.callIndirect(self.followUp)
             return True
         if not noRender:
-            header.set_text("")
+            src.interaction.header.set_text("")
 
         if key == "a":
             # convert options to ordered dict
@@ -78,7 +77,7 @@ class ListActionMenu(SubMenu):
                 self.niceOptions[str(counter)] = oldNiceOptions[str(counter - 1)]
                 counter += 1
 
-        if key in (commandChars.autoAdvance, commandChars.advance):
+        if key in (src.interaction.commandChars.autoAdvance, src.interaction.commandChars.advance):
             if self.default is not None:
                 self.selection = self.default
             else:
@@ -131,9 +130,9 @@ class ListActionMenu(SubMenu):
 
             # show the rendered options
             # bad code: urwid specific code
-            main.set_text(
+            src.interaction.main.set_text(
                 (
-                    urwid.AttrSpec("default", "default"),
+                    src.interaction.urwid.AttrSpec("default", "default"),
                     self.persistentText + "\n\n" + out,
                 )
             )

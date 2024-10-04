@@ -1,8 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import header, main, urwid
-
+import src
 
 class ImplantConnection(SubMenu):
     type = "ImplantConnection"
@@ -15,12 +14,12 @@ class ImplantConnection(SubMenu):
 
     def handleKey(self, key, noRender=False, character = None):
         if not noRender:
-            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
             self.persistentText = f"implant connection to {self.connectionTarget.type}"
             self.persistentText += "\n\n"
             self.persistentText += "press j to use connection\n"
             self.persistentText += "press x to close connection\n"
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         if self.submenu and self.submenu.done:
             self.submenu = None

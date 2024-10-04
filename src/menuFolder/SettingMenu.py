@@ -2,9 +2,6 @@ import json
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import header, main, settings, urwid
-
-
 def clamp(n, min, max):
     if n < min:
         return min
@@ -24,7 +21,7 @@ class SettingMenu(SubMenu):
     def handleKey(self, key, noRender=False, character=None):
         if key in ("esc", " "):
             with open("config/globalSettings.json", "w") as f:
-                json.dump(settings, f)
+                json.dump(src.interaction.settings, f)
             return True
         change_value = False
         if key in ("a", "d"):
@@ -34,7 +31,7 @@ class SettingMenu(SubMenu):
             self.index = clamp(self.index, 0, len(self.options))
 
         # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "\n\nsettings\n\n"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nsettings\n\n"))
         text = ""
 
         for setting in self.setting_options:
@@ -47,6 +44,6 @@ class SettingMenu(SubMenu):
                     text += " " + settings["sound"] * "║"
                     text += (32 - settings["sound"]) * "|"
 
-        main.set_text((urwid.AttrSpec("default", "default"), text))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 
         return False

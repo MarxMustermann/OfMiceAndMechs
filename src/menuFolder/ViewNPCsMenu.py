@@ -2,8 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import main, urwid
-
 
 class ViewNPCsMenu(SubMenu):
     type = "ViewNPCsMenu"
@@ -28,7 +26,7 @@ class ViewNPCsMenu(SubMenu):
         characters = self.personnelArtwork.getPersonnelList()
 
         if not characters:
-            main.set_text((urwid.AttrSpec("default", "default"), "no personnel found"))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "no personnel found"))
             return None
 
         if key in (".",):
@@ -166,5 +164,5 @@ class ViewNPCsMenu(SubMenu):
         else:
             self.persistentText.append("\nactive quest: None")
 
-        main.set_text(self.persistentText)
+        src.interaction.main.set_text(self.persistentText)
         return None

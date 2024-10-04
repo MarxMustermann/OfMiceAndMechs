@@ -287,7 +287,7 @@ thie is a level %s item
         """
 
         options = [("addCommand", "add command")]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -299,7 +299,7 @@ thie is a level %s item
             options = []
             for itemType in self.commands:
                 options.append((itemType, itemType))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Run command for producing item. select item to produce.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -310,7 +310,7 @@ thie is a level %s item
             options.append(("cooldown", "set cooldown command"))
             options.append(("targetFull", "set target full command"))
             options.append(("material Scrap", "set Scrap fetching command"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Setting command for handling triggers.", options
             )
             self.character.macroState["submenue"] = self.submenue

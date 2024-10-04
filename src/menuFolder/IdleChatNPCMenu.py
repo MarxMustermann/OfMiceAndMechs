@@ -39,25 +39,25 @@ class IdleChatNPCMenu(SubMenu):
             self.subMenu = None
 
         if self.instructionType == "charInfo":
-            submenue = src.menuFolder.CharacterInfoMenu.CharacterInfoMenu(char=self.npc)
+            submenue = src.interaction.CharacterInfoMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
         if self.instructionType == "showQuests":
-            submenue = src.menuFolder.QuestMenu.QuestMenu(char=self.npc)
+            submenue = src.interaction.QuestMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
         if self.instructionType == "showInventory":
-            submenue = src.menuFolder.InventoryMenu.InventoryMenu(char=self.npc)
+            submenue = src.interaction.InventoryMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
         if self.instructionType == "showFeelings":
-            submenue = src.menuFolder.InventoryMenu.InventoryMenu(char=self.npc)
+            submenue = src.interaction.InventoryMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None

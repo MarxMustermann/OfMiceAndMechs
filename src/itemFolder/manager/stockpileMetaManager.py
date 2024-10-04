@@ -567,7 +567,7 @@ class StockpileMetaManager(src.items.Item):
             ("configureStockpiles", "set stockpile settings"),
             ("addPlot", "add plot"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -678,7 +678,7 @@ class StockpileMetaManager(src.items.Item):
             options = []
             for stockpile in self.stockPiles:
                 options.append((stockpile, stockpile))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "what stockpile do you want to configure?", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -711,7 +711,7 @@ class StockpileMetaManager(src.items.Item):
                 if node in self.stockPiles or node in self.assignedPlots:
                     continue
                 options.append((node, node))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "what do you want to do?", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -738,7 +738,7 @@ class StockpileMetaManager(src.items.Item):
             options = []
             for node in mapFound.getReachableNodes(pathingnodeFound.nodeName):
                 options.append((node, node))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "what do you want to do?", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -748,7 +748,7 @@ class StockpileMetaManager(src.items.Item):
             options = []
             for stockpile in self.stockPiles:
                 options.append((stockpile, stockpile))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "what stockpile do you want to configure?", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -758,7 +758,7 @@ class StockpileMetaManager(src.items.Item):
         if self.submenue.selection == "addCommand":
             options = []
             options.append(("full", "stockpiles full"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Setting command for handling triggers.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -777,7 +777,7 @@ class StockpileMetaManager(src.items.Item):
                 ("showInfo", "set stockpile information"),
                 ("deleteStockpile", "delete stockpile"),
             ]
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "what do you want to do?", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -785,7 +785,7 @@ class StockpileMetaManager(src.items.Item):
             return
 
         if self.submenue.selection == "showInfo":
-            self.submenue = src.menuFolder.TextMenu.TextMenu(
+            self.submenue = src.interaction.TextMenu(
                 str(self.stockPileInfo[self.stockPile])
             )
             self.character.macroState["submenue"] = self.submenue
@@ -804,7 +804,7 @@ class StockpileMetaManager(src.items.Item):
             options.append(("clear", "clear"))
             options.append(("source", "set as source"))
             options.append(("sink", "set as sink"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Setting the setting to set.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -830,7 +830,7 @@ class StockpileMetaManager(src.items.Item):
             options.append(("clear", "clear"))
             options.append(("source", "set as source"))
             options.append(("sink", "set as sink"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Setting the setting to set.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -842,7 +842,7 @@ class StockpileMetaManager(src.items.Item):
         if not self.settingType:
             self.settingType = self.submenue.selection
 
-            self.submenue = src.menuFolder.InputMenu.InputMenu("input the settings value")
+            self.submenue = src.interaction.InputMenu("input the settings value")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.configureStockpile
 

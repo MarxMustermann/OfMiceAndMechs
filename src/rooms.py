@@ -889,19 +889,19 @@ class Room:
             # draw path
             for pos in self.walkingSpace:
                 display = (src.interaction.urwid.AttrSpec("#888", "black"), "::")
-                #chars[pos[1]][pos[0]] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
             for entry in self.inputSlots:
                 pos = entry[0]
                 display= (src.interaction.urwid.AttrSpec("#f88", "black"), "::")
-                #chars[pos[1]][pos[0]] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
             for entry in self.outputSlots:
                 pos = entry[0]
                 display = (src.interaction.urwid.AttrSpec("#88f", "black"), "::")
-                #chars[pos[1]][pos[0]] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
             for entry in self.storageSlots:
@@ -912,19 +912,19 @@ class Room:
                     display = (src.interaction.urwid.AttrSpec("#f0f", "black"), "::")
                 else:
                     display = (src.interaction.urwid.AttrSpec("#fff", "black"), "::")
-                #chars[pos[1]][pos[0]] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
             for entry in self.buildSites:
                 pos = entry[0]
                 display = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
-                #chars[pos[1]][pos[0]] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
+                #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
             # draw items
             for item in self.itemsOnFloor:
                 display = item.render()
-                #chars[item.yPosition][item.xPosition] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
+                #chars[item.yPosition][item.xPosition] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": (item.xPosition,item.yPosition,0)}},content=display)
                 if item.yPosition == None:
                     logger.error("drawing non positioned item")
                     continue
@@ -1377,11 +1377,11 @@ class Room:
                 if src.gamestate.gamestate.dragState["start"]["container"] == self:
                     pos = src.gamestate.gamestate.dragState["start"]["pos"]
 
-                    chars[pos[1]][pos[0]-2] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]-1] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]+1] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
-                    chars[pos[1]][pos[0]+2] = src.menuFolder.ActionMeta.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]-2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]-1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]+1] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
+                    chars[pos[1]][pos[0]+2] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content="XX")
 
         # show dummy of the room
         else:

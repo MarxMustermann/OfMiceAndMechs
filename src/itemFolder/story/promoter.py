@@ -22,7 +22,7 @@ class Promoter(src.items.Item):
         if character.rank > 2:
             character.rank = 2
             character.addMessage(f"you were promoted to base commander")
-            submenu = src.menuFolder.TextMenu.TextMenu("""
+            submenu = src.interaction.TextMenu("""
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.

@@ -14,7 +14,7 @@ class ScrapCommander(src.items.Item):
 
     def apply(self, character):
         options = [("addScrap", "add scrap"), ("fetchScrap", "fetch scrap")]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

@@ -24,7 +24,7 @@ class Engraver(src.items.Item):
 
         if not self.text:
             character.addMessage("starting interaction")
-            self.submenue = src.menuFolder.InputMenu.InputMenu("Set the text to engrave")
+            self.submenue = src.interaction.InputMenu("Set the text to engrave")
             character.macroState["submenue"] = self.submenue
             character.macroState["submenue"].followUp = self.setText
         else:

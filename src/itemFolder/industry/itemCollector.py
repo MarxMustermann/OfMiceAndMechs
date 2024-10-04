@@ -171,7 +171,7 @@ class ItemCollector(src.items.Item):
         """
 
         options = [("addCommand", "add command")]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -187,7 +187,7 @@ class ItemCollector(src.items.Item):
             options = []
             options.append(("empty", "no items left"))
             options.append(("fullInventory", "inventory full"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Setting command for handling triggers.", options
             )
             self.character.macroState["submenue"] = self.submenue

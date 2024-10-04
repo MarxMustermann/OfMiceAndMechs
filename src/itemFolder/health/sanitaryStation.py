@@ -64,7 +64,7 @@ class SanitaryStation(src.items.Item):
             ("changeSetting", "change settings"),
             ("showSettings", "show settings"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -81,7 +81,7 @@ class SanitaryStation(src.items.Item):
             options.append(("healing", "need healing"))
             options.append(("hungry", "need satiation"))
             options.append(("depressed", "need depressed"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Setting command for handling triggers.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -91,14 +91,14 @@ class SanitaryStation(src.items.Item):
             options.append(("health", "set health threshold"))
             options.append(("satiation", "set satiation threshold"))
             options.append(("depressed", "set depressed threshold"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "Choose setting to set", options
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setSetting
             self.settingName = None
         if self.submenue.selection == "showSettings":
-            self.submenue = src.menuFolder.TextMenu.TextMenu(
+            self.submenue = src.interaction.TextMenu(
                 f"health threshold: {self.healthThreshold}\nsatiation threshold: {self.satiationThreshold}"
             )
             self.character.macroState["submenue"] = self.submenue
@@ -111,7 +111,7 @@ class SanitaryStation(src.items.Item):
         if not self.settingName:
             self.settingName = self.submenue.selection
 
-            self.submenue = src.menuFolder.InputMenu.InputMenu("input the value")
+            self.submenue = src.interaction.InputMenu("input the value")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setSetting
             return

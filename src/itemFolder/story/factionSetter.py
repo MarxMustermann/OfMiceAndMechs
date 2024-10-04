@@ -29,6 +29,6 @@ It claws into your head and connects to your implant.
 
 It changes your implant and sets your faction marker to {self.faction}.
 """
-        character.macroState["submenue"] = src.menuFolder.TextMenu.TextMenu(text)
+        character.macroState["submenue"] = src.interaction.TextMenu(text)
 
 src.items.addType(FactionSetter)

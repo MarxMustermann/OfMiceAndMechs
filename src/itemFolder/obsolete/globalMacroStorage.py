@@ -22,7 +22,7 @@ class GlobalMacroStorage(src.items.Item):
         options = []
         options.append(("load", "load macro from global storage"))
         options.append(("store", "add macro to the global storage"))
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu("what do you want to do", options)
+        self.submenue = src.interaction.SelectionMenu("what do you want to do", options)
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.actionSelection
 
@@ -41,14 +41,14 @@ class GlobalMacroStorage(src.items.Item):
             for entry in globalStorage:
                 options.append((counter, entry["name"]))
                 counter += 1
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "what macro do you want to load?", options
             )
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.load
 
         if selection == "store":
-            self.submenue = src.menuFolder.InputMenu.InputMenu(
+            self.submenue = src.interaction.InputMenu(
                 "supply a name/description for the macro"
             )
             self.character.macroState["submenue"] = self.submenue

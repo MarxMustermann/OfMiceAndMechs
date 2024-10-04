@@ -42,14 +42,14 @@ class PerformanceTester(src.items.Item):
         self.teststart(character,10)
 
     def teststart(self,character,count):
-        submenue = src.menuFolder.ViewNPCsMenu.ViewNPCsMenu(self)
+        submenue = src.interaction.ViewNPCsMenu(self)
         character.macroState["submenue"] = submenue
         self.faction = character.faction
 
         params = {"character":character}
 
         character.timeTaken += count
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu("testing",targetParamName="abortKey")
+        submenue = src.interaction.OneKeystrokeMenu("testing",targetParamName="abortKey")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"test_end","params":params}
         character.runCommandString(".")

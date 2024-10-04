@@ -59,7 +59,7 @@ This is a level {self.level} item.
         options = []
         options.append(("load", "load blooms"))
         options.append(("unload", "unload blooms"))
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "select the item to produce", options
         )
         character.macroState["submenue"] = self.submenue

@@ -36,7 +36,7 @@ class MiningManager(src.items.Item):
             ("spawn npc", "spawn npc"),
             ("loop", "start joborder loop"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

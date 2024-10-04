@@ -62,7 +62,7 @@ class SiegeManager(src.items.Item):
             options.append(("delete",f"delete action"))
             options.append(("clear",f"clear schedule"))
             options.append(("faction",f"set faction"))
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu(text,options,targetParamName="action")
+            submenue = src.interaction.SelectionMenu(text,options,targetParamName="action")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
             return
@@ -78,7 +78,7 @@ class SiegeManager(src.items.Item):
                 options.append(("sound alarms",f"sound AlarmBells"))
                 options.append(("silence alarms",f"silence AlarmBells"))
                 options.append(("mop up",f"start mop up operation"))
-                submenue = src.menuFolder.SelectionMenu.SelectionMenu("select action to schedule:\n\n",options,targetParamName="actionType")
+                submenue = src.interaction.SelectionMenu("select action to schedule:\n\n",options,targetParamName="actionType")
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
                 return
@@ -88,7 +88,7 @@ class SiegeManager(src.items.Item):
                 return
 
             if not "actionTick" in params:
-                submenue = src.menuFolder.InputMenu.InputMenu("type the tick to schedule the action for:\n\n",targetParamName="actionTick")
+                submenue = src.interaction.InputMenu("type the tick to schedule the action for:\n\n",targetParamName="actionTick")
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
                 return
@@ -107,7 +107,7 @@ class SiegeManager(src.items.Item):
                 options = []
                 for (key,value) in self.schedule.items():
                     options.append((key,str(key)+" - "+str(value)))
-                submenue = src.menuFolder.SelectionMenu.SelectionMenu("select action to delete:\n\n",options,targetParamName="actionTick")
+                submenue = src.interaction.SelectionMenu("select action to delete:\n\n",options,targetParamName="actionTick")
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
                 return

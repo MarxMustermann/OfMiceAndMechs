@@ -85,7 +85,7 @@ press j to shock coordinate
 press r to reload from nearby fields
 press . to wait"""]
 
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(rerender())
+        submenue = src.interaction.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"showTargetingHud","params":params}

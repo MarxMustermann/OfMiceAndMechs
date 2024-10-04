@@ -662,7 +662,7 @@ def handleActivitySelection(key,char):
 
         extraText = "\n\n"
 
-        submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
+        submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
     del char.interactionState["runaction"]

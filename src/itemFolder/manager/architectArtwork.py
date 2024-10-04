@@ -415,7 +415,7 @@ class ArchitectArtwork(src.items.Item):
             ("generate maze", "generate maze"),
             ("test", "test"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -1122,7 +1122,7 @@ class ArchitectArtwork(src.items.Item):
             mapText = ""
             for x in range(15):
                 mapText += "".join(mapContent[x]) + "\n"
-            self.submenue = src.menuFolder.TextMenu.TextMenu(text=mapText)
+            self.submenue = src.interaction.TextMenu(text=mapText)
             self.character.macroState["submenue"] = self.submenue
         elif self.submenue.selection == "addScrapField":
             self.submenue = None
@@ -1143,7 +1143,7 @@ class ArchitectArtwork(src.items.Item):
         """
 
         if not self.submenue:
-            self.submenue = src.menuFolder.InputMenu.InputMenu(
+            self.submenue = src.interaction.InputMenu(
                 f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
@@ -1196,7 +1196,7 @@ class ArchitectArtwork(src.items.Item):
             self.targetAmount = None
 
         if not self.submenue:
-            self.submenue = src.menuFolder.InputMenu.InputMenu(
+            self.submenue = src.interaction.InputMenu(
                 f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
@@ -1207,7 +1207,7 @@ class ArchitectArtwork(src.items.Item):
             self.targetX = int(self.submenue.text.split(",")[0])
             self.targetY = int(self.submenue.text.split(",")[1])
 
-            self.submenue = src.menuFolder.InputMenu.InputMenu(
+            self.submenue = src.interaction.InputMenu(
                 "enter the amount of scrap piles (AMOUNt)"
             )
             self.character.macroState["submenue"] = self.submenue
@@ -1341,7 +1341,7 @@ class ArchitectArtwork(src.items.Item):
             self.targetRoomType = None
 
         if not self.submenue:
-            self.submenue = src.menuFolder.InputMenu.InputMenu(
+            self.submenue = src.interaction.InputMenu(
                 f"enter the coordinate ( x,y ) current: {self.character.xPosition // 15},{self.character.yPosition // 15}"
             )
             self.character.macroState["submenue"] = self.submenue
@@ -1352,7 +1352,7 @@ class ArchitectArtwork(src.items.Item):
             self.targetX = int(self.submenue.text.split(",")[0])
             self.targetY = int(self.submenue.text.split(",")[1])
 
-            self.submenue = src.menuFolder.InputMenu.InputMenu("enter the offset ( x,y )")
+            self.submenue = src.interaction.InputMenu("enter the offset ( x,y )")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.addRoom
             return
@@ -1364,7 +1364,7 @@ class ArchitectArtwork(src.items.Item):
             options = []
             for key, _value in src.rooms.roomMap.items():
                 options.append((key, key))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.interaction.SelectionMenu(
                 "select the room to produce", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -1379,7 +1379,7 @@ class ArchitectArtwork(src.items.Item):
                 self.entryPointX = None
                 self.entryPointY = None
 
-                self.submenue = src.menuFolder.InputMenu.InputMenu(
+                self.submenue = src.interaction.InputMenu(
                     "enter the rooms size ( x,y )"
                 )
                 self.character.macroState["submenue"] = self.submenue
@@ -1390,7 +1390,7 @@ class ArchitectArtwork(src.items.Item):
             self.emptyRoomSizeX = int(self.submenue.text.split(",")[0])
             self.emptyRoomSizeY = int(self.submenue.text.split(",")[1])
 
-            self.submenue = src.menuFolder.InputMenu.InputMenu(
+            self.submenue = src.interaction.InputMenu(
                 "enter the doors positions ( x,y x,y x,y )"
             )
             self.character.macroState["submenue"] = self.submenue

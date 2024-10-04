@@ -103,7 +103,7 @@ class MotionSensor(src.items.Item):
         for line in roomRender:
             line.append("\n")
 
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor"])
+        submenue = src.interaction.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor"])
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configureTargetPosition","params":params}
 

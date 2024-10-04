@@ -27,7 +27,7 @@ class PersonnelTracker(src.items.Item):
         self.faction = ""
 
     def viewNPCs(self,character):
-        submenue = src.menuFolder.ViewNPCsMenu.ViewNPCsMenu(self)
+        submenue = src.interaction.ViewNPCsMenu(self)
         character.macroState["submenue"] = submenue
         self.faction = character.faction
 

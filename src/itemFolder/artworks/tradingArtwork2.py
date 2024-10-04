@@ -183,7 +183,7 @@ class TradingArtwork2(src.items.Item):
                 "r":{"description":"toggle auto trade","callback":{"container":self,"method":"setTradeAutoTrade","params":{"character":character}}},
                 }
 
-        self.submenue = src.menuFolder.ListActionMenu.ListActionMenu(
+        self.submenue = src.interaction.ListActionMenu(
             options, applyOptions, "", targetParamName="trade"
         )
         character.macroState["submenue"] = self.submenue

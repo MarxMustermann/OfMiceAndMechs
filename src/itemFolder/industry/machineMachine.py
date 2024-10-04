@@ -56,7 +56,7 @@ Select the thing to produce and confirm.
         options.append(("produce", "produce machine"))
         if self.lastProduced:
             options.append(("repeat", "repeat last production"))
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenue = src.interaction.SelectionMenu(
                 "select the item to produce", options
         )
         character.macroState["submenue"] = submenue
@@ -74,7 +74,7 @@ Select the thing to produce and confirm.
         """
 
         options = [("addCommand", "add command")]
-        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
+        self.submenue = src.interaction.OneKeystrokeMenu(
             "what do you want to do?\n\nc: add command\nj: run job order"
         )
         character.macroState["submenue"] = self.submenue
@@ -220,7 +220,7 @@ Select the thing to produce and confirm.
         options = []
         for itemType in self.endProducts:
             options.append((itemType, itemType + " machine"))
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.interaction.SelectionMenu(
             "select the item to produce", options
         )
         self.submenue.tag = "machineSelection"

@@ -2345,7 +2345,7 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
         # place initial fighting spots
-        fightingSpots = [(5,5,0),(7,7,0),(2,8,0),(2,10,0)]
+        fightingSpots = [(5,5,0),(7,7,0),(2,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0)]
         for fightingSpot in fightingSpots:
 
             # add reward

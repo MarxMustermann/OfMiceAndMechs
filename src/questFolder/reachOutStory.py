@@ -23,6 +23,10 @@ class ReachOutStory(src.quests.MetaQuestSequence):
         return super().assignToCharacter(character)
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        if character.autoExpandQ:
+            self.postHandler()
+            character.runCommandString("q",nativeKey=True)
+            return (None,(".",""))
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None, (["esc"],"close submenu"))
         else:

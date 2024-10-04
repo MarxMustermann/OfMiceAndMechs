@@ -28,7 +28,7 @@ class MemoryStack(src.items.Item):
         options.append(("p", "push macro on stack"))
         options.append(("l", "load/pop macro from stack"))
 
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

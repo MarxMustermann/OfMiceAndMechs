@@ -51,7 +51,7 @@ class CityPlaner(src.items.Item):
             for _item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
                 options.append((index,f"prefab{index}"))
-            submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}
             return
@@ -283,7 +283,7 @@ class CityPlaner(src.items.Item):
         options.append(("s","toggle south"))
         options.append(("d","toggle east"))
         options.append(("done","done"))
-        submenue = src.interaction.SelectionMenu("What do you want to do?",options)
+        submenue = src.menuFolder.SelectionMenu.SelectionMenu("What do you want to do?",options)
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"setConnectionsFromMap","params":params}
         return
@@ -358,7 +358,7 @@ class CityPlaner(src.items.Item):
             options.append(("trapRoom","trap room"))
             options.append(("temple","temple"))
             options.append(("exit","exit menu"))
-            submenue = src.interaction.SelectionMenu("what floorplan to use?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             submenue.tag = "floorplanSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"setFloorplanFromMap","params":params}
@@ -992,7 +992,7 @@ class CityPlaner(src.items.Item):
         return options
 
     def setAutoExtensionThreashold(self,character):
-        submenue = src.interaction.InputMenu("This threashold determines at many empty rooms clones will stop building new rooms.\nSet the value",targetParamName="value",stealAllKeys=False)
+        submenue = src.menuFolder.InputMenu.InputMenu("This threashold determines at many empty rooms clones will stop building new rooms.\nSet the value",targetParamName="value",stealAllKeys=False)
         submenue.tag = "tagInput"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"setAutoExtensionThreashold2","params":{"character":character}}
@@ -1030,7 +1030,7 @@ class CityPlaner(src.items.Item):
         character = params["character"]
 
         if "tag" not in params:
-            submenue = src.interaction.InputMenu("enter the tag for this room",targetParamName="tag",stealAllKeys=False)
+            submenue = src.menuFolder.InputMenu.InputMenu("enter the tag for this room",targetParamName="tag",stealAllKeys=False)
             submenue.tag = "tagInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"setSpecialPurposeRoomFromMap","params":params}
@@ -1272,7 +1272,7 @@ class CityPlaner(src.items.Item):
             extraText += "%s\n"%(task,)
         """
 
-        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
+        self.submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
         character.macroState["submenue"] = self.submenue
 
     def getFloorPlanFromDict(self,rawFloorplan):
@@ -1399,7 +1399,7 @@ scheduledFloorPlans: {self.scheduledFloorPlans}
             options.append(("scrapCompactorProduction","scrap compactor production"))
             options.append(("basicRoombuildingItemsProduction","basic room building items production"))
             options.append(("productionRoom","production room"))
-            submenue = src.interaction.SelectionMenu("what type of floor plan to schedule?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what type of floor plan to schedule?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleFloorplan","params":params}
             return

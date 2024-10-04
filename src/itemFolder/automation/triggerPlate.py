@@ -156,7 +156,7 @@ class TriggerPlate(src.items.Item):
         for line in roomRender:
             line.append("\n")
 
-        submenue = src.interaction.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor\npress j to add/remove target"])
+        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu([roomRender,"\nselect the target position\npress wasd to move cursor\npress j to add/remove target"])
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"configureTargetPosition","params":params}
 

@@ -9,6 +9,8 @@ import src.canvas
 import src.chats
 import src.gamestate
 import src.interaction
+import src.menuFolder
+import src.menuFolder.TextMenu
 
 urwid = None
 logger = logging.getLogger(__name__)
@@ -266,7 +268,7 @@ class Character:
         return resultList
 
     def showTextMenu(self,text):
-        submenu = src.interaction.TextMenu(text)
+        submenu = src.menuFolder.TextMenu.TextMenu(text)
         self.macroState["submenue"] = submenu
 
     def callIndirect(self, callback, extraParams=None):
@@ -1173,8 +1175,7 @@ press l/L for light attack
         text += """
 
 press any other key to attack normally"""
-        submenu = src.interaction.OneKeystrokeMenu(text)
-
+        submenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
         self.macroState["submenue"] = submenu
         self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)
@@ -2215,7 +2216,7 @@ press any other key to attack normally"""
             # notify listeners
             self.changed("examine", mainItem)
 
-        self.submenue = src.interaction.OneKeystrokeMenu(text)
+        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
         self.macroState["submenue"] = self.submenue
 
     def examine(self, item):
@@ -2235,7 +2236,7 @@ press any other key to attack normally"""
         info = item.getLongInfo()
         if info:
             info += "\n\nregisterinformation:\n\n" + registerInfo
-            self.submenue = src.interaction.OneKeystrokeMenu(info)
+            self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(info)
             self.macroState["submenue"] = self.submenue
 
         # notify listeners

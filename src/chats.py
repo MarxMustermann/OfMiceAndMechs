@@ -9,11 +9,13 @@ import config
 import src.canvas
 import src.gamestate
 import src.interaction
+import src.menuFolder
+import src.menuFolder.SubMenu
 import src.quests
 
 logger = logging.getLogger(__name__)
 
-class Chat(src.interaction.SubMenu):
+class Chat(src.menuFolder.SubMenu.SubMenu):
     """
     the main class for chats
     """
@@ -306,7 +308,7 @@ Activate these, while having a full bottle in your inventory, but leave the full
             src.gamestate.gamestate.mainChar.addMessage(
                 "please refill your flask and use it to refill the growthtanks"
             )
-            src.interaction.submenue = None
+            src.menuFolder.SubMenu.SubMenue = None
             self.set_text(self.persistentText)
             # remove chat option
             # bad code: this removal results in bugs if chats of the same type exist
@@ -387,7 +389,7 @@ class TutorialSpeechTest(Chat):
             # show fluffed up information
             self.persistentText = "indeed. There are some things that need to be done.\n\nFirst examine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
             src.gamestate.gamestate.mainChar.addMessage("press q to see your questlist")
-            src.interaction.submenue = None
+            src.menuFolder.SubMenu.SubMenue = None
             self.set_text(self.persistentText)
 
             # remove chat option
@@ -518,7 +520,7 @@ class FurnaceChat(Chat):
                 (self.phase.fireFurnaces, "yes"),
                 (self.phase.noFurnaceFirering, "no"),
             ]
-            self.submenue = src.interaction.SelectionMenu(
+            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
                 "Say, do you like furnaces?", options
             )
             self.firstRun = False
@@ -538,7 +540,7 @@ class FurnaceChat(Chat):
 
                 # clear submenu
                 # bad code: direct state setting
-                src.interaction.submenue = None
+                src.menuFolder.SubMenu.SubMenue = None
                 src.interaction.loop.set_alarm_in(
                     0.0, src.interaction.callShow_or_exit, "~"
                 )
@@ -733,7 +735,7 @@ for a brain.\n\n"""
 
 # bad code: story specific
 # obsolete: needs to be reintegrated
-class ReReport(src.interaction.SubMenu):
+class ReReport(src.menuFolder.SubMenu.SubMenu):
     """
     a dialog for reentering the command chain
     """
@@ -1001,7 +1003,7 @@ class JobChatSecond(Chat):
                 if self.mainChar.reputation < 6:
                     addition += " (" + str(quest.reputationReward) + ")"
                 options.append((quest, quest.description.split("\n")[0] + addition))
-            self.submenue = src.interaction.SelectionMenu("select the quest", options)
+            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu("select the quest", options)
 
             return False
 
@@ -1215,7 +1217,7 @@ class JobChatThird(Chat):
                 if self.mainChar.reputation < 6:
                     addition += " (" + str(quest.reputationReward) + ")"
                 options.append((quest, quest.description.split("\n")[0] + addition))
-            self.submenue = src.interaction.SelectionMenu("select the quest", options)
+            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu("select the quest", options)
 
             return False
 
@@ -2052,34 +2054,34 @@ class ChatMenu(Chat):
                 elif self.selection == "stop":
                     self.partner.runCommandString(".",clear=True)
                 elif self.selection == "set name":
-                    submenue = src.interaction.NameGhoulMenu(npc=self.partner)
+                    submenue = src.menuFolder.NameGhoulMenu.NameGhoulMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
                 elif self.selection == "giveInstruction":
-                    submenue = src.interaction.InstructNPCMenu(npc=self.partner)
+                    submenue = src.menuFolder.InstructNPCMenu.InstructNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
                 elif self.selection == "talkWork":
-                    submenue = src.interaction.TextMenu(
+                    submenue = src.menuFolder.TextMenu.TextMenu(
                         text="Work is as hard as the day is long"
                     )
                     character.macroState["submenue"] = submenue
                     submenue.handleKey(key, noRender=noRender)
                     return True
                 elif self.selection == "chat":
-                    submenue = src.interaction.IdleChatNPCMenu(npc=self.partner)
+                    submenue = src.menuFolder.IdleChatNPCMenu.IdleChatNPCMenu(npc=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender,character=character)
                     return True
-                    submenue = src.interaction.CharacterInfoMenu(char=self.partner)
+                    submenue = src.menuFolder.CharacterInfoMenu.CharacterInfoMenu(char=self.partner)
                     character.macroState["submenue"] = submenue
                     submenue.handleKey("~", noRender=noRender)
                     return True
                 elif self.selection == "showQuests":
                     # spawn quest submenu for partner
-                    submenue = src.interaction.QuestMenu(char=self.partner)
+                    submenue = src.menuFolder.QuestMenu.QuestMenu(char=self.partner)
                     self.subMenu = submenue
                     submenue.handleKey(key, noRender=noRender)
                     return False
@@ -2090,7 +2092,7 @@ class ChatMenu(Chat):
                     src.gamestate.gamestate.mainChar.addMessage("copy macros")
                     return True
                 elif self.selection == "showFrustration":
-                    submenue = src.interaction.OneKeystrokeMenu(
+                    submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
                         text="my frustration is: %s" % self.partner.frustration
                     )
                     self.subMenu = submenue
@@ -2169,7 +2171,7 @@ class ChatMenu(Chat):
 
                     return True
                 elif self.selection == "runMacro":
-                    submenue = src.interaction.OneKeystrokeMenu(
+                    submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
                         text="press key for the macro to run"
                     )
                     self.subMenu = submenue

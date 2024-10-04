@@ -218,12 +218,12 @@ class PrefabDesign(BasicPhase):
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-        submenu = src.interaction.TextMenu("""
+        submenu = src.menuFolder.TextMenu.TextMenu("""
 the floorplan is available in basebuilder mode and main game now""")
 
     def askAction(self):
         options = [("generateFloorPlan", "generate floor plan"), ("simulateUsage", "simulate usage"), ("submitFloorPlan", "submit floor plan"), ("addFloorPlan", "add floor plan to loadable prefabs"),("donateFloorPlan", "donate floor plan")]
-        submenu = src.interaction.SelectionMenu(
+        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
             "what do you want to do?", options,
         )
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -248,7 +248,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
     def donateFloorPlan(self):
         options = [("yes", "Yes"), ("no", "No")]
-        submenu = src.interaction.SelectionMenu(
+        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
             "Do you want to donate the room?\n\nSelect \"Yes\" to make the rooms design public domain and upload the room.\nThis will require an internet connection", options,
             targetParamName="upload",
         )
@@ -675,7 +675,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.maintananceLoop()
 
         ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
-        submenu = src.interaction.TextMenu(f"""
+        submenu = src.menuFolder.TextMenu.TextMenu(f"""
 your room produces a MetalBar every {ticksPerBar} ticks on average.""")
 
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -1123,11 +1123,11 @@ class MainGame(BasicPhase):
             mainChar.health = int(mainChar.health*0.5)
 
         if not self.difficulty == "tutorial":
-            questMenu = src.interaction.QuestMenu(mainChar)
+            questMenu = src.menuFolder.QuestMenu.QuestMenu(mainChar)
             questMenu.sidebared = True
             mainChar.rememberedMenu.append(questMenu)
 
-        messagesMenu = src.interaction.MessagesMenu(mainChar)
+        messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests = True
@@ -1202,7 +1202,7 @@ Then go and claim their heart.
 You should start with the GlassStatue on the top right.
 That GlassStatue leads to the next easiest dungeon.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1234,7 +1234,7 @@ Use that to spawn a NPC. That is pretty important actually.
 Use the leftmost Shrine (\\/) to wish for a NPC.
 What the NPC does does not matter on easy.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1258,7 +1258,7 @@ On easy this means that you collected all GlassHearts.
 Now there is only one step left to do.
 Use the Throne (TT) in the middle of the Temple to win the game.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1281,7 +1281,7 @@ You claimed all GlassHearts.
 
 And when you are done then try medium difficulty, much more will be explained there.
 """
-                submenu = src.interaction.TextMenu(text+"""
+                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1311,7 +1311,7 @@ Bring the GlassHeart to your temple.
 Use the GlassStatue marked as (kk) to claim the GlassHeart as yours.
 When the GlassHeart is properly set it will show as KK.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1341,7 +1341,7 @@ To get basic production active you need the following NPCs:
 a resource gatherer
 a scrap hammerer
 a metal worker"""
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1368,7 +1368,7 @@ Now return to your base to put the GlassHeart to use.
 
 To return back to the base use the Shrine (\\/).
 Select the "teleport home" option to get back to base."""
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1392,7 +1392,7 @@ Until you bring set it into a GlassStatue again you are cursed.
 
 Your movement speed is halfed, so running from enemies is much harder.
 Bring the GlassHeart back to your base to lift that curse."""
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1419,7 +1419,7 @@ For this you have to have a healing item like the Vial in you inventory.
 
 The less health you have the stronger the Vials healing effect.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1448,7 +1448,7 @@ The GooFlask is destroyed in the progress though.
 
 So bring it with you to be able to spawn one NPC cheaper.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1483,7 +1483,7 @@ Fight the enemies by bumping into them.
 
 There are more complex fighting systems,
 but you won't need them on easy difficulty."""
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1512,7 +1512,7 @@ This room contains LandMines.
 Active LandMines are shown as red "_~".
 
 Try not to step onto them and avoid standing next to them."""
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1546,7 +1546,7 @@ Pick up the GlassHeart (!!) afterwards.
 
 press ? after closing this menu to see what keys you need to use.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1597,7 +1597,7 @@ Keep in mind that the GlassHeart is not the only reward in this room.
 
 Remember to take the additional items with you.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1626,7 +1626,7 @@ If you have more than 10 exhaustion then you get penalities.
 
 To reduce your exhaustion press .
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1650,7 +1650,7 @@ The ranged combat allows you to fire bolts by pressing f.
 As long as you have Bolts in your inventory, you can shoot in straight lines.
 Each shot will consume a Bolt.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1676,7 +1676,7 @@ I can hurt you quite a lot, too. So remember to keep a distance.
 
 
 """
-                        submenu = src.interaction.TextMenu(text+"""
+                        submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1699,7 +1699,7 @@ Another thing you can to is to bait/kite enemies
 When you enter and leave a room sometimes enemies will chase you.
 You can use this to divide enemy groups and kite enemies into traps.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1723,7 +1723,7 @@ When time passes you slowly heal, so you can just wait
 The more hurt you are the faster you heal.
 So this works best when you are near dead.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1749,7 +1749,7 @@ but destroys the item itself.
 If you can reach and use it without getting killed,
 it is a very fast and HP saving way to clear a room.
 """
-                    submenu = src.interaction.TextMenu(text+"""
+                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1784,7 +1784,7 @@ this can easily kill you if enemies are nearby.
 You can also pick up active LandMines,
 but they are likely to explode when disturbed.
 """
-                        submenu = src.interaction.TextMenu(text+"""
+                        submenu = src.menuFolder.TextMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -3011,15 +3011,15 @@ but they are likely to explode when disturbed.
 
                 src.gamestate.gamestate.mainChar = candidate
 
-                questMenu = src.interaction.QuestMenu(candidate)
+                questMenu = src.menuFolder.QuestMenu.QuestMenu(candidate)
                 questMenu.sidebared = True
                 candidate.rememberedMenu.append(questMenu)
-                messagesMenu = src.interaction.MessagesMenu(candidate)
+                messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(candidate)
                 candidate.rememberedMenu2.append(messagesMenu)
-                inventoryMenu = src.interaction.InventoryMenu(candidate)
+                inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(candidate)
                 inventoryMenu.sidebared = True
                 candidate.rememberedMenu2.append(inventoryMenu)
-                combatMenu = src.interaction.CombatInfoMenu(candidate)
+                combatMenu = src.menuFolder.CombatInfoMenu.CombatInfoMenu(candidate)
                 combatMenu.sidebared = True
                 candidate.rememberedMenu.insert(0,combatMenu)
 
@@ -3115,7 +3115,7 @@ but they are likely to explode when disturbed.
         # triggers at any time
         if mainChar.health < mainChar.maxHealth - 10:
             if len(mainChar.rememberedMenu2) < 2:
-                inventoryMenu = src.interaction.InventoryMenu(mainChar)
+                inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(mainChar)
                 inventoryMenu.sidebared = True
                 mainChar.rememberedMenu2.append(inventoryMenu)
 

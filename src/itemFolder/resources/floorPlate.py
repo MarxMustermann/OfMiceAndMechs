@@ -39,7 +39,7 @@ class FloorPlate(src.items.Item):
         get a text from a character to set as name for this item
         """
 
-        self.submenue = src.interaction.InputMenu("Enter the name")
+        self.submenue = src.menuFolder.InputMenu.InputMenu("Enter the name")
         self.character.macroState["submenue"] = self.submenue
         self.character.macroState["submenue"].followUp = self.setName
 

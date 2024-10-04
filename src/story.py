@@ -3143,6 +3143,16 @@ but they are likely to explode when disturbed.
 
         # assimilate into base
         if mainChar.faction != "city #1":
+
+            # grab nearby vial
+            if mainChar.getBigPosition() == (3,11,0):
+                quest = src.quests.questMap["SecureTile"](toSecure=(2,10,0),endWhenCleared=True)
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
             # get to control room
             if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):
                 quest = src.quests.questMap["ReachSafety"]()

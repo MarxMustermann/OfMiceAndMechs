@@ -109,3 +109,5 @@ gamestate/
 # VSCode
 .vscode/
 .timetracker
+
+config/globalSettings.json

@@ -4555,6 +4555,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
     while 1:
         tcodConsole.clear()
+        time.sleep(0.1)
 
         try:
             # register the save

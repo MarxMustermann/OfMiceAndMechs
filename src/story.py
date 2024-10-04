@@ -2327,16 +2327,8 @@ but they are likely to explode when disturbed.
             item.display = "OT"
             startRoom.addItem(item,pos)
 
-        specialSpots = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,9,0),(6,9,0)]
-        for specialSpot in specialSpots:
-            flask = src.items.itemMap["GooFlask"]()
-            flask.uses = 100
-            currentTerrain.addItem(flask,(15*specialSpot[0]+random.randint(2,11),15*specialSpot[1]+random.randint(2,11),0))
-            vial = src.items.itemMap["Vial"]()
-            vial.uses = 5
-            currentTerrain.addItem(vial,(15*specialSpot[0]+random.randint(2,11),15*specialSpot[1]+random.randint(2,11),0))
-
         # scatter walls
+        specialSpots = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,9,0),(6,9,0)]
         for x in range(1,14):
             for y in range(1,14):
                 if (x,y) in ((3,11),):
@@ -2355,10 +2347,20 @@ but they are likely to explode when disturbed.
         # place initial fighting spots
         fightingSpots = [(5,5,0),(7,7,0),(2,8,0),(2,10,0)]
         for fightingSpot in fightingSpots:
+            # add reward
             vial = src.items.itemMap["Vial"]()
             vial.uses = 5
             currentTerrain.addItem(vial,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
         
+            # add enemy
+            enemy = src.characters.Spiderling()
+            quest = src.quests.questMap["SecureTile"](toSecure=bigPos,alwaysHuntDown=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(enemy)
+            quest.activate()
+            enemy.quests.append(quest)
+            currentTerrain.addCharacter(enemy,fightingSpot[0]*15+random.randint(3,12),fightingSpot[1]*15+random.randint(3,12))
+
         """
         # scatter cocoons
         for x in range(1,14):

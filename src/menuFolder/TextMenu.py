@@ -1,8 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import header, main, urwid
-
+import src
 
 class TextMenu(SubMenu):
     """
@@ -46,8 +45,8 @@ class TextMenu(SubMenu):
 
         if not noRender:
             # show info
-            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
             self.persistentText = self.text
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False

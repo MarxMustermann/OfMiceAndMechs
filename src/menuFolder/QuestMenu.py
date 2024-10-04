@@ -2,8 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import header, main, urwid
-
 
 class QuestMenu(SubMenu):
     """
@@ -130,9 +128,9 @@ class QuestMenu(SubMenu):
         addition = ""
         if self.char == src.gamestate.gamestate.mainChar:
             addition = " (you)"
-        header.set_text(
+        src.interaction.header.set_text(
             (
-                urwid.AttrSpec("default", "default"),
+                src.interaction.urwid.AttrSpec("default", "default"),
                 "\nquest overview for "
                 + self.char.name
                 + ""
@@ -181,7 +179,7 @@ class QuestMenu(SubMenu):
         self.persistentText = flatten(self.persistentText)
 
         # show rendered quests via urwid
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
     # bad code: the asList and questIndex parameters are out of place

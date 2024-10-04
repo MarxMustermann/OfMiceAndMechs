@@ -1,8 +1,6 @@
 
+import src
 from src.menuFolder.SubMenu import SubMenu
-
-from src.interaction import header
-
 
 # bad code: this does nothing the Submenu doesn't do
 class SelectionMenu(SubMenu):
@@ -54,8 +52,8 @@ class SelectionMenu(SubMenu):
             if self.followUp:
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:None})
             return True
-        if not noRender and header:
-            header.set_text("")
+        if not noRender and src.interaction.header:
+            src.interaction.header.set_text("")
 
         # let superclass handle the actual selection
         if not self.getSelection():

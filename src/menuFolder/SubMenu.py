@@ -1,10 +1,9 @@
 import collections
 
-from src.interaction import main, urwid
-
 # bad code: there is redundant code from the specific submenus that should be put here
 # bad code: there is spcific code from the selection submenu that should NOT be here
 
+import src
 
 class SubMenu:
     """
@@ -220,10 +219,10 @@ class SubMenu:
 
             # show the rendered options
             # bad code: urwid specific code
-            if main:
-                main.set_text(
+            if src.interaction.main:
+                src.interaction.main.set_text(
                     (
-                        urwid.AttrSpec("default", "default"),
+                        src.interaction.urwid.AttrSpec("default", "default"),
                         [self.persistentText , "\n\n" , out],
                     )
                 )

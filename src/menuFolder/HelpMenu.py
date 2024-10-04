@@ -1,8 +1,7 @@
 
+import src
+
 from src.menuFolder.SubMenu import SubMenu
-
-from src.interaction import header, main, urwid
-
 
 # bad code: uses global function to render
 class HelpMenu(SubMenu):
@@ -29,7 +28,7 @@ class HelpMenu(SubMenu):
             return True
 
         # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nhelp\n\n"))
 
         txt = ""
         txt += "\n= movement =\n"
@@ -60,6 +59,6 @@ class HelpMenu(SubMenu):
         txt += "\n"
         txt += ""
 
-        main.set_text((urwid.AttrSpec("default", "default"), txt))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), txt))
 
         return False

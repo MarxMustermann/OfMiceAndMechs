@@ -1,9 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import main, urwid
-from src.menuFolder.InputMenu import InputMenu
-
+import src
 
 class RoomSourceMenu(SubMenu):
     """
@@ -48,10 +46,10 @@ class RoomSourceMenu(SubMenu):
         for source in self.room.sources:
             self.persistentText += f"{source[1]}: {source[0]}\n"
         self.persistentText += "\n\npresss c to add source"
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         if key == "c":
-            self.submenu = InputMenu(f"input source.\nCurrent tile is {character.container.getTilePosition()}.\nFormat to input source is \nresourceType: tilecoordinate")
+            self.submenu = src.menuFolder.InputMenu.InputMenu(f"input source.\nCurrent tile is {character.container.getTilePosition()}.\nFormat to input source is \nresourceType: tilecoordinate")
             self.submenu.handleKey("~", noRender, character)
             return False
 

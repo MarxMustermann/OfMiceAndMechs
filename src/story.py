@@ -2351,6 +2351,13 @@ but they are likely to explode when disturbed.
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
+
+        # place initial fighting spots
+        fightingSpots = [(5,5,0),(7,7,0),(2,8,0),(2,10,0)]
+        for fightingSpot in fightingSpots:
+            vial = src.items.itemMap["Vial"]()
+            vial.uses = 5
+            currentTerrain.addItem(vial,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
         
         """
         # scatter cocoons

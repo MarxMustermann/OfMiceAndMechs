@@ -211,7 +211,7 @@ class QuestMenu(SubMenu):
         # render the quests
         if len(char.quests):
             if sidebared:
-                result = char.quests[0].getSolvingCommandString(char)
+                result = char.getActiveQuest().getSolvingCommandString(char)
                 solvingCommangString = None
                 if result:
                     if isinstance(result,list):

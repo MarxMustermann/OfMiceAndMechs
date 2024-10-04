@@ -300,7 +300,7 @@ def setUpTcod():
 
     global tcodMixer
     global tcodAudioDevice
-    device = src.interaction.tcodAudio.open(channels = 2,samples = 6000)
+    device = src.interaction.tcodAudio.open(channels = 2)
     tcodAudioDevice = device
     mixer = src.interaction.tcodAudio.BasicMixer(device)
     tcodMixer = mixer
@@ -2274,6 +2274,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("changeFaction", "changeFaction"),
                ("toggleQuestExpanding", "toggleQuestExpanding"),
                ("toggleQuestExpanding2", "toggleQuestExpanding2"),
+               ("toggleExpandQ", "toggleExpandQ"),
                ("toggleCommandOnPlus", "toggleCommandOnPlus"),
                ("change personality settings", "change personality settings"),
                ("change setting", "change setting")]
@@ -2336,6 +2337,8 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             char.autoExpandQuests = not char.autoExpandQuests
         elif selection == "toggleQuestExpanding2":
             char.autoExpandQuests2 = not char.autoExpandQuests2
+        elif selection == "toggleExpandQ":
+            char.autoExpandQ = not char.autoExpandQ
         elif selection == "toggleCommandOnPlus":
             char.disableCommandsOnPlus = not char.disableCommandsOnPlus
         elif selection == "changeFaction":
@@ -3173,8 +3176,6 @@ def renderMessages(character, maxMessages=5):
 
     return txt
 
-
-
 lastTerrain = None
 
 lastCenterX = None
@@ -3182,6 +3183,7 @@ lastCenterY = None
 
 # bad code: should be contained somewhere
 def render(char):
+    print("render")
     """
     render the map
 

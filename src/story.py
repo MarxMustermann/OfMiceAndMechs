@@ -2347,6 +2347,7 @@ but they are likely to explode when disturbed.
         # place initial fighting spots
         fightingSpots = [(5,5,0),(7,7,0),(2,8,0),(2,10,0)]
         for fightingSpot in fightingSpots:
+
             # add reward
             vial = src.items.itemMap["Vial"]()
             vial.uses = 5
@@ -2354,7 +2355,7 @@ but they are likely to explode when disturbed.
         
             # add enemy
             enemy = src.characters.Spiderling()
-            quest = src.quests.questMap["SecureTile"](toSecure=bigPos,alwaysHuntDown=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=fightingSpot,alwaysHuntDown=True)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()

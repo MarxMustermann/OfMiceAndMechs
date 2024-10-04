@@ -1,6 +1,6 @@
-from src.interaction import header, main, urwid
-from src.menuFolder.SubMenu import SubMenu
+import src
 
+from src.menuFolder.SubMenu import SubMenu
 
 class MessagesMenu(SubMenu):
     def render(self,char):
@@ -46,7 +46,7 @@ class MessagesMenu(SubMenu):
         text = f"press a/d to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render(char)
 
         # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "messages"))
-        main.set_text((urwid.AttrSpec("default", "default"), [text]))
-        header.set_text((urwid.AttrSpec("default", "default"), ""))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "messages"))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None

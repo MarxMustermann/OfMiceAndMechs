@@ -3,9 +3,7 @@ import collections
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import commandChars, header, main, urwid
 from src.menuFolder.SelectionMenu import SelectionMenu
-
 
 class DebugMenu(SubMenu):
     """

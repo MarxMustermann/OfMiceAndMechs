@@ -192,7 +192,7 @@ Scrapfields are shown on the minimap as white ss"""]
                     if source is None and not character.getTerrain().scrapFields:
                         continue
 
-                    step =  src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room)
+                    step =  src.quests.questMap["ClearInventory"].generateDutyQuest(beUsefull,character,room,dryRun)
                     if step != (None,None):    
                         if not dryRun:
                             beUsefull.idleCounter = 0

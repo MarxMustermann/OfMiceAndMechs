@@ -38,7 +38,7 @@ class StaffArtwork(src.items.Item):
         super().apply()
 
     def connect(self, character):
-        character.macroState["submenue"] = src.interaction.ImplantConnection(self)
+        character.macroState["submenue"] = src.menuFolder.ImplantConnection.ImplantConnection(self)
 
     def showMap(self, character, cursor=None):
         # render empty map

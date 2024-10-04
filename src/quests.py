@@ -812,7 +812,12 @@ class MetaQuestSequence(Quest,ABC):
             return
         NextStep = self.getNextStep(character, dryRun=False)
         if NextStep is not None:
-            (nextQuests, nextCommand) = NextStep
+            try:
+                (nextQuests, nextCommand) = NextStep
+            except:
+                print(self)
+                print(NextStep)
+                1/0
             if nextQuests:
                 for quest in nextQuests:
                     self.addQuest(quest)

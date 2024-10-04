@@ -268,7 +268,7 @@ Currently the machine has no charges
             character: the character trying to use the machine
         """
 
-        self.submenue = src.interaction.OneKeystrokeMenu(
+        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
                 "what do you want to do?\n\nc: add command\nj: run job order\nb: bolt/unbolt"
         )
         character.macroState["submenue"] = self.submenue
@@ -324,7 +324,7 @@ Currently the machine has no charges
                         f"set {itemType} fetching command",
                     )
                 )
-            self.submenue = src.interaction.SelectionMenu(
+            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
                 "Setting command for handling triggers.", options
             )
             self.character.macroState["submenue"] = self.submenue

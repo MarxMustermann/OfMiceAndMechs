@@ -46,7 +46,7 @@ class PathingNode(src.items.Item):
         """
 
         options = [("setName", "set name")]
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -60,7 +60,7 @@ class PathingNode(src.items.Item):
         """
 
         if self.submenue.selection == "setName":
-            self.submenue = src.interaction.InputMenu("enter node name")
+            self.submenue = src.menuFolder.InputMenu.InputMenu("enter node name")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setName
 

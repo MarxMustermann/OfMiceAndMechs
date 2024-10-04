@@ -163,7 +163,7 @@ class MessageZoomCinematic(BasicCinematic):
 
         # get the text of the message window if it wasn't retrieved yet
         if not self.text:
-            self.text = src.interaction.renderMessages().split("\n")
+            self.text = src.menuFolder.renderMessages.renderMessages().split("\n")
 
         # wait for some time till actually doing something
         if self.turnOnCounter:
@@ -636,7 +636,7 @@ class SelectionCinematic(BasicCinematic):
         show the selection menu
         """
 
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             self.text, self.options, default=self.default
         )
         self.addSubmenuToCinematicQueue()

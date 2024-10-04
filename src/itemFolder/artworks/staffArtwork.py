@@ -38,7 +38,7 @@ class StaffArtwork(src.items.Item):
         super().apply()
 
     def connect(self, character):
-        character.macroState["submenue"] = src.interaction.ImplantConnection(self)
+        character.macroState["submenue"] = src.menuFolder.ImplantConnection.ImplantConnection(self)
 
     def showMap(self, character, cursor=None):
         # render empty map
@@ -125,7 +125,7 @@ class StaffArtwork(src.items.Item):
 
         extraText = "\n\n"
 
-        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
+        self.submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
         character.macroState["submenue"] = self.submenue
 
     def fetchCityleader(self):
@@ -246,7 +246,7 @@ class StaffArtwork(src.items.Item):
         pass
 
     def assignByRoomType(self, character):
-        self.submenue = src.interaction.StaffAsMatrixMenu(self)
+        self.submenue = src.menuFolder.StaffAsMatrixMenu.StaffAsMatrixMenu(self)
         character.macroState["submenue"] = self.submenue
 
 src.items.addType(StaffArtwork)

@@ -48,14 +48,14 @@ class MachiningTable(src.items.Item):
             for item_type in self.default_item_types:
                 options.append((item_type,item_type))
             options.append(("byName","produce by name"))
-            submenue = src.interaction.SelectionMenu("Produce machine for what item?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("Produce machine for what item?",options,targetParamName="type")
             submenue.tag = "machiningProductSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
         if params.get("type") == "byName":
-            submenue = src.interaction.InputMenu("Type the name of the item to produce?",targetParamName="type")
+            submenue = src.menuFolder.InputMenu.InputMenu("Type the name of the item to produce?",targetParamName="type")
             submenue.tag = "machiningTableProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
@@ -104,14 +104,14 @@ class MachiningTable(src.items.Item):
         if ticksLeft > 10:
             character.timeTaken += 10
             params["doneProductionTime"] += 10
-            submenue = src.interaction.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
             submenue.tag = "metalWorkingProductWait"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
         else:
             character.timeTaken += ticksLeft
             params["doneProductionTime"] += ticksLeft
-            submenue = src.interaction.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
             submenue.tag = "metalWorkingProductWait"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
@@ -203,7 +203,7 @@ class MachiningTable(src.items.Item):
             for item_type in self.default_item_types:
                 options.append((item_type,item_type))
             options.append(("Bolt","Bolt"))
-            submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return

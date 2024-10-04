@@ -66,7 +66,7 @@ class GlassStatue(src.items.Item):
                 if not numScrapFound:
                     if character:
                         text = "no Scrap to offer\n\nPlace the Scrap to offer on the floor of this room."
-                        submenue = src.interaction.TextMenu(text)
+                        submenue = src.menuFolder.TextMenu.TextMenu(text)
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
                     return
@@ -100,7 +100,7 @@ class GlassStatue(src.items.Item):
                 if not len(itemsFound):
                     if character:
                         text = f"you need to offer {itemType}.\n\nPlace the offered items on the floor of this room."
-                        submenue = src.interaction.TextMenu(text)
+                        submenue = src.menuFolder.TextMenu.TextMenu(text)
                         character.macroState["submenue"] = submenue
                         character.addMessage(text)
                     return
@@ -122,7 +122,7 @@ class GlassStatue(src.items.Item):
 
         if self.charges >= 9:
             text = f"the glass statue has maximum charges now"
-            submenue = src.interaction.TextMenu(text)
+            submenue = src.menuFolder.TextMenu.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.addMessage(text)
             return
@@ -143,7 +143,7 @@ class GlassStatue(src.items.Item):
             text += f"\n\nyour saccrifice was not enough for another charge"
 
 
-        submenue = src.interaction.TextMenu(text)
+        submenue = src.menuFolder.TextMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.addMessage(text)
 
@@ -417,7 +417,7 @@ class GlassStatue(src.items.Item):
             options.append(("spawn maggot gathering NPC","spawn maggot gatherer"))
             options.append(("spawn cleaning NPC","spawn cleaner"))
 
-            submenue = src.interaction.SelectionMenu("what reward do you desire?",options,targetParamName="rewardType")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what reward do you desire?",options,targetParamName="rewardType")
             submenue.tag = "rewardSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"dispenseRewards","params":{"character":character}}
@@ -730,7 +730,7 @@ class GlassStatue(src.items.Item):
         character.movementSpeed = character.movementSpeed/2
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
-        submenue = src.interaction.TextMenu("""
+        submenue = src.menuFolder.TextMenu.TextMenu("""
 You insert the GlassHeart into the GlassStatue and make it whole.
 
 The GlassHeart scream and its agony takes physical form.

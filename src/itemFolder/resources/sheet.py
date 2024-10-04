@@ -83,7 +83,7 @@ This is a level {self.level} item
         options.append(("createMap", "create a map"))
         options.append(("createJobOrder", "create a job order"))
         options.append(("createFloorPlan", "create a floor plan"))
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "What do you want do do?", options
         )
         self.character.macroState["submenue"] = self.submenue
@@ -111,7 +111,7 @@ This is a level {self.level} item
         start creating a note by prompting a character for more information
         """
 
-        self.submenue = src.interaction.InputMenu(
+        self.submenue = src.menuFolder.InputMenu.InputMenu(
             "type the text you want to write on the note"
         )
         self.character.macroState["submenue"] = self.submenue
@@ -235,7 +235,7 @@ This is a level {self.level} item
         )
         options.append(("store", "store macro from memory"))
         options.append(("text", "type in comand"))
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "select how to get the commands content", options
         )
         self.character.macroState["submenue"] = self.submenue
@@ -262,7 +262,7 @@ This is a level {self.level} item
         self.character.runCommandString("-a")
 
     def storeFromText(self):
-        self.submenue = src.interaction.InputMenu(
+        self.submenue = src.menuFolder.InputMenu.InputMenu(
             "Type the command in",
         )
         self.character.macroState["submenue"] = self.submenue
@@ -304,7 +304,7 @@ This is a level {self.level} item
                     compressedMacro += "/" + keystroke + "/"
             options.append((key, key + " - " + compressedMacro))
 
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "select the macro you want to store", options
         )
         self.character.macroState["submenue"] = self.submenue

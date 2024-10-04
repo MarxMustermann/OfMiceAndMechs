@@ -32,7 +32,7 @@ class HealingStation(src.items.Item):
         """
 
         options = [("heal", "heal me"), ("vial", "fill vial")]
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

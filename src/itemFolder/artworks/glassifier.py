@@ -143,7 +143,7 @@ class Glassifier(src.items.Item):
                     break
             if amountScrap < 10:
                 text = self.getPhaseInstruction()
-                submenue = src.interaction.TextMenu(text)
+                submenue = src.menuFolder.TextMenu.TextMenu(text)
                 character.macroState["submenue"] = submenue
 
                 character.addMessage("you need 10 units of Scrap in the room to pray.")
@@ -376,13 +376,13 @@ class Glassifier(src.items.Item):
         if params["prayerTime"] - params["timeTaken"] > 10:
             character.timeTaken += 10
             params["timeTaken"] += 10
-            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"pray_wait","params":params}
         else:
             character.timeTaken += params["prayerTime"] - params["timeTaken"]
             params["timeTaken"] += params["prayerTime"] - params["timeTaken"]
-            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"pray_done","params":params}
 
@@ -409,7 +409,7 @@ class Glassifier(src.items.Item):
         self.numPrayed = 0
 
         text = self.getPhaseInstruction()
-        submenue = src.interaction.TextMenu(text)
+        submenue = src.menuFolder.TextMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.addMessage(text)
 
@@ -420,7 +420,7 @@ class Glassifier(src.items.Item):
             if self.unstableLevel == 1:
                 character = src.gamestate.gamestate.mainChar
 
-                submenue = src.interaction.TextMenu("The glassfifier is unstable. Stabilise it this epoch!")
+                submenue = src.menuFolder.TextMenu.TextMenu("The glassfifier is unstable. Stabilise it this epoch!")
                 character.macroState["submenue"] = submenue
                 self.unstableLevel += 1
             else:
@@ -450,7 +450,7 @@ class Glassifier(src.items.Item):
             currentTerrain.addEvent(event)
 
             text = self.getPhaseInstruction()
-            submenue = src.interaction.TextMenu(text)
+            submenue = src.menuFolder.TextMenu.TextMenu(text)
             character.macroState["submenue"] = submenue
             character.addMessage(text)
 

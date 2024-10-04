@@ -1,10 +1,10 @@
+import logging
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import logger, main, urwid
-from src.menuFolder.RoomDutyMenu import RoomDutyMenu
-from src.menuFolder.RoomSourceMenu import RoomSourceMenu
+import src
 
+logger = logging.getLogger(__name__)
 
 class RoomMenu(SubMenu):
     type = "RoomMenu"
@@ -68,17 +68,17 @@ class RoomMenu(SubMenu):
 
         self.persistentText.append("\n\n- q: open staff section\n- r: show resource sources\n- o: issue room orders")
 
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         if self.firstKey:
             self.firstKey = False
             return None
 
         if character and key in ("q",):
-            character.macroState["submenue"] = RoomDutyMenu(self.room)
+            character.macroState["submenue"] = src.menuFolder.RoomDutyMenu.RoomDutyMenu(self.room)
 
         if character and key in ("r",):
-            character.macroState["submenue"] = RoomSourceMenu(self.room)
+            character.macroState["submenue"] = src.menuFolder.RoomSourceMenu.RoomSourceMenu(self.room)
 
         if character and key in ("o",):
             homeRoom = character.getHomeRoom()

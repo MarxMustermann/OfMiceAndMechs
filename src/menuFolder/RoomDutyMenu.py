@@ -1,8 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import header, main, urwid
-
+import src
 
 class RoomDutyMenu(SubMenu):
     """
@@ -55,7 +54,7 @@ class RoomDutyMenu(SubMenu):
 
         # show info
         if not noRender:
-            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
             self.persistentText = """
 move the cursor using w/a/s/d.
 press j or enter to select
@@ -103,12 +102,12 @@ press j or enter to select
                         backColor = "#000"
                         if (colCounter,rowCounter) == self.index:
                             backColor = "#444"
-                        self.persistentText.append((urwid.AttrSpec(frontColor, backColor),staffCharacter.name))
+                        self.persistentText.append((src.interaction.urwid.AttrSpec(frontColor, backColor),staffCharacter.name))
                         self.persistentText.append(" |")
                         colCounter += 1
                     self.persistentText.append("\n")
                     rowCounter += 1
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu
         if key in ("esc",):

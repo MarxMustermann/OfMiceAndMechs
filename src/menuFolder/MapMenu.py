@@ -2,8 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import header, main, urwid
-
 
 class MapMenu(SubMenu):
     """
@@ -114,9 +112,9 @@ class MapMenu(SubMenu):
 
         if not noRender:
             # show info
-            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
             self.persistentText = mapText
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
 
         return False

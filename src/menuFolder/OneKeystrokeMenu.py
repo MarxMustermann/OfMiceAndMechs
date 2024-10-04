@@ -1,8 +1,7 @@
 
 from src.menuFolder.SubMenu import SubMenu
 
-from src.interaction import header, main, urwid
-
+import src
 
 class OneKeystrokeMenu(SubMenu):
     """
@@ -30,7 +29,7 @@ class OneKeystrokeMenu(SubMenu):
 
     def rerender(self):
         if self.rerenderFunction:
-            main.set_text((urwid.AttrSpec("default", "default"), self.rerenderFunction()))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.rerenderFunction()))
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -45,9 +44,9 @@ class OneKeystrokeMenu(SubMenu):
 
         # show info
         if not noRender:
-            header.set_text((urwid.AttrSpec("default", "default"), ""))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
             self.persistentText = self.text
-            main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         # exit the submenu
         if key not in ("~",) and not self.firstRun:

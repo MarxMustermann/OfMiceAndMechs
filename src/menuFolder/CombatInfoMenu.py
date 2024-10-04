@@ -1,8 +1,6 @@
 
 from src.menuFolder.SubMenu import SubMenu
-
-from src.interaction import header, main, urwid
-
+import src
 
 # bad code: should be abstracted
 # bad code: uses global function to render
@@ -89,7 +87,7 @@ subordinates:
         text = self.render(char)
 
         # show info
-        header.set_text((urwid.AttrSpec("default", "default"), "\ncharacter overview"))
-        main.set_text((urwid.AttrSpec("default", "default"), [text]))
-        header.set_text((urwid.AttrSpec("default", "default"), ""))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncharacter overview"))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None

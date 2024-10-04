@@ -2,8 +2,6 @@
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import header, urwid
-
 
 # bad code: since there is no need to wait for some return this submenue should not wrap around the Chat menu
 # bad code: sub menues should be implemented in the base class
@@ -42,7 +40,7 @@ class ChatPartnerselection(SubMenu):
             return True
 
         # set title
-        header.set_text((urwid.AttrSpec("default", "default"), "\nConversation menu\n"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nConversation menu\n"))
         out = "\n"
 
         # offer the player the option to select from characters to talk to

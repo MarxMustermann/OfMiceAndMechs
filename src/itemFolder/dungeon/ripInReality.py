@@ -331,7 +331,7 @@ class RipInReality(src.items.Item):
         """
 
         options = [("destabilize", "destabilize"), ("stablize", "stablize")]
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

@@ -125,7 +125,7 @@ class StaffArtwork(src.items.Item):
 
         extraText = "\n\n"
 
-        self.submenue = src.interaction.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
+        self.submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
         character.macroState["submenue"] = self.submenue
 
     def fetchCityleader(self):
@@ -246,7 +246,7 @@ class StaffArtwork(src.items.Item):
         pass
 
     def assignByRoomType(self, character):
-        self.submenue = src.interaction.StaffAsMatrixMenu(self)
+        self.submenue = src.menuFolder.StaffAsMatrixMenu.StaffAsMatrixMenu(self)
         character.macroState["submenue"] = self.submenue
 
 src.items.addType(StaffArtwork)

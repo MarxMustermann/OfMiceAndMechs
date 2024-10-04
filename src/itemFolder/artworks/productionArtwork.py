@@ -118,7 +118,7 @@ Select the thing to produce and confirm."""
             if key in excludeList and not self.godMode:
                 continue
             options.append((value, key))
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "select the item to produce", options
         )
         character.macroState["submenue"] = self.submenue
@@ -136,7 +136,7 @@ Select the thing to produce and confirm."""
                 options = []
                 for key, _value in src.items.itemMap.items():
                     options.append((key, key))
-                self.submenue = src.interaction.SelectionMenu(
+                self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
                     "select the item the machine should produce", options
                 )
                 self.character.macroState["submenue"] = self.submenue
@@ -147,7 +147,7 @@ Select the thing to produce and confirm."""
                 options = []
                 for key, _value in src.items.itemMap.items():
                     options.append((key, key))
-                self.submenue = src.interaction.SelectionMenu(
+                self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
                     "select resource the terminal is for", options
                 )
                 self.character.macroState["submenue"] = self.submenue

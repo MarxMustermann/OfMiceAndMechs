@@ -71,14 +71,14 @@ class MetalWorkingBench(src.items.Item):
             options.append(("ArmorStand","ArmorStand"))
             options.append(("WeaponRack","WeaponRack"))
             options.append(("byName","produce by name"))
-            submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             submenue.tag = "metalWorkingProductSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
         if params.get("type") == "byName":
-            submenue = src.interaction.InputMenu("Type the name of the item to produce",targetParamName="type")
+            submenue = src.menuFolder.InputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "metalWorkingProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
@@ -145,14 +145,14 @@ class MetalWorkingBench(src.items.Item):
         if ticksLeft > 10:
             character.timeTaken += 10
             params["doneProductionTime"] += 10
-            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             submenue.tag = "metalWorkingProductWait"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
         else:
             character.timeTaken += ticksLeft
             params["doneProductionTime"] += ticksLeft
-            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             submenue.tag = "metalWorkingProductWait"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
@@ -270,7 +270,7 @@ class MetalWorkingBench(src.items.Item):
             options.append(("ArmorStand","ArmorStand"))
             options.append(("WeaponRack","WeaponRack"))
             options.append(("byName","produce by name"))
-            submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
@@ -280,7 +280,7 @@ class MetalWorkingBench(src.items.Item):
             return
 
         if params.get("type") == "byName":
-            submenue = src.interaction.InputMenu("Type the name of the item to produce",targetParamName="type")
+            submenue = src.menuFolder.InputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
@@ -294,7 +294,7 @@ class MetalWorkingBench(src.items.Item):
             options.append((100,"100"))
             options.append((500,"500"))
             options.append((1000,"1000"))
-            submenue = src.interaction.SelectionMenu("how many items to shedule?",options,targetParamName="amount")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("how many items to shedule?",options,targetParamName="amount")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return

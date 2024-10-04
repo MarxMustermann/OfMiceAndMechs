@@ -636,7 +636,7 @@ class SelectionCinematic(BasicCinematic):
         show the selection menu
         """
 
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             self.text, self.options, default=self.default
         )
         self.addSubmenuToCinematicQueue()

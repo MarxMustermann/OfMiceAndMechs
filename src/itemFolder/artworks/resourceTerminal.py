@@ -45,7 +45,7 @@ class ResourceTerminal(src.items.Item):
             ("getTokens", "get token"),
             ("addTokens", "add token"),
         ]
-        self.submenue = src.interaction.SelectionMenu(
+        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

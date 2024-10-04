@@ -110,13 +110,13 @@ class ManufacturingTable(src.items.Item):
             options.append(("ArmorStand","ArmorStand"))
             options.append(("WeaponRack","WeaponRack"))
             options.append(("byName","produce by name"))
-            submenue = src.interaction.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
 
         if params.get("type") == "byName":
-            submenue = src.interaction.InputMenu("Type the name of the item to produce",targetParamName="type")
+            submenue = src.menuFolder.InputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
@@ -210,14 +210,14 @@ class ManufacturingTable(src.items.Item):
         if ticksLeft > 10:
             character.timeTaken += 10
             params["doneProductionTime"] += 10
-            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             submenue.tag = "metalWorkingProductWait"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
         else:
             character.timeTaken += ticksLeft
             params["doneProductionTime"] += ticksLeft
-            submenue = src.interaction.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
+            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             submenue.tag = "metalWorkingProductWait"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}

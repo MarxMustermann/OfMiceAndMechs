@@ -55,7 +55,7 @@ class CreateQuestMenu(SubMenu):
             description = "set param: "
             if param["type"] == "coordinate":
                 description += str(character.getBigPosition())
-            self.submenu = src.interaction.InputMenu(f"{description}{param}")
+            self.submenu = src.menuFolder.InputMenu.InputMenu(f"{description}{param}")
             self.submenu.handleKey("~", noRender=noRender, character=character)
             self.stealAllKeys = True
             return False

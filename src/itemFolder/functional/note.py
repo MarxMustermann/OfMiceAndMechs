@@ -49,7 +49,7 @@ it holds the text:
             character: the character that tries to read the note
         """
 
-        submenue = src.interaction.OneKeystrokeMenu(
+        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
             f"the note has the text: \n\n\n{self.text}"
         )
         character.macroState["submenue"] = submenue

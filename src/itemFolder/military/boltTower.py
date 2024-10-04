@@ -59,7 +59,7 @@ class BoltTower(src.items.Item):
                 charges_text = "no"
             return [rendering,"\n",extraText,"\n\n",f"you have {charges_text} shots left","\npress wasd to shoot            \npress . to wait"]
 
-        submenue = src.interaction.OneKeystrokeMenu(rerender())
+        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(rerender())
         submenue.rerenderFunction = rerender
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"showTargetingHud","params":params}

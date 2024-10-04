@@ -53,7 +53,7 @@ class DutyBell(src.items.Item):
             options.append(("machine placing", "machine placing"))
             options.append(("room building", "room building"))
 
-            submenue = src.interaction.SelectionMenu("select the duty to set",options)
+            submenue = src.menuFolder.SelectionMenu.SelectionMenu("select the duty to set",options)
             character.macroState["submenue"] = submenue
             params = {"character":character}
             character.macroState["submenue"].followUp = {"container":self,"method":"setDuty","params":params}
@@ -93,7 +93,7 @@ class DutyBell(src.items.Item):
         options.append(("machine placing", "machine placing"))
         options.append(("room building", "room building"))
 
-        submenue = src.interaction.SelectionMenu("select the duty to set",options)
+        submenue = src.menuFolder.SelectionMenu.SelectionMenu("select the duty to set",options)
         character.macroState["submenue"] = submenue
         params = {"character":character}
         character.macroState["submenue"].followUp = {"container":self,"method":"setDuty","params":params}

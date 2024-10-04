@@ -55,7 +55,7 @@ After changing the duties the clones should change their behaviour after complet
         options.append(("duty1","duty1"))
         options.append(("duty2","duty2"))
 
-        submenue = src.interaction.SelectionMenu("select duty to toggle\n",options,targetParamName="duty")
+        submenue = src.menuFolder.SelectionMenu.SelectionMenu("select duty to toggle\n",options,targetParamName="duty")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"changeOwnDuties_real","params":params}
 
@@ -88,7 +88,7 @@ After changing the duties the clones should change their behaviour after complet
         for (k,v) in dutyMap.items():
             text += f"{k} - {v}\n"
 
-        submenue = src.interaction.TextMenu(text)
+        submenue = src.menuFolder.TextMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
 
     def showMatrix(self, character):
@@ -96,7 +96,7 @@ After changing the duties the clones should change their behaviour after complet
         #if not character.rank < 4:
         #    character.addMessage("you need to have rank 3 to do this. You can see the overview though.")
         #    return
-        self.submenue = src.interaction.JobAsMatrixMenu(self)
+        self.submenue = src.menuFolder.JobAsMatrixMenu.JobAsMatrixMenu(self)
         character.macroState["submenue"] = self.submenue
 
 src.items.addType(DutyArtwork)

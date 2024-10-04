@@ -1,5 +1,5 @@
 
-import SubMenu
+from src.menuFolder.SubMenu import SubMenu
 
 from src.interaction import main, urwid
 from src.menuFolder.InputMenu import InputMenu

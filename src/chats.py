@@ -9,11 +9,13 @@ import config
 import src.canvas
 import src.gamestate
 import src.interaction
+import src.menuFolder
+import src.menuFolder.SubMenu
 import src.quests
 
 logger = logging.getLogger(__name__)
 
-class Chat(src.interaction.SubMenu):
+class Chat(src.menuFolder.SubMenu.SubMenu):
     """
     the main class for chats
     """
@@ -306,7 +308,7 @@ Activate these, while having a full bottle in your inventory, but leave the full
             src.gamestate.gamestate.mainChar.addMessage(
                 "please refill your flask and use it to refill the growthtanks"
             )
-            src.interaction.submenue = None
+            src.menuFolder.SubMenu.SubMenue = None
             self.set_text(self.persistentText)
             # remove chat option
             # bad code: this removal results in bugs if chats of the same type exist
@@ -387,7 +389,7 @@ class TutorialSpeechTest(Chat):
             # show fluffed up information
             self.persistentText = "indeed. There are some things that need to be done.\n\nFirst examine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
             src.gamestate.gamestate.mainChar.addMessage("press q to see your questlist")
-            src.interaction.submenue = None
+            src.menuFolder.SubMenu.SubMenue = None
             self.set_text(self.persistentText)
 
             # remove chat option
@@ -538,7 +540,7 @@ class FurnaceChat(Chat):
 
                 # clear submenu
                 # bad code: direct state setting
-                src.interaction.submenue = None
+                src.menuFolder.SubMenu.SubMenue = None
                 src.interaction.loop.set_alarm_in(
                     0.0, src.interaction.callShow_or_exit, "~"
                 )
@@ -733,7 +735,7 @@ for a brain.\n\n"""
 
 # bad code: story specific
 # obsolete: needs to be reintegrated
-class ReReport(src.interaction.SubMenu):
+class ReReport(src.menuFolder.SubMenu.SubMenu):
     """
     a dialog for reentering the command chain
     """

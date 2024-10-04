@@ -7032,23 +7032,3 @@ def handleMultiplayerClients():
 
     loop.set_alarm_in(0.1, handleMultiplayerClients)
 
-
-# the directory for the submenus
-subMenuMap = {
-    "SelectionMenu": SelectionMenu,
-    "ListActionMenu": ListActionMenu,
-    "ChatPartnerselection": ChatPartnerselection,
-    "DebugMenu": DebugMenu,
-    "QuestMenu": QuestMenu,
-    "InventoryMenu": InventoryMenu,
-    "CharacterInfoMenu": CharacterInfoMenu,
-    "AdvancedQuestMenu": AdvancedQuestMenu,
-    "HelpMenu": HelpMenu,
-    "TextMenu": TextMenu,
-    "MapMenu": MapMenu,
-    "OneKeystrokeMenu": OneKeystrokeMenu,
-    "CreateQuestMenu": CreateQuestMenu,
-    "JobAsMatrixMenu": JobAsMatrixMenu,
-    "StaffAsMatrixMenu": StaffAsMatrixMenu,
-    "RoomMenu": RoomMenu,
-}

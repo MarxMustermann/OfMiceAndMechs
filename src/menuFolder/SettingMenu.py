@@ -1,6 +1,6 @@
 import json
 
-import SubMenu
+from src.menuFolder.SubMenu import SubMenu
 
 from src.interaction import header, main, settings, urwid
 

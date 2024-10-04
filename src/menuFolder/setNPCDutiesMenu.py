@@ -1,5 +1,5 @@
 
-import SubMenu
+from src.menuFolder.SubMenu import SubMenu
 
 
 class setNPCDutiesMenu(SubMenu):

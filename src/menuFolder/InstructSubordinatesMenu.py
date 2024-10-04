@@ -1,5 +1,5 @@
 
-import SubMenu
+from src.menuFolder.SubMenu import SubMenu
 
 import src
 from src.menuFolder.SelectionMenu import SelectionMenu

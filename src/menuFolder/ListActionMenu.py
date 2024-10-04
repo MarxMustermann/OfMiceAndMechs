@@ -1,6 +1,6 @@
 import collections
 
-import SubMenu
+from src.menuFolder.SubMenu import SubMenu
 
 from src.interaction import commandChars, header, main, urwid
 

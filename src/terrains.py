@@ -982,7 +982,7 @@ class Terrain:
             for x in range(1,13):
                 for y in range(1,13):
                     if self.getEnemiesOnTile(character,(x,y,0)):
-                        tileMap[x*2+1][y*2+1] = 100
+                        tileMap[x*2+1][y*2+1] = 127
 
         for scrapField in self.scrapFields:
             tileMap[scrapField[0]*2+1][scrapField[1]*2+1] = 50

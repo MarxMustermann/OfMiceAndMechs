@@ -2295,7 +2295,7 @@ but they are likely to explode when disturbed.
 
         startRoom = architect.doAddRoom(
                 {
-                       "coordinate": (3,12),
+                       "coordinate": (6,10),
                        "roomType": "EmptyRoom",
                        "doors": "6,0",
                        "offset": [1,1],
@@ -2307,13 +2307,13 @@ but they are likely to explode when disturbed.
 
         vial = src.items.itemMap["Vial"]()
         vial.uses = 5
-        currentTerrain.addItem(vial, (3*15+3,11*15+4,0))
+        currentTerrain.addItem(vial, (6*15+3,9*15+4,0))
         vial = src.items.itemMap["Vial"]()
         vial.uses = 1
-        currentTerrain.addItem(vial, (3*15+8,11*15+2,0))
+        currentTerrain.addItem(vial, (6*15+8,9*15+2,0))
         vial = src.items.itemMap["Vial"]()
         vial.uses = 1
-        currentTerrain.addItem(vial, (3*15+9,11*15+6,0))
+        currentTerrain.addItem(vial, (6*15+9,9*15+6,0))
         
         for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
                     (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
@@ -2328,7 +2328,7 @@ but they are likely to explode when disturbed.
             startRoom.addItem(item,pos)
 
         # scatter walls
-        specialSpots = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,9,0),(6,9,0)]
+        specialSpots = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,8,0),(7,9,0)]
         for x in range(1,14):
             for y in range(1,14):
                 if (x,y) in ((3,11),):

@@ -157,7 +157,7 @@ class SternsContraption(src.items.Item):
                         terrain.addItem(scrap,(bigX*15+x,bigY*15+y,0))
                         terrain.scrapFields.append((bigX,bigY,0))
 
-                enemySpawns = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,9,0),(6,9,0)]
+                enemySpawns = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,8,0),(7,9,0)]
                 for bigPos in enemySpawns:
                     for i in range(1,random.randint(2,6)):
                         enemy = src.characters.Spider()

@@ -2863,7 +2863,7 @@ press key for advanced drop
 
     # open the menu for giving quests
     if key in (commandChars.show_quests_detailed,):
-        charState["submenue"] = src.menuFolder.InventoryMenu.AdvancedQuestMenu(char)
+        charState["submenue"] = src.menuFolder.AdvancedQuestMenu.AdvancedQuestMenu(char)
 
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):

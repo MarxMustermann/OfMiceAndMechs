@@ -2,8 +2,6 @@ import collections
 
 from src.menuFolder.SubMenu import SubMenu
 import src
-from src.interaction import header, main, urwid
-from src.menuFolder.CreateQuestMenu import CreateQuestMenu
 
 
 class AdvancedQuestMenu(SubMenu):
@@ -41,8 +39,8 @@ class AdvancedQuestMenu(SubMenu):
 
         # start rendering
         if not noRender:
-            header.set_text(
-                (urwid.AttrSpec("default", "default"), "\nadvanced Quest management\n")
+            src.interaction.header.set_text(
+                (src.interaction.urwid.AttrSpec("default", "default"), "\nadvanced Quest management\n")
             )
             out = "\n"
             #if self.character:
@@ -159,7 +157,7 @@ class AdvancedQuestMenu(SubMenu):
                     self.selection += key
 
                 if not noRender:
-                    main.set_text((urwid.AttrSpec("default", "default"), self.selection+"\n\n%s"%(self.activeChar.questsDone)))
+                    src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.selection+"\n\n%s"%(self.activeChar.questsDone)))
                 return False
 
         # let the player select the parameters for the quest
@@ -242,9 +240,9 @@ class AdvancedQuestMenu(SubMenu):
                         return False
             elif self.quest:
                 if self.character == "ALL":
-                    self.activeChar.macroState["submenue"] = CreateQuestMenu(self.quest, self.activeChar.subordinates, self.activeChar)
+                    self.activeChar.macroState["submenue"] = src.menuFolder.CreateQuestMenu.CreateQuestMenu(self.quest, self.activeChar.subordinates, self.activeChar)
                 else:
-                    self.activeChar.macroState["submenue"] = CreateQuestMenu(self.quest, [self.character], self.activeChar)
+                    self.activeChar.macroState["submenue"] = src.menuFolder.CreateQuestMenu.CreateQuestMenu(self.quest, [self.character], self.activeChar)
                 return False
             else:
                 # skip parameter selection
@@ -363,6 +361,6 @@ class AdvancedQuestMenu(SubMenu):
                 return True
 
         # show rendered text via urwid
-        main.set_text((urwid.AttrSpec("default", "default"), self.persistentText))
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False

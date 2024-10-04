@@ -3,8 +3,6 @@ import collections
 from src.menuFolder.SubMenu import SubMenu
 
 import src
-from src.interaction import header, main, urwid, commandChars
-from src.menuFolder.SelectionMenu import SelectionMenu
 
 class CreateQuestMenu(SubMenu):
     type = "CreateQuestMenu"
@@ -119,7 +117,7 @@ class CreateQuestMenu(SubMenu):
 
         # start rendering
         if not noRender:
-            header.set_text((urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncreate Quest\n"))
             # show rendered text via urwid
-            main.set_text((urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "type: {}\n\nparameters: \n\n{}\n\ncurrent parameter: \n\n{} : {}\n\noptional parameters: \n\n{}\n\npress space to confirm".format(self.questType,self.questParams,self.parameterName,self.parameterValue,self.optionalParams)))
         return False

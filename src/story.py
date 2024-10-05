@@ -3145,8 +3145,8 @@ but they are likely to explode when disturbed.
         if mainChar.faction != "city #1":
 
             # grab nearby vial
-            if mainChar.getBigPosition() == (3,11,0):
-                quest = src.quests.questMap["SecureTile"](toSecure=(2,10,0),endWhenCleared=True)
+            if mainChar.getBigPosition() == (6,9,0):
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True)
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)

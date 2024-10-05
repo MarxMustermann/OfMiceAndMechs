@@ -6,7 +6,7 @@ import src
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None):
         super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
@@ -15,10 +15,14 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         self.huntdownCooldown = 0
         self.strict = strict
         self.alwaysHuntDown = alwaysHuntDown
+        self.reason = reason
 
     def generateTextDescription(self):
+        reasonString = ""
+        if self.reason:
+            reasonString = f", to {self.reason}"
         text  = f"""
-Secure the tile {self.targetPosition}.
+Secure the tile {self.targetPosition}{reasonString}.
 
 This means you should go to the tile and kill all enemies you find."""
         if not self.endWhenCleared:

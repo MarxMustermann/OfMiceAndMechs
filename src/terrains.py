@@ -954,7 +954,7 @@ class Terrain:
                 if x in (0,14,) or y in (0,14):
                     tileMap[x*2+1].append(0)
                 else:
-                    tileMap[x*2+1].append(1)
+                    tileMap[x*2+1].append(5)
                 tileMap[x*2+1].append("1")
             tileMap[x*2+1].pop()
             tileMap[x*2+1].append(0)
@@ -968,7 +968,7 @@ class Terrain:
         tileMap[7*2+1][14*2+1] = 1
 
         for room in self.rooms:
-            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "1"
+            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
             if not room.getPositionWalkable((0,6,0)):
                 tileMap[room.xPosition*2+0][room.yPosition*2+1] = "0"
             if not room.getPositionWalkable((12,6,0)):
@@ -982,22 +982,22 @@ class Terrain:
             for x in range(1,13):
                 for y in range(1,13):
                     if self.getEnemiesOnTile(character,(x,y,0)):
-                        tileMap[x*2+1][y*2+1] = 127
+                        tileMap[x*2+1][y*2+1] = 10000
 
         for scrapField in self.scrapFields:
-            tileMap[scrapField[0]*2+1][scrapField[1]*2+1] = 50
+            tileMap[scrapField[0]*2+1][scrapField[1]*2+1] = 2000
         for forest in self.forests:
-            tileMap[forest[0]*2+1][forest[1]*2+1] = 50
+            tileMap[forest[0]*2+1][forest[1]*2+1] = 2000
         for forest in self.forests:
-            tileMap[forest[0]*2+1][forest[1]*2+1] = 50
+            tileMap[forest[0]*2+1][forest[1]*2+1] = 2000
 
         for x in range(1,13):
             for y in range(1,13):
                 items = self.getItemByPosition((15*x+7,15*y+7,0))
                 if items and items[0].type == "RoomBuilder":
-                    tileMap[x*2+1][y*2+1] = 50
+                    tileMap[x*2+1][y*2+1] = 2000
 
-        cost = np.array(tileMap, dtype=np.int8)
+        cost = np.array(tileMap, dtype=np.int16)
         pathfinder = tcod.path.AStar(cost,diagonal = 0)
         path = pathfinder.get_path(startPos[0]*2+1,startPos[1]*2+1,targetPos[0]*2+1,targetPos[1]*2+1)
         realPath = []

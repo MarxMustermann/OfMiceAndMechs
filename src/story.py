@@ -3146,7 +3146,7 @@ but they are likely to explode when disturbed.
 
             # grab nearby vial
             if mainChar.getBigPosition() == (6,9,0):
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the vial on that tile")
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)

@@ -954,7 +954,7 @@ class Terrain:
                 if x in (0,14,) or y in (0,14):
                     tileMap[x*2+1].append(0)
                 else:
-                    tileMap[x*2+1].append(5)
+                    tileMap[x*2+1].append(1)
                 tileMap[x*2+1].append("1")
             tileMap[x*2+1].pop()
             tileMap[x*2+1].append(0)
@@ -968,7 +968,7 @@ class Terrain:
         tileMap[7*2+1][14*2+1] = 1
 
         for room in self.rooms:
-            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
+            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "1"
             if not room.getPositionWalkable((0,6,0)):
                 tileMap[room.xPosition*2+0][room.yPosition*2+1] = "0"
             if not room.getPositionWalkable((12,6,0)):

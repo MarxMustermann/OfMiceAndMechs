@@ -105,6 +105,11 @@ class Door(src.items.Item):
                 character.addMessage("you can only use doors within rooms")
             return
 
+        if character:
+            if not (character.container == self.container):
+                character.addMessage("you can only open the door from inside the room")
+                return
+
         # open the door
         self.walkable = True
 

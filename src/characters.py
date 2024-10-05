@@ -3042,123 +3042,6 @@ class Statuette(Monster):
     def die(self, reason=None, addCorpse=True):
         super().die(reason, addCorpse=False)
 
-# bad code: there is very specific code in here, so it it stopped to be a generic class
-class Guardian(Character):
-    """
-    a class for a generic monster
-    """
-
-    def __init__(
-        self,
-        display="🝆~",
-        xPosition=0,
-        yPosition=0,
-        quests=None,
-        automated=True,
-        name="Guardian",
-        creator=None,
-        characterId=None,
-    ):
-        """
-        basic state setting
-        """
-
-        if quests is None:
-            quests = []
-        super().__init__(
-            display,
-            xPosition,
-            yPosition,
-            quests,
-            automated,
-            name,
-            creator=creator,
-            characterId=characterId,
-        )
-        self.faction = "monster"
-
-        self.solvers.extend(["NaiveMurderQuest"])
-        self.charType = "Guardian"
-
-    def render(self):
-        """
-        render the monster depending on health and damage
-        """
-
-        render = src.canvas.displayChars.monster_feeder
-
-        if self.health > 1500:
-            colorHealth = "#f80"
-        elif self.health > 1400:
-            colorHealth = "#e80"
-        elif self.health > 1300:
-            colorHealth = "#d80"
-        elif self.health > 1200:
-            colorHealth = "#c80"
-        elif self.health > 1100:
-            colorHealth = "#b80"
-        elif self.health > 1000:
-            colorHealth = "#a80"
-        elif self.health > 900:
-            colorHealth = "#980"
-        elif self.health > 800:
-            colorHealth = "#880"
-        elif self.health > 700:
-            colorHealth = "#780"
-        elif self.health > 600:
-            colorHealth = "#680"
-        elif self.health > 500:
-            colorHealth = "#580"
-        elif self.health > 400:
-            colorHealth = "#480"
-        elif self.health > 300:
-            colorHealth = "#380"
-        elif self.health > 200:
-            colorHealth = "#280"
-        elif self.health > 100:
-            colorHealth = "#180"
-        else:
-            colorHealth = "#080"
-
-        if self.baseDamage > 15:
-            colorDamage = "#f80"
-        elif self.baseDamage > 14:
-            colorDamage = "#e80"
-        elif self.baseDamage > 13:
-            colorDamage = "#d80"
-        elif self.baseDamage > 12:
-            colorDamage = "#c80"
-        elif self.baseDamage > 11:
-            colorDamage = "#b80"
-        elif self.baseDamage > 10:
-            colorDamage = "#a80"
-        elif self.baseDamage > 9:
-            colorDamage = "#980"
-        elif self.baseDamage > 8:
-            colorDamage = "#880"
-        elif self.baseDamage > 7:
-            colorDamage = "#780"
-        elif self.baseDamage > 6:
-            colorDamage = "#680"
-        elif self.baseDamage > 5:
-            colorDamage = "#580"
-        elif self.baseDamage > 4:
-            colorDamage = "#480"
-        elif self.baseDamage > 3:
-            colorDamage = "#380"
-        elif self.baseDamage > 2:
-            colorDamage = "#280"
-        elif self.baseDamage > 1:
-            colorDamage = "#180"
-        else:
-            colorDamage = "#080"
-
-        if self.faction == src.gamestate.gamestate.mainChar.faction:
-            render = [(urwid.AttrSpec(colorHealth, "black"), "?"),(urwid.AttrSpec(colorDamage, "black"), "-")]
-        else:
-            render = [(urwid.AttrSpec(colorHealth, "black"), "!"),(urwid.AttrSpec(colorDamage, "black"), "-")]
-
-        return render
 
 class Exploder(Monster):
     """
@@ -3482,7 +3365,6 @@ class Maggot(Character):
 characterMap = {
     "Character": Character,
     "Monster": Monster,
-    "Guardian": Guardian,
     "Exploder": Exploder,
     "Mouse": Mouse,
     "Spider": Spider,

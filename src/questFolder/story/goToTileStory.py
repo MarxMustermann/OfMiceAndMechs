@@ -17,8 +17,11 @@ class GoToTileStory(src.quests.questMap["GoToTile"]):
 
         return [f"""
 Go to the base entrance located on tile {self.targetPosition}{reasonString}.
-Avoid fighting with the insects, you are not equipped for it.
+Avoid fighting you are not equipped for it.
 Enemies are shown with a red background.
+
+Do not enter tiles with Spiders ("""+"SP"+"""), they can kill you easily.
+You should be able to beat the Spiderlings ("""+"sp"+""") for some extra resources.
 
 This quest is part of the quest to secure the base.
 

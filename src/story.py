@@ -2031,7 +2031,7 @@ but they are likely to explode when disturbed.
         sword.baseDamage = 10
         actualCharacter.weapon = sword
         actualCharacter.faction = faction
-        mainRoom.addCharacter(actualCharacter,6,6)
+        mainRoom.addCharacter(actualCharacter,5,5)
 
         # make npc protect the room
         quest = src.quests.questMap["SecureTile"](toSecure=mainRoom.getPosition())
@@ -2040,6 +2040,8 @@ but they are likely to explode when disturbed.
         quest.activate()
         actualCharacter.quests.append(quest)
 
+        # add regenerator
+        mainRoom.addItem(src.items.itemMap["Regenerator"](), (6, 6, 0))
         ####
         # create manufacturing hall
         ##

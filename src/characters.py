@@ -1407,6 +1407,9 @@ press any other key to attack normally"""
         if self.maxHealth - self.health < amount:
             amount = self.maxHealth - self.health
 
+        if reason:
+            self.addMessage(reason)
+
         self.health += amount
         self.changed("healed",{})
         self.addMessage(f"you heal for {amount} and have {self.health} health")

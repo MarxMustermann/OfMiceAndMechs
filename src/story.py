@@ -2306,14 +2306,11 @@ but they are likely to explode when disturbed.
         startRoom.tag = "sternslab"
 
         vial = src.items.itemMap["Vial"]()
-        vial.uses = 5
+        vial.uses = 2
         currentTerrain.addItem(vial, (6*15+3,9*15+4,0))
         vial = src.items.itemMap["Vial"]()
         vial.uses = 1
         currentTerrain.addItem(vial, (6*15+8,9*15+2,0))
-        vial = src.items.itemMap["Vial"]()
-        vial.uses = 1
-        currentTerrain.addItem(vial, (6*15+9,9*15+6,0))
         
         for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
                     (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
@@ -2328,7 +2325,7 @@ but they are likely to explode when disturbed.
             startRoom.addItem(item,pos)
 
         # scatter walls
-        specialSpots = [(4,6,0),(4,8,0),(3,9,0),(3,7,0),(5,8,0),(7,9,0)]
+        specialSpots = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
         for x in range(1,14):
             for y in range(1,14):
                 if (x,y) in ((3,11),):
@@ -2345,7 +2342,7 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
         # place initial fighting spots
-        fightingSpots = [(5,5,0),(7,7,0),(2,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0)]
+        fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0)]
         for fightingSpot in fightingSpots:
 
             # add reward
@@ -3146,7 +3143,7 @@ but they are likely to explode when disturbed.
 
             # grab nearby vial
             if mainChar.getBigPosition() == (6,9,0):
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the vial on that tile")
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the vial on that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)

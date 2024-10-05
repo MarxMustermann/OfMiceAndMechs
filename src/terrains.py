@@ -2084,8 +2084,8 @@ class Terrain:
 
                     chars[pos[1]][pos[0]] = display
 
-        quest = src.gamestate.gamestate.mainChar.getActiveQuest()
-        if quest:
+        quests = src.gamestate.gamestate.mainChar.getActiveQuests()
+        for quest in quests:
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
                 display = chars[pos[1]][pos[0]]

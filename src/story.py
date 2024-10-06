@@ -3140,6 +3140,16 @@ but they are likely to explode when disturbed.
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 return
 
+        # pick up nearby vials
+        if mainChar.getFreeInventorySpace() > 0:
+            if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
+                quest = src.quests.questMap["TreatWounds"]()
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
         # assimilate into base
         if mainChar.faction != "city #1":
 

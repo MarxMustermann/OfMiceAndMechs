@@ -2330,7 +2330,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             char.macroState["submenue"] = None
             char.specialRender = False
             src.gamestate.gamestate.save()
-            src.interaction.tcodMixer.close()
+            # src.interaction.tcodMixer.close()
             raise SystemExit() #HACK: workaround for bug that causes memory leak
         elif selection == "actions":
             pass

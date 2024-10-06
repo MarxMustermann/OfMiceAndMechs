@@ -1,6 +1,5 @@
-import Monster
-
 import src
+from src.CharcFolder.Monster import Monster
 
 
 class Statue(Monster):

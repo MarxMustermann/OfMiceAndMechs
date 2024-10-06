@@ -1,7 +1,6 @@
 
-import Monster
-
 import src
+from src.CharcFolder.Monster import Monster
 
 
 class Exploder(Monster):

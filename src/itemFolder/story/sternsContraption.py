@@ -174,6 +174,11 @@ class SternsContraption(src.items.Item):
 
                         terrain.addCharacter(enemy,bigPos[0]*15+random.randint(3,12),bigPos[1]*15+random.randint(3,12))
 
+                hunterSpawns = [(9,10,0),(10,9,0),(12,12,0)]
+                for bigPos in hunterSpawns:
+                    enemy = src.characters.characterMap["Hunter"]()
+                    terrain.addCharacter(enemy,bigPos[0]*15+random.randint(3,12),bigPos[1]*15+random.randint(3,12))
+
                 self.container.destroy()
                 return
             self.meltdownLevel += 1

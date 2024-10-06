@@ -52,7 +52,7 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
                 break
 
         if not foundActiveTrap:
-            return (None,(baseCommand,"step on trap"))
+            return (None,(baseCommand,"step on disabled trap"))
         
         return (None,("J"+baseCommand,"trigger trap"))
 

@@ -100,6 +100,7 @@ class Anvil(src.items.Item):
         if scrap in character.inventory:
             character.inventory.remove(scrap)
         else:
+            self.container.addAnimation(scrap.getPosition(),"showchar",1,{"char":"--"})
             if scrap.amount == 1:
                 self.container.removeItem(scrap)
             else:
@@ -122,6 +123,7 @@ class Anvil(src.items.Item):
 
                 if not targetFull:
                     self.container.addItem(new,targetPos)
+                    self.container.addAnimation(new.getPosition(),"showchar",1,{"char":"++"})
 
         character.changed("hammered scrap",{})
 

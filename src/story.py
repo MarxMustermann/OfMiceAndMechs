@@ -2394,6 +2394,13 @@ but they are likely to explode when disturbed.
                 enemy.quests.append(quest)
                 currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
 
+        # add mold spots
+        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0)]
+        for moldTile in moldTiles:
+            mold = src.items.itemMap["Mold"]()
+            currentTerrain.addItem(mold,(15*moldTile[0]+7,15*moldTile[1]+7,0))
+            mold.startSpawn()
+
         """
         # scatter cocoons
         for x in range(1,14):

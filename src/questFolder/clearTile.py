@@ -6,12 +6,13 @@ import src
 class ClearTile(src.quests.MetaQuestSequence):
     type = "ClearTile"
 
-    def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None):
+    def __init__(self, description="clean tile", creator=None, targetPosition=None, noDelegate=False, reason=None, story=None):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
         self.reason = reason
+        self.story = story
 
         self.timesDelegated = 0
 
@@ -24,10 +25,13 @@ class ClearTile(src.quests.MetaQuestSequence):
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
+        storyString = ""
+        if self.story:
+            storyString = self.story
 
         if self.character.rank == 3:
-            text = f"""
-Ensure that the trap room on {self.targetPosition} is cleaned.
+            text = f"""{storyString}
+Ensure that the trap room on {self.targetPosition} is cleaned{reasonString}.
 
 Since you are the commander of the base you can make other people do it.
 Send the rank 5-6 NPCs and proceed to do something else in the meantime.
@@ -44,7 +48,7 @@ After you do this the NPCs should stop what they are doing and start working on 
 If the task is not completed after some time, reload the trap room yourself.
 Use the shockers in the trap room for this."""
         else:
-            text = f"""
+            text = f"""{storyString}
 Clean the room on tile {self.targetPosition}{reasonString}.
 
 Remove all items from the walkways that are not bolted down."""

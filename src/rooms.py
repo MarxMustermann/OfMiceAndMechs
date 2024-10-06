@@ -267,10 +267,7 @@ class Room:
             if fullyEmpty:
                 continue
 
-            if (itemType and items[0].type != itemType):
-                continue
-
-            if (inputSlot[1] and items[0].type != inputSlot[1]):
+            if (itemType and not inputSlot[1] and items[0].type != itemType):
                 continue
 
             if items[-1].type == "Scrap":
@@ -304,10 +301,7 @@ class Room:
                 if fullyEmpty:
                     continue
 
-                if (itemType and items[0].type != itemType):
-                    continue
-
-                if (storageSlot[1] and items[0].type != storageSlot[1]):
+                if (itemType and not storageSlot[1] and items[0].type != itemType):
                     continue
 
                 if items[0].type == "Scrap":

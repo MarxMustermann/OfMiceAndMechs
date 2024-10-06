@@ -416,7 +416,7 @@ Press d to move the cursor and show the subquests description.
                                 return (quests,None)
                         if not dryRun:
                             beUsefull.idleCounter = 0
-                        return True
+                        return (quests,None)
 
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             checkedTypes = set()

@@ -2365,6 +2365,36 @@ but they are likely to explode when disturbed.
             enemy.quests.append(quest)
             currentTerrain.addCharacter(enemy,fightingSpot[0]*15+random.randint(3,12),fightingSpot[1]*15+random.randint(3,12))
 
+        # spawn wall spots
+        wallTiles = [(4,3,0),(2,3,0),(2,2,0),(5,2,0),(6,3,0),(8,1,0),(10,3,0),(11,4,0),(12,4,0),(11,8,0),(11,11,0),(12,11,0),(11,12,0),(10,13,0),(9,12,0),(7,12,0),]
+        for wallTile in wallTiles:
+
+            # add walls
+            wallSpots = []
+            for x in range(1,14):
+                for y in (1,13):
+                    if x == 7:
+                        continue
+                    wallSpots.append((x,y,0))
+            for x in (1,13):
+                for y in range(2,13):
+                    if y == 7:
+                        continue
+                    wallSpots.append((x,y,0))
+            for wallSpot in wallSpots:
+                item = src.items.itemMap["Wall"]()
+                currentTerrain.addItem(item,(15*wallTile[0]+wallSpot[0],15*wallTile[1]+wallSpot[1],0))
+
+            # add enemies
+            for _i in range(0,random.randint(1,5)):
+                enemy = src.characters.Monster()
+                quest = src.quests.questMap["SecureTile"](toSecure=wallTile,alwaysHuntDown=True)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+                currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
+
         """
         # scatter cocoons
         for x in range(1,14):

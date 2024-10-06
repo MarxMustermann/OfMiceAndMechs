@@ -10,11 +10,17 @@ class TreatWounds(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
 
-
-    def getTileVials(self,character):
+    @staticmethod
+    def getTileVials(character):
         terrain = character.getTerrain()
         tileVials = []
-        for item in terrain.itemsByBigCoordinate.get(character.getBigPosition(),[]):
+        rooms = terrain.getRoomByPosition(character.getBigPosition())
+        if rooms:
+            items = rooms[0].itemsOnFloor
+        else:
+            items = terrain.itemsByBigCoordinate.get(character.getBigPosition(),[])
+
+        for item in items:
             if not item.type == "Vial":
                 continue
             if not item.uses > 0:

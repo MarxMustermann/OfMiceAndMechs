@@ -35,7 +35,7 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
             return (None,(baseCommand,"move"))
 
         # block trigger plates
-        if character.inventory:
+        if character.inventory and character.inventory[-1].walkable:
             return (None,("L"+baseCommand,"block TrickerPlate"))
 
         # check of traps are in cooldown
@@ -52,7 +52,7 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
                 break
 
         if not foundActiveTrap:
-            return (None,(baseCommand,"step on trap"))
+            return (None,(baseCommand,"step on disabled trap"))
         
         return (None,("J"+baseCommand,"trigger trap"))
 

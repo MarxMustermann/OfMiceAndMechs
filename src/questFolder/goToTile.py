@@ -291,7 +291,7 @@ The target tile is {direction[4:]}
     def generatePath(self,character):
         self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True)
 
-    def unhandledSubQuestFail(self,extraParam):
+    def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
             return
 
@@ -300,7 +300,7 @@ The target tile is {direction[4:]}
         if extraParam["reason"] and "no path found" in extraParam["reason"]:
             quest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraParam["quest"].targetPosition)
             self.addQuest(quest)
-            self.startWatching(quest,self.unhandledSubQuestFail,"failed")
+            self.startWatching(quest,self.handleQuestFailure,"failed")
             return
 
         self.fail(extraParam["reason"])

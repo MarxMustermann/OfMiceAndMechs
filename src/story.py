@@ -1130,7 +1130,7 @@ class MainGame(BasicPhase):
         messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
-        mainChar.autoExpandQuests = True
+        mainChar.autoExpandQuests2 = True
 
         print("len(self.available_positions)")
         print(len(self.available_positions))
@@ -2344,7 +2344,7 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
         # place initial fighting spots
-        fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0)]
+        fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
         for fightingSpot in fightingSpots:
 
             # add reward
@@ -3140,12 +3140,22 @@ but they are likely to explode when disturbed.
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 return
 
+        # pick up nearby vials
+        if mainChar.getFreeInventorySpace() > 0:
+            if src.quests.questMap["TreatWounds"].getTileVials(mainChar):
+                quest = src.quests.questMap["TreatWounds"]()
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
         # assimilate into base
         if mainChar.faction != "city #1":
 
             # grab nearby vial
             if mainChar.getBigPosition() == (6,9,0):
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the vial on that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)

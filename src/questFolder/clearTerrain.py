@@ -45,6 +45,9 @@ Just clear the whole terrain tile for tile.
 
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        if not character:
+            return (None,None)
+
         if not self.subQuests:
             if not ignoreCommands and character.macroState.get("submenue"):
                 return (None,(["esc"],"exit submenu"))

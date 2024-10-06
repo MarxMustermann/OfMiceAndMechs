@@ -3155,7 +3155,7 @@ but they are likely to explode when disturbed.
 
             # grab nearby vial
             if mainChar.getBigPosition() == (6,9,0):
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the vial on that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)

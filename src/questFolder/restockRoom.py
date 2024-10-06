@@ -282,12 +282,12 @@ Place the items in the correct input or storage stockpile.
             self.fail()
         return (None,None)
 
-
     def getQuestMarkersTile(self,character):
         result = super().getQuestMarkersTile(character)
         if self.targetPositionBig:
             result.append(((self.targetPositionBig[0],self.targetPositionBig[1]),"target"))
         return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         checkedTypes = set()
@@ -420,4 +420,5 @@ Place the items in the correct input or storage stockpile.
                             beUsefull.idleCounter = 0
                         return (quests,None)
         return (None,None)
+
 src.quests.addType(RestockRoom)

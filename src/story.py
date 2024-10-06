@@ -1130,7 +1130,7 @@ class MainGame(BasicPhase):
         messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
-        mainChar.autoExpandQuests = True
+        mainChar.autoExpandQuests2 = True
 
         print("len(self.available_positions)")
         print(len(self.available_positions))

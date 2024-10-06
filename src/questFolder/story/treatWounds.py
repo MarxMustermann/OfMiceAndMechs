@@ -81,7 +81,7 @@ class TreatWounds(src.quests.MetaQuestSequence):
         door.blocked = False
 
         return ["""
-You reach out to your implant and it answers.
+You reach out to your implant and it answers:
 
 You are hurt and need to heal.
 Passing time will heal your wounds, but you don't have the time for that.

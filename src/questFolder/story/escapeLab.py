@@ -38,7 +38,7 @@ class EscapeLab(src.quests.MetaQuestSequence):
         door.blocked = False
 
         return ["""
-You reach out to your implant and it answers.
+You reach out to your implant and it answers:
 It whispers, but you understand clearly:
 
 Something has gone wrong.

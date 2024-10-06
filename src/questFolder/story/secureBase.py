@@ -43,7 +43,7 @@ class SecureBase(src.quests.MetaQuestSequence):
         door.blocked = False
 
         text = ["""
-You reach out to your implant and it answers.
+You reach out to your implant and it answers:
 
 The meltdown of the lab woke the insects.
 It will take some time for them to start hunting you, but you should get to safety.

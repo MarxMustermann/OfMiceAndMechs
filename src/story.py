@@ -3331,7 +3331,7 @@ but they are likely to explode when disturbed.
         god = src.gamestate.gamestate.gods[1]
         if god["home"] == god["lastHeartPos"]:
             storyText = """
-You reach out to your implant and it answers.
+You reach out to your implant and it answers:
 It reminds you that have to fetch the glass heart from this dungeon.
 
 The information popups will try to give you some rough directions about what you should be doing.

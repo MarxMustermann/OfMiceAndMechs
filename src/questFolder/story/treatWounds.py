@@ -80,15 +80,27 @@ class TreatWounds(src.quests.MetaQuestSequence):
         door.walkable = True
         door.blocked = False
 
-        return ["""
+        hasVial = False
+        for item in self.character.inventory:
+            if not item.type == "Vial":
+                continue
+            if item.uses == 0:
+                continue
+            hasVial = True
+
+        result = []
+        result.append("""
 You reach out to your implant and it answers:
 
 You are hurt and need to heal.
 Passing time will heal your wounds, but you don't have the time for that.
 
-A quick way to heal is to use Vials.
-You started with a Vial in your inventory. Use it to heal yourself.
-
+A quick way to heal is to use Vials.""")
+        if hasVial:
+            result.append("""
+You have a Vial in your inventory. Use it to heal yourself.
+""")
+        result.append("""
 
 Try to collect more vials and other useful things.
 Your inventory is now shown on the top right side of the screen.
@@ -99,7 +111,8 @@ Right now you are looking at the quest menu.
 Detailed instructions are shown here.
 For now ignore the options below and press esc to continue.
 
-"""]
+""")
+        return result
 
     def assignToCharacter(self, character):
         if self.character:

@@ -1,0 +1,9 @@
+import Mouse
+import Monster
+import Statue
+import Statuette
+import Exploder
+import Ghoul
+import Maggot
+import Spider
+import Spiderling

@@ -55,6 +55,8 @@ class GooFlask(src.items.Item):
             amount = min(character.flask.maxUses-character.flask.uses,self.uses)
             character.flask.uses += amount
             self.uses -= amount
+            character.container.addAnimation(character.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#0f0", "black"),"o=")})
+            character.container.addAnimation(character.getPosition(),"showchar",1,{"char":"oo"})
             character.addMessage(f"you fill your flask with {amount} uses. {self.uses} uses remain.")
             return
 

@@ -2043,9 +2043,6 @@ but they are likely to explode when disturbed.
         quest.activate()
         actualCharacter.quests.append(quest)
 
-        # add regenerator
-        mainRoom.addItem(src.items.itemMap["Regenerator"](), (1, 3, 0))
-
         ####
         # create manufacturing hall
         ##
@@ -2148,7 +2145,7 @@ but they are likely to explode when disturbed.
                 throneRoom.walkingSpace.add((x,y,0))
         for x in range(5,8):
             for y in range(7,12):
-                if (x,y) in ((6,9),(6,8)):
+                if (x,y) in ((6,9),(6,8),(6,10)):
                     continue
                 throneRoom.walkingSpace.add((x,y,0))
 
@@ -2170,6 +2167,8 @@ but they are likely to explode when disturbed.
         dutyBeacon = src.items.itemMap["DutyBeacon"]()
         dutyBeacon.bolted = True
         throneRoom.addItem(dutyBeacon,(6,9,0))
+        throneRoom.addItem(src.items.itemMap["Regenerator"](), (6, 10, 0))
+
 
         for basePos in [(1,2,0),(11,2,0),(1,10,0),(11,10,0)]:
             motionSensor = src.items.itemMap["MotionSensor"]()
@@ -2388,7 +2387,7 @@ but they are likely to explode when disturbed.
             # add enemies
             for _i in range(0,random.randint(1,5)):
                 enemy = src.characters.characterMap["Monster"]()
-                quest = src.quests.questMap["SecureTile"](toSecure=wallTile,alwaysHuntDown=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()

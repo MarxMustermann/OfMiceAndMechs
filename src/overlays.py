@@ -120,7 +120,7 @@ class NPCsOverlay:
                 chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
             else:
                 if viewChar == "rank":
-                    if not isinstance(character,src.characters.Ghoul):
+                    if not isinstance(character,src.characters.characterMap["Ghoul"]):
                         if character.superior:
                             char = "@s"
                         else:
@@ -133,14 +133,14 @@ class NPCsOverlay:
                         health = "|"
                     char = "@"+health
                 elif viewChar == "name":
-                    if not isinstance(character,src.characters.Ghoul):
+                    if not isinstance(character,src.characters.characterMap["Ghoul"]):
                         char = character.name[0]+character.name.split(" ")[1][0]
                     else:
                         char = "Gu"
                 elif viewChar == "faction":
                     char = "@"+character.faction[-1]
                 elif viewChar == "activity":
-                    if not isinstance(character,src.characters.Ghoul):
+                    if not isinstance(character,src.characters.characterMap["Ghoul"]):
                         postfix = " "
 
                         if character.isStaff:
@@ -172,7 +172,7 @@ class NPCsOverlay:
 
                 color = "#fff"
                 if viewColour == "activity":
-                    if not isinstance(character,src.characters.Ghoul):
+                    if not isinstance(character,src.characters.characterMap["Ghoul"]):
                         if character.isStaff:
                             color = "#0f0"
                         elif not character.quests:

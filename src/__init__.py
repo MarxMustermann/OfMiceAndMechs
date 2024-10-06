@@ -1,3 +1,5 @@
+import src.characters
+import src.CharcFolder
 import src.items
 import src.itemFolder
 import src.questFolder

@@ -72,7 +72,7 @@ This is a level {self.level} item
             self.createCommand()
             return
 
-        if isinstance(character, src.characters.Monster):
+        if isinstance(character, src.characters.characterMap["Monster"]):
             return
 
         self.character = character

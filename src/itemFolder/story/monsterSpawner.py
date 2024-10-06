@@ -20,7 +20,7 @@ class MonsterSpawner(src.items.Item):
         self.disabled = False
 
     def apply(self, character):
-        if isinstance(character,src.characters.Monster):
+        if isinstance(character,src.characters.characterMap["Monster"]):
             return
         character.addMessage("you rip the spawner apart")
 
@@ -37,7 +37,7 @@ class MonsterSpawner(src.items.Item):
         for _i in range(mass):
             pos = self.getPosition()
             room = self.container
-            enemy = src.characters.Monster(pos[0],pos[1])
+            enemy = src.characters.characterMap["Monster"](pos[0],pos[1])
             enemy.health = 100
             enemy.baseDamage = 7
             enemy.faction = "invader"

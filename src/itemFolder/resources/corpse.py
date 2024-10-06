@@ -54,7 +54,7 @@ The corpse has %s charges left.
             character: the character that tries to use the item
         """
 
-        if isinstance(character, src.characters.Monster):
+        if isinstance(character, src.characters.characterMap["Monster"]):
             if character.phase == 3:
                 character.enterPhase4()
             else:

@@ -160,7 +160,7 @@ Activate a filled corpse animator to spawn a ghoul
                 self.xPosition + self.container.timeIndex,
                 self.yPosition + self.container.timeIndex,
             )
-            character = src.characters.Ghoul()
+            character = src.characters.characterMap["Ghoul"]()
             if originalActor:
                 character.faction = originalActor.faction
 

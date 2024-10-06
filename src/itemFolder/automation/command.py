@@ -38,7 +38,7 @@ class Command(src.items.Item):
             character: the character trying to use the command
         """
 
-        if isinstance(character, src.characters.Monster):
+        if isinstance(character, src.characters.characterMap["Monster"]):
             return
 
         if self.level == 1:

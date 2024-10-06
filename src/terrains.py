@@ -3487,7 +3487,7 @@ class Ruin(Base):
                 continue
 
             for _i in range(level):
-                enemy = src.characters.Monster()
+                enemy = src.characters.characterMap["Monster"]()
                 room.addCharacter(enemy,random.randint(2,13),random.randint(2,13))
                 enemy.macroState["macros"]["g"] = ["g","g","_","g"]
                 enemy.health = 100+3*level

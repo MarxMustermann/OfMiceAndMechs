@@ -458,7 +458,7 @@ class CityBuilder2(src.items.Item):
         self.enemyRoomCounter += 1
 
         for _i in range(self.enemyRoomCounter):
-            enemy = src.characters.Monster()
+            enemy = src.characters.characterMap["Monster"]()
             enemy.godMode = True
             enemy.macroState["macros"]["g"] = ["g","g","_","g"]
             enemy.runCommandString("_g")
@@ -471,7 +471,7 @@ class CityBuilder2(src.items.Item):
     def addActiveEnemies(self,params):
 
         for _i in range(10):
-            enemy = src.characters.Monster()
+            enemy = src.characters.characterMap["Monster"]()
             enemy.godMode = True
             self.container.container.addCharacter(enemy,params["coordinate"][0]*15+random.randint(2,11),params["coordinate"][1]*15+random.randint(2,11))
             quest = src.quests.questMap["ClearTerrain"]()

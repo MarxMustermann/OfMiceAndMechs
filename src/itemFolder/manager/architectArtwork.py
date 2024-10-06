@@ -459,7 +459,7 @@ class ArchitectArtwork(src.items.Item):
             room.yPosition = yPosition
 
             for _j in range(1,random.randint(4,10)):
-                enemy = src.characters.Spider()
+                enemy = src.characters.characterMap["Spider"]()
                 enemy.godMode = True
                 room.addCharacter(enemy,random.randint(1,11),random.randint(1,11))
                 enemy.startDefending()
@@ -504,7 +504,7 @@ class ArchitectArtwork(src.items.Item):
 
                 connections[tuple(adjustedPosition)].append(backDirection)
 
-        enemy = src.characters.Spider()
+        enemy = src.characters.characterMap["Spider"]()
         enemy.godMode = True
         terrain.addCharacter(enemy,96,115)
 
@@ -703,7 +703,7 @@ class ArchitectArtwork(src.items.Item):
                         break
 
                     if random.choice([True,False]):
-                        enemy = src.characters.Monster(x*15+7, y*15+7)
+                        enemy = src.characters.characterMap["Monster"](x*15+7, y*15+7)
                         enemy.health = 10 + random.randint(1, 100)
                         enemy.baseDamage = random.randint(1, 10)
                         enemy.godMode = True
@@ -877,7 +877,7 @@ class ArchitectArtwork(src.items.Item):
                     bomb = src.items.itemMap["Bomb"]()
                     terrain.addItem(bomb,(roomSlot[0]*15+random.randint(1,13),roomSlot[1]*15+random.randint(1,13),0))
 
-                enemy = src.characters.Monster(x, y)
+                enemy = src.characters.characterMap["Monster"](x, y)
                 enemy.health = 10 + random.randint(1, 1000)
                 enemy.baseDamage = random.randint(1, 100)
                 enemy.godMode = True
@@ -898,7 +898,7 @@ class ArchitectArtwork(src.items.Item):
                 roomMap[roomSlot[1]][roomSlot[0]] = "ss"
 
             for _i in range(random.randint(0,5)):
-                enemy = src.characters.Monster(x, y)
+                enemy = src.characters.characterMap["Monster"](x, y)
                 enemy.health = 10 + random.randint(1, 100)
                 enemy.baseDamage = random.randint(1, 5)
                 enemy.godMode = True
@@ -988,7 +988,7 @@ class ArchitectArtwork(src.items.Item):
                     terrain.addItem(mold,(roomSlot[0]*15+pos[0],roomSlot[1]*15+pos[1],0))
                     mold.startSpawn()
             for _i in range(random.randint(0,2)):
-                enemy = src.characters.Monster(x, y)
+                enemy = src.characters.characterMap["Monster"](x, y)
                 enemy.health = 10 + random.randint(1, distance*10)
                 enemy.baseDamage = random.randint(1, distance)
                 enemy.godMode = True
@@ -1067,11 +1067,11 @@ class ArchitectArtwork(src.items.Item):
                 terrain.addItem(item, itemPos)
             """
             for i in range(1,20):
-                enemy = src.characters.Monster()
+                enemy = src.characters.characterMap["Monster"]()
                 terrain.addCharacter(enemy,random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
                 enemy.godMode = True
             for i in range(1,5):
-                enemy = src.characters.Exploder()
+                enemy = src.characters.characterMap["Exploder"]()
                 terrain.addCharacter(enemy,random.randint(1,13)*15+random.randint(1,13),random.randint(1,13)*15+random.randint(1,13))
                 enemy.godMode = True
             for i in range(1,5):

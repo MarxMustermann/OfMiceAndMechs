@@ -686,7 +686,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
 
         charCount = 0
         for character in room.characters:
-            if isinstance(character,src.characters.Ghoul):
+            if isinstance(character,src.characters.characterMap["Ghoul"]):
                 continue
             charCount += 1
 
@@ -778,7 +778,7 @@ your room produces a MetalBar every {ticksPerBar} ticks on average.""")
             room = self.toBuildRoomClone5
 
         for npc in room.characters[:]:
-            if isinstance(npc,src.characters.Ghoul):
+            if isinstance(npc,src.characters.characterMap["Ghoul"]):
                 continue
             if len(npc.quests) > 1:
                 continue
@@ -1844,7 +1844,7 @@ but they are likely to explode when disturbed.
                 if x == 7 and y == 7:
                     continue
 
-                enemy = src.characters.Monster(4,4)
+                enemy = src.characters.characterMap["Monster"](4,4)
                 enemy.health = 30
                 enemy.baseDamage = 7
                 enemy.maxHealth = 30
@@ -2353,7 +2353,7 @@ but they are likely to explode when disturbed.
             currentTerrain.addItem(vial,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
         
             # add enemy
-            enemy = src.characters.Spiderling()
+            enemy = src.characters.characterMap["Spiderling"]()
             quest = src.quests.questMap["SecureTile"](toSecure=fightingSpot,alwaysHuntDown=True)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
@@ -2490,7 +2490,7 @@ but they are likely to explode when disturbed.
 
             # add monster
             pos = (random.randint(1,11),random.randint(1,11),0)
-            statue = src.characters.Statue()
+            statue = src.characters.characterMap["Statue"]()
             statue.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
             quest.autoSolve = True
@@ -2792,7 +2792,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statue = src.characters.Statue(4,4)
+                statue = src.characters.characterMap["Statue"](4,4)
                 statue.baseDamage = int(5+multiplier)
                 statue.baseDamage = int(statue.baseDamage*(1-runModifier))
                 statue.maxHealth = int((20+10)*multiplier)
@@ -2811,7 +2811,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statuette = src.characters.Statuette(4,4)
+                statuette = src.characters.characterMap["Statuette"](4,4)
                 statuette.baseDamage = int(2+multiplier)
                 statuette.baseDamage = int(statuette.baseDamage*(1+runModifier))
                 statuette.maxHealth = int(10*multiplier)
@@ -2834,7 +2834,7 @@ but they are likely to explode when disturbed.
         for room in reversed(extraRooms):
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statue = src.characters.Statue(4,4)
+                statue = src.characters.characterMap["Statue"](4,4)
                 statue.baseDamage = int(5+multiplier)
                 statue.baseDamage = int(statue.baseDamage*(1-runModifier))
                 statue.maxHealth = int((20+10)*multiplier)
@@ -2853,7 +2853,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(random.randint(3,8)):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statuette = src.characters.Statuette(4,4)
+                statuette = src.characters.characterMap["Statuette"](4,4)
                 statuette.baseDamage = int(2+multiplier)
                 statuette.baseDamage = int(statuette.baseDamage*(1+runModifier))
                 statuette.maxHealth = int(10*multiplier)
@@ -2942,7 +2942,7 @@ but they are likely to explode when disturbed.
 
                 pos = (random.randint(1,11),random.randint(1,11),0)
 
-                enemy = src.characters.Monster(4,4)
+                enemy = src.characters.characterMap["Monster"](4,4)
                 enemy.baseDamage = 2+multiplier
                 enemy.maxHealth = 20*multiplier
                 enemy.health = enemy.maxHealth
@@ -2975,7 +2975,7 @@ but they are likely to explode when disturbed.
                 continue
             if candidate.faction != character.faction:
                 continue
-            if isinstance(candidate,src.characters.Ghoul):
+            if isinstance(candidate,src.characters.characterMap["Ghoul"]):
                 continue
             candidate.runCommandString("~",clear=True)
             for quest in candidate.quests[:]:

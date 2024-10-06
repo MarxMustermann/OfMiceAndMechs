@@ -191,7 +191,7 @@ class CommandBloom(src.items.Item):
                 command = "wal20jsdj"
                 self.runCommandOnNewCrawler("j",character.faction)
 
-            if isinstance(character, src.characters.Exploder):
+            if isinstance(character, src.characters.characterMap["Exploder"]):
                 if self.blocked:
                     foundItem = None
                     length = 1
@@ -805,7 +805,7 @@ class CommandBloom(src.items.Item):
 
         if not self.numSick:
             return None
-        newCharacter = src.characters.Monster()
+        newCharacter = src.characters.characterMap["Monster"]()
 
         newCharacter.solvers = [
             "NaiveActivateQuest",

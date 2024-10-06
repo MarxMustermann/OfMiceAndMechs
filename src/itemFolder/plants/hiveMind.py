@@ -172,7 +172,7 @@ class HiveMind(src.items.Item):
             and character.inventory[-1].type == "SickBloom"
         ):
             command = "ljj"
-        elif isinstance(character, src.characters.Exploder):
+        elif isinstance(character, src.characters.characterMap["Exploder"]):
 
             if self.territory:
                 command = ""

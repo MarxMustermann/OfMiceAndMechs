@@ -37,7 +37,7 @@ def spawnWaves():
                 multipliers = (1.7,1.5,2,1.5)
 
             for _i in range(numSpectres):
-                enemy = src.characters.Monster(6,6)
+                enemy = src.characters.characterMap["Monster"](6,6)
                 enemy.health = int(baseHealth*2*multipliers[0]**numGlassHeartsOnPos)
                 enemy.maxHealth = enemy.health
                 enemy.baseDamage = int(baseDamage+1*multipliers[1]**numGlassHeartsOnPos)
@@ -84,7 +84,7 @@ def spawnWaves():
                 quest.activate()
                 enemy.quests.append(quest)
 
-                enemy = src.characters.Monster(6,6)
+                enemy = src.characters.characterMap["Monster"](6,6)
                 #enemy.health = int(src.gamestate.gamestate.tick//(15*15*15)*1.5**numGlassHeartsOnPos)*2
                 enemy.health = int(baseHealth*multipliers[2]**numGlassHeartsOnPos)
                 enemy.maxHealth = enemy.health

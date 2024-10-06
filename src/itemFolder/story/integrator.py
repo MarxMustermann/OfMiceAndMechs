@@ -49,4 +49,8 @@ class Integrator(src.items.Item):
         character.registers["HOMETx"] = terrain.xPosition
         character.registers["HOMETy"] = terrain.yPosition
 
+        self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"OO"})
+        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"OO"})
+
+
 src.items.addType(Integrator)

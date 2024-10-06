@@ -23,6 +23,9 @@ class FactionSetter(src.items.Item):
         character.addMessage(f"your faction was changed to {self.faction}")
         character.changed("set faction")
 
+        self.container.addAnimation(character.getPosition(),"showchar",1,{"char":"OO"})
+        self.container.addAnimation(self.getPosition(),"showchar",1,{"char":"OO"})
+
         text = f"""
 You insert your head into the machine.
 It claws into your head and connects to your implant.

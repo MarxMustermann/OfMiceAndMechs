@@ -7,3 +7,4 @@ import src.CharcFolder.Ghoul
 import src.CharcFolder.Maggot
 import src.CharcFolder.Spider
 import src.CharcFolder.Spiderling
+import src.CharcFolder.Hunter

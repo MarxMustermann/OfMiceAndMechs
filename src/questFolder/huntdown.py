@@ -4,11 +4,12 @@ import src
 class Huntdown(src.quests.MetaQuestSequence):
     type = "Huntdown"
 
-    def __init__(self, description="huntdown", target=None, lifetime=None):
+    def __init__(self, description="huntdown", target=None, lifetime=None, alwaysfollow = False):
         questList = []
         super().__init__(questList,lifetime=lifetime)
         self.metaDescription = description
         self.target = target
+        self.alwaysfollow = alwaysfollow
 
     def triggerCompletionCheck(self,character=None):
         if self.target and self.target.dead:
@@ -46,7 +47,7 @@ class Huntdown(src.quests.MetaQuestSequence):
                 return (None,("a","move toward target"))
 
             if charPos != targetPos:
-                if abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
+                if self.alwaysfollow or abs(charPos[0]-targetPos[0])+abs(charPos[1]-targetPos[1]) == 1:
                     newPos = targetPos
                 else:
                     if not dryRun:

@@ -20,7 +20,7 @@ class Spawner(src.items.Item):
         if not self.charges:
             return
 
-        enemy = src.characters.Monster(6,6)
+        enemy = src.characters.characterMap["Monster"](6,6)
         enemy.health = 50
         enemy.maxHealth = enemy.health
         enemy.baseDamage = 5

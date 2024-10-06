@@ -31,7 +31,7 @@ class SickBloom(src.items.Item):
         """
 
         if self.charges and not self.dead:
-            if isinstance(character, src.characters.Monster):
+            if isinstance(character, src.characters.characterMap["Monster"]):
                 if character.phase == 1:
                     character.satiation += 300
                     if character.satiation > 1000:
@@ -95,7 +95,7 @@ class SickBloom(src.items.Item):
         if self.dead:
             return
 
-        character = src.characters.Monster()
+        character = src.characters.characterMap["Monster"]()
         character.solvers = [
             "NaiveActivateQuest",
             "ActivateQuestMeta",

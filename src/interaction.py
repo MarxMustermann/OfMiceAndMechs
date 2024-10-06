@@ -2563,7 +2563,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     continue
                 if (enemy.xPosition, enemy.yPosition) not in adjascentFields:
                     continue
-                if isinstance(char, src.characters.Monster) and char.phase == 4:
+                if isinstance(char, src.characters.characterMap["Monster"]) and char.phase == 4:
                     char.addMessage("entered stage 5")
                     char.enterPhase5()
                 char.attack(enemy)

@@ -1889,7 +1889,7 @@ class ChatMenu(Chat):
             return True
 
         if key != "~":
-            if not isinstance(self.partner,src.characters.Ghoul):
+            if not isinstance(self.partner,src.characters.characterMap["Ghoul"]):
                 if self.partner.rank and src.gamestate.gamestate.mainChar.rank > self.partner.rank:
                     src.gamestate.gamestate.mainChar.revokeReputation(amount=10**(self.partner.rank-src.gamestate.gamestate.mainChar.rank),reason="trying to address someone out of rank")
                     return True
@@ -1955,7 +1955,7 @@ class ChatMenu(Chat):
                     options.append(("talkWork", "talk about work"))
                 options.append(("chat", "chat idly"))
 
-                if isinstance(self.partner,src.characters.Ghoul):
+                if isinstance(self.partner,src.characters.characterMap["Ghoul"]):
                     options = []
                     options.append(("stop", "stop"))
                     options.append(("come to me", "come to me"))

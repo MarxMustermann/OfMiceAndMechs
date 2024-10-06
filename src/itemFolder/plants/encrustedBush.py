@@ -28,7 +28,7 @@ class EncrustedBush(src.items.Item):
         new = src.items.itemMap["Coal"]()
         self.container.addItem(new,self.getPosition())
 
-        character = src.characters.Monster()
+        character = src.characters.characterMap["Monster"]()
 
         character.solvers = [
             "NaiveActivateQuest",

@@ -40,7 +40,7 @@ class ItemCollector(src.items.Item):
             )
             self.bolted = True
 
-        if isinstance(character, src.characters.Monster):
+        if isinstance(character, src.characters.characterMap["Monster"]):
             character.die()
             return
 

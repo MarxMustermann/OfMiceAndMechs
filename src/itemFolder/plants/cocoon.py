@@ -34,16 +34,16 @@ class Cocoon(src.items.Item):
         """
 
         if self.charges == 0:
-            character = src.characters.Maggot()
+            character = src.characters.characterMap["Maggot"]()
         elif self.charges == 1:
-            character = src.characters.Monster()
+            character = src.characters.characterMap["Monster"]()
             quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),strict=True)
             quest.autoSolve = True
             quest.assignToCharacter(character)
             character.quests.append(quest)
             quest.activate()
         else:
-            character = src.characters.Monster()
+            character = src.characters.characterMap["Monster"]()
             character.movementSpeed = 0.4
             quest = src.quests.questMap["ClearTerrain"]()
             quest.autoSolve = True

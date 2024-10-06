@@ -67,7 +67,7 @@ You can use it to loose 100 satiation.
         self.container.addItem(new,self.getPosition())
         # new.startExploding()
 
-        character = src.characters.Monster()
+        character = src.characters.characterMap["Monster"]()
 
         character.solvers = [
             "NaiveActivateQuest",

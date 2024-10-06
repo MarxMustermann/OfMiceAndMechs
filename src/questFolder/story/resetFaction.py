@@ -48,6 +48,8 @@ class ResetFaction(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         return ["""
+You reach out to your implant and it answers:
+
 You are safe for now, but there is a deeper problem with the base.
 It fails to detect you as part of their faction.
 Maybe your faction marker got corrupted during the meltdown. 

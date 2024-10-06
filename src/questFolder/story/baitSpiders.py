@@ -63,6 +63,8 @@ class BaitSpiders(src.quests.MetaQuestSequence):
         rodTower = src.items.itemMap["RodTower"]()
 
         result = [f"""
+You reach out to the implant and it answers:
+
 The outside is still a dangerous place.
 There are groups of spiders lurking near the base entrance.
 The spiders are very aggressive.

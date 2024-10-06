@@ -3187,7 +3187,7 @@ but they are likely to explode when disturbed.
             for item in items:
                 if item.bolted:
                     continue
-                quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clear the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains")
+                quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains",story="You reach out to your implant and it answers:\n\nThe main defenses of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)

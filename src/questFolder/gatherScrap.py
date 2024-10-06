@@ -165,6 +165,7 @@ Scrapfields are shown on the minimap as white ss"""]
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=(foundScrap[1][0]%15,foundScrap[1][1]%15,0),description="go to scrap",reason="go to scrap",ignoreEndBlocked=True)
         return ([quest],None)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()

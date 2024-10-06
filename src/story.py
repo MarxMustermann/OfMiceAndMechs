@@ -1974,6 +1974,9 @@ but they are likely to explode when disturbed.
             for x in range(1,7):
                 mainRoom.walkingSpace.add((x,y,0))
 
+        for x in range(2,6):
+            mainRoom.walkingSpace.add((x,3,0))
+
         # add items
         painter = src.items.itemMap["Painter"]()
         mainRoom.addItem(painter,(7,8,0))
@@ -2041,7 +2044,8 @@ but they are likely to explode when disturbed.
         actualCharacter.quests.append(quest)
 
         # add regenerator
-        mainRoom.addItem(src.items.itemMap["Regenerator"](), (6, 6, 0))
+        mainRoom.addItem(src.items.itemMap["Regenerator"](), (1, 3, 0))
+
         ####
         # create manufacturing hall
         ##

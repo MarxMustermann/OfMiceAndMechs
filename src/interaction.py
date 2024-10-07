@@ -3596,11 +3596,11 @@ def getTcodEvents():
                     translatedKey = "#"
                 """
                 if key == tcod.event.KeySym.ESCAPE:
-                    if event.mod in (tcod.event.Modifier.RSHIFT,4097):
+                    if event.mod & tcod.event.Modifier.RSHIFT:
                         translatedKey = "rESC"
-                    elif event.mod in (tcod.event.Modifier.LSHIFT,4098):
+                    elif event.mod & tcod.event.Modifier.LSHIFT:
                         translatedKey = "lESC"
-                    elif event.mod in (tcod.event.Modifier.SHIFT,):
+                    elif event.mod & tcod.event.Modifier.SHIFT:
                         translatedKey = "ESC"
                     else:
                         translatedKey = "esc"
@@ -3654,7 +3654,7 @@ def getTcodEvents():
                         translatedKey = "b"
                 """
                 if key == tcod.event.KeySym.c:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
+                    if event.mod & tcod.event.Modifier.LCTRL or event.mod & tcod.event.Modifier.RCTRL:
                         translatedKey = "ctrl c"
                 """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
@@ -3663,7 +3663,7 @@ def getTcodEvents():
                         translatedKey = "c"
                 """
                 if key == tcod.event.KeySym.d:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
+                    if event.mod & tcod.event.Modifier.LCTRL or event.mod & tcod.event.Modifier.RCTRL:
                         translatedKey = "ctrl d"
                 """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
@@ -3692,7 +3692,7 @@ def getTcodEvents():
                         translatedKey = "h"
                 """
                 if key == tcod.event.KeySym.i:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
+                    if event.mod & tcod.event.Modifier.LCTRL or event.mod & tcod.event.Modifier.RCTRL:
                         translatedKey = "ctrl i"
                 """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
@@ -3751,7 +3751,7 @@ def getTcodEvents():
                         translatedKey = "s"
                 """
                 if key == tcod.event.KeySym.t:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
+                    if event.mod & tcod.event.Modifier.LCTRL or event.mod & tcod.event.Modifier.RCTRL:
                         translatedKey = "ctrl t"
                 """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
@@ -3770,7 +3770,7 @@ def getTcodEvents():
                         translatedKey = "v"
                 """
                 if key == tcod.event.KeySym.w:
-                    if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,4161,4224,):
+                    if event.mod & tcod.event.Modifier.LCTRL or event.mod & tcod.event.Modifier.RCTRL:
                         translatedKey = "ctrl w"
                 """
                     elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):

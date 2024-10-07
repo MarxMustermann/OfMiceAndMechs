@@ -23,6 +23,7 @@ class Regenerator(src.items.Item):
             self.addTickingEvent()
             character.addMessage("Activated the regenerator")
             self.activated = True
+            character.changed("regenerator activated",{})
 
     def handleTicking(self):
         self.addTickingEvent()

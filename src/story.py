@@ -3163,6 +3163,16 @@ but they are likely to explode when disturbed.
         # heal
         # triggers at any time
         if mainChar.health < mainChar.maxHealth - 10:
+            terrain = mainChar.getTerrain()
+            for room in terrain.rooms:
+                regenerator = room.getItemByType("Regenerator",needsBolted=True)
+                if regenerator and not regenerator.activated and mainChar.faction == "city #1":
+                    quest = src.quests.questMap["ActivateRegenerator"]()
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
             if len(mainChar.rememberedMenu2) < 2:
                 inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(mainChar)
                 inventoryMenu.sidebared = True

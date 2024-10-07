@@ -172,7 +172,6 @@ sounds = {}
 settings = None
 
 def playSound(soundName,channelName,loop=False):
-    return
     if settings["sound"] != 0:
         channel = src.interaction.tcodMixer.get_channel(channelName)
         if not channel.busy:
@@ -252,8 +251,6 @@ def setUpTcod():
 
     context.present(root_console,integer_scaling=True,keep_aspect=True)
 
-    return
-
     import soundfile as sf
     import tcod.sdl.audio as audio
 
@@ -303,7 +300,7 @@ def setUpTcod():
 
     global tcodMixer
     global tcodAudioDevice
-    device = src.interaction.tcodAudio.open(channels = 2)
+    device = src.interaction.tcodAudio.open(samples = 8000)
     tcodAudioDevice = device
     mixer = src.interaction.tcodAudio.BasicMixer(device)
     tcodMixer = mixer
@@ -6487,8 +6484,8 @@ to remember"""
 def gameLoop(loop=None, user_data=None):
     while 1:
         advanceGame()
-        #if not tcodMixer.get_channel("background").busy:
-        #    playSound("loop1","background")
+        if not tcodMixer.get_channel("background").busy:
+            playSound("loop1","background")
         #renderGameDisplay()
 
 def gameLoop_disabled(loop, user_data=None):

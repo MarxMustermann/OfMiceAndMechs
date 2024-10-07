@@ -187,6 +187,7 @@ if __name__ == '__main__':
                         raise SystemExit()
             """
     except Exception as e:
-        src.interaction.tcodMixer.stop()
+        if src.interaction.tcodMixer:
+            src.interaction.tcodMixer.stop()
 
         raise e

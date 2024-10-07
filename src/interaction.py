@@ -300,7 +300,7 @@ def setUpTcod():
 
     global tcodMixer
     global tcodAudioDevice
-    device = src.interaction.tcodAudio.open(channels = 2)
+    device = src.interaction.tcodAudio.open(samples = 8000)
     tcodAudioDevice = device
     mixer = src.interaction.tcodAudio.BasicMixer(device)
     tcodMixer = mixer

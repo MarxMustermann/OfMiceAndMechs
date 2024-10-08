@@ -990,16 +990,8 @@ class Item:
             container.addItems([(newItem,pos)])
 
     def constrain_within_room(self, pos):
-        def clamp(n, min, max):
-            if n < min:
-                return min
-            elif n > max:
-                return max
-            else:
-                return n
-
-        x = clamp(pos[0],1,11)
-        y = clamp(pos[1],1,11)
+        x = src.helpers.clamp(pos[0],1,11)
+        y = src.helpers.clamp(pos[1],1,11)
         return x,y,pos[2]
 
 commons = [

@@ -1,13 +1,7 @@
 import json
 
+import src
 from src.menuFolder.SubMenu import SubMenu
-
-def clamp(n, min, max):
-    if n < min:
-        return min
-    if n > max:
-        return max
-    return n
 
 
 class SettingMenu(SubMenu):
@@ -28,7 +22,7 @@ class SettingMenu(SubMenu):
             change_value = True
         if key in ("w", "s"):
             self.index += 1 if key == "s" else -1
-            self.index = clamp(self.index, 0, len(self.options))
+            self.index = src.helpers.clamp(self.index, 0, len(self.options))
 
         # show info
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nsettings\n\n"))

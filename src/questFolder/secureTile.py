@@ -2,11 +2,18 @@ import random
 
 import src
 
+def clamp(n, min, max):
+    if n < min:
+        return min
+    if n > max:
+        return max
+    return n
+
 
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None):
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False):
         super().__init__(description=description,targetPosition=toSecure)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
@@ -17,6 +24,7 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         self.alwaysHuntDown = alwaysHuntDown
         self.reason = reason
         self.story = story
+        self.wandering = wandering
 
     def generateTextDescription(self):
         reasonString = ""
@@ -31,6 +39,8 @@ Secure the tile {self.targetPosition}{reasonString}.
 This means you should go to the tile and kill all enemies you find."""
         if not self.endWhenCleared:
             text = "\n"+text+"\n\nStay there and kill all enemies arriving"
+            if self.wandering:
+                text += " and sweeping the area for any potential danger"
         else:
             text = "\n"+text+"\n\nThis quest will end after you do this"
         text += """
@@ -119,6 +129,12 @@ Try luring enemies into landmines or detonating some bombs."""
             if character.getBigPosition() == self.targetPosition:
                 enemies = character.getNearbyEnemies()
                 if not enemies and not self.endWhenCleared:
+                    if self.wandering:
+                        (x,y,_) = character.getSpacePosition()
+                        x= clamp(x+int(random.uniform(-3,3)),1,13)
+                        y= clamp(y+int(random.uniform(-3,3)),1,13)
+                        quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
+                        return ([quest], (int(random.uniform(3,5))* ".","wait"))
                     return (None, ("10.","wait"))
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 

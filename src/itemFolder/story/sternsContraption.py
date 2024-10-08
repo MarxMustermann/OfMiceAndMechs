@@ -166,7 +166,7 @@ class SternsContraption(src.items.Item):
                         enemy = src.characters.characterMap["Spider"]()
 
 
-                        quest = src.quests.questMap["SecureTile"](toSecure=bigPos,alwaysHuntDown=True)
+                        quest = src.quests.questMap["SecureTile"](toSecure=bigPos,alwaysHuntDown=True, wandering = True)
                         quest.autoSolve = True
                         quest.assignToCharacter(enemy)
                         quest.activate()

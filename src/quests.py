@@ -823,13 +823,12 @@ class MetaQuestSequence(Quest,ABC):
                     self.addQuest(quest)
                     self.startWatching(quest,self.subQuestCompleted,"completed")
                     self.startWatching(quest,self.handleQuestFailure,"failed")
-                    character.timeTaken += 0.01
-                return
 
             if nextCommand:
                 character.runCommandString(nextCommand[0])
-                character.timeTaken += 0.01
-                return
+
+            character.timeTaken += 0.01
+
     @abstractmethod
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
 

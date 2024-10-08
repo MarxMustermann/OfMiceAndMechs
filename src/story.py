@@ -2357,7 +2357,7 @@ but they are likely to explode when disturbed.
         
             # add enemy
             enemy = src.characters.characterMap["Spiderling"]()
-            quest = src.quests.questMap["SecureTile"](toSecure=fightingSpot,alwaysHuntDown=True)
+            quest = src.quests.questMap["SecureTile"](toSecure=fightingSpot,alwaysHuntDown=True,wandering = True)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
             quest.activate()

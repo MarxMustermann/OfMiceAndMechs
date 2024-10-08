@@ -2,13 +2,6 @@ import random
 
 import src
 
-def clamp(n, min, max):
-    if n < min:
-        return min
-    if n > max:
-        return max
-    return n
-
 
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
@@ -131,8 +124,8 @@ Try luring enemies into landmines or detonating some bombs."""
                 if not enemies and not self.endWhenCleared:
                     if self.wandering:
                         (x,y,_) = character.getSpacePosition()
-                        x= clamp(x+int(random.uniform(-3,3)),1,13)
-                        y= clamp(y+int(random.uniform(-3,3)),1,13)
+                        x= src.helpers.clamp(x+int(random.uniform(-3,3)),1,13)
+                        y= src.helpers.clamp(y+int(random.uniform(-3,3)),1,13)
                         quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
                         return ([quest], (int(random.uniform(3,5))* ".","wait"))
                     return (None, ("10.","wait"))

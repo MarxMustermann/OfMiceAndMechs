@@ -36,7 +36,7 @@ class Spiderling(Monster):
         )
 
         self.charType = "Spiderling"
-        self.specialDisplay = "sp"
+        self.specialDisplay = (src.characters.urwid.AttrSpec("#d62", "black"), "sp")
         self.baseDamage = 4
         self.health = 10
         self.maxHealth = 10

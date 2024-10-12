@@ -117,7 +117,10 @@ class NPCsOverlay:
                 else:
                     char = "<-"
                 bgColor = "#722"
-                chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
+                if isinstance(char,tuple):
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = char
+                else:
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
             else:
                 if viewChar == "rank":
                     if not isinstance(character,src.characters.characterMap["Ghoul"]):

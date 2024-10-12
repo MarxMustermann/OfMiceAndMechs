@@ -3182,7 +3182,6 @@ lastCenterY = None
 
 # bad code: should be contained somewhere
 def render(char):
-    print("render")
     """
     render the map
 

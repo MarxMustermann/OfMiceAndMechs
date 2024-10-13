@@ -11,7 +11,7 @@ class Hunter(Monster):
         quest.activate()
         self.quests.append(quest)
 
-        self.movementSpeed = 2
+        self.movementSpeed = 3
         self.solvers = []
         self.specialDisplay = "Hu"
         self.baseDamage = 15

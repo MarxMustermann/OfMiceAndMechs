@@ -3303,28 +3303,47 @@ but they are likely to explode when disturbed.
 
         # check for spider lairs
         terrain = mainChar.getTerrain()
-        spider_lairs_found = []
+        targets_found = []
         for x in range(1,14):
             for y in range(1,14):
+                numSpiders = 0
+                numSpiderlings = 0
+
                 for otherChar in terrain.charactersByTile.get((x,y,0),[]):
-                    
-                    numSpiders = 0
                     if otherChar.charType == "Spider":
                         numSpiders += 1
+                    if otherChar.charType == "Spiderling":
+                        numSpiderlings += 1
 
-                    if numSpiders:
-                        spider_lairs_found.append(((x,y,0),numSpiders))
+                if numSpiders:
+                    targets_found.append(("spider",(x,y,0),numSpiders))
+                if numSpiderlings:
+                    targets_found.append(("spiderling",(x,y,0),numSpiderlings))
+        
+        if targets_found:
+            target = random.choice(targets_found)
 
-        # clear spiders
-        if spider_lairs_found:
-            spider_lair_pos = spider_lairs_found[0][0]
-                
-            quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos)
-            quest.assignToCharacter(mainChar)
-            quest.activate()
-            mainChar.assignQuest(quest,active=True)
-            quest.endTrigger = {"container": self, "method": "reachImplant"}
-            return
+            # clear spiders
+            if target[0] == "spider":
+                spider_lair_pos = target[1]
+                    
+                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos)
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
+            # clear spiderlings
+            if target[0] == "spiderling":
+                spider_lair_pos = target[1]
+                    
+                quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True)
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
 
         # remove all enemies from terrain
         if enemyCount > 0:

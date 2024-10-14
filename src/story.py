@@ -3204,15 +3204,41 @@ but they are likely to explode when disturbed.
 
         # assimilate into base
         if mainChar.faction != "city #1":
+            terrain = mainChar.getTerrain()
 
             # grab nearby vial
             if mainChar.getBigPosition() == (6,9,0):
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,8,0),endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
-                return
+                vialTile = (6,8,0)
+
+                # check for enemies on vial tile
+                hasEnemy = False
+                for character in terrain.charactersByTile.get(vialTile,[]):
+                    if not character.faction == mainChar.faction:
+                        continue
+                    hasEnemy = True
+
+                # check for vial on vial tile
+                hasVial = False
+                rooms = terrain.getRoomByPosition(vialTile)
+                if rooms:
+                    items = rooms[0].itemsOnFloor
+                else:
+                    items = terrain.itemsByBigCoordinate.get(vialTile,[])
+                for item in items:
+                    if not item.type == "Vial":
+                        continue
+                    if not item.uses > 0:
+                        continue
+                    hasVial = True
+
+                # get vial from tile
+                if hasVial and hasEnemy:
+                    quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
 
             # get to control room
             if not (mainChar.getBigPosition() in [(7,7,0),(7,8,0)]):

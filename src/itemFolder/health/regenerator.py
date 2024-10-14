@@ -27,6 +27,9 @@ class Regenerator(src.items.Item):
 
     def handleTicking(self):
         self.addTickingEvent()
+        self.container.addAnimation(
+            self.getPosition(), "showchar", 1, {"char": ")("}
+        )
 
         for character in self.container.characters:
             character.heal(self.healing_amount, reason="by the regenerator")

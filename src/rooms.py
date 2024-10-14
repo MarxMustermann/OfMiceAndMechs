@@ -940,14 +940,14 @@ class Room:
                     chars[character.yPosition]
                 ):
                     if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
-                        #chars[character.yPosition][character.xPosition] = character.display
-                        char = "<-"
-                        fgColor = "#fff"
-                        if character.charType == "Statue":
-                            char = "@@"
-                            fgColor = "#aaa"
+                        char = character.specialDisplay
                         bgColor = "#722"
-                        chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
+
+                        if isinstance(char,tuple):
+                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
+                        else:
+                            fgColor = "#fff"
+                            chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(fgColor, bgColor), char)
                     else:
                         if viewChar == "rank":
                             if not isinstance(character,src.characters.characterMap["Ghoul"]):

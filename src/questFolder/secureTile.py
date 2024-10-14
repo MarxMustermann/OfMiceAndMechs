@@ -122,12 +122,12 @@ Try luring enemies into landmines or detonating some bombs."""
             if character.getBigPosition() == self.targetPosition:
                 enemies = character.getNearbyEnemies()
                 if not enemies and not self.endWhenCleared:
-                    if self.wandering:
+                    if self.wandering and random.random() < 0.2:
                         (x,y,_) = character.getSpacePosition()
                         x= src.helpers.clamp(x+int(random.uniform(-3,3)),1,13)
                         y= src.helpers.clamp(y+int(random.uniform(-3,3)),1,13)
                         quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
-                        return ([quest], (int(random.uniform(3,5))* ".","wait"))
+                        return ([quest], None)
                     return (None, ("10.","wait"))
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 

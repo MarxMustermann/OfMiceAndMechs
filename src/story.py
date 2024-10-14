@@ -2387,6 +2387,7 @@ but they are likely to explode when disturbed.
             # add enemies
             for _i in range(0,random.randint(1,5)):
                 enemy = src.characters.characterMap["Monster"]()
+                enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)

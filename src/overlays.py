@@ -118,7 +118,7 @@ class NPCsOverlay:
                     char = "<-"
                 bgColor = "#722"
                 if isinstance(char,tuple):
-                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = char
+                    chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor),char[1])
                 else:
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec("white", bgColor), char)
             else:

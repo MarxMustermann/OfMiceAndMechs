@@ -2398,9 +2398,10 @@ but they are likely to explode when disturbed.
         # add mold spots
         moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0)]
         for moldTile in moldTiles:
-            mold = src.items.itemMap["Mold"]()
-            currentTerrain.addItem(mold,(15*moldTile[0]+7,15*moldTile[1]+7,0))
-            mold.startSpawn()
+            for i in range(1,random.randint(5,10)):
+                mold = src.items.itemMap["Mold"]()
+                currentTerrain.addItem(mold,(15*moldTile[0]+random.randint(1,13),15*moldTile[1]+random.randint(1,13),0))
+                mold.startSpawn()
 
         """
         # scatter cocoons

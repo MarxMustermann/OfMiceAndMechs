@@ -66,7 +66,15 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
 
     def generateTextDescription(self):
         text = ["""
-    You want to heal, so activate the Regenerator.
+You reach out to your implant and it answers:
+
+There are many enemies to be slain.
+They are dangerous and will hurt you.
+Time will heal your wounds, but there is a faster way.
+
+The base has a Regenerator. It is located in the temple.
+It will heal all creatures nearby.
+Activate it so you and the other clones heal faster,
 """]
         return text
 

@@ -117,7 +117,7 @@ class NPCsOverlay:
                 else:
                     char = "<-"
                 # bgColor = "#722"
-                colors = ["black","#f33","#712","#f33","#712"]
+                colors = ["black","#f33","black","black"]
                 bgColor = colors[src.gamestate.gamestate.tick % len(colors)]
                 if isinstance(char,tuple):
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor),char[1])

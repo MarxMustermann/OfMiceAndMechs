@@ -6,7 +6,7 @@ import src
 class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = f"{description} {targetPosition}"
@@ -19,6 +19,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.showCoordinates = showCoordinates
         self.reason = reason
         self.abortHealthPercentage = abortHealthPercentage
+        self.story = story
 
     def sanatiyCheckPath(self):
         1/0
@@ -98,8 +99,11 @@ class GoToTile(src.quests.MetaQuestSequence):
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
+        storyString = ""
+        if self.story:
+            storyString = f"{self.story}"
 
-        text = f"""
+        text = f"""{storyString}
 Go to tile {self.targetPosition}{reason}.
 """
 

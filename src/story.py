@@ -3279,7 +3279,7 @@ but they are likely to explode when disturbed.
         if not mainChar.armor:
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots(itemType="Armor",allowStorage=True,allowDesiredFilled=True):
-                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself")
+                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
                     quest.assignToCharacter(mainChar)
                     quest.activate()
                     mainChar.assignQuest(quest,active=True)
@@ -3288,7 +3288,7 @@ but they are likely to explode when disturbed.
         if not mainChar.weapon:
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots(itemType="Sword",allowStorage=True,allowDesiredFilled=True):
-                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself")
+                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
                     quest.assignToCharacter(mainChar)
                     quest.activate()
                     mainChar.assignQuest(quest,active=True)
@@ -3344,6 +3344,7 @@ but they are likely to explode when disturbed.
         # check for spider lairs
         terrain = mainChar.getTerrain()
         targets_found = []
+        specialSpiderBlockersFound = []
         for x in range(1,14):
             for y in range(1,14):
                 numSpiders = 0
@@ -3357,10 +3358,23 @@ but they are likely to explode when disturbed.
 
                 if numSpiders:
                     targets_found.append(("spider",(x,y,0),numSpiders))
+                    pos = (5,8,0)
+                    if (x,y,0) == pos:
+                        specialSpiderBlockersFound = [pos]
                 if numSpiderlings:
                     targets_found.append(("spiderling",(x,y,0),numSpiderlings))
         
         if targets_found:
+            # clear first spider spot
+            if specialSpiderBlockersFound:
+                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=specialSpiderBlockersFound[0])
+                quest.assignToCharacter(mainChar)
+                quest.activate()
+                mainChar.assignQuest(quest,active=True)
+                quest.endTrigger = {"container": self, "method": "reachImplant"}
+                return
+
+            # select target
             target = random.choice(targets_found)
 
             # clear spiders

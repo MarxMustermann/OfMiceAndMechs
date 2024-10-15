@@ -6705,6 +6705,9 @@ def advanceChar(char,render=True):
                 return
             newInputs = getTcodEvents()
 
+            if not tcodMixer.get_channel("background").busy:
+                playSound("loop1","background")
+
             if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
                 skipNextRender = True
 

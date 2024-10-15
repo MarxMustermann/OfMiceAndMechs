@@ -3213,7 +3213,7 @@ but they are likely to explode when disturbed.
                 # check for enemies on vial tile
                 hasEnemy = False
                 for character in terrain.charactersByTile.get(vialTile,[]):
-                    if not character.faction == mainChar.faction:
+                    if character.faction == mainChar.faction:
                         continue
                     hasEnemy = True
 
@@ -3231,9 +3231,18 @@ but they are likely to explode when disturbed.
                         continue
                     hasVial = True
 
-                # get vial from tile
+                # fight for vial from tile
                 if hasVial and hasEnemy:
                     quest = src.quests.questMap["SecureTile"](toSecure=vialTile,endWhenCleared=True,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Corpse and a Vial on the tile to the north.")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+
+                # go to vial from tile
+                if hasVial:
+                    quest = src.quests.questMap["GoToTile"](targetPosition=vialTile,reason="be able to fetch the Vial from that tile",story="You reach out to your implant and it answers:\n\nThere is a Vial on the tile to the north.")
                     quest.assignToCharacter(mainChar)
                     quest.activate()
                     mainChar.assignQuest(quest,active=True)

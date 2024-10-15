@@ -32,11 +32,11 @@ class SettingMenu(SubMenu):
             match setting:
                 case "set sound volume":
                     if change_value:
-                        settings["sound"] += -1 if key == "a" else +1
-                        settings["sound"] = clamp(settings["sound"], 0, 32)
+                        src.interaction.settings["sound"] += -1 if key == "a" else +1
+                        src.interaction.settings["sound"] = src.helpers.clamp(src.interaction.settings["sound"], 0, 32)
                     text += setting + ":"
-                    text += " " + settings["sound"] * "║"
-                    text += (32 - settings["sound"]) * "|"
+                    text += " " + src.interaction.settings["sound"] * "║"
+                    text += (32 - src.interaction.settings["sound"]) * "|"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 

@@ -300,7 +300,7 @@ def setUpTcod():
 
     global tcodMixer
     global tcodAudioDevice
-    device = src.interaction.tcodAudio.open(samples = 8000)
+    device = src.interaction.tcodAudio.open(samples = 12000)
     tcodAudioDevice = device
     mixer = src.interaction.tcodAudio.BasicMixer(device)
     tcodMixer = mixer
@@ -316,8 +316,10 @@ def setUpTcod():
         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
     )
     """
-    playSound("loop1_start","background")
-
+    def s_loop(ch):
+        ch.play(sound =sounds["loop1"],volume = settings["sound"]/32.0,on_end = s_loop)
+    tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = s_loop)
+    
 footer = None
 main = None
 header = None
@@ -6483,8 +6485,6 @@ to remember"""
 def gameLoop(loop=None, user_data=None):
     while 1:
         advanceGame()
-        if not tcodMixer.get_channel("background").busy:
-            playSound("loop1","background")
         #renderGameDisplay()
 
 def gameLoop_disabled(loop, user_data=None):
@@ -6704,9 +6704,6 @@ def advanceChar(char,render=True):
             if char.dead:
                 return
             newInputs = getTcodEvents()
-
-            if not tcodMixer.get_channel("background").busy:
-                playSound("loop1","background")
 
             if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
                 skipNextRender = True

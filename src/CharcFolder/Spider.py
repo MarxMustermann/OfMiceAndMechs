@@ -36,7 +36,7 @@ class Spider(Monster):
         )
 
         self.charType = "Spider"
-        self.specialDisplay = (src.characters.urwid.AttrSpec("#66f", "black"), "SP")
+        self.specialDisplay = (src.characters.urwid.AttrSpec("#731", "black"), "SP")
         self.baseDamage = 10
         self.health = 50
         self.maxHealth = 50

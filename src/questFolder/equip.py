@@ -4,7 +4,7 @@ import src
 class Equip(src.quests.MetaQuestSequence):
     type = "Equip"
 
-    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None):
+    def __init__(self, description="equip", creator=None, command=None, lifetime=None, weaponOnly=False, reason=None, story=None):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
@@ -12,14 +12,18 @@ class Equip(src.quests.MetaQuestSequence):
 
         self.shortCode = "e"
         self.reason = reason
+        self.story = story
 
     def generateTextDescription(self):
         reasonString = ""
         if self.reason:
             reasonString = ", to "+self.reason
+        storyString = ""
+        if self.story:
+            storyString = f"{self.story}"
         sword = src.items.itemMap["Sword"]()
         armor = src.items.itemMap["Armor"]()
-        return [f"""
+        return [f"""{storyString}
 Equip yourself{reasonString}.
 A Aword (""",sword.render(),""") and Armor (""",armor.render(),""") are good equipment.
 

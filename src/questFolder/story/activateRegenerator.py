@@ -68,9 +68,9 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         text = ["""
 You reach out to your implant and it answers:
 
-There are many enemies to be slain.
-They are dangerous and will hurt you.
-Time will heal your wounds, but there is a faster way.
+The base has some clones now and there are many enemies to be slain.
+There will be fights and somebody will get hurt
+Time will heal wounds, but there is a faster way.
 
 The base has a Regenerator. It is located in the temple.
 It will heal all creatures nearby.

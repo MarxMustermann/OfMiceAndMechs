@@ -201,7 +201,7 @@ def setUpTcod():
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
     else:
-        settings = {"sound": 32} #Default Settings
+        settings = {"sound": 32, "fullscreen": True} #Default Settings
     
     import tcod as internalTcod
     global tcod
@@ -251,6 +251,11 @@ def setUpTcod():
 
     context.present(root_console,integer_scaling=True,keep_aspect=True)
 
+    tcod.lib.SDL_SetWindowFullscreen(
+        tcodContext.sdl_window_p,
+        tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP if settings["fullscreen"] else 0,
+    )
+    
     import soundfile as sf
     import tcod.sdl.audio as audio
 

@@ -188,6 +188,6 @@ if __name__ == '__main__':
             """
     except Exception as e:
         if src.interaction.tcodMixer:
-            src.interaction.tcodMixer.stop()
+            src.interaction.tcodMixer.close()
 
         raise e

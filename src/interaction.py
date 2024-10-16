@@ -201,7 +201,7 @@ def setUpTcod():
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
     else:
-        settings = {"sound": 32, "fullscreen": True} #Default Settings
+        settings = {"sound": 32, "fullscreen": True, "synchronize_enemy_blinking": True} #Default Settings
     
     import tcod as internalTcod
     global tcod

@@ -101,7 +101,7 @@ class NPCsOverlay:
 
         viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
         viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
-
+        counter = 0
         for character in terrain.characters:
             if not (character.yPosition and character.xPosition):
                 continue
@@ -117,8 +117,12 @@ class NPCsOverlay:
                 else:
                     char = "<-"
                 # bgColor = "#722"
+                counter +=1
                 colors = ["black","#f33","black","black"]
-                bgColor = colors[src.gamestate.gamestate.tick % len(colors)]
+                if not src.interaction.settings["synchronize_enemy_blinking"]:
+                    bgColor = colors[(src.gamestate.gamestate.tick + counter) % len(colors)]
+                else:
+                    bgColor = colors[src.gamestate.gamestate.tick % len(colors)]
                 if isinstance(char,tuple):
                     chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor),char[1])
                 else:

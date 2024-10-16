@@ -441,6 +441,11 @@ class Canvas:
                 numPrinted = 0
                 for item in tcodPrepared:
                     text = item[2]
+                    if text == None:
+                        logger.error("error drawing stuff")
+                        logger.error(item)
+                        logger.error(tcodPrepared)
+                        continue
                     text = text.replace("ò","o")
                     text = text.replace("＠","@ ")
                     text = text.replace("🝆","<")

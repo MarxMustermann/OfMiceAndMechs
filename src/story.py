@@ -1961,7 +1961,7 @@ but they are likely to explode when disturbed.
                 if y == 11:
                     scrap = src.items.itemMap["Scrap"](amount=20)
                     mainRoom.addItem(scrap,(x,y,0))
-                if y == 9 and x in (8,9,):
+                if y == 9 and x in (8,9,10,):
                     flask = src.items.itemMap["GooFlask"]()
                     flask.uses = 100
                     mainRoom.addItem(flask,(x,y,0))

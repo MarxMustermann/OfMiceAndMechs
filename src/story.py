@@ -2834,15 +2834,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statue = src.characters.characterMap["Statue"](4,4)
-                statue.baseDamage = int(5+multiplier)
-                statue.baseDamage = int(statue.baseDamage*(1-runModifier))
-                statue.maxHealth = int((20+10)*multiplier)
-                statue.maxHealth = int(statue.maxHealth*(1+runModifier))
-                statue.health = statue.maxHealth
-                statue.godMode = True
-                statue.movementSpeed = 1.3-0.1*multiplier
-
+                statue = src.characters.characterMap["Statue"](4,4,multiplier = multiplier,runModifier = runModifier)
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
                 quest.assignToCharacter(statue)
@@ -2853,14 +2845,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statuette = src.characters.characterMap["Statuette"](4,4)
-                statuette.baseDamage = int(2+multiplier)
-                statuette.baseDamage = int(statuette.baseDamage*(1+runModifier))
-                statuette.maxHealth = int(10*multiplier)
-                statuette.maxHealth = int(statuette.maxHealth*(1-runModifier))
-                statuette.health = statuette.maxHealth
-                statuette.godMode = True
-                statuette.movementSpeed = 1.0*0.9**multiplier
+                statuette = src.characters.characterMap["Statuette"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -2876,14 +2861,7 @@ but they are likely to explode when disturbed.
         for room in reversed(extraRooms):
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statue = src.characters.characterMap["Statue"](4,4)
-                statue.baseDamage = int(5+multiplier)
-                statue.baseDamage = int(statue.baseDamage*(1-runModifier))
-                statue.maxHealth = int((20+10)*multiplier)
-                statue.maxHealth = int(statue.maxHealth*(1+runModifier))
-                statue.health = statue.maxHealth
-                statue.godMode = True
-                statue.movementSpeed = 1.3-0.1*multiplier
+                statue = src.characters.characterMap["Statue"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -2895,14 +2873,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(random.randint(3,8)):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statuette = src.characters.characterMap["Statuette"](4,4)
-                statuette.baseDamage = int(2+multiplier)
-                statuette.baseDamage = int(statuette.baseDamage*(1+runModifier))
-                statuette.maxHealth = int(10*multiplier)
-                statuette.maxHealth = int(statuette.maxHealth*(1-runModifier))
-                statuette.health = statuette.maxHealth
-                statuette.godMode = True
-                statuette.movementSpeed = 1.0*0.9**multiplier
+                statuette = src.characters.characterMap["Statuette"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True

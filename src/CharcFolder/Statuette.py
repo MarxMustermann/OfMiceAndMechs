@@ -17,6 +17,8 @@ class Statuette(Monster):
         name="Statuette",
         creator=None,
         characterId=None,
+        multiplier = 1,
+        runModifier = 0
     ):
         """
         basic state setting
@@ -35,7 +37,15 @@ class Statuette(Monster):
             characterId=characterId,
         )
         self.charType = "Statuette"
-        self.specialDisplay = "st"
+        self.specialDisplay = (src.characters.urwid.AttrSpec(src.characters.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"st")
+        self.baseDamage = int(2+multiplier)
+        self.baseDamage = int(self.baseDamage*(1+runModifier))
+        self.maxHealth = int(10*multiplier)
+        self.maxHealth = int(self.maxHealth*(1-runModifier))
+        self.health = self.maxHealth
+        self.godMode = True
+        self.movementSpeed = 1.0*0.9**multiplier
+
 
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":

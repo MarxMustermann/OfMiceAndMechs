@@ -940,7 +940,10 @@ class Room:
                     chars[character.yPosition]
                 ):
                     if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
-                        char = character.specialDisplay
+                        if character.specialDisplay:
+                            char = character.specialDisplay
+                        else:
+                            char = "<-"
                         bgColor = "#722"
 
                         if isinstance(char,tuple):

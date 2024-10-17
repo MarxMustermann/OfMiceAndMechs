@@ -179,6 +179,9 @@ This command has the name: %s
             self.extraName
             )
 
+        text += f"""repeat command: {self.repeat}
+"""
+
         text += """
 
 This is a level %s item.

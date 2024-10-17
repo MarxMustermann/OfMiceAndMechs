@@ -16,5 +16,6 @@ class Hunter(Monster):
         self.specialDisplay = "Hu"
         self.baseDamage = 15
 
+        self.charType = "Hunter"
 
 src.characters.add_character(Hunter)

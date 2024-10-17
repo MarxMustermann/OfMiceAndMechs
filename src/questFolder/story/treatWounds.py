@@ -140,10 +140,14 @@ For now ignore the options below and press esc to continue.
             if hasInventoryVial:
                 return False
 
+        if not character.getFreeInventorySpace():
+            self.postHandler()
+            return True
         hasTileVial = self.getTileVials(character)
         if hasTileVial:
             return False
 
         self.postHandler()
+        return True
 
 src.quests.addType(TreatWounds)

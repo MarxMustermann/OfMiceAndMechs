@@ -36,6 +36,7 @@ class SettingMenu(SubMenu):
                     if change_value:
                         src.interaction.settings["sound"] += -1 if key == "a" else +1
                         src.interaction.settings["sound"] = src.helpers.clamp(src.interaction.settings["sound"], 0, 32)
+                        src.interaction.changeVolume()
                     text += setting + ":"
                     text += " " + src.interaction.settings["sound"] * "║"
                     text += (32 - src.interaction.settings["sound"]) * "|"

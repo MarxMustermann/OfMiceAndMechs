@@ -323,12 +323,17 @@ def setUpTcod():
         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
     )
     """
-    def s_loop(ch):
-        if random.random() < 0.5:
-            ch.play(sound = sounds["loop1"],volume = settings["sound"]/32.0,on_end = s_loop)
-        else:
-            ch.play(sound = sounds["loop2"],volume = settings["sound"]/32.0,on_end = s_loop)
-    tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = s_loop)
+    tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = sound_loop)
+
+def sound_loop(ch):
+    if random.random() < 0.5:
+        ch.play(sound = sounds["loop1"],volume = settings["sound"]/32.0,on_end = sound_loop)
+    else:
+        ch.play(sound = sounds["loop2"],volume = settings["sound"]/32.0,on_end = sound_loop)
+
+def changeVolume():
+    channel = tcodMixer.get_channel("background")
+    channel.volume = settings["sound"]/ 32.0
     
 footer = None
 main = None

@@ -291,6 +291,8 @@ def setUpTcod():
     sounds["machineUsed"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop1.wav',dtype='float32')
     sounds["loop1"] = sound_clip
+    sound_clip, samplerate = src.interaction.soundloader.read('sounds/loop2.wav',dtype='float32')
+    sounds["loop2"] = sound_clip
     sound_clip, samplerate = src.interaction.soundloader.read("sounds/loop1_start.wav", dtype="float32")
     sounds["loop1_start"] = sound_clip
     global tcodAudio
@@ -322,7 +324,10 @@ def setUpTcod():
     )
     """
     def s_loop(ch):
-        ch.play(sound =sounds["loop1"],volume = settings["sound"]/32.0,on_end = s_loop)
+        if random.random() < 0.5:
+            ch.play(sound = sounds["loop1"],volume = settings["sound"]/32.0,on_end = s_loop)
+        else:
+            ch.play(sound = sounds["loop2"],volume = settings["sound"]/32.0,on_end = s_loop)
     tcodMixer.get_channel("background").play(sound = sounds["loop1_start"],volume = settings["sound"]/ 32.0,on_end = s_loop)
     
 footer = None

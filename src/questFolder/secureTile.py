@@ -6,8 +6,8 @@ import src
 class SecureTile(src.quests.questMap["GoToTile"]):
     type = "SecureTile"
 
-    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False):
-        super().__init__(description=description,targetPosition=toSecure)
+    def __init__(self, description="secure tile", toSecure=None, endWhenCleared=False, reputationReward=0,rewardText=None,strict=False,alwaysHuntDown=False,reason=None,story=None, wandering = False, lifetime=None):
+        super().__init__(description=description,targetPosition=toSecure,lifetime=lifetime)
         self.metaDescription = description
         self.endWhenCleared = endWhenCleared
         self.reputationReward = reputationReward
@@ -128,7 +128,7 @@ Try luring enemies into landmines or detonating some bombs."""
                         y= src.helpers.clamp(y+int(random.uniform(-3,3)),1,13)
                         quest = src.quests.questMap["GoToPosition"](targetPosition = (x,y))
                         return ([quest], None)
-                    return (None, ("10.","wait"))
+                    return (None, ("."*10,"wait"))
         return super().getNextStep(character=character,ignoreCommands=ignoreCommands)
 
 src.quests.addType(SecureTile)

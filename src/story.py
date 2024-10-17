@@ -2253,10 +2253,31 @@ but they are likely to explode when disturbed.
         trapRoom1.addItem(moldFeed,(11,9,0))
 
         for x in range(1,12):
-            for y in range(1,12):
+            for y in range(1,11):
                 if (x,y) in ((11,9),(11,8)):
                     continue
                 trapRoom1.walkingSpace.add((x,y,0))
+
+        corpseAnimator = src.items.itemMap["CorpseAnimator"]()
+        corpseAnimator.bolted = True
+        trapRoom1.addItem(corpseAnimator,(2,11,0))
+        command = src.items.itemMap["Command"]()
+        command.bolted = True
+        command.command = ""
+        command.command += "5w5a6a" # move to traproom center
+        command.command += "Kdd"*5+"5a" # clear east line 
+        command.command += "Kaa"*5+"5d" # clear west line
+        command.command += "Kss"*5+"5w" # clear south line
+        command.command += "Kww"*5+"5s" # clear north line
+        command.command += "6d"+"5d5s" # return to start position
+        command.command += "w"+"dLs"*8 # fill output stockpiles
+        command.command += "8as" # return to start position
+        command.command += "100." # wait
+        command.repeat = True
+        trapRoom1.addItem(command,(3,11,0))
+        trapRoom1.addInputSlot((1,11,0),"Corpse")
+        for x in range(4,12):
+            trapRoom1.addOutputSlot((x,11,0),None)
 
         trapRoom2 = architect.doAddRoom(
                 {
@@ -3123,6 +3144,7 @@ but they are likely to explode when disturbed.
 
     def openedQuestsStory(self):
         mainChar = self.activeStory["mainChar"]
+        homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
         
         # flee initial room
         if mainChar.container.tag == "sternslab":
@@ -3229,19 +3251,39 @@ but they are likely to explode when disturbed.
             return
 
         # keep trap rooms clean
-        homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
         room = homeTerrain.getRoomByPosition((5,7,0))[0]
         for walkingSpace in room.walkingSpace:
             items = room.getItemByPosition(walkingSpace)
             for item in items:
                 if item.bolted:
                     continue
-                quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains",story="You reach out to your implant and it answers:\n\nThe main defenses of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defenses of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
                 quest.assignToCharacter(mainChar)
                 quest.activate()
                 mainChar.assignQuest(quest,active=True)
                 quest.endTrigger = {"container": self, "method": "reachImplant"}
                 return
+
+        # check for hunters
+        hunterCount = 0
+        for character in homeTerrain.characters:
+            if character.charType != "Hunter":
+                continue
+            hunterCount += 1
+        for room in homeTerrain.rooms:
+            for character in room.characters:
+                if character.charType != "Hunter":
+                    continue
+                hunterCount += 1
+
+        # wait out hunters
+        if hunterCount:
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,reason="ensure no Hunters get into the base",story="You reach out to your implant and it answers:\n\nThere are still Hunters out there trying to kill you.\nIf you stay inside, they will get caught up in the Traproom.",lifetime=100)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
 
         # get the players environment
         terrain = mainChar.getTerrain()
@@ -3281,7 +3323,7 @@ but they are likely to explode when disturbed.
                 else:
                     npcCount += 1
 
-        # TODO: kill hunters
+        # TODO: kill grabbers
 
         # ensure there is a backup NPC
         if npcCount < 2:

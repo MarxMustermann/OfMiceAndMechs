@@ -5,7 +5,7 @@ from src.CharcFolder.Monster import Monster
 class Hunter(Monster):
     def __init__(self,):
         super().__init__(name= "Hunter")
-        quest = src.quests.questMap["Huntdown"](target=src.gamestate.gamestate.mainChar,alwaysfollow = True)
+        quest = src.quests.questMap["ClearTerrain"]()
         quest.autoSolve = True
         quest.assignToCharacter(self)
         quest.activate()

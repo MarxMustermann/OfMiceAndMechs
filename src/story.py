@@ -2253,11 +2253,36 @@ but they are likely to explode when disturbed.
         trapRoom1.addItem(moldFeed,(11,9,0))
 
         for x in range(1,12):
-            for y in range(1,11):
+            for y in range(2,11):
                 if (x,y) in ((11,9),(11,8)):
                     continue
                 trapRoom1.walkingSpace.add((x,y,0))
 
+        # added ghoul automation for harvesting
+        corpseAnimator = src.items.itemMap["CorpseAnimator"]()
+        corpseAnimator.bolted = True
+        trapRoom1.addItem(corpseAnimator,(2,1,0))
+        command = src.items.itemMap["Command"]()
+        command.bolted = True
+        command.command = ""
+        command.command += "5s5a6a" # move to traproom center
+        command.command += "14sj" # activate field
+        command.command += "13sj" # activate field
+        command.command += "13aj" # activate field
+        command.command += "13wj" # activate field
+        command.command += "13wj" # activate field
+        command.command += "13d" # move to traproom center
+        command.command += "11d5w" # move to traproom center
+        command.command += "s"+"dLw"*8 # fill output stockpiles
+        command.command += "8aw" # return to start position
+        command.repeat = True
+        trapRoom1.addItem(command,(3,1,0))
+        trapRoom1.addInputSlot((1,1,0),"Corpse")
+        for x in range(4,12):
+            trapRoom1.addOutputSlot((x,1,0),None)
+
+
+        # added ghoul automation for trap room clearing
         corpseAnimator = src.items.itemMap["CorpseAnimator"]()
         corpseAnimator.bolted = True
         trapRoom1.addItem(corpseAnimator,(2,11,0))
@@ -2352,6 +2377,7 @@ but they are likely to explode when disturbed.
 
         # scatter walls
         specialSpots = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
+        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
         for x in range(1,14):
             for y in range(1,14):
                 if (x,y) in ((3,11),):
@@ -2361,6 +2387,8 @@ but they are likely to explode when disturbed.
                 if currentTerrain.charactersByTile.get((x,y),[]):
                     continue
                 if (x,y,0) in specialSpots:
+                    continue
+                if (x,y,0) in moldTiles:
                     continue
                 for i in range(1,random.randint(1,4)):
                     wall = src.items.itemMap["Wall"]()
@@ -2417,11 +2445,30 @@ but they are likely to explode when disturbed.
                 currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
 
         # add mold spots
-        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0)]
         for moldTile in moldTiles:
+            if moldTile in [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0),]:
+                autoFarmer = src.items.itemMap["AutoFarmer"]()
+                currentTerrain.addItem(autoFarmer,(15*moldTile[0]+7,15*moldTile[1]+7,0))
+                for x in range(1,15):
+                    if x == 7:
+                        continue
+                    paving = src.items.itemMap["Paving"]()
+                    paving.bolted = True
+                    currentTerrain.addItem(paving,(15*moldTile[0]+x,15*moldTile[1]+7,0))
+                for y in range(1,15):
+                    if y == 7:
+                        continue
+                    paving = src.items.itemMap["Paving"]()
+                    paving.bolted = True
+                    currentTerrain.addItem(paving,(15*moldTile[0]+7,15*moldTile[1]+y,0))
+
+
             for i in range(1,random.randint(5,10)):
+                pos = (random.randint(1,13),random.randint(1,13),0)
+                if pos[0] == 7 or pos[1] == 7:
+                    continue
                 mold = src.items.itemMap["Mold"]()
-                currentTerrain.addItem(mold,(15*moldTile[0]+random.randint(1,13),15*moldTile[1]+random.randint(1,13),0))
+                currentTerrain.addItem(mold,(15*moldTile[0]+pos[0],15*moldTile[1]+pos[1],0))
                 mold.startSpawn()
 
         """
@@ -3250,35 +3297,51 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        # keep trap rooms clean
-        room = homeTerrain.getRoomByPosition((5,7,0))[0]
-        for walkingSpace in room.walkingSpace:
-            items = room.getItemByPosition(walkingSpace)
-            for item in items:
-                if item.bolted:
-                    continue
-                quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defenses of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
-                quest.assignToCharacter(mainChar)
-                quest.activate()
-                mainChar.assignQuest(quest,active=True)
-                quest.endTrigger = {"container": self, "method": "reachImplant"}
-                return
-
         # check for hunters
         hunterCount = 0
+        ghulCount = 0
         for character in homeTerrain.characters:
-            if character.charType != "Hunter":
-                continue
-            hunterCount += 1
-        for room in homeTerrain.rooms:
-            for character in room.characters:
-                if character.charType != "Hunter":
-                    continue
+            if character.charType == "Hunter":
                 hunterCount += 1
+            if character.charType == "Ghoul":
+                ghulCount += 1
+        for room in homeTerrain.rooms:
+
+            for character in room.characters:
+                if character.charType == "Hunter":
+                    hunterCount += 1
+                if character.charType == "Ghoul":
+                    ghulCount += 1
+
+        # keep trap rooms clean
+        if not ghulCount:
+            room = homeTerrain.getRoomByPosition((5,7,0))[0]
+            for walkingSpace in room.walkingSpace:
+                items = room.getItemByPosition(walkingSpace)
+                for item in items:
+                    if item.bolted:
+                        continue
+
+                    if not hunterCount:
+                        # spawn trap cleaning ghul
+                        quest = src.quests.questMap["SpawnGhul"]()
+                        quest.assignToCharacter(mainChar)
+                        quest.activate()
+                        mainChar.assignQuest(quest,active=True)
+                        quest.endTrigger = {"container": self, "method": "reachImplant"}
+                        return
+
+                    # clear room yourself
+                    quest = src.quests.questMap["ClearTile"](description="clean up trap room",targetPosition=room.getPosition(),reason="clean the trap room.\n\nThe trap room relies on TriggerPlates to work.\nThose only work, if there are no items ontop of them.\nRestore the defence by removing the enemies remains.\nAvoid any enemies entering the trap room while you work",story="You reach out to your implant and it answers:\n\nThe main defenses of the base is the trap room,\nit needs to be cleaned to ensure it works correctly.")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
 
         # wait out hunters
         if hunterCount:
-            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,reason="ensure no Hunters get into the base",story="You reach out to your implant and it answers:\n\nThere are still Hunters out there trying to kill you.\nIf you stay inside, they will get caught up in the Traproom.",lifetime=100)
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,reason="ensure no Hunters get into the base",story="You reach out to your implant and it answers:\n\nThere are still Hunters out there trying to kill you.\nIf you stay inside, they will get caught up in the Traproom.",lifetime=100,description="wait out Hunters")
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)
@@ -3315,12 +3378,16 @@ but they are likely to explode when disturbed.
             if character.faction != "city #1":
                 enemyCount += 1
             else:
+                if character.charType == "Ghoul":
+                    continue
                 npcCount += 1
         for room in terrain.rooms:
             for character in room.characters:
                 if character.faction != "city #1":
                     enemyCount += 1
                 else:
+                    if character.charType == "Ghoul":
+                        continue
                     npcCount += 1
 
         # TODO: kill grabbers

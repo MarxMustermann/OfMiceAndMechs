@@ -163,10 +163,16 @@ class SpawnGhul(src.quests.MetaQuestSequence):
         text = ["""
 You reach out to your implant and it answers:
 
-Cleaning the trap room is a repetetive task.
+Cleaning the TrapRoom is a dull and repetetive task.
 It will keep you busy while you could do more useful work.
 It still needs to be done or the TrapRoom will fail.
 
+Ghouls can't do much, but they can do repetetive tasks.
+As reanimated dead they cant think and only follow very detailed instructions.
+Those instructions are held in commands (c#) and can be recorded from Sheets (+#).
+
+This base has a automation set up to clear the TrapRoom using ghouls.
+Fetch a Corpse and spawn a Ghoul to do that task.
 """]
         return text
 

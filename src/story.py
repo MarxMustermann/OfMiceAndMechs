@@ -2304,6 +2304,12 @@ but they are likely to explode when disturbed.
         for x in range(4,12):
             trapRoom1.addOutputSlot((x,11,0),None)
 
+        ###############################################
+        ###
+        ##  add the trap room
+        #
+
+        # add the actual room
         trapRoom2 = architect.doAddRoom(
                 {
                        "coordinate": (5,7),
@@ -2315,8 +2321,10 @@ but they are likely to explode when disturbed.
                 None,
            )
 
+        # add walking space in the center
         trapRoom2.addWalkingSpace((6,6,0))
 
+        # add north-south trap line
         for y in (1,2,3,4,5,7,8,9,10,11):
             triggerPlate = src.items.itemMap["TriggerPlate"]()
             triggerPlate.faction = faction
@@ -2328,6 +2336,7 @@ but they are likely to explode when disturbed.
                 trapRoom2.addItem(rodTower,(x,y,0))
                 triggerPlate.targets.append((x,y,0))
 
+        # add west-east trap line
         for x in (1,2,3,4,5,7,8,9,10,11):
             triggerPlate = src.items.itemMap["TriggerPlate"]()
             triggerPlate.faction = faction
@@ -2340,13 +2349,33 @@ but they are likely to explode when disturbed.
                     trapRoom2.addItem(rodTower,(x,y,0))
                 triggerPlate.targets.append((x,y,0))
 
+        # block some of the trap
         for pos in ((1,6,0),(2,6,0),(6,1,0),(6,2,0),(6,11,0),(6,10,0)):
             moldFeed = src.items.itemMap["MoldFeed"]()
             trapRoom2.addItem(moldFeed,pos)
 
+        ###############################################
+        ###
+        ##  load hardcoded placements
+        #
+
+        labPosition = (6,10,0)
+        labPositionExit = (6,9,0)
+        specialSpots = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
+        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
+        farmPlotTiles = [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
+        fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
+        wallTiles = [(4,3,0),(2,3,0),(2,2,0),(5,2,0),(6,3,0),(8,1,0),(10,3,0),(11,4,0),(12,4,0),(11,8,0),(11,11,0),(12,11,0),(11,12,0),(10,13,0),(9,12,0),(7,12,0),]
+
+        ###############################################
+        ###
+        ##  add the lab/starter room
+        #
+
+        # add the actual room
         startRoom = architect.doAddRoom(
                 {
-                       "coordinate": (6,10),
+                       "coordinate": labPosition,
                        "roomType": "EmptyRoom",
                        "doors": "6,0",
                        "offset": [1,1],
@@ -2356,13 +2385,15 @@ but they are likely to explode when disturbed.
            )
         startRoom.tag = "sternslab"
 
+        # add vial just outside the lab
         vial = src.items.itemMap["Vial"]()
         vial.uses = 2
-        currentTerrain.addItem(vial, (6*15+3,9*15+4,0))
+        currentTerrain.addItem(vial, (labPositionExit[0]*15+3,labPositionExit[1]*15+4,0))
         vial = src.items.itemMap["Vial"]()
         vial.uses = 1
-        currentTerrain.addItem(vial, (6*15+8,9*15+2,0))
+        currentTerrain.addItem(vial, (labPositionExit[0]*15+8,labPositionExit[1]*15+2,0))
         
+        # add decoration for flavour
         for pos in [(6,1,0),(6,2,0),(6,3,0),(6,4,0),(6,5,0), 
                     (5,5,0),(4,5,0),(4,6,0),(4,7,0),(4,8,0),(5,8,0),(6,8,0),(7,8,0),(8,8,0),(8,7,0),(8,6,0),(8,5,0),(7,5,0)]:
             startRoom.addWalkingSpace(pos)
@@ -2375,9 +2406,12 @@ but they are likely to explode when disturbed.
             item.display = "OT"
             startRoom.addItem(item,pos)
 
+        ###############################################
+        ###
+        ##  add terrain details
+        #
+
         # scatter walls
-        specialSpots = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
-        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
         for x in range(1,14):
             for y in range(1,14):
                 if (x,y) in ((3,11),):
@@ -2396,7 +2430,6 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
         # place initial fighting spots
-        fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
         for fightingSpot in fightingSpots:
 
             # add reward
@@ -2414,7 +2447,6 @@ but they are likely to explode when disturbed.
             currentTerrain.addCharacter(enemy,fightingSpot[0]*15+random.randint(3,12),fightingSpot[1]*15+random.randint(3,12))
 
         # spawn wall spots
-        wallTiles = [(4,3,0),(2,3,0),(2,2,0),(5,2,0),(6,3,0),(8,1,0),(10,3,0),(11,4,0),(12,4,0),(11,8,0),(11,11,0),(12,11,0),(11,12,0),(10,13,0),(9,12,0),(7,12,0),]
         for wallTile in wallTiles:
 
             # add walls
@@ -2446,7 +2478,7 @@ but they are likely to explode when disturbed.
 
         # add mold spots
         for moldTile in moldTiles:
-            if moldTile in [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0),]:
+            if moldTile in farmPlotTiles:
                 autoFarmer = src.items.itemMap["AutoFarmer"]()
                 currentTerrain.addItem(autoFarmer,(15*moldTile[0]+7,15*moldTile[1]+7,0))
                 for x in range(1,15):

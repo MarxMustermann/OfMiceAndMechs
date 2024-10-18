@@ -6,7 +6,7 @@ from src.menuFolder.SubMenu import SubMenu
 
 class SettingMenu(SubMenu):
     type = "SettingMenu"
-    setting_options = ["set sound volume","toggle fullscreen","synchronize enemy marker blinking"]
+    setting_options = ["set sound volume","toggle fullscreen"]
 
     def __init__(self, default=None, targetParamName="selection"):
         self.index = 0
@@ -50,11 +50,6 @@ class SettingMenu(SubMenu):
                         )
                     text += setting + ":    "
                     text += "On" if src.interaction.settings["fullscreen"] else "Off"
-                case "synchronize enemy marker blinking":
-                    if change_value:
-                        src.interaction.settings["synchronize_enemy_blinking"] = not src.interaction.settings["synchronize_enemy_blinking"]
-                    text += setting + ":    "
-                    text += "On" if src.interaction.settings["synchronize_enemy_blinking"] else "Off"
             text+="\n"
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 

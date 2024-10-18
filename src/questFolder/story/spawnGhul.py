@@ -117,7 +117,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 if not corpse:
                     continue
                 
-                quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate")
+                quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=False)
                 return ([quest],None)
             
             if dryRun:

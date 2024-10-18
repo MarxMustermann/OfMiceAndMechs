@@ -4,7 +4,7 @@ import random
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
-    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True):
+    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True,pickUpBolted=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -14,6 +14,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.targetPositionBig = targetPositionBig
         self.reason = reason
         self.abortOnfullInventory = abortOnfullInventory
+        self.pickUpBolted = pickUpBolted
 
     def generateTextDescription(self):
         reason = ""
@@ -27,7 +28,6 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
     def unhandledSubQuestFail(self,extraParam):
         self.fail(extraParam["reason"])
 
-
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
@@ -36,12 +36,12 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         if rooms:
             room = rooms[0]
             items = room.getItemByPosition(self.targetPosition)
-            if not items:
+            if not items or ((not self.pickUpBolted) and items[0].bolted):
                 self.postHandler()
                 return True
         else:
             items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-            if not items:
+            if not items or ((not self.pickUpBolted) and items[0].bolted):
                 self.postHandler()
                 return True
         return None
@@ -65,13 +65,13 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if rooms:
                 room = rooms[0]
                 items = room.getItemByPosition(self.targetPosition)
-                if not items:
+                if not items or ((not self.pickUpBolted) and items[0].bolted):
                     if not dryRun:
                         self.postHandler()
                     return (None,None)
             else:
                 items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                if not items:
+                if not items or ((not self.pickUpBolted) and items[0].bolted):
                     if not dryRun:
                         self.postHandler()
                     return (None,None)
@@ -89,7 +89,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             for (offset,direction) in offsets.items():
                 if character.container.isRoom:
                     if character.getPosition(offset=offset) == self.targetPosition:
-                        if items[0].bolted:
+                        if (not self.pickUpBolted) and items[0].bolted:
                             return (None, (direction+"cb","unbolt item"))
                         return (None, (direction+"k","pick up item"))
                 else:
@@ -127,6 +127,7 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             if character.getBigPosition() == self.targetPositionBig:
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         if len(character.inventory):
@@ -193,4 +194,5 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                     beUsefull.idleCounter = 0
                 return ([quest],None)
         return (None,None)
+
 src.quests.addType(CleanSpace)

@@ -1,5 +1,6 @@
-
 from src.menuFolder.SubMenu import SubMenu
+
+import src
 
 class NameGhoulMenu(SubMenu):
     def __init__(self,npc=None):

@@ -12,6 +12,7 @@ import src.interaction
 import src.menuFolder
 import src.menuFolder.SubMenu
 import src.quests
+import src
 
 logger = logging.getLogger(__name__)
 

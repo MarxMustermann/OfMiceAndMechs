@@ -1006,7 +1006,7 @@ class Character:
             #self.exhaustion += int(damage//4)
             self.exhaustion += int(random.random()*damage//2)
 
-        if reason == "attacked":
+        if reason.startswith("attacked"):
             if self.aggro < 20:
                 self.aggro += 5
             if self.personality.get("abortMacrosOnAttack") and not self.macroState["submenue"]:
@@ -1048,8 +1048,8 @@ class Character:
             self.frustration += 10 * damage
             message = "you took " + str(damage) + f" damage. You have {self.health}/{self.maxHealth} health left"
             if reason:
-                message += f"\nreason: {reason}"
-            self.addMessage("you took " + str(damage) + f" damage. You have {self.health}/{self.maxHealth} health left")
+                message += f"\ncause you got {reason}"
+            self.addMessage(message)
 
             if self.combatMode == "defensive":
                 staggerThreshold *= 2
@@ -1232,7 +1232,9 @@ press any other key to attack normally"""
         else:
             self.addMessage("you do a normal attack")
             self.attack(target)
-
+    @staticmethod
+    def hasTimingBonus():
+        return src.gamestate.gamestate.tick % 4 == 1
     def attack(self, target, heavy = False, quick = False, ultraheavy = False, initial=False, harassing=False, light=False, opportunity=False, gambling=False, bestial=False, slow=False):
         """
         make the character attack something
@@ -1291,6 +1293,8 @@ press any other key to attack normally"""
         else:
             self.numAttackedWithoutResponse = 0
 
+        reason="attacked"
+        bonus = " "
         baseDamage = self.baseDamage
 
         if self.weapon:
@@ -1323,6 +1327,13 @@ press any other key to attack normally"""
         if bestial:
             baseDamage = int(baseDamage*2)
 
+        if (isinstance(self, src.CharcFolder.Monster.Monster) and self.hasTimingBonus()) or (
+            isinstance(target, src.CharcFolder.Monster.Monster) and target.hasTimingBonus()
+        ):
+            baseDamage = int(baseDamage * 1.25)
+            reason+= " with timing bonus"
+            bonus+= "with timing bonus "
+
         damage = baseDamage
 
         if self.bonusDamageOnLowerExhaustion and self.exhaustion < target.exhaustion:
@@ -1346,9 +1357,9 @@ press any other key to attack normally"""
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
-        target.hurt(damage, reason="attacked", actor=self)
+        target.hurt(damage, reason=reason, actor=self)
         self.addMessage(
-            f"you attack the enemy for {damage} damage, the enemy has {target.health}/{target.maxHealth} health left"
+            f"you attack the enemy for {damage} damage {bonus},the enemy has {target.health}/{target.maxHealth} health left"
         )
 
         if self.addRandomExhaustionOnAttack:

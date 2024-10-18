@@ -933,7 +933,6 @@ class Room:
             viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
 
             foundMainchar = None
-            counter = 0
             for character in self.characters:
                 if character == src.gamestate.gamestate.mainChar:
                     foundMainchar = character
@@ -945,15 +944,12 @@ class Room:
                             char = character.specialDisplay
                         else:
                             char = "<-"
-                        bgColor = "#722"
 
-                        counter +=1
-                        colors = ["black","#f33","black","black"]
-                        if not src.interaction.settings["synchronize_enemy_blinking"]:
-                            bgColor = colors[(src.gamestate.gamestate.tick + counter) % len(colors)]
+                        if src.characters.Character.hasTimingBonus():
+                            bgColor = "#f33"
                         else:
-                            bgColor = colors[src.gamestate.gamestate.tick % len(colors)]
-
+                            bgColor = "black"
+                            
                         if isinstance(char,tuple):
                             chars[character.yPosition][character.xPosition] = (src.interaction.urwid.AttrSpec(char[0].fg, bgColor), char[1])
                         else:

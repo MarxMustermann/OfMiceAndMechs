@@ -166,6 +166,6 @@ So if an enemy is to directly east of you:
         if command is None:
             return (None,None)
 
-        return (None,(command,"fight"))
+        return (None,(command,"approach enemy"))
 
 src.quests.addType(Fight)

@@ -1021,7 +1021,6 @@ class MainGame(BasicPhase):
                 self.available_positions.append((x,y))
 
         for pos in ((1,1),(13,1),(1,13),(13,13)):
-            print(pos)
             currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
             currentTerrain.tag = "corner terrain"
             self.available_positions.remove(pos)
@@ -1172,6 +1171,7 @@ The room is filled with various items.
 You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
+                self.activeStory["failedReintegration"] = True
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
             self.activeStory["sternsContraption"].startMeltdown()
 

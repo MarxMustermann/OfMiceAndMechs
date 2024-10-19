@@ -6,10 +6,12 @@ import src
 class ClearTerrain(src.quests.MetaQuestSequence):
     type = "ClearTerrain"
 
-    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None):
+    def __init__(self, description="clear terrain", creator=None, command=None, lifetime=None,outsideOnly=False,insideOnly=False):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = description
+        self.outsideOnly = outsideOnly
+        self.insideOnly = insideOnly
 
     def generateTextDescription(self):
         text = ["""
@@ -70,14 +72,21 @@ Just clear the whole terrain tile for tile.
             if random.random() < 0.3:
                 steps = ["clearRooms","clearOutside"]
 
+            if self.outsideOnly:
+                steps = ["clearOutside"]
+            if self.insideOnly:
+                steps = ["clearRooms"]
+
             for step in steps:
-                if step == "clearRooms":
+                if step == "clearOutside":
                     for otherChar in terrain.characters:
                         if otherChar.faction == character.faction:
                             continue
+                        if terrain.getRoomByPosition(otherChar.getBigPosition()):
+                            continue
                         quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
                         return ([quest],None)
-                if step == "clearOutside":
+                if step == "clearRooms":
                     for room in terrain.rooms:
                         for otherChar in room.characters:
                             if otherChar.faction == character.faction:

@@ -8,3 +8,4 @@ import src.CharcFolder.Maggot
 import src.CharcFolder.Spider
 import src.CharcFolder.Spiderling
 import src.CharcFolder.Hunter
+import src.CharcFolder.Snatcher

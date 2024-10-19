@@ -164,7 +164,7 @@ class SternsContraption(src.items.Item):
                         numEnemies = 5
                     for i in range(0,numEnemies):
                         enemy = src.characters.characterMap["Spider"]()
-
+                        enemy.faction = "insects"
 
                         quest = src.quests.questMap["SecureTile"](toSecure=bigPos,alwaysHuntDown=True, wandering = True)
                         quest.autoSolve = True
@@ -177,6 +177,7 @@ class SternsContraption(src.items.Item):
                 hunterSpawns = [(9,10,0),(10,9,0),(12,12,0)]
                 for bigPos in hunterSpawns:
                     enemy = src.characters.characterMap["Hunter"]()
+                    enemy.faction = "insects"
                     terrain.addCharacter(enemy,bigPos[0]*15+random.randint(3,12),bigPos[1]*15+random.randint(3,12))
 
                 self.container.destroy()

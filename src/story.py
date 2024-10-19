@@ -2366,6 +2366,7 @@ but they are likely to explode when disturbed.
         farmPlotTiles = [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
         fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
         wallTiles = [(4,3,0),(2,3,0),(2,2,0),(5,2,0),(6,3,0),(8,1,0),(10,3,0),(11,4,0),(12,4,0),(11,8,0),(11,11,0),(12,11,0),(11,12,0),(10,13,0),(9,12,0),(7,12,0),]
+        snatcherNests = [(4,12,0),(8,3,0),]
 
         ###############################################
         ###
@@ -2424,6 +2425,12 @@ but they are likely to explode when disturbed.
                     continue
                 if (x,y,0) in moldTiles:
                     continue
+                if (x,y,0) in snatcherNests:
+                    continue
+                if (x,y,0) in moldTiles:
+                    continue
+                if (x,y,0) in fightingSpots:
+                    continue
                 for i in range(1,random.randint(1,4)):
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
@@ -2439,6 +2446,7 @@ but they are likely to explode when disturbed.
         
             # add enemy
             enemy = src.characters.characterMap["Spiderling"]()
+            enemy.faction = "insects"
             quest = src.quests.questMap["SecureTile"](toSecure=fightingSpot,alwaysHuntDown=True,wandering = True)
             quest.autoSolve = True
             quest.assignToCharacter(enemy)
@@ -2468,6 +2476,7 @@ but they are likely to explode when disturbed.
             # add enemies
             for _i in range(0,random.randint(1,5)):
                 enemy = src.characters.characterMap["Monster"]()
+                enemy.faction = "insects"
                 enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
                 quest.autoSolve = True
@@ -2502,6 +2511,28 @@ but they are likely to explode when disturbed.
                 mold = src.items.itemMap["Mold"]()
                 currentTerrain.addItem(mold,(15*moldTile[0]+pos[0],15*moldTile[1]+pos[1],0))
                 mold.startSpawn()
+
+        # add snatcher nest
+        for snatcherNest in snatcherNests:
+
+            # add enemies
+            for _i in range(0,random.randint(1,15)):
+                enemy = src.characters.characterMap["Snatcher"]()
+                enemy.faction = "insects"
+
+                quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=300, wandering=True)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                quest.activate()
+                enemy.quests.append(quest)
+
+                quest = src.quests.questMap["ClearTerrain"](outsideOnly=True)
+                quest.autoSolve = True
+                quest.assignToCharacter(enemy)
+                enemy.quests.append(quest)
+
+                currentTerrain.addCharacter(enemy,snatcherNest[0]*15+random.randint(3,12),snatcherNest[1]*15+random.randint(3,12))
+
 
         """
         # scatter cocoons
@@ -3406,9 +3437,12 @@ but they are likely to explode when disturbed.
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0
+        snatcherCount = 0
         for character in terrain.characters:
             if character.faction != "city #1":
                 enemyCount += 1
+                if character.charType == "Snatcher":
+                    snatcherCount += 1
             else:
                 if character.charType == "Ghoul":
                     continue
@@ -3422,7 +3456,14 @@ but they are likely to explode when disturbed.
                         continue
                     npcCount += 1
 
-        # TODO: kill grabbers
+        # kill snatchers
+        if snatcherCount:
+            quest = src.quests.questMap["SecureTile"](toSecure=(5,6,0),endWhenCleared=False,reason="confront the Snatchers",story="You reach out to your implant and it answers:\n\nThe base itself is safe now, but there are Snatchers out there.\nThey will try to swarm and kill everyone that goes outside.",lifetime=100)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
 
         # ensure there is a backup NPC
         if npcCount < 2:

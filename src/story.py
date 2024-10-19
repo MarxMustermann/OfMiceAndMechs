@@ -2020,6 +2020,9 @@ but they are likely to explode when disturbed.
         promoter = src.items.itemMap["Promoter"]()
         promoter.bolted = True
         mainRoom.addItem(promoter,(4,2,0))
+        communicator = src.items.itemMap["Communicator"]()
+        communicator.bolted = True
+        mainRoom.addItem(communicator,(1,3,0))
         dutyArtwork = src.items.itemMap["DutyArtwork"]()
         dutyArtwork.bolted = True
         mainRoom.addItem(dutyArtwork,(2,4,0))

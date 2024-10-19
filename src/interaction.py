@@ -192,7 +192,7 @@ def checkResetWindowSize(width,height):
     tcodContext.change_tileset(tileset)
 
     global tcodConsole
-    root_console = tcod.Console(newWidth, newHeight, order="F")
+    root_console = tcod.console.Console(newWidth, newHeight, order="F")
     tcodConsole = root_console
 
 def setUpTcod():
@@ -240,7 +240,7 @@ def setUpTcod():
                 )
     size = context.recommended_console_size()
 
-    root_console = tcod.Console(size[0], size[1], order="F")
+    root_console = tcod.console.Console(size[0], size[1], order="F")
     global tcodConsole
     global tcodContext
     tcodConsole = root_console

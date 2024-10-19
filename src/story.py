@@ -2118,6 +2118,9 @@ but they are likely to explode when disturbed.
 
         spawnRoom.addStorageSlot((10,8,0),"Flask",{"desiredState":"filled"})
 
+        ####
+        # create temple
+        ##
         throneRoom = architect.doAddRoom(
                 {
                        "coordinate": (7,6),
@@ -2187,6 +2190,9 @@ but they are likely to explode when disturbed.
             if basePos == (1,2,0):
                 shocktower.charges = 10
 
+        ####
+        # create secondary trap room (arena)
+        ##
         trapRoom1 = architect.doAddRoom(
                 {
                        "coordinate": (6,7),
@@ -2306,7 +2312,7 @@ but they are likely to explode when disturbed.
 
         ###############################################
         ###
-        ##  add the trap room
+        ##  add the primary trap room
         #
 
         # add the actual room

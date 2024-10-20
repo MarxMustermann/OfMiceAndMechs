@@ -1171,7 +1171,6 @@ The room is filled with various items.
 You recognise your hostile suroundings and
 try to remember how you got here ..."""
                 self.activeStory["mainChar"].messages.insert(0,(text))
-                self.activeStory["failedReintegration"] = True
             self.activeStory["mainChar"].messages.insert(0,("""until the explosions fully wake you."""))
             self.activeStory["sternsContraption"].startMeltdown()
 
@@ -3414,6 +3413,15 @@ but they are likely to explode when disturbed.
         # wait out hunters
         if hunterCount:
             quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,reason="ensure no Hunters get into the base",story="You reach out to your implant and it answers:\n\nThere are still Hunters out there trying to kill you.\nIf you stay inside, they will get caught up in the Traproom.",lifetime=100,description="wait out Hunters")
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+        
+        # try to contact base leader
+        if not src.gamestate.gamestate.stern.get("failedContact1"):
+            quest = src.quests.questMap["ContactCommand"]()
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)

@@ -66,3 +66,4 @@ import src.questFolder.story.appeaseAGod
 import src.questFolder.story.baitSpiders
 import src.questFolder.story.activateRegenerator
 import src.questFolder.story.spawnGhul
+import src.questFolder.story.contactCommand

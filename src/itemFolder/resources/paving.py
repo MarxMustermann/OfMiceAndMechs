@@ -17,6 +17,6 @@ class Paving(src.items.Item):
         set up internal state
         """
 
-        super().__init__(display=";;")
+        super().__init__(display=(src.interaction.urwid.AttrSpec("#d84", "black"),"::"))
 
 src.items.addType(Paving)

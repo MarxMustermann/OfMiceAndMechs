@@ -36,8 +36,8 @@ class GameState:
         self.gameOverText = ""
         self.savedThisTurn = False
         self.waitedForInputThisTurn = False
-        self.gods = {
-                    }
+        self.stern = {}
+        self.gods = {}
         self.theOldOne = {
                 "throneTaken":False
                     }

@@ -19,6 +19,11 @@ class Communicator(src.items.Item):
         self.bolted = True
 
     def apply(self,character):
+        if character.rank > 5:
+            character.addMessage("You need to be at least rank 5.")
+            character.changed("permission denied",{})
+            if character == src.gamestate.gamestate.mainChar:
+                src.gamestate.gamestate.stern["failedContact1"] = True
         return
         if character.rank > 2:
             character.rank = 2

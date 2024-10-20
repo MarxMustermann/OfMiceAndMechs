@@ -7,3 +7,4 @@ import src.quests
 import src.magic
 import src.menuFolder
 import src.helpers
+import src.StateFolder

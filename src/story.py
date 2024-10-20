@@ -1159,7 +1159,7 @@ class MainGame(BasicPhase):
         if not src.gamestate.gamestate.mainChar.dead:
             return
         else:
-            raise src.interaction.EndGame("character died")
+            src.StateFolder.death.Death(extraParam["reason"])
 
     def kickoff(self):
         if self.activeStory["type"] == "story start":

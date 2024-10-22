@@ -1071,7 +1071,7 @@ class Character:
             """
         else:
             self.health = 0
-            self.die(reason="you died from injuries")
+            self.die(reason="you died from injuries",killer = actor)
 
     def getNumMaxPosSubordinates(self):
         """
@@ -1834,7 +1834,7 @@ press any other key to attack normally"""
             self.addMessage("*grown*")
         self.changed("woke up", self)
 
-    def die(self, reason=None, addCorpse=True):
+    def die(self, reason=None, killer = None, addCorpse=True):
         """
         kill the character and do a bit of extra stuff like placing corpses
 
@@ -1892,7 +1892,7 @@ press any other key to attack normally"""
         self.path = []
 
         # notify listeners
-        self.changed("died", {"character": self, "reason": reason})
+        self.changed("died", {"character": self, "reason": reason ,"killer": killer})
 
         if container:
             # notify nearby characters

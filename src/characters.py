@@ -1294,7 +1294,7 @@ press any other key to attack normally"""
             self.numAttackedWithoutResponse = 0
 
         reason="attacked"
-        bonus = " "
+        bonus = ""
         baseDamage = self.baseDamage
 
         if self.weapon:
@@ -1332,7 +1332,7 @@ press any other key to attack normally"""
         ):
             baseDamage = int(baseDamage * 1.25)
             reason+= " with timing bonus"
-            bonus+= "with timing bonus "
+            bonus+= "with timing bonus"
 
         damage = baseDamage
 
@@ -1359,7 +1359,7 @@ press any other key to attack normally"""
 
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(
-            f"you attack the enemy for {damage} damage {bonus},the enemy has {target.health}/{target.maxHealth} health left"
+            f"you attack the enemy for {damage} damage {bonus}, the enemy has {target.health}/{target.maxHealth} health left"
         )
 
         if self.addRandomExhaustionOnAttack:

@@ -5,6 +5,7 @@ import tcod
 import tcod.constants
 
 import src
+import src.helpers
 import src.interaction
 import src.pseudoUrwid
 import src.urwidSpecials
@@ -14,7 +15,9 @@ def in_dest(source, target, radius):
     return pow(target[0] - source[0], 2) + pow(target[1] - source[1], 2) <= pow(radius, 2)
 
 
-def Death(reason):
+def Death(extraParam):
+    reason = extraParam["reason"]
+    killer = extraParam["killer"]
     # playerpos = (-99999,-9999)
     # for width in range(src.interaction.tcodConsole.width):
     #     for height in range(src.interaction.tcodConsole.height):
@@ -46,18 +49,15 @@ def Death(reason):
                 raise SystemExit()
         time.sleep(0.017)
 
-    t = f"{reason}\npress enter to return to main menu"
-    src.interaction.tcodConsole.print_box(
-        int(src.interaction.tcodConsole.width / 2 - len(t) / 2) - 30,
-        int(src.interaction.tcodConsole.height / 2 - 4),
-        len(t),
-        4,
-        t,
-        (255, 255, 255),
-        (0, 0, 0),
-        tcod.constants.BKGND_SET,
-        tcod.constants.CENTER
-    )
+    t = f"{reason}\nby {killer.name}\npress enter to return to main menu"
+
+    x = int(src.interaction.tcodConsole.width / 2 - len(t) / 2)
+    y = int(src.interaction.tcodConsole.height / 2 - 5)
+    width = len(max(t.splitlines(), key=len))
+    height = 3
+
+    src.helpers.draw_frame_text(width, height, t, x, y)
+
     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
     while 1:
         for event in tcod.event.get():

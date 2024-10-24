@@ -49,14 +49,17 @@ def Death(extraParam):
                 raise SystemExit()
         time.sleep(0.017)
 
-    t = f"{reason}\nby {killer.name}\npress enter to return to main menu"
+    text = f"{reason}\n"
+    if killer:
+        text += f"by {killer.name}\n"
+    text += f"press enter to return to main menu"
 
-    x = int(src.interaction.tcodConsole.width / 2 - len(t) / 2)
+    x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
     y = int(src.interaction.tcodConsole.height / 2 - 5)
-    width = len(max(t.splitlines(), key=len))
+    width = len(max(text.splitlines(), key=len))
     height = 3
 
-    src.helpers.draw_frame_text(width, height, t, x, y)
+    src.helpers.draw_frame_text(width, height, text, x, y)
 
     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
     while 1:

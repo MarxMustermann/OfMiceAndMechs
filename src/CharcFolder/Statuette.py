@@ -52,7 +52,7 @@ class Statuette(Monster):
             info["item"].destroy()
         super().changed(tag, info)
 
-    def die(self, reason=None, addCorpse=True):
-        super().die(reason, addCorpse=False)
+    def die(self, reason=None, addCorpse=True, killer=None):
+        super().die(reason, addCorpse=False, killer=killer)
 
 src.characters.add_character(Statuette)

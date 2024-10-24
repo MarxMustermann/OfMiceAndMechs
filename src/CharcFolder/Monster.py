@@ -69,13 +69,13 @@ class Monster(src.characters.Character):
         return item.walkable
 
     # bad code: specific code in generic class
-    def die(self, reason=None, addCorpse=True):
+    def die(self, reason=None, addCorpse=True, killer=None):
         """
         special handle corpse spawning
         """
 
         if not addCorpse:
-            super().die(reason, addCorpse=False)
+            super().die(reason, addCorpse=False, killer=killer)
             return
 
         if self.phase == 1:
@@ -95,12 +95,12 @@ class Monster(src.characters.Character):
                 else:
                     self.container.damage()
 
-            super().die(reason, addCorpse=False)
+            super().die(reason, addCorpse=False, killer=killer)
         else:
             new = src.items.itemMap["MoldFeed"]()
             if self.container:
                 self.container.addItem(new, self.getPosition())
-            super().die(reason, addCorpse=False)
+            super().die(reason, addCorpse=False, killer=killer)
 
     # bad code: very specific and unclear
     def enterPhase2(self):

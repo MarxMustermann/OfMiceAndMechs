@@ -45,7 +45,7 @@ class Exploder(Monster):
         """
         return src.canvas.displayChars.monster_exploder
 
-    def die(self, reason=None, addCorpse=True):
+    def die(self, reason=None, addCorpse=True, killer = None):
         """
         create an explosion on death
 
@@ -60,7 +60,7 @@ class Exploder(Monster):
             if self.explode:
                 new.startExploding()
 
-        super().die(reason=reason, addCorpse=False)
+        super().die(reason=reason, addCorpse=False, killer=killer)
 
 
 src.characters.add_character(Exploder)

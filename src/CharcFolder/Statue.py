@@ -63,10 +63,10 @@ class Statue(Monster):
             info["item"].destroy()
         super().changed(tag, info)
 
-    def die(self, reason=None, addCorpse=True):
+    def die(self, reason=None, addCorpse=True, killer=None):
         """
         die without leaving a corpse
         """
-        super().die(reason, addCorpse=False)
+        super().die(reason, addCorpse=False, killer=killer)
 
 src.characters.add_character(Statue)

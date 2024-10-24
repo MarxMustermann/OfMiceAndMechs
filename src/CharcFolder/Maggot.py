@@ -88,7 +88,7 @@ class Maggot(src.characters.Character):
         direction = random.choice(directions)
         self.runCommandString(direction+"jm")
 
-    def die(self, reason=None, addCorpse=True):
+    def die(self, reason=None, addCorpse=True, killer=None):
         """
         leave a special corpse
         """
@@ -97,7 +97,7 @@ class Maggot(src.characters.Character):
             new = src.items.itemMap["VatMaggot"]()
             self.container.addItem(new,self.getPosition())
 
-        super().die(reason=reason, addCorpse=False)
+        super().die(reason=reason, addCorpse=False, killer=killer)
 
 
 src.characters.add_character(Maggot)

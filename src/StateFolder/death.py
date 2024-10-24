@@ -64,7 +64,7 @@ def Death(extraParam):
     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
     while 1:
         for event in tcod.event.get():
-            if isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.K_RETURN:
+            if isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN:
                 raise src.interaction.EndGame("character died")
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()

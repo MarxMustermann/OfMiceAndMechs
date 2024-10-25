@@ -58,12 +58,12 @@ def Death(extraParam):
         text += f"by {killer.name}\n"
     text += f"press enter to return to main menu"
 
-    x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
-    y = int(src.interaction.tcodConsole.height / 2 - 5)
     width = len(max(text.splitlines(), key=len))
     height = 3
+    x = int(src.interaction.tcodConsole.width / 2 - width / 2)
+    y = int(src.interaction.tcodConsole.height / 2 - 5)
 
-    src.helpers.draw_frame_text(width, height, text, x, y)
+    src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
 
     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
     while 1:
@@ -71,6 +71,7 @@ def Death(extraParam):
             if isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN:
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
                 src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console,19, 6, False)
+                src.helpers.draw_frame_text(new_console, width, height, text, x, y)
                 target_console = new_console.rgb
                 total_frames = 5
                 for i in range(total_frames+1):
@@ -93,6 +94,7 @@ def Death(extraParam):
                     time.sleep(0.01)
                     for event2 in tcod.event.get():
                         pass
+                time.sleep(1.0)
                 raise src.interaction.EndGame("character died")
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()

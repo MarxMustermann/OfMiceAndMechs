@@ -12,31 +12,31 @@ def clamp(n, min, max):
 
 
 def draw_frame_text(con, width, height, t, x, y):
-    for cx in range(x - 1, x + width):
-        for cy in range(y - 1, y + height):
+    for cx in range(x - 2, x + width+1):
+        for cy in range(y - 2, y + height+1):
             con.rgb[cx, cy] = ord(" "), (0, 0, 0), (0, 0, 0)
-    for cx in range(x - 1, x + width):
-        con.rgb[cx, y - 1] = ord("-"), (255, 255, 255), (0, 0, 0)
-        con.rgb[cx, y + height] = ord("-"), (255, 255, 255), (0, 0, 0)
-    for cy in range(y - 1, y + height):
-        con.rgb[x - 1, cy] = ord("|"), (255, 255, 255), (0, 0, 0)
-        con.rgb[x + width, cy] = ord("|"), (255, 255, 255), (0, 0, 0)
+    for cx in range(x - 2, x + width+1):
+        con.rgb[cx, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
+        con.rgb[cx, y + height+1] = ord("-"), (255, 255, 255), (0, 0, 0)
+    for cy in range(y - 2, y + height+1):
+        con.rgb[x - 2, cy] = ord("|"), (255, 255, 255), (0, 0, 0)
+        con.rgb[x + width+1, cy] = ord("|"), (255, 255, 255), (0, 0, 0)
 
-    con.rgb[x - 1, y - 1] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 1, y - 2] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 2, y - 1] = ord("-"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 2, y - 2] = ord("+"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 2, y - 3] = ord("|"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 3, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
 
-    con.rgb[x + width, y - 1] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width, y - 2] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width + 1, y - 1] = ord("-"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width+1, y - 2] = ord("+"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width+1, y - 3] = ord("|"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width + 1, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
 
-    con.rgb[x - 1, y + height] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 1, y + height + 1] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 2, y + height] = ord("-"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 2, y + height + 1] = ord("+"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 2, y + height + 1] = ord("|"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 3, y + height + 1] = ord("-"), (255, 255, 255), (0, 0, 0)
 
-    con.rgb[x + width, y + height] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width, y + height + 1] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width + 1, y + height] = ord("-"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width + 1, y + height + 1] = ord("+"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width + 1, y + height + 2] = ord("|"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width + 2, y + height+1] = ord("-"), (255, 255, 255), (0, 0, 0)
 
     con.print_box(x, y, width, height, t, (255, 255, 255), (0, 0, 0), tcod.constants.BKGND_SET, tcod.constants.CENTER)
 

@@ -19,25 +19,33 @@ class Communicator(src.items.Item):
         self.bolted = True
 
     def apply(self,character):
-        if character.rank > 5:
-            character.addMessage("You need to be at least rank 5.")
-            character.changed("permission denied",{})
-            if character == src.gamestate.gamestate.mainChar:
-                src.gamestate.gamestate.stern["failedContact1"] = True
-        return
-        if character.rank > 2:
-            character.rank = 2
-            character.addMessage(f"you were promoted to base commander")
-            submenu = src.menuFolder.TextMenu.TextMenu("""
-You put your head into the machine.
+        options = []
+        options.append(("contact base leader","contact base leader"))
+        options.append(("contact main base","contact main base"))
+        submenue = src.menuFolder.SelectionMenu.SelectionMenu("what do you want to do?",options,targetParamName="type")
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {"container":self,"method":"makeContact","params":{"character":character}}
 
-Its tendrils reach out and touch your implant.
+    def makeContact(self,extraParams):
+        character = extraParams["character"]
 
-It is upgraded to rank 2.
-This means you can do special attacks now.""")
-            character.macroState["submenue"] = submenu
-            character.runCommandString("~",nativeKey=True)
-            character.hasSpecialAttacks = True
-        character.changed("got promotion",{})
+        if extraParams["type"] == "contact base leader":
+            if character.rank > 5:
+                character.addMessage("You need to be at least rank 5.")
+                character.changed("permission denied",{})
+
+                submenu = src.menuFolder.TextMenu.TextMenu("""
+Permission denied:
+
+You need to be at least rank 5 to contact the base leader.
+""")
+                character.macroState["submenue"] = submenu
+                character.runCommandString("~",nativeKey=True)
+
+                if character == src.gamestate.gamestate.mainChar:
+                    src.gamestate.gamestate.stern["failedContact1"] = True
+            return
+
+        character.addMessage("unknown action")
 
 src.items.addType(Communicator)

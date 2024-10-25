@@ -5,6 +5,7 @@ import tcod
 import tcod.constants
 
 import src
+import src.gamestate
 import src.helpers
 import src.interaction
 import src.pseudoUrwid
@@ -16,6 +17,9 @@ def in_dest(source, target, radius):
 
 
 def Death(extraParam):
+    src.interaction.advanceGame()
+    src.interaction.renderGameDisplay()
+
     reason = extraParam["reason"]
     killer = extraParam["killer"]
     # playerpos = (-99999,-9999)
@@ -65,6 +69,20 @@ def Death(extraParam):
     while 1:
         for event in tcod.event.get():
             if isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN:
+                console = src.interaction.tcodConsole.rgb.copy()
+                src.interaction.tcodConsole.clear()
+
+                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(src.interaction.tcodConsole,19, 6, False)
+                target_console = src.interaction.tcodConsole.rgb.copy()
+                src.interaction.tcodConsole.clear()
+                total_frames = 5
+                for i in range(total_frames+1):
+                    src.helpers.fade_between_consoles_rgb(console,target_console,i/total_frames)
+                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                    time.sleep(0.1)
+                    for event2 in tcod.event.get():
+                        pass
+                
                 raise src.interaction.EndGame("character died")
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()

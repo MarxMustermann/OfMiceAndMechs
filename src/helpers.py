@@ -51,3 +51,20 @@ def draw_frame_text(width, height, t, x, y):
         tcod.constants.BKGND_SET,
         tcod.constants.CENTER
     )
+
+
+
+def fade_between_consoles_rgb(current, target, t):
+    transition_array = ["?","/","."]
+    for width in range(current.shape[0]):
+        for height in range(current.shape[1]):
+            transition_state = int(t * 4)
+            match transition_state:
+                case 0:
+                        src.interaction.tcodConsole.rgb[width, height]["ch"] = current[width, height]["ch"]
+                case 4:
+                        src.interaction.tcodConsole.rgb[width, height]["ch"] = target[width, height]["ch"]
+                case _:
+                    src.interaction.tcodConsole.rgb[width, height]["ch"] = ord(transition_array[transition_state-1])
+            src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(current[width, height]["fg"], target[width, height]["fg"], t)
+            src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(current[width, height]["bg"], target[width, height]["bg"], t)

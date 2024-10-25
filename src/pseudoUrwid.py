@@ -1,3 +1,5 @@
+import numpy as np
+
 class AttrSpec:
     """
     dummy object behaving like an urwid attribute
@@ -19,8 +21,11 @@ class AttrSpec:
     @staticmethod
     def interpolate(color_a, color_b, t):
         # 't' is a value between 0.0 and 1.0
-        return tuple(int(a + (b - a) * t) for a, b in zip(color_a, color_b))
-    
+        if isinstance(color_a, np.ndarray) or isinstance(color_b, np.ndarray):
+            return tuple(int(int(a) + (int(b) - int(a)) * t) for a, b in zip(color_a, color_b))
+        else:
+            return tuple(int(a + (b - a) * t) for a, b in zip(color_a, color_b))
+
     @staticmethod
     def convertValue(value):
             if value == "a":

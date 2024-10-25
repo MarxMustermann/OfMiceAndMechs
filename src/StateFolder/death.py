@@ -51,7 +51,7 @@ def Death(extraParam):
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
                 raise SystemExit()
-        time.sleep(0.017)
+        time.sleep(0.014)
 
     text = f"{reason}\n"
     if killer:
@@ -69,20 +69,30 @@ def Death(extraParam):
     while 1:
         for event in tcod.event.get():
             if isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN:
-                console = src.interaction.tcodConsole.rgb.copy()
-                src.interaction.tcodConsole.clear()
-
-                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(src.interaction.tcodConsole,19, 6, False)
-                target_console = src.interaction.tcodConsole.rgb.copy()
-                src.interaction.tcodConsole.clear()
+                new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
+                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console,19, 6, False)
+                target_console = new_console.rgb
                 total_frames = 5
                 for i in range(total_frames+1):
-                    src.helpers.fade_between_consoles_rgb(console,target_console,i/total_frames)
+                    for width in range(src.interaction.tcodConsole.width):
+                        for height in range(src.interaction.tcodConsole.height):
+                            if target_console[width,height]["ch"] == ord(" "):
+                                src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0),i/total_frames)
+                                src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0),i/total_frames)
                     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
-                    time.sleep(0.1)
+                    time.sleep(0.04)
                     for event2 in tcod.event.get():
                         pass
-                
+                for i in range(total_frames+1):
+                    for width in range(src.interaction.tcodConsole.width):
+                        for height in range(src.interaction.tcodConsole.height):
+                            if (width,height) != playerpos:
+                                src.interaction.tcodConsole.rgb[width, height]["fg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["fg"],(0,0,0),i/total_frames)
+                                src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(src.interaction.tcodConsole.rgb[width, height]["bg"],(0,0,0),i/total_frames)
+                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                    time.sleep(0.01)
+                    for event2 in tcod.event.get():
+                        pass
                 raise src.interaction.EndGame("character died")
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()

@@ -1140,7 +1140,6 @@ class MainGame(BasicPhase):
         self.numRounds = 1
         self.startRound()
 
-        self.checkDead()
 
 
         containerQuest = src.quests.questMap["ReachOutStory"]()
@@ -3659,22 +3658,6 @@ Once you understand things try to find better solutions.
         src.gamestate.gamestate.mainChar.addMessage("reach out to implant by pressing q")
         containerQuest.endTrigger = {"container": self, "method": "openedQuests"}
 
-    def checkDead(self):
-
-        text = "epoch: {} tick: {}".format(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
-        self.wavecounterUI["text"] = "epoch: {} tick: {}".format(src.gamestate.gamestate.tick//self.epochLength+1,src.gamestate.gamestate.tick%self.epochLength)
-        self.wavecounterUI["offset"] = (82-len(text)//2,5)
-
-        if src.gamestate.gamestate.mainChar.dead:
-            src.gamestate.gamestate.uiElements = [
-                    {"type":"text","offset":(15,10), "text":"you were killed while holding against the siege"},
-                    {"type":"text","offset":(15,12), "text":"you suvived {} ticks. That means wave no {} got you".format(src.gamestate.gamestate.tick,src.gamestate.gamestate.tick//1000+1,)},
-                    ]
-        else:
-            event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 1)
-            event.setCallback({"container": self, "method": "checkDead"})
-            currentTerrain = src.gamestate.gamestate.terrainMap[7][7]
-            currentTerrain.addEvent(event)
 
     def startRound(self):
 

@@ -78,8 +78,6 @@ def advanceGame():
     for character in multi_chars:
         advanceChar(character)
 
-    if src.gamestate.gamestate.mainChar.dead:
-        showDeathScreen()
 
     if src.gamestate.gamestate.tick%(15*15*15) == 0:
         for god in src.gamestate.gamestate.gods.values():
@@ -4125,8 +4123,9 @@ def renderGameDisplay(renderChar=None):
                         )
                         canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
                         canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
-                        position_string = str(src.gamestate.gamestate.mainChar.getTerrainPosition())+" // "+str(src.gamestate.gamestate.mainChar.getBigPosition())
-                        printUrwidToTcod(position_string,(uiElement["offset"][0]+5,uiElement["offset"][1]))
+                        if not src.gamestate.gamestate.mainChar.dead:
+                            position_string = str(src.gamestate.gamestate.mainChar.getTerrainPosition())+" // "+str(src.gamestate.gamestate.mainChar.getBigPosition())
+                            printUrwidToTcod(position_string,(uiElement["offset"][0]+5,uiElement["offset"][1]))
 
                     if uiElement["type"] == "healthInfo":
                         if src.gamestate.gamestate.dragState:
@@ -5010,31 +5009,6 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                         else:
                             if not canLoad:
                                 submenu = "difficulty"
-
-def showDeathScreen():
-    text = "\n\n\n       you died.\n\n\n\n   - press enter to quit -"
-    tcod.event.get()
-
-    while 1:
-        tcodConsole.clear()
-        printUrwidToTcod(text,(0,0))
-        tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
-
-        events = tcod.event.get()
-        for event in events:
-            if isinstance(event, tcod.event.Quit):
-                src.interaction.tcodMixer.close()
-                raise SystemExit()
-            if isinstance(event, tcod.event.WindowResized):
-                checkResetWindowSize(event.width,event.height)
-            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                src.interaction.tcodMixer.close()
-                raise SystemExit()
-            if isinstance(event,tcod.event.KeyDown):
-                key = event.sym
-                if key in (tcod.event.KeySym.ESCAPE,tcod.event.KeySym.RETURN,tcod.event.KeySym.SPACE):
-                    src.interaction.tcodMixer.close()
-                    raise SystemExit()
 
 def showInterruptChoice(text,options):
     tcod.event.get()

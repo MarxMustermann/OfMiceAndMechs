@@ -32,18 +32,32 @@ Just clear the whole terrain tile for tile.
         else:
             terrain = character.container
 
-        for otherChar in terrain.characters:
-            if otherChar.faction == character.faction:
-                continue
-            return None
-        for room in terrain.rooms:
-            for otherChar in room.characters:
+        if self.outsideOnly:
+            for otherChar in terrain.characters:
                 if otherChar.faction == character.faction:
                     continue
-                return None
+                if terrain.getRoomByPosition(otherChar.getBigPosition()):
+                    continue
+                return False
+        elif self.insideOnly:
+            for room in terrain.rooms:
+                for otherChar in room.characters:
+                    if otherChar.faction == character.faction:
+                        continue
+                    return False
+        else:
+            for otherChar in terrain.characters:
+                if otherChar.faction == character.faction:
+                    continue
+                return False
+            for room in terrain.rooms:
+                for otherChar in room.characters:
+                    if otherChar.faction == character.faction:
+                        continue
+                    return False
 
-        super().triggerCompletionCheck()
-        return False
+        self.postHandler()
+        return True
 
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):

@@ -2530,12 +2530,6 @@ but they are likely to explode when disturbed.
                 quest.activate()
                 enemy.quests.append(quest)
 
-                quest = src.quests.questMap["ClearTerrain"](outsideOnly=True)
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
-
                 currentTerrain.addCharacter(enemy,snatcherNest[0]*15+random.randint(3,12),snatcherNest[1]*15+random.randint(3,12))
 
 

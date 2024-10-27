@@ -3481,16 +3481,16 @@ but they are likely to explode when disturbed.
                         continue
                     npcCount += 1
 
-        # kill snatchers
+        # kill snatchers (redundant to GetRank5Promotion)
         if snatcherCount:
-            quest = src.quests.questMap["SecureTile"](toSecure=(5,6,0),endWhenCleared=False,reason="confront the Snatchers",story="You reach out to your implant and it answers:\n\nThe base itself is safe now, but there are Snatchers out there.\nThey will try to swarm and kill everyone that goes outside.",lifetime=100)
+            quest = src.quests.questMap["ConfrontSnatchers"]()
             quest.assignToCharacter(mainChar)
             quest.activate()
             mainChar.assignQuest(quest,active=True)
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        # ensure there is a backup NPC
+        # ensure there is a backup NPC (redundant to GetRank5Promotion, but also triggers after respawn)
         if npcCount < 2:
             terrain = character.getTerrain()
             items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))

@@ -131,7 +131,7 @@ Guard the arena behind the trap room to ensure no spider slips through.
         if not character:
             return False
 
-        if self.phase == "bait" and not self.subQuests:
+        if self.phase in ("bait","wait") and not self.subQuests:
             foundEnemy = False
             for otherChar in self.character.getTerrain().charactersByTile.get(self.targetPositionBig,[]):
                 if otherChar.faction == character.faction:

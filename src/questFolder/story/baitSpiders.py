@@ -45,12 +45,23 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     phase = "run"
                     if not dryRun:
                         self.phase = phase
+                    return (None,None)
 
         if phase == "wait":
             return (None,(".","wait for the spider to attack"))
 
         if phase == "run":
-            if character.getPosition() != (6,7,0):
+            if character.getBigPosition() == self.targetPositionBig:
+                if character.getSpacePosition() in [(7,1,0),(7,0,0)]:
+                    return (None,("w","flee tile"))
+                if character.getSpacePosition() in [(7,13,0),(7,14,0)]:
+                    return (None,("s","flee tile"))
+                if character.getSpacePosition() in [(1,7,0),(0,7,0)]:
+                    return (None,("a","flee tile"))
+                if character.getSpacePosition() in [(13,7,0),(14,7,0)]:
+                    return (None,("d","flee tile"))
+
+            if character.getBigPosition() != (6,7,0):
                 quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0),reason="get to safety",description="run back to base",paranoid=True)
                 phase = "end"
                 if not dryRun:

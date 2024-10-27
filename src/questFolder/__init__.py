@@ -67,3 +67,4 @@ import src.questFolder.story.baitSpiders
 import src.questFolder.story.activateRegenerator
 import src.questFolder.story.spawnGhul
 import src.questFolder.story.contactCommand
+import src.questFolder.story.getRank5PromotionStory

@@ -758,10 +758,10 @@ class MetaQuestSequence(Quest,ABC):
     """
 
     def addQuest(self, quest, addFront=True, noActivate=False, noAssign=False):
-        if not noActivate and not quest.active and (addFront or not self.subQuests):
-            quest.activate()
         if not noAssign and not quest.character and self.character:
             quest.assignToCharacter(self.character)
+        if not noActivate and not quest.active and (addFront or not self.subQuests):
+            quest.activate()
 
         # add quest
         if addFront:

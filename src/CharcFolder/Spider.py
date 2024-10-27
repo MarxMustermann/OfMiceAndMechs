@@ -40,6 +40,7 @@ class Spider(Monster):
         self.baseDamage = 10
         self.health = 50
         self.maxHealth = 50
+        self.autoAdvance = True
 
         self.solvers = [
             "NaiveActivateQuest",
@@ -55,5 +56,16 @@ class Spider(Monster):
         force static render
         """
         return "SP"
+
+    def generateQuests(self):
+
+        quest = src.quests.questMap["SecureTile"](toSecure=self.getBigPosition(),wandering=True, endWhenCleared=False,alwaysHuntDown=True)
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+        self.quests.append(quest)
+
+        return super().generateQuests()
+
 
 src.characters.add_character(Spider)

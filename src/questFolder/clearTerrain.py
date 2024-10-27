@@ -64,49 +64,52 @@ Just clear the whole terrain tile for tile.
         if not character:
             return (None,None)
 
-        if not self.subQuests:
-            if not ignoreCommands and character.macroState.get("submenue"):
-                return (None,(["esc"],"exit submenu"))
+        if self.subQuests:
+            return (None,None)
 
-            if character.yPosition%15 == 14:
-                return (None,("w","enter tile"))
-            if character.yPosition%15 == 0:
-                return (None,("s","enter tile"))
-            if character.xPosition%15 == 14:
-                return (None,("a","enter tile"))
-            if character.xPosition%15 == 0:
-                return (None,("d","enter tile"))
+        if not ignoreCommands and character.macroState.get("submenue"):
+            return (None,(["esc"],"exit submenu"))
 
-            if isinstance(character.container,src.rooms.Room):
-                terrain = character.container.container
-            else:
-                terrain = character.container
+        if character.yPosition%15 == 14:
+            return (None,("w","enter tile"))
+        if character.yPosition%15 == 0:
+            return (None,("s","enter tile"))
+        if character.xPosition%15 == 14:
+            return (None,("a","enter tile"))
+        if character.xPosition%15 == 0:
+            return (None,("d","enter tile"))
 
-            steps = ["clearOutside","clearRooms"]
-            if random.random() < 0.3:
-                steps = ["clearRooms","clearOutside"]
+        if isinstance(character.container,src.rooms.Room):
+            terrain = character.container.container
+        else:
+            terrain = character.container
 
-            if self.outsideOnly:
-                steps = ["clearOutside"]
-            if self.insideOnly:
-                steps = ["clearRooms"]
+        steps = ["clearOutside","clearRooms"]
+        if random.random() < 0.3:
+            steps = ["clearRooms","clearOutside"]
 
-            for step in steps:
-                if step == "clearOutside":
-                    for otherChar in terrain.characters:
+        if self.outsideOnly:
+            steps = ["clearOutside"]
+        if self.insideOnly:
+            steps = ["clearRooms"]
+
+        for step in steps:
+            if step == "clearOutside":
+                for otherChar in terrain.characters:
+                    if otherChar.faction == character.faction:
+                        continue
+                    if terrain.getRoomByPosition(otherChar.getBigPosition()):
+                        continue
+                    quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                    return ([quest],None)
+            if step == "clearRooms":
+                for room in terrain.rooms:
+                    for otherChar in room.characters:
                         if otherChar.faction == character.faction:
                             continue
-                        if terrain.getRoomByPosition(otherChar.getBigPosition()):
-                            continue
-                        quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
                         return ([quest],None)
-                if step == "clearRooms":
-                    for room in terrain.rooms:
-                        for otherChar in room.characters:
-                            if otherChar.faction == character.faction:
-                                continue
-                            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True)
-                            return ([quest],None)
+
         return (None,None)
 
 src.quests.addType(ClearTerrain)

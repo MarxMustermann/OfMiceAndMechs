@@ -3041,7 +3041,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
             if not char.automated:
                 char.runCommandString("~")
         else:
-            pass
+            char.generateQuests()
 
     # handle a keystroke while on map or in cinematic
     if not charState["submenue"]:
@@ -6746,6 +6746,9 @@ def advanceChar(char,render=True):
             )
             rerender = True
             skipNextRender = False
+        elif char.autoAdvance:
+            char.runCommandString("+")
+            char.timeTaken += 1
         elif hasAutosolveQuest:
             rerender = True
             char.runCommandString("+")

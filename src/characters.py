@@ -79,6 +79,7 @@ class Character:
         self.stepsOnMines = False
         self.implantLoad = 0
         self.hasFreeWill = False
+        self.autoAdvance = False
 
         self.hasSpecialAttacks = False
 
@@ -1779,6 +1780,9 @@ press any other key to attack normally"""
 
         for item in items:
             self.inventory.remove(item)
+
+    def generateQuests(self):
+        pass
 
     # obsolete: should probably rewritten
     # bad code: should be handled in quest

@@ -68,3 +68,4 @@ import src.questFolder.story.activateRegenerator
 import src.questFolder.story.spawnGhul
 import src.questFolder.story.contactCommand
 import src.questFolder.story.getRank5PromotionStory
+import src.questFolder.story.confrontSnatchers

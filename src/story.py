@@ -3427,6 +3427,15 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # get promoted to rank 5 to unlock Communicator
+        if mainChar.rank > 5:
+            quest = src.quests.questMap["GetRank5PromotionStory"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
         # get the players environment
         terrain = mainChar.getTerrain()
 

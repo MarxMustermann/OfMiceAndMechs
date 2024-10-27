@@ -1108,9 +1108,6 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.mainChar = mainChar
         mainChar.addListener(self.mainCharacterDeath,"died")
 
-        self.wavecounterUI = {"type":"text","offset":(72,5), "text":"wavecounter"}
-        src.gamestate.gamestate.uiElements.append(self.wavecounterUI)
-
         if self.difficulty == "tutorial":
             mainChar.maxHealth *= 2
             mainChar.health *= 2
@@ -2527,7 +2524,7 @@ but they are likely to explode when disturbed.
                 enemy = src.characters.characterMap["Snatcher"]()
                 enemy.faction = "insects"
 
-                quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=300, wandering=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=300, wandering=True, endWhenCleared=False)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()
@@ -2536,6 +2533,7 @@ but they are likely to explode when disturbed.
                 quest = src.quests.questMap["ClearTerrain"](outsideOnly=True)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
+                quest.activate()
                 enemy.quests.append(quest)
 
                 currentTerrain.addCharacter(enemy,snatcherNest[0]*15+random.randint(3,12),snatcherNest[1]*15+random.randint(3,12))

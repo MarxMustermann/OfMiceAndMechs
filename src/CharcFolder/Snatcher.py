@@ -7,11 +7,11 @@ class Snatcher(Monster):
     def __init__(self,):
         super().__init__(name= "Snatcher")
 
-        self.movementSpeed = 1
+        self.movementSpeed = 0.7
         self.solvers = []
         self.specialDisplay = "sn"
-        self.baseDamage = 8
-        self.maxHealth = 15
+        self.baseDamage = 20
+        self.maxHealth = 20
         self.health = self.maxHealth
 
         self.homeTile = None

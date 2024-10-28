@@ -59,9 +59,18 @@ Comtact the bases leader to get further instrucions.
             return
 
         self.startWatching(character,self.handePermissionDenied, "permission denied")
+        self.startWatching(character,self.handleNoCommander, "no base commander")
         super().assignToCharacter(character)
 
     def handePermissionDenied(self,extraInfo):
+        if self.completed:
+            1/0
+        if not self.active:
+            return
+
+        self.postHandler()
+
+    def handleNoCommander(self,extraInfo):
         if self.completed:
             1/0
         if not self.active:

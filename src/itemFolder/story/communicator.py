@@ -52,7 +52,9 @@ no base leader found.
                 character.macroState["submenue"] = submenu
 
                 if character == src.gamestate.gamestate.mainChar:
+                    src.gamestate.gamestate.stern["failedContact1"] = True
                     src.gamestate.gamestate.stern["failedContact2"] = True
+                character.changed("no base commander",{})
             return
 
         character.addMessage("unknown action")

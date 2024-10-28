@@ -44,6 +44,15 @@ You need to be at least rank 5 to contact the base leader.
 
                 if character == src.gamestate.gamestate.mainChar:
                     src.gamestate.gamestate.stern["failedContact1"] = True
+            else:
+                character.addMessage("no base commander")
+                submenu = src.menuFolder.TextMenu.TextMenu("""
+no base leader found.
+""")
+                character.macroState["submenue"] = submenu
+
+                if character == src.gamestate.gamestate.mainChar:
+                    src.gamestate.gamestate.stern["failedContact2"] = True
             return
 
         character.addMessage("unknown action")

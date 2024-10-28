@@ -72,6 +72,14 @@ Press JH to auto heal.
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
+        if character.container.isRoom and character.container.tag == "temple":
+            return (None,("..........","wait to heal"))
+
+        for room in rooms:
+            if room.tag == "temple":
+                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                return ([quest],None)
+
         self.fail("no way to heal")
         return (None,None)
 

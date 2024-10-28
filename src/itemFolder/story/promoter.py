@@ -19,7 +19,36 @@ class Promoter(src.items.Item):
         self.bolted = True
 
     def apply(self,character):
+        if not self.faction:
+            self.faction = character.faction
+
         if character.rank > 5:
+            numCharacters = 0
+            terrain = character.getTerrain()
+            for checkChar in terrain.characters:
+                if not checkChar.faction == character.faction:
+                    continue
+                numCharacters += 1
+            for room in terrain.rooms:
+                for checkChar in room.characters:
+                    if not checkChar.faction == character.faction:
+                        continue
+                    numCharacters += 1
+
+            if numCharacters < 2:
+                character.addMessage(f"promotions locked")
+
+                submenu = src.menuFolder.TextMenu.TextMenu("""
+Promotions to rank 5 are blocked.
+
+There need to be at least 2 clones on the base to allow any promptions.
+""")
+                character.macroState["submenue"] = submenu
+                character.runCommandString("~",nativeKey=True)
+
+                character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
+                return
+
             character.rank = 5
             character.hasSpecialAttacks = True
             

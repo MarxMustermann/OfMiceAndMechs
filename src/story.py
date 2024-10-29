@@ -1894,6 +1894,7 @@ but they are likely to explode when disturbed.
     def setUpSternsBase(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "sterns base"
+        currentTerrain.alarm = True
 
         thisFactionId = self.factionCounter
         faction = f"city #{thisFactionId}"

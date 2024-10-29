@@ -28,10 +28,18 @@ class Promoter(src.items.Item):
             for checkChar in terrain.characters:
                 if not checkChar.faction == character.faction:
                     continue
+                if not checkChar.charType == "Character":
+                    continue
+                if checkChar.burnedIn:
+                    continue
                 numCharacters += 1
             for room in terrain.rooms:
                 for checkChar in room.characters:
                     if not checkChar.faction == character.faction:
+                        continue
+                    if not checkChar.charType == "Character":
+                        continue
+                    if checkChar.burnedIn:
                         continue
                     numCharacters += 1
 

@@ -21,7 +21,7 @@ The Communicator does not work with your current rank.
 The reset of your faction marker seems to also has reset your rank marker to rank 6.
 Since the base is empty this error can not be resolved.
 
-Gain rank 5 by getting promoted using the normal way.
+Gain rank 5 by getting promoted using the normal way{reasonString}.
 The base has a Promoter, use that to get promoted.
 """
 
@@ -30,11 +30,19 @@ The base has a Promoter, use that to get promoted.
     def handleGotPromotion(self, extraInfo):
         self.postHandler()
 
+    def handlePromotionBlocked(self, extraInfo):
+        for quest in self.subQuests[:]:
+            quest.postHandler()
+
+        quest = src.quests.questMap["SpawnClone"]()
+        self.addQuest(quest)
+
     def assignToCharacter(self, character):
         if self.character:
             return
 
         self.startWatching(character,self.handleGotPromotion, "got promotion")
+        self.startWatching(character,self.handlePromotionBlocked, "promotion blocked")
 
         super().assignToCharacter(character)
 

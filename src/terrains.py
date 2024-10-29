@@ -1715,13 +1715,7 @@ class Terrain:
             self.hidden = mapHidden
 
             # select color for force field 
-            try:
-                self.alarm
-            except:
-                self.alarm = False
             forceField = src.canvas.displayChars.forceField
-            if self.alarm:
-                forceField = "++"
 
             # paint floor
             chars = self.paintFloor(size=size,coordinateOffset=coordinateOffset)
@@ -1755,6 +1749,10 @@ class Terrain:
                     else:
                         room.hidden = True
 
+            alarmChar = "~~"
+            if src.gamestate.gamestate.tick%4 == 0:
+                alarmChar = "--"
+
             for bigX in range(14):
                 if bigX*15 < coordinateOffset[1]-15 or bigX*15 > coordinateOffset[1]+size[1]+15:
                     continue
@@ -1769,29 +1767,40 @@ class Terrain:
                             if x == 7 or y == 7:
                                 continue
 
+                            displayChar = forceField
+                            if self.alarm:
+                                if x%15 == 0 and y%15 == 0:
+                                    displayChar = alarmChar
+                                if x%15 == 14 and y%15 == 0:
+                                    displayChar = alarmChar
+                                if x%15 == 0 and y%15 == 14:
+                                    displayChar = alarmChar
+                                if x%15 == 14 and y%15 == 14:
+                                    displayChar = alarmChar
+
                             if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
                                     bigY*15 < coordinateOffset[0] or bigY*15 > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + 0 - coordinateOffset[0]][
                                     bigX * 15 + x - coordinateOffset[1]
-                                ] = forceField
+                                ] = displayChar
 
                             if not (bigX*15+x < coordinateOffset[1] or bigX*15+x > coordinateOffset[1]+size[1] or
                                     bigY*15+14 < coordinateOffset[0] or bigY*15+14 > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + 14 - coordinateOffset[0]][
                                     bigX * 15 + x - coordinateOffset[1]
-                                ] = forceField
+                                ] = displayChar
 
                             if not (bigX*15 < coordinateOffset[1] or bigX*15 > coordinateOffset[1]+size[1] or
                                     bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + y - coordinateOffset[0]][
                                     bigX * 15 + 0 - coordinateOffset[1]
-                                ] = forceField
+                                ] = displayChar
 
                             if not (bigX*15+14 < coordinateOffset[1] or bigX*15+14 > coordinateOffset[1]+size[1] or
                                     bigY*15+y < coordinateOffset[0] or bigY*15+y > coordinateOffset[0]+size[0]):
                                 chars[bigY * 15 + y - coordinateOffset[0]][
                                     bigX * 15 + 14 - coordinateOffset[1]
-                                ] = forceField
+                                ] = displayChar
 
             # calculate room visibility
             if not mapHidden:

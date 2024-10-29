@@ -3428,6 +3428,15 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # try to contact base leader
+        if not src.gamestate.gamestate.stern.get("failedContact2"):
+            quest = src.quests.questMap["ContactCommand"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
         # get the players environment
         terrain = mainChar.getTerrain()
 

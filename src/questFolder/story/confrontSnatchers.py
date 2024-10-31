@@ -64,6 +64,7 @@ Rest and heal and repeat until all Snatchers are dead.
         return result
 
     def triggerCompletionCheck(self,character=None):
+        print("triggerCompletionCheck")
         if not character:
             return False
         
@@ -71,6 +72,8 @@ Rest and heal and repeat until all Snatchers are dead.
         for otherChar in terrain.characters:
             if not otherChar.charType == "Snatcher":
                 continue
+            print(otherChar)
+            print(otherChar.getBigPosition())
             return False
 
         self.postHandler()

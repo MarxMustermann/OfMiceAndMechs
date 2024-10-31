@@ -72,7 +72,7 @@ def Death(extraParam):
     width = len(max(splitted, key=len))
     height = len(splitted)
     x = int(playerpos[0]- width / 2)
-    y = int(src.interaction.tcodConsole.height / 2 - 7)
+    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
 
     src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
 

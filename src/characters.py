@@ -1846,6 +1846,7 @@ press any other key to attack normally"""
             reason: the reason for dieing
             addCorpse: flag to control adding a corpse
         """
+        self.dead = True
         self.changed("died_pre", {"character": self, "reason": reason,"killer": killer, "pre": True})
         self.quests = []
 
@@ -1889,7 +1890,6 @@ press any other key to attack normally"""
 
         # set attributes
         self.addMessage("you died.")
-        self.dead = True
         if reason:
             self.deathReason = reason
             self.addMessage(f"cause of death: {reason}")

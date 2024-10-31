@@ -18,13 +18,14 @@ def in_dest(source, target, radius):
 
 
 def Death(extraParam):
-    src.interaction.advanceGame()
-    src.interaction.renderGameDisplay()
-
     character = extraParam["character"]
     reason = extraParam["reason"]
     killer = extraParam["killer"]
     pre = "pre" in extraParam
+
+    character.dead = True
+    src.interaction.advanceGame()
+    src.interaction.renderGameDisplay()
 
     # playerpos = (-99999,-9999)
     # for width in range(src.interaction.tcodConsole.width):

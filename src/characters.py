@@ -1846,7 +1846,7 @@ press any other key to attack normally"""
             reason: the reason for dieing
             addCorpse: flag to control adding a corpse
         """
-        self.changed("died_pre", {"character": self, "reason": reason})
+        self.changed("died_pre", {"character": self, "reason": reason,"killer": killer, "pre": True})
         self.quests = []
 
         self.lastRoom = self.room

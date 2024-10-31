@@ -13,6 +13,8 @@ import random
 
 import requests
 
+import src.StateFolder
+import src.StateFolder.death
 import src.canvas
 import src.chats
 import src.cinematics
@@ -1146,7 +1148,7 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.mainChar.quests.append(containerQuest)
 
         src.gamestate.gamestate.mainChar.messages = []
-
+        src.gamestate.gamestate.story = self
         src.interaction.showRunIntro()
         self.kickoff()
 
@@ -3101,94 +3103,6 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
-    def roguelike_baseLeaderDeath(self,extraParam):
-        text = ""
-
-        character = extraParam["character"]
-        faction = character.faction
-
-        homePos = (character.registers["HOMETx"],character.registers["HOMETy"],0)
-        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
-
-        candidates = homeTerrain.characters[:]
-        for room in homeTerrain.rooms:
-            candidates.extend(room.characters)
-
-        for candidate in candidates:
-            if candidate == character:
-                continue
-            if candidate.faction != character.faction:
-                continue
-            if isinstance(candidate,src.characters.characterMap["Ghoul"]):
-                continue
-            candidate.runCommandString("~",clear=True)
-            for quest in candidate.quests[:]:
-                #quest.fail("taken over NPC")
-                quest.autoSolve = False
-
-            if self.difficulty == "tutorial":
-                if candidate.maxHealth < character.maxHealth:
-                    candidate.maxHealth = character.maxHealth
-                    candidate.health = candidate.maxHealth
-                candidate.baseDamage = character.baseDamage
-                candidate.attackSpeed = character.attackSpeed
-                candidate.movementSpeed = character.movementSpeed
-                if not candidate.weapon:
-                    weapon = src.items.itemMap["Sword"]()
-                    weapon.baseDamage = 10
-                    candidate.weapon = weapon
-
-                if not candidate.armor:
-                    armor = src.items.itemMap["Armor"]()
-                    armor.armorValue = 1
-                    candidate.armor = armor
-
-            if self.difficulty == "difficult":
-                candidate.health = int(candidate.health/2)
-                candidate.maxHealth = int(candidate.maxHealth/2)
-            candidate.addListener(self.roguelike_baseLeaderDeath,"died_pre")
-
-            if character == src.gamestate.gamestate.mainChar:
-                text += f"The last bit of your life force leaves and you die.\n"
-                text += f"But something else leaves your implant as well.\n"
-                text += f"It takes over another clone from your base.\n"
-                text += f"\n- press enter to respawn -"
-                src.interaction.showInterruptText(text)
-
-                candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
-                candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
-                candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
-                candidate.personality = src.gamestate.gamestate.mainChar.personality
-                candidate.duties = src.gamestate.gamestate.mainChar.duties
-                candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
-
-                src.gamestate.gamestate.mainChar = candidate
-
-                questMenu = src.menuFolder.QuestMenu.QuestMenu(candidate)
-                questMenu.sidebared = True
-                candidate.rememberedMenu.append(questMenu)
-                messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(candidate)
-                candidate.rememberedMenu2.append(messagesMenu)
-                inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(candidate)
-                inventoryMenu.sidebared = True
-                candidate.rememberedMenu2.append(inventoryMenu)
-                combatMenu = src.menuFolder.CombatInfoMenu.CombatInfoMenu(candidate)
-                combatMenu.sidebared = True
-                candidate.rememberedMenu.insert(0,combatMenu)
-
-            for quest in candidate.quests[:]:
-                quest.fail("aborted")
-            candidate.quests = []
-            self.reachImplant()
-            self.activeStory["mainChar"] = candidate
-            candidate.rank = 6
-
-            candidate.addListener(self.enteredRoom,"entered room")
-            candidate.addListener(self.itemPickedUp,"itemPickedUp")
-            candidate.addListener(self.changedTerrain,"changedTerrain")
-            candidate.addListener(self.deliveredSpecialItem,"deliveredSpecialItem")
-            candidate.addListener(self.gotEpochReward,"got epoch reward")
-            return
 
     def createStoryStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
@@ -3220,7 +3134,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
-        mainChar.addListener(self.roguelike_baseLeaderDeath,"died_pre")
+        mainChar.addListener(src.StateFolder.death.Death,"died_pre")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain

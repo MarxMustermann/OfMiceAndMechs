@@ -9,6 +9,7 @@ import src.gamestate
 import src.helpers
 import src.interaction
 import src.pseudoUrwid
+import src.story
 import src.urwidSpecials
 
 
@@ -17,11 +18,15 @@ def in_dest(source, target, radius):
 
 
 def Death(extraParam):
+    character = extraParam["character"]
+    reason = extraParam["reason"]
+    killer = extraParam["killer"]
+    pre = "pre" in extraParam
+
+    character.dead = True
     src.interaction.advanceGame()
     src.interaction.renderGameDisplay()
 
-    reason = extraParam["reason"]
-    killer = extraParam["killer"]
     # playerpos = (-99999,-9999)
     # for width in range(src.interaction.tcodConsole.width):
     #     for height in range(src.interaction.tcodConsole.height):
@@ -56,12 +61,19 @@ def Death(extraParam):
     text = f"{reason}\n"
     if killer:
         text += f"by {killer.name}\n"
-    text += f"press enter to return to main menu"
 
-    width = len(max(text.splitlines(), key=len))
-    height = 3
+    if not pre:
+        text += "press enter to return to main menu"
+    else:
+        text += "The last bit of your life force leaves and you die.\n"
+        text += "But something else leaves your implant as well.\n"
+        text += "It takes over another clone from your base.\n"
+        text += "\n- press enter to respawn -"
+    splitted = text.splitlines()
+    width = len(max(splitted, key=len))
+    height = len(splitted)
     x = int(playerpos[0]- width / 2)
-    y = int(src.interaction.tcodConsole.height / 2 - 7)
+    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
 
     src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
 
@@ -95,7 +107,64 @@ def Death(extraParam):
                     for event2 in tcod.event.get():
                         pass
                 time.sleep(1.0)
-                raise src.interaction.EndGame("character died")
+                if not pre:
+                    raise src.interaction.EndGame("character died")
+                else:
+                    homePos = (character.registers["HOMETx"],character.registers["HOMETy"],0)
+                    homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+
+                    candidates = homeTerrain.characters[:]
+                    for room in homeTerrain.rooms:
+                        candidates.extend(room.characters)
+
+                    for candidate in candidates:
+                        if candidate == character:
+                            continue
+                        if candidate.faction != character.faction:
+                            continue
+                        if isinstance(candidate,src.characters.characterMap["Ghoul"]):
+                            continue
+                        candidate.runCommandString("~",clear=True)
+                        for quest in candidate.quests[:]:
+                            quest.autoSolve = False
+
+                        if src.gamestate.gamestate.difficulty == "difficult":
+                            candidate.health = int(candidate.health/2)
+                            candidate.maxHealth = int(candidate.maxHealth/2)
+                        candidate.addListener(src.StateFolder.death.Death,"died_pre")
+                        candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
+                        candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
+                        candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
+                        candidate.personality = src.gamestate.gamestate.mainChar.personality
+                        candidate.duties = src.gamestate.gamestate.mainChar.duties
+                        candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
+
+                        src.gamestate.gamestate.mainChar = candidate
+
+                        questMenu = src.menuFolder.QuestMenu.QuestMenu(candidate)
+                        questMenu.sidebared = True
+                        candidate.rememberedMenu.append(questMenu)
+                        messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(candidate)
+                        candidate.rememberedMenu2.append(messagesMenu)
+                        inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(candidate)
+                        inventoryMenu.sidebared = True
+                        candidate.rememberedMenu2.append(inventoryMenu)
+                        combatMenu = src.menuFolder.CombatInfoMenu.CombatInfoMenu(candidate)
+                        combatMenu.sidebared = True
+                        candidate.rememberedMenu.insert(0,combatMenu)
+                        for quest in candidate.quests[:]:
+                            quest.fail("aborted")
+                        candidate.quests = []
+                        src.gamestate.gamestate.story.reachImplant()
+                        src.gamestate.gamestate.story.activeStory["mainChar"] = candidate
+                        candidate.rank = 6
+
+                        candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
+                        candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")
+                        candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
+                        candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
+                        candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
+                        return
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":

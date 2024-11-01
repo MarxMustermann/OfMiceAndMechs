@@ -21,7 +21,28 @@ def Death(extraParam):
     character = extraParam["character"]
     reason = extraParam["reason"]
     killer = extraParam["killer"]
-    pre = "pre" in extraParam
+    pre = False
+    chosen_candidate = None
+    if "pre" in extraParam:
+        homePos = (character.registers["HOMETx"],character.registers["HOMETy"],0)
+        homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+
+        candidates = homeTerrain.characters[:]
+        for room in homeTerrain.rooms:
+            candidates.extend(room.characters)
+
+        for candidate in candidates:
+            if candidate == character:
+                continue
+            if candidate.faction != character.faction:
+                continue
+            if isinstance(candidate,src.characters.characterMap["Ghoul"]):
+                continue
+            candidate.runCommandString("~",clear=True)
+            for quest in candidate.quests[:]:
+                quest.autoSolve = False
+            chosen_candidate = candidate
+            pre = True
 
     character.dead = True
     src.interaction.advanceGame()
@@ -110,61 +131,43 @@ def Death(extraParam):
                 if not pre:
                     raise src.interaction.EndGame("character died")
                 else:
-                    homePos = (character.registers["HOMETx"],character.registers["HOMETy"],0)
-                    homeTerrain = src.gamestate.gamestate.terrainMap[homePos[1]][homePos[0]]
+                    if src.gamestate.gamestate.difficulty == "difficult":
+                        chosen_candidate.health = int(chosen_candidate.health/2)
+                        chosen_candidate.maxHealth = int(chosen_candidate.maxHealth/2)
+                    chosen_candidate.addListener(src.StateFolder.death.Death,"died_pre")
+                    chosen_candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
+                    chosen_candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
+                    chosen_candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
+                    chosen_candidate.personality = src.gamestate.gamestate.mainChar.personality
+                    chosen_candidate.duties = src.gamestate.gamestate.mainChar.duties
+                    chosen_candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
 
-                    candidates = homeTerrain.characters[:]
-                    for room in homeTerrain.rooms:
-                        candidates.extend(room.characters)
+                    src.gamestate.gamestate.mainChar = chosen_candidate
 
-                    for candidate in candidates:
-                        if candidate == character:
-                            continue
-                        if candidate.faction != character.faction:
-                            continue
-                        if isinstance(candidate,src.characters.characterMap["Ghoul"]):
-                            continue
-                        candidate.runCommandString("~",clear=True)
-                        for quest in candidate.quests[:]:
-                            quest.autoSolve = False
+                    questMenu = src.menuFolder.QuestMenu.QuestMenu(chosen_candidate)
+                    questMenu.sidebared = True
+                    chosen_candidate.rememberedMenu.append(questMenu)
+                    messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(chosen_candidate)
+                    chosen_candidate.rememberedMenu2.append(messagesMenu)
+                    inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(chosen_candidate)
+                    inventoryMenu.sidebared = True
+                    chosen_candidate.rememberedMenu2.append(inventoryMenu)
+                    combatMenu = src.menuFolder.CombatInfoMenu.CombatInfoMenu(chosen_candidate)
+                    combatMenu.sidebared = True
+                    chosen_candidate.rememberedMenu.insert(0,combatMenu)
+                    for quest in chosen_candidate.quests[:]:
+                        quest.fail("aborted")
+                    chosen_candidate.quests = []
+                    src.gamestate.gamestate.story.reachImplant()
+                    src.gamestate.gamestate.story.activeStory["mainChar"] = chosen_candidate
+                    chosen_candidate.rank = 6
 
-                        if src.gamestate.gamestate.difficulty == "difficult":
-                            candidate.health = int(candidate.health/2)
-                            candidate.maxHealth = int(candidate.maxHealth/2)
-                        candidate.addListener(src.StateFolder.death.Death,"died_pre")
-                        candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
-                        candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
-                        candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus
-                        candidate.personality = src.gamestate.gamestate.mainChar.personality
-                        candidate.duties = src.gamestate.gamestate.mainChar.duties
-                        candidate.dutyPriorities = src.gamestate.gamestate.mainChar.dutyPriorities
-
-                        src.gamestate.gamestate.mainChar = candidate
-
-                        questMenu = src.menuFolder.QuestMenu.QuestMenu(candidate)
-                        questMenu.sidebared = True
-                        candidate.rememberedMenu.append(questMenu)
-                        messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(candidate)
-                        candidate.rememberedMenu2.append(messagesMenu)
-                        inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(candidate)
-                        inventoryMenu.sidebared = True
-                        candidate.rememberedMenu2.append(inventoryMenu)
-                        combatMenu = src.menuFolder.CombatInfoMenu.CombatInfoMenu(candidate)
-                        combatMenu.sidebared = True
-                        candidate.rememberedMenu.insert(0,combatMenu)
-                        for quest in candidate.quests[:]:
-                            quest.fail("aborted")
-                        candidate.quests = []
-                        src.gamestate.gamestate.story.reachImplant()
-                        src.gamestate.gamestate.story.activeStory["mainChar"] = candidate
-                        candidate.rank = 6
-
-                        candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
-                        candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")
-                        candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
-                        candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
-                        candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
-                        return
+                    chosen_candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
+                    chosen_candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")
+                    chosen_candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
+                    chosen_candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
+                    chosen_candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
+                    return
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
             if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":

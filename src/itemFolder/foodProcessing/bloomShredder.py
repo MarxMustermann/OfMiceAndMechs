@@ -47,6 +47,43 @@ Activate the bloom shredder to produce biomass.
         character.addMessage("you unbolt the ScrapCompactor")
         character.changed("unboltedItem",{"character":character,"item":self})
 
+    def render(self):
+        if self.readyToUse():
+            return "%>"
+        else:
+            return self.display
+
+    def readyToUse(self):
+        if not self.xPosition:
+            return False
+
+        items = []
+        for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):
+            if isinstance(item, src.items.itemMap["Bloom"]):
+                items.append(item)
+
+        # refuse to produce without resources
+        if len(items) < 1:
+            return False
+
+        targetFull = False
+        if (self.xPosition + 1, self.yPosition, self.zPosition) in self.container.itemByCoordinates:
+            if (
+                len(self.container.itemByCoordinates[(self.xPosition + 1, self.yPosition, self.zPosition)])
+                > 15
+            ):
+                targetFull = True
+            for item in self.container.itemByCoordinates[
+                (self.xPosition + 1, self.yPosition, self.zPosition)
+            ]:
+                if item.walkable is False:
+                    targetFull = True
+
+        if targetFull:
+            return False
+
+        return True
+
     def apply(self, character):
         """
         handle a character trying to use this item to convert a bloom into a bio mass
@@ -54,6 +91,8 @@ Activate the bloom shredder to produce biomass.
         Parameters:
             character: the character using the item
         """
+
+        character.changed("operated machine",{"character":character,"machine":self})
 
         items = []
         for item in self.container.getItemByPosition((self.xPosition - 1, self.yPosition, self.zPosition)):

@@ -1794,6 +1794,10 @@ press any other key to attack normally"""
             solver: a custom solver to use
         """
 
+        # add exponentially increasing penality to prevent AI loops from locking up the game
+        self.timeTaken += 0.01*(self.implantLoad**2)
+        self.implantLoad += 1
+
         if self.disableCommandsOnPlus:
 
             hasComand = False

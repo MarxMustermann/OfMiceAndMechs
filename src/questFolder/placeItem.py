@@ -14,6 +14,9 @@ class PlaceItem(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
         self.boltDown = boltDown
         self.reason = reason
+    
+    def handleQuestFailure(self,extraInfo):
+        self.fail()
 
     def generateTextDescription(self):
         reason = ""

@@ -1897,6 +1897,7 @@ but they are likely to explode when disturbed.
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "sterns base"
         currentTerrain.alarm = True
+        currentTerrain.maxMana = 50
 
         thisFactionId = self.factionCounter
         faction = f"city #{thisFactionId}"
@@ -1956,9 +1957,9 @@ but they are likely to explode when disturbed.
                 if (x,y) == (11,6):
                     continue
                 mainRoom.addStorageSlot((x,y,0),None,{})
-                if y == 11:
-                    scrap = src.items.itemMap["Scrap"](amount=20)
-                    mainRoom.addItem(scrap,(x,y,0))
+                #if y == 11:
+                #    scrap = src.items.itemMap["Scrap"](amount=20)
+                #    mainRoom.addItem(scrap,(x,y,0))
                 if y == 9 and x in (8,9,10,):
                     flask = src.items.itemMap["GooFlask"]()
                     flask.uses = 100
@@ -2094,11 +2095,14 @@ but they are likely to explode when disturbed.
         factionChanger.faction = faction
         spawnRoom.addItem(factionChanger,(5,3,0))
 
-        for y in range(1,10):
-            spawnRoom.walkingSpace.add((6,y,0))
+        for y in range(1,12):
+            spawnRoom.walkingSpace.add((1,y,0))
+            if y not in (10,):
+                spawnRoom.walkingSpace.add((6,y,0))
+            spawnRoom.walkingSpace.add((11,y,0))
         for x in range(1,12):
-            for y in (9,4,):
-                if x == 6:
+            for y in (11,9,4,1):
+                if x in (1,6,11,):
                     continue
                 spawnRoom.walkingSpace.add((x,y,0))
 
@@ -2118,6 +2122,16 @@ but they are likely to explode when disturbed.
         spawnRoom.addItem(flask,(2,3,0))
 
         spawnRoom.addStorageSlot((10,8,0),"Flask",{"desiredState":"filled"})
+
+        spawnRoom.addInputSlot((2,10,0),"Bloom")
+        item = src.items.itemMap["BloomShredder"]()
+        spawnRoom.addItem(item,(3,10,0))
+        item = src.items.itemMap["BioPress"]()
+        spawnRoom.addItem(item,(5,10,0))
+        item = src.items.itemMap["GooProducer"]()
+        spawnRoom.addItem(item,(7,10,0))
+        item = src.items.itemMap["GooDispenser"]()
+        spawnRoom.addItem(item,(8,10,0))
 
         ####
         # create temple
@@ -2229,7 +2243,7 @@ but they are likely to explode when disturbed.
         if self.difficulty == "difficult":
             sword.baseDamage = 10
         sword.bolted = False
-        trapRoom1.addItem(sword,(11,1,0))
+        trapRoom1.addItem(sword,(11,3,0))
         armor = src.items.itemMap["Armor"]()
         armor.armorValue = 3
         if self.difficulty == "easy":
@@ -2237,7 +2251,13 @@ but they are likely to explode when disturbed.
         if self.difficulty == "difficult":
             armor.armorValue = 1
         armor.bolted = False
-        trapRoom1.addItem(armor,(11,2,0))
+        trapRoom1.addItem(armor,(11,4,0))
+
+        for x in range(4,12):
+            for i in range(10):
+                bloom = src.items.itemMap["Bloom"]()
+                bloom.dead = True
+                trapRoom1.addItem(bloom,(x,1,0))
 
         coalBurner = src.items.itemMap["CoalBurner"]()
         coalBurner.bolted = True
@@ -2446,11 +2466,6 @@ but they are likely to explode when disturbed.
         # place initial fighting spots
         for fightingSpot in fightingSpots:
 
-            # add reward
-            vial = src.items.itemMap["Vial"]()
-            vial.uses = 5
-            currentTerrain.addItem(vial,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
-        
             # add enemy
             enemy = src.characters.characterMap["Spiderling"]()
             enemy.faction = "insects"
@@ -2461,6 +2476,29 @@ but they are likely to explode when disturbed.
             enemy.quests.append(quest)
             currentTerrain.addCharacter(enemy,fightingSpot[0]*15+random.randint(3,12),fightingSpot[1]*15+random.randint(3,12))
 
+            # spawn corpses
+            if fightingSpot in [(6,8,0),]:
+                corpse = src.items.itemMap["Corpse"]()
+                currentTerrain.addItem(corpse,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+
+                vial = src.items.itemMap["Vial"]()
+                vial.uses = 5
+                currentTerrain.addItem(vial,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+            else:
+                if random.random() < 0.8:
+                    choice = random.random()
+                    if choice < 0.3:
+                        corpse = src.items.itemMap["Corpse"]()
+                        currentTerrain.addItem(corpse,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+                    elif choice < 0.7:
+                        vial = src.items.itemMap["Vial"]()
+                        vial.uses = 5
+                        currentTerrain.addItem(vial,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+                    else:
+                        flask = src.items.itemMap["GooFlask"]()
+                        flask.uses = 100
+                        currentTerrain.addItem(flask,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+        
         # spawn wall spots
         for wallTile in wallTiles:
 

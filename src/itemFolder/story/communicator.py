@@ -56,6 +56,33 @@ no base leader found.
                     src.gamestate.gamestate.stern["failedContact2"] = True
                 character.changed("no base commander",{})
             return
+        if extraParams["type"] == "contact main base":
+            if character.rank > 2:
+                character.addMessage("You need to be at least rank 2.")
+                character.changed("permission denied",{})
+
+                submenu = src.menuFolder.TextMenu.TextMenu("""
+Permission denied:
+
+You need to be at least rank 2 to contact main base.
+""")
+                character.macroState["submenue"] = submenu
+                character.runCommandString("~",nativeKey=True)
+
+                if character == src.gamestate.gamestate.mainChar:
+                    src.gamestate.gamestate.stern["failedContact3"] = True
+            else:
+                character.addMessage("no main base")
+                submenu = src.menuFolder.TextMenu.TextMenu("""
+no main base found.
+""")
+                character.macroState["submenue"] = submenu
+
+                if character == src.gamestate.gamestate.mainChar:
+                    src.gamestate.gamestate.stern["failedContact3"] = True
+                    src.gamestate.gamestate.stern["failedContact4"] = True
+                character.changed("no base commander",{})
+            return
 
         character.addMessage("unknown action")
 

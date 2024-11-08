@@ -18,6 +18,7 @@ class RodTower(src.items.Item):
         self.charges = 0
         self.coolDown = 10
         self.lastUsed = 0
+        self.weapon = None
 
     def apply(self, character=None):
         try:
@@ -44,8 +45,12 @@ class RodTower(src.items.Item):
         for neighbour in neighbours:
             self.container.addAnimation(neighbour,"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#fff", "black"), "%%")]})
             targets = self.container.getCharactersOnPosition(neighbour)
+            baseDamage = 2
+            if self.weapon:
+                baseDamage = self.weapon.baseDamage
+
             for target in targets:
-                target.hurt(20,reason="hit by rod")
+                target.hurt(baseDamage*2,reason="hit by RodTower")
 
     def remoteActivate(self,extraParams=None):
         self.apply()
@@ -58,6 +63,10 @@ class RodTower(src.items.Item):
 
     def render(self):
         try:
+            self.weapon
+        except:
+            self.weapon = None
+        try:
             self.lastUsed
         except:
             self.lastUsed = 0
@@ -69,7 +78,25 @@ class RodTower(src.items.Item):
         if self.isInCoolDown():
             return (src.interaction.urwid.AttrSpec("#444", "#000"), "RT")
         else:
-            return (src.interaction.urwid.AttrSpec("#fff", "#000"), "RT")
+            color = "#777"
+            if self.weapon:
+                color = "#888"
+                if self.weapon.baseDamage >= 13:
+                    color = "#999"
+                if self.weapon.baseDamage >= 17:
+                    color = "#aaa"
+                if self.weapon.baseDamage >= 18:
+                    color = "#bbb"
+                if self.weapon.baseDamage >= 19:
+                    color = "#ccc"
+                if self.weapon.baseDamage >= 21:
+                    color = "#ddd"
+                if self.weapon.baseDamage >= 23:
+                    color = "#eee"
+                if self.weapon.baseDamage >= 25:
+                    color = "#fff"
+
+            return (src.interaction.urwid.AttrSpec(color, "#000"), "RT")
 
     def getConfigurationOptions(self, character):
         """
@@ -84,7 +111,52 @@ class RodTower(src.items.Item):
             options["b"] = ("unbolt", self.unboltAction)
         else:
             options["b"] = ("bolt down", self.boltAction)
+        options["w"] = ("replace weapon", self.replaceWeapon)
         return options
+
+    def replaceWeapon(self,character):
+        try:
+            self.weapon
+        except:
+            self.weapon = None
+
+        bestSword = None
+        for item in character.inventory:
+            if not item.type == "Sword":
+                continue
+            if bestSword == None:
+                bestSword = item
+                continue
+
+            if item.baseDamage <= bestSword.baseDamage:
+                continue
+
+            bestSword = item
+
+        if self.weapon:
+            character.inventory.append(self.weapon)
+
+        if bestSword:
+            self.weapon = bestSword
+            character.inventory.remove(self.weapon)
+        else:
+            self.weapon = None
+
+    def getLongInfo(self):
+        try:
+            self.weapon
+        except:
+            self.weapon = None
+
+        if self.weapon:
+            result = f"""
+weapon: {self.weapon.baseDamage}
+"""
+        else:
+            result = f"""
+weapon: None
+"""
+        return result
 
     def boltAction(self,character):
         self.bolted = True

@@ -42,7 +42,7 @@ class WeaponRack(src.items.Item):
         if not items:
             character.addMessage("you have no swords with you")
             return
-        if len(items) >= 25:
+        if len(self.swords) >= 25:
             character.addMessage("weapon rack full")
             return
         self.swords.extend(items)

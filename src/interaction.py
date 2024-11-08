@@ -4205,6 +4205,10 @@ def renderGameDisplay(renderChar=None):
                     if uiElement["type"] == "text":
                         printUrwidToTcod(uiElement["text"],uiElement["offset"])
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
+                    if uiElement["type"] == "time":
+                        text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)}"
+                        printUrwidToTcod(text,uiElement["offset"])
+                        printUrwidToDummy(pseudoDisplay,text,uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
                         chars = []
                         counter = 0

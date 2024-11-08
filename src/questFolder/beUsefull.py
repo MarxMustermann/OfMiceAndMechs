@@ -235,6 +235,8 @@ Press d to move the cursor and show the subquests description.
 
         resultList = []
         for key in reversed(sorted(prioSortedRooms.keys())):
+            if key == currentRoom.priority:
+                resultList.append(currentRoom)
             resultList.extend(prioSortedRooms[key])
 
         return resultList

@@ -516,9 +516,6 @@ class Item:
             result["level"] = self.level
         if hasattr(self, "coolDown"):
             result["coolDown"] = self.coolDown
-            result["coolDownRemaining"] = self.coolDown - (
-                src.gamestate.gamestate.tick - self.coolDownTimer
-            )
         if hasattr(self, "amount"):
             result["amount"] = self.amount
         if hasattr(self, "walkable"):

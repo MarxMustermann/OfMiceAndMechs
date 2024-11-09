@@ -80,7 +80,7 @@ or use this item with MoldFeed in your inventory.
         else:
             self.container.removeItem(moldFeed)
         character.addMessage("you burn the corpse and inhale the smoke")
-        character.heal(30,reason="inhaling the smoke")
+        character.heal(5,reason="inhaling the smoke")
         character.timeTaken += 30
 
         character.container.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "#fff"), "++")]})

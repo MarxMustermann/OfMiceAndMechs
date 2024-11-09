@@ -23,7 +23,14 @@ class ViewNPCsMenu(SubMenu):
         self.persistentText = ["press t to take over clone\n\n"]
         self.persistentText = ["press r to reset clone quests\n\n"]
 
-        characters = self.personnelArtwork.getPersonnelList()
+        terrain = character.getTerrain()
+        characters = terrain.characters[:]
+        for room in terrain.rooms:
+            characters.extend(room.characters)
+        for otherChar in characters[:]:
+            if otherChar.faction == character.faction:
+                continue
+            characters.remove(otherChar)
 
         if not characters:
             src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "no personnel found"))

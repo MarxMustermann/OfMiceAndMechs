@@ -43,6 +43,13 @@ class ManufacturingTable(src.items.Item):
     auto generate stockpiles
     """
     def drawStockpiles(self,character):
+        if not self.toProduce:
+            self.container.clearMarkings(self.getPosition(offset=(-1,0,0)))
+            self.container.addOutputSlot(self.getPosition(offset=(-1,0,0)),None)
+            self.container.clearMarkings(self.getPosition(offset=( 1,0,0)))
+            self.container.addOutputSlot(self.getPosition(offset=( 1,0,0)),None)
+            return
+
         # paint each output
         for out in self.outs:
             # calculate position to add the output to

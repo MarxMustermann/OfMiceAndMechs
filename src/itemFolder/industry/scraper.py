@@ -33,8 +33,6 @@ Place an item to the west and activate the scrapper to shred an item.
             character: the character trying to use the item
         """
 
-        super().apply(character)
-
         # fetch input scrap
         itemFound = None
         for item in self.container.getItemByPosition((self.xPosition-1,self.yPosition,self.zPosition)):
@@ -83,5 +81,6 @@ Place an item to the west and activate the scrapper to shred an item.
         # spawn scrap
         new = src.items.itemMap["Scrap"](amount=1)
         self.container.addItem(new,(self.xPosition + 1,self.yPosition,self.zPosition))
+        character.addMessage("the scraper destroys an item")
 
 src.items.addType(Scraper)

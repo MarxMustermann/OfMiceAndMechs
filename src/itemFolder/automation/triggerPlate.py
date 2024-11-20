@@ -54,8 +54,6 @@ class TriggerPlate(src.items.Item):
             character: the character trying to use the item
         """
 
-        print(self.faction)
-        print(character.faction)
         if checkFaction and self.faction == character.faction:
             return
 
@@ -79,12 +77,12 @@ class TriggerPlate(src.items.Item):
 
             items = self.container.getItemByPosition(target)
             if not items:
-                return
+                continue
 
             try:
                 items[0].remoteActivate
             except:
-                return
+                continue
             items[0].remoteActivate(extraParams={"pos":self.getPosition()})
 
     def getConfigurationOptions(self, character):
@@ -96,7 +94,6 @@ class TriggerPlate(src.items.Item):
         """
 
         self.faction = character.faction
-        print(self.faction)
 
         options = super().getConfigurationOptions(character)
         if self.bolted:

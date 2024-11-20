@@ -911,7 +911,10 @@ class Room:
 
             for entry in self.buildSites:
                 pos = entry[0]
-                display = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
+                if entry[1] == "TriggerPlate":
+                    display = (src.interaction.urwid.AttrSpec("#292", "black"), "::")
+                else:
+                    display = (src.interaction.urwid.AttrSpec("#0f0", "black"), "::")
                 #chars[pos[1]][pos[0]] = src.interaction.ActionMeta(payload={"container":self,"method":"handleFloorClick","params": {"pos": pos}},content=display)
                 chars[pos[1]][pos[0]] = display
 
@@ -1497,8 +1500,8 @@ class Room:
                     if buildSite[1] == "TriggerPlate":
                         targets = buildSite[2].get("targets","[]")
                         item.targets = []
-                        print(targets)
                         if targets != "[]":
+                            print(targets)
                             targets = targets[2:-2]
                             print(targets)
                             for target in targets.split("), ("):

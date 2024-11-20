@@ -72,6 +72,8 @@ This should be used in cases where you can not place the Painter on the position
             return "xw"
         if self.paintMode == "buildSite":
             return "xb"
+        if self.paintMode == "trap":
+            return "xt"
         if self.paintMode == "delete":
             return "xd"
         return "x?"
@@ -192,6 +194,8 @@ This should be used in cases where you can not place the Painter on the position
             mode = "buildSite"
         if mode == "d":
             mode = "delete"
+        if mode == "t":
+            mode = "trap"
         self.paintMode = mode
 
         character.addMessage(f"you set the mode to {self.paintMode}")
@@ -276,6 +280,73 @@ This should be used in cases where you can not place the Painter on the position
                             room.floorPlan["buildSites"].remove(buildSite)
                             break
                 character.changed("drew marking",{})
+            if self.paintMode == "trap":
+                center = character.getPosition(offset=self.offset)
+
+                neighbours = [
+                              (center[0]-1,center[1]  ,center[2]),
+                              (center[0]+1,center[1]  ,center[2]),
+                              (center[0]  ,center[1]+1,center[2]),
+                              (center[0]  ,center[1]-1,center[2]),
+                             ]
+
+                targets = []
+                for neighbourPos in neighbours:
+                    if neighbourPos in room.walkingSpace:
+                        continue
+
+                    items = room.getItemByPosition(neighbourPos)
+                    if items:
+                        for item in items:
+                            if item.type == "RodTower":
+                                targets.append(neighbourPos)
+                        continue
+
+                    hasInput = False
+                    for inputSlot in room.inputSlots:
+                        if inputSlot[0] == neighbourPos:
+                            hasInput = True
+                    if hasInput:
+                        continue
+
+                    hasOutput = False
+                    for outputSlot in room.outputSlots:
+                        if outputSlot[0] == neighbourPos:
+                            hasOutput = True
+                    if hasOutput:
+                        continue
+
+                    hasStorage = False
+                    for storageSlot in room.storageSlots:
+                        if storageSlot[0] == neighbourPos:
+                            hasStorage = True
+                    if hasStorage:
+                        continue
+
+                    hasBuildsite = False
+                    for buildSite in room.buildSites:
+                        if buildSite[0] == neighbourPos:
+                            hasBuildsite = True
+
+                            if buildSite[1] == "RodTower":
+                                targets.append(neighbourPos)
+                            if buildSite[1] == "TriggerPlate":
+                                if not "targets" in buildSite[2]:
+                                    continue
+
+                                if not str(center) in buildSite[2]["targets"]:
+                                    continue
+
+                                buildSite[2]["targets"] = buildSite[2]["targets"].replace("]",", ]").replace(str(center)+", ","").replace(", ]","]")
+
+                    if hasBuildsite:
+                        continue
+
+                    room.addBuildSite(neighbourPos,"RodTower", {})
+                    targets.append(neighbourPos)
+
+                room.addBuildSite(center,"TriggerPlate",{"floor":"walkingSpace","targets":str(targets)})
+
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)
         character.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})

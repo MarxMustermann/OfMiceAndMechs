@@ -12,3 +12,4 @@ import src.itemFolder.functional.shrine
 import src.itemFolder.functional.stasisTank
 import src.itemFolder.functional.suicideBooth
 import src.itemFolder.functional.throne
+import src.itemFolder.functional.voider

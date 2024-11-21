@@ -111,6 +111,8 @@ class MachinePlacing(src.quests.MetaQuestSequence):
         terrain = character.getTerrain()
         produceQuest = None
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
+            if room.alarm:
+                continue
             if (not room.floorPlan) and room.buildSites:
                 checkedMaterial = set()
                 for buildSite in random.sample(room.buildSites,len(room.buildSites)):

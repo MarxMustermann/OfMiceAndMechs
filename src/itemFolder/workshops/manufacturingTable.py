@@ -411,5 +411,4 @@ numUsed: {self.numUsed}
         else:
             return "Mt"
 
-
 src.items.addType(ManufacturingTable)

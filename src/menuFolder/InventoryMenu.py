@@ -100,6 +100,13 @@ class InventoryMenu(SubMenu):
                 self.char.drop(self.char.inventory[self.cursor])
                 self.char.timeTaken += self.char.movementSpeed
 
+            # equip as tool
+            if key == "t":
+                item = self.char.inventory[self.cursor]
+                self.char.tool = item
+                self.char.addMessage(f"you equiped {item.type} as tool")
+                self.char.inventory.remove(item)
+
             # do drop
             if key == "L":
                 self.subMenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu("Drop where?\n\n w - north\n s - south\n a - left\n d - right")

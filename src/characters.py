@@ -200,6 +200,7 @@ class Character:
         self.numAttackedWithoutResponse = 0
 
         self.weapon = None
+        self.tool = None
         self.armor = None
         self.flask = None
         self.combatMode = None

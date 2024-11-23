@@ -233,9 +233,11 @@ This should be used in cases where you can not place the Painter on the position
             for storageSlot in room.storageSlots[:]:
                 if storageSlot[0] == pos:
                     room.storageSlots.remove(storageSlot)
+            deletedBuildSite = None
             for buildSite in room.buildSites[:]:
                 if buildSite[0] == pos:
                     room.buildSites.remove(buildSite)
+                    deletedBuildSite = buildSite
 
             if self.paintMode == "delete":
                 character.changed("deleted marking",{})
@@ -290,63 +292,73 @@ This should be used in cases where you can not place the Painter on the position
                               (center[0]  ,center[1]-1,center[2]),
                              ]
 
-                targets = []
-                for neighbourPos in neighbours:
-                    if neighbourPos in room.walkingSpace:
-                        continue
+                if deletedBuildSite and deletedBuildSite[1] == "TriggerPlate": # override existing drawings
+                    room.addBuildSite(center,"RodTower")
+                    for neighbourPos in neighbours:
+                        for buildSite in room.buildSites:
+                            if buildSite[0] == neighbourPos:
+                                if buildSite[1] == "TriggerPlate":
+                                    if buildSite[2].get("targets","[]") == "[]":
+                                        buildSite[2]["targets"] = "["+str(center)+"]"
+                                    else:
+                                        buildSite[2]["targets"] = buildSite[2]["targets"].replace("]",", "+str(center)+"]")
+                else: # draw new markers
+                    targets = []
+                    for neighbourPos in neighbours:
+                        if neighbourPos in room.walkingSpace:
+                            continue
 
-                    items = room.getItemByPosition(neighbourPos)
-                    if items:
-                        for item in items:
-                            if item.type == "RodTower":
-                                targets.append(neighbourPos)
-                        continue
+                        items = room.getItemByPosition(neighbourPos)
+                        if items:
+                            for item in items:
+                                if item.type == "RodTower":
+                                    targets.append(neighbourPos)
+                            continue
 
-                    hasInput = False
-                    for inputSlot in room.inputSlots:
-                        if inputSlot[0] == neighbourPos:
-                            hasInput = True
-                    if hasInput:
-                        continue
+                        hasInput = False
+                        for inputSlot in room.inputSlots:
+                            if inputSlot[0] == neighbourPos:
+                                hasInput = True
+                        if hasInput:
+                            continue
 
-                    hasOutput = False
-                    for outputSlot in room.outputSlots:
-                        if outputSlot[0] == neighbourPos:
-                            hasOutput = True
-                    if hasOutput:
-                        continue
+                        hasOutput = False
+                        for outputSlot in room.outputSlots:
+                            if outputSlot[0] == neighbourPos:
+                                hasOutput = True
+                        if hasOutput:
+                            continue
 
-                    hasStorage = False
-                    for storageSlot in room.storageSlots:
-                        if storageSlot[0] == neighbourPos:
-                            hasStorage = True
-                    if hasStorage:
-                        continue
+                        hasStorage = False
+                        for storageSlot in room.storageSlots:
+                            if storageSlot[0] == neighbourPos:
+                                hasStorage = True
+                        if hasStorage:
+                            continue
 
-                    hasBuildsite = False
-                    for buildSite in room.buildSites:
-                        if buildSite[0] == neighbourPos:
-                            hasBuildsite = True
+                        hasBuildsite = False
+                        for buildSite in room.buildSites:
+                            if buildSite[0] == neighbourPos:
+                                hasBuildsite = True
 
-                            if buildSite[1] == "RodTower":
-                                targets.append(neighbourPos)
-                            if buildSite[1] == "TriggerPlate":
-                                if not "targets" in buildSite[2]:
-                                    continue
+                                if buildSite[1] == "RodTower":
+                                    targets.append(neighbourPos)
+                                if buildSite[1] == "TriggerPlate":
+                                    if not "targets" in buildSite[2]:
+                                        continue
 
-                                if not str(center) in buildSite[2]["targets"]:
-                                    continue
+                                    if not str(center) in buildSite[2]["targets"]:
+                                        continue
 
-                                buildSite[2]["targets"] = buildSite[2]["targets"].replace("]",", ]").replace(str(center)+", ","").replace(", ]","]")
+                                    buildSite[2]["targets"] = buildSite[2]["targets"].replace("]",", ]").replace(str(center)+", ","").replace(", ]","]")
 
-                    if hasBuildsite:
-                        continue
+                        if hasBuildsite:
+                            continue
 
-                    room.addBuildSite(neighbourPos,"RodTower", {})
-                    targets.append(neighbourPos)
+                        room.addBuildSite(neighbourPos,"RodTower", {})
+                        targets.append(neighbourPos)
 
-                room.addBuildSite(center,"TriggerPlate",{"floor":"walkingSpace","targets":str(targets)})
-
+                    room.addBuildSite(center,"TriggerPlate",{"floor":"walkingSpace","targets":str(targets)})
 
         self.paintExtraInfo = copy.copy(self.paintExtraInfo)
         character.container.addAnimation(self.getPosition(),"showchar",1,{"char":"::"})

@@ -34,6 +34,8 @@ def Death(extraParam):
         for candidate in candidates:
             if candidate == character:
                 continue
+            if candidate.burnedIn:
+                continue
             if candidate.faction != character.faction:
                 continue
             if isinstance(candidate,src.characters.characterMap["Ghoul"]):
@@ -43,6 +45,7 @@ def Death(extraParam):
                 quest.autoSolve = False
             chosen_candidate = candidate
             pre = True
+            break
 
     character.dead = True
     src.interaction.advanceGame()

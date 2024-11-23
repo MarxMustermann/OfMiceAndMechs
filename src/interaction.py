@@ -2509,6 +2509,29 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     char.selectSpecialAttack(enemy)
                     return None
 
+            if char.tool:
+                char.tool.apply(char)
+                if key in ("W",):
+                    charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                    return None
+                if key in ("S",):
+                    charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                    return None
+                if key in ("D",):
+                    charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                    return None
+                if key in ("A",):
+                    charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
+                    if charState["itemMarkedLast"]:
+                        handleCollision(char,charState)
+                    return None
+
             if key in ("W",):
                 charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:

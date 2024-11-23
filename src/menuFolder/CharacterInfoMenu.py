@@ -77,6 +77,8 @@ class CharacterInfoMenu(SubMenu):
         text += f"disableCommandsOnPlus: %s\n" % char.disableCommandsOnPlus
         text += f"autoExpandQuests: %s\n" % char.autoExpandQuests
         text += f"autoExpandQuests2: %s\n" % char.autoExpandQuests2
+        text += f"burnedIn: %s\n" % char.burnedIn
+        text += f"tool: %s\n" % char.tool
 
         return text
 

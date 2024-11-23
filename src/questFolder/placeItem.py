@@ -16,6 +16,19 @@ class PlaceItem(src.quests.MetaQuestSequence):
         self.reason = reason
     
     def handleQuestFailure(self,extraInfo):
+        if extraInfo["reason"] == "no path found":
+            room = None
+            if self.targetPositionBig:
+                rooms = self.character.getTerrain().getRoomByPosition(self.targetPositionBig)
+                if rooms:
+                    room = rooms[0]
+            else:
+                if self.character.container.isRoom:
+                    room = self.character.container
+            if room:
+                for buildSite in room.buildSites[:]:
+                    if buildSite[0] == self.targetPosition:
+                        room.buildSites.remove(buildSite)
         self.fail()
 
     def generateTextDescription(self):

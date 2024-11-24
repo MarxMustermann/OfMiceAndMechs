@@ -24,7 +24,7 @@ def spawnWaves():
                 if god["lastHeartPos"] == checkGod["lastHeartPos"]:
                     numGlassHeartsOnPos += 1
 
-            multipliers = (1.2,1.1,1.5,1.1)
+            multipliers = (1.1,1.2,1.5,1.1)
             baseHealth = 50
             baseDamage = 5
             if src.gamestate.gamestate.difficulty == "easy":

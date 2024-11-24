@@ -1333,7 +1333,7 @@ press any other key to attack normally"""
             isinstance(target, src.CharcFolder.Monster.Monster) and target.hasTimingBonus()
         ):
             baseDamage = int(baseDamage * 1.25)
-            reason+= " with timing bonus"
+            #reason+= " with timing bonus"
             bonus+= "with timing bonus"
 
         damage = baseDamage

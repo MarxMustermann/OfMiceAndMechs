@@ -33,7 +33,7 @@ class SecureBase(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["Fight"](description="kill the last enemy")
                 return ([quest],None)
             return (None,None)
-        quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance")
+        quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="be able to enter the base")
         return ([quest],None)
 
     def generateTextDescription(self):

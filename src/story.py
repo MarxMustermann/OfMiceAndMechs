@@ -2218,6 +2218,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
+        trapRoom1.tag = "arena"
 
         sword = src.items.itemMap["Sword"]()
         sword.baseDamage = 15
@@ -2347,6 +2348,7 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
+        trapRoom2.tag = "traproom"
 
         # add walking space in the center
         trapRoom2.addWalkingSpace((6,6,0))

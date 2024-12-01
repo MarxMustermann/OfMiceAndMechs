@@ -123,6 +123,16 @@ Try luring enemies into landmines or detonating some bombs."""
                     quest = src.quests.questMap["Fight"]()
                     return ([quest],None)
             if character.getBigPosition() == self.targetPosition:
+                pos = character.getSpacePosition()
+                if pos == (0,7,0):
+                    return (None, ("d","enter tile"))
+                if pos == (14,7,0):
+                    return (None, ("a","enter tile"))
+                if pos == (7,0,0):
+                    return (None, ("s","enter tile"))
+                if pos == (7,14,0):
+                    return (None, ("w","enter tile"))
+
                 enemies = character.getNearbyEnemies()
                 if not enemies and not self.endWhenCleared:
                     if self.wandering and random.random() < 0.2:

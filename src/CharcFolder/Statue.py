@@ -49,9 +49,9 @@ class Statue(Monster):
         )
         self.charType = "Statue"
         self.specialDisplay = (src.characters.urwid.AttrSpec(src.characters.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"@@")
-        self.baseDamage = int(5+multiplier)
+        self.baseDamage = int(10+multiplier)
         self.baseDamage = int(self.baseDamage*(1-runModifier))
-        self.maxHealth = int((20+10)*multiplier)
+        self.maxHealth = int(60*multiplier)
         self.maxHealth = int(self.maxHealth*(1+runModifier))
         self.health = self.maxHealth
         self.godMode = True

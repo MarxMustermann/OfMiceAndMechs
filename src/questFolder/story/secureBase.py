@@ -57,9 +57,9 @@ To make things easier this quest splits into subquests.
 
 """]
         if not self.subQuests:
-            text.append("press + to generate a sub quest") 
+            text.append("press r to generate a sub quest") 
         else:
-            text.append("press d to view sub quest")
+            text.append("press d to view sub quest.\npress esc to close menu")
         return text
 
     def assignToCharacter(self, character):

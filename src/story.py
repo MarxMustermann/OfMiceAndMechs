@@ -1069,12 +1069,12 @@ class MainGame(BasicPhase):
             gods = [1,2,3,4,5,6,7]
             random.shuffle(gods)
             self.setUpGlassHeartDungeon(dungeonPositions[0],gods[0],1*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[1],gods[1],1.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[2],gods[2],2*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[3],gods[3],2.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[4],gods[4],3*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],3.5*difficultyModifier)
-            self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],4*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[1],gods[1],2*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[2],gods[2],3*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[3],gods[3],4*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[4],gods[4],5*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[5],gods[5],6*difficultyModifier)
+            self.setUpGlassHeartDungeon(dungeonPositions[6],gods[6],7*difficultyModifier)
         else:
             self.setUpGlassHeartDungeon(dungeonPositions[0],1,1*difficultyModifier)
             self.setUpGlassHeartDungeon(dungeonPositions[1],2,1.5*difficultyModifier)

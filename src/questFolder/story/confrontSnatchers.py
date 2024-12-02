@@ -31,7 +31,22 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
 
         enemies = character.getNearbyEnemies()
         if not enemies:
-            return (None,("...........","wait for Snatchers"))
+        
+            terrain = character.getTerrain()
+            foundSnatcher = False
+            for otherChar in terrain.characters:
+                if not otherChar.charType == "Snatcher":
+                    continue
+                foundSnatcher = True
+                break
+
+            if foundSnatcher:
+                return (None,("...........","wait for Snatchers"))
+
+            if not dryRun:
+                self.postHandler()
+
+            return (None,None)
 
         characterPosition = character.getPosition()
         for enemy in enemies:

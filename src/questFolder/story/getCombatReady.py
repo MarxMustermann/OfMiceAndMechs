@@ -59,6 +59,9 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                         continue
                     validCoalBurners.append(item)
 
+                if len(validCoalBurners) == 0:
+                    return (None,None)
+
                 for item in validCoalBurners:
                     if character.getDistance(item.getPosition()) > 1:
                         continue

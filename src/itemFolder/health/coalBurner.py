@@ -24,6 +24,7 @@ class CoalBurner(src.items.Item):
         self.bolted = False
         self.charges = 0
         self.consumption_amount = 5
+
     def getLongInfo(self):
         """
         return a longer than normal description text
@@ -66,6 +67,11 @@ or use this item with MoldFeed in your inventory.
         Parameters:
             character: the character trying to use this item
         """
+        try:
+            self.consumption_amount
+        except:
+            self.consumption_amount = 5
+
         moldFeed = self.getMoldFeed(character)
         if len(moldFeed) == 0:
             character.addMessage("you need to have a MoldFeed in your inventory or nearby")

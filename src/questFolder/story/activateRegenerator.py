@@ -70,11 +70,11 @@ You reach out to your implant and it answers:
 
 The base has some clones now and there are many enemies to be slain.
 There will be fights and somebody will get hurt
-Time will heal wounds, but there is a faster way.
+Time will heal wounds, but that can be sped up.
 
 The base has a Regenerator. It is located in the temple.
-It will heal all creatures nearby.
-Activate it so you and the other clones heal faster,
+It will heal all nearby creatures faster.
+Activate it so you and the other clones heal while waiting in the temple.
 """]
         return text
 

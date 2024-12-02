@@ -2097,7 +2097,10 @@ class Terrain:
         for quest in quests:
             for marker in quest.getQuestMarkersTile(src.gamestate.gamestate.mainChar):
                 pos = marker[0]
-                display = chars[pos[1]][pos[0]]
+                try:
+                    display = chars[pos[1]][pos[0]]
+                except:
+                    continue
 
                 if isinstance(display,int):
                     display = src.canvas.displayChars.indexedMapping[display]

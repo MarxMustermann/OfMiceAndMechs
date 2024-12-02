@@ -45,22 +45,25 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
 
             if not dryRun:
                 self.postHandler()
-
             return (None,None)
 
         characterPosition = character.getPosition()
         for enemy in enemies:
             enemyPosition = enemy.getPosition()
-            if enemyPosition == (characterPosition[0]-1,characterPosition[1],characterPosition[2]):
-                return (None,("a","attack Snatcher"))
-            if enemyPosition == (characterPosition[0]+1,characterPosition[1],characterPosition[2]):
-                return (None,("d","attack Snatcher"))
-            if enemyPosition == (characterPosition[0],characterPosition[1]-1,characterPosition[2]):
-                return (None,("w","attack Snatcher"))
-            if enemyPosition == (characterPosition[0],characterPosition[1]+1,characterPosition[2]):
-                return (None,("s","attack Snatcher"))
             if enemyPosition == characterPosition:
-                return (None,("m","attack Snatcher"))
+                return (None,("m","attack Snatcher (bellow you)"))
+            
+            direction = None
+            if enemyPosition == (characterPosition[0]-1,characterPosition[1],characterPosition[2]):
+                direction = "a"
+            if enemyPosition == (characterPosition[0]+1,characterPosition[1],characterPosition[2]):
+                direction = "d"
+            if enemyPosition == (characterPosition[0],characterPosition[1]-1,characterPosition[2]):
+                direction = "w"
+            if enemyPosition == (characterPosition[0],characterPosition[1]+1,characterPosition[2]):
+                direction = "s"
+            if direction:
+                return (None,(direction,"attack Snatcher"))
 
         return (None,(".","let Snatchers approach"))
 

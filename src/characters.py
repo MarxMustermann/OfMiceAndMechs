@@ -1267,8 +1267,9 @@ press any other key to attack normally"""
                     while target in cachedList:
                         cachedList.remove(target)
             else:
-                self.container.removeCharacter(target)
-            logger.error("killed ghost")
+                if target != src.gamestate.gamestate.mainChar:
+                    self.container.removeCharacter(target)
+                    logger.error("killed ghost")
             return
 
         target.changed("attacked",{})

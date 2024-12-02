@@ -58,6 +58,7 @@ def Death(extraParam):
     #             if width > playerpos[0] and height > playerpos[1]:
     #                 playerpos = (width, height)
     playerpos = (82,28)
+    src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]]["ch"] = ord("@")
     p = {}
     max_dist = -99999
     for width in range(src.interaction.tcodConsole.width):

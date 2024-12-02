@@ -17,6 +17,9 @@ class GetCombatReady(src.quests.MetaQuestSequence):
 
         if not character:
             return (None,None)
+        
+        if not isinstance(character.container,src.rooms.Room):
+            return (None,None)
 
         if character.macroState["submenue"]:
             return (None,(("esc"),"close the menu"))
@@ -55,6 +58,9 @@ class GetCombatReady(src.quests.MetaQuestSequence):
                     if not item.getMoldFeed(character):
                         continue
                     validCoalBurners.append(item)
+
+                if len(validCoalBurners) == 0:
+                    return (None,None)
 
                 for item in validCoalBurners:
                     if character.getDistance(item.getPosition()) > 1:
@@ -107,6 +113,9 @@ Get yourself a Sword and a piece of Armor.
 
     def triggerCompletionCheck(self,character=None):
         if not character:
+            return False
+        
+        if not isinstance(character.container,src.rooms.Room):
             return False
 
         if not character.weapon and character.container.getItemsByType("Sword"):

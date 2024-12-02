@@ -1,3 +1,5 @@
+import math
+
 import src
 
 
@@ -21,7 +23,7 @@ class CoalBurner(src.items.Item):
         self.walkable = False
         self.bolted = False
         self.charges = 0
-
+        self.consumption_amount = 5
     def getLongInfo(self):
         """
         return a longer than normal description text
@@ -42,24 +44,18 @@ or use this item with MoldFeed in your inventory.
         return text
 
     def getMoldFeed(self,character):
-        moldFeed = None
+        moldFeed = []
 
         for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:
             items = self.container.getItemByPosition(self.getPosition(offset))
             for item in items:
                 if item.type == "MoldFeed":
-                    moldFeed = item
-                if moldFeed:
-                    break
-            if moldFeed:
-                break
+                    moldFeed.append(item)
 
         if not moldFeed:
             for item in character.inventory:
-                if item.type != "MoldFeed":
-                    continue
-                moldFeed = item
-                break
+                if item.type == "MoldFeed":
+                    moldFeed.append(item)
 
         return moldFeed
 
@@ -71,16 +67,18 @@ or use this item with MoldFeed in your inventory.
             character: the character trying to use this item
         """
         moldFeed = self.getMoldFeed(character)
-        if not moldFeed:
+        if len(moldFeed) == 0:
             character.addMessage("you need to have a MoldFeed in your inventory or nearby")
             return
-
-        if moldFeed in character.inventory:
-            character.inventory.remove(moldFeed)
-        else:
-            self.container.removeItem(moldFeed)
-        character.addMessage("you burn the corpse and inhale the smoke")
-        character.heal(5,reason="inhaling the smoke")
+        amount_to_burn = min(len(moldFeed), self.consumption_amount, math.ceil((character.maxHealth - character.health) / 5))
+        for i in range(amount_to_burn):
+            current_moldFeed = moldFeed[i]
+            if current_moldFeed in character.inventory:
+                character.inventory.remove(current_moldFeed)
+            else:
+                self.container.removeItem(current_moldFeed)
+        character.addMessage("you burn the corpses and inhale the smoke")
+        character.heal(5 * amount_to_burn,reason="inhaling the smoke of " + str(amount_to_burn) + " corpse")
         character.timeTaken += 30
 
         character.container.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "#fff"), "++")]})

@@ -53,7 +53,7 @@ class SettingMenu(SubMenu):
                 case "set sound volume":
                     text += setting + ":"
                     text += " " + src.interaction.settings["sound"] * "║"
-                    text += (32 -rc.interaction.settings["sound"]) * "|"
+                    text += (32 - src.interaction.settings["sound"]) * "|"
                 case "toggle fullscreen":
                     text += setting + ":    "
                     text += "On" if src.interaction.settings["fullscreen"] else "Off"

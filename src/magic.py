@@ -30,17 +30,17 @@ def spawnWaves():
                 if god["lastHeartPos"] == checkGod["lastHeartPos"]:
                     numGlassHeartsOnPos += 1
 
-            multipliers = (1.1,1.2,1.5,1.1)
+            multipliers = (1.1,1.2,1.1,1.2)
             baseHealth = 50
             baseDamage = 5
             if src.gamestate.gamestate.difficulty == "easy":
                 baseHealth = 10
                 baseDamage = 3
-                multipliers = (1.02,1.01,1.05,1.01)
+                multipliers = (1.01,1.02,1.01,1.02)
             elif src.gamestate.gamestate.difficulty == "difficulty":
                 baseHealth = 100
                 baseDamage = 10
-                multipliers = (1.7,1.5,2,1.5)
+                multipliers = (1.3,1.5,1.3,1.5)
 
             for _i in range(numSpectres):
                 enemy = src.characters.characterMap["Monster"](6,6)

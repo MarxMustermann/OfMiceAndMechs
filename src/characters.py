@@ -253,6 +253,7 @@ class Character:
 
         self.dutyPriorities = {}
 
+        self.buffs = {src.Buff.buffMap["DamageBuff"]: []}
     def getRandomProtisedDuties(self):
         priotisedDuties = {}
         for duty in self.duties:
@@ -1360,6 +1361,8 @@ press any other key to attack normally"""
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
+        for dbuff in self.buffs[src.Buff.buffMap["DamageBuff"]]:
+            damage, bonus = dbuff.Apply(attacker=self,attacked= target, damage = damage, bonus = bonus)
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(
             f"you attack the enemy for {damage} damage {bonus}, the enemy has {target.health}/{target.maxHealth} health left"
@@ -2386,6 +2389,11 @@ press any other key to attack normally"""
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
         """
+        for key in self.buffs:
+            for b in self.buffs[key]:
+                b.advance()
+                if b.is_done():
+                    self.buffs[key].remove(b)
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):

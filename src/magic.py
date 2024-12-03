@@ -6,6 +6,12 @@ def spawnRoom(terrain,roomType):
 
     pass
 
+def spawnForest(terrain,coordinate):
+    terrain.forests.append(coordinate)
+    
+    tree = src.items.itemMap["Tree"]()
+    terrain.addItem(tree,(15*coordinate[0]+7,15*coordinate[1]+7,0))
+
 def spawnWaves():
     for (godId,god) in src.gamestate.gamestate.gods.items():
         if ( (god["lastHeartPos"][0] != god["home"][0]) or

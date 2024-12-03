@@ -2396,6 +2396,7 @@ but they are likely to explode when disturbed.
         fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
         wallTiles = [(4,3,0),(2,3,0),(2,2,0),(5,2,0),(6,3,0),(8,1,0),(10,3,0),(11,4,0),(12,4,0),(11,8,0),(11,11,0),(12,11,0),(11,12,0),(10,13,0),(9,12,0),(7,12,0),]
         snatcherNests = [(4,12,0),(8,3,0),]
+        forestPositions = [(6,6,0)]
 
         ###############################################
         ###
@@ -2459,6 +2460,8 @@ but they are likely to explode when disturbed.
                 if (x,y,0) in moldTiles:
                     continue
                 if (x,y,0) in fightingSpots:
+                    continue
+                if (x,y,0) in forestPositions:
                     continue
                 for i in range(1,random.randint(1,4)):
                     wall = src.items.itemMap["Wall"]()
@@ -2575,6 +2578,9 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy,snatcherNest[0]*15+random.randint(3,12),snatcherNest[1]*15+random.randint(3,12))
 
+        # add forests
+        for forestPosition in forestPositions:
+            src.magic.spawnForest(currentTerrain,forestPosition)
 
         """
         # scatter cocoons

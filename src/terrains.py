@@ -524,7 +524,6 @@ class Terrain:
                         char.runCommandString("aa")
                         char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
-                char.addMessage("a force field pushes you")
                 char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
 
             if char.xPosition % 15 == 14:
@@ -557,7 +556,6 @@ class Terrain:
                         char.runCommandString("dd")
                         char.container.addAnimation(char.getPosition(offset=(2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
-                char.addMessage("a force field pushes you")
                 char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
@@ -592,7 +590,6 @@ class Terrain:
                         char.runCommandString("ww")
                         char.container.addAnimation(char.getPosition(offset=(0,-2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
-                char.addMessage("a force field pushes you")
                 char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
@@ -625,7 +622,6 @@ class Terrain:
                         char.runCommandString("ss")
                         char.container.addAnimation(char.getPosition(offset=(0,2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
-                char.addMessage("a force field pushes you")
                 char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")

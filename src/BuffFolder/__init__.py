@@ -1,1 +1,2 @@
 import src.BuffFolder.AddDamageOverTicks
+import src.BuffFolder.Berserk

@@ -5,6 +5,7 @@ import logging
 import random
 
 import config
+import src.Buff
 import src.canvas
 import src.chats
 import src.gamestate
@@ -253,7 +254,7 @@ class Character:
 
         self.dutyPriorities = {}
 
-        self.buffs = {src.Buff.buffMap["DamageBuff"]: []}
+        self.buffs = []
     def getRandomProtisedDuties(self):
         priotisedDuties = {}
         for duty in self.duties:
@@ -1361,8 +1362,10 @@ press any other key to attack normally"""
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
-        for dbuff in self.buffs[src.Buff.buffMap["DamageBuff"]]:
-            damage, bonus = dbuff.Apply(attacker=self,attacked= target, damage = damage, bonus = bonus)
+        for dbuff in self.buffs:
+            if issubclass(type(dbuff), src.Buff.buffMap["DamageBuff"]):
+                damage, bonus = dbuff.ModDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
+                bonus+= " "
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(
             f"you attack the enemy for {damage} damage {bonus}, the enemy has {target.health}/{target.maxHealth} health left"
@@ -1404,6 +1407,8 @@ press any other key to attack normally"""
 
         self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
+        if target.dead:
+            self.buffs.append(src.Buff.buffMap["Berserk"]())
     def heal(self, amount, reason=None):
         """
         heal the character
@@ -2389,11 +2394,10 @@ press any other key to attack normally"""
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
         """
-        for key in self.buffs:
-            for b in self.buffs[key]:
-                b.advance()
-                if b.is_done():
-                    self.buffs[key].remove(b)
+        for b in self.buffs:
+            b.advance()
+            if b.is_done():
+                self.buffs.remove(b)
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):
@@ -2618,7 +2622,13 @@ press any other key to attack normally"""
         """
 
         self.frustration -= amount
-
+    @property
+    def adjustedMovementSpeed(self):
+        speed = self.movementSpeed
+        for b in self.buffs:
+            if issubclass(type(b), src.Buff.buffMap["MovementBuff"]):
+                speed = b.ModMovement(speed)
+        return speed
 
 characterMap = {
     "Character": Character,

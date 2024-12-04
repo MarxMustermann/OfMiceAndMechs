@@ -3,10 +3,13 @@ import src
 
 class StrengthPotion(src.items.itemMap["BuffPotion"]):
     type = "StrengthPotion"
+
+    @property
+    def BuffToAdd(self):
+        return src.Buff.buffMap["AddDamageOverTicks"]()
+
     def __init__(self):
         self.name = "Strength Potion"
 
-    def addBuff(self, character):
-        character.buffs[src.Buff.buffMap["DamageBuff"]].append(src.Buff.buffMap["AddDamageOverTicks"]())
 
 src.items.addType(StrengthPotion)

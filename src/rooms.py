@@ -1725,13 +1725,13 @@ class Room:
                 return None
 
             if not dash or character.exhaustion >= 10:
-                character.timeTaken += character.movementSpeed
+                character.timeTaken += character.adjustedMovementSpeed
                 if not dash:
                     if character.exhaustion > 0:
                         character.exhaustion -= min(1,character.exhaustion)
                         character.timeTaken += 1
             else:
-                character.timeTaken += character.movementSpeed/2
+                character.timeTaken += character.adjustedMovementSpeed/2
                 character.exhaustion += 5
             return self.moveCharacter(character, tuple(newPosition))
 
@@ -1778,9 +1778,9 @@ class Room:
             if character.exhaustion:
                 character.exhaustion -= 1
                 multiplier = 1.2
-            character.timeTaken += character.movementSpeed*multiplier
+            character.timeTaken += character.adjustedMovementSpeed*multiplier
         else:
-            character.timeTaken += character.movementSpeed/2
+            character.timeTaken += character.adjustedMovementSpeed/2
             character.exhaustion += 5
         self.terrain.addCharacter(character, newXPos, newYPos)
         return None

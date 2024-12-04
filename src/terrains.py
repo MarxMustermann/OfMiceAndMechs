@@ -449,7 +449,7 @@ class Terrain:
             if char.exhaustion:
                 char.exhaustion -= 1
                 multiplier = 1.2
-            char.timeTaken += char.movementSpeed*multiplier
+            char.timeTaken += char.adjustedMovementSpeed*multiplier
 
             # teleport the character into the room
             room.addCharacter(char, localisedEntry[0], localisedEntry[1])
@@ -919,9 +919,9 @@ class Terrain:
                     if char.exhaustion:
                         char.exhaustion -= 1
                         multiplier = 1.2
-                    char.timeTaken += char.movementSpeed*multiplier
+                    char.timeTaken += char.adjustedMovementSpeed*multiplier
                 else:
-                    char.timeTaken += char.movementSpeed/2
+                    char.timeTaken += char.adjustedMovementSpeed/2
                     char.exhaustion += 5
                 for item in stepOnActiveItems:
                     item.doStepOnAction(char)

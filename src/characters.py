@@ -2622,7 +2622,13 @@ press any other key to attack normally"""
         """
 
         self.frustration -= amount
-
+    @property
+    def adjustedMovementSpeed(self):
+        speed = self.movementSpeed
+        for b in self.buffs:
+            if issubclass(type(b), src.Buff.buffMap["MovementBuff"]):
+                speed = b.ModMovement(speed)
+        return speed
 
 characterMap = {
     "Character": Character,

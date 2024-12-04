@@ -4,7 +4,7 @@ import src
 class Berserk(src.Buff.buffMap["DamageBuff"],src.Buff.buffMap["MovementBuff"]):
     type = "Berserk"
 
-    def __init__(self, DamageBonus=5, ticks=10):
+    def __init__(self, DamageBonus=2, ticks=10):
         self.DamageBonus = DamageBonus
         super().__init__(ticks)
 
@@ -16,5 +16,5 @@ class Berserk(src.Buff.buffMap["DamageBuff"],src.Buff.buffMap["MovementBuff"]):
         return (damage, bonus)
 
     def ModMovement(self, speed):
-        return speed + 2
+        return speed * 0.9
 src.Buff.addType(Berserk)

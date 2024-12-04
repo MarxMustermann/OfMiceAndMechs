@@ -15,13 +15,17 @@ class Buff:
 
 class DamageBuff(Buff, ABC):
     @abstractmethod
-    def Apply(self, attacker, attacked, bonus, damage): ...
+    def ModDamage(self, attacker, attacked, bonus, damage): ...
 
 
 class ProtectionBuff(Buff, ABC):
     @abstractmethod
-    def Apply(self, attacker, attacked, bonus, damage): ...
+    def ModProtection(self, attacker, attacked, bonus, damage): ...
 
+
+class MovementBuff(Buff, ABC):
+    @abstractmethod
+    def ModMovement(self, speed): ...
 
 def addType(toRegister):
     buffMap[toRegister.type] = toRegister
@@ -29,4 +33,4 @@ def addType(toRegister):
 
 # mapping from strings to all items
 # should be extendable
-buffMap = {"Buff": Buff, "DamageBuff": DamageBuff, "ProtectionBuff": ProtectionBuff}
+buffMap = {"Buff": Buff, "DamageBuff": DamageBuff, "ProtectionBuff": ProtectionBuff, "MovementBuff": MovementBuff}

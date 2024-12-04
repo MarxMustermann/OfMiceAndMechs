@@ -5,11 +5,12 @@ import src
 
 class BuffPotion(src.items.Item, ABC):
     type = "BuffPotion"
+
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.gooflask_empty)
 
     def apply(self, character):
-        self.addBuff(character)
+        character.buffs.append(self.BuffToAdd)
         character.changed()
         character.inventory.remove(self)
         character.inventory.append(src.items.itemMap["Flask"]())
@@ -17,7 +18,9 @@ class BuffPotion(src.items.Item, ABC):
     def render(self):
         return src.canvas.displayChars.vial_full
 
+    @property
     @abstractmethod
-    def addBuff(self, character): ...
+    def BuffToAdd(self): ...
+
 
 src.items.addType(BuffPotion)

@@ -8,7 +8,7 @@ class AddDamageOverTicks(src.Buff.buffMap["DamageBuff"]):
         self.DamageBonus = DamageBonus
         super().__init__(ticks)
 
-    def Apply(self, attacker, attacked, bonus, damage):
+    def ModDamage(self, attacker, attacked, bonus, damage):
         damage += self.DamageBonus
         return (damage, bonus + "with added strength")
 

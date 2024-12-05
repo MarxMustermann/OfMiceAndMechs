@@ -1,4 +1,6 @@
 import src
+import src.gamestate
+import src.interaction
 
 
 class MetalWorkingBench(src.items.Item):
@@ -134,29 +136,29 @@ class MetalWorkingBench(src.items.Item):
             timeModifier = 4
         params["productionTime"] = 100*timeModifier
         params["doneProductionTime"] = 0
+        params["hitCounter"] = character.numAttackedWithoutResponse
         self.produceItem_wait(params)
-        character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
 
-    def produceItem_wait(self,params):
+    def produceItem_wait(self, params):
         character = params["character"]
-        ticksLeft = params["productionTime"]-params["doneProductionTime"]
-
-        progressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
-        if ticksLeft > 10:
-            character.timeTaken += 10
-            params["doneProductionTime"] += 10
-            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
-            submenue.tag = "metalWorkingProductWait"
-            character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
-        else:
-            character.timeTaken += ticksLeft
-            params["doneProductionTime"] += ticksLeft
-            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
-            submenue.tag = "metalWorkingProductWait"
-            character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
-
+        if params["hitCounter"] != character.numAttackedWithoutResponse:
+            character.addMessage("You got hit while working")
+            return
+        ticksLeft = params["productionTime"] - params["doneProductionTime"]
+        character.timeTaken += 1
+        params["doneProductionTime"] += 1
+        progressbar = "X" * (params["doneProductionTime"] // 10) + "." * (ticksLeft // 10)
+        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar, targetParamName="abortKey")
+        submenue.tag = "metalWorkingProductWait"
+        character.macroState["submenue"] = submenue
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "produceItem_done" if ticksLeft <= 0 else "produceItem_wait",
+            "params": params,
+        }
+        character.runCommandString(".", nativeKey=True)
+        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
+            src.interaction.skipNextRender = True
     def produceItem_done(self,params):
         character = params["character"]
         character.addMessage("You produce a wall")

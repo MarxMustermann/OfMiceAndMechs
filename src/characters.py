@@ -5,6 +5,7 @@ import logging
 import random
 
 import config
+import src.Buff
 import src.canvas
 import src.chats
 import src.gamestate
@@ -253,6 +254,7 @@ class Character:
 
         self.dutyPriorities = {}
 
+        self.buffs = []
     def getRandomProtisedDuties(self):
         priotisedDuties = {}
         for duty in self.duties:
@@ -325,8 +327,8 @@ class Character:
         """
         gives the charachter an extra health boost, but reduces the characters max health
         """
-        if self.maxHealth > 10:
-            self.maxHealth -= 10
+        if self.adjustedMaxHealth > 10:
+            self.adjustedMaxHealth -= 10
             self.heal(50)
 
     def addGrievance(self,grievance):
@@ -1044,11 +1046,11 @@ class Character:
 
             staggerThreshold = self.health // 4 + 1
 
-            self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.maxHealth,"mainChar":self==src.gamestate.gamestate.mainChar,"health":self.health})
+            self.container.addAnimation(self.getPosition(),"hurt",damage,{"maxHealth":self.adjustedMaxHealth,"mainChar":self==src.gamestate.gamestate.mainChar,"health":self.health})
 
             self.health -= damage
             self.frustration += 10 * damage
-            message = "you took " + str(damage) + f" damage. You have {self.health}/{self.maxHealth} health left"
+            message = "you took " + str(damage) + f" damage. You have {self.health}/{self.adjustedMaxHealth} health left"
             if reason:
                 message += f"\ncause you got {reason}"
             self.addMessage(message)
@@ -1360,6 +1362,10 @@ press any other key to attack normally"""
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
+        for dbuff in self.buffs:
+            if issubclass(type(dbuff), src.Buff.buffMap["DamageBuff"]):
+                damage, bonus = dbuff.ModDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
+                bonus+= " "
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(
             f"you attack the enemy for {damage} damage {bonus}, the enemy has {target.health}/{target.maxHealth} health left"
@@ -1401,6 +1407,8 @@ press any other key to attack normally"""
 
         self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
+        if target.dead:
+            self.buffs.append(src.Buff.buffMap["Berserk"]())
     def heal(self, amount, reason=None):
         """
         heal the character
@@ -1418,8 +1426,8 @@ press any other key to attack normally"""
         #if self.removeExhaustionOnHeal:
         #    self.exhaustion = 0
 
-        if self.maxHealth - self.health < amount:
-            amount = self.maxHealth - self.health
+        if self.adjustedMaxHealth - self.health < amount:
+            amount = self.adjustedMaxHealth - self.health
 
         if reason:
             self.addMessage(reason)
@@ -2338,9 +2346,9 @@ press any other key to attack normally"""
             )
             return
 
-        if self.health < self.maxHealth and (
+        if self.health < self.adjustedMaxHealth and (
                 int(self.health) and (src.gamestate.gamestate.tick+10000)%int(self.health) < self.healingThreashold):
-            self.heal(1,reason="time heals your wounds")
+            self.heal(self.adjustedHealthRegen ,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
         if self.satiation < 300 and self.flask and self.flask.uses > 0:
@@ -2386,6 +2394,10 @@ press any other key to attack normally"""
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
         """
+        for b in self.buffs:
+            b.advance()
+            if b.is_done():
+                self.buffs.remove(b)
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):
@@ -2610,7 +2622,29 @@ press any other key to attack normally"""
         """
 
         self.frustration -= amount
+    @property
+    def adjustedMovementSpeed(self):
+        speed = self.movementSpeed
+        for b in self.buffs:
+            if issubclass(type(b), src.Buff.buffMap["MovementBuff"]):
+                speed = b.ModMovement(speed)
+        return speed
 
+    @property
+    def adjustedMaxHealth(self):
+        maxHealth = self.maxHealth
+        for b in self.buffs:
+            if issubclass(type(b), src.Buff.buffMap["HealthBuff"]):
+                maxHealth = b.ModHealth(maxHealth)
+        return maxHealth
+
+    @property
+    def adjustedHealthRegen(self):
+        HealthRegen = 1
+        for b in self.buffs:
+            if issubclass(type(b), src.Buff.buffMap["HealthRegenBuff"]):
+                HealthRegen = b.ModHealthRegen(HealthRegen)
+        return HealthRegen
 
 characterMap = {
     "Character": Character,

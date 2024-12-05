@@ -1,4 +1,6 @@
 import src
+import src.gamestate
+import src.interaction
 
 
 class MetalWorkingBench(src.items.Item):
@@ -155,7 +157,8 @@ class MetalWorkingBench(src.items.Item):
             "params": params,
         }
         character.runCommandString(".", nativeKey=True)
-
+        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
+            src.interaction.skipNextRender = True
     def produceItem_done(self,params):
         character = params["character"]
         character.addMessage("You produce a wall")

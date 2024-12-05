@@ -2348,7 +2348,7 @@ press any other key to attack normally"""
 
         if self.health < self.adjustedMaxHealth and (
                 int(self.health) and (src.gamestate.gamestate.tick+10000)%int(self.health) < self.healingThreashold):
-            self.heal(1,reason="time heals your wounds")
+            self.heal(self.adjustedHealthRegen ,reason="time heals your wounds")
 
         #if self.satiation in (300 - 1, 200 - 1, 100 - 1, 30 - 1):
         if self.satiation < 300 and self.flask and self.flask.uses > 0:
@@ -2637,6 +2637,14 @@ press any other key to attack normally"""
             if issubclass(type(b), src.Buff.buffMap["HealthBuff"]):
                 maxHealth = b.ModHealth(maxHealth)
         return maxHealth
+
+    @property
+    def adjustedHealthRegen(self):
+        HealthRegen = 1
+        for b in self.buffs:
+            if issubclass(type(b), src.Buff.buffMap["HealthRegenBuff"]):
+                HealthRegen = b.ModHealthRegen(HealthRegen)
+        return HealthRegen
 
 characterMap = {
     "Character": Character,

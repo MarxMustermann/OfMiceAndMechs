@@ -1,3 +1,4 @@
 import src.BuffFolder.AddDamageOverTicks
 import src.BuffFolder.Berserk
 import src.BuffFolder.IncreaseMaxHealth
+import src.BuffFolder.IncreaseHealthRegen

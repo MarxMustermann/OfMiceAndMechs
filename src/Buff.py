@@ -27,10 +27,28 @@ class MovementBuff(Buff, ABC):
     @abstractmethod
     def ModMovement(self, speed): ...
 
+
+class HealthBuff(Buff, ABC):
+    @abstractmethod
+    def ModHealth(self, health): ...
+
+
+class HealthRegenBuff(Buff, ABC):
+    @abstractmethod
+    def ModHealthRegen(self, healthRegen): ...
+
+
 def addType(toRegister):
     buffMap[toRegister.type] = toRegister
 
 
 # mapping from strings to all items
 # should be extendable
-buffMap = {"Buff": Buff, "DamageBuff": DamageBuff, "ProtectionBuff": ProtectionBuff, "MovementBuff": MovementBuff}
+buffMap = {
+    "Buff": Buff,
+    "DamageBuff": DamageBuff,
+    "ProtectionBuff": ProtectionBuff,
+    "MovementBuff": MovementBuff,
+    "HealthBuff": HealthBuff,
+    "HealthRegenBuff": HealthRegenBuff,
+}

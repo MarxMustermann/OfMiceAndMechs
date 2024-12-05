@@ -34,7 +34,7 @@ class CharacterInfoMenu(SubMenu):
         text += "\n"
         text += "\n"
         text += "health:     %s" % char.health + "\n"
-        text += "max health: %s" % char.maxHealth + "\n"
+        text += "max health: %s" % char.adjustedMaxHealth + "\n"
         text += "exhaustion: %s" % char.exhaustion + "\n"
         text += "\n"
         text += "baseDamage: %s\n" % char.baseDamage

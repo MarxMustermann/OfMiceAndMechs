@@ -1,7 +1,4 @@
 import src
-import src.gamestate
-import src.interaction
-
 
 class MetalWorkingBench(src.items.Item):
     """

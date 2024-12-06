@@ -10,7 +10,7 @@ class BuffPotion(src.items.Item, ABC):
         super().__init__(display=src.canvas.displayChars.gooflask_empty)
 
     def apply(self, character):
-        character.buffs.append(self.BuffToAdd)
+        character.buffs.extent(self.getBuffsToAdd())
         character.changed("buffed")
 
         flask = src.items.itemMap["Flask"]()
@@ -27,9 +27,8 @@ class BuffPotion(src.items.Item, ABC):
     def render(self):
         return src.canvas.displayChars.vial_full
 
-    @property
     @abstractmethod
-    def BuffToAdd(self): ...
+    def getBuffsToAdd(self): ...
 
 
 src.items.addType(BuffPotion)

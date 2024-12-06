@@ -6,9 +6,8 @@ class IncreaseMaxHealthPotion(src.items.itemMap["BuffPotion"]):
     description = "Increases max HP"
     name = "Potion of temporary vitality"
 
-    @property
-    def BuffToAdd(self):
-        return src.Buff.buffMap["IncreaseMaxHealth"](healthBonus=self.healthBonus,duration=self.duration)
+    def getBuffsToAdd(self):
+        return [src.Buff.buffMap["IncreaseMaxHealth"](healthBonus=self.healthBonus,duration=self.duration)]
 
     def __init__(self,healthBonus=25,duration=30):
         super().__init__()

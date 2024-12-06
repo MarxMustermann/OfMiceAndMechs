@@ -6,9 +6,8 @@ class StrengthPotion(src.items.itemMap["BuffPotion"]):
     description = "Increases damage dealt in melee"
     name = "Potion of violent impact"
 
-    @property
-    def BuffToAdd(self):
-        return src.Buff.buffMap["AddDamageOverTicks"](damageBonus=self.damageBonus,duration=self.duration)
+    def getBuffsToAdd(self):
+        return [src.Buff.buffMap["AddDamageOverTicks"](damageBonus=self.damageBonus,duration=self.duration)]
 
     def __init__(self, damageBonus=10, duration=200):
         self.damageBonus = damageBonus

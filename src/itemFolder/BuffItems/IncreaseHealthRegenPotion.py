@@ -7,7 +7,7 @@ class IncreaseHealthRegenPotion(src.items.itemMap["BuffPotion"]):
     name = "refreshing Potion"
 
     def getBuffsToAdd(self):
-        return [src.statusEffects.buffMap["IncreaseHealthRegen"](healthBonus=self.healthBonus,duration=self.duration)]
+        return [src.statusEffects.statusEffectMap["IncreaseHealthRegen"](healthBonus=self.healthBonus,duration=self.duration)]
 
     def __init__(self,healthBonus=2,duration=500):
         super().__init__()

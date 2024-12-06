@@ -1407,7 +1407,7 @@ press any other key to attack normally"""
         self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
         if target.dead:
-            self.buffs.append(src.Buff.buffMap["Berserk"]())
+            self.buffs.append(src.statusEffects.statusEffectMap["Berserk"]())
     def heal(self, amount, reason=None):
         """
         heal the character

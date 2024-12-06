@@ -88,33 +88,9 @@ class MachiningTable(src.items.Item):
 
         params["productionTime"] = 1000
         params["doneProductionTime"] = 0
-        self.produceItem_wait(params)
-        character.runCommandString("."*(params["productionTime"]//10),nativeKey=True)
-
-    def produceItem_wait(self,params):
-        character = params["character"]
-        ticksLeft = params["productionTime"]-params["doneProductionTime"]
-
-        baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
-        progressBar = ""
-        while len(baseProgressbar) > 10:
-            progressBar += baseProgressbar[:10]+"\n"
-            baseProgressbar = baseProgressbar[10:]
-        progressBar += baseProgressbar
-        if ticksLeft > 10:
-            character.timeTaken += 10
-            params["doneProductionTime"] += 10
-            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
-            submenue.tag = "metalWorkingProductWait"
-            character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_wait","params":params}
-        else:
-            character.timeTaken += ticksLeft
-            params["doneProductionTime"] += ticksLeft
-            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressBar,targetParamName="abortKey")
-            submenue.tag = "metalWorkingProductWait"
-            character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem_done","params":params}
+        params["hitCounter"] = character.numAttackedWithoutResponse
+        params["self"] = self
+        src.helpers.produceItem_wait(params)
 
     def produceItem_done(self,params):
         character = params["character"]

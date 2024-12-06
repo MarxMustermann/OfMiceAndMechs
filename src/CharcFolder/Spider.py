@@ -67,5 +67,8 @@ class Spider(Monster):
 
         return super().generateQuests()
 
+    def applyNativeMeleeAttackEffects(self,target):
+        target.statusEffects.append(src.statusEffects.statusEffectMap["Slowed"](duration=2,slowDown=1.1))
+        super().applyNativeMeleeAttackEffects(target)
 
 src.characters.add_character(Spider)

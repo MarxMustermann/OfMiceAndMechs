@@ -4,7 +4,7 @@ import src
 class IncreaseMaxHealthPotion(src.items.itemMap["BuffPotion"]):
     type = "IncreaseMaxHealthPotion"
     description = "Increases max HP"
-    name = "Potion of vitality"
+    name = "Potion of temporary vitality"
 
     @property
     def BuffToAdd(self):

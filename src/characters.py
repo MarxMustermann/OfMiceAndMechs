@@ -253,7 +253,8 @@ class Character:
 
         self.dutyPriorities = {}
 
-        self.buffs = []
+        self.statusEffects = []
+
     def getRandomProtisedDuties(self):
         priotisedDuties = {}
         for duty in self.duties:
@@ -1361,7 +1362,7 @@ press any other key to attack normally"""
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
-        for statusEffect in self.buffs:
+        for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.DamageBuff):
                 damage, bonus = statusEffect.ModDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
                 bonus+= " "
@@ -1407,7 +1408,7 @@ press any other key to attack normally"""
         self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
         if target.dead:
-            self.buffs.append(src.statusEffects.statusEffectMap["Berserk"]())
+            self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"]())
     def heal(self, amount, reason=None):
         """
         heal the character
@@ -2393,10 +2394,10 @@ press any other key to attack normally"""
             if len(self.quests):
                 self.applysolver(self.quests[0].solver)
         """
-        for b in self.buffs:
-            b.advance()
-            if b.is_done():
-                self.buffs.remove(b)
+        for statusEffect in self.statusEffects:
+            statusEffect.advance()
+            if statusEffect.is_done():
+                self.statusEffects.remove(statusEffect)
 
     # bad pattern: is repeated in items etc
     def addListener(self, listenFunction, tag="default"):
@@ -2625,7 +2626,7 @@ press any other key to attack normally"""
     @property
     def adjustedMovementSpeed(self):
         speed = self.movementSpeed
-        for statusEffect in self.buffs:
+        for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.MovementBuff):
                 speed = statusEffect.ModMovement(speed)
         return speed
@@ -2633,7 +2634,7 @@ press any other key to attack normally"""
     @property
     def adjustedMaxHealth(self):
         maxHealth = self.maxHealth
-        for statusEffect in self.buffs:
+        for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthBuff):
                 maxHealth = statusEffect.ModHealth(maxHealth)
         return maxHealth
@@ -2641,7 +2642,7 @@ press any other key to attack normally"""
     @property
     def adjustedHealthRegen(self):
         healthRegen = 1
-        for statusEffect in self.buffs:
+        for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthRegenBuff):
                 healthRegen = statusEffect.ModHealthRegen(healthRegen)
         return healthRegen

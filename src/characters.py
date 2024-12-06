@@ -65,7 +65,7 @@ class Character:
         self.healingModifier = 1.0 # multiplier for how much health healing adds
         self.healingThreashold = 1 # threashold regulating when healing triggers
         self.movementSpeed = 1 # the speed characters move with
-        self.attackSpeed = 1 # the speed characters attack with
+        self.baseAttackSpeed = 1 # the speed characters attack with
 
         self.disableCommandsOnPlus = False
         self.autoExpandQuests = False
@@ -2622,6 +2622,14 @@ press any other key to attack normally"""
         """
 
         self.frustration -= amount
+
+    @property
+    def attackSpeed(self):
+        speed = self.baseAttackSpeed
+        for statusEffect in self.statusEffects:
+            if issubclass(type(statusEffect), src.statusEffects.AttackSpeedEffect):
+                speed = statusEffect.modAttackSpeed(speed)
+        return speed
 
     @property
     def adjustedMovementSpeed(self):

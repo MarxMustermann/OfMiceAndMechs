@@ -1,7 +1,7 @@
 import src
 
 
-class IncreaseHealthRegen(src.Buff.buffMap["HealthRegenBuff"]):
+class IncreaseHealthRegen(src.statusEffects.HealthRegenBuff):
     type = "IncreaseHealthRegen"
 
     def __init__(self, healthBonus=2, duration=500):
@@ -14,4 +14,4 @@ class IncreaseHealthRegen(src.Buff.buffMap["HealthRegenBuff"]):
     def getShortCode(self):
         return "regeneration"
 
-src.Buff.addType(IncreaseHealthRegen)
+src.statusEffects.addType(IncreaseHealthRegen)

@@ -1,7 +1,7 @@
 import src
 
 
-class Berserk(src.Buff.buffMap["DamageBuff"],src.Buff.buffMap["MovementBuff"]):
+class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
     type = "Berserk"
 
     def __init__(self, DamageBonus=2, ticks=10):
@@ -21,4 +21,4 @@ class Berserk(src.Buff.buffMap["DamageBuff"],src.Buff.buffMap["MovementBuff"]):
     def getShortCode(self):
         return "beserk"
 
-src.Buff.addType(Berserk)
+src.statusEffects.addType(Berserk)

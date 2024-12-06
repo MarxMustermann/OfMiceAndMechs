@@ -5,7 +5,6 @@ import logging
 import random
 
 import config
-import src.Buff
 import src.canvas
 import src.chats
 import src.gamestate

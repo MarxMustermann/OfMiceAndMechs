@@ -1,7 +1,7 @@
 import src
 
 
-class AddDamageOverTicks(src.Buff.buffMap["DamageBuff"]):
+class AddDamageOverTicks(src.statusEffects.DamageBuff):
     type = "AddDamageOverTicks"
 
     def __init__(self, damageBonus=10, duration=200):
@@ -15,4 +15,4 @@ class AddDamageOverTicks(src.Buff.buffMap["DamageBuff"]):
     def getShortCode(self):
         return "meleeDamage"
 
-src.Buff.addType(AddDamageOverTicks)
+src.statusEffects.addType(AddDamageOverTicks)

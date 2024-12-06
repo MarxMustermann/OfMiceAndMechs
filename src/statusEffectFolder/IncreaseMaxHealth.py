@@ -1,7 +1,7 @@
 import src
 
 
-class IncreaseMaxHealth(src.Buff.buffMap["HealthBuff"]):
+class IncreaseMaxHealth(src.statusEffects.HealthBuff):
     type = "IncreaseMaxHealth"
 
     def __init__(self, healthBonus=25, duration=30):
@@ -14,4 +14,4 @@ class IncreaseMaxHealth(src.Buff.buffMap["HealthBuff"]):
     def getShortCode(self):
         return "maxHP"
 
-src.Buff.addType(IncreaseMaxHealth)
+src.statusEffects.addType(IncreaseMaxHealth)

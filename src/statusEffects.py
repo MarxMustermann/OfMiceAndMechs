@@ -48,10 +48,4 @@ def addType(toRegister):
 # mapping from strings to all items
 # should be extendable
 buffMap = {
-    "Buff": Buff,
-    "DamageBuff": DamageBuff,
-    "ProtectionBuff": ProtectionBuff,
-    "MovementBuff": MovementBuff,
-    "HealthBuff": HealthBuff,
-    "HealthRegenBuff": HealthRegenBuff,
 }

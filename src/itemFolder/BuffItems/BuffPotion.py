@@ -11,9 +11,18 @@ class BuffPotion(src.items.Item, ABC):
 
     def apply(self, character):
         character.buffs.append(self.BuffToAdd)
-        character.changed()
-        character.inventory.remove(self)
-        character.inventory.append(src.items.itemMap["Flask"]())
+        character.changed("buffed")
+
+        flask = src.items.itemMap["Flask"]()
+        if not self.container:
+            character.inventory.remove(self)
+            character.inventory.append(flask)
+        else:
+            container = self.container
+            pos = self.getPosition() 
+            
+            container.removeItem(self)
+            container.addItem(flask, pos)
 
     def render(self):
         return src.canvas.displayChars.vial_full

@@ -4172,7 +4172,7 @@ def renderGameDisplay(renderChar=None):
 
                         statusEffectDisplay = ""
                         for buff in char.buffs:
-                            statusEffectDisplay += buff.getShortCode()
+                            statusEffectDisplay += buff.getShortCode()+" "
 
                         text = [
                             "health: " , healthDisplay ,

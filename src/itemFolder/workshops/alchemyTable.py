@@ -141,6 +141,7 @@ class AlchemyTable(src.items.Item):
             preferInventoryOut = False
 
         new = src.items.itemMap[params["type"]]()
+        new.bolted = False
 
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
             character.inventory.append(new)

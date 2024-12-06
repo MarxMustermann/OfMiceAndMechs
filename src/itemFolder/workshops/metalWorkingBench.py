@@ -163,8 +163,8 @@ class MetalWorkingBench(src.items.Item):
 
     def produceItem_done(self,params):
         character = params["character"]
-        character.addMessage("You produce a wall")
-        character.addMessage("It took you 100 turns to do that")
+        character.addMessage("You produce a %s"%(params["type"],))
+        character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
 
         badListed = ["Sword","Armor","Rod"]
         if params["type"] in badListed:

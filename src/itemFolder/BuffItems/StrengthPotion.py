@@ -17,6 +17,6 @@ class StrengthPotion(src.items.itemMap["BuffPotion"]):
         self.bolted = False
 
     def getLongInfo(self):
-        return f"This Potion increases your melee damage dealt by {self.damageBomus} for {self.duration} ticks"
+        return f"This Potion increases your melee damage dealt by {self.damageBonus} for {self.duration} ticks"
 
 src.items.addType(StrengthPotion)

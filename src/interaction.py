@@ -4155,7 +4155,6 @@ def renderGameDisplay(renderChar=None):
                             continue
                         if not footer:
                             continue
-                        healthtext = "testt"
 
                         stepSize = char.maxHealth/15
                         if stepSize == 0:
@@ -4171,18 +4170,13 @@ def renderGameDisplay(renderChar=None):
                         if char.flask:
                             flaskInfo = str(char.flask.uses)
 
-                        if char.satiation == 0:
-                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),f"starved ({char.satiation}/{flaskInfo})")
-                        elif char.satiation < 200:
-                            satiationDisplay = (urwid.AttrSpec("#f00", "default"),f"starving ({char.satiation}/{flaskInfo})")
-                        elif char.satiation < 300:
-                            satiationDisplay = (urwid.AttrSpec("#f60", "default"),f"hungry ({char.satiation}/{flaskInfo})")
-                        else:
-                            satiationDisplay = (urwid.AttrSpec("#0f0", "default"),f"satiated ({char.satiation}/{flaskInfo})")
+                        statusEffectDisplay = ""
+                        for buff in char.buffs:
+                            statusEffectDisplay += buff.getShortCode()
 
                         text = [
                             "health: " , healthDisplay ,
-                            "    satiation: " , satiationDisplay
+                            "  effects: " , statusEffectDisplay
                         ]
 
                         x = max(uiElement["offset"][0]+uiElement["width"]//2-len(stringifyUrwid(text))//2,0)

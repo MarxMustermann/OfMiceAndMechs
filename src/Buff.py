@@ -12,6 +12,9 @@ class Buff:
     def is_done(self):
         return self.ticks is not None and self.ticks <= 0
 
+    def getShortCode(self):
+        return self.type
+
 
 class DamageBuff(Buff, ABC):
     @abstractmethod

@@ -17,4 +17,8 @@ class Berserk(src.Buff.buffMap["DamageBuff"],src.Buff.buffMap["MovementBuff"]):
 
     def ModMovement(self, speed):
         return speed * 0.9
+
+    def getShortCode(self):
+        return "beserk"
+
 src.Buff.addType(Berserk)

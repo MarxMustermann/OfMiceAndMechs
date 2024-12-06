@@ -11,5 +11,7 @@ class IncreaseMaxHealth(src.Buff.buffMap["HealthBuff"]):
     def ModHealth(self, health):
         return health + self.healthBonus
 
+    def getShortCode(self):
+        return "maxHP"
 
 src.Buff.addType(IncreaseMaxHealth)

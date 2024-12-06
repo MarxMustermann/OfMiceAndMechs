@@ -11,5 +11,7 @@ class IncreaseHealthRegen(src.Buff.buffMap["HealthRegenBuff"]):
     def ModHealthRegen(self, health):
         return health + self.healthBonus
 
+    def getShortCode(self):
+        return "regeneration"
 
 src.Buff.addType(IncreaseHealthRegen)

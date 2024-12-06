@@ -12,4 +12,7 @@ class AddDamageOverTicks(src.Buff.buffMap["DamageBuff"]):
         damage += self.damageBonus
         return (damage, bonus + "with added strength")
 
+    def getShortCode(self):
+        return "meleeDamage"
+
 src.Buff.addType(AddDamageOverTicks)

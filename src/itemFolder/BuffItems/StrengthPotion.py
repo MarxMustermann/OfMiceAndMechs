@@ -7,7 +7,7 @@ class StrengthPotion(src.items.itemMap["BuffPotion"]):
     name = "Potion of violent impact"
 
     def getBuffsToAdd(self):
-        return [src.Buff.buffMap["AddDamageOverTicks"](damageBonus=self.damageBonus,duration=self.duration)]
+        return [src.statusEffects.buffMap["AddDamageOverTicks"](damageBonus=self.damageBonus,duration=self.duration)]
 
     def __init__(self, damageBonus=10, duration=200):
         self.damageBonus = damageBonus

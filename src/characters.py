@@ -2621,33 +2621,30 @@ press any other key to attack normally"""
         """
 
         self.frustration -= amount
+
     @property
     def adjustedMovementSpeed(self):
         speed = self.movementSpeed
-        for b in self.buffs:
-            if issubclass(type(b), src.Buff.buffMap["MovementBuff"]):
-                speed = b.ModMovement(speed)
+        for statusEffect in self.buffs:
+            if issubclass(type(statusEffect), src.statusEffects.MovementBuff):
+                speed = statusEffect.ModMovement(speed)
         return speed
 
     @property
     def adjustedMaxHealth(self):
-        try:
-            self.buffs
-        except:
-            self.buffs = []
         maxHealth = self.maxHealth
-        for b in self.buffs:
-            if issubclass(type(b), src.Buff.buffMap["HealthBuff"]):
-                maxHealth = b.ModHealth(maxHealth)
+        for statusEffect in self.buffs:
+            if issubclass(type(statusEffect), src.statusEffects.HealthBuff):
+                maxHealth = statusEffect.ModHealth(maxHealth)
         return maxHealth
 
     @property
     def adjustedHealthRegen(self):
-        HealthRegen = 1
-        for b in self.buffs:
-            if issubclass(type(b), src.Buff.buffMap["HealthRegenBuff"]):
-                HealthRegen = b.ModHealthRegen(HealthRegen)
-        return HealthRegen
+        healthRegen = 1
+        for statusEffect in self.buffs:
+            if issubclass(type(statusEffect), src.statusEffects.HealthRegenBuff):
+                healthRegen = statusEffect.ModHealthRegen(healthRegen)
+        return healthRegen
 
 characterMap = {
     "Character": Character,

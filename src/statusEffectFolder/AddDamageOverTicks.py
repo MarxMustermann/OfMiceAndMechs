@@ -13,6 +13,6 @@ class AddDamageOverTicks(src.statusEffects.DamageBuff):
         return (damage, bonus + "with added strength")
 
     def getShortCode(self):
-        return "meleeDamage"
+        return "+mDmg"
 
 src.statusEffects.addType(AddDamageOverTicks)

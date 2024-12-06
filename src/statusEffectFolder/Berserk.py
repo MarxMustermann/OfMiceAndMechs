@@ -19,6 +19,6 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
         return speed * 0.9
 
     def getShortCode(self):
-        return "beserk"
+        return "BSRK"
 
 src.statusEffects.addType(Berserk)

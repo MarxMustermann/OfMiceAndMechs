@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Buff:
+class StatusEffect:
     def __init__(self, ticks = None):
         self.ticks = ticks
 
@@ -16,27 +16,27 @@ class Buff:
         return self.type
 
 
-class DamageBuff(Buff, ABC):
+class DamageBuff(StatusEffect, ABC):
     @abstractmethod
     def ModDamage(self, attacker, attacked, bonus, damage): ...
 
 
-class ProtectionBuff(Buff, ABC):
+class ProtectionBuff(StatusEffect, ABC):
     @abstractmethod
     def ModProtection(self, attacker, attacked, bonus, damage): ...
 
 
-class MovementBuff(Buff, ABC):
+class MovementBuff(StatusEffect, ABC):
     @abstractmethod
     def ModMovement(self, speed): ...
 
 
-class HealthBuff(Buff, ABC):
+class HealthBuff(StatusEffect, ABC):
     @abstractmethod
     def ModHealth(self, health): ...
 
 
-class HealthRegenBuff(Buff, ABC):
+class HealthRegenBuff(StatusEffect, ABC):
     @abstractmethod
     def ModHealthRegen(self, healthRegen): ...
 

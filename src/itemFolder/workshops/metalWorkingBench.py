@@ -138,6 +138,10 @@ class MetalWorkingBench(src.items.Item):
 
     def produceItem_wait(self, params):
         character = params["character"]
+
+        if not "hitCounter" in params:
+            params["hitCounter"] = character.numAttackedWithoutResponse
+
         if params["hitCounter"] != character.numAttackedWithoutResponse:
             character.addMessage("You got hit while working")
             return
@@ -156,6 +160,7 @@ class MetalWorkingBench(src.items.Item):
         character.runCommandString(".", nativeKey=True)
         if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
             src.interaction.skipNextRender = True
+
     def produceItem_done(self,params):
         character = params["character"]
         character.addMessage("You produce a wall")

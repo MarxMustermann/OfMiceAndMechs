@@ -1361,9 +1361,9 @@ press any other key to attack normally"""
 
         self.container.addAnimation(target.getPosition(),"attack",damage,{})
 
-        for dbuff in self.buffs:
-            if issubclass(type(dbuff), src.Buff.buffMap["DamageBuff"]):
-                damage, bonus = dbuff.ModDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
+        for statusEffect in self.buffs:
+            if issubclass(type(statusEffect), src.statusEffects.DamageBuff):
+                damage, bonus = statusEffect.ModDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
                 bonus+= " "
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(

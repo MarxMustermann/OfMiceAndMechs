@@ -42,10 +42,10 @@ class HealthRegenBuff(StatusEffect, ABC):
 
 
 def addType(toRegister):
-    buffMap[toRegister.type] = toRegister
+    statusEffectMap[toRegister.type] = toRegister
 
 
 # mapping from strings to all items
 # should be extendable
-buffMap = {
+statusEffectMap = {
 }

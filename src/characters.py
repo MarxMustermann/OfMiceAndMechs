@@ -255,6 +255,9 @@ class Character:
 
         self.statusEffects = []
 
+    def applyNativeMeleeAttackEffects(self,target):
+        pass
+
     def getRandomProtisedDuties(self):
         priotisedDuties = {}
         for duty in self.duties:
@@ -1236,9 +1239,11 @@ press any other key to attack normally"""
         else:
             self.addMessage("you do a normal attack")
             self.attack(target)
+
     @staticmethod
     def hasTimingBonus():
         return src.gamestate.gamestate.tick % 4 == 1
+
     def attack(self, target, heavy = False, quick = False, ultraheavy = False, initial=False, harassing=False, light=False, opportunity=False, gambling=False, bestial=False, slow=False):
         """
         make the character attack something
@@ -1409,6 +1414,9 @@ press any other key to attack normally"""
 
         if target.dead:
             self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"]())
+        else:
+            self.applyNativeMeleeAttackEffects(target)
+
     def heal(self, amount, reason=None):
         """
         heal the character

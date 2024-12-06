@@ -2632,6 +2632,10 @@ press any other key to attack normally"""
 
     @property
     def adjustedMaxHealth(self):
+        try:
+            self.buffs
+        except:
+            self.buffs = []
         maxHealth = self.maxHealth
         for b in self.buffs:
             if issubclass(type(b), src.Buff.buffMap["HealthBuff"]):

@@ -71,4 +71,10 @@ class Spider(Monster):
         target.statusEffects.append(src.statusEffects.statusEffectMap["Slowed"](duration=2,slowDown=1.1))
         super().applyNativeMeleeAttackEffects(target)
 
+    def die(self, reason=None, killer = None, addCorpse=True):
+        if addCorpse:
+            extraLoot = src.items.itemMap["SpiderEye"]()
+            self.container.addItem(extraLoot,self.getPosition())
+        super().die(reason=reason, killer = killer, addCorpse=addCorpse)
+
 src.characters.add_character(Spider)

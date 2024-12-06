@@ -30,6 +30,9 @@ class MovementBuff(StatusEffect, ABC):
     @abstractmethod
     def ModMovement(self, speed): ...
 
+class AttackSpeedEffect(StatusEffect, ABC):
+    @abstractmethod
+    def modAttackSpeed(self,speed): ...
 
 class HealthBuff(StatusEffect, ABC):
     @abstractmethod

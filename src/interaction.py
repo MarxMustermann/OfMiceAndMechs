@@ -4171,8 +4171,8 @@ def renderGameDisplay(renderChar=None):
                             flaskInfo = str(char.flask.uses)
 
                         statusEffectDisplay = ""
-                        for buff in char.buffs:
-                            statusEffectDisplay += buff.getShortCode()+" "
+                        for statusEffect in char.statusEffects:
+                            statusEffectDisplay += statusEffect.getShortCode()+" "
 
                         text = [
                             "health: " , healthDisplay ,

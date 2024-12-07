@@ -18,3 +18,4 @@ import src.questFolder.story.getRank5PromotionStory
 import src.questFolder.story.confrontSnatchers
 import src.questFolder.story.contactMainBase
 import src.questFolder.story.storyClearTerrain
+import src.questFolder.story.storyAscendTry

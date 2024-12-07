@@ -2522,6 +2522,7 @@ but they are likely to explode when disturbed.
                     wallSpots.append((x,y,0))
             for wallSpot in wallSpots:
                 item = src.items.itemMap["Wall"]()
+                item.bolted = False
                 currentTerrain.addItem(item,(15*wallTile[0]+wallSpot[0],15*wallTile[1]+wallSpot[1],0))
 
             # add enemies

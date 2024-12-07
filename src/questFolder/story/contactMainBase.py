@@ -17,6 +17,9 @@ class ContactMainBase(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.macroState["submenue"]:
+            return (None,(("esc",),"close the menu"))
+
         if not character.getBigPosition() == (7,7,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="reach the communicator",description="go to command centre")
             return ([quest],None)

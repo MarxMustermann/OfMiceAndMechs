@@ -4,9 +4,10 @@ import random
 class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
 
-    def __init__(self, description="heal"):
+    def __init__(self, description="heal",noWaitHeal=False):
         super().__init__()
         self.metaDescription = description
+        self.noWaitHeal = noWaitHeal
 
     def generateTextDescription(self):
         text = """
@@ -72,13 +73,14 @@ Press JH to auto heal.
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
-        if character.container.isRoom and character.container.tag == "temple":
-            return (None,("..........","wait to heal"))
+        if not self.noWaitHeal:
+            if character.container.isRoom and character.container.tag == "temple":
+                return (None,("..........","wait to heal"))
 
-        for room in rooms:
-            if room.tag == "temple":
-                quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
-                return ([quest],None)
+            for room in rooms:
+                if room.tag == "temple":
+                    quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
+                    return ([quest],None)
 
         self.fail("no way to heal")
         return (None,None)

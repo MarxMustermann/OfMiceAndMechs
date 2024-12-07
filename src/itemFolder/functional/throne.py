@@ -37,6 +37,19 @@ A throne. Take control over the throne to win the game.
             foundMissingHeart = True
 
         if foundMissingHeart:
+            submenu = src.menuFolder.TextMenu.TextMenu("""
+The throne rejects you.
+
+You need to collect all GlassHarts to be accepted as supreme leader.
+""")
+            character.macroState["submenue"] = submenu
+            character.runCommandString("~",nativeKey=True)
+
+            if character == src.gamestate.gamestate.mainChar:
+                src.gamestate.gamestate.stern["failedAscend"] = True
+
+            character.changed("missing glass heart",{})
+
             character.addMessage("you need to control all GlassHearts")
             return
 

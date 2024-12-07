@@ -59,3 +59,35 @@ def fade_between_consoles_rgb(current, target, t):
             src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(
                 current[width, height]["bg"], target[width, height]["bg"], t
             )
+
+def produceItem_wait(params):
+    character = params["character"]
+
+    if not "hitCounter" in params:
+        params["hitCounter"] = character.numAttackedWithoutResponse
+
+    if params["hitCounter"] != character.numAttackedWithoutResponse:
+        character.addMessage("You got hit while working")
+        return
+    ticksLeft = params["productionTime"] - params["doneProductionTime"]
+    character.timeTaken += 1
+    params["doneProductionTime"] += 1
+
+    baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
+    progressBar = ""
+    while len(baseProgressbar) > 10:
+        progressBar += baseProgressbar[:10]+"\n"
+        baseProgressbar = baseProgressbar[10:]
+    progressBar += baseProgressbar
+
+    submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
+    submenue.tag = "metalWorkingProductWait"
+    character.macroState["submenue"] = submenue
+    character.macroState["submenue"].followUp = {
+        "container": params["self"] if ticksLeft <= 0 else src.helpers,
+        "method": "produceItem_done" if ticksLeft <= 0 else "produceItem_wait",
+        "params": params,
+    }
+    character.runCommandString(".", nativeKey=True)
+    if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
+        src.interaction.skipNextRender = True

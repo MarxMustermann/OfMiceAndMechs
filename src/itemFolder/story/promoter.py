@@ -72,6 +72,34 @@ This means you can do special attacks now.""")
             character.runCommandString("~",nativeKey=True)
 
         elif character.rank > 2:
+            foundEnemies = []
+            terrain = self.getTerrain()
+            for otherChar in terrain.characters:
+                if otherChar.faction == character.faction:
+                    continue
+                foundEnemies.append(otherChar)
+
+            for room in terrain.rooms:
+                for otherChar in room.characters:
+                    if otherChar.faction == character.faction:
+                        continue
+                    foundEnemies.append(otherChar)
+
+            if foundEnemies:
+                character.addMessage(f"promotions locked")
+
+                submenu = src.menuFolder.TextMenu.TextMenu("""
+Promotions to rank 2 are blocked.
+Enemies are nearby.
+
+Kill all enemies on this terrain, to unlock the promotions to rank 2.
+""")
+                character.macroState["submenue"] = submenu
+                character.runCommandString("~",nativeKey=True)
+
+                character.changed("promotion blocked",{"reason":"needs 2 clones on base"})
+                return
+
             character.rank = 2
             character.addMessage(f"you were promoted to base commander")
             submenu = src.menuFolder.TextMenu.TextMenu("""

@@ -51,6 +51,7 @@ class RodTower(src.items.Item):
                 self.weapon.baseDamage -= 1
                 if self.weapon.baseDamage == 10:
                     self.weapon = None
+            baseDamage *= 4
 
             for target in targets:
                 target.hurt(baseDamage*2,reason="hit by RodTower")

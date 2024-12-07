@@ -21,6 +21,7 @@ import src.cinematics
 import src.events
 import src.gamestate
 import src.interaction
+import src.popups
 import src.quests
 import src.rooms
 
@@ -1109,6 +1110,8 @@ class MainGame(BasicPhase):
         mainChar = self.activeStory["mainChar"]
         src.gamestate.gamestate.mainChar = mainChar
         mainChar.addListener(self.mainCharacterDeath,"died")
+        for popup in src.popups.popupsArray:
+            popup().AddToChar(mainChar)
 
         if self.difficulty == "tutorial":
             mainChar.maxHealth *= 2

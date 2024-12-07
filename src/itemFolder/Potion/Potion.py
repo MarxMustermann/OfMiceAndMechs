@@ -22,6 +22,4 @@ class Potion(src.items.Item):
     def render(self):
         return src.canvas.displayChars.vial_full
 
-
-
 src.items.addType(Potion)

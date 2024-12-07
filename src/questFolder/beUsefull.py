@@ -368,7 +368,8 @@ Press d to move the cursor and show the subquests description.
 
         self.numTasksDone += 1
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return (None,None)
 
         room = character.container
@@ -413,7 +414,8 @@ Press d to move the cursor and show the subquests description.
             if step != (None,None):
                 return step
         if self.endOnIdle:
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return (None,None)
 
         for room in character.getTerrain().rooms:

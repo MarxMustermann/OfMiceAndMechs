@@ -10,3 +10,5 @@ import src.magic
 import src.menuFolder
 import src.helpers
 import src.StateFolder
+import src.popups
+import src.PopupFolder

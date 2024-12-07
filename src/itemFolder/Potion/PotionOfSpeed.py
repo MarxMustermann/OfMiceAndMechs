@@ -20,4 +20,4 @@ class PotionOfSpeed(src.items.itemMap["BuffPotion"]):
     def getLongInfo(self):
         return f"This Potion increases your the time you need to move by {(1-self.speedUp)*100}%"
 
-src.items.addType(PotionOfSpeed)
+src.items.addType(PotionOfSpeed,potion=True)

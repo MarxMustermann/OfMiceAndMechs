@@ -16,4 +16,4 @@ class HealthPotion(src.items.itemMap["Potion"]):
     def getLongInfo(self):
         return f"This Potion heals you for {self.healingamount}"
 
-src.items.addType(HealthPotion)
+src.items.addType(HealthPotion,potion=True)

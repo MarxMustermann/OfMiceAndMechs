@@ -3602,6 +3602,15 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # ascend to be supreme leader
+        if not src.gamestate.gamestate.stern.get("failedAscend"):
+            quest = src.quests.questMap["StoryAscendTry"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
         # collect all glass heart
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):

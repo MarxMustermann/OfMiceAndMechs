@@ -46,19 +46,18 @@ class AlchemyTable(src.items.Item):
 
         if "type" not in params:
             options = []
-            options.append(("IncreaseHealthRegenPotion","IncreaseHealthRegenPotion"))
-            options.append(("IncreaseMaxHealthPotion","IncreaseMaxHealthPotion"))
-            options.append(("StrengthPotion","StrengthPotion"))
+            for potionType in src.items.potionTypes:
+                options.append((potionType.type,potionType.name))
             options.append(("byName","produce by name"))
             submenue = src.menuFolder.SelectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
-            submenue.tag = "metalWorkingProductSelection"
+            submenue.tag = "alchemyTableProductSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
 
         if params.get("type") == "byName":
             submenue = src.menuFolder.InputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
-            submenue.tag = "metalWorkingProductInput"
+            submenue.tag = "alchemyTableProductInput"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
@@ -72,23 +71,21 @@ class AlchemyTable(src.items.Item):
                 character.addMessage("Item type unknown.")
             return
 
-        vials = []
+        flasks = []
         for item in character.inventory+self.getInputItems():
-            if item.type != "Vial":
+            if item.type != "Flask":
                 continue
-            if item.uses < 10:
-                continue
-            vials.append(item)
+            flasks.append(item)
 
-        if not vials:
-            character.addMessage("You need to have a full vial in your inventory to use produce a potion")
-            character.changed("no full Vial error",{})
+        if not flasks:
+            character.addMessage("You need to have a Flask in your inventory to use produce a potion")
+            character.changed("no Flask error",{})
             return
 
-        vial = vials[-1]
+        flask = flasks[-1]
 
         dropsSpotsFull = self.checkForDropSpotsFull()
-        if not character.getFreeInventorySpace() > 0 and vial not in character.inventory and dropsSpotsFull:
+        if not character.getFreeInventorySpace() > 0 and flask not in character.inventory and dropsSpotsFull:
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return
@@ -96,10 +93,10 @@ class AlchemyTable(src.items.Item):
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
 
-        if vial in character.inventory:
-            character.inventory.remove(vial)
+        if flask in character.inventory:
+            character.inventory.remove(flask)
         else:
-            self.container.removeItem(vial)
+            self.container.removeItem(flask)
 
         self.lastProduction = params["type"]
 
@@ -254,15 +251,13 @@ class AlchemyTable(src.items.Item):
 
     def readyToUse(self):
 
-        vials = []
+        flasks = []
         for item in character.inventory+self.getInputItems():
-            if item.type != "Vial":
+            if item.type != "Flask":
                 continue
-            if item.uses < 10:
-                continue
-            vials.append(item)
+            flasks.append(item)
 
-        if not vials:
+        if not flasks:
             return True
         else:
             return False

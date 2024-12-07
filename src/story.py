@@ -3336,6 +3336,30 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        # get the players environment
+        terrain = mainChar.getTerrain()
+
+        # ensure basic equipment
+        if not mainChar.armor:
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots(itemType="Armor",allowStorage=True,allowDesiredFilled=True):
+                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+
+        if not mainChar.weapon:
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots(itemType="Sword",allowStorage=True,allowDesiredFilled=True):
+                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+
         # check for hunters
         hunterCount = 0
         ghulCount = 0
@@ -3414,28 +3438,32 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
-        # get the players environment
-        terrain = mainChar.getTerrain()
+        # try to contact main base
+        if not src.gamestate.gamestate.stern.get("failedBaseContact1"):
+            quest = src.quests.questMap["ContactMainBase"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
 
-        # ensure basic equipment
-        if not mainChar.armor:
-            for room in terrain.rooms:
-                if room.getNonEmptyOutputslots(itemType="Armor",allowStorage=True,allowDesiredFilled=True):
-                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
-                    return
-        if not mainChar.weapon:
-            for room in terrain.rooms:
-                if room.getNonEmptyOutputslots(itemType="Sword",allowStorage=True,allowDesiredFilled=True):
-                    quest = src.quests.questMap["Equip"](description="equip",reason="be able to defend yourself",story="You reach out to implant and it answers:\n")
-                    quest.assignToCharacter(mainChar)
-                    quest.activate()
-                    mainChar.assignQuest(quest,active=True)
-                    quest.endTrigger = {"container": self, "method": "reachImplant"}
-                    return
+        # get promoted to rank 5 to unlock Communicator
+        if mainChar.rank > 2:
+            quest = src.quests.questMap["GetRank2PromotionStory"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        # try to contact main base
+        if not src.gamestate.gamestate.stern.get("failedBaseContact2"):
+            quest = src.quests.questMap["ContactMainBase"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
 
         # count the number of enemies/allies
         npcCount = 0
@@ -3459,7 +3487,7 @@ but they are likely to explode when disturbed.
                         continue
                     npcCount += 1
 
-        # kill snatchers (redundant to GetRank5Promotion)
+        # kill snatchers (redundant to GetRank2Promotion)
         if snatcherCount:
             quest = src.quests.questMap["ConfrontSnatchers"]()
             quest.assignToCharacter(mainChar)

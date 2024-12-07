@@ -70,7 +70,7 @@ You need to be at least rank 2 to contact main base.
                 character.runCommandString("~",nativeKey=True)
 
                 if character == src.gamestate.gamestate.mainChar:
-                    src.gamestate.gamestate.stern["failedContact3"] = True
+                    src.gamestate.gamestate.stern["failedBaseContact1"] = True
             else:
                 character.addMessage("no main base")
                 submenu = src.menuFolder.TextMenu.TextMenu("""
@@ -79,9 +79,9 @@ no main base found.
                 character.macroState["submenue"] = submenu
 
                 if character == src.gamestate.gamestate.mainChar:
-                    src.gamestate.gamestate.stern["failedContact3"] = True
-                    src.gamestate.gamestate.stern["failedContact4"] = True
-                character.changed("no base commander",{})
+                    src.gamestate.gamestate.stern["failedBaseContact1"] = True
+                    src.gamestate.gamestate.stern["failedBaseContact2"] = True
+                character.changed("no main base",{})
             return
 
         character.addMessage("unknown action")

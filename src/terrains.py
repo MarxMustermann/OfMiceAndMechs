@@ -1888,7 +1888,10 @@ class Terrain:
                     if pos[1] < 0:
                         continue
 
-                    display = chars[pos[1]][pos[0]]
+                    try:
+                        display = chars[pos[1]][pos[0]]
+                    except:
+                        continue
 
                     actionMeta = None
                     if isinstance(display,src.interaction.ActionMeta):

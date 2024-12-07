@@ -943,6 +943,11 @@ class Room:
                     chars[character.yPosition]
                 ):
                     if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
+                        try:
+                            character.specialDisplay
+                        except:
+                            character.specialDisplay = None
+
                         if character.specialDisplay:
                             char = character.specialDisplay
                         else:

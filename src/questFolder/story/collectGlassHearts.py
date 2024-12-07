@@ -1,6 +1,5 @@
 import src
 
-
 class CollectGlassHearts(src.quests.MetaQuestSequence):
     type = "CollectGlassHearts"
 
@@ -8,8 +7,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
-    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 
@@ -92,26 +91,16 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         text = ["""
 You reach out to your implant and it answers:
 
-You have control over the base now, but your ressources are limited.
-You need to use magic to keep the base runnning in the long term.
+You were not accepted by the Throne as the supreme leader.
+As long as you don't control all Glasshearts you can't ascend.
+Fetch all GlassHearts and rule the world.
 
-The GlassStatues in the temple allow you to cast magic.
-This will use up the mana of the area.
+The GlassHearts can be found in dungeons and are guarded.
+Those dungeons can be accessed using the GlassStatues in the Temple.
 
-The mana will slowly regenerate, but there is a faster way.
-The GlassStatues are missing their hearts.
-Obtain their GlassHeart and make them whole.
-
-This will give you 3 advantages:
-1. you will get a immediate mana boost
-2. the GlassStatues will generate extra mana each epoch
-3. the cost for using magic will be halfed
-
+Once you apeased the god of a GlassStatue, it will allow you to teleport to its dungeon.
+So apease the gods and obtain their GlassHearts.
 """]
-        if not self.subQuests:
-            text.append("press + to generate a sub quest") 
-        else:
-            text.append("press d to view sub quest")
         return text
 
     def assignToCharacter(self, character):

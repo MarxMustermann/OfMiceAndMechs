@@ -11,7 +11,7 @@ class Snatcher(Monster):
         self.solvers = []
         self.specialDisplay = "sn"
         self.baseDamage = 20
-        self.maxHealth = 15
+        self.maxHealth = 18
         self.health = self.maxHealth
 
         self.homeTile = None

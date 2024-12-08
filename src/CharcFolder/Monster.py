@@ -73,6 +73,11 @@ class Monster(src.characters.Character):
         """
         special handle corpse spawning
         """
+        if addCorpse and hasattr(self.__class__,"lootTable"):
+            lootTable = self.lootTable()
+            loot = random.choices([item[0] for item in lootTable],[item[1] for item in lootTable])[0]
+            if loot is not None:
+                self.container.addItem(loot(),self.getPosition())
 
         if not addCorpse:
             super().die(reason, addCorpse=False, killer=killer)

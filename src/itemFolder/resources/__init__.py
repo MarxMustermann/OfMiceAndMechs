@@ -27,3 +27,4 @@ import src.itemFolder.resources.tank
 import src.itemFolder.resources.token
 import src.itemFolder.resources.wall
 import src.itemFolder.resources.spiderEye
+import src.itemFolder.resources.grindstone

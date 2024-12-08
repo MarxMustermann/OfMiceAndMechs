@@ -69,4 +69,8 @@ class Golems(Monster):
         """
         super().die(reason, addCorpse=False, killer=killer)
 
+    @staticmethod
+    def lootTable():
+        return [(None, 9),(src.items.itemMap["Grindstone"], 1)]
+
 src.characters.add_character(Golems)

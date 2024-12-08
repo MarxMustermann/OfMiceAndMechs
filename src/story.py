@@ -3044,7 +3044,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                mechanical_crawler = src.characters.characterMap["mechanical crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
+                mechanical_crawler = src.characters.characterMap["Mechanical_Crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
@@ -3072,7 +3072,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(random.randint(3,8)):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                mechanical_crawler = src.characters.characterMap["mechanical crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
+                mechanical_crawler = src.characters.characterMap["Mechanical_Crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True

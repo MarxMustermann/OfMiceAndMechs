@@ -45,16 +45,19 @@ class swordSharpener(src.items.Item):
         if params["choice"] == "Sharpen Equipped Sword":
             if character.weapon:
                 sword = character.weapon
+                if sword.name == "improved sword":
+                    character.addMessage("you can't upgrade the sword twice")
+                    return
             else:
                 character.addMessage("you don't have any sword equipped")
                 return
         else:
             for item in character.inventory:
-                if isinstance(item, src.items.itemMap["Sword"]):
+                if isinstance(item, src.items.itemMap["Sword"]) and sword.name != "improved sword":
                     sword = item
                     break
             if sword is None:
-                character.addMessage("you don't have any sword in the inventory")
+                character.addMessage("you don't have any base sword in the inventory")
                 return
         params["sword"] = sword
         params["productionTime"] = 100

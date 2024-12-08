@@ -4,3 +4,4 @@ import src.itemFolder.workshops.metalWorkingBench
 import src.itemFolder.workshops.manufacturingTable
 import src.itemFolder.workshops.electrifier
 import src.itemFolder.workshops.alchemyTable
+import src.itemFolder.workshops.swordSharpener

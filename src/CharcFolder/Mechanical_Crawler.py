@@ -2,7 +2,7 @@ import src
 from src.CharcFolder.Monster import Monster
 
 
-class Statuette(Monster):
+class Mechanical_Crawler(Monster):
     """
     the class for a small statue
     is intended as temple guard
@@ -14,7 +14,7 @@ class Statuette(Monster):
         yPosition=0,
         quests=None,
         automated=True,
-        name="Statuette",
+        name="mechanical crawler",
         creator=None,
         characterId=None,
         multiplier = 1,
@@ -36,7 +36,7 @@ class Statuette(Monster):
             creator=creator,
             characterId=characterId,
         )
-        self.charType = "Statuette"
+        self.charType = "Mechanical crawler"
         self.specialDisplay = (src.characters.urwid.AttrSpec(src.characters.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"st")
         self.baseDamage = int(4+multiplier)
         self.baseDamage = int(self.baseDamage*(1+runModifier))
@@ -55,4 +55,4 @@ class Statuette(Monster):
     def die(self, reason=None, addCorpse=True, killer=None):
         super().die(reason, addCorpse=False, killer=killer)
 
-src.characters.add_character(Statuette)
+src.characters.add_character(Mechanical_Crawler)

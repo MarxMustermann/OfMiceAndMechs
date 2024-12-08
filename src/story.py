@@ -3044,15 +3044,15 @@ but they are likely to explode when disturbed.
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statuette = src.characters.characterMap["Statuette"](4,4,multiplier = multiplier,runModifier = runModifier)
+                mechanical_crawler = src.characters.characterMap["mechanical crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
-                quest.assignToCharacter(statuette)
+                quest.assignToCharacter(mechanical_crawler)
                 quest.activate()
-                statuette.quests.append(quest)
+                mechanical_crawler.quests.append(quest)
 
-                room.addCharacter(statuette, pos[0], pos[1])
+                room.addCharacter(mechanical_crawler, pos[0], pos[1])
 
             counter += 1
 
@@ -3072,15 +3072,15 @@ but they are likely to explode when disturbed.
 
             for _i in range(random.randint(3,8)):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statuette = src.characters.characterMap["Statuette"](4,4,multiplier = multiplier,runModifier = runModifier)
+                mechanical_crawler = src.characters.characterMap["mechanical crawler"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
-                quest.assignToCharacter(statuette)
+                quest.assignToCharacter(mechanical_crawler)
                 quest.activate()
-                statuette.quests.append(quest)
+                mechanical_crawler.quests.append(quest)
 
-                room.addCharacter(statuette, pos[0], pos[1])
+                room.addCharacter(mechanical_crawler, pos[0], pos[1])
 
             while random.random() > 0.5:
                 item = src.items.itemMap["Bolt"]()

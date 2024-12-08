@@ -2731,14 +2731,14 @@ but they are likely to explode when disturbed.
 
             # add monster
             pos = (random.randint(1,11),random.randint(1,11),0)
-            statue = src.characters.characterMap["Statue"]()
-            statue.godMode = True
+            golem = src.characters.characterMap["Golems"]()
+            golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
             quest.autoSolve = True
-            quest.assignToCharacter(statue)
+            quest.assignToCharacter(golem)
             quest.activate()
-            statue.quests.append(quest)
-            room.addCharacter(statue, pos[0], pos[1])
+            golem.quests.append(quest)
+            room.addCharacter(golem, pos[0], pos[1])
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod
@@ -3033,14 +3033,14 @@ but they are likely to explode when disturbed.
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statue = src.characters.characterMap["Statue"](4,4,multiplier = multiplier,runModifier = runModifier)
+                golem = src.characters.characterMap["Golems"](4,4,multiplier = multiplier,runModifier = runModifier)
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
-                quest.assignToCharacter(statue)
+                quest.assignToCharacter(golem)
                 quest.activate()
-                statue.quests.append(quest)
+                golem.quests.append(quest)
 
-                room.addCharacter(statue, pos[0], pos[1])
+                room.addCharacter(golem, pos[0], pos[1])
 
             for _i in range(counter-1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
@@ -3060,15 +3060,15 @@ but they are likely to explode when disturbed.
         for room in reversed(extraRooms):
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                statue = src.characters.characterMap["Statue"](4,4,multiplier = multiplier,runModifier = runModifier)
+                golem = src.characters.characterMap["Golems"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
-                quest.assignToCharacter(statue)
+                quest.assignToCharacter(golem)
                 quest.activate()
-                statue.quests.append(quest)
+                golem.quests.append(quest)
 
-                room.addCharacter(statue, pos[0], pos[1])
+                room.addCharacter(golem, pos[0], pos[1])
 
             for _i in range(random.randint(3,8)):
                 pos = (random.randint(1,11),random.randint(1,11),0)

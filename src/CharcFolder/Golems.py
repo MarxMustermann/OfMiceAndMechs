@@ -2,7 +2,7 @@ import src
 from src.CharcFolder.Monster import Monster
 
 
-class Statue(Monster):
+class Golems(Monster):
     """
     the class for animated statues
     intended as temple guards
@@ -15,7 +15,7 @@ class Statue(Monster):
         yPosition=0,
         quests=None,
         automated=True,
-        name="Statue",
+        name="Golems",
         creator=None,
         characterId=None,
         multiplier = 1,
@@ -47,7 +47,7 @@ class Statue(Monster):
             creator=creator,
             characterId=characterId,
         )
-        self.charType = "Statue"
+        self.charType = "Golems"
         self.specialDisplay = (src.characters.urwid.AttrSpec(src.characters.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"@@")
         self.baseDamage = int(10+multiplier)
         self.baseDamage = int(self.baseDamage*(1-runModifier))
@@ -69,4 +69,4 @@ class Statue(Monster):
         """
         super().die(reason, addCorpse=False, killer=killer)
 
-src.characters.add_character(Statue)
+src.characters.add_character(Golems)

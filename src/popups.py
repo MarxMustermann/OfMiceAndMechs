@@ -22,7 +22,7 @@ class Popup(ABC):
         if self.ConditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
-            submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(self.text(), targetParamName="abortKey")
+            submenue = src.menuFolder.TextMenu.TextMenu(self.text())
             submenue.tag = "popup"
             self.character.macroState["submenue"] = submenue
             self.character.runCommandString("~",nativeKey=True)

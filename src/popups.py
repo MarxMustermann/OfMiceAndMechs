@@ -25,6 +25,7 @@ class Popup(ABC):
             submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(self.text(), targetParamName="abortKey")
             submenue.tag = "popup"
             self.character.macroState["submenue"] = submenue
+            self.character.runCommandString("~",nativeKey=True)
 
     def AddToChar(self, character):
         self.character = character

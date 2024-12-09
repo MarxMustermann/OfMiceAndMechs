@@ -7,7 +7,13 @@ class EnterTrapRoom(src.popups.Popup):
         return "entered room"
 
     def text(self):
-        return "It seems the room has many traps you need to deactivate them\nmaybe try activating it from far away"
+        return """Your implant iterrupts:
+
+You just entered a trap room.
+Be careful and don't step onto the triggerPlates (_~)
+
+press q to get more detailed information.
+"""
 
     def ConditionMet(self, params) -> bool:
         return self.character.container.tag == "traproom"

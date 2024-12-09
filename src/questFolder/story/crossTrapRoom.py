@@ -19,6 +19,10 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        # close open menues
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"to close menu"))
+
         baseCommand = "d"
         nextPos = (character.xPosition+1,character.yPosition,0)
         if character.yPosition < 6:
@@ -67,7 +71,7 @@ but they seem to register us as threat.
 We need to circumvent the defenses.
 
 The design is pretty old:
-The TriggerPlates """,triggerPlate.render(),""" are cennected to the RodTowers """,rodTower.render(),""".
+The TriggerPlates """,triggerPlate.render(),""" are connected to the RodTowers """,rodTower.render(),""".
 So if you step on the TriggerPlate the RodTower whacks you.
 
 There are two ways you can bypass those traps:

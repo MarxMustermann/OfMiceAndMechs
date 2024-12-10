@@ -20,6 +20,12 @@ You reach out to your implant and it answers:
 The Communicator does let you contact tha main base with your current rank.
 Gain rank 2 by getting promoted using the normal way{reasonString}.
 The base has a Promoter, use that to get promoted.
+
+"""
+    
+        if self.subQuests:
+            text += """
+this quest has sub quests. Press d to show subquest.
 """
 
         return text

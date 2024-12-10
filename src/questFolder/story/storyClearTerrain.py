@@ -80,6 +80,19 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["ConfrontSnatchers"]()
             return ([quest],None)
 
+        for room in terrain.rooms:
+            if not room.tag == "traproom":
+                continue
+            hasEnemy = False
+            for otherCharacter in room.characters:
+                if otherCharacter.faction == character.faction:
+                    continue
+                hasEnemy = True
+
+            if hasEnemy:
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                return ([quest],None)
+
         # check for spider lairs
         targets_found = []
         specialSpiderBlockersFound = []

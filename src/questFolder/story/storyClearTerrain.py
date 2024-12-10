@@ -80,6 +80,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["ConfrontSnatchers"]()
             return ([quest],None)
 
+        # unrestrict outside movement
+        if terrain.alarm:
+            quest = src.quests.questMap["LiftOutsideRestrictions"]()
+            return ([quest],None)
+
         for room in terrain.rooms:
             if not room.tag == "traproom":
                 continue

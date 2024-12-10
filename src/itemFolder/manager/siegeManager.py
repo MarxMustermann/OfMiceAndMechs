@@ -142,12 +142,14 @@ class SiegeManager(src.items.Item):
         terrain.alarm = True
         if character:
             character.addMessage("restricted outside")
+            character.changed("did restricted outside",{})
 
     def unrestrictOutside(self,character=None):
         terrain = self.getTerrain()
         terrain.alarm = False
         if character:
             character.addMessage("unrestricted outside")
+            character.changed("did unrestricted outside",{})
 
     def checkCharacter(self,toCheck,faction=None):
         if faction and toCheck.faction != faction:

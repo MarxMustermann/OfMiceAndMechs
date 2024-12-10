@@ -18,6 +18,14 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        # ensure healing for the clones
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            regenerator = room.getItemByType("Regenerator",needsBolted=True)
+            if regenerator and not regenerator.activated:
+                quest = src.quests.questMap["ActivateRegenerator"]()
+                return ([quest],None)
+
         # count the number of enemies/allies
         terrain = character.getTerrain()
         npcCount = 0

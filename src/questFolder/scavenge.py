@@ -215,6 +215,8 @@ This quest will end when your inventory is full."""
                     continue
 
                 for item in character.getTerrain().itemsByBigCoordinate.get((pos[0],pos[1],0),[]):
+                    if item.bolted:
+                        continue
                     if self.toCollect and item.type != self.toCollect:
                         continue
                     result.append((item.getPosition(),"target"))

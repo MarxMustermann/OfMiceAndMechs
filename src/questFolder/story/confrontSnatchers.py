@@ -17,7 +17,7 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
-        if character.health < character.maxHealth/2:
+        if character.health < character.maxHealth/1.5:
             quest = src.quests.questMap["Heal"]()
             return ([quest],None)
 

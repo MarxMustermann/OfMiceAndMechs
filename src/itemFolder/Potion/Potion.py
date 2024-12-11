@@ -6,6 +6,7 @@ class Potion(src.items.Item):
 
     def __init__(self):
         super().__init__(display=src.canvas.displayChars.gooflask_empty)
+        self.walkable = True
 
     def apply(self, character):
         flask = src.items.itemMap["Flask"]()

@@ -4,10 +4,11 @@ import random
 class Heal(src.quests.MetaQuestSequence):
     type = "Heal"
 
-    def __init__(self, description="heal",noWaitHeal=False):
+    def __init__(self, description="heal",noWaitHeal=False,noVialHeal=False):
         super().__init__()
         self.metaDescription = description
         self.noWaitHeal = noWaitHeal
+        self.noVialHeal = noVialHeal
 
     def generateTextDescription(self):
         text = """
@@ -29,12 +30,17 @@ Press JH to auto heal.
             return (None,None)
 
         # heal using vials
-        foundVial = None
-        for item in character.inventory:
-            if item.type == "Vial" and item.uses > 0:
-                foundVial = item
-        if foundVial:
-            return (None,("JH","drink from vial"))
+        try:
+            self.noVialHeal
+        except:
+            self.noVialHeal = False
+        if not self.noVialHeal:
+            foundVial = None
+            for item in character.inventory:
+                if item.type == "Vial" and item.uses > 0:
+                    foundVial = item
+            if foundVial:
+                return (None,("JH","drink from vial"))
 
         # heal using coal burners
         terrain = character.getTerrain()

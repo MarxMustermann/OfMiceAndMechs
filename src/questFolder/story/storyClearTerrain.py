@@ -65,7 +65,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                     readyCoalBurner = True
 
             if characterHasVial or readyCoalBurner:
-                quest = src.quests.questMap["Heal"](noWaitHeal=True)
+                quest = src.quests.questMap["Heal"](noWaitHeal=True,noVialHeal=True)
                 return ([quest],None)
 
             if not character.getFreeInventorySpace():

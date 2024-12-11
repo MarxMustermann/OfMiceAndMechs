@@ -2477,7 +2477,7 @@ but they are likely to explode when disturbed.
                     if currentTerrain.getPositionWalkable(bug_pos):
                         Shieldbug = src.characters.characterMap["ShieldBug"]()
                         quest = src.quests.questMap["SecureTile"](
-                            toSecure=(bug_pos[0], bug_pos[1], 0), alwaysHuntDown=False, wandering=False
+                            toSecure=(x, y, 0), alwaysHuntDown=False, wandering=False
                         )
                         quest.autoSolve = True
                         quest.assignToCharacter(Shieldbug)

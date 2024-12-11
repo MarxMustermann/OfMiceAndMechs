@@ -49,6 +49,9 @@ Use the Promotor to do this.
         if not character:
             return (None,None)
 
+        if character.macroState["submenue"]:
+            return (None,(["esc"],"close the menu"))
+
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):

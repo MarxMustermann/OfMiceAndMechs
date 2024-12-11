@@ -22,7 +22,7 @@ class GetCombatReady(src.quests.MetaQuestSequence):
             return (None,None)
 
         if character.macroState["submenue"]:
-            return (None,(("esc"),"close the menu"))
+            return (None,(["esc"],"close the menu"))
 
         if not character.weapon:
             items = character.container.getItemsByType("Sword")

@@ -70,9 +70,9 @@ class AlchemyTable(src.items.Item):
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
-
+        accessible_items = character.inventory+self.getInputItems()
         flasks = []
-        for item in character.inventory+self.getInputItems():
+        for item in accessible_items:
             if item.type != "Flask":
                 continue
             flasks.append(item)
@@ -89,14 +89,31 @@ class AlchemyTable(src.items.Item):
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return
-
+        needed_Ingredients = {ing:None for ing in src.items.itemMap[params["type"]].Ingredients()}
+        for item in accessible_items:
+            t = type(item)
+            if t in needed_Ingredients and needed_Ingredients[t] is None:
+                needed_Ingredients[t] = item
+        have_ingredients = all(needed_Ingredients[ing] is not None for ing in needed_Ingredients)
+        
+        if not have_ingredients:
+            n = ""
+            i = 1
+            for ing in needed_Ingredients:
+                if needed_Ingredients[ing] is None:
+                    n+= ing.name
+                    if i != len(needed_Ingredients):
+                        n+= ", "
+            character.addMessage("you don't have the "+ n +" ingredient in your inventory")
+            return
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
-
-        if flask in character.inventory:
-            character.inventory.remove(flask)
-        else:
-            self.container.removeItem(flask)
+        to_remove = [flask] + [needed_Ingredients[ing] for ing in needed_Ingredients]
+        for item in to_remove:
+            if item in character.inventory:
+                character.inventory.remove(item)
+            else:
+                self.container.removeItem(item)
 
         self.lastProduction = params["type"]
 

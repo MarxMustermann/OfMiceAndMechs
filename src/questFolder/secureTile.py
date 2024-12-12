@@ -18,6 +18,8 @@ class SecureTile(src.quests.questMap["GoToTile"]):
         self.reason = reason
         self.story = story
         self.wandering = wandering
+        if toSecure is not None and (toSecure[0] > 13 or toSecure[1] > 13):
+            raise Exception("Out of bounds" + str(toSecure))
 
     def generateTextDescription(self):
         reasonString = ""

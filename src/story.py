@@ -2450,7 +2450,7 @@ but they are likely to explode when disturbed.
         # scatter walls
         for x in range(1,14):
             for y in range(1,14):
-                if (x,y) in ((3,11),):
+                if (x,y) in ((3,11),(6,10)):
                     continue
                 if currentTerrain.itemsByBigCoordinate.get((x,y,0),[]):
                     continue
@@ -2468,22 +2468,25 @@ but they are likely to explode when disturbed.
                     continue
                 if (x,y,0) in forestPositions:
                     continue
+                added_walls = False
                 for i in range(1,random.randint(1,4)):
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
-                for i in range(1,random.randint(1,3)):
-                    bug_pos = (15 * x + random.randint(2, 11), 15 * y + random.randint(2, 11))
-                    if currentTerrain.getPositionWalkable(bug_pos):
-                        Shieldbug = src.characters.characterMap["ShieldBug"]()
-                        quest = src.quests.questMap["SecureTile"](
-                            toSecure=(x, y, 0), alwaysHuntDown=False, wandering=False
-                        )
-                        quest.autoSolve = True
-                        quest.assignToCharacter(Shieldbug)
-                        quest.activate()
-                        Shieldbug.quests.append(quest)
-                        currentTerrain.addCharacter(Shieldbug, bug_pos[0], bug_pos[1])
+                    added_walls = True
+                if added_walls:
+                    for i in range(1,random.randint(1,2)):
+                        bug_pos = (15 * x + random.randint(2, 11), 15 * y + random.randint(2, 11))
+                        if currentTerrain.getPositionWalkable(bug_pos):
+                            Shieldbug = src.characters.characterMap["ShieldBug"]()
+                            quest = src.quests.questMap["SecureTile"](
+                                toSecure=(x, y, 0), alwaysHuntDown=False, wandering=False
+                            )
+                            quest.autoSolve = True
+                            quest.assignToCharacter(Shieldbug)
+                            quest.activate()
+                            Shieldbug.quests.append(quest)
+                            currentTerrain.addCharacter(Shieldbug, bug_pos[0], bug_pos[1])
         # place initial fighting spots
         for fightingSpot in fightingSpots:
 

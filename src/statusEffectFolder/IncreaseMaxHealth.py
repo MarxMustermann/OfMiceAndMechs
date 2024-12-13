@@ -8,7 +8,7 @@ class IncreaseMaxHealth(src.statusEffects.HealthBuff):
         self.healthBonus = healthBonus
         super().__init__(duration)
 
-    def ModHealth(self, health):
+    def modHealth(self, health):
         return health + self.healthBonus
 
     def getShortCode(self):

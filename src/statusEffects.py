@@ -37,7 +37,7 @@ class AttackSpeedEffect(StatusEffect, ABC):
 
 class HealthBuff(StatusEffect, ABC):
     @abstractmethod
-    def ModHealth(self, health): ...
+    def modHealth(self, health): ...
 
 
 class HealthRegenBuff(StatusEffect, ABC):

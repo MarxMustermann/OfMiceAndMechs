@@ -2652,7 +2652,7 @@ press any other key to attack normally"""
         maxHealth = self.maxHealth
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthBuff):
-                maxHealth = statusEffect.ModHealth(maxHealth)
+                maxHealth = statusEffect.modHealth(maxHealth)
         return maxHealth
 
     @property

@@ -1,8 +1,6 @@
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class NameGhoulMenu(SubMenu):
+class NameGhoulMenu(src.SubMenu.SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
         self.type = "NameGhoulMenu"

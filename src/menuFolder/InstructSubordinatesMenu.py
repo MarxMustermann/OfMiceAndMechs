@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class InstructSubordinatesMenu(SubMenu):
+class InstructSubordinatesMenu(src.SubMenu.SubMenu):
     def __init__(self,npcs=None):
         self.type = "InstructSubordinatesMenu"
         self.subMenu = None

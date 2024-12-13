@@ -1,9 +1,8 @@
 import collections
 
 import src
-from src.menuFolder.SubMenu import SubMenu
 
-class ChangeViewsMenu(SubMenu):
+class ChangeViewsMenu(src.SubMenu.SubMenu):
     type = "ChangeViewsMenu"
 
     def __init__(self):

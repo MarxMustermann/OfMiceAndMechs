@@ -1,9 +1,7 @@
-
 import src
-from src.menuFolder.SubMenu import SubMenu
 
 # bad code: this does nothing the Submenu doesn't do
-class SelectionMenu(SubMenu):
+class SelectionMenu(src.SubMenu.SubMenu):
     """
     does a simple selection and terminates
     """

@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class OneKeystrokeMenu(SubMenu):
+class OneKeystrokeMenu(src.SubMenu.SubMenu):
     """
     a menu getting a single keystroke from the character
     """

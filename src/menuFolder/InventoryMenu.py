@@ -1,11 +1,8 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
 # bad code: should be abstracted
 # bad code: uses global functions to render
-class InventoryMenu(SubMenu):
+class InventoryMenu(src.SubMenu.SubMenu):
     """
     shows and interacts with a characters inventory
     """

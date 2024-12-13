@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class QuestMenu(SubMenu):
+class QuestMenu(src.SubMenu.SubMenu):
     """
     show the quests for a character and allow player interaction
     """

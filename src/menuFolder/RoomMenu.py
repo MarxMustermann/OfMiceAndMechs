@@ -1,12 +1,10 @@
 import logging
 
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
 logger = logging.getLogger(__name__)
 
-class RoomMenu(SubMenu):
+class RoomMenu(src.SubMenu.SubMenu):
     type = "RoomMenu"
 
     def __init__(self, room):

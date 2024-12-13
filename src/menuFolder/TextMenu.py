@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class TextMenu(SubMenu):
+class TextMenu(src.SubMenu.SubMenu):
     """
     a menu showing a text
     """

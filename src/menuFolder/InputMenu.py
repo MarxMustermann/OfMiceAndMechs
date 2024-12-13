@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class InputMenu(SubMenu):
+class InputMenu(src.SubMenu.SubMenu):
     """
     menu to get a string input from the user
     """

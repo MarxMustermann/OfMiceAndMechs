@@ -1,17 +1,27 @@
+import json
+
 import src
 
-class MessagesMenu(src.SubMenu.SubMenu):
-    def render(self,char):
-        if self.scrollIndex:
-            return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))
-        return "\n".join(reversed(char.messages[-46:]))
+# bad code: should be abstracted
+# bad code: uses global function to render
+class StatusEffectMenu(src.SubMenu.SubMenu):
+    """
+    menu to show the players attributes
+    """
 
-    type = "MessagesMenu"
+    type = "StatusEffectMenu"
 
     def __init__(self, char=None):
         self.char = char
-        self.scrollIndex = 0
         super().__init__()
+
+    def render(self,char):
+        if char.dead:
+            return ""
+
+        text = "KatzeKatzeKatze"
+
+        return text
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -24,13 +34,12 @@ class MessagesMenu(src.SubMenu.SubMenu):
             returns True when done
         """
 
+        if key == "e":
+
+            return True
+
         # exit the submenu
-        if key == "a" and self.scrollIndex > 0:
-            self.scrollIndex -= 1
-        if key == "d":
-            self.scrollIndex += 1
         if key == "esc":
-            character.changed("closedMessages")
             return True
         if key in ("ESC","lESC",):
             self.char.rememberedMenu.append(self)
@@ -41,10 +50,10 @@ class MessagesMenu(src.SubMenu.SubMenu):
 
         char = self.char
 
-        text = f"press a/d to scroll\noldest message on top - skipping {self.scrollIndex} messages\n\n"+self.render(char)
+        text = self.render(char)
 
         # show info
-        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "messages"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncharacter overview"))
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None

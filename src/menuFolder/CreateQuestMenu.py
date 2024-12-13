@@ -1,10 +1,8 @@
 import collections
 
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class CreateQuestMenu(SubMenu):
+class CreateQuestMenu(src.SubMenu.SubMenu):
     type = "CreateQuestMenu"
 
     def __init__(self, questType=None, assignTo=None, activeChar=None):

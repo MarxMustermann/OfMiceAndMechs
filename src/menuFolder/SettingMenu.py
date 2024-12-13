@@ -1,10 +1,8 @@
 import json
 
 import src
-from src.menuFolder.SubMenu import SubMenu
 
-
-class SettingMenu(SubMenu):
+class SettingMenu(src.SubMenu.SubMenu):
     type = "SettingMenu"
     setting_options = ["enable sound","set sound volume","toggle fullscreen"]
 

@@ -5,7 +5,7 @@ import collections
 
 import src
 
-class SubMenu:
+class SubMenu(object):
     """
     The base class for submenus offering selections
     """

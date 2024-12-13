@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class RoomSourceMenu(SubMenu):
+class RoomSourceMenu(src.SubMenu.SubMenu):
     """
     """
 

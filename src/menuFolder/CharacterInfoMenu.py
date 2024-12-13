@@ -1,12 +1,10 @@
 import json
 
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
 # bad code: should be abstracted
 # bad code: uses global function to render
-class CharacterInfoMenu(SubMenu):
+class CharacterInfoMenu(src.SubMenu.SubMenu):
     """
     menu to show the players attributes
     """
@@ -53,6 +51,13 @@ class CharacterInfoMenu(SubMenu):
             flaskInfo = str(char.flask.uses)+" flask charges"
         text += f"satiation:  {char.satiation} ({flaskInfo})\n"
 
+        statusEffectString = ""
+        for statusEffect in char.statusEffects:
+            statusEffectString += statusEffect.type + " (" + statusEffect.getShortCode() + "), "
+        if not statusEffectString == "":
+            statusEffectString = statusEffectString[:-2]
+        text += f"status effects: %s\npress e to view a detailed buff list"%(statusEffectString,)
+
         text += "\n"
         text += f"movementSpeed:  {char.movementSpeed}\n"
         text += f"attackSpeed:    {char.attackSpeed}\n"
@@ -93,6 +98,10 @@ class CharacterInfoMenu(SubMenu):
         Returns:
             returns True when done
         """
+
+        if key == "e":
+
+            return True
 
         # exit the submenu
         if key == "esc":

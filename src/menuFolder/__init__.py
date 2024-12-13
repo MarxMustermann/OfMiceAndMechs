@@ -1,4 +1,3 @@
-import src.menuFolder.SubMenu
 import src.menuFolder.AdvancedQuestMenu
 import src.menuFolder.ChangeViewsMenu
 import src.menuFolder.CharacterInfoMenu
@@ -29,3 +28,4 @@ import src.menuFolder.StaffAsMatrixMenu
 import src.menuFolder.TextMenu
 import src.menuFolder.ViewNPCsMenu
 import src.menuFolder.MessagesMenu
+import src.menuFolder.StatusEffectMenu

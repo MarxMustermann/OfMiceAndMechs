@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class StaffAsMatrixMenu(SubMenu):
+class StaffAsMatrixMenu(src.SubMenu.SubMenu):
     type = "StaffAsMatrixMenu"
 
     def __init__(self,staffArtwork):

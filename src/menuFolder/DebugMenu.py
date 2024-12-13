@@ -1,11 +1,8 @@
 import collections
 
-from src.menuFolder.SubMenu import SubMenu
-
 import src
-from src.menuFolder.SelectionMenu import SelectionMenu
 
-class DebugMenu(SubMenu):
+class DebugMenu(src.SubMenu.SubMenu):
     """
     menu offering minimal debug ability
     (actually does nothing)

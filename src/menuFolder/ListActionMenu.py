@@ -1,11 +1,9 @@
 import collections
 
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
 # bad code: this does nothing the Submenu doesn't do
-class ListActionMenu(SubMenu):
+class ListActionMenu(src.SubMenu.SubMenu):
     """
     does a simple selection and terminates
     """

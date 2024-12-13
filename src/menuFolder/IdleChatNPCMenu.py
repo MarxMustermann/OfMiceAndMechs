@@ -1,11 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
-from src.menuFolder.SelectionMenu import SelectionMenu
 
-
-class IdleChatNPCMenu(SubMenu):
+class IdleChatNPCMenu(src.SubMenu.SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
         self.type = "IdleChatNPCMenu"
@@ -32,7 +27,7 @@ class IdleChatNPCMenu(SubMenu):
                 options.append(("showInventory","What is in your inventory?"))
                 options.append(("showFeelings","How are you feeling?"))
                 options.append(("reset","You are behaving eratically. Get yourself together!"))
-                self.subMenu = SelectionMenu("", options)
+                self.subMenu = src.menuFolder.SelectionMenu.SelectionMenu("", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
             self.instructionType = self.subMenu.selection

@@ -1,9 +1,6 @@
-
-from src.menuFolder.SubMenu import SubMenu
-
 import src
 
-class MapMenu(SubMenu):
+class MapMenu(src.SubMenu.SubMenu):
     """
     a menu for triggering actions from a map
     """

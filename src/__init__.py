@@ -1,3 +1,4 @@
+import src.SubMenu
 import src.characters
 import src.CharcFolder
 import src.statusEffects

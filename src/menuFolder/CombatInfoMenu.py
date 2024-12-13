@@ -1,10 +1,8 @@
-
-from src.menuFolder.SubMenu import SubMenu
 import src
 
 # bad code: should be abstracted
 # bad code: uses global function to render
-class CombatInfoMenu(SubMenu):
+class CombatInfoMenu(src.SubMenu.SubMenu):
     """
     menu to show the players attributes
     """

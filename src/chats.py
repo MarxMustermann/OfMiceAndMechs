@@ -9,14 +9,12 @@ import config
 import src.canvas
 import src.gamestate
 import src.interaction
-import src.menuFolder
-import src.menuFolder.SubMenu
 import src.quests
 import src
 
 logger = logging.getLogger(__name__)
 
-class Chat(src.menuFolder.SubMenu.SubMenu):
+class Chat(src.SubMenu.SubMenu):
     """
     the main class for chats
     """
@@ -736,7 +734,7 @@ for a brain.\n\n"""
 
 # bad code: story specific
 # obsolete: needs to be reintegrated
-class ReReport(src.menuFolder.SubMenu.SubMenu):
+class ReReport(src.SubMenu.SubMenu):
     """
     a dialog for reentering the command chain
     """

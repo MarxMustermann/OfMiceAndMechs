@@ -45,7 +45,7 @@ Activate it to eat
 
     def pickUp(self, character):
         character.addListener(self.OnDrop,"dropped")
-        self.debuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=1.1, duration = None)
+        self.debuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=0.1, duration = None, reason="You carry a MoldFeed")
         character.statusEffects.append(self.debuff)
         super().pickUp(character)
 

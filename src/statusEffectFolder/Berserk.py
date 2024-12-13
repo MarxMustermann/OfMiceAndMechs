@@ -4,8 +4,9 @@ import src
 class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
     type = "Berserk"
 
-    def __init__(self, damageBonus=2, ticks=10):
+    def __init__(self, damageBonus=2, ticks=10, speedUp=0.1):
         self.damageBonus = damageBonus
+        self.speedUp = speedUp
         super().__init__(ticks)
 
     def ModDamage(self, attacker, attacked, bonus:str, damage):
@@ -16,7 +17,12 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
         return (damage, bonus)
 
     def ModMovement(self, speed):
-        return speed * 0.9
+        try:
+            self.speedUp
+        except:
+            self.speedUp = 0.1
+
+        return speed * (1-self.speedUp)
 
     def getShortCode(self):
         return "BSRK"

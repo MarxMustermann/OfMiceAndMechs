@@ -25,8 +25,7 @@ class DamageBuff(StatusEffect, ABC):
 
 class ProtectionBuff(StatusEffect, ABC):
     @abstractmethod
-    def ModProtection(self, attacker, attacked, bonus, damage): ...
-
+    def modProtection(self, attacker, attacked, bonus, damage): ...
 
 class MovementBuff(StatusEffect, ABC):
     @abstractmethod

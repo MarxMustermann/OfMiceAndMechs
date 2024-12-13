@@ -2660,7 +2660,7 @@ press any other key to attack normally"""
         healthRegen = 1
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.HealthRegenBuff):
-                healthRegen = statusEffect.ModHealthRegen(healthRegen)
+                healthRegen = statusEffect.modHealthRegen(healthRegen)
         return healthRegen
 
 characterMap = {

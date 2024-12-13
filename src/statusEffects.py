@@ -42,7 +42,7 @@ class HealthBuff(StatusEffect, ABC):
 
 class HealthRegenBuff(StatusEffect, ABC):
     @abstractmethod
-    def ModHealthRegen(self, healthRegen): ...
+    def modHealthRegen(self, healthRegen): ...
 
 
 def addType(toRegister):

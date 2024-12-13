@@ -8,7 +8,7 @@ class IncreaseHealthRegen(src.statusEffects.HealthRegenBuff):
         self.healthBonus = healthBonus
         super().__init__(duration)
 
-    def ModHealthRegen(self, health):
+    def modHealthRegen(self, health):
         return health + self.healthBonus
 
     def getShortCode(self):

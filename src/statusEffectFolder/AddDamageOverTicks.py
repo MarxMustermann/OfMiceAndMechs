@@ -8,7 +8,7 @@ class AddDamageOverTicks(src.statusEffects.DamageBuff):
         self.damageBonus = damageBonus
         super().__init__(duration)
 
-    def ModDamage(self, attacker, attacked, bonus, damage):
+    def modDamage(self, attacker, attacked, bonus, damage):
         damage += self.damageBonus
         return (damage, bonus + "with added strength")
 

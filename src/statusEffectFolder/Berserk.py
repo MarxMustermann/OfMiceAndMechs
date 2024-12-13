@@ -9,7 +9,7 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
         self.speedUp = speedUp
         super().__init__(ticks)
 
-    def ModDamage(self, attacker, attacked, bonus:str, damage):
+    def modDamage(self, attacker, attacked, bonus:str, damage):
         damage += self.damageBonus
         if "and you gone Berserk" not in bonus:
             return (damage, bonus + "and you gone Berserk ")

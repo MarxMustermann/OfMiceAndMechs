@@ -1369,7 +1369,7 @@ press any other key to attack normally"""
 
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.DamageBuff):
-                damage, bonus = statusEffect.ModDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
+                damage, bonus = statusEffect.modDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
                 bonus+= " "
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(

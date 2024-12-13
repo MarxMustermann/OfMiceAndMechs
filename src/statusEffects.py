@@ -29,7 +29,7 @@ class ProtectionBuff(StatusEffect, ABC):
 
 class MovementBuff(StatusEffect, ABC):
     @abstractmethod
-    def ModMovement(self, speed): ...
+    def modMovement(self, speed): ...
 
 class AttackSpeedEffect(StatusEffect, ABC):
     @abstractmethod

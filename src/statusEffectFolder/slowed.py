@@ -9,7 +9,7 @@ class Slowed(src.statusEffects.MovementBuff):
         self.reason = reason
         super().__init__(duration)
 
-    def ModMovement(self, speed):
+    def modMovement(self, speed):
         return speed * (1+self.slowDown)
 
     def getShortCode(self):

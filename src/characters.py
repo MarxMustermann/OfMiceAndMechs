@@ -2644,7 +2644,7 @@ press any other key to attack normally"""
         speed = self.movementSpeed
         for statusEffect in self.statusEffects:
             if issubclass(type(statusEffect), src.statusEffects.MovementBuff):
-                speed = statusEffect.ModMovement(speed)
+                speed = statusEffect.modMovement(speed)
         return speed
 
     @property

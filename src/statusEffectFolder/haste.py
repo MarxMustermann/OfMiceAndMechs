@@ -8,7 +8,7 @@ class Haste(src.statusEffects.MovementBuff):
         self.speedUp = speedUp
         super().__init__(duration)
 
-    def ModMovement(self, speed):
+    def modMovement(self, speed):
         return speed * self.speedUp
 
     def getShortCode(self):

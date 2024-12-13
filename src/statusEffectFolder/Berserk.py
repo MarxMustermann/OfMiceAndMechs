@@ -16,7 +16,7 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
 
         return (damage, bonus)
 
-    def ModMovement(self, speed):
+    def modMovement(self, speed):
         try:
             self.speedUp
         except:

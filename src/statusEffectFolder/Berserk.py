@@ -21,4 +21,10 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
     def getShortCode(self):
         return "BSRK"
 
+    def getDescription(self):
+        text = ""
+        text += f"You are in a beserk rage and are ready to kill.\nYou chase your victims faster and hurt them harder.\n\nYou need to hurry and move fast or your rage runs out"
+        text += f"\n\nReason: You killed somebody\nDamageBonus: {self.DamageBonus}\nduration: {self.ticks}"
+        return text
+
 src.statusEffects.addType(Berserk)

@@ -1413,7 +1413,7 @@ press any other key to attack normally"""
         self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
         if target.dead:
-            self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"]())
+            self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
         else:
             self.applyNativeMeleeAttackEffects(target)
 

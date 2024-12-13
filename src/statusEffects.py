@@ -15,6 +15,8 @@ class StatusEffect:
     def getShortCode(self):
         return self.type
 
+    def getDescription(self):
+        return "This Description is missing, feel free to report that as a bug. thx"
 
 class DamageBuff(StatusEffect, ABC):
     @abstractmethod

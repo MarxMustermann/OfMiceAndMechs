@@ -2456,6 +2456,8 @@ but they are likely to explode when disturbed.
                     continue
                 if currentTerrain.charactersByTile.get((x,y),[]):
                     continue
+                if currentTerrain.getRoomByPosition((x,y,0)):
+                    continue
                 if (x,y,0) in specialSpots:
                     continue
                 if (x,y,0) in moldTiles:
@@ -2468,25 +2470,12 @@ but they are likely to explode when disturbed.
                     continue
                 if (x,y,0) in forestPositions:
                     continue
-                added_walls = False
+
                 for i in range(1,random.randint(1,4)):
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
-                    added_walls = True
-                if added_walls:
-                    for i in range(1,random.randint(1,2)):
-                        bug_pos = (15 * x + random.randint(2, 11), 15 * y + random.randint(2, 11))
-                        if currentTerrain.getPositionWalkable(bug_pos):
-                            Shieldbug = src.characters.characterMap["ShieldBug"]()
-                            quest = src.quests.questMap["SecureTile"](
-                                toSecure=(x, y, 0), alwaysHuntDown=False, wandering=False
-                            )
-                            quest.autoSolve = True
-                            quest.assignToCharacter(Shieldbug)
-                            quest.activate()
-                            Shieldbug.quests.append(quest)
-                            currentTerrain.addCharacter(Shieldbug, bug_pos[0], bug_pos[1])
+
         # place initial fighting spots
         for fightingSpot in fightingSpots:
 
@@ -2545,9 +2534,8 @@ but they are likely to explode when disturbed.
 
             # add enemies
             for _i in range(0,random.randint(1,5)):
-                enemy = src.characters.characterMap["Monster"]()
+                enemy = src.characters.characterMap["ShieldBug"]()
                 enemy.faction = "insects"
-                enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
@@ -2606,7 +2594,7 @@ but they are likely to explode when disturbed.
         for genericEnemyGroupPosition in genericEnemyGroups:
             # add enemies
             for _i in range(0,random.randint(1,2)):
-                enemy = src.characters.characterMap["Monster"]()
+                enemy = src.characters.characterMap["Golems"](multiplier=5)
                 enemy.faction = "insects"
                 enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=genericEnemyGroupPosition)

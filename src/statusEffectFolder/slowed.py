@@ -23,7 +23,7 @@ class Slowed(src.statusEffects.MovementBuff):
             text += f"\nreason: {self.reason}"
         text += f"\nslowDown: {self.slowDown}"
         if self.ticks:
-            text += f"\nduration: {self.ticks}"
+            text += f"\nduration: {self.duration}"
         return text
 
 src.statusEffects.addType(Slowed)

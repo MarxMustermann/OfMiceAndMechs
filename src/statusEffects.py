@@ -2,21 +2,41 @@ from abc import ABC, abstractmethod
 
 
 class StatusEffect:
-    def __init__(self, ticks = None):
-        self.ticks = ticks
+    def __init__(self, duration = None, reason = None):
+        self.duration = duration
+        self.reason = reason
 
     def advance(self):
-        if self.ticks is not None:
-            self.ticks -= 1
+        try:
+            self.duration
+        except:
+            self.duration = 10
+
+        if self.duration is not None:
+            self.duration -= 1
 
     def is_done(self):
-        return self.ticks is not None and self.ticks <= 0
+        return self.duration is not None and self.duration <= 0
 
     def getShortCode(self):
         return self.type
 
-    def getDescription(self):
+    def getLoreDescription(self):
         return "This Description is missing, feel free to report that as a bug. thx"
+
+    def buildStatListDescription(self,description = ""):
+        if self.reason:
+            description += f"reason: {self.reason}\n"
+        if self.duration:
+            description += f"duration: {self.duration} ticks\n"
+        return description
+
+    def getDescription(self):
+        result = []
+        result.append(self.getLoreDescription())
+        result.append("\n\n")
+        result.append(self.buildStatListDescription())
+        return result
 
 class DamageBuff(StatusEffect, ABC):
     @abstractmethod

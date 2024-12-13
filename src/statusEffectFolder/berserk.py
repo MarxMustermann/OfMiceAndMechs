@@ -34,7 +34,7 @@ class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
 
     def buildStatListDescription(self,description = ""):
         description = super().buildStatListDescription(description=description)
-        description += f"damage bonus: {self.damageBonus}\n"
+        description += f"damage bonus: {self.damageBonus} damage\n"
         description += f"speed up: {self.speedUp*100}%\n"
         return description
 

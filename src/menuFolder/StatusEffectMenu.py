@@ -11,15 +11,26 @@ class StatusEffectMenu(src.SubMenu.SubMenu):
 
     type = "StatusEffectMenu"
 
-    def __init__(self, char=None):
+    def __init__(self, char=None,cursor=0):
         self.char = char
+        self.cursor = cursor
         super().__init__()
 
     def render(self,char):
         if char.dead:
             return ""
 
-        text = "KatzeKatzeKatze"
+        if not char.statusEffects:
+            text = "no status effects"
+        else:
+            text = []
+            index = 0
+            for statusEffect in char.statusEffects:
+                text.append(f"== {statusEffect.type} ({statusEffect.getShortCode()}) ==")
+                if index == self.cursor:
+                    text.append(f"\n\n{statusEffect.getDescription()}\n")
+                text.append(f"\n")
+                index += 1
 
         return text
 
@@ -34,10 +45,18 @@ class StatusEffectMenu(src.SubMenu.SubMenu):
             returns True when done
         """
 
-        if key == "e":
+        if key == "w":
+            self.cursor -= 1 
+        if self.cursor < 0:
+            self.cursor = 0
 
+        if key == "s":
+            self.cursor += 1 
+        if self.cursor >= len(character.statusEffects):
+            self.cursor = len(character.statusEffects)-1
+
+        if key == "esc":
             return True
-
         # exit the submenu
         if key == "esc":
             return True

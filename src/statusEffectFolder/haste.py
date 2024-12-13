@@ -4,12 +4,12 @@ import src
 class Haste(src.statusEffects.MovementBuff):
     type = "Haste"
 
-    def __init__(self, speedUp=0.8, duration=100):
+    def __init__(self, speedUp=0.2, duration=100, reason=None):
         self.speedUp = speedUp
-        super().__init__(duration)
+        super().__init__(duration,reason=reason)
 
     def modMovement(self, speed):
-        return speed * self.speedUp
+        return speed * (1-self.speedUp)
 
     def getShortCode(self):
         return "HST"

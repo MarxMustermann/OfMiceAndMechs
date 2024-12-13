@@ -6,8 +6,7 @@ class Slowed(src.statusEffects.MovementBuff):
 
     def __init__(self, slowDown=0.1, duration=100, reason=None):
         self.slowDown = slowDown
-        self.reason = reason
-        super().__init__(duration)
+        super().__init__(duration, reason=reason)
 
     def modMovement(self, speed):
         return speed * (1+self.slowDown)
@@ -21,9 +20,9 @@ class Slowed(src.statusEffects.MovementBuff):
         text += f"\n"
         if self.reason:
             text += f"\nreason: {self.reason}"
-        text += f"\nslowDown: {self.slowDown}"
-        if self.ticks:
-            text += f"\nduration: {self.duration}"
+        text += f"\nslow down: {self.slowDown*100}%"
+        if self.duration:
+            text += f"\nduration: {self.duration} ticks"
         return text
 
 src.statusEffects.addType(Slowed)

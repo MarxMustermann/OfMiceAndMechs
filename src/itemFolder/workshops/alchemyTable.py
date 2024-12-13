@@ -1,6 +1,6 @@
 import src
 
-class AlchemyTable(src.items.Item):
+class AlchemyTable(src.items.itemMap["WorkShop"]):
     """
     ingame item used as ressource. basically does nothing
     """
@@ -120,30 +120,9 @@ class AlchemyTable(src.items.Item):
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
-        self.producePotion_wait(params)
+        self.produceItem_wait(params)
 
-    def producePotion_wait(self, params):
-        character = params["character"]
-        if params["hitCounter"] != character.numAttackedWithoutResponse:
-            character.addMessage("You got hit while working")
-            return
-        ticksLeft = params["productionTime"] - params["doneProductionTime"]
-        character.timeTaken += 1
-        params["doneProductionTime"] += 1
-        progressbar = "X" * (params["doneProductionTime"] // 10) + "." * (ticksLeft // 10)
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar, targetParamName="abortKey")
-        submenue.tag = "alchemyTableProductWait"
-        character.macroState["submenue"] = submenue
-        character.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "producePotion_done" if ticksLeft <= 0 else "producePotion_wait",
-            "params": params,
-        }
-        character.runCommandString(".", nativeKey=True)
-        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
-            src.interaction.skipNextRender = True
-
-    def producePotion_done(self,params):
+    def produceItem_done(self,params):
         character = params["character"]
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
@@ -278,30 +257,5 @@ class AlchemyTable(src.items.Item):
             return True
         else:
             return False
-
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the AlchemyTable")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the AlchemyTable")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(AlchemyTable)

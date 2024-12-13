@@ -1,6 +1,6 @@
 import src
 
-class MetalWorkingBench(src.items.Item):
+class MetalWorkingBench(src.items.itemMap["WorkShop"]):
     """
     ingame item used as ressource. basically does nothing
     """
@@ -134,8 +134,7 @@ class MetalWorkingBench(src.items.Item):
         params["productionTime"] = 100*timeModifier
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
-        params["self"] = self
-        src.helpers.produceItem_wait(params)
+        self.produceItem_wait(params)
 
     def produceItem_done(self,params):
         character = params["character"]
@@ -297,29 +296,5 @@ class MetalWorkingBench(src.items.Item):
         else:
             return False
 
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the MetalWorkingBench")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the MetalWorkingBench")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(MetalWorkingBench)

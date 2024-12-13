@@ -1,7 +1,7 @@
 import src
 
 
-class Electrifier(src.items.Item):
+class Electrifier(src.items.itemMap["WorkShop"]):
     """
     ingame item used as ressource. basically does nothing
     """
@@ -173,16 +173,6 @@ class Electrifier(src.items.Item):
     def disable(self,character):
         character.addMessage("you disable the Machine")
         self.disabled = True
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Machine")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Machine")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
         """

@@ -1,7 +1,7 @@
 import src
 
 
-class Anvil(src.items.Item):
+class Anvil(src.items.itemMap["WorkShop"]):
     """
     ingame item used as ressource. basically does nothing
     """
@@ -92,9 +92,25 @@ class Anvil(src.items.Item):
         if self.scheduledItems:
             self.scheduledItems.pop()
 
-        new = src.items.itemMap["MetalBars"]()
+        params = {
+            "character": character,
+            "scrap": scrap,
+            "preferInventoryOut": preferInventoryOut,
+            "dropsSpotsFull": dropsSpotsFull,
+        }
+        params["productionTime"] = 10
+        params["doneProductionTime"] = 0
+        params["hitCounter"] = character.numAttackedWithoutResponse
 
-        character.timeTaken += 10
+        self.produceItem_wait(params)
+
+    def produceItem_done(self,params):
+        character = params["character"]
+        scrap = params["scrap"]
+        preferInventoryOut = params["preferInventoryOut"]
+        dropsSpotsFull = params["dropsSpotsFull"]
+
+        new = src.items.itemMap["MetalBars"]()
         character.addMessage("You produce a metal bar")
         character.addMessage("It takes you 10 turns to do that")
         if scrap in character.inventory:
@@ -164,30 +180,5 @@ class Anvil(src.items.Item):
 
     def scheduleProductionHook(self,character):
         self.scheduledItems.append("MetalBars")
-
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the Anvil")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the Amvil")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(Anvil)

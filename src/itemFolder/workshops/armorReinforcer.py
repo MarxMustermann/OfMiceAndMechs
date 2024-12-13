@@ -4,7 +4,7 @@ import src
 import src.items
 
 
-class armorReinforcer(src.items.Item):
+class armorReinforcer(src.items.itemMap["WorkShop"]):
     type = "armorReinforcer"
     name = "armor Reinforcer"
     description = "Use it to upgrade armors"
@@ -63,11 +63,10 @@ class armorReinforcer(src.items.Item):
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
-        params["self"] = self
 
         character.inventory.remove(CitinPlates)
 
-        src.helpers.produceItem_wait(params)
+        self.produceItem_wait(params)
 
     def produceItem_done(self, params):
         character = params["character"]
@@ -78,24 +77,6 @@ class armorReinforcer(src.items.Item):
         Armor = params["Armor"]
         Armor.name = "improved Armor"
         Armor.armorValue += improvement
-
-    def getConfigurationOptions(self, character):
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self, character):
-        self.bolted = True
-        character.addMessage("you bolt down the Armor Reinforcer")
-        character.changed("boltedItem", {"character": character, "item": self})
-
-    def unboltAction(self, character):
-        self.bolted = False
-        character.addMessage("you unbolt the Armor Reinforcer")
-        character.changed("unboltedItem", {"character": character, "item": self})
 
 
 src.items.addType(armorReinforcer)

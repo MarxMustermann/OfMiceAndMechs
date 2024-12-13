@@ -4,7 +4,7 @@ import src
 import src.items
 
 
-class swordSharpener(src.items.Item):
+class swordSharpener(src.items.itemMap["WorkShop"]):
     type = "swordSharpener"
     name = "sword Sharpener"
     description = "Use it to upgrade swords"
@@ -63,11 +63,10 @@ class swordSharpener(src.items.Item):
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
-        params["self"] = self
 
         character.inventory.remove(Grindstone)
 
-        src.helpers.produceItem_wait(params)
+        self.produceItem_wait(params)
 
     def produceItem_done(self, params):
         character = params["character"]
@@ -78,24 +77,6 @@ class swordSharpener(src.items.Item):
         sword = params["sword"]
         sword.name = "improved sword"
         sword.baseDamage += improvement
-
-    def getConfigurationOptions(self, character):
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self, character):
-        self.bolted = True
-        character.addMessage("you bolt down the sword Sharpener")
-        character.changed("boltedItem", {"character": character, "item": self})
-
-    def unboltAction(self, character):
-        self.bolted = False
-        character.addMessage("you unbolt the sword Sharpener")
-        character.changed("unboltedItem", {"character": character, "item": self})
 
 
 src.items.addType(swordSharpener)

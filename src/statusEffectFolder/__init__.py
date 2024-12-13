@@ -1,4 +1,4 @@
-import src.statusEffectFolder.AddDamageOverTicks
+import src.statusEffectFolder.addDamageOverTicks
 import src.statusEffectFolder.berserk
 import src.statusEffectFolder.IncreaseMaxHealth
 import src.statusEffectFolder.IncreaseHealthRegen

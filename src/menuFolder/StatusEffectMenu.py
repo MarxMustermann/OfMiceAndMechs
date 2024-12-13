@@ -48,12 +48,12 @@ class StatusEffectMenu(src.SubMenu.SubMenu):
         if key == "w":
             self.cursor -= 1 
         if self.cursor < 0:
-            self.cursor = 0
+            self.cursor = len(character.statusEffects)-1
 
         if key == "s":
             self.cursor += 1 
         if self.cursor >= len(character.statusEffects):
-            self.cursor = len(character.statusEffects)-1
+            self.cursor = 0
 
         if key == "esc":
             return True

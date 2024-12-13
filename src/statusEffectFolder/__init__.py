@@ -1,6 +1,6 @@
 import src.statusEffectFolder.addDamageOverTicks
 import src.statusEffectFolder.berserk
-import src.statusEffectFolder.IncreaseMaxHealth
+import src.statusEffectFolder.increaseMaxHealth
 import src.statusEffectFolder.increaseHealthRegen
 import src.statusEffectFolder.haste
 import src.statusEffectFolder.frenzy

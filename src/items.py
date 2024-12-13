@@ -404,7 +404,7 @@ class Item:
             a list of functions
         """
 
-        return [self.__vanillaPickUp]
+        return [self.__vanillaPickUp ,self.pickUpNonWalkable]
 
     def degrade(self):
         return
@@ -433,6 +433,19 @@ class Item:
             character.addMessage("no pickup action found")
 
         character.changed("itemPickedUp",(character,self,oldPos))
+
+    def pickUpNonWalkable(self, character):
+        if not self.walkable:
+            character.addListener(self.OnDropNonWalkable,"dropped")
+            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=1.1, duration = None)
+            character.statusEffects.append(self.NonWalkableItemDeBuff)
+            character.addMessage("it's heavy and slows you down")
+
+    def OnDropNonWalkable(self,params):
+        (character,item) = params
+        if item == self:
+            character.statusEffects.remove(self.NonWalkableItemDeBuff)
+            character.delListener(self.OnDropNonWalkable,"dropped")
 
     def getBigPosition(self,offset=(0,0,0)):
         if self.container.isRoom:

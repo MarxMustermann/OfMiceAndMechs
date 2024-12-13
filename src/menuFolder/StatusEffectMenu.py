@@ -28,7 +28,9 @@ class StatusEffectMenu(src.SubMenu.SubMenu):
             for statusEffect in char.statusEffects:
                 text.append(f"== {statusEffect.type} ({statusEffect.getShortCode()}) ==")
                 if index == self.cursor:
-                    text.append(f"\n\n{statusEffect.getDescription()}\n")
+                    text.append(f"\n\n")
+                    text.append(statusEffect.getDescription())
+                    text.append(f"\n")
                 text.append(f"\n")
                 index += 1
 

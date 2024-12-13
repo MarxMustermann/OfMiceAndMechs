@@ -94,13 +94,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         else:
             self.refill(character)
 
-    def refill(self, character):
-        """
-        refill the growth tank
-
-        Parameters
-            character: the character trying to refill the growth tank
-        """
+    def getFlask(self, character=None):
 
         flask = None
         for offset in [(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]:
@@ -111,6 +105,18 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             for item in character.inventory:
                 if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
                     flask = item
+
+        return flask
+
+    def refill(self, character):
+        """
+        refill the growth tank
+
+        Parameters
+            character: the character trying to refill the growth tank
+        """
+
+        flask = self.getFlask(character)
 
         if flask:
             self.filled = True

@@ -4,10 +4,10 @@ import src
 class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
     type = "Berserk"
 
-    def __init__(self, damageBonus=2, ticks=10, speedUp=0.1):
+    def __init__(self, damageBonus=2, duration=10, speedUp=0.1):
         self.damageBonus = damageBonus
         self.speedUp = speedUp
-        super().__init__(ticks)
+        super().__init__(duration)
 
     def modDamage(self, attacker, attacked, bonus:str, damage):
         damage += self.damageBonus

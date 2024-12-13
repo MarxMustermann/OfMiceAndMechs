@@ -100,7 +100,9 @@ class CharacterInfoMenu(src.SubMenu.SubMenu):
         """
 
         if key == "e":
-
+            submenue = src.menuFolder.StatusEffectMenu.StatusEffectMenu(char=character)
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender,character=character)
             return True
 
         # exit the submenu

@@ -4233,7 +4233,7 @@ def renderGameDisplay(renderChar=None):
                         printUrwidToDummy(pseudoDisplay,uiElement["text"],uiElement["offset"])
                     if uiElement["type"] == "time":
                         text = f"epoch: {src.gamestate.gamestate.tick//(15*15*15)} tick: {src.gamestate.gamestate.tick%(15*15*15)}"
-                        printUrwidToTcod(text,uiElement["offset"])
+                        printUrwidToTcod(text,uiElement["offset"],((255, 68, 51),(0,0,0)) if src.gamestate.gamestate.mainChar.timeTaken > 1 else None)
                         printUrwidToDummy(pseudoDisplay,text,uiElement["offset"])
                     if uiElement["type"] == "rememberedMenu" and char.rememberedMenu:
                         chars = []
@@ -6704,6 +6704,9 @@ def advanceChar(char,render=True):
     global lastRender
 
     lastLoop = time.time()
+    if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1:
+        renderGameDisplay()
+        lastRender = time.time()
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
             #char.getTerrain().animations = []

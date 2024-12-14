@@ -147,4 +147,15 @@ Pick up and unbolt items that are in the way.
 
         return (None,None)
 
+    def handleChangedTile(self, extraInfo = None):
+        self.fail("left terrain")
+
+    def assignToCharacter(self, character):
+        if self.character:
+            return
+
+        self.startWatching(character,self.handleChangedTile, "changedTile")
+
+        super().assignToCharacter(character)
+
 src.quests.addType(ClearPathToPosition)

@@ -1337,8 +1337,8 @@ press any other key to attack normally"""
         if bestial:
             baseDamage = int(baseDamage*2)
 
-        if (isinstance(self, src.CharcFolder.Monster.Monster) and self.hasTimingBonus()) or (
-            isinstance(target, src.CharcFolder.Monster.Monster) and target.hasTimingBonus()
+        if (isinstance(self, src.monster.Monster) and self.hasTimingBonus()) or (
+            isinstance(target, src.monster.Monster) and target.hasTimingBonus()
         ):
             baseDamage = int(baseDamage * 1.25)
             #reason+= " with timing bonus"

@@ -1,6 +1,5 @@
 import src.CharcFolder.Mouse
-import src.CharcFolder.Monster
-import src.CharcFolder.Golems
+import src.CharcFolder.Golem
 import src.CharcFolder.Mechanical_Crawler
 import src.CharcFolder.Exploder
 import src.CharcFolder.Ghoul

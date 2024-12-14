@@ -1,9 +1,6 @@
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Insect(Monster):
+class Insect(src.monster.Monster):
     pass
-
 
 src.characters.add_character(Insect)

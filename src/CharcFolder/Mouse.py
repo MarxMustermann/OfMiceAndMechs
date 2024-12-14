@@ -1,6 +1,5 @@
 import src
 
-
 # bad code: animals should not be characters. This means it is possible to chat with a mouse
 class Mouse(src.characters.Character):
     """

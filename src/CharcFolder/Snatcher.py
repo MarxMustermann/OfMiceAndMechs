@@ -1,9 +1,7 @@
 import random
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Snatcher(Monster):
+class Snatcher(src.monster.Monster):
     def __init__(self,):
         super().__init__(name= "Snatcher")
 

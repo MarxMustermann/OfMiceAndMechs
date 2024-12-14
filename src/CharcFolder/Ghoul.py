@@ -1,6 +1,5 @@
 import src
 
-
 class Ghoul(src.characters.Character):
     """
     """

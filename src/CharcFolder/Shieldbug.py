@@ -1,6 +1,5 @@
 import src
 
-
 class ShieldBug(src.characters.characterMap["Insect"]):
     def __init__(
         self,

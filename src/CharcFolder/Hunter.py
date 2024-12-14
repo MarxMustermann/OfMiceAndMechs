@@ -1,8 +1,6 @@
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Hunter(Monster):
+class Hunter(src.monster.Monster):
     def __init__(self,):
         super().__init__(name= "Hunter")
         quest = src.quests.questMap["ClearTerrain"]()

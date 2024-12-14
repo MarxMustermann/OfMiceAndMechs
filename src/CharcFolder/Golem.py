@@ -1,8 +1,6 @@
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Golems(Monster):
+class Golem(src.monster.Monster):
     """
     the class for animated statues
     intended as temple guards
@@ -15,7 +13,7 @@ class Golems(Monster):
         yPosition=0,
         quests=None,
         automated=True,
-        name="Golems",
+        name="Golem",
         creator=None,
         characterId=None,
         multiplier = 1,
@@ -47,7 +45,7 @@ class Golems(Monster):
             creator=creator,
             characterId=characterId,
         )
-        self.charType = "Golems"
+        self.charType = "Golem"
         self.specialDisplay = (src.characters.urwid.AttrSpec(src.characters.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"@@")
         self.baseDamage = int(10+multiplier)
         self.baseDamage = int(self.baseDamage*(1-runModifier))
@@ -73,4 +71,4 @@ class Golems(Monster):
     def lootTable():
         return [(None, 9),(src.items.itemMap["Grindstone"], 1)]
 
-src.characters.add_character(Golems)
+src.characters.add_character(Golem)

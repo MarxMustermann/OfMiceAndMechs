@@ -2594,7 +2594,7 @@ but they are likely to explode when disturbed.
         for genericEnemyGroupPosition in genericEnemyGroups:
             # add enemies
             for _i in range(0,random.randint(1,2)):
-                enemy = src.characters.characterMap["Golems"](multiplier=5)
+                enemy = src.characters.characterMap["Golem"](multiplier=5)
                 enemy.faction = "insects"
                 enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=genericEnemyGroupPosition)
@@ -2737,7 +2737,7 @@ but they are likely to explode when disturbed.
 
             # add monster
             pos = (random.randint(1,11),random.randint(1,11),0)
-            golem = src.characters.characterMap["Golems"]()
+            golem = src.characters.characterMap["Golem"]()
             golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
             quest.autoSolve = True
@@ -3036,7 +3036,7 @@ but they are likely to explode when disturbed.
 
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                golem = src.characters.characterMap["Golems"](4,4,multiplier = multiplier,runModifier = runModifier)
+                golem = src.characters.characterMap["Golem"](4,4,multiplier = multiplier,runModifier = runModifier)
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True
                 quest.assignToCharacter(golem)
@@ -3063,7 +3063,7 @@ but they are likely to explode when disturbed.
         for room in reversed(extraRooms):
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
-                golem = src.characters.characterMap["Golems"](4,4,multiplier = multiplier,runModifier = runModifier)
+                golem = src.characters.characterMap["Golem"](4,4,multiplier = multiplier,runModifier = runModifier)
 
                 quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
                 quest.autoSolve = True

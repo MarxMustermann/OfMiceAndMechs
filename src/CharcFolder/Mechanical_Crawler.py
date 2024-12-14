@@ -1,8 +1,6 @@
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Mechanical_Crawler(Monster):
+class Mechanical_Crawler(src.monster.Monster):
     """
     the class for a small statue
     is intended as temple guard

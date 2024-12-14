@@ -1,8 +1,6 @@
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Spiderling(Monster):
+class Spiderling(src.monster.Monster):
     """
     A spider
     should hang out in abandoned room and such

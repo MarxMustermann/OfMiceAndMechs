@@ -2,7 +2,6 @@ import random
 
 import src
 
-
 class Maggot(src.characters.Character):
     """
     A maggot

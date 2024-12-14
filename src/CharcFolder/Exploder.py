@@ -1,9 +1,7 @@
 
 import src
-from src.CharcFolder.Monster import Monster
 
-
-class Exploder(Monster):
+class Exploder(src.monster.Monster):
     """
     a monster that explodes on death
     """

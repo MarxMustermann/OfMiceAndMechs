@@ -2634,6 +2634,9 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(coocon,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
         """
 
+        #set number of rooms for the god
+        src.gamestate.gamestate.gods[1]["roomRewardMapByTerrain"] = {(currentTerrain.xPosition,currentTerrain.yPosition): len(currentTerrain.rooms) - 1}
+
     def setUpFactoryRemains(self,pos):
         # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
@@ -2798,9 +2801,6 @@ but they are likely to explode when disturbed.
         src.gamestate.gamestate.gods[itemID] = {
                 "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":sacrificeRequirement
             }
-        if itemID == 1:
-            src.gamestate.gamestate.gods[itemID]["roomRewardMapByTerrain"] = {}
-
 
 
         # get basic info

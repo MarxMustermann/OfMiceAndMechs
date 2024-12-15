@@ -72,7 +72,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["ClearInventory"](returnToTile=False)
                 return ([quest],None)
 
-            quest = src.quests.questMap["Scavenge"](lifetime=500)
+            if not terrain.alarm:
+                quest = src.quests.questMap["Scavenge"](lifetime=500)
+                return ([quest],None)
+
+            quest = src.quests.questMap["Heal"](noVialHeal=True)
             return ([quest],None)
 
         # kill snatchers (redundant to GetRank2Promotion)

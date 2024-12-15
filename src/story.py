@@ -2446,11 +2446,11 @@ but they are likely to explode when disturbed.
         ###
         ##  add terrain details
         #
-
+        all_base_rooms = [(r.xPosition, r.yPosition) for r in currentTerrain.rooms]
         # scatter walls
         for x in range(1,14):
             for y in range(1,14):
-                if (x,y) in ((3,11),(6,10)):
+                if (x,y) in ((3,11),(6,10)) or (x,y) in all_base_rooms:
                     continue
                 if currentTerrain.itemsByBigCoordinate.get((x,y,0),[]):
                     continue
@@ -3105,6 +3105,10 @@ but they are likely to explode when disturbed.
                 item = src.items.itemMap["MoldFeed"]()
                 room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
+            if random.random() < 0.15:
+                item = src.items.itemMap["RodTower"]()
+                room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
+
         # spawn special items
         endIndex = len(rooms)-3
         counter = 0
@@ -3184,7 +3188,7 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
-
+            
     def createStoryStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
 

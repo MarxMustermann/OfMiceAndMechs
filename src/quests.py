@@ -834,6 +834,7 @@ class MetaQuestSequence(Quest,ABC):
 
     def subQuestCompleted(self,extraInfo=None):
         pass
+
     def handleQuestFailure(self,extraParam):
         pass
     

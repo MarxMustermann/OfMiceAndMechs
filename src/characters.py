@@ -2404,7 +2404,7 @@ press any other key to attack normally"""
         """
         for statusEffect in self.statusEffects:
             statusEffect.advance()
-            if statusEffect.is_done():
+            if statusEffect.is_done(self):
                 self.statusEffects.remove(statusEffect)
 
     # bad pattern: is repeated in items etc

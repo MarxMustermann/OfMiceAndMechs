@@ -16,12 +16,12 @@ class StatusEffect:
         if self.duration is not None:
             self.duration -= 1
 
-    def is_done(self):
+    def is_done(self, character):
         if self.duration is not None:
             if self.duration <= 0:
                 return True
         if self.inventoryItem:
-            if not self.inventoryItem:
+            if not self.inventoryItem in character.inventory:
                 return True
         return False
 

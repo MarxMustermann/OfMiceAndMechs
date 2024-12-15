@@ -74,15 +74,22 @@ or use this item with MoldFeed in your inventory.
 
         moldFeed = self.getMoldFeed(character)
         if len(moldFeed) == 0:
-            character.addMessage("you need to have a MoldFeed in your inventory or nearby")
+            character.addMessage("you need to have a MoldFeed in your inventory or in the coal burners input stockpile")
             return
+
         amount_to_burn = min(len(moldFeed), self.consumption_amount, math.ceil((character.maxHealth - character.health) / 5))
+        
+        if not amount_to_burn:
+            character.addMessage("you need no healing and burn no corpses")
+            return
+
         for i in range(amount_to_burn):
             current_moldFeed = moldFeed[i]
             if current_moldFeed in character.inventory:
                 character.inventory.remove(current_moldFeed)
             else:
                 self.container.removeItem(current_moldFeed)
+
         character.addMessage("you burn the corpses and inhale the smoke")
         character.heal(5 * amount_to_burn,reason="inhaling the smoke of " + str(amount_to_burn) + " corpse")
         character.timeTaken += 30

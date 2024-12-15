@@ -129,6 +129,8 @@ This quest will end when the target tile has no items left."""
 
         if renderForTile and character.getBigPosition() == self.targetPosition:
             for item in character.getTerrain().itemsByBigCoordinate.get(self.targetPosition,[]):
+                if item.bolted:
+                    continue
                 if self.toCollect and item.type != self.toCollect:
                     continue
                 result.append((item.getPosition(),"target"))

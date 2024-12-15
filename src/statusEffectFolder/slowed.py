@@ -4,9 +4,9 @@ import src
 class Slowed(src.statusEffects.MovementBuff):
     type = "Slowed"
 
-    def __init__(self, slowDown=0.1, duration=100, reason=None):
+    def __init__(self, slowDown=0.1, duration=100, reason=None, inventoryItem=None):
         self.slowDown = slowDown
-        super().__init__(duration, reason=reason)
+        super().__init__(duration, reason=reason, inventoryItem=inventoryItem)
 
     def modMovement(self, speed):
         return speed * (1+self.slowDown)

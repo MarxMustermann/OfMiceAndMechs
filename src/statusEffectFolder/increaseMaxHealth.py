@@ -4,9 +4,9 @@ import src
 class IncreaseMaxHealth(src.statusEffects.HealthBuff):
     type = "IncreaseMaxHealth"
 
-    def __init__(self, healthBonus=25, duration=30):
+    def __init__(self, healthBonus=25, duration=30, inventoryItem=None):
         self.healthBonus = healthBonus
-        super().__init__(duration)
+        super().__init__(duration=duration, inventoryItem=inventoryItem)
 
     def modHealth(self, health):
         return health + self.healthBonus

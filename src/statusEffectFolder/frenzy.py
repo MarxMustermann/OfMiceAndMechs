@@ -3,9 +3,9 @@ import src
 class Frenzy(src.statusEffects.AttackSpeedEffect):
     type = "Frenzy"
 
-    def __init__(self, speedUp=0.2, duration=100, reason=None):
+    def __init__(self, speedUp=0.2, duration=100, reason=None,inventoryItem=None):
         self.speedUp = speedUp
-        super().__init__(duration,reason=reason)
+        super().__init__(duration,reason=reason,inventoryItem=inventoryItem)
 
     def modAttackSpeed(self, speed):
         return speed * (1-self.speedUp)

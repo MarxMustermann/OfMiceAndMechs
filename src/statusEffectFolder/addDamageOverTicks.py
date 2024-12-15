@@ -4,9 +4,9 @@ import src
 class AddDamageOverTicks(src.statusEffects.DamageBuff):
     type = "AddDamageOverTicks"
 
-    def __init__(self, damageBonus=10, duration=200, reason=None):
+    def __init__(self, damageBonus=10, duration=200, reason=None, inventoryItem=None):
         self.damageBonus = damageBonus
-        super().__init__(duration=duration,reason=reason)
+        super().__init__(duration=duration,reason=reason,inventoryItem=inventoryItem)
 
     def modDamage(self, attacker, attacked, bonus, damage):
         damage += self.damageBonus

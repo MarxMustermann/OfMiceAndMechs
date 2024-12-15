@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 
 
 class StatusEffect:
-    def __init__(self, duration = None, reason = None):
+    def __init__(self, duration = None, reason = None, inventoryItem = None):
         self.duration = duration
         self.reason = reason
+        self.inventoryItem = inventoryItem
 
     def advance(self):
         try:
@@ -16,7 +17,13 @@ class StatusEffect:
             self.duration -= 1
 
     def is_done(self):
-        return self.duration is not None and self.duration <= 0
+        if self.duration is not None:
+            if self.duration <= 0:
+                return True
+        if self.inventoryItem:
+            if not self.inventoryItem:
+                return True
+        return False
 
     def getShortCode(self):
         return self.type

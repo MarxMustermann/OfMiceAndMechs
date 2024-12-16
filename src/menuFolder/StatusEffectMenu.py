@@ -24,6 +24,12 @@ class StatusEffectMenu(src.SubMenu.SubMenu):
             text = "no status effects"
         else:
             text = []
+            if len(char.statusEffects) > 1:
+                text.append("""
+use w/s to select the status effect to show the details for.
+
+""")
+
             index = 0
             for statusEffect in char.statusEffects:
                 text.append(f"== {statusEffect.type} ({statusEffect.getShortCode()}) ==")

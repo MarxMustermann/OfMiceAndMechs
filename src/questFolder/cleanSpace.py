@@ -1,6 +1,8 @@
 import src
 import random
 
+import src.rooms
+
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
@@ -15,7 +17,6 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.reason = reason
         self.abortOnfullInventory = abortOnfullInventory
         self.pickUpBolted = pickUpBolted
-
     def generateTextDescription(self):
         reason = ""
         if self.reason:
@@ -194,5 +195,8 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
                     beUsefull.idleCounter = 0
                 return ([quest],None)
         return (None,None)
+
+    def handleQuestFailure(self, extraParam):
+        self.fail()
 
 src.quests.addType(CleanSpace)

@@ -1297,7 +1297,9 @@ class Terrain:
 
         for y in range(1,14):
             for x in range(1,14):
-                 if not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
+                 if ignoreEndBlocked and (x,y,0) == targetPos:
+                    tileMap[x][y] = 1
+                 elif not self.getPositionWalkable((x+15*tilePos[0],y+15*tilePos[1],0),character=character):
                     tileMap[x][y] = 0
 
         for y in range(1,14):

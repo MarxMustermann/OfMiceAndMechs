@@ -48,6 +48,16 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
             return (None,None)
 
         characterPosition = character.getPosition()
+
+        numDirectNeighbours = 0
+        for enemy in enemies:
+            if character.getDistance(enemy.getPosition()) > 1:
+                continue
+            numDirectNeighbours += 1
+        print(numDirectNeighbours)
+        if numDirectNeighbours > 2:
+            return (None,("s","retreat"))
+
         for enemy in enemies:
             enemyPosition = enemy.getPosition()
             if enemyPosition == characterPosition:

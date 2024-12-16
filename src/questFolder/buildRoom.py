@@ -13,6 +13,7 @@ class BuildRoom(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
         self.reason = reason
         self.takeAnyUnbolted = takeAnyUnbolted
+        self.type = "BuildRoom"
 
     def builtRoom(self,extraParam):
         if self.targetPosition and extraParam["room"].getPosition() != self.targetPosition:

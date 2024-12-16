@@ -26,8 +26,14 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.checkedRoomPositions = []
         self.reason = reason
         self.endOnIdle = endOnIdle
+        
+        self.dutySkipps = {}
 
     def generateTextDescription(self):
+        try:
+            self.dutySkipps
+        except:
+            self.dutySkipps = {}
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -89,6 +95,8 @@ Do your duty to gain more reputation.
 Try to avoid losing reputation due to being careless.
 
 """
+        out += f"""dutySkipps: {str(self.dutySkipps)}
+"""
 
         out = [out]
         if not self.subQuests:
@@ -134,6 +142,21 @@ Press d to move the cursor and show the subquests description.
             quest.fail()
         self.handleMovement(None)
 
+    def handleQuestFailure(self,extraParam):
+        quest = extraParam.get("quest")
+
+        failedDuty = None
+        if quest.type == "BuildRoom":
+            failedDuty = "room building"
+
+        if failedDuty:
+            self.dutySkipps[failedDuty] = 10
+
+        try:
+            self.dutySkipps
+        except:
+            self.dutySkipps = {}
+    
     def handleChargedTrapRoom(self,extraInfo):
         # reload trap room
         if "trap setting" in self.character.duties:
@@ -374,6 +397,17 @@ Press d to move the cursor and show the subquests description.
 
         room = character.container
         for duty in character.getRandomProtisedDuties():
+            dutySkip = self.dutySkipps.get(duty,None)
+            if not dutySkip == None: 
+                if dutySkip > 0:
+                    dutySkip -= 1
+                
+                if dutySkip > 0:
+                    self.dutySkipps[duty] = dutySkip
+                    continue
+                else:
+                    del self.dutySkipps[duty]
+
             match (duty):
                 case "flask filling":
                     step = src.quests.questMap["FillFlask"].generateDutyQuest(self,character,room,dryRun)

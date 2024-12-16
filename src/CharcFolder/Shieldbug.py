@@ -30,7 +30,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         self.charType = "Insect"
         self.specialDisplay = (src.characters.urwid.AttrSpec((46, 99, 67), "black"), "/>")
 
-        self.baseDamage = 20
+        self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))
 
         self.maxHealth = int(100 * multiplier)

@@ -2446,11 +2446,11 @@ but they are likely to explode when disturbed.
         ###
         ##  add terrain details
         #
-
+        all_base_rooms = [(r.xPosition, r.yPosition) for r in currentTerrain.rooms]
         # scatter walls
         for x in range(1,14):
             for y in range(1,14):
-                if (x,y) in ((3,11),):
+                if (x,y) in ((3,11),(6,10)) or (x,y) in all_base_rooms:
                     continue
                 if currentTerrain.itemsByBigCoordinate.get((x,y,0),[]):
                     continue
@@ -2468,22 +2468,25 @@ but they are likely to explode when disturbed.
                     continue
                 if (x,y,0) in forestPositions:
                     continue
+                added_walls = False
                 for i in range(1,random.randint(1,4)):
                     wall = src.items.itemMap["Wall"]()
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
-                for i in range(1,random.randint(1,3)):
-                    bug_pos = (15 * x + random.randint(2, 11), 15 * y + random.randint(2, 11))
-                    if currentTerrain.getPositionWalkable(bug_pos):
-                        Shieldbug = src.characters.characterMap["ShieldBug"]()
-                        quest = src.quests.questMap["SecureTile"](
-                            toSecure=(x, y, 0), alwaysHuntDown=False, wandering=False
-                        )
-                        quest.autoSolve = True
-                        quest.assignToCharacter(Shieldbug)
-                        quest.activate()
-                        Shieldbug.quests.append(quest)
-                        currentTerrain.addCharacter(Shieldbug, bug_pos[0], bug_pos[1])
+                    added_walls = True
+                if added_walls:
+                    for i in range(1,random.randint(1,2)):
+                        bug_pos = (15 * x + random.randint(2, 11), 15 * y + random.randint(2, 11))
+                        if currentTerrain.getPositionWalkable(bug_pos):
+                            Shieldbug = src.characters.characterMap["ShieldBug"]()
+                            quest = src.quests.questMap["SecureTile"](
+                                toSecure=(x, y, 0), alwaysHuntDown=False, wandering=False
+                            )
+                            quest.autoSolve = True
+                            quest.assignToCharacter(Shieldbug)
+                            quest.activate()
+                            Shieldbug.quests.append(quest)
+                            currentTerrain.addCharacter(Shieldbug, bug_pos[0], bug_pos[1])
         # place initial fighting spots
         for fightingSpot in fightingSpots:
 
@@ -2630,6 +2633,9 @@ but they are likely to explode when disturbed.
                     coocon = src.items.itemMap["Cocoon"]()
                     currentTerrain.addItem(coocon,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
         """
+
+        #set number of rooms for the god
+        src.gamestate.gamestate.gods[1]["roomRewardMapByTerrain"] = {(currentTerrain.xPosition,currentTerrain.yPosition): len(currentTerrain.rooms) - 1}
 
     def setUpFactoryRemains(self,pos):
         # get basic info
@@ -2795,9 +2801,6 @@ but they are likely to explode when disturbed.
         src.gamestate.gamestate.gods[itemID] = {
                 "name":f"god{itemID}","mana":200,"home":pos,"lastHeartPos":pos,"sacrifice":sacrificeRequirement
             }
-        if itemID == 1:
-            src.gamestate.gamestate.gods[itemID]["roomRewardMapByTerrain"] = {}
-
 
 
         # get basic info
@@ -3102,6 +3105,10 @@ but they are likely to explode when disturbed.
                 item = src.items.itemMap["MoldFeed"]()
                 room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
+            if random.random() < 0.15:
+                item = src.items.itemMap["RodTower"]()
+                room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
+
         # spawn special items
         endIndex = len(rooms)-3
         counter = 0
@@ -3181,7 +3188,7 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
-
+            
     def createStoryStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
 

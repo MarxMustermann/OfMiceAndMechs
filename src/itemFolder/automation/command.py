@@ -26,10 +26,6 @@ class Command(src.items.Item):
         self.level = 1
         self.repeat = False
 
-    def configure(self, character):
-        self.repeat = not self.repeat
-        character.addMessage(f"you set the command to repeat: {self.repeat}")
-
     def apply(self, character):
         """
         handle a character using the command
@@ -199,5 +195,33 @@ it holds the command:
             compressedMacro
         )
         return text
+    def getConfigurationOptions(self, character):
+        options = super().getConfigurationOptions(character)
+        if self.bolted:
+            options["b"] = ("unbolt", self.unboltAction)
+        else:
+            options["b"] = ("bolt down", self.boltAction)
+        if self.repeat:
+            options["r"] = ("set the command to not repeat", self.changeRepeat)
+        else:
+            options["r"] = ("set the command to repeat", self.changeRepeat)
+        return options
+    def changeRepeat(self, character):
+        self.repeat = not self.repeat
+        m = "you set the command to"
+        m+= " not" if not self.repeat else ""
+        m+= " repeat"
+        character.addMessage(m)
+
+    def boltAction(self, character):
+        self.bolted = True
+        character.addMessage("you bolt down the " + self.name)
+        character.changed("boltedItem", {"character": character, "item": self})
+
+    def unboltAction(self, character):
+        self.bolted = False
+        character.addMessage("you unbolt the " + self.name)
+        character.changed("unboltedItem", {"character": character, "item": self})
+
 
 src.items.addType(Command)

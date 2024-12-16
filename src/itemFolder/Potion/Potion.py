@@ -1,4 +1,5 @@
 import src
+from abc import ABC, abstractmethod
 
 
 class Potion(src.items.Item):
@@ -22,5 +23,8 @@ class Potion(src.items.Item):
 
     def render(self):
         return src.canvas.displayChars.vial_full
+    
+    @abstractmethod
+    def Ingredients(): ...
 
 src.items.addType(Potion)

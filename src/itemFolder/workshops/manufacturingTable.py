@@ -1,7 +1,7 @@
 import src
 
 
-class ManufacturingTable(src.items.Item):
+class ManufacturingTable(src.items.itemMap["WorkShop"]):
     """
     """
 
@@ -204,8 +204,7 @@ class ManufacturingTable(src.items.Item):
             params["productionTime"] = params["productionTime"]//10
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
-        params["self"] = self
-        src.helpers.produceItem_wait(params)
+        self.produceItem_wait(params)
         self.numUsed += 1
         self.inUse = True
 
@@ -351,18 +350,6 @@ class ManufacturingTable(src.items.Item):
     def disable(self,character):
         character.addMessage("you disable the Machine")
         self.disabled = True
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the ManufacuringTable")
-        character.changed("boltedItem",{"character":character,"item":self})
-        self.numUsed = 0
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the ManufacturingTable")
-        character.changed("unboltedItem",{"character":character,"item":self})
-        self.numUsed = 0
 
     def getLongInfo(self):
         """

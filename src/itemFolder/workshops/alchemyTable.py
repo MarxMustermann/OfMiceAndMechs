@@ -1,6 +1,6 @@
 import src
 
-class AlchemyTable(src.items.Item):
+class AlchemyTable(src.items.itemMap["WorkShop"]):
     """
     ingame item used as ressource. basically does nothing
     """
@@ -70,9 +70,9 @@ class AlchemyTable(src.items.Item):
             if params.get("type"):
                 character.addMessage("Item type unknown.")
             return
-
+        accessible_items = character.inventory+self.getInputItems()
         flasks = []
-        for item in character.inventory+self.getInputItems():
+        for item in accessible_items:
             if item.type != "Flask":
                 continue
             flasks.append(item)
@@ -89,44 +89,40 @@ class AlchemyTable(src.items.Item):
             character.addMessage("You have no free inventory space to put the item in")
             character.changed("inventory full error",{})
             return
-
+        needed_Ingredients = {ing:None for ing in src.items.itemMap[params["type"]].Ingredients()}
+        for item in accessible_items:
+            t = type(item)
+            if t in needed_Ingredients and needed_Ingredients[t] is None:
+                needed_Ingredients[t] = item
+        have_ingredients = all(needed_Ingredients[ing] is not None for ing in needed_Ingredients)
+        
+        if not have_ingredients:
+            n = ""
+            i = 1
+            for ing in needed_Ingredients:
+                if needed_Ingredients[ing] is None:
+                    n+= ing.name
+                    if i != len(needed_Ingredients):
+                        n+= ", "
+            character.addMessage("you don't have the "+ n +" ingredient in your inventory")
+            return
         if params["type"] in self.scheduledItems:
             self.scheduledItems.remove(params["type"])
-
-        if flask in character.inventory:
-            character.inventory.remove(flask)
-        else:
-            self.container.removeItem(flask)
+        to_remove = [flask] + [needed_Ingredients[ing] for ing in needed_Ingredients]
+        for item in to_remove:
+            if item in character.inventory:
+                character.inventory.remove(item)
+            else:
+                self.container.removeItem(item)
 
         self.lastProduction = params["type"]
 
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
-        self.producePotion_wait(params)
+        self.produceItem_wait(params)
 
-    def producePotion_wait(self, params):
-        character = params["character"]
-        if params["hitCounter"] != character.numAttackedWithoutResponse:
-            character.addMessage("You got hit while working")
-            return
-        ticksLeft = params["productionTime"] - params["doneProductionTime"]
-        character.timeTaken += 1
-        params["doneProductionTime"] += 1
-        progressbar = "X" * (params["doneProductionTime"] // 10) + "." * (ticksLeft // 10)
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressbar, targetParamName="abortKey")
-        submenue.tag = "alchemyTableProductWait"
-        character.macroState["submenue"] = submenue
-        character.macroState["submenue"].followUp = {
-            "container": self,
-            "method": "producePotion_done" if ticksLeft <= 0 else "producePotion_wait",
-            "params": params,
-        }
-        character.runCommandString(".", nativeKey=True)
-        if ticksLeft % 10 != 9 and src.gamestate.gamestate.mainChar == character:
-            src.interaction.skipNextRender = True
-
-    def producePotion_done(self,params):
+    def produceItem_done(self,params):
         character = params["character"]
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
@@ -261,30 +257,5 @@ class AlchemyTable(src.items.Item):
             return True
         else:
             return False
-
-    def getConfigurationOptions(self, character):
-        """
-        register the configuration options with superclass
-
-        Parameters:
-            character: the character trying to conigure the machine
-        """
-
-        options = super().getConfigurationOptions(character)
-        if self.bolted:
-            options["b"] = ("unbolt", self.unboltAction)
-        else:
-            options["b"] = ("bolt down", self.boltAction)
-        return options
-
-    def boltAction(self,character):
-        self.bolted = True
-        character.addMessage("you bolt down the AlchemyTable")
-        character.changed("boltedItem",{"character":character,"item":self})
-
-    def unboltAction(self,character):
-        self.bolted = False
-        character.addMessage("you unbolt the AlchemyTable")
-        character.changed("unboltedItem",{"character":character,"item":self})
 
 src.items.addType(AlchemyTable)

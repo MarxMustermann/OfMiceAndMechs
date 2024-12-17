@@ -1409,8 +1409,8 @@ press any other key to attack normally"""
                 "m" * self.personality.get("autoAttackOnCombatSuccess")
             )
             self.addMessage("auto attack")
-
-        self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
+        if self.exhaustion != 0 or target.exhaustion != 0:
+            self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
         if target.dead:
             self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))

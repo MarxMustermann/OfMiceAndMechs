@@ -839,6 +839,8 @@ class MetaQuestSequence(Quest,ABC):
         pass
     
     def getSolvingCommandString(self, character, dryRun=True):
+        if self.triggerCompletionCheck(character):
+            return None
         nextStep = self.getNextStep(character,dryRun= dryRun)
         if nextStep is None or nextStep == (None, None):
             return None

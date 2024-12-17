@@ -3,6 +3,7 @@ the code for the characters belongs here
 """
 import logging
 import random
+import regex
 
 import config
 import src.canvas
@@ -850,8 +851,20 @@ class Character:
         Parameters:
             message: the message
         """
+        
+        if len(self.messages):
+            last_message:str = self.messages[-1]
 
-        self.messages.append(str(message))
+            if last_message.startswith(str(message)):
+                m = regex.search("x(\\d+)", last_message)
+                if m:
+                    self.messages[-1]= self.messages[-1][:-len(m.group())] +"x" +str(int(m.group()[1:]) + 1)
+                else:
+                    self.messages[-1]+= " x2"
+            else:
+                self.messages.append(str(message))
+        else:
+            self.messages.append(str(message))
 
     def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
         """

@@ -43,7 +43,7 @@ class Promoter(src.items.Item):
                         continue
                     numCharacters += 1
 
-            if numCharacters < 2:
+            if numCharacters < 3:
                 character.addMessage(f"promotions locked")
 
                 submenu = src.menuFolder.TextMenu.TextMenu("""

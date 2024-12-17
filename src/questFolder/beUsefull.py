@@ -150,7 +150,7 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "room building"
 
         if failedDuty:
-            self.dutySkipps[failedDuty] = 10
+            self.dutySkipps[failedDuty] = 3
 
         try:
             self.dutySkipps

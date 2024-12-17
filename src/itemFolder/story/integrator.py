@@ -30,7 +30,8 @@ class Integrator(src.items.Item):
 
         terrain = character.getTerrain()
 
-        duties = [ "resource gathering",
+        duties = [ "room building",
+                   "resource gathering",
                    "scrap hammering",
                    "resource fetching",
                    "hauling",

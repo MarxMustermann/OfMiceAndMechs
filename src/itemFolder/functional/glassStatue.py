@@ -39,6 +39,7 @@ class GlassStatue(src.items.Item):
         self.charges = 2
         self.stable = False
         self.numSubSacrifices = 0
+        self.numTeleportsDone = 0
 
     def handleItemRequirements(self,removeItems=False,character=None):
         # determine what items are needed
@@ -219,6 +220,7 @@ class GlassStatue(src.items.Item):
         newTerrain.addCharacter(character,15*bigPos[0]+13,15*bigPos[1]+7)
 
         self.charges -= 1
+        self.numTeleportsDone += 1
 
         character.changed("glass statue used",{})
 
@@ -769,6 +771,7 @@ Use this GlassStatue to teleport there.
 
 Teleporting to the dungeon requires 5 charges and consumes one charge.
 Currently the GlassStatue has {self.charges} charges.
+This GlassStatue was used teleported {self.numTeleportsDone} times.
 """
 
 src.items.addType(GlassStatue)

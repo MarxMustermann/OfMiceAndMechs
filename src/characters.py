@@ -1426,8 +1426,6 @@ press any other key to attack normally"""
             reason: the reason why the character was healed
         """
         amount = int(amount*self.healingModifier)
-        if not amount:
-            return
 
         #if self.reduceExhaustionOnHeal:
         #    self.exhaustion = max(0,self.exhaustion-(amount//self.reduceExhaustionDividend+self.reduceExhaustionBonus))
@@ -1437,6 +1435,8 @@ press any other key to attack normally"""
         if self.adjustedMaxHealth - self.health < amount:
             amount = self.adjustedMaxHealth - self.health
 
+        if not amount:
+            return
         if reason:
             self.addMessage(reason)
 

@@ -2050,9 +2050,9 @@ but they are likely to explode when disturbed.
         actualCharacter.quests.append(quest)
 
         ####
-        # create manufacturing hall
+        # create storage room
         ##
-        manufacturingHall = architect.doAddRoom(
+        storageRoom = architect.doAddRoom(
                 {
                        "coordinate": (8,7),
                        "roomType": "EmptyRoom",
@@ -2062,18 +2062,22 @@ but they are likely to explode when disturbed.
                 },
                 None,
            )
-        for item in manufacturingHall.itemsOnFloor:
+        storageRoom.tag = "storage"
+        for item in storageRoom.itemsOnFloor:
             if item.type != "Door":
                 continue
             if item.getPosition() == (0,6,0):
                 continue
             item.walkable = False
 
-        ####
-        # create storage room
-        ##
-
-        #8,8
+        for y in (1,3,6,9,11,):
+            for x in range(1,12):
+                storageRoom.addWalkingSpace((x,y,0))
+        for y in (2,4,5,7,8,10,):
+            storageRoom.addWalkingSpace((1,y,0))
+            for x in range(2,11):
+                storageRoom.addStorageSlot((x,y,0),None)
+            storageRoom.addWalkingSpace((11,y,0))
 
         ####
         # create spawn room
@@ -2533,7 +2537,7 @@ but they are likely to explode when disturbed.
                 currentTerrain.addItem(item,(15*wallTile[0]+wallSpot[0],15*wallTile[1]+wallSpot[1],0))
 
             # add enemies
-            for _i in range(0,random.randint(1,5)):
+            for _i in range(0,random.randint(1,3)):
                 enemy = src.characters.characterMap["ShieldBug"]()
                 enemy.faction = "insects"
                 quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
@@ -2594,7 +2598,7 @@ but they are likely to explode when disturbed.
         for genericEnemyGroupPosition in genericEnemyGroups:
             # add enemies
             for _i in range(0,random.randint(1,2)):
-                enemy = src.characters.characterMap["Golem"](multiplier=5)
+                enemy = src.characters.characterMap["Golem"](multiplier=1)
                 enemy.faction = "insects"
                 enemy.baseDamage = 6
                 quest = src.quests.questMap["SecureTile"](toSecure=genericEnemyGroupPosition)
@@ -2754,11 +2758,10 @@ but they are likely to explode when disturbed.
                 ("Wall",6),
                 ("ScrapCompactor",8),
                 ("MetalBars", 20),
-                ("Vial", 3),
-                ("GooFlask", 5),
                 ("Rod", 15),
                 ("Bolt", 15),
                 ("Tank", 15),
+                ("Flask", 5),
                 ("Case", 10),
                 ("Frame", 12),
                 ("Corpse", 1),

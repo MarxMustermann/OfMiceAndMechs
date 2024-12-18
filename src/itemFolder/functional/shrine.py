@@ -567,10 +567,10 @@ class Shrine(src.items.Item):
 
             text = "upgrading attack speed"
             if self.getTerrain().mana >= cost:
-                increaseValue = 0.1*character.attackSpeed
-                increaseValue = min(character.attackSpeed-0.5,increaseValue)
-                character.attackSpeed -= increaseValue
-                character.addMessage(f"your attack speed is improved by {increaseValue} to {character.attackSpeed}")
+                increaseValue = 0.1*character.baseAttackSpeed
+                increaseValue = min(character.baseAttackSpeed-0.5,increaseValue)
+                character.baseAttackSpeed -= increaseValue
+                character.addMessage(f"your attack speed is improved by {increaseValue} to {character.baseAttackSpeed}")
                 self.getTerrain().mana -= cost
             else:
                 character.addMessage(f"the mana is used up")

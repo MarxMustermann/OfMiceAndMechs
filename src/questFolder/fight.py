@@ -54,8 +54,8 @@ So if an enemy is to directly east of you:
             self.postHandler()
             return (None,None)
 
-        if character.health < character.maxHealth//5 and character.canHeal():
-            return (None,("JH","heal"))
+        if character.health < character.maxHealth//2 and character.canHeal():
+            return (None,("Jh","heal"))
 
         try:
             self.suicidal

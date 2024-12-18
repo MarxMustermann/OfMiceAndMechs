@@ -1,3 +1,5 @@
+import math
+
 import tcod
 
 import src
@@ -59,3 +61,6 @@ def fade_between_consoles_rgb(current, target, t):
             src.interaction.tcodConsole.rgb[width, height]["bg"] = src.pseudoUrwid.AttrSpec.interpolate(
                 current[width, height]["bg"], target[width, height]["bg"], t
             )
+
+def distance_between_points(a, b):
+    return math.sqrt(math.pow(a[0]-b[0],2) + math.pow(a[1]-b[1],2))

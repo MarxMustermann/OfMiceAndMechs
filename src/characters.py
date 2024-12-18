@@ -3,6 +3,7 @@ the code for the characters belongs here
 """
 import logging
 import random
+import regex
 
 import config
 import src.canvas
@@ -850,8 +851,20 @@ class Character:
         Parameters:
             message: the message
         """
+        
+        if len(self.messages):
+            last_message:str = self.messages[-1]
 
-        self.messages.append(str(message))
+            if last_message.startswith(str(message)):
+                m = regex.search("x(\\d+)", last_message)
+                if m:
+                    self.messages[-1]= self.messages[-1][:-len(m.group())] +"x" +str(int(m.group()[1:]) + 1)
+                else:
+                    self.messages[-1]+= " x2"
+            else:
+                self.messages.append(str(message))
+        else:
+            self.messages.append(str(message))
 
     def convertCommandString(self,commandString,nativeKey=False, extraFlags=None):
         """
@@ -1409,8 +1422,8 @@ press any other key to attack normally"""
                 "m" * self.personality.get("autoAttackOnCombatSuccess")
             )
             self.addMessage("auto attack")
-
-        self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
+        if self.exhaustion != 0 or target.exhaustion != 0:
+            self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
         if target.dead:
             self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
@@ -1426,8 +1439,6 @@ press any other key to attack normally"""
             reason: the reason why the character was healed
         """
         amount = int(amount*self.healingModifier)
-        if not amount:
-            return
 
         #if self.reduceExhaustionOnHeal:
         #    self.exhaustion = max(0,self.exhaustion-(amount//self.reduceExhaustionDividend+self.reduceExhaustionBonus))
@@ -1437,6 +1448,8 @@ press any other key to attack normally"""
         if self.adjustedMaxHealth - self.health < amount:
             amount = self.adjustedMaxHealth - self.health
 
+        if not amount:
+            return
         if reason:
             self.addMessage(reason)
 

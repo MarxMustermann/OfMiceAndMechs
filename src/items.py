@@ -390,6 +390,8 @@ class Item:
 
         # do the pick up
         character.addMessage("you pick up a %s" % self.type)
+        if not self.walkable:
+            character.addMessage("it's heavy and slows you down")
         self.container.removeItem(self)
         character.addToInventory(self)
 
@@ -437,9 +439,8 @@ class Item:
     def pickUpNonWalkable(self, character):
         if not self.walkable:
             character.addListener(self.OnDropNonWalkable,"dropped")
-            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=1.1, duration = None)
+            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=1.1, duration = None,inventoryItem = self)
             character.statusEffects.append(self.NonWalkableItemDeBuff)
-            character.addMessage("it's heavy and slows you down")
 
     def OnDropNonWalkable(self,params):
         (character,item) = params

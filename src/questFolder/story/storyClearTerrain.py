@@ -1,6 +1,8 @@
 import src
 import random
 
+import src.helpers
+
 
 class StoryClearTerrain(src.quests.MetaQuestSequence):
     type = "StoryClearTerrain"
@@ -131,7 +133,8 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
             # select target
-            target = random.choice(targets_found)
+            targets_found.sort(key=lambda x: src.helpers.distance_between_points(x[0],character.getTilePosition()))
+            target = targets_found[0]
 
             # clear spiders
             if target[0] == "spider":
@@ -155,7 +158,9 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             targets_found[tilePos] = targets_found.get(tilePos,0)+1
 
         if targets_found:
-            target = random.choice(list(targets_found.keys()))
+            targets_pos = list(targets_found.keys())
+            targets_pos.sort(key=lambda x: src.helpers.distance_between_points(x,character.getTilePosition()))
+            target = targets_pos[0]
             quest = src.quests.questMap["SecureTile"](toSecure=target,endWhenCleared=True)
             return ([quest],None)
 

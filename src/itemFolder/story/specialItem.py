@@ -14,7 +14,7 @@ class SpecialItem(src.items.Item):
         """
 
         super().__init__(display="!!")
-        self.name = "special item"
+        self.name = "glass heart"
 
         self.walkable = True
         self.bolted = False

@@ -72,6 +72,17 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
             if enemyPosition == (characterPosition[0],characterPosition[1]+1,characterPosition[2]):
                 direction = "s"
             if direction:
+                hasBerserk = False
+                for statusEffect in character.statusEffects:
+                    if not statusEffect.type == "Berserk":
+                        continue
+                    hasBerserk = True
+
+                if not hasBerserk:
+                    if character.exhaustion < 1:
+                        return (None,(direction.upper()+"k","attack Snatcher"))
+                    if character.exhaustion < 10:
+                        return (None,(direction.upper()+"h","attack Snatcher"))
                 return (None,(direction,"attack Snatcher"))
 
         return (None,(".","let Snatchers approach"))

@@ -48,6 +48,11 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     return (None,None)
 
         if phase == "wait":
+            if not self.character.getNearbyEnemies():
+                if not dryRun:
+                    self.postHandler()
+                return (None,None)
+
             return (None,(".","wait for the spider to attack"))
 
         if phase == "run":

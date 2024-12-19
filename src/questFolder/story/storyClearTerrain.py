@@ -136,18 +136,24 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             targets_found.sort(key=lambda x: src.helpers.distance_between_points(x[1],character.getTilePosition()))
             target = targets_found[0]
 
+            reason = "reduce the amount of enemies"
+
             # clear spiders
             if target[0] == "spider":
                 spider_lair_pos = target[1]
 
-                quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos)
-                return ([quest],None)
+                if target[2] > 2:
+                    quest = src.quests.questMap["BaitSpiders"](targetPositionBig=spider_lair_pos,reason=reason)
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True,reason=reason)
+                    return ([quest],None)
 
             # clear spiderlings
             if target[0] == "spiderling":
                 spider_lair_pos = target[1]
 
-                quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True)
+                quest = src.quests.questMap["SecureTile"](toSecure=spider_lair_pos,endWhenCleared=True,reason=reason)
                 return ([quest],None)
 
         targets_found = {}

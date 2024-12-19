@@ -393,7 +393,7 @@ class Character:
             self.skills.append(skill)
         self.changed("learnedSkill",self)
 
-    def getStrengthSelfEstimate(self,healthWeight=0.1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,totalWeight=0.02):
+    def getStrengthSelfEstimate(self,healthWeight=0.1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,movementSpeedWeight = 1,attackSpeedWeight = 1,totalWeight=0.02):
         weight = 0
         weight += self.health*healthWeight
         print("healthweight")
@@ -419,6 +419,12 @@ class Character:
         weight += numVialCharges*vialChargeWeight
         print("vial Weight")
         print(numVialCharges*vialChargeWeight)
+        weight-= self.adjustedMovementSpeed* movementSpeedWeight
+        print("MovementSpeed Weight")
+        print(self.adjustedMovementSpeed* movementSpeedWeight)
+        weight-= self.attackSpeed* attackSpeedWeight
+        print("AttackSpeed Weight")
+        print(self.attackSpeed* attackSpeedWeight)
 
         return weight*totalWeight
 

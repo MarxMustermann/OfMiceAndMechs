@@ -28,8 +28,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     for item in items:
                         if not item.getMoldFeed(character):
                             continue
-                        quest = src.quests.questMap["Heal"]()
+                        quest = src.quests.questMap["Heal"](noWaitHeal=True)
                         return ([quest],None)
+
                 quest = src.quests.questMap["BeUsefull"](numTasksToDo=1)
                 return ([quest],None)
 

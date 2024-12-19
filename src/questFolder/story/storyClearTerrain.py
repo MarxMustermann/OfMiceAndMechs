@@ -133,7 +133,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
             # select target
-            targets_found.sort(key=lambda x: src.helpers.distance_between_points(x[0],character.getTilePosition()))
+            targets_found.sort(key=lambda x: src.helpers.distance_between_points(x[1],character.getTilePosition()))
             target = targets_found[0]
 
             # clear spiders

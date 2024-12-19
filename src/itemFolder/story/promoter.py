@@ -43,13 +43,13 @@ class Promoter(src.items.Item):
                         continue
                     numCharacters += 1
 
-            if numCharacters < 3:
+            if numCharacters < 2:
                 character.addMessage(f"promotions locked")
 
                 submenu = src.menuFolder.TextMenu.TextMenu("""
 Promotions to rank 5 are blocked.
 
-There need to be at least 2 clones on the base to allow any promptions.
+There need to be at least 1 clone besides you on the base to allow any promptions.
 """)
                 character.macroState["submenue"] = submenu
                 character.runCommandString("~",nativeKey=True)

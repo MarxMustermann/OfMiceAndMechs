@@ -4,7 +4,7 @@ import src
 
 class SettingMenu(src.SubMenu.SubMenu):
     type = "SettingMenu"
-    setting_options = ["enable sound","set sound volume","toggle fullscreen"]
+    setting_options = ["auto save","enable sound","set sound volume","toggle fullscreen"]
 
     def __init__(self, default=None, targetParamName="selection"):
         self.index = 0
@@ -42,6 +42,8 @@ class SettingMenu(src.SubMenu.SubMenu):
                             src.interaction.tcodContext.sdl_window_p,
                             tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP if src.interaction.settings["fullscreen"] else 0,
                         )
+                    case "auto save":
+                        src.interaction.settings["auto save"] = not src.interaction.settings["auto save"]
         for i,setting in enumerate(self.setting_options):
             text+= ">" if self.index == i else ""
             match setting:
@@ -55,6 +57,9 @@ class SettingMenu(src.SubMenu.SubMenu):
                 case "toggle fullscreen":
                     text += setting + ":    "
                     text += "On" if src.interaction.settings["fullscreen"] else "Off"
+                case "auto save":
+                    text+= "auto save:    "
+                    text += "On" if src.interaction.settings["auto save"] else "Off"
             text+="\n"
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 

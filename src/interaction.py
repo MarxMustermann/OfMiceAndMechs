@@ -110,9 +110,10 @@ def advanceGame():
 
         if not src.gamestate.gamestate.difficulty == "tutorial":
             src.magic.spawnWaves()
-    #if src.gamestate.gamestate.tick%100 == 15:
-    #    src.gamestate.gamestate.save()
-
+    if settings["auto save"]:
+        if src.gamestate.gamestate.tick % 150 == 0:
+            src.gamestate.gamestate.save()
+            src.gamestate.gamestate.mainChar.addMessage("auto saved")
 def advanceGame_disabled():
     """
     advance the game
@@ -199,7 +200,7 @@ def setUpTcod():
                 with open("config/globalSettings.json") as f:
                     settings = json.loads(f.read())
     else:
-        settings = {"sound": 32, "fullscreen": True} #Default Settings
+        settings = {"auto save": False, "sound": 32, "fullscreen": True} #Default Settings
     
     import tcod as internalTcod
     global tcod

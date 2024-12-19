@@ -2374,7 +2374,7 @@ but they are likely to explode when disturbed.
                 triggerPlate.targets.append((x,y,0))
 
         # add west-east trap line
-        for x in (1,2,3,4,5,7,8,9,10,11):
+        for x in (1,2,3,4,5,7,8,9,10):
             triggerPlate = src.items.itemMap["TriggerPlate"]()
             triggerPlate.faction = faction
             triggerPlate.bolted = True
@@ -2385,6 +2385,12 @@ but they are likely to explode when disturbed.
                     rodTower = src.items.itemMap["RodTower"]()
                     trapRoom2.addItem(rodTower,(x,y,0))
                 triggerPlate.targets.append((x,y,0))
+        trapRoom2.addWalkingSpace((11,6,0))
+
+        # add alarm bell
+        alarmBell = src.items.itemMap["AlarmBell"]()
+        alarmBell.bolted = True
+        trapRoom2.addItem(alarmBell,(11,7,0))
 
         # block some of the trap
         for pos in ((1,6,0),(2,6,0),(6,1,0),(6,2,0),(6,11,0),(6,10,0)):

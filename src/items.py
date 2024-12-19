@@ -439,7 +439,7 @@ class Item:
     def pickUpNonWalkable(self, character):
         if not self.walkable:
             character.addListener(self.OnDropNonWalkable,"dropped")
-            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=1.1, duration = None,inventoryItem = self)
+            self.NonWalkableItemDeBuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=0.1, duration = None,inventoryItem = self)
             character.statusEffects.append(self.NonWalkableItemDeBuff)
 
     def OnDropNonWalkable(self,params):

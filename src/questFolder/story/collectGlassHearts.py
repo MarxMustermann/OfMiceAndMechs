@@ -67,6 +67,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["SpawnClone"]()
                 return ([quest],None)
 
+        strengthRating = character.getStrengthSelfEstimate()
         readyStatues = {}
         for room in character.getTerrain().rooms:
             for item in room.itemsOnFloor:
@@ -74,7 +75,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     continue
                 if not (item.charges > 4):
                     continue
+                if strengthRating < item.numTeleportsDone:
+                    continue
                 readyStatues[item.itemID] = item
+
 
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):

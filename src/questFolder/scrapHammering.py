@@ -4,7 +4,7 @@ import src
 class ScrapHammering(src.quests.MetaQuestSequence):
     type = "ScrapHammering"
 
-    def __init__(self, description="scrap hammering", creator=None, reason=None, amount=None,produceToInventory=False):
+    def __init__(self, description="scrap hammering", creator=None, reason=None, amount=None,produceToInventory=False, tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -12,6 +12,7 @@ class ScrapHammering(src.quests.MetaQuestSequence):
         self.amount = amount
         self.amountDone = 0
         self.produceToInventory = produceToInventory
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         reason = ""
@@ -81,12 +82,18 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
 
         quest = extraParam["quest"]
 
+        try:
+            self.tryHard
+        except:
+            self.tryHard = False
+
         reason = extraParam.get("reason")
-        if reason and reason.startswith("no source for item ") and "resource gathering" in self.character.duties and not self.character.getTerrain().alarm:
+        if reason and reason.startswith("no source for item Scrap") and (self.tryHard or "resource gathering" in self.character.duties) and not self.character.getTerrain().alarm:
             newQuest = src.quests.questMap["GatherScrap"](reason="have some scrap to hammer")
             self.addQuest(newQuest)
             self.startWatching(quest,self.handleQuestFailure,"failed")
             return
+
         self.fail(reason)
 
     def handleHammeredScrap(self, extraInfo):

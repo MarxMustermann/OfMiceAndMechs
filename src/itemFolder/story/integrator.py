@@ -42,6 +42,7 @@ class Integrator(src.items.Item):
                    "cleaning",
                    "machine operation",
                    "manufacturing",
+                   "scavenging",
                    "praying" ]
         character.duties = duties
 

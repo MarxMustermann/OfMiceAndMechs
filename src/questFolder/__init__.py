@@ -54,3 +54,4 @@ import src.questFolder.machinePlacing
 import src.questFolder.refillPersonalFlask
 import src.questFolder.story
 import src.questFolder.sharpenPersonalSword
+import src.questFolder.reinforcePersonalArmor

@@ -83,6 +83,8 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         improvement = params["improvementAmount"]
         character.addMessage(f"You improved the Armor by {improvement!s} points")
 
+        character.changed("improved armor")
+
         armor = params["Armor"]
         armor.name = "improved Armor"
         armor.armorValue += improvement

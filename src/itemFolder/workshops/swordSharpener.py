@@ -69,7 +69,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             improvementAmount += min(5,30-sword.baseDamage-improvementAmount)
 
         if not improvementAmount:
-            character.addMessage("you can't improve your sword further")
+            character.addMessage("you can't improve your sword")
             return
 
         params["sword"] = sword

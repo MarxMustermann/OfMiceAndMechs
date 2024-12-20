@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class BeUsefull(src.quests.MetaQuestSequence):
     type = "BeUsefull"
 
-    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None):
+    def __init__(self, description="be useful", creator=None, targetPosition=None, strict=False, reason=None, endOnIdle=False,numTasksToDo=None,failOnIdle=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
@@ -26,6 +26,7 @@ class BeUsefull(src.quests.MetaQuestSequence):
         self.checkedRoomPositions = []
         self.reason = reason
         self.endOnIdle = endOnIdle
+        self.failOnIdle = failOnIdle
         
         self.dutySkipps = {}
 
@@ -148,6 +149,8 @@ Press d to move the cursor and show the subquests description.
         failedDuty = None
         if quest.type == "BuildRoom":
             failedDuty = "room building"
+        if quest.type == "MetalWorking":
+            failedDuty = "metal working"
 
         if failedDuty:
             self.dutySkipps[failedDuty] = 3
@@ -389,7 +392,6 @@ Press d to move the cursor and show the subquests description.
         except:
             self.numTasksToDo = None
 
-        self.numTasksDone += 1
         if self.numTasksToDo and self.numTasksDone > self.numTasksToDo:
             if not dryRun:
                 self.postHandler()
@@ -446,10 +448,21 @@ Press d to move the cursor and show the subquests description.
                 case "praying":
                     step = src.quests.questMap["Pray"].generateDutyQuest(self,character,room,dryRun)
             if step != (None,None):
+                if not dryRun:
+                    self.numTasksDone += 1
                 return step
+
         if self.endOnIdle:
             if not dryRun:
                 self.postHandler()
+            return (None,None)
+        try:
+            self.failOnIdle
+        except:
+            self.failOnIdle = False
+        if self.failOnIdle:
+            if not dryRun:
+                self.fail("no job")
             return (None,None)
 
         for room in character.getTerrain().rooms:
@@ -474,7 +487,8 @@ Press d to move the cursor and show the subquests description.
         quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
         if not dryRun:
             self.idleCounter += 1
-        character.timeTaken += self.idleCounter
+        if not dryRun:
+            character.timeTaken += self.idleCounter
         return ([quest],None)
 
 src.quests.addType(BeUsefull)

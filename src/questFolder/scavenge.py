@@ -243,11 +243,11 @@ This quest will end when your inventory is full."""
             if not terrain.itemsByBigCoordinate.get(terrain.collectionSpots[-1]):
                 terrain.collectionSpots.pop()
                 continue
-            quest = src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1]))
+            quest = src.quests.questMap["ScavengeTile"](targetPosition=(terrain.collectionSpots[-1]),lifetime=1000)
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
-        quest =  src.quests.questMap["Scavenge"]()
+        quest =  src.quests.questMap["Scavenge"](lifetime=1000)
         if not dryRun:
                 beUsefull.idleCounter = 0
         return ([quest],None)

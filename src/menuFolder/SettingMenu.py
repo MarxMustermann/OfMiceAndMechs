@@ -43,7 +43,7 @@ class SettingMenu(src.SubMenu.SubMenu):
                             tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP if src.interaction.settings["fullscreen"] else 0,
                         )
                     case "auto save":
-                        src.interaction.settings["auto save"] = not src.interaction.settings["auto save"]
+                        src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
         for i,setting in enumerate(self.setting_options):
             text+= ">" if self.index == i else ""
             match setting:
@@ -59,7 +59,7 @@ class SettingMenu(src.SubMenu.SubMenu):
                     text += "On" if src.interaction.settings["fullscreen"] else "Off"
                 case "auto save":
                     text+= "auto save:    "
-                    text += "On" if src.interaction.settings["auto save"] else "Off"
+                    text += "On" if src.interaction.settings.get("auto save") else "Off"
             text+="\n"
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 

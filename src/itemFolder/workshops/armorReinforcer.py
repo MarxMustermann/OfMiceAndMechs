@@ -27,7 +27,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             )
             submenue.tag = "ArmorReinforceerSelection"
             character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container": self, "method": "ReinforceArmor", "params": params}
+            character.macroState["submenue"].followUp = {"container": self, "method": "reinforceArmor", "params": params}
             return
 
         chitinPlates = []
@@ -38,7 +38,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         if not chitinPlates:
             character.addMessage("you don't have Citin Plates, you only can improve your armor to 3")
-            return
 
         armor = None
         if params["choice"] == "Reinforce Equipped Armor":

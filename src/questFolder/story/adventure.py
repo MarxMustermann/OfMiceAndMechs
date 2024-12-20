@@ -1,4 +1,5 @@
 import src
+import random
 
 class Adventure(src.quests.MetaQuestSequence):
     type = "Adventure"
@@ -11,42 +12,26 @@ class Adventure(src.quests.MetaQuestSequence):
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
-        return (None,None)
-
         if self.subQuests:
             return (None,None)
 
         if not character:
             return (None,None)
 
-        if not character.getBigPosition() == (7,8,0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
-            return ([quest],None)
+        currentTerrain = character.getTerrain()
 
-        if not character.container.isRoom:
-            return (None,None)
+        candidates = []
+        if currentTerrain.xPosition > 1:
+            candidates.append((currentTerrain.xPosition-1,currentTerrain.yPosition,0))
+        if currentTerrain.xPosition < 13:
+            candidates.append((currentTerrain.xPosition+1,currentTerrain.yPosition,0))
+        if currentTerrain.yPosition > 1:
+            candidates.append((currentTerrain.xPosition,currentTerrain.yPosition-1,0))
+        if currentTerrain.yPosition < 13:
+            candidates.append((currentTerrain.xPosition,currentTerrain.yPosition+1,0))
 
-        factionSetter = character.container.getItemByType("FactionSetter")
-        if not factionSetter:
-            self.fail(reason="no faction setter found")
-            return (None,None)
-
-        itemPos = factionSetter.getPosition()
-        if character.getDistance(itemPos) > 1:
-            quest = src.quests.questMap["GoToPosition"](targetPosition=factionSetter.getPosition(),reason="to be able to use the faction setter",description="go to faction setter",ignoreEndBlocked=True)
-            return ([quest],None)
-
-        direction = ""
-        if character.getPosition(offset=(1,0,0)) == itemPos:
-            direction = "d"
-        if character.getPosition(offset=(-1,0,0)) == itemPos:
-            direction = "a"
-        if character.getPosition(offset=(0,1,0)) == itemPos:
-            direction = "s"
-        if character.getPosition(offset=(0,-1,0)) == itemPos:
-            direction = "w"
-
-        return (None,(direction+"j","reset faction"))
+        quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=random.choice(candidates))
+        return ([quest],None)
 
     def generateTextDescription(self):
         return ["""

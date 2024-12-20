@@ -22,3 +22,4 @@ import src.questFolder.story.storyAscendTry
 import src.questFolder.story.liftOutsideRestrictions
 import src.questFolder.story.adventure
 import src.questFolder.story.becomeStronger
+import src.questFolder.story.adventureOnTerrain

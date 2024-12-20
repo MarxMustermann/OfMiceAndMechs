@@ -31,15 +31,16 @@ class CharacterInfoMenu(src.SubMenu.SubMenu):
         text += "name:       %s\n" % char.name
         text += "\n"
         text += "\n"
-        text += "health:     %s" % char.health + "\n"
-        text += "max health: %s" % char.adjustedMaxHealth + "\n"
-        text += "exhaustion: %s" % char.exhaustion + "\n"
+        text += "health:       %s" % char.health + "\n"
+        text += "max health:   %s" % char.adjustedMaxHealth + "\n"
+        text += "exhaustion:   %s" % char.exhaustion + "\n"
         text += "\n"
-        text += "baseDamage: %s\n" % char.baseDamage
-        text += "weapon:     %s\n" % weaponBaseDamage
-        text += "armor:      %s\n" % armorValue
-        text += "faction:    %s\n" % char.faction
-        text += "time taken: %s" % char.timeTaken + "\n"
+        text += "baseDamage:   %s\n" % char.baseDamage
+        text += "weapon:       %s\n" % weaponBaseDamage
+        text += "armor:        %s\n" % armorValue
+        text += "faction:      %s\n" % char.faction
+        text += "time taken:   %s" % char.timeTaken + "\n"
+        text += "combat value: %s" % char.getStrengthSelfEstimate() + "\n"
 
         if hasattr(char,"rank"):
             text += "rank:       %s\n" % char.rank

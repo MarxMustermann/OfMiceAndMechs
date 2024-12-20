@@ -1,25 +1,23 @@
 import random
 
 import src
-import src.items
 
-
-class armorReinforcer(src.items.itemMap["WorkShop"]):
-    type = "armorReinforcer"
+class ArmorReinforcer(src.items.itemMap["WorkShop"]):
+    type = "ArmorReinforcer"
     name = "armor Reinforcer"
     description = "Use it to upgrade armors"
     walkable = False
     bolted = True
 
     def __init__(self):
-        super().__init__(display="SH")
+        super().__init__(display="AR")
         self.applyOptions.extend([("Reinforce armor", "Reinforce armor")])
-        self.applyMap = {"Reinforce armor": self.ReinforceArmorHook}
+        self.applyMap = {"Reinforce armor": self.reinforceArmorHook}
 
-    def ReinforceArmorHook(self, character):
-        self.ReinforceArmor({"character": character})
+    def reinforceArmorHook(self, character):
+        self.reinforceArmor({"character": character})
 
-    def ReinforceArmor(self, params):
+    def reinforceArmor(self, params):
         character = params["character"]
 
         if "choice" not in params:
@@ -31,21 +29,22 @@ class armorReinforcer(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container": self, "method": "ReinforceArmor", "params": params}
             return
-        CitinPlates = None
+
+        citinPlates = None
         for item in character.inventory:
             if isinstance(item, src.items.itemMap["CitinPlates"]):
-                CitinPlates = item
+                citinPlates = item
                 break
 
-        if CitinPlates is None:
+        if citinPlates is None:
             character.addMessage("you don't have Citin Plates")
             return
 
-        Armor = None
+        armor = None
         if params["choice"] == "Reinforce Equipped Armor":
             if character.armor:
-                Armor = character.armor
-                if Armor.name == "improved Armor":
+                armor = character.armor
+                if armor.name == "improved Armor":
                     character.addMessage("you can't upgrade the Armor twice")
                     return
             else:
@@ -53,13 +52,14 @@ class armorReinforcer(src.items.itemMap["WorkShop"]):
                 return
         else:
             for item in character.inventory:
-                if isinstance(item, src.items.itemMap["Armor"]) and Armor.name != "improved Armor":
-                    Armor = item
+                if isinstance(item, src.items.itemMap["Armor"]) and armor.name != "improved Armor":
+                    armor = item
                     break
-            if Armor is None:
+            if armor is None:
                 character.addMessage("you don't have any base Armor in the inventory")
                 return
-        params["Armor"] = Armor
+
+        params["Armor"] = armor
         params["productionTime"] = 100
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
@@ -74,9 +74,9 @@ class armorReinforcer(src.items.itemMap["WorkShop"]):
         improvement = random.choices([val[0] for val in improvement_table], [val[1] for val in improvement_table])[0]
         character.addMessage(f"You improved the Armor by {improvement!s} points")
 
-        Armor = params["Armor"]
-        Armor.name = "improved Armor"
-        Armor.armorValue += improvement
+        armor = params["Armor"]
+        armor.name = "improved Armor"
+        armor.armorValue += improvement
 
 
-src.items.addType(armorReinforcer)
+src.items.addType(ArmorReinforcer)

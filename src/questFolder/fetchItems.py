@@ -119,9 +119,9 @@ Press d to move the cursor and show the subquests description.
 
             if numItems >= self.amount:
                 self.collectedItems = True
-
-        if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
-            self.collectedItems = True
+        else:
+            if character.getFreeInventorySpace() <= 0 and character.inventory[-1].type == self.toCollect:
+                self.collectedItems = True
 
         if self.collectedItems:
             self.postHandler()

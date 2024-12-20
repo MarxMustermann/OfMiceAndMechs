@@ -94,19 +94,18 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         else:
             self.refill(character)
 
-    def getFlask(self, character=None):
+    def getFlasks(self, character=None):
 
-        flask = None
+        flasks = []
         for offset in [(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]:
             for item in self.container.getItemByPosition(self.getPosition(offset=offset)):
                 if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
-                    flask = item
-        if not flask:
-            for item in character.inventory:
-                if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
-                    flask = item
+                    flasks.append(item)
+        for item in character.inventory:
+            if isinstance(item, src.items.itemMap["GooFlask"]) and item.uses == 100:
+                flasks.append(item)
 
-        return flask
+        return flasks
 
     def refill(self, character):
         """
@@ -116,21 +115,23 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             character: the character trying to refill the growth tank
         """
 
-        flask = self.getFlask(character)
+        flasks = self.getFlasks(character)
 
-        if flask:
+        if len(flasks) > 1:
             self.filled = True
-            if flask in character.inventory:
-                character.inventory.remove(flask)
-                character.inventory.append(src.items.itemMap["Flask"]())
-            else:
-                pos = flask.getPosition()
-                self.container.removeItem(flask)
-                self.container.addItem(src.items.itemMap["Flask"](),pos)
+            flasks = flasks[:2]
+            for flask in flasks:
+                if flask in character.inventory:
+                    character.inventory.remove(flask)
+                    character.inventory.append(src.items.itemMap["Flask"]())
+                else:
+                    pos = flask.getPosition()
+                    self.container.removeItem(flask)
+                    self.container.addItem(src.items.itemMap["Flask"](),pos)
         else:
             character.changed("no flask",{})
             character.addMessage(
-                "you need to have a full goo flask to refill the growth tank"
+                "you need to have 2 full goo flasks to refill the growth tank"
             )
 
     def eject(self, character=None):
@@ -202,6 +203,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             ]
 
         flask = src.items.itemMap["GooFlask"]()
+        flask.uses = 100
         character.flask = flask
 
         # inhabit character

@@ -58,33 +58,34 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                 if not items:
                     continue
 
-                shouldUse = False
-                if items[0].type in ["GooDispenser"] and items[0].charges:
-                    shouldUse = True
+                for item in items:
+                    shouldUse = False
+                    if item.type in ["GooDispenser"] and item.charges:
+                        shouldUse = True
 
-                if items[0].type in ["GooFlask"] and items[0].uses:
-                    shouldUse = True
+                    if item.type in ["GooFlask"] and item.uses:
+                        shouldUse = True
 
-                if not shouldUse:
-                    continue
+                    if not shouldUse:
+                        continue
 
+                    if not item == character.container.getItemByPosition(item.getPosition())[0]:
+                        return (None,("k","remove item from flask"))
                 
-                if offset == (0,0,0):
-                    return (None,("jj","refill"))
-                if offset == (1,0,0):
-                    return (None,("Jdj","refill"))
-                if offset == (-1,0,0):
-                    return (None,("Jaj","refill"))
-                if offset == (0,1,0):
-                    return (None,("Jsj","refill"))
-                if offset == (0,-1,0):
-                    return (None,("Jwj","refill"))
+                    if offset == (0,0,0):
+                        return (None,("jj","refill"))
+                    if offset == (1,0,0):
+                        return (None,("Jdj","refill"))
+                    if offset == (-1,0,0):
+                        return (None,("Jaj","refill"))
+                    if offset == (0,1,0):
+                        return (None,("Jsj","refill"))
+                    if offset == (0,-1,0):
+                        return (None,("Jwj","refill"))
 
 
             for item in character.container.itemsOnFloor:
                 if not character.container.getItemByPosition(item.getPosition()):
-                    continue
-                if not item == character.container.getItemByPosition(item.getPosition())[0]:
                     continue
                 if item.type == "GooDispenser" and item.charges:
                     quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),description="go to goo dispenser",ignoreEndBlocked=True)

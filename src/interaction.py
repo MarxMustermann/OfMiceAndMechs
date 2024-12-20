@@ -3836,7 +3836,10 @@ def getTcodEvents():
                         tcodContext.sdl_window_p,
                         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
                     )
-
+                if key == tcod.event.KeySym.RIGHT:
+                    translatedKey = "right"
+                if key == tcod.event.KeySym.LEFT:
+                    translatedKey = "left"
                 if translatedKey is None:
                     continue
 

@@ -49,8 +49,41 @@ class SiegeManager(src.items.Item):
             self.schedule = {}
 
         text = "schedules:\n\n"
-        for (tick,schedule) in self.schedule.items():
-            text += str(tick)+" - "+str(schedule)+"\n"
+        text+= "0" + " " * 14 + "tick"+ " " * 12 + "3375" + "\n"
+        text+= "-" * 35 + "\n"
+        items = {}
+        for (tick,sch) in self.schedule.items():
+            items[int((tick/3375)*35)] = sch
+
+        for i in range(35):
+            if i in items:
+                text+= "^"
+            else:
+                text+= " "
+        text+= "\n"
+        for i in range(35):
+            if i in items:
+                text+= "|"
+            else:
+                text+= " "
+        text+= "\n"
+        num = 1
+        for i in range(35):
+            if i in items:
+                if num > 9:
+                    text = text[:-1] + str(num)
+                else:
+                    text+= str(num)
+                num+= 1
+            else:
+                text+= " "
+        text+= "\n"
+        text+= "\n"
+
+        items = list(self.schedule.items())
+        items.sort(key = lambda x: x[0])
+        for (i,(tick,schedule)) in enumerate(items):
+            text += str(i+1) + "- tick: "+str(tick)+" - "+str(schedule["type"])+"\n"
         text += "\n"
 
         print(params)

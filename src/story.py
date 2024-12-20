@@ -2770,9 +2770,6 @@ but they are likely to explode when disturbed.
                 ("Flask", 5),
                 ("Case", 10),
                 ("Frame", 12),
-                ("Corpse", 1),
-                ("MoldFeed", 10),
-                ("LightningRod", 5),
                 ("Sheet", 15),
                 ]
         sacrificeRequirement = random.choice(sacrificeCandidates)

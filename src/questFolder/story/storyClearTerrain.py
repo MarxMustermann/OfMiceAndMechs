@@ -51,6 +51,10 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     npcCount += 1 
 
+        if npcCount < 2:
+            quest = src.quests.questMap["SpawnClone"]()
+            return ([quest],None)
+
         # ensure the character has good health
         if character.health < 80:
             characterHasVial = False

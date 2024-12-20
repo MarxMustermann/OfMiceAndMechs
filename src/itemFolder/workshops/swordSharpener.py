@@ -31,47 +31,59 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container": self, "method": "sharpenSword", "params": params}
             return
-        Grindstone = None
-        for item in character.inventory:
-            if isinstance(item, src.items.itemMap["Grindstone"]):
-                Grindstone = item
-                break
 
-        if Grindstone is None:
-            character.addMessage("you don't have Grindstone")
-            return
+        grindstones = []
+        for item in character.inventory:
+            if not isinstance(item, src.items.itemMap["Grindstone"]):
+               continue 
+            grindstones.append(item)
+
+        if not grindstones:
+            character.addMessage("you don't have Grindstone, you only can improve your sword to 15")
 
         sword = None
         if params["choice"] == "Sharpen Equipped Sword":
             if character.weapon:
                 sword = character.weapon
-                if sword.name == "improved sword":
-                    character.addMessage("you can't upgrade the sword twice")
-                    return
             else:
                 character.addMessage("you don't have any sword equipped")
                 return
         else:
             for item in character.inventory:
-                if isinstance(item, src.items.itemMap["Sword"]) and sword.name != "improved sword":
+                if isinstance(item, src.items.itemMap["Sword"]):
                     sword = item
                     break
             if sword is None:
                 character.addMessage("you don't have any base sword in the inventory")
                 return
+
+        improvementAmount = 0
+        if sword.baseDamage < 15:
+            improvementAmount += 15-sword.baseDamage
+
+        for grindStone in grindstones:
+            if improvementAmount+sword.baseDamage >= 30:
+                break
+
+            character.inventory.remove(Grindstone)
+            improvementAmount += min(5,30-sword.baseDamage-improvementAmount)
+
+        if not improvementAmount:
+            character.addMessage("you can't improve your sword further")
+            return
+
         params["sword"] = sword
-        params["productionTime"] = 100
+        params["productionTime"] = 20*improvementAmount
         params["doneProductionTime"] = 0
+        params["improvementAmount"] = improvementAmount
         params["hitCounter"] = character.numAttackedWithoutResponse
 
-        character.inventory.remove(Grindstone)
 
         self.produceItem_wait(params)
 
     def produceItem_done(self, params):
         character = params["character"]
-        improvement_table = [(2, 5), (3, 3), (4, 2), (5, 1)]
-        improvement = random.choices([val[0] for val in improvement_table], [val[1] for val in improvement_table])[0]
+        improvement = params["improvementAmount"]
         character.addMessage(f"You improved the sword by {improvement!s} points")
 
         sword = params["sword"]

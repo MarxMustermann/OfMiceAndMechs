@@ -551,7 +551,7 @@ class Shrine(src.items.Item):
 
             text = "upgrading weapon"
             if self.getTerrain().mana >= cost:
-                increaseValue = 4
+                increaseValue = 5
                 increaseValue = min(30-character.weapon.baseDamage,increaseValue)
                 character.weapon.baseDamage += increaseValue
                 character.addMessage(f"your weapons base damage is increased by {increaseValue} to {character.weapon.baseDamage}")

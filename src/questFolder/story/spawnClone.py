@@ -3,11 +3,33 @@ import src
 class SpawnClone(src.quests.MetaQuestSequence):
     type = "SpawnClone"
 
-    def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None):
+    def __init__(self, description="spawn clone", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,direction=None,reason=None,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
+        self.tryHard = tryHard
+
+    def handleQuestFailure(self,extraParam):
+        if extraParam["quest"] not in self.subQuests:
+            return
+
+        self.subQuests.remove(extraParam["quest"])
+        quest = extraParam["quest"]
+
+        reason = extraParam.get("reason")
+        if reason == "no source for item GooFlask":
+            for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():
+                for item in itemList:
+                    if not item.type == "GooFlask":
+                        continue
+
+                    newQuest = src.quests.questMap["ScavengeTile"](targetPosition=coord,toCollect="GooFlask")
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
+
+        self.fail(reason)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
 
@@ -28,6 +50,10 @@ class SpawnClone(src.quests.MetaQuestSequence):
         if not growthTank:
             self.fail(reason="no growth tank found")
             return (None,None)
+
+        if not growthTank.filled and len(growthTank.getFlasks(character)) < 2:
+            quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=2)
+            return ([quest],None)
 
         itemPos = growthTank.getPosition()
         if character.getDistance(itemPos) > 1:

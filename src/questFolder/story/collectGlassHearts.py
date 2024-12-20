@@ -53,7 +53,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         # remove all enemies from terrain
         # ? should that only mean hunters ?
         if enemyCount > 0:
-            quest = src.quests.questMap["ClearTerrain"]()
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
 
         # ensure there is a backup NPC

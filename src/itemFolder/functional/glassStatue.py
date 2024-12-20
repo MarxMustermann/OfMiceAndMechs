@@ -693,10 +693,11 @@ class GlassStatue(src.items.Item):
     def removeGlassHeart(self,character):
         newItem = src.items.itemMap["SpecialItem"](epoch=src.gamestate.gamestate.tick//(15*15*15))
         newItem.itemID = self.itemID
-        self.container.addItem(newItem,character.getPosition())
-
+        if not character.getFreeInventorySpace() > 0:
+            self.container.addItem(newItem,character.getPosition())
+        else:
+            character.inventory.append(newItem)
         self.hasItem = False
-        character.movementSpeed = character.movementSpeed*2
 
     def setGlassHeart(self,character):
         self.getTerrain().mana += 10
@@ -723,13 +724,11 @@ class GlassStatue(src.items.Item):
         if glassHeart.epoch < src.gamestate.gamestate.tick//(15*15*15):
             character.addMessage("the heart stpped beating and shatters. Transer the heart faster next time.")
             character.inventory.remove(glassHeart)
-            character.movementSpeed = character.movementSpeed/2
             return
 
         self.hasItem = True
         character.inventory.remove(glassHeart)
         src.gamestate.gamestate.gods[self.itemID]["lastHeartPos"] = (character.getTerrain().xPosition,character.getTerrain().yPosition)
-        character.movementSpeed = character.movementSpeed/2
         character.changed("deliveredSpecialItem",{"itemID":self.itemID})
 
         submenue = src.menuFolder.TextMenu.TextMenu("""

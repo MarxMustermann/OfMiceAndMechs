@@ -20,3 +20,5 @@ import src.questFolder.story.contactMainBase
 import src.questFolder.story.storyClearTerrain
 import src.questFolder.story.storyAscendTry
 import src.questFolder.story.liftOutsideRestrictions
+import src.questFolder.story.adventure
+import src.questFolder.story.becomeStronger

@@ -61,14 +61,17 @@ class Golem(src.monster.Monster):
             info["item"].destroy()
         super().changed(tag, info)
 
+    def getCorpse(self):
+        return None
+
     def die(self, reason=None, addCorpse=True, killer=None):
         """
         die without leaving a corpse
         """
-        super().die(reason, addCorpse=False, killer=killer)
+        super().die(reason, addCorpse=True, killer=killer)
 
     @staticmethod
     def lootTable():
-        return [(None, 9),(src.items.itemMap["Grindstone"], 1)]
+        return [(None, 6),(src.items.itemMap["Grindstone"], 4)]
 
 src.characters.add_character(Golem)

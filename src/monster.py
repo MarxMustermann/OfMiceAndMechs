@@ -68,44 +68,30 @@ class Monster(src.characters.Character):
             return True
         return item.walkable
 
+    def getCorpse(self):
+        return src.items.itemMap["MoldFeed"]()
+
     # bad code: specific code in generic class
     def die(self, reason=None, addCorpse=True, killer=None):
         """
         special handle corpse spawning
         """
+        if not addCorpse:
+            super().die(reason, addCorpse=False, killer=killer)
+            return
+
+        corpse = self.getCorpse()
+        if corpse is not None and self.container:
+            self.container.addItem(corpse, self.getPosition())
+
         if addCorpse and hasattr(self.__class__,"lootTable"):
             lootTable = self.lootTable()
             loot = random.choices([item[0] for item in lootTable],[item[1] for item in lootTable])[0]
             if loot is not None:
                 self.container.addItem(loot(),self.getPosition())
 
-        if not addCorpse:
-            super().die(reason, addCorpse=False, killer=killer)
-            return
+        super().die(reason, addCorpse=False, killer=killer)
 
-        if self.phase == 1:
-            if (
-                self.xPosition
-                and self.yPosition
-                and (
-                    not self.container.getItemByPosition(
-                        (self.xPosition, self.yPosition, self.zPosition)
-                    )
-                )
-            ):
-                if isinstance(self.container,src.terrains.Terrain):
-                    new = src.items.itemMap["Mold"]()
-                    self.container.addItem(new, self.getPosition())
-                    new.startSpawn()
-                else:
-                    self.container.damage()
-
-            super().die(reason, addCorpse=False, killer=killer)
-        else:
-            new = src.items.itemMap["MoldFeed"]()
-            if self.container:
-                self.container.addItem(new, self.getPosition())
-            super().die(reason, addCorpse=False, killer=killer)
 
     # bad code: very specific and unclear
     def enterPhase2(self):

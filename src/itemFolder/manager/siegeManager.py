@@ -88,7 +88,7 @@ class SiegeManager(src.items.Item):
                 return
 
             if not "actionTick" in params:
-                submenue = src.menuFolder.InputMenu.InputMenu("type the tick to schedule the action for:\n\n",targetParamName="actionTick")
+                submenue = src.menuFolder.SliderMenu.SliderMenu("choose the tick to schedule the action for:\n\n",maxValue = 3375,targetParamName="actionTick")
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
                 return

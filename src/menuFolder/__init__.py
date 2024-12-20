@@ -29,3 +29,4 @@ import src.menuFolder.TextMenu
 import src.menuFolder.ViewNPCsMenu
 import src.menuFolder.MessagesMenu
 import src.menuFolder.StatusEffectMenu
+import src.menuFolder.SliderMenu

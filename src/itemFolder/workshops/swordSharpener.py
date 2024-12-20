@@ -86,6 +86,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         improvement = params["improvementAmount"]
         character.addMessage(f"You improved the sword by {improvement!s} points")
 
+        character.changed("sharpened sword")
+
         sword = params["sword"]
         sword.name = "improved sword"
         sword.baseDamage += improvement

@@ -140,6 +140,7 @@ Press d to move the cursor and show the subquests description.
             return (None,("sjj","start metal working"))
 
         return (None,None)
+
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:
             return
@@ -149,11 +150,12 @@ Press d to move the cursor and show the subquests description.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        if reason and reason.startswith("no source for item ") and (self.tryHard or "scrap hammering" in self.character.duties):
-            newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True)
+        if reason and reason.startswith("no source for item MetalBars") and (self.tryHard or "scrap hammering" in self.character.duties):
+            newQuest = src.quests.questMap["ScrapHammering"](amount=1,produceToInventory=True,tryHard=self.tryHard)
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return
+
         self.fail(reason)
 
     def handleWorkedMetal(self, extraInfo):

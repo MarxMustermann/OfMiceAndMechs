@@ -12,13 +12,29 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
-        return (None,None)
-
         if self.subQuests:
             return (None,None)
 
         if not character:
             return (None,None)
+
+        terrain = character.getTerrain()
+
+        if not character.weapon:
+            101/0
+        else:
+            if character.weapon.baseDamage < 15:
+                for room in terrain.rooms:
+                    for item in room.getItemsByType("SwordSharpener",needsBolted=True):
+                        quest = src.quests.questMap["SharpenPersonalSword"]()
+                        return ([quest],None)
+
+                102/0
+            
+        quest = src.quests.questMap["Adventure"]()
+        return ([quest],None)
+
+        return (None,None)
 
         if not character.getBigPosition() == (7,8,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")

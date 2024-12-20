@@ -29,6 +29,11 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
+            newQuest = src.quests.questMap["Adventure"]()
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+
         self.fail(reason)
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):

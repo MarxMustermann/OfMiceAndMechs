@@ -30,6 +30,10 @@ class Adventure(src.quests.MetaQuestSequence):
         if currentTerrain.yPosition < 13:
             candidates.append((currentTerrain.xPosition,currentTerrain.yPosition+1,0))
 
+        homeCoordinate = (character.registers["HOMETx"],character.registers["HOMETy"],0)
+        if homeCoordinate in candidates:
+            candidates.remove(homeCoordinate)
+
         quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=random.choice(candidates))
         return ([quest],None)
 

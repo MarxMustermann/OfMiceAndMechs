@@ -68,9 +68,9 @@ class SliderMenu(src.SubMenu.SubMenu):
             self.value = max(self.minValue, self.value - self.stepValue)
         elif key == "d":
             self.value = min(self.maxValue, self.value + self.stepValue)
-        elif key == "q":
+        elif key == "A":
             self.value = max(self.minValue, self.value - self.stepValue * 10)
-        elif key == "e":
+        elif key == "D":
             self.value = min(self.maxValue, self.value + self.stepValue * 10)
 
         percentage = self.value / self.maxValue

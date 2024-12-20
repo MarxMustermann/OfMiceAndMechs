@@ -29,8 +29,15 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["SharpenPersonalSword"]()
                         return ([quest],None)
 
-                102/0
-            
+        if not character.armor:
+            201/0
+        else:
+            if character.armor.armorValue < 3:
+                for room in terrain.rooms:
+                    for item in room.getItemsByType("ArmorReinforcer",needsBolted=True):
+                        quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                        return ([quest],None)
+
         quest = src.quests.questMap["Adventure"]()
         return ([quest],None)
 

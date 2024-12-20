@@ -31,7 +31,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["Heal"](noWaitHeal=True)
                         return ([quest],None)
 
-                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1)
+                quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True)
                 return ([quest],None)
 
         # count the number of enemies/allies
@@ -90,9 +90,12 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId,suicidal=True)
                 return ([quest],None)
 
-        quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1)
-        return ([quest],None)
+        if len(readyStatues) < 7:
+            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1)
+            return ([quest],None)
 
+        quest = src.quests.questMap["BecomeStronger"]()
+        return ([quest],None)
 
     def generateTextDescription(self):
         text = ["""
@@ -135,5 +138,16 @@ So apease the gods and obtain their GlassHearts.
             return False
 
         self.postHandler()
+
+    def handleQuestFailure(self,extraParam):
+        if extraParam["reason"] == "no job":
+            self.subQuests.remove(extraParam["quest"])
+
+            newQuest = src.quests.questMap["Heal"](noVialHeal=True)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+
+        super().handleQuestFailure(extraParam)
 
 src.quests.addType(CollectGlassHearts)

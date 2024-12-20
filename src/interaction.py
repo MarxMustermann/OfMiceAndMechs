@@ -110,7 +110,7 @@ def advanceGame():
 
         if not src.gamestate.gamestate.difficulty == "tutorial":
             src.magic.spawnWaves()
-    if settings["auto save"]:
+    if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")

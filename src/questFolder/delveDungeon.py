@@ -85,6 +85,10 @@ After fetching the glass heart return the glass heart to your base and set it in
                     quest = src.quests.questMap["Fight"](suicidal=True)
                     return ([quest],None)
 
+                if character.canHeal():
+                    quest = src.quests.questMap["Heal"]()
+                    return ([quest],None)
+
                 # wait to heal
                 #if character.health < character.maxHealth*0.75:
                 #    return (None,("..............","wait to heal"))

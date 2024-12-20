@@ -27,11 +27,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         if character.getBigPosition()[0] == 0:
             return (None, ("d","enter the terrain"))
-        if character.getBigPosition()[0] == 13:
+        if character.getBigPosition()[0] == 14:
             return (None, ("a","enter the terrain"))
         if character.getBigPosition()[1] == 0:
             return (None, ("s","enter the terrain"))
-        if character.getBigPosition()[1] == 13:
+        if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
         
         if not character.getBigPosition() == (7,7,0):
@@ -50,15 +50,17 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 self.postHandler()
             return (None,None)
 
+        for otherCharacter in character.container.characters:
+            if otherCharacter.faction == character.faction:
+                continue
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
+
         for item in character.container.itemsOnFloor:
             if item.bolted or not item.walkable:
                 continue
 
-            
-        
-        1/0
-        if not dryRun:
-            self.postHandler()
         return (None,None)
 
     def generateTextDescription(self):
@@ -67,27 +69,35 @@ Go out and adventure.
 
 """]
 
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.wrapedTriggerCompletionCheck, "set faction")
-        super().assignToCharacter(character)
-
-    def wrapedTriggerCompletionCheck(self):
-        if self.completed:
-            1/0
-        if not self.active:
-            return
-
-        self.triggerCompletionCheck(self.character)
-
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
 
-        return False
+        currentTerrain = character.getTerrain()
+
+        if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
+            return False
+
+        if not character.getBigPosition() == (7,7,0):
+            return False
+        
+        if not character.container.isRoom:
+            return False
+
+        for otherCharacter in character.container.characters:
+            if otherCharacter.faction == character.faction:
+                continue
+            return False
+
+        for item in character.container.itemsOnFloor:
+            if item.bolted or not item.walkable:
+                continue
+            return False
 
         self.postHandler()
+        return True
+
+    def wrapedTriggerCompletionCheck(self,test=None):
+        pass
 
 src.quests.addType(AdventureOnTerrain)

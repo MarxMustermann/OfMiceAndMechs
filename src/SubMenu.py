@@ -181,7 +181,7 @@ class SubMenu(object):
                 if self.selectionIndex > len(self.options):
                     self.selectionIndex = 1
             # select the marked option
-            if key in ["enter", "j", "k", "right"]:
+            if key in ["enter", "j", "k"]:
                 # bad code: transforming the key to the shortcut is needlessly complicated
                 if len(self.options.items()):
                     key = list(self.options.items())[self.selectionIndex - 1][0]

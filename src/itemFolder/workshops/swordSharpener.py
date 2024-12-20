@@ -4,8 +4,8 @@ import src
 import src.items
 
 
-class swordSharpener(src.items.itemMap["WorkShop"]):
-    type = "swordSharpener"
+class SwordSharpener(src.items.itemMap["WorkShop"]):
+    type = "SwordSharpener"
     name = "sword Sharpener"
     description = "Use it to upgrade swords"
     walkable = False
@@ -79,4 +79,4 @@ class swordSharpener(src.items.itemMap["WorkShop"]):
         sword.baseDamage += improvement
 
 
-src.items.addType(swordSharpener)
+src.items.addType(SwordSharpener)

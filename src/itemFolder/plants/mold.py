@@ -118,6 +118,7 @@ you can eat it to gain 2 satiation.
                     item.xPosition = None
                     item.yPosition = None
 
+                    """
                     if (newPos[0] % 15, newPos[1] % 15) in ((7, 7, 0),):
                         new = itemMap["CommandBloom"]()
                         self.container.addItem(new, newPos)
@@ -143,9 +144,11 @@ you can eat it to gain 2 satiation.
                         new = itemMap["CommandBloom"]()
                         self.container.addItem(new, newPos)
                     else:
-                        new = src.items.itemMap["Bloom"]()
-                        self.container.addItem(new, newPos)
-                        new.startSpawn()
+                    """
+                    new = src.items.itemMap["Bloom"]()
+                    self.container.addItem(new, newPos)
+                    new.startSpawn()
+                """
                 elif itemList[-1].type == "Bloom":
                     item = itemList[-1]
                     item.container.removeItem(item)
@@ -211,6 +214,7 @@ you can eat it to gain 2 satiation.
 
                 elif itemList[-1].type in ["CommandBloom"]:
                     itemList[-1].charges += 1
+                """
 
         self.charges -= 1
         if self.charges:

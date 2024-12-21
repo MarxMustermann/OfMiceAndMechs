@@ -46,7 +46,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
         if character.inventory:
-            quest = src.quests.questMap["ClearInventory"]()
+            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
             return ([quest],None)
 
         quest = src.quests.questMap["Adventure"]()

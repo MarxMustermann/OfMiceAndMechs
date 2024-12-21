@@ -21,7 +21,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
         terrain = character.getTerrain()
 
         if not character.weapon:
-            101/0
+            pass
         else:
             if character.weapon.baseDamage < 15:
                 for room in terrain.rooms:
@@ -30,7 +30,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
         if not character.armor:
-            201/0
+            pass
         else:
             if character.armor.armorValue < 3:
                 for room in terrain.rooms:

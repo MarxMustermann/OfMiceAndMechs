@@ -2453,11 +2453,8 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     # handle the keystroke for a char on the map
     else:
         # open the debug menue
-        if key in ("´",):
-            if debug:
-                charState["submenue"] = src.menuFolder.DebugMenu.DebugMenu()
-            else:
-                char.addMessage("debug not enabled")
+        if key in ("\'",):
+            charState["submenue"] = src.menuFolder.DebugMenu.DebugMenu()
 
         # destroy save and quit
         if key in (commandChars.quit_delete,):
@@ -3798,12 +3795,13 @@ def getTcodEvents():
                         translatedKey = "U"
                     else:
                         translatedKey = "u"
+                """
                 if key == tcod.event.KeySym.v:
-                    if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,4097,4098):
-                        translatedKey = "V"
+                    if event.mod & tcod.event.Modifier.CTRL:
+                        translatedKey = "ctrl v"
                     else:
                         translatedKey = "v"
-                """
+
                 if key == tcod.event.KeySym.w:
                     if event.mod & tcod.event.Modifier.CTRL:
                         translatedKey = "ctrl w"

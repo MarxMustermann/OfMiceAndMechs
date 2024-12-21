@@ -1,5 +1,5 @@
 import src
-
+import tcod
 class InputMenu(src.SubMenu.SubMenu):
     """
     menu to get a string input from the user
@@ -68,6 +68,9 @@ class InputMenu(src.SubMenu.SubMenu):
             self.position -= 1
         elif key == "right":
             self.position += 1
+        elif key == "ctrl v":
+            self.text +=tcod.sdl.sys._get_clipboard()
+            self.position = len(self.text) + 1
         else:
             if key == "enter":
                 key = "\n"

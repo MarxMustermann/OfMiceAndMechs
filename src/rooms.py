@@ -1895,6 +1895,13 @@ class Room:
     def getDistance(self,position):
         return abs(self.xPosition-position[0])+abs(self.yPosition-position[1])
 
+    def getEstimatedStrength(self, numCharWeight = 1.11):
+        s = 0
+        for ch in self.characters:
+            s += ch.getStrengthSelfEstimate() * (1 / len(self.characters))
+
+        return s * pow(numCharWeight, len(self.characters))
+
 class MiniBase(Room):
     """
     a room sized base for small off mech missions

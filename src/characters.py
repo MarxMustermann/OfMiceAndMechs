@@ -396,20 +396,20 @@ class Character:
     def getStrengthSelfEstimate(self,healthWeight=0.1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,movementSpeedWeight = 1,attackSpeedWeight = 1,totalWeight=0.04):
         weight = 0
         weight += self.health*healthWeight
-        print("healthweight")
-        print(self.health*healthWeight)
+        # print("healthweight")
+        # print(self.health*healthWeight)
 
         baseDamage = self.baseDamage
         if self.weapon:
             baseDamage += self.weapon.baseDamage
         weight += baseDamage*damageWeight
-        print("damageWeight")
-        print(baseDamage*damageWeight)
+        # print("damageWeight")
+        # print(baseDamage*damageWeight)
 
         if self.armor:
             weight += self.armor.getArmorValue("attacked")*armorWeight
-            print("armorWeight")
-            print(self.armor.getArmorValue("attacked")*armorWeight)
+            # print("armorWeight")
+            # print(self.armor.getArmorValue("attacked")*armorWeight)
 
         numVialCharges = 0
         for item in self.inventory:
@@ -417,14 +417,14 @@ class Character:
                 continue
             numVialCharges += item.uses
         weight += numVialCharges*vialChargeWeight
-        print("vial Weight")
-        print(numVialCharges*vialChargeWeight)
+        # print("vial Weight")
+        # print(numVialCharges*vialChargeWeight)
         weight-= self.adjustedMovementSpeed* movementSpeedWeight
-        print("MovementSpeed Weight")
-        print(self.adjustedMovementSpeed* movementSpeedWeight)
+        # print("MovementSpeed Weight")
+        # print(self.adjustedMovementSpeed* movementSpeedWeight)
         weight-= self.attackSpeed* attackSpeedWeight
-        print("AttackSpeed Weight")
-        print(self.attackSpeed* attackSpeedWeight)
+        # print("AttackSpeed Weight")
+        # print(self.attackSpeed* attackSpeedWeight)
 
         return weight*totalWeight
 

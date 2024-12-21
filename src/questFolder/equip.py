@@ -121,6 +121,12 @@ Swords can range from 10 to 25 damage per hit.
         if self.subQuests:
             return (None,None)
 
+        if not character:
+            return (None,None)
+
+        if character.macroState.get("submenue"):
+            return (None,(["esc"],"close the menu"))
+
         (bestSword,bestArmor) = self.findBestEquipment(character)
         if bestSword and (not character.weapon or bestSword.baseDamage > character.weapon.baseDamage):
             if character.container != bestSword.container:

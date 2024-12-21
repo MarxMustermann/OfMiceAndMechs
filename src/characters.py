@@ -408,8 +408,8 @@ class Character:
 
         if self.armor:
             weight += self.armor.getArmorValue("attacked")*armorWeight
-        print("armorWeight")
-        print(self.armor.getArmorValue("attacked")*armorWeight)
+            print("armorWeight")
+            print(self.armor.getArmorValue("attacked")*armorWeight)
 
         numVialCharges = 0
         for item in self.inventory:

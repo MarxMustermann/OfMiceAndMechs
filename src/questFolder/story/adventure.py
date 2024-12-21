@@ -18,6 +18,15 @@ class Adventure(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.getBigPosition()[0] == 0:
+            return (None, ("d","enter the terrain"))
+        if character.getBigPosition()[0] == 14:
+            return (None, ("a","enter the terrain"))
+        if character.getBigPosition()[1] == 0:
+            return (None, ("s","enter the terrain"))
+        if character.getBigPosition()[1] == 14:
+            return (None, ("w","enter the terrain"))
+        
         currentTerrain = character.getTerrain()
 
         if character.getFreeInventorySpace() < 2:

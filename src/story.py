@@ -2079,6 +2079,14 @@ but they are likely to explode when disturbed.
                 storageRoom.addStorageSlot((x,y,0),None)
             storageRoom.addWalkingSpace((11,y,0))
 
+        painter = src.items.itemMap["Painter"]()
+        painter.bolted = False
+        storageRoom.addItem(painter,(2,2,0))
+
+        roomBuilder = src.items.itemMap["RoomBuilder"]()
+        roomBuilder.bolted = False
+        storageRoom.addItem(roomBuilder,(3,2,0))
+
         ####
         # create spawn room
         ##

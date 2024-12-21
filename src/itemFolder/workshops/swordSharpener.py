@@ -65,7 +65,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             if improvementAmount+sword.baseDamage >= 30:
                 break
 
-            character.inventory.remove(grindstone)
+            character.inventory.remove(grindStone)
             improvementAmount += min(5,30-sword.baseDamage-improvementAmount)
 
         if not improvementAmount:

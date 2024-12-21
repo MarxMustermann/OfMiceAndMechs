@@ -2147,6 +2147,7 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["GooProducer"]()
         spawnRoom.addItem(item,(7,10,0))
         item = src.items.itemMap["GooDispenser"]()
+        item.charges = 5
         spawnRoom.addItem(item,(8,10,0))
 
         ####
@@ -3646,6 +3647,42 @@ but they are likely to explode when disturbed.
             quest.endTrigger = {"container": self, "method": "reachImplant"}
             return
 
+        if not mainChar.weapon:
+            for room in mainChar.getTerrain().rooms:
+                if room.getNonEmptyOutputslots("Sword"):
+                    quest = src.quests.questMap["Equip"]()
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+
+        if not mainChar.armor:
+            for room in mainChar.getTerrain().rooms:
+                if room.getNonEmptyOutputslots("Armor"):
+                    quest = src.quests.questMap["Equip"]()
+                    quest.assignToCharacter(mainChar)
+                    quest.activate()
+                    mainChar.assignQuest(quest,active=True)
+                    quest.endTrigger = {"container": self, "method": "reachImplant"}
+                    return
+
+        if not mainChar.weapon:
+            quest = src.quests.questMap["MetalWorking"](toProduce="Sword",amount=1,produceToInventory=False,tryHard=True)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+
+        if not mainChar.armor:
+            quest = src.quests.questMap["MetalWorking"](toProduce="Armor",amount=1,produceToInventory=False,tryHard=True)
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
+                    
         # collect all glass heart
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == mainChar.registers["HOMETx"] and god["lastHeartPos"][1] == mainChar.registers["HOMETy"]):

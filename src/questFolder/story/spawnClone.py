@@ -29,6 +29,16 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
+            for item in self.character.container.getItemsByType("GooDispenser"):
+                if item.charges > 0:
+                    newQuest = src.quests.questMap["FillFlask"]()
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    newQuest = src.quests.questMap["FetchItems"](toCollect="Flask",tryHard=True,amount=1)
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
+
             if self.character.container.isRoom:
                 for item in self.character.container.getItemsByType("GooProducer"):
                     if item.readyToUse():

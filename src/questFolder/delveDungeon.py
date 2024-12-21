@@ -101,9 +101,9 @@ After fetching the glass heart return the glass heart to your base and set it in
                 #    return (None,("..............","wait to heal"))
 
                 # abort
-                if not dryRun:
-                    self.fail("too hurt")
-                return (None,None)
+                #if not dryRun:
+                #    self.fail("too hurt")
+                #return (None,None)
 
             # get to the terrain the dungeon is on
             if terrain.xPosition != self.targetTerrain[0] or terrain.yPosition != self.targetTerrain[1]:
@@ -202,7 +202,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             return (None,None)
 
         if foundGlassStatue.container != character.container:
-            quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="be able to set the GlassHeart")
+            quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),description="go to temple",reason="be able to set the GlassHeart")
             return ([quest],None)
 
         if character.getDistance(glassStatue.getPosition()) > 1:
@@ -236,7 +236,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             tryNextTile = True
 
         if tryNextTile:
-            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
+            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to temple",reason="reach the GlassHeart")
             self.path.remove(self.path[0])
             return ([quest],None)
 

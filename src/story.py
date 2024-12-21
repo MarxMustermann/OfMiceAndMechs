@@ -2727,6 +2727,7 @@ but they are likely to explode when disturbed.
             loot_types = [random.choice(loot_types)]
 
         # add random amount of loot 
+        monsterType = random.choice(["Golem","ShieldBug"])
         for i in range(0,random.randint(1,6)):
             # add loot
             if random.random() < 0.5:
@@ -2747,7 +2748,7 @@ but they are likely to explode when disturbed.
 
             # add monster
             pos = (random.randint(1,11),random.randint(1,11),0)
-            golem = src.characters.characterMap["Golem"]()
+            golem = src.characters.characterMap[monsterType]()
             golem.godMode = True
             quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
             quest.autoSolve = True

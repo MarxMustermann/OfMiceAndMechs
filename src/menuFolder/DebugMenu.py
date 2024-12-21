@@ -6,7 +6,7 @@ class DebugMenu(src.SubMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Execute Code"]
+    debug_options = ["Teleport", "Execute Code"]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -34,6 +34,48 @@ class DebugMenu(src.SubMenu.SubMenu):
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {"container":self,"method":"action","params":{"character":character}}
                         return True
+                case "Teleport":
+                    text += debug
+                    if current_change:
+                        terrain = character.getTerrain()
+                        mapContent = []
+                        functionMap = {}
+
+                        for x in range(15):
+                            mapContent.append([])
+                            for y in range(15):
+                                if x not in (0, 14) and y not in (0, 14):
+                                    displayChar = "  "
+                                elif x != 7 and y != 7:
+                                    displayChar = "##"
+                                else:
+                                    displayChar = "  "
+
+                        for x in range(1,14):
+                            for y in range(1,14):
+                                mapContent[x].append(displayChar)
+                                functionMap[(y, x)] = {
+                                    "j": {
+                                        "function": {
+                                            "container": self,
+                                            "method": "action",
+                                            "params": {"character":character},
+                                        },
+                                        "description": "move to it",
+                                    }
+                                }
+
+                        for room in terrain.rooms:
+                            mapContent[room.yPosition][room.xPosition] = room.displayChar
+                        for scrapField in terrain.scrapFields:
+                            mapContent[scrapField[1]][scrapField[0]] = "ss"
+                        submenue = src.menuFolder.MapMenu.MapMenu(
+                            mapContent=mapContent,
+                            functionMap=functionMap,
+                            cursor=character.getBigPosition(),
+                        )
+                        character.macroState["submenue"] = submenue
+                        return True
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
@@ -50,3 +92,13 @@ class DebugMenu(src.SubMenu.SubMenu):
             except Exception as e:
                 print("error: " + str(e))
             return
+
+        if "coordinate" in params:
+            print(params["coordinate"])
+            terrain = character.getTerrain()
+            character.container.removeCharacter(character)
+            room = terrain.getRoomByPosition(params["coordinate"])
+            if len(room):
+                room[0].addCharacter(character,7,7)
+            else:
+                terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)

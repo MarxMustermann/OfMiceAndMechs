@@ -223,10 +223,23 @@ After fetching the glass heart return the glass heart to your base and set it in
 
     def DelveToRoomIfSafe(self,character):
         new_pos = (self.path[0][0] + character.getBigPosition()[0], self.path[0][1] + character.getBigPosition()[1])
-        if self.suicidal or not character.getStrengthSelfEstimate() < character.getTerrain().getRoomByPosition(new_pos)[0].getEstimatedStrength():
+
+        tryNextTile = False
+        if self.suicidal:
+            tryNextTile = True
+
+        rooms = character.getTerrain().getRoomByPosition(new_pos)
+        if not rooms:
+            tryNextTile = True
+        
+        if rooms and (not character.getStrengthSelfEstimate() < rooms[0].getEstimatedStrength()):
+            tryNextTile = True
+
+        if tryNextTile:
             quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
             self.path.remove(self.path[0])
             return ([quest],None)
+
         self.fail("dungeon too tough")
         return (None,None)
 

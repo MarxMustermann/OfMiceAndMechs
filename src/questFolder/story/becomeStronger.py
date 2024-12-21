@@ -23,7 +23,14 @@ class BecomeStronger(src.quests.MetaQuestSequence):
         if not character.weapon:
             pass
         else:
+            shouldSharpen = False
             if character.weapon.baseDamage < 15:
+                shouldSharpen = True
+            else:
+                if character.searchInventory("Grindstone"):
+                    shouldSharpen = True
+
+            if shouldSharpen:
                 for room in terrain.rooms:
                     for item in room.getItemsByType("SwordSharpener",needsBolted=True):
                         quest = src.quests.questMap["SharpenPersonalSword"]()
@@ -99,8 +106,10 @@ Get some upgrades to be stronger.
         if not character:
             return False
 
-        return False
+        if character.getStrengthSelfEstimate() < self.targetStrength:
+            return False
 
         self.postHandler()
+        return True
 
 src.quests.addType(BecomeStronger)

@@ -2733,7 +2733,7 @@ but they are likely to explode when disturbed.
                 mana_crystal = src.items.itemMap["ManaCrystal"]()
                 room.addItem(mana_crystal,(6,6,0))
             else:
-                positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(13,11,0),(5,5,0)]
+                positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(10,11,0),(5,5,0)]
                 item = src.items.itemMap[random.choice(loot_types)]()
                 if item.type == "GooFlask":
                     item.uses = 100

@@ -2236,15 +2236,6 @@ but they are likely to explode when disturbed.
             sword.baseDamage = 10
         sword.bolted = False
         trapRoom1.addItem(sword,(11,3,0))
-        armor = src.items.itemMap["Armor"]()
-        armor.armorValue = 3
-        if self.difficulty == "easy":
-            armor.armorValue = 5
-        if self.difficulty == "difficult":
-            armor.armorValue = 1
-        armor.bolted = False
-        trapRoom1.addItem(armor,(11,4,0))
-
         sword = src.items.itemMap["Sword"]()
         sword.baseDamage = 15
         if self.difficulty == "easy":
@@ -2253,6 +2244,8 @@ but they are likely to explode when disturbed.
             sword.baseDamage = 10
         sword.bolted = False
         trapRoom1.addItem(sword,(11,3,0))
+        trapRoom1.addStorageSlot((11,3,0),"Sword")
+
         armor = src.items.itemMap["Armor"]()
         armor.armorValue = 3
         if self.difficulty == "easy":
@@ -2261,6 +2254,15 @@ but they are likely to explode when disturbed.
             armor.armorValue = 1
         armor.bolted = False
         trapRoom1.addItem(armor,(11,4,0))
+        armor = src.items.itemMap["Armor"]()
+        armor.armorValue = 3
+        if self.difficulty == "easy":
+            armor.armorValue = 5
+        if self.difficulty == "difficult":
+            armor.armorValue = 1
+        armor.bolted = False
+        trapRoom1.addItem(armor,(11,4,0))
+        trapRoom1.addStorageSlot((11,4,0),"Armor")
 
         for x in range(4,12):
             for i in range(10):
@@ -2298,7 +2300,7 @@ but they are likely to explode when disturbed.
 
         for x in range(1,12):
             for y in range(2,11):
-                if (x,y) in ((11,9),(11,8),(11,5),(11,7)):
+                if (x,y) in ((11,9),(11,8),(11,5),(11,7),(11,4),(11,3)):
                     continue
                 trapRoom1.walkingSpace.add((x,y,0))
 

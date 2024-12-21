@@ -21,7 +21,12 @@ class BecomeStronger(src.quests.MetaQuestSequence):
         terrain = character.getTerrain()
 
         if not character.weapon:
-            pass
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots("Sword"):
+                    quest = src.quests.questMap["Equip"]()
+                    return ([quest],None)
+            quest = src.quests.questMap["MetalWorking"](toProduce="Sword",produceToInventory=False,amount=1)
+            return ([quest],None)
         else:
             shouldSharpen = False
             if character.weapon.baseDamage < 15:
@@ -36,8 +41,19 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["SharpenPersonalSword"]()
                         return ([quest],None)
 
+            if character.weapon.baseDamage < 30:
+                for room in terrain.rooms:
+                    if room.getNonEmptyOutputslots("Grindstone"):
+                        quest = src.quests.questMap["FetchItems"](toCollect="Grindstone")
+                        return ([quest],None)
+
         if not character.armor:
-            pass
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots("Armor"):
+                    quest = src.quests.questMap["Equip"]()
+                    return ([quest],None)
+            quest = src.quests.questMap["MetalWorking"](toProduce="Armor",produceToInventory=False,amount=1)
+            return ([quest],None)
         else:
             if character.armor.armorValue < 3:
                 for room in terrain.rooms:

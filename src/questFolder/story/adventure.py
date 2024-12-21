@@ -20,6 +20,11 @@ class Adventure(src.quests.MetaQuestSequence):
 
         currentTerrain = character.getTerrain()
 
+        if character.getFreeInventorySpace() < 2:
+            if currentTerrain.tag == "shrine":
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
+
         candidates = []
         if currentTerrain.xPosition > 1:
             candidates.append((currentTerrain.xPosition-1,currentTerrain.yPosition,0))
@@ -62,8 +67,16 @@ Go out and adventure.
         if not character:
             return False
 
-        return False
+        currentTerrain = character.getTerrain()
+        if not currentTerrain.xPosition == character.registers["HOMETx"]:
+            return False
+        if not currentTerrain.yPosition == character.registers["HOMETy"]:
+            return False
+
+        if not character.getFreeInventorySpace() < 2:
+            return False
 
         self.postHandler()
+        return True
 
 src.quests.addType(Adventure)

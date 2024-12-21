@@ -17,6 +17,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
+        if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
+            quest = src.quests.questMap["GoHome"]()
+            return ([quest],None)
+
         if character.health < character.maxHealth*0.75:
             if not (terrain.xPosition == character.registers["HOMETx"] and
                     terrain.yPosition == character.registers["HOMETy"]):

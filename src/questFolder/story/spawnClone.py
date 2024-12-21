@@ -29,7 +29,29 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            newQuest = src.quests.questMap["Adventure"]()
+            if self.character.container.isRoom:
+                for item in self.character.container.getItemsByType("GooProducer"):
+                    if item.readyToUse():
+                        newQuest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition())
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
+
+                for item in self.character.container.getItemsByType("BioPress"):
+                    if item.readyToUse():
+                        newQuest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition())
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
+
+                for item in self.character.container.getItemsByType("BloomShredder"):
+                    if item.readyToUse():
+                        newQuest = src.quests.questMap["OperateMachine"](targetPosition=item.getPosition(),targetPositionBig=item.getBigPosition())
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
+
+            newQuest = src.quests.questMap["FarmMold"]()
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return

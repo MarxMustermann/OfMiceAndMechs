@@ -140,8 +140,6 @@ as long as enough workers and ressources are available.
         for checkRoom in character.getTerrain().rooms:
             glassStatues = checkRoom.getItemsByType("GlassStatue")
             for checkStatue in glassStatues:
-                if checkStatue.hasItem:
-                    continue
                 if checkStatue.charges < 5:
                     continue
                 numGlassStatues += 1

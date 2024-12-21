@@ -88,7 +88,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             if godId in readyStatues:
 
-                if strengthRating < readyStatues[godId].numTeleportsDone:
+                if strengthRating < 1+(readyStatues[godId].numTeleportsDone/10):
                     continue
 
                 quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId,suicidal=True)

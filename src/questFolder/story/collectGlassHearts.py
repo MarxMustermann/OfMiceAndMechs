@@ -82,17 +82,22 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 readyStatues[item.itemID] = item
 
 
+        bestDungeon = None
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):
                 continue
 
             if godId in readyStatues:
 
-                if strengthRating < 1+(readyStatues[godId].numTeleportsDone/10):
+                if readyStatues[godId].numTeleportsDone and strengthRating < 1+(readyStatues[godId].numTeleportsDone/10):
                     continue
 
-                quest = src.quests.questMap["DelveDungeon"](targetTerrain=god["lastHeartPos"],itemID=godId,suicidal=True)
-                return ([quest],None)
+                if not bestDungeon or bestDungeon[0] > readyStatues[godId].numTeleportsDone:
+                    bestDungeon = (readyStatues[godId].numTeleportsDone,god,godId)
+
+        if bestDungeon:
+            quest = src.quests.questMap["DelveDungeon"](targetTerrain=bestDungeon[1]["lastHeartPos"],itemID=bestDungeon[2])
+            return ([quest],None)
 
         if len(readyStatues) < 7:
             quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1)

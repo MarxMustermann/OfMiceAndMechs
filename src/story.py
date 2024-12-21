@@ -2272,6 +2272,14 @@ but they are likely to explode when disturbed.
         coalBurner.bolted = True
         trapRoom1.addItem(coalBurner,(11,8,0))
 
+        swordSharpener = src.items.itemMap["SwordSharpener"]()
+        swordSharpener.bolted = True
+        trapRoom1.addItem(swordSharpener,(11,5,0))
+
+        armorReinforcer = src.items.itemMap["ArmorReinforcer"]()
+        armorReinforcer.bolted = True
+        trapRoom1.addItem(armorReinforcer,(11,7,0))
+
         trapRoom1.addInputSlot((11,9,0),"MoldFeed",{})
         moldFeed = src.items.itemMap["MoldFeed"]()
         trapRoom1.addItem(moldFeed,(11,9,0))
@@ -2290,7 +2298,7 @@ but they are likely to explode when disturbed.
 
         for x in range(1,12):
             for y in range(2,11):
-                if (x,y) in ((11,9),(11,8)):
+                if (x,y) in ((11,9),(11,8),(11,5),(11,7)):
                     continue
                 trapRoom1.walkingSpace.add((x,y,0))
 

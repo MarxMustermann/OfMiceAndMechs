@@ -82,7 +82,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             except:
                 self.path = None
 
-            if self.path is not None:
+            if self.path is not None and len(self.path):
                 return self.DelveToRoomIfSafe(character)
             # handle beeing hurt
             #if not self.suicidal and character.health < character.maxHealth*0.75:
@@ -146,7 +146,9 @@ After fetching the glass heart return the glass heart to your base and set it in
                         quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
                         quest.generatePath(character)
                         self.path = quest.path
-                        return self.DelveToRoomIfSafe(character)
+                        if len(self.path):
+                            return self.DelveToRoomIfSafe(character)
+                        return (None,None)
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:
                         quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
                         return ([quest],None)

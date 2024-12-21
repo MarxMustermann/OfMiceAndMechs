@@ -2453,11 +2453,8 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     # handle the keystroke for a char on the map
     else:
         # open the debug menue
-        if key in ("´",):
-            if debug:
-                charState["submenue"] = src.menuFolder.DebugMenu.DebugMenu()
-            else:
-                char.addMessage("debug not enabled")
+        if key in ("\'",):
+            charState["submenue"] = src.menuFolder.DebugMenu.DebugMenu()
 
         # destroy save and quit
         if key in (commandChars.quit_delete,):

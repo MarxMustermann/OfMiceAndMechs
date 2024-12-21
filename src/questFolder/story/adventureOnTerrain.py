@@ -60,6 +60,10 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         for item in character.container.itemsOnFloor:
             if item.bolted or not item.walkable:
                 continue
+            if item.xPosition > 12:
+                continue
+            quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition())
+            return ([quest],None)
 
         return (None,None)
 

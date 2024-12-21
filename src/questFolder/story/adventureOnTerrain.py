@@ -82,6 +82,10 @@ Go out and adventure.
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
             return False
 
+        if not character.getFreeInventorySpace():
+            self.postHandler()
+            return True
+
         if currentTerrain.tag == "ruin":
             if not character.getBigPosition() == (7,7,0):
                 return False

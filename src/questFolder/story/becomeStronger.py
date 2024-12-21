@@ -26,7 +26,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             shouldSharpen = False
             if character.weapon.baseDamage < 15:
                 shouldSharpen = True
-            else:
+            elif character.weapon.baseDamage < 30:
                 if character.searchInventory("Grindstone"):
                     shouldSharpen = True
 

@@ -24,7 +24,13 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
-        return False
+
+        if not character.weapon:
+            return False
+
+        if character.weapon.baseDamage >= 30:
+            self.postHandler()
+            return True
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 

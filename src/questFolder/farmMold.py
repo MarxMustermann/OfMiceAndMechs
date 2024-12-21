@@ -50,7 +50,7 @@ farm mold"""
                 if not item.type == "Bloom":
                     continue
 
-                quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord)
+                quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False)
                 return ([quest],None)
 
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
@@ -69,5 +69,8 @@ farm mold"""
                 return ([quest],None)
 
         return (None,None)
+
+    def pickedUpItem(self,test=None):
+        pass
 
 src.quests.addType(FarmMold)

@@ -5,13 +5,14 @@ import src
 class FarmMoldTile(src.quests.MetaQuestSequence):
     type = "FarmMoldTile"
 
-    def __init__(self, description="farm mold tile", creator=None, targetPosition=None, reason=None, endOnFullInventory=False):
+    def __init__(self, description="farm mold tile", creator=None, targetPosition=None, reason=None, endOnFullInventory=False, stimulateMoldGrowth=True):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
         self.reason = reason
         self.endOnFullInventory = endOnFullInventory
+        self.stimulateMoldGrowth = stimulateMoldGrowth
 
         self.targetPosition = targetPosition
 
@@ -67,6 +68,9 @@ farm mold on the tile {self.targetPosition}"""
                     quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items")
                     return ([quest],None)
 
+        if not self.stimulateMoldGrowth:
+            return (None,None)
+
         offsets = [(0,0,0),(1,0,0),(0,1,0),(-1,0,0),(0,-1,0)]
         foundOffset = None
         charPos = character.getPosition()
@@ -111,10 +115,11 @@ farm mold on the tile {self.targetPosition}"""
         for item in items:
             if item.type == "Bloom":
                 leftOverItems.append(item)
-            if item.type == "Sprout":
-                numSprouts += 1
-                if numSprouts > 4:
-                    leftOverItems.append(item)
+            if self.stimulateMoldGrowth:
+                if item.type == "Sprout":
+                    numSprouts += 1
+                    if numSprouts > 4:
+                        leftOverItems.append(item)
         return leftOverItems
 
     def pickedUpItem(self,extraInfo):

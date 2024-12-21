@@ -110,14 +110,10 @@ Spawn a clone to have a backup in case of emergencies.
 
         self.postHandler()
 
-    def wrapedTriggerCompletionCheck(self,character=None):
-        pass
-
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
 
         return False
-        self.postHandler()
 
 src.quests.addType(SpawnClone)

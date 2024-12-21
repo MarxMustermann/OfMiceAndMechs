@@ -45,14 +45,20 @@ farm mold"""
 
         terrain = character.getTerrain()
 
+        candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
             for item in itemList:
                 if not item.type == "Bloom":
                     continue
 
-                quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False)
-                return ([quest],None)
+                candidates.append(coord)
 
+        if candidates:
+            coord = random.choice(candidates)
+            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False)
+            return ([quest],None)
+
+        candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
             numSprouts = 0
             for item in itemList:
@@ -65,8 +71,12 @@ farm mold"""
                 numSprouts += 1
 
             if numSprouts > 4:
-                quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord)
-                return ([quest],None)
+                candidates.append(coord)
+
+        if candidates:
+            coord = random.choice(candidates)
+            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord)
+            return ([quest],None)
 
         return (None,None)
 

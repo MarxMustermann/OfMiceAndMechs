@@ -16,7 +16,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.storyText = storyText
         self.directSendback = directSendback
         self.suicidal = suicidal
-
+        self.path = None
     def generateTextDescription(self):
         text = ""
 
@@ -77,6 +77,13 @@ After fetching the glass heart return the glass heart to your base and set it in
 
         # get the glass heart
         if not hasSpecialItem:
+            try:
+                self.path
+            except:
+                self.path = None
+
+            if self.path is not None:
+                return self.DelveToRoomIfSafe(character)
             # handle beeing hurt
             #if not self.suicidal and character.health < character.maxHealth*0.75:
             if character.health < character.maxHealth*0.75:
@@ -137,8 +144,9 @@ After fetching the glass heart return the glass heart to your base and set it in
                 if foundGlassStatue:
                     if character.container != foundGlassStatue.container:
                         quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
-                        return ([quest],None)
-
+                        quest.generatePath(character)
+                        self.path = quest.path
+                        return self.DelveToRoomIfSafe(character)
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:
                         quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
                         return ([quest],None)
@@ -210,5 +218,14 @@ After fetching the glass heart return the glass heart to your base and set it in
         if character.getPosition(offset=(0,-1,0)) == glassStatue.getPosition():
             directionCommand = "w"
         return (None,(directionCommand+"cg","insert glass heart"))
+
+    def DelveToRoomIfSafe(self,character):
+        new_pos = (self.path[0][0] + character.getBigPosition()[0], self.path[0][1] + character.getBigPosition()[1])
+        if self.suicidal or not character.getStrengthSelfEstimate() < character.getTerrain().getRoomByPosition(new_pos)[0].getEstimatedStrength():
+            quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
+            self.path.remove(self.path[0])
+            return ([quest],None)
+        self.fail("dungeon too tough")
+        return (None,None)
 
 src.quests.addType(DelveDungeon)

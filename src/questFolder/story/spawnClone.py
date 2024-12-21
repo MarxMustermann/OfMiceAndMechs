@@ -19,6 +19,12 @@ class SpawnClone(src.quests.MetaQuestSequence):
 
         reason = extraParam.get("reason")
         if reason == "no source for item GooFlask":
+            if not self.character.getBigPosition() == (7,8,0):
+                newQuest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
+
             for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():
                 for item in itemList:
                     if not item.type == "GooFlask":
@@ -60,6 +66,13 @@ class SpawnClone(src.quests.MetaQuestSequence):
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
+
+            for room in self.character.getTerrain().rooms:
+                if room.getNonEmptyOutputslots("Bloom"):
+                    newQuest = src.quests.questMap["FetchItems"](toCollect="Bloom")
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
 
             newQuest = src.quests.questMap["FarmMold"]()
             self.addQuest(newQuest)

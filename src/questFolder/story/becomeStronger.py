@@ -55,10 +55,23 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["MetalWorking"](toProduce="Armor",produceToInventory=False,amount=1)
             return ([quest],None)
         else:
+            shouldReinforce = False
             if character.armor.armorValue < 3:
+                shouldReinforce = True
+            elif character.armor.armorValue < 8:
+                if character.searchInventory("CitinPlates"):
+                    shouldReinforce = True
+
+            if shouldReinforce:
                 for room in terrain.rooms:
                     for item in room.getItemsByType("ArmorReinforcer",needsBolted=True):
                         quest = src.quests.questMap["ReinforcePersonalArmor"]()
+                        return ([quest],None)
+
+            if character.armor.armorValue < 8:
+                for room in terrain.rooms:
+                    if room.getNonEmptyOutputslots("CitinPlates"):
+                        quest = src.quests.questMap["FetchItems"](toCollect="CitinPlates")
                         return ([quest],None)
 
         if character.inventory:

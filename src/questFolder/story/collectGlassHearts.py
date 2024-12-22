@@ -125,7 +125,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # get stronger to be able to complete the unlocked dungeons
-        quest = src.quests.questMap["BecomeStronger"]()
+        quest = src.quests.questMap["BecomeStronger"](targetStrength=strengthRating+0.1)
         return ([quest],None)
 
     def generateTextDescription(self):

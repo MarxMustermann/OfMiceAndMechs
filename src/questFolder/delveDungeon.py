@@ -229,9 +229,6 @@ After fetching the glass heart return the glass heart to your base and set it in
         if not rooms:
             tryNextTile = True
         
-        print("---------------------------")
-        print(character.getStrengthSelfEstimate())
-        print(rooms[0].getEstimatedStrength())
         if rooms and (not character.getStrengthSelfEstimate() < rooms[0].getEstimatedStrength()):
             tryNextTile = True
 

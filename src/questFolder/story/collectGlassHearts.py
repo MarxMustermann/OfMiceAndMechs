@@ -71,6 +71,28 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["SpawnClone"]()
                 return ([quest],None)
 
+        # ensure the siege manager is configured
+        if terrain.alarm:
+            
+            terrain = character.getTerrain()
+            siegeManager = None
+            for room in terrain.rooms:
+                item = room.getItemByType("SiegeManager",needsBolted=True)
+                if not item:
+                    continue
+                
+                siegeManager = item
+
+            if siegeManager:
+                existingActions = []
+                for actionDefintion in siegeManager.schedule.values():
+                    existingActions.append(actionDefintion["type"])
+
+                if "restrict outside" not in existingActions or "sound alarms" not in existingActions or "unrestrict outside" not in existingActions or "silence alarms" not in existingActions:
+                    quest = src.quests.questMap["ConfigureSiegeManager"]()
+                    return ([quest],None)
+
+        # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()
         readyStatues = {}
         for room in character.getTerrain().rooms:
@@ -81,28 +103,28 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     continue
                 readyStatues[item.itemID] = item
 
-
+        # try to do a dungeon run
         bestDungeon = None
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):
                 continue
 
             if godId in readyStatues:
-
                 if readyStatues[godId].numTeleportsDone and strengthRating < 1+(readyStatues[godId].numTeleportsDone/10):
                     continue
 
                 if not bestDungeon or bestDungeon[0] > readyStatues[godId].numTeleportsDone:
                     bestDungeon = (readyStatues[godId].numTeleportsDone,god,godId)
-
         if bestDungeon:
             quest = src.quests.questMap["DelveDungeon"](targetTerrain=bestDungeon[1]["lastHeartPos"],itemID=bestDungeon[2])
             return ([quest],None)
 
+        # unlock more statues
         if len(readyStatues) < 7:
             quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1)
             return ([quest],None)
 
+        # get stronger to be able to complete the unlocked dungeons
         quest = src.quests.questMap["BecomeStronger"]()
         return ([quest],None)
 

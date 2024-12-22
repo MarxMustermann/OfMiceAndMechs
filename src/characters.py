@@ -393,7 +393,7 @@ class Character:
             self.skills.append(skill)
         self.changed("learnedSkill",self)
 
-    def getStrengthSelfEstimate(self,healthWeight=0.1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,movementSpeedWeight = 1,attackSpeedWeight = 1,totalWeight=0.04):
+    def getStrengthSelfEstimate(self,healthWeight=1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,movementSpeedWeight = 1,attackSpeedWeight = 1,specialAttackWeight = 10,totalWeight=0.009):
         weight = 0
         weight += self.health*healthWeight
         # print("healthweight")
@@ -405,6 +405,9 @@ class Character:
         weight += baseDamage*damageWeight
         # print("damageWeight")
         # print(baseDamage*damageWeight)
+
+        if self.hasSpecialAttacks:
+            weight += specialAttackWeight
 
         if self.armor:
             weight += self.armor.getArmorValue("attacked")*armorWeight
@@ -426,7 +429,9 @@ class Character:
         # print("AttackSpeed Weight")
         # print(self.attackSpeed* attackSpeedWeight)
 
-        return weight*totalWeight
+        weight = weight*totalWeight
+
+        return weight
 
     def getOffset(self,position):
         """

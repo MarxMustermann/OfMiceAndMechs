@@ -62,6 +62,9 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
+        if params.get("type") == None:
+            return
+
         if not "Potion" in params.get("type"):
             character.addMessage("You can only produce Potions here.")
             return

@@ -1,6 +1,8 @@
 import src
 import random
 
+import src.helpers
+
 class Adventure(src.quests.MetaQuestSequence):
     type = "Adventure"
 
@@ -9,7 +11,7 @@ class Adventure(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
-
+        self.visited_terrain = []
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
@@ -48,7 +50,19 @@ class Adventure(src.quests.MetaQuestSequence):
         if homeCoordinate in candidates:
             candidates.remove(homeCoordinate)
 
-        quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=random.choice(candidates))
+        try:
+            self.visited_terrain
+        except:
+            self.visited_terrain = []
+
+        candidates = [x for x in candidates if x not in self.visited_terrain]
+
+        targetTerrain = random.choices(
+            candidates, [src.helpers.distance_between_points(homeCoordinate, candidate) for candidate in candidates]
+        )[0]
+
+        self.visited_terrain.append(targetTerrain)
+        quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
         return ([quest],None)
 
     def generateTextDescription(self):

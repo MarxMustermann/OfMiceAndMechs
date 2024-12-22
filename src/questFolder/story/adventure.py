@@ -35,36 +35,29 @@ class Adventure(src.quests.MetaQuestSequence):
             if currentTerrain.tag == "shrine":
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
-
-        candidates = []
-        if currentTerrain.xPosition > 1:
-            candidates.append((currentTerrain.xPosition-1,currentTerrain.yPosition,0))
-        if currentTerrain.xPosition < 13:
-            candidates.append((currentTerrain.xPosition+1,currentTerrain.yPosition,0))
-        if currentTerrain.yPosition > 1:
-            candidates.append((currentTerrain.xPosition,currentTerrain.yPosition-1,0))
-        if currentTerrain.yPosition < 13:
-            candidates.append((currentTerrain.xPosition,currentTerrain.yPosition+1,0))
-
-        homeCoordinate = (character.registers["HOMETx"],character.registers["HOMETy"],0)
-        if homeCoordinate in candidates:
-            candidates.remove(homeCoordinate)
-
         try:
             self.visited_terrain
         except:
             self.visited_terrain = []
 
-        candidates = [x for x in candidates if x not in self.visited_terrain]
+        candidates = []
+        for x in range(14):
+            for y in range(14):
+                if (x, y, 0) not in self.visited_terrain:
+                    candidates.append((x, y, 0))
 
-        targetTerrain = random.choices(
-            candidates, [src.helpers.distance_between_points(homeCoordinate, candidate) for candidate in candidates]
-        )[0]
+        homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
+        candidates.remove(homeCoordinate)
 
-        self.visited_terrain.append(targetTerrain)
-        quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
-        return ([quest],None)
+        if len(candidates):
+            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x))
+            targetTerrain = candidates[0]
+            if not dryRun:
+                self.visited_terrain.append(targetTerrain)
+            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
+            return ([quest], None)
 
+        return (None, None)
     def generateTextDescription(self):
         return ["""
 Go out and adventure.

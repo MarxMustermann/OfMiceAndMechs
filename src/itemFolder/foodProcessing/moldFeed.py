@@ -43,18 +43,4 @@ Activate it to eat
         character.addSatiation(1000,reason="ate mold feed")
         self.destroy()
 
-    def pickUp(self, character):
-        self.startWatching(character,self.OnDrop,"dropped")
-        character.addMessage("it's heavy and slows you down")
-        self.debuff = src.statusEffects.statusEffectMap["Slowed"](slowDown=0.1, duration = None, reason="You carry a MoldFeed", inventoryItem=self)
-        character.statusEffects.append(self.debuff)
-        super().pickUp(character)
-
-    def OnDrop(self,params):
-        (character,item) = params
-        if item == self:
-            character.statusEffects.remove(self.debuff)
-            self.stopWatching(character,self.OnDrop,"dropped")
-
-
 src.items.addType(MoldFeed)

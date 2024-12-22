@@ -16,7 +16,7 @@ class DelveDungeon(src.quests.MetaQuestSequence):
         self.storyText = storyText
         self.directSendback = directSendback
         self.suicidal = suicidal
-        self.path = None
+
     def generateTextDescription(self):
         text = ""
 
@@ -77,13 +77,6 @@ After fetching the glass heart return the glass heart to your base and set it in
 
         # get the glass heart
         if not hasSpecialItem:
-            try:
-                self.path
-            except:
-                self.path = None
-
-            if self.path is not None and len(self.path):
-                return self.DelveToRoomIfSafe(character)
             # handle beeing hurt
             #if not self.suicidal and character.health < character.maxHealth*0.75:
             if character.health < character.maxHealth*0.75:
@@ -145,9 +138,9 @@ After fetching the glass heart return the glass heart to your base and set it in
                     if character.container != foundGlassStatue.container:
                         quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),abortHealthPercentage=0.5,description="go to temple",reason="reach the GlassHeart")
                         quest.generatePath(character)
-                        self.path = quest.path
-                        if len(self.path):
-                            return self.DelveToRoomIfSafe(character)
+                        path = quest.path
+                        if len(path):
+                            return self.DelveToRoomIfSafe(character,path)
                         return (None,None)
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:
                         quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
@@ -201,6 +194,10 @@ After fetching the glass heart return the glass heart to your base and set it in
             self.fail(reason="no glass statues found")
             return (None,None)
 
+        if not terrain.alarm:
+            quest = src.quests.questMap["ReadyBaseDefences"]()
+            return ([quest],None)
+
         if foundGlassStatue.container != character.container:
             quest = src.quests.questMap["GoToTile"](targetPosition=foundGlassStatue.getBigPosition(),description="go to temple",reason="be able to set the GlassHeart")
             return ([quest],None)
@@ -221,8 +218,8 @@ After fetching the glass heart return the glass heart to your base and set it in
             directionCommand = "w"
         return (None,(directionCommand+"cg","insert glass heart"))
 
-    def DelveToRoomIfSafe(self,character):
-        new_pos = (self.path[0][0] + character.getBigPosition()[0], self.path[0][1] + character.getBigPosition()[1])
+    def DelveToRoomIfSafe(self,character,path):
+        new_pos = (path[0][0] + character.getBigPosition()[0], path[0][1] + character.getBigPosition()[1])
 
         tryNextTile = False
         if self.suicidal:
@@ -232,12 +229,14 @@ After fetching the glass heart return the glass heart to your base and set it in
         if not rooms:
             tryNextTile = True
         
+        print("---------------------------")
+        print(character.getStrengthSelfEstimate())
+        print(rooms[0].getEstimatedStrength())
         if rooms and (not character.getStrengthSelfEstimate() < rooms[0].getEstimatedStrength()):
             tryNextTile = True
 
         if tryNextTile:
             quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to temple",reason="reach the GlassHeart")
-            self.path.remove(self.path[0])
             return ([quest],None)
 
         self.fail("dungeon too tough")

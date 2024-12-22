@@ -96,7 +96,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
 
 
     def generateTextDescription(self):
-        return ["""
+        text = """
 Apease a god, to gain access to gain quick access to its GlassHeart.
 The GlassStatues in the temple can teleport you the Dungeon containing the gods GlassHeart.
 It needs to have 5 charges to allow you to actually do that.
@@ -107,7 +107,12 @@ Examine the GlassStatues to see how much and what type of resources need to be s
 
 A proper temple should be set up to apease all gods after some time,
 as long as enough workers and ressources are available.
-"""]
+"""
+        if self.targetNumGods:
+            text = f"""
+Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
+"""
+        return [text]
 
     def assignToCharacter(self, character):
         if self.character:
@@ -140,9 +145,11 @@ as long as enough workers and ressources are available.
         for checkRoom in character.getTerrain().rooms:
             glassStatues = checkRoom.getItemsByType("GlassStatue")
             for checkStatue in glassStatues:
-                if checkStatue.charges < 5:
+                if checkStatue.charges < 5 and not checkStatue.hasItem:
                     continue
                 numGlassStatues += 1
+
+        print(numGlassStatues)
 
         if self.targetNumGods:
             if self.targetNumGods <= numGlassStatues:

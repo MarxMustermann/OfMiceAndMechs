@@ -1,6 +1,9 @@
 import random
 
 import src
+import logging
+
+logger = logging.getLogger(__name__)
 
 class LootRoom(src.quests.MetaQuestSequence):
     type = "LootRoom"
@@ -147,6 +150,9 @@ Remove all items that are not bolted down."""
         foundItems = []
         for item in room.itemsOnFloor:
             if item.bolted:
+                continue
+            if item.xPosition == None:
+                logger.error("found ghost item")
                 continue
             if item.xPosition > 12:
                 continue

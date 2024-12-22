@@ -1,6 +1,10 @@
 import src
 import random
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class AdventureOnTerrain(src.quests.MetaQuestSequence):
     type = "AdventureOnTerrain"
 
@@ -60,6 +64,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         for item in character.container.itemsOnFloor:
             if item.bolted or not item.walkable:
                 continue
+            if item.xPosition == None:
+                logger.error("found ghost item")
+                continue
             if item.xPosition > 12:
                 continue
             quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition())
@@ -101,7 +108,7 @@ Go out and adventure.
             for item in character.container.itemsOnFloor:
                 if item.bolted or not item.walkable:
                     continue
-
+            
                 invalidStack = False
                 for stackedItem in character.container.getItemByPosition(item.getPosition()):
                     if stackedItem == item:
@@ -110,8 +117,14 @@ Go out and adventure.
                         continue
                     invalidStack = True
 
-                if not invalidStack:
-                    return False
+                if invalidStack:
+                    continue
+
+                if item.xPosition == None:
+                    logger.error("found ghost item")
+                    continue
+
+                return False
 
         self.postHandler()
         return True

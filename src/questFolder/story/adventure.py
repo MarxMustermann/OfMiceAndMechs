@@ -12,6 +12,7 @@ class Adventure(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
         self.visited_terrain = []
+
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
@@ -56,8 +57,11 @@ class Adventure(src.quests.MetaQuestSequence):
                 self.visited_terrain.append(targetTerrain)
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
             return ([quest], None)
-        self.fail()
+
+        if dryRun:
+            self.fail()
         return (None, None)
+
     def generateTextDescription(self):
         return ["""
 Go out and adventure.

@@ -236,6 +236,11 @@ After fetching the glass heart return the glass heart to your base and set it in
             quest = src.quests.questMap["GoToTile"](targetPosition=new_pos,description="go to temple",reason="reach the GlassHeart")
             return ([quest],None)
 
+        if rooms:
+            character.addMessage(f"char strength: {character.getStrengthSelfEstimate()}")
+            character.addMessage(f"room strength: {rooms[0].getEstimatedStrength()}")
+            print(f"char strength: {character.getStrengthSelfEstimate()}")
+            print(f"room strength: {rooms[0].getEstimatedStrength()}")
         self.fail("dungeon too tough")
         return (None,None)
 

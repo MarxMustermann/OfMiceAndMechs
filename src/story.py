@@ -3268,6 +3268,15 @@ but they are likely to explode when disturbed.
     def openedQuestsStory(self):
         mainChar = self.activeStory["mainChar"]
         homeTerrain = src.gamestate.gamestate.terrainMap[mainChar.registers["HOMETy"]][mainChar.registers["HOMETx"]]
+
+        # go home when lost
+        if not mainChar.getTerrain() == homeTerrain:
+            quest = src.quests.questMap["GoHome"]()
+            quest.assignToCharacter(mainChar)
+            quest.activate()
+            mainChar.assignQuest(quest,active=True)
+            quest.endTrigger = {"container": self, "method": "reachImplant"}
+            return
         
         # flee initial room
         if mainChar.container.tag == "sternslab":

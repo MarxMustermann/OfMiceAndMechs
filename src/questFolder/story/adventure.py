@@ -56,7 +56,7 @@ class Adventure(src.quests.MetaQuestSequence):
                 self.visited_terrain.append(targetTerrain)
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
             return ([quest], None)
-
+        self.fail()
         return (None, None)
     def generateTextDescription(self):
         return ["""

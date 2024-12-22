@@ -47,7 +47,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if otherChar.faction != character.faction:
                     enemyCount += 1
                     if not room.alarm:
-                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=False,description="kill enemies that breached the defences")
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,description="kill enemies that breached the defences")
                         return ([quest],None)
                 else:
                     npcCount += 1

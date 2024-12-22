@@ -101,7 +101,17 @@ Go out and adventure.
             for item in character.container.itemsOnFloor:
                 if item.bolted or not item.walkable:
                     continue
-                return False
+
+                invalidStack = False
+                for stackedItem in character.container.getItemByPosition(item.getPosition()):
+                    if stackedItem == item:
+                        break
+                    if not stackedItem.bolted:
+                        continue
+                    invalidStack = True
+
+                if not invalidStack:
+                    return False
 
         self.postHandler()
         return True

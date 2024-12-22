@@ -120,13 +120,10 @@ Remove all items that are not bolted down."""
 
         items = self.getLeftoverItems(character)
         random.shuffle(items)
-        print(items)
         for item in items:
             if item.xPosition > 12:
                 continue
 
-            print(item)
-            print(item.getPosition())
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
             return ([quest],None)
 
@@ -152,6 +149,16 @@ Remove all items that are not bolted down."""
             if item.bolted:
                 continue
             if item.xPosition > 12:
+                continue
+            
+            invalidStack = False
+            for stackedItem in room.getItemByPosition(item.getPosition()):
+                if stackedItem == item:
+                    break
+                if not stackedItem.bolted:
+                    continue
+                invalidStack = True
+            if invalidStack:
                 continue
 
             foundItems.append(item)

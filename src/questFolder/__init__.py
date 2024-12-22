@@ -58,3 +58,5 @@ import src.questFolder.reinforcePersonalArmor
 import src.questFolder.lootRoom
 import src.questFolder.farmMold
 import src.questFolder.farmMoldTile
+import src.questFolder.readyBaseDefences
+import src.questFolder.configureSiegeManager

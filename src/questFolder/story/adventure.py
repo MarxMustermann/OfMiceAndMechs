@@ -42,8 +42,8 @@ class Adventure(src.quests.MetaQuestSequence):
             self.visited_terrain = []
 
         candidates = []
-        for x in range(14):
-            for y in range(14):
+        for x in range(1,14):
+            for y in range(1,14):
                 if (x, y, 0) not in self.visited_terrain:
                     candidates.append((x, y, 0))
 

@@ -1,8 +1,6 @@
 import src
 import random
 
-import src.helpers
-
 class Adventure(src.quests.MetaQuestSequence):
     type = "Adventure"
 
@@ -44,14 +42,16 @@ class Adventure(src.quests.MetaQuestSequence):
         candidates = []
         for x in range(1,14):
             for y in range(1,14):
-                if (x, y, 0) not in self.visited_terrain:
-                    candidates.append((x, y, 0))
+                if (x, y, 0) in self.visited_terrain:
+                    continue
+                candidates.append((x, y, 0))
 
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
         candidates.remove(homeCoordinate)
 
         if len(candidates):
-            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x))
+            random.shuffle(candidates)
+            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random())
             targetTerrain = candidates[0]
             if not dryRun:
                 self.visited_terrain.append(targetTerrain)

@@ -124,10 +124,12 @@ To see your items open the your inventory by pressing i."""
                     self.fail(reason="no home")
                     return (None,None)
 
-                if not dryRun:
-                    character.timeTaken += 1
-                    self.fail(reason="no storage available")
-                return (None,None)
+                #if not dryRun:
+                #    character.timeTaken += 1
+                #    self.fail(reason="no storage available")
+                #return (None,None)
+                quest = src.quests.questMap["DropItemsOutside"]()
+                return ([quest],None)
 
             if self.returnToTile and character.getBigPosition() != self.returnToTile:
                 quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")
@@ -139,6 +141,7 @@ To see your items open the your inventory by pressing i."""
         if "returnToTile" in parameters and "returnToTile" in parameters:
             self.returnToTile = parameters["returnToTile"]
         return super().setParameters(parameters)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,room, dryRun):
         if len(character.inventory) > 9:

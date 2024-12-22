@@ -60,3 +60,4 @@ import src.questFolder.farmMold
 import src.questFolder.farmMoldTile
 import src.questFolder.readyBaseDefences
 import src.questFolder.configureSiegeManager
+import src.questFolder.dropItemsOutside

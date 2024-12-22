@@ -42,23 +42,22 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         npcCount = 0
         enemyCount = 0
         terrain = character.getTerrain()
-        for otherChar in terrain.characters:
-            if otherChar.faction != character.faction:
-                enemyCount += 1
-            else:
-                npcCount += 1
         for room in terrain.rooms:
             for otherChar in room.characters:
                 if otherChar.faction != character.faction:
                     enemyCount += 1
+                    if not room.alarm:
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=False,description="kill enemies that breached the defences")
+                        return ([quest],None)
                 else:
                     npcCount += 1
-
-        # remove all enemies from terrain
-        # ? should that only mean hunters ?
-        if enemyCount > 0:
-            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
-            return ([quest],None)
+        for otherChar in terrain.characters:
+            if otherChar.faction != character.faction:
+                enemyCount += 1
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                return ([quest],None)
+            else:
+                npcCount += 1
 
         # ensure there is a backup NPC
         if npcCount < 2:
@@ -99,8 +98,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             for item in room.itemsOnFloor:
                 if not (item.type == "GlassStatue"):
                     continue
-                if not (item.charges > 4):
+                if not (item.charges > 4) and not item.hasItem:
                     continue
+
                 readyStatues[item.itemID] = item
 
         # try to do a dungeon run
@@ -110,6 +110,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 continue
 
             if godId in readyStatues:
+                if readyStatues[godId].hasItem:
+                    continue
                 if readyStatues[godId].numTeleportsDone and strengthRating < 1+(readyStatues[godId].numTeleportsDone/10):
                     continue
 

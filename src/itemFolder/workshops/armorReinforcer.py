@@ -64,14 +64,14 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 break
 
             character.inventory.remove(chitinPlate)
-            improvementAmount += min(0.5,8-sword.armorValue-improvementAmount)
+            improvementAmount += min(0.5,8-armor.armorValue-improvementAmount)
 
         if not improvementAmount:
             character.addMessage("you can't improve your armor")
             return
 
         params["Armor"] = armor
-        params["productionTime"] = 100*improvementAmount
+        params["productionTime"] = int(100*improvementAmount)+1
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
         params["improvementAmount"] = improvementAmount

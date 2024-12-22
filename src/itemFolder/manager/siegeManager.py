@@ -96,6 +96,7 @@ class SiegeManager(src.items.Item):
             options.append(("clear",f"clear schedule"))
             options.append(("faction",f"set faction"))
             submenue = src.menuFolder.SelectionMenu.SelectionMenu(text,options,targetParamName="action")
+            submenue.tag = "configure siege manager main"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
             return
@@ -112,6 +113,7 @@ class SiegeManager(src.items.Item):
                 options.append(("silence alarms",f"silence AlarmBells"))
                 options.append(("mop up",f"start mop up operation"))
                 submenue = src.menuFolder.SelectionMenu.SelectionMenu("select action to schedule:\n\n",options,targetParamName="actionType")
+                submenue.tag = "configure siege manager task selection"
                 character.macroState["submenue"] = submenue
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
                 return
@@ -123,6 +125,7 @@ class SiegeManager(src.items.Item):
             if not "actionTick" in params:
                 submenue = src.menuFolder.SliderMenu.SliderMenu("choose the tick to schedule the action for:\n\n",maxValue = 3375,targetParamName="actionTick")
                 character.macroState["submenue"] = submenue
+                submenue.tag = "configure siege manager time selection"
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
                 return
 

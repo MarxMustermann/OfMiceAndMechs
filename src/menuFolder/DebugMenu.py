@@ -50,7 +50,7 @@ class DebugMenu(src.SubMenu.SubMenu):
                                     displayChar = "##"
                                 else:
                                     displayChar = "  "
-
+                                mapContent[x].append(displayChar)
                         for x in range(1,14):
                             for y in range(1,14):
                                 mapContent[x].append(displayChar)

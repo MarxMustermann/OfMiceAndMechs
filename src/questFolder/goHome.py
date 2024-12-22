@@ -80,6 +80,17 @@ Press control-d to stop your character from moving.
         if not character:
             return (None,None)
 
+        if character.getBigPosition()[0] == 0:
+            return (None, ("d","enter the terrain"))
+        if character.getBigPosition()[0] == 14:
+            return (None, ("a","enter the terrain"))
+        if character.getBigPosition()[1] == 0:
+            return (None, ("s","enter the terrain"))
+        if character.getBigPosition()[1] == 14:
+            return (None, ("w","enter the terrain"))
+        
+        currentTerrain = character.getTerrain()
+
         if character.getTerrainPosition() != self.terrainLocation:
             foundShrine = None
             if isinstance(character.container, src.rooms.Room):

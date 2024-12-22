@@ -27,36 +27,65 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             return (None,(["esc"],"close the menu"))
 
         if character.getTerrain().yPosition > self.targetTerrain[1]:
-            if character.getBigPosition() not in ((7,1,0),(7,0,0)):
-                return (None,("gmW","go to south tile edge"))
+            if character.getBigPosition()[0] == 0:
+                return (None, ("d","enter the terrain"))
+            if character.getBigPosition()[0] == 14:
+                return (None, ("a","enter the terrain"))
+            if character.getBigPosition()[1] == 14:
+                return (None, ("w","enter the terrain"))
+            
+            if character.getBigPosition() not in ((7,1,0),(7,0,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                return (None,("gmW","go to north tile edge"))
             if character.getPosition() != (7 * 15 + 7, 15 * 1 + 1, 0) and character.getBigPosition() not in ((7,0,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,1,0))
                 return ([quest],None)
-            return (None,"w")
+            return (None,("w","go to terrain"))
 
         if character.getTerrain().yPosition < self.targetTerrain[1]:
-            if character.getBigPosition() not in ((7,13,0),(7,14,0)):
+            if character.getBigPosition()[0] == 0:
+                return (None, ("d","enter the terrain"))
+            if character.getBigPosition()[0] == 14:
+                return (None, ("a","enter the terrain"))
+            if character.getBigPosition()[1] == 0:
+                return (None, ("s","enter the terrain"))
+            
+            if character.getBigPosition() not in ((7,13,0),(7,14,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
                 return (None,("gmS","go to south tile edge"))
             if character.getPosition() != (7 * 15 + 7, 15 * 13 + 13, 0) and character.getBigPosition() not in ((7,14,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(7,13,0))
                 return ([quest],None)
-            return (None,"s")
+            return (None,("s","go to terrain"))
 
         if character.getTerrain().xPosition > self.targetTerrain[0]:
-            if character.getBigPosition() not in ((1,7,0),(0,7,0)):
-                return (None,("gmA","go to south tile edge"))
+            if character.getBigPosition()[0] == 14:
+                return (None, ("a","enter the terrain"))
+            if character.getBigPosition()[1] == 0:
+                return (None, ("s","enter the terrain"))
+            if character.getBigPosition()[1] == 14:
+                return (None, ("w","enter the terrain"))
+            
+            if character.getBigPosition() not in ((1,7,0),(0,7,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                return (None,("gmA","go to west tile edge"))
             if character.getPosition() != (1 * 15 + 1, 15 * 7 + 7, 0) and character.getBigPosition() not in ((0,7,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0))
                 return ([quest],None)
-            return (None,"a")
+            return (None,("a","go to terrain"))
 
         if character.getTerrain().xPosition < self.targetTerrain[0]:
-            if character.getBigPosition() not in ((13,7,0),(14,7,0)):
-                return (None,("gmD","go to south tile edge"))
+            if character.getBigPosition()[0] == 0:
+                return (None, ("d","enter the terrain"))
+            if character.getBigPosition()[1] == 0:
+                return (None, ("s","enter the terrain"))
+            if character.getBigPosition()[1] == 14:
+                return (None, ("w","enter the terrain"))
+            
+            if character.getBigPosition() not in ((13,7,0),(14,7,0)) and not (character.getBigPosition()[0] in (0,14,) or character.getBigPosition()[1] in (0,14,)):
+                return (None,("gmD","go to east tile edge"))
             if character.getPosition() != (13 * 15 + 13, 15 * 7 + 7, 0) and character.getBigPosition() not in ((14,7,0),):
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(13,7,0))
                 return ([quest],None)
-            return (None,"d")
+            return (None,("d","go to terrain"))
+
         return (None,None)
 
         quest = src.quests.questMap["TeleportToTerrain"](targetPosition=self.targetTerrain)

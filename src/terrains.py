@@ -250,7 +250,7 @@ class Terrain:
 
     def getPositionWalkable(self,pos,character=None):
         items = self.getItemByPosition(pos)
-        if len(items) > 15:
+        if len(items) >= 15:
             return False
         for item in items:
             if not character:

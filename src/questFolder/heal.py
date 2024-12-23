@@ -29,6 +29,9 @@ Press JH to auto heal.
         if not character:
             return (None,None)
 
+        if character.macroState["submenue"]:
+            return (None,(["esc"],"close the menu"))
+
         # heal using vials
         try:
             self.noVialHeal

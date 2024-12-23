@@ -445,7 +445,8 @@ class Item:
     def OnDropNonWalkable(self,params):
         (character,item) = params
         if item == self:
-            character.statusEffects.remove(self.NonWalkableItemDeBuff)
+            if self.NonWalkableItemDeBuff in character.statusEffects:
+                character.statusEffects.remove(self.NonWalkableItemDeBuff)
             character.delListener(self.OnDropNonWalkable,"dropped")
 
     def getBigPosition(self,offset=(0,0,0)):

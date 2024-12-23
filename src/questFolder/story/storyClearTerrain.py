@@ -28,7 +28,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         # loot tile
         if not character.container.isRoom:
             if character.getFreeInventorySpace():
-                for item in character.container.itemsByBigCoordinate.get(character.getBigPosition()):
+                for item in character.container.itemsByBigCoordinate.get(character.getBigPosition(),[]):
                     if item.bolted:
                         continue
                     if item.type in ("Wall","Scrap",):

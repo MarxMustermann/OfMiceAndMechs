@@ -114,6 +114,14 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["BrewPotion"](potionType="PermaMaxHealthPotion")
                         return ([quest],None)
 
+            if manaCrystalAvailable and not bloomAvailable:
+                quest = src.quests.questMap["FarmMold"](lifetime=1000)
+                return ([quest],None)
+
+            if manaCrystalAvailable and not flaskAvailable:
+                quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1)
+                return ([quest],None)
+
         if character.inventory:
             quest = src.quests.questMap["ClearInventory"](returnToTile=False)
             return ([quest],None)

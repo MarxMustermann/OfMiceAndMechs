@@ -6,7 +6,7 @@ class DebugMenu(src.SubMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Teleport", "Execute Code"]
+    debug_options = ["Teleport", "Add Mana", "Execute Code"]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -33,6 +33,12 @@ class DebugMenu(src.SubMenu.SubMenu):
                         submenue = src.menuFolder.InputMenu.InputMenu("Type the code to execute",targetParamName="code")
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {"container":self,"method":"action","params":{"character":character}}
+                        return True
+                case "Add Mana":
+                    text+= debug
+                    if current_change:
+                        terrain = character.getTerrain()
+                        terrain.mana += 100
                         return True
                 case "Teleport":
                     text += debug

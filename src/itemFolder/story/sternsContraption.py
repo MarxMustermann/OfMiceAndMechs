@@ -155,7 +155,7 @@ class SternsContraption(src.items.Item):
                             amount = random.randint(8,15)
                         scrap = src.items.itemMap["Scrap"](amount=amount)
                         terrain.addItem(scrap,(bigX*15+x,bigY*15+y,0))
-                        terrain.scrapFields.append((bigX,bigY,0))
+                terrain.scrapFields.append((bigX,bigY,0))
 
                 enemySpawns = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
                 for bigPos in enemySpawns:

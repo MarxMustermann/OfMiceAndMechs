@@ -84,7 +84,7 @@ track:
                     rawMap[y].append("  ")
             rawMap[y].append("\n")
 
-        for (pos,info) in self.terrainInfo.items():
+        for (pos,info) in self.character.terrainInfo.items():
             if info["tag"] == "nothingness":
                 rawMap[pos[1]][pos[0]] = src.canvas.displayChars.dirt
             elif info["tag"] == "shrine":
@@ -111,11 +111,16 @@ track:
         pos = terrain.getPosition()
         tag = terrain.tag
         self.track.append({"pos":pos,"tag":tag})
-        self.terrainInfo[pos] = {"tag":tag}
+        self.character.terrainInfo[pos] = {"tag":tag}
 
     def assignToCharacter(self, character):
         if self.character:
             return
+
+        try:
+            character.terrainInfo
+        except:
+            character.terrainInfo =  {}
 
         self.startWatching(character,self.handleChangedTerrain, "changedTerrain")
         super().assignToCharacter(character)

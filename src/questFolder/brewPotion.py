@@ -102,7 +102,7 @@ Brew a potion of the type {self.potionType}
 """]
         return text
 
-    def unhandledSubQuestFail(self,extraParam):
+    def handleQuestFailure(self,extraParam):
         self.fail(extraParam["reason"])
 
 src.quests.addType(BrewPotion)

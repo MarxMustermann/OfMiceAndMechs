@@ -114,7 +114,7 @@ So if an enemy is to directly east of you:
 
             return (None,(directionCommand+specialAttack,"attack enemy"))
 
-        if character.exhaustion > 0:
+        if character.exhaustion > 1:
             return (None,(".","catch breath"))
 
         # move toward enemies

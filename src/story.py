@@ -2727,18 +2727,17 @@ but they are likely to explode when disturbed.
         architect = item
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
-
+        rand_pos = (7,7)
+        make_room = True
         filled_cord = []
         for i in range(random.randint(2,6)):
-            rand_pos = (random.randint(1,13),random.randint(1,13))
             if rand_pos in filled_cord:
                 continue
-            make_room = random.random() < 0.4
             if make_room:
                 # create the basic room
                 room = architect.doAddRoom(
                         {
-                            "coordinate": (random.randint(1,13),random.randint(1,13)),
+                            "coordinate": rand_pos,
                             "roomType": "EmptyRoom",
                             "doors": "0,6 6,0 12,6 6,12",
                             "offset": [1,1],
@@ -2799,6 +2798,8 @@ but they are likely to explode when disturbed.
                     loot_types = ["Flask","GooFlask","Scrap"]
                     item = src.items.itemMap[random.choice(loot_types)]()
                     currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
+            rand_pos = (random.randint(1,13),random.randint(1,13))
+            make_room = random.random() < 0.4
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod

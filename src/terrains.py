@@ -833,6 +833,7 @@ class Terrain:
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,15*15-2)
+                    char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -857,6 +858,7 @@ class Terrain:
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,char.xPosition,2)
+                    char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -881,6 +883,7 @@ class Terrain:
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,15*15-2,char.yPosition)
+                    char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
@@ -905,6 +908,7 @@ class Terrain:
 
                     self.removeCharacter(char)
                     newTerrain.addCharacter(char,2,char.yPosition)
+                    char.changed("changedTerrain",{"character":char})
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain

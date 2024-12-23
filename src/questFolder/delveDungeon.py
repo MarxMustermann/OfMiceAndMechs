@@ -140,7 +140,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                         quest.generatePath(character)
                         path = quest.path
                         if len(path):
-                            return self.delveToRoomIfSafe(character,path)
+                            return self.delveToRoomIfSafe(character,path,dryRun=dryRun)
                         return (None,None)
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:
                         quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
@@ -218,7 +218,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             directionCommand = "w"
         return (None,(directionCommand+"cg","insert glass heart"))
 
-    def delveToRoomIfSafe(self,character,path):
+    def delveToRoomIfSafe(self,character,path,dryRun=True):
         new_pos = (path[0][0] + character.getBigPosition()[0], path[0][1] + character.getBigPosition()[1])
 
         tryNextTile = False
@@ -242,7 +242,16 @@ After fetching the glass heart return the glass heart to your base and set it in
             print(f"char strength: {character.getStrengthSelfEstimate()}")
             print(f"room strength: {rooms[0].getEstimatedStrength()}")
 
-        self.fail("dungeon too tough")
+        if not dryRun:
+            homeTerrain = src.gamestate.gamestate.terrainMap[character.registers["HOMETy"]][character.registers["HOMETx"]]
+            for room in homeTerrain.rooms:
+                for statue in room.getItemsByType("GlassStatue"):
+                    if statue.itemID == self.itemID:
+                        calculatedTries = int((rooms[0].getEstimatedStrength()-1)*10)
+
+                        if statue.numTeleportsDone < calculatedTries:
+                            statue.numTeleportsDone = calculatedTries
+            self.fail("dungeon too tough")
         return (None,None)
 
 src.quests.addType(DelveDungeon)

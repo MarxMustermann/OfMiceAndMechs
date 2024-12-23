@@ -140,7 +140,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                         quest.generatePath(character)
                         path = quest.path
                         if len(path):
-                            return self.DelveToRoomIfSafe(character,path)
+                            return self.delveToRoomIfSafe(character,path)
                         return (None,None)
                     if character.getDistance(foundGlassStatue.getPosition()) > 1:
                         quest = src.quests.questMap["GoToPosition"](targetPosition=foundGlassStatue.getPosition(),ignoreEndBlocked=True,description="go to GlasStatue", reason="be able to extract the GlassHeart")
@@ -218,7 +218,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             directionCommand = "w"
         return (None,(directionCommand+"cg","insert glass heart"))
 
-    def DelveToRoomIfSafe(self,character,path):
+    def delveToRoomIfSafe(self,character,path):
         new_pos = (path[0][0] + character.getBigPosition()[0], path[0][1] + character.getBigPosition()[1])
 
         tryNextTile = False
@@ -241,6 +241,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             character.addMessage(f"room strength: {rooms[0].getEstimatedStrength()}")
             print(f"char strength: {character.getStrengthSelfEstimate()}")
             print(f"room strength: {rooms[0].getEstimatedStrength()}")
+
         self.fail("dungeon too tough")
         return (None,None)
 

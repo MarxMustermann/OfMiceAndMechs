@@ -89,9 +89,25 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
         for saccrificeType in saccrificesNeeded:
             if saccrificeType in ("Corpse","MoldFeed","MetalBars",):
                 continue
-            quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
-            return ([quest],None)
+            
+            if not character.getTerrain().alarm:
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
+                return ([quest],None)
 
+            hasScrap = False
+            hasMetalBars = False
+            for room in character.getTerrain().rooms:
+                if room.getNonEmptyOutputslots("Scrap"):
+                    hasScrap = True
+                if room.getNonEmptyOutputslots("MetalBars"):
+                    hasMetalbars = True
+
+            if hasScrap and hasMetalBars:
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
+                return ([quest],None)
+
+        if character.getTerrain().alarm:
+            return (None,("...........","wait for the alarm to end"))
         return (None,("...........","wait for something to happen"))
 
 
@@ -112,6 +128,9 @@ as long as enough workers and ressources are available.
             text += f"""
 Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
 """
+
+        if self.lifetimeEvent:
+            text += f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n"""
         return [text]
 
     def assignToCharacter(self, character):

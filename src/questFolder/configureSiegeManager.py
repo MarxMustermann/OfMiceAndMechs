@@ -79,9 +79,9 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                 if submenue.followUp["params"].get("actionType") == "sound alarms":
                     targetValue = 2801
                 if submenue.followUp["params"].get("actionType") == "unrestrict outside":
-                    targetValue = 500
+                    targetValue = 1500
                 if submenue.followUp["params"].get("actionType") == "silence alarms":
-                    targetValue = 501
+                    targetValue = 1501
                 
                 if submenue.value <= targetValue-100:
                     return (None,( "D",f"move the slider to tick {targetValue}"))

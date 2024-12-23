@@ -33,6 +33,7 @@ class Integrator(src.items.Item):
         duties = [ "room building",
                    "resource gathering",
                    "scrap hammering",
+                   "mold farming",
                    "resource fetching",
                    "hauling",
                    "metal working",
@@ -45,6 +46,10 @@ class Integrator(src.items.Item):
                    "scavenging",
                    "praying" ]
         character.duties = duties
+
+        character.dutyPriorities["praying"] = 4
+        character.dutyPriorities["room building"] = 2
+        character.dutyPriorities["painting"] = 2
 
         character.registers["HOMEx"] = 7
         character.registers["HOMEy"] = 7

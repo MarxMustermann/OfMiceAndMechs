@@ -59,7 +59,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             submenue = src.menuFolder.InputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "alchemyTableProductInput"
             character.macroState["submenue"] = submenue
-            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
+            character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}
             return
 
         if params.get("type") == None:

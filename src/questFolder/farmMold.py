@@ -33,6 +33,9 @@ farm mold"""
         if not character.getFreeInventorySpace():
             self.postHandler()
             return True
+        if character.getTerrain().alarm:
+            self.postHandler()
+            return True
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):

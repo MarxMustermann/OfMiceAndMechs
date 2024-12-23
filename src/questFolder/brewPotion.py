@@ -12,14 +12,14 @@ class BrewPotion(src.quests.MetaQuestSequence):
         self.shortCode = "e"
         self.potionType = potionType
 
-    def handleArmorImproved(self,extraInfo=None):
+    def handleBrewedPotions(self,extraInfo=None):
         self.postHandler()
 
     def assignToCharacter(self, character):
         if self.character:
             return
 
-        self.startWatching(character,self.handleArmorImproved, "improved armor")
+        self.startWatching(character,self.handleBrewedPotions, "brewed potion")
         super().assignToCharacter(character)
 
     def triggerCompletionCheck(self,character=None):

@@ -2137,7 +2137,10 @@ but they are likely to explode when disturbed.
         flask.uses = 100
         spawnRoom.addItem(flask,(2,3,0))
 
-        spawnRoom.addStorageSlot((10,8,0),"Flask",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((7,5,0),"Flask",{"desiredState":"filled"})
+        item = src.items.itemMap["AlchemyTable"]()
+        item.bolted = True
+        spawnRoom.addItem(item,(8,5,0))
 
         spawnRoom.addInputSlot((2,10,0),"Bloom")
         item = src.items.itemMap["BloomShredder"]()

@@ -2728,53 +2728,77 @@ but they are likely to explode when disturbed.
         item.godMode = True
         currentTerrain.addItem(item,(1,1,0))
 
-        # create the basic room
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
-
-        # decide between mixed or pure loot room
-        loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable"]
-        if random.random() > 0.5:
-            loot_types = [random.choice(loot_types)]
-
-        # add random amount of loot 
-        monsterType = random.choice(["Golem","ShieldBug"])
-        for i in range(0,random.randint(1,6)):
-            # add loot
-            if random.random() < 0.5:
-                mana_crystal = src.items.itemMap["ManaCrystal"]()
-                room.addItem(mana_crystal,(6,6,0))
-            else:
-                positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(10,11,0),(5,5,0)]
-                item = src.items.itemMap[random.choice(loot_types)]()
-                if item.type == "GooFlask":
-                    item.uses = 100
-                if item.type == "Vial":
-                    item.uses = 10
-                room.addItem(item,random.choice(positions))
-
-            # give one free loot
-            if i == 0:
+        filled_cord = []
+        for i in range(random.randint(2,6)):
+            rand_pos = (random.randint(1,13),random.randint(1,13))
+            if rand_pos in filled_cord:
                 continue
+            make_room = random.random() < 0.4
+            if make_room:
+                # create the basic room
+                room = architect.doAddRoom(
+                        {
+                            "coordinate": (random.randint(1,13),random.randint(1,13)),
+                            "roomType": "EmptyRoom",
+                            "doors": "0,6 6,0 12,6 6,12",
+                            "offset": [1,1],
+                            "size": [13, 13],
+                        },
+                        None,
+                )
 
-            # add monster
-            pos = (random.randint(1,11),random.randint(1,11),0)
-            golem = src.characters.characterMap[monsterType]()
-            golem.godMode = True
-            quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
-            quest.autoSolve = True
-            quest.assignToCharacter(golem)
-            quest.activate()
-            golem.quests.append(quest)
-            room.addCharacter(golem, pos[0], pos[1])
+                # decide between mixed or pure loot room
+                loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable"]
+                if random.random() > 0.5:
+                    loot_types = [random.choice(loot_types)]
+
+                # add random amount of loot 
+                monsterType = random.choice(["Golem","ShieldBug"])
+                for i in range(0,random.randint(1,8)):
+                    # add loot
+                    if random.random() < 0.2:
+                        mana_crystal = src.items.itemMap["ManaCrystal"]()
+                        room.addItem(mana_crystal,(6,6,0))
+                    else:
+                        positions = [(3,8,0),(2,2,0),(11,4,0),(6,11,0),(10,11,0),(5,5,0)]
+                        item = src.items.itemMap[random.choice(loot_types)]()
+                        if item.type == "GooFlask":
+                            item.uses = 100
+                        if item.type == "Vial":
+                            item.uses = 10
+                        room.addItem(item,random.choice(positions))
+
+                    # give one free loot
+                    if i == 0:
+                        continue
+
+                    # add monster
+                    pos = (random.randint(1,11),random.randint(1,11),0)
+                    golem = src.characters.characterMap[monsterType]()
+                    golem.godMode = True
+                    quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition())
+                    quest.autoSolve = True
+                    quest.assignToCharacter(golem)
+                    quest.activate()
+                    golem.quests.append(quest)
+                    room.addCharacter(golem, pos[0], pos[1])
+            else:
+                for i in range(random.randint(1,3)):
+                    monsterType = random.choice(["Golem","ShieldBug"])
+                    pos = (random.randint(1,11),random.randint(1,11),0)
+                    golem = src.characters.characterMap[monsterType]()
+                    golem.godMode = True
+                    quest = src.quests.questMap["SecureTile"](toSecure=rand_pos)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(golem)
+                    quest.activate()
+                    golem.quests.append(quest)
+                    currentTerrain.addCharacter(golem, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
+
+                for i in range(random.randint(1,3)):
+                    loot_types = ["Flask","GooFlask","Scrap"]
+                    item = src.items.itemMap[random.choice(loot_types)]()
+                    currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod

@@ -100,6 +100,8 @@ Just clear the whole terrain tile for tile.
                         continue
                     if terrain.getRoomByPosition(otherChar.getBigPosition()):
                         continue
+                    if otherChar.xPosition//15 == 14:
+                        continue
                     quest = src.quests.questMap["SecureTile"](toSecure=(otherChar.xPosition//15,otherChar.yPosition//15),endWhenCleared=True)
                     return ([quest],None)
             if step == "clearRooms":

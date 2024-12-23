@@ -115,8 +115,9 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         return ([quest],None)
 
             if manaCrystalAvailable and not bloomAvailable:
-                quest = src.quests.questMap["FarmMold"](lifetime=1000)
-                return ([quest],None)
+                if not terrain.alarm:
+                    quest = src.quests.questMap["FarmMold"](lifetime=1000)
+                    return ([quest],None)
 
             if manaCrystalAvailable and not flaskAvailable:
                 quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1,tryHard=True)

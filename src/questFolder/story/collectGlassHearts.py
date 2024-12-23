@@ -132,7 +132,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # unlock more statues
         if len(readyStatues) < 7:
-            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1)
+            quest = src.quests.questMap["AppeaseAGod"](targetNumGods=len(readyStatues)+1, lifetime=1000)
             return ([quest],None)
 
         # get stronger to be able to complete the unlocked dungeons

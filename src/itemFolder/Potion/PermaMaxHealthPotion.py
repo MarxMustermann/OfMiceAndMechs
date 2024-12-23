@@ -8,6 +8,7 @@ class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
 
     def __init__(self, healingamount=25):
         self.healingamount = healingamount
+        super().__init__()
 
     def apply(self, character):
         if character.maxHealth >= 500:

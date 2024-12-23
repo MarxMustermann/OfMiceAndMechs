@@ -123,6 +123,10 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1,tryHard=True)
                 return ([quest],None)
 
+        if character.health < character.maxHealth:
+            quest = src.quests.questMap["Heal"]()
+            return ([quest],None)
+
         if character.inventory:
             quest = src.quests.questMap["ClearInventory"](returnToTile=False)
             return ([quest],None)

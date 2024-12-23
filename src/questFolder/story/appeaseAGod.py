@@ -109,7 +109,7 @@ A proper temple should be set up to apease all gods after some time,
 as long as enough workers and ressources are available.
 """
         if self.targetNumGods:
-            text = f"""
+            text += f"""
 Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
 """
         return [text]

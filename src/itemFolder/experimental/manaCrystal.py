@@ -3,6 +3,7 @@ import src
 
 class ManaCrystal(src.items.Item):
     type = "ManaCrystal"
+    name = "mana crystal"
 
     def __init__(self):
         super().__init__(display="ma")

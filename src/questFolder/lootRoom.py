@@ -98,6 +98,9 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
+            if items[0].name in ("Scrap","MetalBars"):
+                continue
+
             foundOffset = offset
 
             foundItems = []
@@ -124,6 +127,8 @@ Remove all items that are not bolted down."""
         items = self.getLeftoverItems(character)
         random.shuffle(items)
         for item in items:
+            if item.name in ("Scrap","MetalBars"):
+                continue
             if item.xPosition > 12:
                 continue
 

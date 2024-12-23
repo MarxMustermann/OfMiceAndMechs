@@ -46,10 +46,17 @@ class Adventure(src.quests.MetaQuestSequence):
             for y in range(1,14):
                 if (x, y, 0) in self.visited_terrain:
                     continue
+                if (x, y, 0) in character.terrainInfo:
+                    info = character.terrainInfo[(x, y, 0)]
+                    if not info.get("tag") == "ruin":
+                        continue
+                    if info.get("looted"):
+                        continue
                 candidates.append((x, y, 0))
 
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
-        candidates.remove(homeCoordinate)
+        if homeCoordinate in candidates:
+            candidates.remove(homeCoordinate)
 
         if len(candidates):
             random.shuffle(candidates)
@@ -86,11 +93,15 @@ track:
 
         for (pos,info) in self.character.terrainInfo.items():
             if info["tag"] == "nothingness":
-                rawMap[pos[1]][pos[0]] = src.canvas.displayChars.dirt
+                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#550", "black"),".`")
             elif info["tag"] == "shrine":
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#999", "black"),"\\/")
+                color = "#999"
+                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"\\/")
             elif info["tag"] == "ruin":
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#666", "black"),"&%")
+                color = "#666"
+                if info.get("looted"):
+                    color = "#550"
+                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"&%")
             else:
                 rawMap[pos[1]][pos[0]] = info["tag"][:2]
         rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"

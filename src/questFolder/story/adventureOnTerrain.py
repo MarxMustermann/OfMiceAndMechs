@@ -126,6 +126,7 @@ Go out and adventure.
 
                 return False
 
+        character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
         self.postHandler()
         return True
 

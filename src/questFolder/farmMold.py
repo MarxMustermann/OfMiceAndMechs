@@ -83,4 +83,19 @@ farm mold"""
     def pickedUpItem(self,test=None):
         pass
 
+    @staticmethod
+    def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
+        terrain = character.getTerrain()
+        try:
+            terrain.alarm
+        except:
+            terrain.alarm = False
+        if terrain.alarm:
+            return (None,None)
+
+        quest = src.quests.questMap["FarmMold"](lifetime=1000)
+        if not dryRun:
+            beUsefull.idleCounter = 0
+        return ([quest],None)
+
 src.quests.addType(FarmMold)

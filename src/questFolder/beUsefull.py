@@ -447,6 +447,8 @@ Press d to move the cursor and show the subquests description.
                     step = src.quests.questMap["GetEpochReward"].generateDutyQuest(self,character,room,dryRun)
                 case "praying":
                     step = src.quests.questMap["Pray"].generateDutyQuest(self,character,room,dryRun)
+                case "mold farming":
+                    step = src.quests.questMap["FarmMold"].generateDutyQuest(self,character,room,dryRun)
             if step != (None,None):
                 if not dryRun:
                     self.numTasksDone += 1

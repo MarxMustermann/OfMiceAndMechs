@@ -39,7 +39,7 @@ class JobAsMatrixMenu(src.SubMenu.SubMenu):
         if src.gamestate.gamestate.mainChar in npcs:
             npcs.remove(src.gamestate.gamestate.mainChar)
 
-        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","flask filling","praying"]))
+        duties = list(reversed(["manufacturing","epoch questing","scavenging","machine operation","clone spawning","city planning","cleaning","painting","maggot gathering","machine placing","room building","machining","metal working","hauling","resource fetching","scrap hammering","resource gathering","questing","flask filling","praying","mold farming"]))
 
 
         if key == "C":

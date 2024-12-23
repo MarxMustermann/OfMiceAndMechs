@@ -20,6 +20,22 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        # defend yourself
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
+        # loot tile
+        if not character.container.isRoom:
+            if character.getFreeInventorySpace():
+                for item in character.container.itemsByBigCoordinate.get(character.getBigPosition()):
+                    if item.bolted:
+                        continue
+                    if item.type in ("Wall","Scrap",):
+                        continue
+                    quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition(),endOnFullInventory=True)
+                    return ([quest],None)
+
         # ensure healing for the clones
         terrain = character.getTerrain()
         for room in terrain.rooms:

@@ -74,6 +74,46 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["FetchItems"](toCollect="CitinPlates")
                         return ([quest],None)
 
+        if character.maxHealth < 500:
+            if character.searchInventory("PermaMaxHealthPotion"):
+                quest = src.quests.questMap["ConsumePotion"](potionType="PermaMaxHealthPotion")
+                return ([quest],None)
+
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots("PermaMaxHealthPotion"):
+                    quest = src.quests.questMap["FetchItems"](toCollect="PermaMaxHealthPotion")
+                    return ([quest],None)
+
+            manaCrystalAvailable = False
+            if character.searchInventory("ManaCrystal"):
+                manaCrystalAvailable = True
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots("ManaCrystal"):
+                    manaCrystalAvailable = True
+                    break
+
+            bloomAvailable = False
+            if character.searchInventory("Bloom"):
+                bloomAvailable = True
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots("Bloom"):
+                    bloomAvailable = True
+                    break
+
+            flaskAvailable = False
+            if character.searchInventory("Flask"):
+                flaskAvailable = True
+            for room in terrain.rooms:
+                if room.getNonEmptyOutputslots("Flask"):
+                    flaskAvailable = True
+                    break
+
+            if manaCrystalAvailable and bloomAvailable and flaskAvailable:
+                for room in terrain.rooms:
+                    for item in room.getItemsByType("AlchemyTable",needsBolted=True):
+                        quest = src.quests.questMap["BrewPotion"](potionType="PermaMaxHealthPotion")
+                        return ([quest],None)
+
         if character.inventory:
             quest = src.quests.questMap["ClearInventory"](returnToTile=False)
             return ([quest],None)
@@ -82,12 +122,15 @@ class BecomeStronger(src.quests.MetaQuestSequence):
         return ([quest],None)
 
     def generateTextDescription(self):
-        return ["""
+        text = ["""
 The dungeons are too hard for you. 
 You need to be stronger, to take them on.
 
 Get some upgrades to be stronger.
 """]
+        if self.targetStrength:
+            text.append(f"\nThe target combat value is {self.targetStrength} your current strength is {self.character.getStrengthSelfEstimate()}")
+        return text
 
     def triggerCompletionCheck(self,character=None):
         if not character:

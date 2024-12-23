@@ -1,4 +1,5 @@
 import src
+import random
 
 class CollectGlassHearts(src.quests.MetaQuestSequence):
     type = "CollectGlassHearts"
@@ -105,6 +106,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # try to do a dungeon run
         bestDungeon = None
+        easiestTooHardDungeon = None
         for (godId,god) in src.gamestate.gamestate.gods.items():
             if (god["lastHeartPos"][0] == character.registers["HOMETx"] and god["lastHeartPos"][1] == character.registers["HOMETy"]):
                 continue
@@ -112,13 +114,20 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             if godId in readyStatues:
                 if readyStatues[godId].hasItem:
                     continue
-                if readyStatues[godId].numTeleportsDone and strengthRating < 1+(readyStatues[godId].numTeleportsDone/10):
+                dungeonStrength = 1+(readyStatues[godId].numTeleportsDone/10)
+                if readyStatues[godId].numTeleportsDone and strengthRating < dungeonStrength:
+                    if not easiestTooHardDungeon or easiestTooHardDungeon > dungeonStrength:
+                        easiestTooHardDungeon = dungeonStrength
                     continue
 
                 if not bestDungeon or bestDungeon[0] > readyStatues[godId].numTeleportsDone:
                     bestDungeon = (readyStatues[godId].numTeleportsDone,god,godId)
         if bestDungeon:
             quest = src.quests.questMap["DelveDungeon"](targetTerrain=bestDungeon[1]["lastHeartPos"],itemID=bestDungeon[2])
+            return ([quest],None)
+
+        if easiestTooHardDungeon and random.random() < 0.5:
+            quest = src.quests.questMap["BecomeStronger"](targetStrength=easiestTooHardDungeon+0.1)
             return ([quest],None)
 
         # unlock more statues

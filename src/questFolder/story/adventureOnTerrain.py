@@ -14,7 +14,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
         self.targetTerrain = targetTerrain
-
+        self.posOfInterest = []
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
@@ -38,8 +38,32 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
         
-        if not character.getBigPosition() == (7,7,0):
-            return (None,("gmc","go to terrain center"))
+        try:
+            self.posOfInterest
+        except:
+            self.posOfInterest = []
+
+        if not len(self.posOfInterest):
+            for char in currentTerrain:
+                if char == character:
+                    continue
+                if char.getBigPosition() not in self.posOfInterest:
+                    self.posOfInterest.append(char.getBigPosition())
+
+        char_big_pos = character.getBigPosition()
+        if not char_big_pos in self.posOfInterest:
+            posToGo = random.choice(self.posOfInterest)
+            offset = (posToGo[0] - char_big_pos[0], posToGo[1] - char_big_pos[1])
+            moves = "gm"
+            if offset[0] > 0:
+                moves += "d" * offset[0]
+            else:
+                moves += "a" * -offset[0]
+            if offset[1] > 0:
+                moves += "s" * offset[0]
+            else:
+                moves += "w" * -offset[0]
+            return (None,(moves,"go to terrain rooms"))
 
         if not character.container.isRoom:
             if character.getSpacePosition() == (0,7,0):
@@ -53,7 +77,8 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if not dryRun:
                 self.postHandler()
             return (None,None)
-
+        if len(character.container.itemsOnFloor):
+            self.posOfInterest.remove(posToGo)
         for otherCharacter in character.container.characters:
             if otherCharacter.faction == character.faction:
                 continue
@@ -94,7 +119,7 @@ Go out and adventure.
             return True
 
         if currentTerrain.tag == "ruin":
-            if not character.getBigPosition() == (7,7,0):
+            if not character.getBigPosition() in self.posOfInterest:
                 return False
             
             if not character.container.isRoom:

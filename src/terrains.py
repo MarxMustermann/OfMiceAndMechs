@@ -429,6 +429,7 @@ class Terrain:
                             char.addMessage("you need to open the door first")
                         else:
                             char.addMessage("the entry is blocked")
+                            char.die("getting stuck between rooms")
                         # char.addMessage("press "+commandChars.activate+" to apply")
                         # if noAdvanceGame == False:
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -438,6 +439,7 @@ class Terrain:
 
                 if len(room.itemByCoordinates[localisedEntry]) >= 15:
                     char.addMessage("the entry is blocked by items.")
+                    char.die("getting stuck between rooms")
                     # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))

@@ -154,6 +154,10 @@ Press d to move the cursor and show the subquests description.
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
+            if not self.tryHard and character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"]()
+                return ([quest],None)
+
             if not ignoreCommands:
                 submenue = character.macroState.get("submenue")
                 if submenue:
@@ -208,7 +212,7 @@ Press d to move the cursor and show the subquests description.
                     else:
                         items = character.container.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
                     if items and items[-1].type != self.itemType:
-                        quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig)
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=self.targetPosition,targetPositionBig=self.targetPositionBig,pickUpBolted=True)
                         return ([quest],None)
 
                 if character.getSpacePosition() != self.targetPosition:

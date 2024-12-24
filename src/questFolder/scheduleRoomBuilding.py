@@ -4,12 +4,13 @@ import src
 class ScheduleRoomBuilding(src.quests.MetaQuestSequence):
     type = "ScheduleRoomBuilding"
 
-    def __init__(self, description="schedule room building", creator=None, roomPosition=None,reason=None):
+    def __init__(self, description="schedule room building", creator=None, roomPosition=None,reason=None,priorityBuild=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.roomPosition = roomPosition
         self.reason = reason
+        self.priorityBuild = priorityBuild
 
     def generateTextDescription(self):
         out = []
@@ -43,7 +44,10 @@ Use a CityPlaner to do this.
                 command += "w"*(submenue.cursor[1]-self.roomPosition[1])
             if submenue.cursor[1] < self.roomPosition[1]:
                 command += "s"*(self.roomPosition[1]-submenue.cursor[1])
-            command += "r"
+            if self.priorityBuild:
+                command += "R"
+            else:
+                command += "r"
             return (None,(command,"schedule building a room"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:

@@ -26,6 +26,8 @@ class SpawnClone(src.quests.MetaQuestSequence):
                 return
 
             for (coord,itemList) in self.character.getTerrain().itemsByBigCoordinate.items():
+                if self.character.getTerrain().getRoomByPosition(coord):
+                    continue
                 for item in itemList:
                     if not item.type == "GooFlask":
                         continue

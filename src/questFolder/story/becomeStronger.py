@@ -120,7 +120,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
             if manaCrystalAvailable and not flaskAvailable:
-                quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1,tryHard=True)
+                quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1,tryHard=True,produceToInventory=True)
                 return ([quest],None)
 
         if character.health < character.maxHealth:

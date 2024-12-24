@@ -233,4 +233,16 @@ you can eat it to gain 2 satiation.
 
         super().destroy(generateScrap=False)
 
+    def getConfigurationOptions(self, character):
+        """
+        register the configuration options with superclass
+
+        Parameters:
+            character: the character trying to conigure the machine
+        """
+
+        options = super().getConfigurationOptions(character)
+        options["b"] = ("destroy", self.destroy)
+        return options
+
 src.items.addType(Mold)

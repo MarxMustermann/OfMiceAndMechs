@@ -43,6 +43,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True)
                 return ([quest],None)
 
+        if character.flask.uses < 2:
+            quest = src.quests.questMap["RefillPersonalFlask"]()
+            return ([quest],None)
+
         # get number of glass hearts
         numGlassHearts = 0
         for room in character.getTerrain().rooms:

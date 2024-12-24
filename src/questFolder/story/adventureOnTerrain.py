@@ -30,6 +30,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         currentTerrain = character.getTerrain()
 
+        if self.targetTerrain[0] == character.registers["HOMETx"] and self.targetTerrain[1] == character.registers["HOMETy"]:
+            if not dryRun:
+                self.fail("home is target")
+            return (None,None)
+
         if not (currentTerrain.xPosition == self.targetTerrain[0] and currentTerrain.yPosition == self.targetTerrain[1]):
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.targetTerrain)
             return ([quest],None)

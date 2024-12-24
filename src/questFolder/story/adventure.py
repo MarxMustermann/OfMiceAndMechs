@@ -48,10 +48,14 @@ class Adventure(src.quests.MetaQuestSequence):
                     continue
                 if (x, y, 0) in character.terrainInfo:
                     info = character.terrainInfo[(x, y, 0)]
-                    if not info.get("tag") == "ruin":
-                        continue
-                    if info.get("looted"):
-                        continue
+                    if character.getFreeInventorySpace() < 2:
+                        if not info.get("tag") == "shrine":
+                            continue
+                    else:
+                        if not info.get("tag") == "ruin":
+                            continue
+                        if info.get("looted"):
+                            continue
                 candidates.append((x, y, 0))
 
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)

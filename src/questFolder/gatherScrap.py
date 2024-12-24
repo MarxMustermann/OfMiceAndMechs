@@ -6,12 +6,13 @@ import src
 class GatherScrap(src.quests.MetaQuestSequence):
     type = "GatherScrap"
 
-    def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None,amount=None):
+    def __init__(self, description="gather scrap", creator=None, targetPosition=None,lifetime=None,reason=None,amount=None,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
         self.amount = amount
+        self.tryHard = tryHard
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})

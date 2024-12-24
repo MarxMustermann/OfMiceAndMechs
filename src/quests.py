@@ -805,6 +805,13 @@ class MetaQuestSequence(Quest,ABC):
     def solver(self, character):
         if self.triggerCompletionCheck(character):
             return
+
+        while len(self.subQuests):
+            if self.subQuests[0].completed:
+                self.subQuests.pop()
+                continue
+            break
+
         if len(self.subQuests):
             self.subQuests[0].triggerCompletionCheck(character)
             if len(self.subQuests):

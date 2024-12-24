@@ -55,22 +55,30 @@ Press d to move the cursor and show the subquests description.
         return out
 
     def handleQuestFailure(self,extraParam):
-        if extraParam["quest"] not in self.subQuests:
-            return
-
-        self.subQuests.remove(extraParam["quest"])
-
+        super().handleQuestFailure(extraParam)
         reason = extraParam.get("reason")
         if reason:
             if reason.startswith("no source for item "):
                 if reason.split(" ")[4] not in ("Wall","MetalBars","Scrap",):
-                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True)
+                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard)
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
                 if "metal working" in self.character.duties:
                     if reason.split(" ")[4] not in ("MetalBars","Scrap",):
-                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True)
+                        newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard)
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
+
+                if self.tryHard:
+                    if reason.split(" ")[4] == "MetalBars":
+                        newQuest = src.quests.questMap["ScrapHammering"](amount=1,tryHard=self.tryHard)
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
+                    if reason.split(" ")[4] == ("MetalBars","Scrap",):
+                        newQuest = src.quests.questMap["GatherScrap"](tryHard=self.tryHard)
                         self.addQuest(newQuest)
                         self.startWatching(newQuest,self.handleQuestFailure,"failed")
                         return
@@ -83,8 +91,9 @@ Press d to move the cursor and show the subquests description.
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         terrain = character.getTerrain()
-        if terrain.alarm:
-            self.fail("alarm")
+        if terrain.alarm and not self.tryHard:
+            if not dryRun:
+                self.fail("alarm")
             return (None,None)
 
         if not self.subQuests:

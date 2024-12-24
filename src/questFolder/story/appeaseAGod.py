@@ -89,9 +89,28 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
         for saccrificeType in saccrificesNeeded:
             if saccrificeType in ("Corpse","MoldFeed","MetalBars",):
                 continue
-            quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
-            return ([quest],None)
+            
+            if not character.getTerrain().alarm:
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
+                return ([quest],None)
 
+            hasScrap = False
+            hasMetalBars = False
+            for room in character.getTerrain().rooms:
+                if room.getNonEmptyOutputslots("Scrap"):
+                    hasScrap = True
+                if room.getNonEmptyOutputslots("MetalBars"):
+                    hasMetalbars = True
+
+            if hasScrap and hasMetalBars:
+                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
+                return ([quest],None)
+
+        if character.getTerrain().alarm:
+            if src.gamestate.gamestate.tick%(15*15*15) < 2000:
+                quest = src.quests.questMap["LiftOutsideRestrictions"]()
+                return ([quest],None)
+            return (None,("...........","wait for the wave of enemies"))
         return (None,("...........","wait for something to happen"))
 
 
@@ -109,9 +128,12 @@ A proper temple should be set up to apease all gods after some time,
 as long as enough workers and ressources are available.
 """
         if self.targetNumGods:
-            text = f"""
+            text += f"""
 Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
 """
+
+        if self.lifetimeEvent:
+            text += f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n"""
         return [text]
 
     def assignToCharacter(self, character):

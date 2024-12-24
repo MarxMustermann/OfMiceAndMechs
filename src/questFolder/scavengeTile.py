@@ -90,6 +90,8 @@ This quest will end when the target tile has no items left."""
         terrain = character.getTerrain()
         leftOverItems = []
         items = terrain.itemsByBigCoordinate.get(self.targetPosition,[])
+        items = items[:]
+        random.shuffle(items)
         for item in items:
             #if item.type == "Scrap":
             #    continue

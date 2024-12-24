@@ -123,6 +123,10 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["MetalWorking"](toProduce="Flask",amount=1,tryHard=True)
                 return ([quest],None)
 
+        if character.health < character.maxHealth:
+            quest = src.quests.questMap["Heal"]()
+            return ([quest],None)
+
         if character.inventory:
             quest = src.quests.questMap["ClearInventory"](returnToTile=False)
             return ([quest],None)
@@ -139,6 +143,8 @@ Get some upgrades to be stronger.
 """]
         if self.targetStrength:
             text.append(f"\nThe target combat value is {self.targetStrength} your current strength is {self.character.getStrengthSelfEstimate()}")
+        if self.lifetimeEvent:
+            text += f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n"""
         return text
 
     def triggerCompletionCheck(self,character=None):

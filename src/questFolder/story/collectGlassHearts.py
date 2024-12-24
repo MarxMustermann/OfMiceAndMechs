@@ -18,6 +18,10 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
@@ -51,14 +55,16 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,description="kill enemies that breached the defences")
                         return ([quest],None)
                 else:
-                    npcCount += 1
+                    if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
+                        npcCount += 1
         for otherChar in terrain.characters:
             if otherChar.faction != character.faction:
                 enemyCount += 1
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
             else:
-                npcCount += 1
+                if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
+                    npcCount += 1
 
         # ensure there is a backup NPC
         if npcCount < 2:
@@ -91,6 +97,27 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if "restrict outside" not in existingActions or "sound alarms" not in existingActions or "unrestrict outside" not in existingActions or "silence alarms" not in existingActions:
                     quest = src.quests.questMap["ConfigureSiegeManager"]()
                     return ([quest],None)
+
+        # get number of glass hearts
+        numGlassHearts = 0
+        for room in character.getTerrain().rooms:
+            for item in room.itemsOnFloor:
+                if not (item.type == "GlassStatue"):
+                    continue
+                if not item.hasItem:
+                    continue
+                numGlassHearts += 1
+
+        if numGlassHearts:
+
+            numTrapRooms = 0
+            for room in character.getTerrain().rooms:
+                if room.tag == "traproom":
+                    numTrapRooms += 1
+
+            if numTrapRooms < numGlassHearts:
+                quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts,numTrapRoomsPlanned=numGlassHearts+1,lifetime=1000)
+                return ([quest],None)
 
         # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()
@@ -127,7 +154,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if easiestTooHardDungeon and random.random() < 0.5:
-            quest = src.quests.questMap["BecomeStronger"](targetStrength=easiestTooHardDungeon+0.1)
+            quest = src.quests.questMap["BecomeStronger"](targetStrength=easiestTooHardDungeon+0.1,lifetime=15*15*15)
             return ([quest],None)
 
         # unlock more statues

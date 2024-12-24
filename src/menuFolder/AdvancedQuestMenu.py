@@ -113,6 +113,7 @@ class AdvancedQuestMenu(src.SubMenu.SubMenu):
                         options.append((value.type, key))
                     """
                     options.append(("GoHome", "GoHome"))
+                    options.append(("ScavengeTile", "ScavengeTile"))
                     options.append(("SecureTile", "SecureTile"))
                     options.append(("ClearInventory", "ClearInventory"))
                     options.append(("BeUsefull", "BeUsefull"))

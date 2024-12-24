@@ -1,6 +1,6 @@
 import src
 import random
-
+import itertools
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +15,8 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         self.reason = reason
         self.targetTerrain = targetTerrain
         self.posOfInterest = []
+        self.populated_posOfInterest = False
+        self.current_target = None
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
         if self.subQuests:
@@ -22,6 +24,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         if not character:
             return (None,None)
+
+        if character.macroState["submenue"]:
+            return (None, ("esc", "exit menu"))
 
         currentTerrain = character.getTerrain()
 
@@ -44,28 +49,30 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             self.posOfInterest = []
 
         if not len(self.posOfInterest):
-            for char in currentTerrain:
+            for char in currentTerrain.characters:
                 if char == character:
                     continue
                 if char.getBigPosition() not in self.posOfInterest:
                     self.posOfInterest.append(char.getBigPosition())
+            self.populated_posOfInterest = True
 
         char_big_pos = character.getBigPosition()
         if not char_big_pos in self.posOfInterest:
             posToGo = random.choice(self.posOfInterest)
-            offset = (posToGo[0] - char_big_pos[0], posToGo[1] - char_big_pos[1])
+            self.current_target = posToGo
+            offset = (posToGo[0] - char_big_pos[0] , posToGo[1] - char_big_pos[1])
             moves = "gm"
             if offset[0] > 0:
                 moves += "d" * offset[0]
-            else:
+            elif offset[0] < 0:
                 moves += "a" * -offset[0]
             if offset[1] > 0:
-                moves += "s" * offset[0]
-            else:
-                moves += "w" * -offset[0]
-            return (None,(moves,"go to terrain rooms"))
+                moves += "s" * offset[1]
+            elif offset[1] < 0:
+                moves += "w" * -offset[1]
+            return (None,(moves+"j","go to terrain room"))
 
-        if not character.container.isRoom:
+        if not character.container.isRoom and len(character.terrain.getRoomByPosition(self.current_target)):
             if character.getSpacePosition() == (0,7,0):
                 return (None, ("d","enter the room"))
             if character.getSpacePosition() == (7,0,0):
@@ -77,25 +84,37 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             if not dryRun:
                 self.postHandler()
             return (None,None)
-        if len(character.container.itemsOnFloor):
-            self.posOfInterest.remove(posToGo)
-        for otherCharacter in character.container.characters:
+
+        if character.container.isRoom:
+            itemsOnFloor = character.container.itemsOnFloor
+            enemies = character.container.characters
+        else:
+            itemsOnFloor = character.container.getNearbyItems(character)
+            enemies = character.container.getEnemiesOnTile(character)
+
+        for otherCharacter in enemies:
             if otherCharacter.faction == character.faction:
                 continue
             quest = src.quests.questMap["Fight"]()
             return ([quest],None)
 
 
-        for item in character.container.itemsOnFloor:
+        for item in itemsOnFloor:
             if item.bolted or not item.walkable:
                 continue
-            if item.xPosition == None:
+            item_pos =item.getSmallPosition()
+            if item_pos[0] == None:
                 logger.error("found ghost item")
                 continue
-            if item.xPosition > 12:
+            if item_pos[0] > 12:
                 continue
-            quest = src.quests.questMap["LootRoom"](targetPosition=character.container.getPosition())
+
+            if item.name in ("scrap","metal bars"):
+                        continue
+            quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
             return ([quest],None)
+
+        self.posOfInterest.remove(self.current_target)
 
         return (None,None)
 
@@ -119,37 +138,11 @@ Go out and adventure.
             return True
 
         if currentTerrain.tag == "ruin":
-            if not character.getBigPosition() in self.posOfInterest:
-                return False
-            
-            if not character.container.isRoom:
-                return False
-
-            for otherCharacter in character.container.characters:
-                if otherCharacter.faction == character.faction:
-                    continue
-                return False
-
-            for item in character.container.itemsOnFloor:
-                if item.bolted or not item.walkable:
-                    continue
-            
-                invalidStack = False
-                for stackedItem in character.container.getItemByPosition(item.getPosition()):
-                    if stackedItem == item:
-                        break
-                    if not stackedItem.bolted:
-                        continue
-                    invalidStack = True
-
-                if invalidStack:
-                    continue
-
-                if item.xPosition == None:
-                    logger.error("found ghost item")
-                    continue
-
-                return False
+            try:
+                self.populated_posOfInterest
+            except:
+                self.populated_posOfInterest = False
+            return self.populated_posOfInterest and not len(self.posOfInterest)
 
         character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
         self.postHandler()

@@ -116,8 +116,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if room.tag == "traproom":
                     numTrapRooms += 1
 
-            if numTrapRooms < numGlassHearts:
-                quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts,numTrapRoomsPlanned=numGlassHearts+1,lifetime=1000)
+            if numTrapRooms < numGlassHearts//2:
+                quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
                 return ([quest],None)
 
         # get statues ready for teleport

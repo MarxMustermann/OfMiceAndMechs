@@ -119,7 +119,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
             return ([quest],None)
 
-        self.posOfInterest.remove(self.current_target)
+        if self.current_target in self.posOfInterest:
+            if dryRun:
+                self.posOfInterest.remove(self.current_target)
         return (None,None)
 
     def generateTextDescription(self):

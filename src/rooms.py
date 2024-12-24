@@ -1352,7 +1352,10 @@ class Room:
                 elif animationType in ("charsequence",):
                     display = extraInfo["chars"][len(extraInfo["chars"])-1-duration]
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     animation[2] -= 1
 

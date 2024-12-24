@@ -294,7 +294,7 @@ Press d to move the cursor and show the subquests description.
                             quest = src.quests.questMap["ProduceItem"](itemType=self.toCollect,tryHard=self.tryHard,reason="have items to fetch")
                             return ([quest],None)
                         else:
-                            newQuest = src.quests.questMap["MetalWorking"](toProduce=self.toCollect,amount=1,reason="produce a item you do not have",produceToInventory=True)
+                            newQuest = src.quests.questMap["MetalWorking"](toProduce=self.toCollect,amount=1,reason="produce a item you do not have",produceToInventory=True,tryHard=self.tryHard)
                             return ([newQuest],None)
 
                 if not dryRun:

@@ -98,6 +98,9 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
+            if items[0].name in ("Scrap","MetalBars"):
+                continue
+
             foundOffset = offset
 
             foundItems = []
@@ -124,10 +127,17 @@ Remove all items that are not bolted down."""
         items = self.getLeftoverItems(character)
         random.shuffle(items)
         for item in items:
-            if item.xPosition > 12:
+            if item.name in ("scrap","metal bars"):
                 continue
 
-            quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True)
+            item_pos =item.getSmallPosition()
+            if item_pos[0] == None:
+                logger.error("found ghost item")
+                continue
+            if item_pos[0] > 12:
+                continue
+
+            quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
 
         return (None,None)
@@ -139,26 +149,34 @@ Remove all items that are not bolted down."""
         else:
             terrain  = character.container
 
-        rooms = terrain.getRoomByPosition(self.targetPosition)
-        room = None
-        if rooms:
-            room = rooms[0]
+        if character.container.isRoom:
+            itemsOnFloor = character.container.itemsOnFloor
 
-        if room.floorPlan:
-            return []
+            rooms = terrain.getRoomByPosition(self.targetPosition)
+            room = None
+            if rooms:
+                room = rooms[0]
+
+            if room.floorPlan:
+                return []
+        else:
+            itemsOnFloor = character.container.getNearbyItems(character)
 
         foundItems = []
-        for item in room.itemsOnFloor:
+        for item in itemsOnFloor:
             if item.bolted:
                 continue
-            if item.xPosition == None:
+
+            item_pos =item.getSmallPosition()
+            if item_pos[0] == None:
                 logger.error("found ghost item")
                 continue
-            if item.xPosition > 12:
+            if item_pos[0] > 12:
                 continue
-            
+            if item.name in ("scrap","metal bars"):
+                continue
             invalidStack = False
-            for stackedItem in room.getItemByPosition(item.getPosition()):
+            for stackedItem in character.container.getItemByPosition(item.getPosition()):
                 if stackedItem == item:
                     break
                 if not stackedItem.bolted:

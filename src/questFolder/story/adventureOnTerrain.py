@@ -14,9 +14,24 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
         self.targetTerrain = targetTerrain
-        self.posOfInterest = []
-        self.populated_posOfInterest = False
-        self.current_target = None
+        self.posOfInterest = None
+        self.donePosOfInterest = []
+
+    def getRemainingPointsOfInterests(self):
+        result = []
+
+        currentTerrain = self.character.getTerrain()
+
+        for char in currentTerrain.characters:
+            if char.faction == self.character.faction:
+                continue
+            if char.getBigPosition() not in result:
+                result.append(char.getBigPosition())
+        for room in currentTerrain.rooms:
+            if room.getPosition() not in result:
+                result.append(room.getPosition())
+
+        return result
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
@@ -48,41 +63,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         if character.getBigPosition()[1] == 14:
             return (None, ("w","enter the terrain"))
         
-        try:
-            self.posOfInterest
-        except:
-            self.posOfInterest = []
-
-        if not len(self.posOfInterest):
-            for char in currentTerrain.characters:
-                if char == character:
-                    continue
-                if char.getBigPosition() not in self.posOfInterest:
-                    self.posOfInterest.append(char.getBigPosition())
-            self.populated_posOfInterest = True
-
-        char_big_pos = character.getBigPosition()
-        if not self.posOfInterest:
-            if not dryRun:
-                self.fail("no POI found to explore")
-            return (None,None)
-
-        if not char_big_pos in self.posOfInterest:
-            posToGo = random.choice(self.posOfInterest)
-            self.current_target = posToGo
-            offset = (posToGo[0] - char_big_pos[0] , posToGo[1] - char_big_pos[1])
-            moves = "gm"
-            if offset[0] > 0:
-                moves += "d" * offset[0]
-            elif offset[0] < 0:
-                moves += "a" * -offset[0]
-            if offset[1] > 0:
-                moves += "s" * offset[1]
-            elif offset[1] < 0:
-                moves += "w" * -offset[1]
-            return (None,(moves+"j","go to terrain room"))
-
-        if not character.container.isRoom and len(character.terrain.getRoomByPosition(self.current_target)):
+        if not character.container.isRoom:
             if character.getSpacePosition() == (0,7,0):
                 return (None, ("d","enter the room"))
             if character.getSpacePosition() == (7,0,0):
@@ -91,9 +72,34 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 return (None, ("a","enter the room"))
             if character.getSpacePosition() == (7,14,0):
                 return (None, ("w","enter the room"))
+
+        pointsOfInterest = self.getRemainingPointsOfInterests()
+        if not pointsOfInterest:
             if not dryRun:
-                self.postHandler()
+                self.fail("no POI found to explore")
             return (None,None)
+
+        char_big_pos = character.getBigPosition()
+        if char_big_pos in pointsOfInterest:
+            quest = src.quests.questMap["LootRoom"](targetPosition=char_big_pos)
+            return ([quest],None)
+
+        pointOfInterest = random.choice(pointsOfInterest)
+        offset = (pointOfInterest[0] - char_big_pos[0] , pointOfInterest[1] - char_big_pos[1])
+        moves = "gm"
+        if offset[0] > 0:
+            moves += "d" * offset[0]
+        elif offset[0] < 0:
+            moves += "a" * -offset[0]
+        if offset[1] > 0:
+            moves += "s" * offset[1]
+        elif offset[1] < 0:
+            moves += "w" * -offset[1]
+        return (None,(moves+"j","go to tile"))
+
+
+        1/0
+
 
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
@@ -149,14 +155,8 @@ Go out and adventure.
             return True
 
         if currentTerrain.tag == "ruin":
-            try:
-                self.populated_posOfInterest
-            except:
-                self.populated_posOfInterest = False
-            if self.populated_posOfInterest and not len(self.posOfInterest):
-                self.postHandler()
-                return True
-            return False
+            if self.getRemainingPointsOfInterests():
+                return False
 
         character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
         self.postHandler()

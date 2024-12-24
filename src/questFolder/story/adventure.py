@@ -11,7 +11,6 @@ class Adventure(src.quests.MetaQuestSequence):
         self.reason = reason
         self.visited_terrain = []
         self.track = []
-        self.terrainInfo = {}
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
@@ -131,11 +130,6 @@ track:
     def assignToCharacter(self, character):
         if self.character:
             return
-
-        try:
-            character.terrainInfo
-        except:
-            character.terrainInfo =  {}
 
         self.startWatching(character,self.handleChangedTerrain, "changedTerrain")
         super().assignToCharacter(character)

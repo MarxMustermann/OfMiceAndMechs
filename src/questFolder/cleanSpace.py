@@ -89,11 +89,13 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
             for (offset,direction) in offsets.items():
                 if character.container.isRoom:
                     if character.getPosition(offset=offset) == self.targetPosition:
-                        if (not self.pickUpBolted) and items[0].bolted:
+                        if self.pickUpBolted and items[0].bolted:
                             return (None, (direction+"cb","unbolt item"))
                         return (None, (direction+"k","pick up item"))
                 else:
                     if character.getPosition(offset=offset) == (self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0):
+                        if self.pickUpBolted and items[0].bolted:
+                            return (None, (direction+"cb","unbolt item"))
                         return (None, ("K"+direction,"pick up item"))
         return (None,None)
 

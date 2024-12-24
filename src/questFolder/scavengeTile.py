@@ -6,7 +6,7 @@ import src
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False):
+    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -16,6 +16,7 @@ class ScavengeTile(src.quests.MetaQuestSequence):
         self.endOnFullInventory = endOnFullInventory
 
         self.targetPosition = targetPosition
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         out = []
@@ -62,8 +63,9 @@ This quest will end when the target tile has no items left."""
             if hasIdleSubordinate:
                 return (None,("Hjsssssj","make subordinate scavenge"))
 
-            if character.getTerrain().alarm:
-                self.fail("alarm")
+            if character.getTerrain().alarm and not self.tryHard:
+                if not dryRun:
+                    self.fail("alarm")
                 return (None,None)
 
             if not character.getFreeInventorySpace() > 0:

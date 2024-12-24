@@ -26,7 +26,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None,None)
 
         if character.macroState["submenue"]:
-            return (None, ("esc", "exit menu"))
+            return (None, (["esc"], "exit menu"))
 
         currentTerrain = character.getTerrain()
 

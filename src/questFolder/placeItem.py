@@ -29,7 +29,7 @@ class PlaceItem(src.quests.MetaQuestSequence):
                 for buildSite in room.buildSites[:]:
                     if buildSite[0] == self.targetPosition:
                         room.buildSites.remove(buildSite)
-        self.fail()
+        self.fail(extraInfo["reason"])
 
     def generateTextDescription(self):
         reason = ""

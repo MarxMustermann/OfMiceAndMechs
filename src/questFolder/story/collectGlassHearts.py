@@ -43,6 +43,16 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["BeUsefull"](numTasksToDo=1,failOnIdle=True)
                 return ([quest],None)
 
+        # get number of glass hearts
+        numGlassHearts = 0
+        for room in character.getTerrain().rooms:
+            for item in room.itemsOnFloor:
+                if not (item.type == "GlassStatue"):
+                    continue
+                if not item.hasItem:
+                    continue
+                numGlassHearts += 1
+
         # count the number of enemies/allies
         npcCount = 0
         enemyCount = 0
@@ -67,7 +77,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     npcCount += 1
 
         # ensure there is a backup NPC
-        if npcCount < 2:
+        if npcCount < numGlassHearts+1:
             items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))
             for item in items:
                 if item.type != "GooFlask":
@@ -97,16 +107,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 if "restrict outside" not in existingActions or "sound alarms" not in existingActions or "unrestrict outside" not in existingActions or "silence alarms" not in existingActions:
                     quest = src.quests.questMap["ConfigureSiegeManager"]()
                     return ([quest],None)
-
-        # get number of glass hearts
-        numGlassHearts = 0
-        for room in character.getTerrain().rooms:
-            for item in room.itemsOnFloor:
-                if not (item.type == "GlassStatue"):
-                    continue
-                if not item.hasItem:
-                    continue
-                numGlassHearts += 1
 
         if numGlassHearts:
 

@@ -77,7 +77,7 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     npcCount += 1
 
         # ensure there is a backup NPC
-        if npcCount < numGlassHearts+1:
+        if npcCount < numGlassHearts+2:
             hasDispenserCharges = 0
             for room in terrain.rooms:
                 for item in room.getItemsByType("GooDispenser",needsBolted=True):

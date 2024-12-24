@@ -22,7 +22,6 @@ class Character:
     this is the class for characters meaning both npc and pcs.
     """
 
-    terrainInfo = {}
 
 
     def __init__(
@@ -93,6 +92,8 @@ class Character:
 
         self.rememberedMenu = []
         self.rememberedMenu2 = []
+
+        self.terrainInfo = {}
 
         self.pathCache = {}
 

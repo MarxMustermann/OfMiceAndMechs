@@ -78,12 +78,13 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
         # ensure there is a backup NPC
         if npcCount < numGlassHearts+1:
-            items = terrain.getRoomByPosition((7,8,0))[0].getItemByPosition((2,3,0))
-            for item in items:
-                if item.type != "GooFlask":
-                    continue
-                if item.uses < 100:
-                    continue
+            hasDispenserCharges = 0
+            for room in terrain.rooms:
+                for item in room.getItemsByType("GooDispenser",needsBolted=True):
+                    if item.charges:
+                        hasDispenserCharges += 1
+
+            if npcCount < 2 or hasDispenserCharges:
                 quest = src.quests.questMap["SpawnClone"]()
                 return ([quest],None)
 

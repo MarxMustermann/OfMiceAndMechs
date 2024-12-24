@@ -217,7 +217,7 @@ class Terrain:
         ):
             event = self.events[0]
             if event.tick < src.gamestate.gamestate.tick:
-                1/0
+                continue
             event.handleEvent()
             self.events.remove(event)
 

@@ -17,8 +17,8 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         self.posOfInterest = []
         self.populated_posOfInterest = False
         self.current_target = None
-    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
 
+    def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
 
@@ -57,6 +57,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             self.populated_posOfInterest = True
 
         char_big_pos = character.getBigPosition()
+        if not self.posOfInterest:
+            if not dryRun:
+                self.fail("no POI found to explore")
+            return (None,None)
+
         if not char_big_pos in self.posOfInterest:
             posToGo = random.choice(self.posOfInterest)
             self.current_target = posToGo
@@ -115,7 +120,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         self.posOfInterest.remove(self.current_target)
-
         return (None,None)
 
     def generateTextDescription(self):
@@ -142,7 +146,10 @@ Go out and adventure.
                 self.populated_posOfInterest
             except:
                 self.populated_posOfInterest = False
-            return self.populated_posOfInterest and not len(self.posOfInterest)
+            if self.populated_posOfInterest and not len(self.posOfInterest):
+                self.postHandler()
+                return True
+            return False
 
         character.terrainInfo[currentTerrain.getPosition()]["looted"] = True
         self.postHandler()

@@ -14,8 +14,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
         self.targetTerrain = targetTerrain
-        self.posOfInterest = None
-        self.donePosOfInterest = []
+        self.donePointsOfInterest = []
 
     def getRemainingPointsOfInterests(self):
         result = []
@@ -25,10 +24,10 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         for char in currentTerrain.characters:
             if char.faction == self.character.faction:
                 continue
-            if char.getBigPosition() not in result:
+            if char.getBigPosition() not in result and char.getBigPosition() not in self.donePointsOfInterest:
                 result.append(char.getBigPosition())
         for room in currentTerrain.rooms:
-            if room.getPosition() not in result:
+            if room.getPosition() not in result and room.getPosition() not in self.donePointsOfInterest:
                 result.append(room.getPosition())
 
         return result
@@ -42,6 +41,10 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         if character.macroState["submenue"]:
             return (None, (["esc"], "exit menu"))
+
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
 
         currentTerrain = character.getTerrain()
 
@@ -81,8 +84,31 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         char_big_pos = character.getBigPosition()
         if char_big_pos in pointsOfInterest:
-            quest = src.quests.questMap["LootRoom"](targetPosition=char_big_pos)
-            return ([quest],None)
+
+            if character.container.isRoom:
+                itemsOnFloor = character.container.itemsOnFloor
+            else:
+                itemsOnFloor = character.container.getNearbyItems(character)
+
+            for item in itemsOnFloor:
+                if item.bolted or not item.walkable:
+                    continue
+                item_pos =item.getSmallPosition()
+                if item_pos[0] == None:
+                    logger.error("found ghost item")
+                    continue
+                if item_pos[0] > 12:
+                    continue
+
+                if item.type in ("Scrap","MetalBars"):
+                    continue
+                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                return ([quest],None)
+
+
+            if not dryRun:
+                self.donePointsOfInterest.append(character.getBigPosition())
+            return (None,None)
 
         pointOfInterest = random.choice(pointsOfInterest)
         offset = (pointOfInterest[0] - char_big_pos[0] , pointOfInterest[1] - char_big_pos[1])
@@ -98,47 +124,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         return (None,(moves+"j","go to tile"))
 
 
-        1/0
-
-
-        if character.container.isRoom:
-            itemsOnFloor = character.container.itemsOnFloor
-            enemies = character.container.characters
-        else:
-            itemsOnFloor = character.container.getNearbyItems(character)
-            enemies = character.container.getEnemiesOnTile(character)
-
-        for otherCharacter in enemies:
-            if otherCharacter.faction == character.faction:
-                continue
-            quest = src.quests.questMap["Fight"]()
-            return ([quest],None)
-
-
-        for item in itemsOnFloor:
-            if item.bolted or not item.walkable:
-                continue
-            item_pos =item.getSmallPosition()
-            if item_pos[0] == None:
-                logger.error("found ghost item")
-                continue
-            if item_pos[0] > 12:
-                continue
-
-            if item.name in ("scrap","metal bars"):
-                        continue
-            quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
-            return ([quest],None)
-
-        if self.current_target in self.posOfInterest:
-            if dryRun:
-                self.posOfInterest.remove(self.current_target)
-        return (None,None)
-
     def generateTextDescription(self):
-        return ["""
-Go out and adventure.
+        return [f"""
+Go out and adventure on tile {self.targetTerrain}.
 
+{self.donePointsOfInterest}
 """]
 
     def triggerCompletionCheck(self,character=None):

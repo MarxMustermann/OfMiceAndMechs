@@ -17,6 +17,11 @@ class PlaceItem(src.quests.MetaQuestSequence):
     
     def handleQuestFailure(self,extraInfo):
         if extraInfo["reason"] == "no path found":
+            if self.tryHard:
+                newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=self.targetPosition)
+                self.addQuest(newQuest)
+                self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                return
             room = None
             if self.targetPositionBig:
                 rooms = self.character.getTerrain().getRoomByPosition(self.targetPositionBig)

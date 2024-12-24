@@ -3404,10 +3404,6 @@ def keyboardListener(key, targetCharacter=None):
                 continue
             quest.autoSolve = False
 
-        for quest in char.quests[:]:
-            if not quest.selfAssigned:
-                break
-            char.quests.remove(quest)
         char.guarding = 0
         char.hasOwnAction = False
         char.runCommandString("~")

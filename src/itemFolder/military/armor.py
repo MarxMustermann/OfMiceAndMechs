@@ -69,7 +69,7 @@ protects you in combat
         character.addMessage(f"you equip the armor and wear a {self.armorValue} armor now")
 
         charSequence = []
-        for i in range(1,self.armorValue+1):
+        for i in range(1,int(self.armorValue+1)):
             char = str(i)
             if i < 10:
                 char = " "+char

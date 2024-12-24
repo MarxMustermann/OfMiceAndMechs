@@ -57,7 +57,7 @@ Press d to move the cursor and show the subquests description.
     def handleQuestFailure(self,extraParam):
         super().handleQuestFailure(extraParam)
         reason = extraParam.get("reason")
-        if reason:
+        if reason and self.tryHard:
             if reason.startswith("no source for item "):
                 if reason.split(" ")[4] not in ("Wall","MetalBars","Scrap",):
                         newQuest = src.quests.questMap["MetalWorking"](toProduce=reason.split(" ")[4],amount=1,produceToInventory=True,tryHard=self.tryHard)

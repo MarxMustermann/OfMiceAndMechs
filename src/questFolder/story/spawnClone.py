@@ -30,7 +30,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     if not item.type == "GooFlask":
                         continue
 
-                    newQuest = src.quests.questMap["ScavengeTile"](targetPosition=coord,toCollect="GooFlask",tryHard=self.tryHard)
+                    newQuest = src.quests.questMap["ScavengeTile"](targetPosition=coord,toCollect="GooFlask",tryHard=True)
                     self.addQuest(newQuest)
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
@@ -101,8 +101,8 @@ class SpawnClone(src.quests.MetaQuestSequence):
             self.fail(reason="no growth tank found")
             return (None,None)
 
-        if not growthTank.filled and len(growthTank.getFlasks(character)) < 2:
-            quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=2)
+        if not growthTank.filled and len(growthTank.getFlasks(character)) < 1:
+            quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=1)
             return ([quest],None)
 
         itemPos = growthTank.getPosition()

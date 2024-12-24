@@ -2801,7 +2801,7 @@ but they are likely to explode when disturbed.
                     loot_types = ["Flask","GooFlask","Scrap"]
                     item = src.items.itemMap[random.choice(loot_types)]()
                     currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
-            rand_pos = (random.randint(2,12),random.randint(2,12))
+            rand_pos = (random.randint(3,11),random.randint(3,11))
             make_room = random.random() < 0.4
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):

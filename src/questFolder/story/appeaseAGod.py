@@ -107,7 +107,10 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         if character.getTerrain().alarm:
-            return (None,("...........","wait for the alarm to end"))
+            if src.gamestate.gamestate.tick%(15*15*15) < 2000:
+                quest = src.quests.questMap["LiftOutsideRestrictions"]()
+                return ([quest],None)
+            return (None,("...........","wait for the wave of enemies"))
         return (None,("...........","wait for something to happen"))
 
 

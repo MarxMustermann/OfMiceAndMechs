@@ -143,6 +143,8 @@ Get some upgrades to be stronger.
 """]
         if self.targetStrength:
             text.append(f"\nThe target combat value is {self.targetStrength} your current strength is {self.character.getStrengthSelfEstimate()}")
+        if self.lifetimeEvent:
+            text += f"""\nlifetime: {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} / {self.lifetime}\n"""
         return text
 
     def triggerCompletionCheck(self,character=None):

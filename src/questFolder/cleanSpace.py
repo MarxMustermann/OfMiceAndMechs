@@ -1,8 +1,6 @@
 import src
 import random
 
-import src.rooms
-
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
@@ -17,6 +15,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.reason = reason
         self.abortOnfullInventory = abortOnfullInventory
         self.pickUpBolted = pickUpBolted
+
     def generateTextDescription(self):
         reason = ""
         if self.reason:

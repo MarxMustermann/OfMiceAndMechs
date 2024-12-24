@@ -93,7 +93,7 @@ class GooFlask(src.items.Item):
             src.canvas.displayChars.gooflask_part4,
             src.canvas.displayChars.gooflask_full,
         ]
-        return displayByUses[self.uses // 20]
+        return displayByUses[min(self.uses // 20,5)]
 
     def getDetailedInfo(self):
         """

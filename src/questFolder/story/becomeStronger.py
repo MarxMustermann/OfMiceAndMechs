@@ -11,7 +11,6 @@ class BecomeStronger(src.quests.MetaQuestSequence):
         self.targetStrength = targetStrength
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
-
         if self.subQuests:
             return (None,None)
 
@@ -116,6 +115,9 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
             if manaCrystalAvailable and not bloomAvailable:
                 if not terrain.alarm:
+                    if character.inventory:
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
+                        return ([quest],None)
                     quest = src.quests.questMap["FarmMold"](lifetime=1000)
                     return ([quest],None)
 
@@ -128,7 +130,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if character.inventory:
-            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+            quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
             return ([quest],None)
 
         quest = src.quests.questMap["Adventure"]()

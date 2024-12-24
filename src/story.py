@@ -2736,6 +2736,7 @@ but they are likely to explode when disturbed.
         for i in range(random.randint(2,6)):
             if rand_pos in filled_cord:
                 continue
+            filled_cord.append(rand_pos)
             if make_room:
                 # create the basic room
                 room = architect.doAddRoom(

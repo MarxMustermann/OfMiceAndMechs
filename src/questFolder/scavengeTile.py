@@ -83,7 +83,7 @@ This quest will end when the target tile has no items left."""
             items = self.getLeftoverItems(character)
             for item in items:
                 path = character.getTerrain().getPathTile(character.getTilePosition(),character.getSpacePosition() ,item.getSmallPosition(),character=character,ignoreEndBlocked =True)
-                if len(path):
+                if len(path) or item.getPosition() == character.getPosition():
                     quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=self.targetPosition,reason="pick up the items")
                     return ([quest],None)
         return (None,None)

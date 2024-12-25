@@ -18,6 +18,10 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
     def getRemainingPointsOfInterests(self):
         result = []
+        try:
+            self.donePointsOfInterest
+        except:
+            self.donePointsOfInterest = []
 
         currentTerrain = self.character.getTerrain()
 
@@ -83,36 +87,35 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             return (None,None)
 
         char_big_pos = character.getBigPosition()
-        if char_big_pos in pointsOfInterest:
+
+
+        if character.container.isRoom:
+            itemsOnFloor = character.container.itemsOnFloor
+        else:
+            itemsOnFloor = character.container.getNearbyItems(character)
+
+        for item in itemsOnFloor:
+            if item.bolted or not item.walkable:
+                continue
+            item_pos =item.getSmallPosition()
+            if item_pos[0] == None:
+                logger.error("found ghost item")
+                continue
+            if item_pos[0] > 12:
+                continue
+
+            if item.type in ("Scrap","MetalBars"):
+                continue
 
             if character.container.isRoom:
-                itemsOnFloor = character.container.itemsOnFloor
+                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                return ([quest],None)
             else:
-                itemsOnFloor = character.container.getNearbyItems(character)
+                quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition())
+                return ([quest],None)
 
-            for item in itemsOnFloor:
-                if item.bolted or not item.walkable:
-                    continue
-                item_pos =item.getSmallPosition()
-                if item_pos[0] == None:
-                    logger.error("found ghost item")
-                    continue
-                if item_pos[0] > 12:
-                    continue
-
-                if item.type in ("Scrap","MetalBars"):
-                    continue
-
-                if character.container.isRoom:
-                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
-                    return ([quest],None)
-                else:
-                    quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition())
-                    return ([quest],None)
-
-            if not dryRun:
-                self.donePointsOfInterest.append(character.getBigPosition())
-            return (None,None)
+        if not dryRun:
+            self.donePointsOfInterest.append(character.getBigPosition())
 
         pointOfInterest = random.choice(pointsOfInterest)
         offset = (pointOfInterest[0] - char_big_pos[0] , pointOfInterest[1] - char_big_pos[1])

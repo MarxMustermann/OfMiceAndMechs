@@ -145,7 +145,7 @@ Press d to move the cursor and show the subquests description.
             missingDoorPositions = []
             for doorPos in doorPositions:
                 items = character.getTerrain().getItemByPosition((15*self.targetPosition[0]+doorPos[0],15*self.targetPosition[1]+doorPos[1],0))
-                if items:
+                if items and items[-1].type == "Door":
                     continue
                 missingDoorPositions.append(doorPos)
 
@@ -180,8 +180,9 @@ Press d to move the cursor and show the subquests description.
             for (offset,command) in offsets.items():
                 if character.getPosition(offset=offset) == (15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0):
                     return (None, (command,"activate the RoomBuilder"))
-            1/0
-        return (None,None)
+
+        quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+        return ([quest], None)
 
     def triggerCompletionCheck(self,character=None):
         if not character:

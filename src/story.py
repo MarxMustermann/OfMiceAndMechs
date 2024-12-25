@@ -2414,6 +2414,10 @@ but they are likely to explode when disturbed.
         alarmBell.bolted = True
         trapRoom2.addItem(alarmBell,(11,7,0))
 
+        alarmBell = src.items.itemMap["Wall"]()
+        alarmBell.bolted = True
+        trapRoom2.addItem(alarmBell,(11,5,0))
+
         # block some of the trap
         for pos in ((1,6,0),(2,6,0),(6,1,0),(6,2,0),(6,11,0),(6,10,0)):
             moldFeed = src.items.itemMap["MoldFeed"]()

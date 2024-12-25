@@ -137,6 +137,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                     pos = flask.getPosition()
                     self.container.removeItem(flask)
                     self.container.addItem(src.items.itemMap["Flask"](),pos)
+            break
 
         if self.gooCharges > 100:
             self.gooCharges -= 100

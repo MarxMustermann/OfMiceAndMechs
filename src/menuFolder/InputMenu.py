@@ -39,6 +39,9 @@ class InputMenu(src.SubMenu.SubMenu):
             returns True when done
         """
 
+        if key == "esc":
+            self.done = True
+            return True
         if key == "enter" and not self.escape:
             if self.followUp:
                 self.callIndirect(self.followUp,extraParams={self.targetParamName:self.text})

@@ -97,6 +97,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         for item in itemsOnFloor:
             if item.bolted or not item.walkable:
                 continue
+            if item.xPosition == None:
+                logger.error("found ghost item")
+                continue
             item_pos =item.getSmallPosition()
             if item_pos[0] == None:
                 logger.error("found ghost item")

@@ -382,7 +382,10 @@ class Room:
         roomMap[12][6] = 1
 
         if ignoreEndBlocked or clearing:
-            roomMap[targetPos[0]][targetPos[1]] = 1
+            try:
+                roomMap[targetPos[0]][targetPos[1]] = 1
+            except:
+                pass
         return roomMap
 
     def convertRoomMap(self,roomMap):

@@ -16,12 +16,12 @@ class SpawnGhul(src.quests.MetaQuestSequence):
         numGhuls = 0
         terrain = character.getTerrain()
         for otherChar in terrain.characters:
-            if otherChar.charType != "Ghul":
+            if otherChar.charType != "Ghoul":
                 continue
             numGhuls += 1
         for room in terrain.rooms:
             for otherChar in room.characters:
-                if otherChar.charType != "Ghul":
+                if otherChar.charType != "Ghoul":
                     continue
                 numGhuls += 1
 
@@ -117,7 +117,10 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 if not corpse:
                     continue
                 
-                quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=False)
+                if not character.getFreeInventorySpace():
+                    quest = src.quests.questMap["CliearInventory"](returnToTile=False,tryHard=True)
+                    return ([quest],None)
+                quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=True)
                 return ([quest],None)
             
             if dryRun:

@@ -51,6 +51,9 @@ farm mold"""
 
         candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
+            if character.getTerrain().getRoomByPosition(coord):
+                continue
+
             for item in itemList:
                 if not item.type == "Bloom":
                     continue
@@ -64,6 +67,9 @@ farm mold"""
 
         candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
+            if character.getTerrain().getRoomByPosition(coord):
+                continue
+
             numSprouts = 0
             for item in itemList:
                 if not item.type == "Sprout":

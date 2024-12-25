@@ -188,5 +188,13 @@ Remove all items that are not bolted down."""
             foundItems.append(item)
 
         return foundItems
+    
+    def handleQuestFailure(self,extraInfo):
+        if extraInfo["reason"] == "no path found":
+            newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=extraInfo["quest"].targetPosition)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+        self.fail(extraInfo["reason"])
 
 src.quests.addType(LootRoom)

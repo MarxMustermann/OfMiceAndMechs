@@ -76,7 +76,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            newQuest = src.quests.questMap["FarmMold"]()
+            newQuest = src.quests.questMap["FarmMold"](tryHard=True)
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")
             return

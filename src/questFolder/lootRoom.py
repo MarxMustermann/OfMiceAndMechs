@@ -167,6 +167,9 @@ Remove all items that are not bolted down."""
             if item.bolted:
                 continue
 
+            if item.xPosition == None:
+                logger.error("found ghost item")
+                continue
             item_pos =item.getSmallPosition()
             if item_pos[0] == None:
                 logger.error("found ghost item")

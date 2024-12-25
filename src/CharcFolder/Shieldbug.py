@@ -40,6 +40,11 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         self.godMode = True
         self.movementSpeed = 2.2
 
+    def changed(self, tag="default", info=None):
+        if tag == "pickup bolted fail":
+            info["item"].destroy()
+        super().changed(tag, info)
+
     @staticmethod
     def lootTable():
         return [(None, 1), (src.items.itemMap["CitinPlates"], 1)]

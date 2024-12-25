@@ -544,6 +544,8 @@ def handleCollision(char,charState):
         char.runCommandString(random.choice(("a","w","s","d",)))
         return
     char.changed("itemCollision")
+    if not char.container:
+        return
     char.container.addAnimation(charState["itemMarkedLast"].getPosition(),"showchar",4,{"char":(urwid.AttrSpec("#fff", "#000"), "XX")})
 
 
@@ -4145,8 +4147,27 @@ def renderGameDisplay(renderChar=None):
                         canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
                         canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
                         if not src.gamestate.gamestate.mainChar.dead:
-                            position_string = str(src.gamestate.gamestate.mainChar.getTerrainPosition())+" // "+str(src.gamestate.gamestate.mainChar.getBigPosition())
-                            printUrwidToTcod(position_string,(uiElement["offset"][0]+5,uiElement["offset"][1]))
+                            position_string = str(src.gamestate.gamestate.mainChar.getBigPosition())
+                            if src.gamestate.gamestate.mainChar.container and src.gamestate.gamestate.mainChar.container.isRoom:
+                                position_string += " "+str(src.gamestate.gamestate.mainChar.container.tag)
+                            printUrwidToTcod(position_string,(2*uiElement["offset"][0]+2,uiElement["offset"][1]))
+
+                    if uiElement["type"] == "zoneMap":
+                        miniMapChars = src.gamestate.gamestate.mainChar.renderZoneInfo()
+                        canvas = src.canvas.Canvas(
+                            size=(15, 15),
+                            chars=miniMapChars,
+                            coordinateOffset=(0,0),
+                            shift=(0,0),
+                            displayChars=src.canvas.displayChars,
+                            tileMapping=None,
+                        )
+                        canvas.getAsDummy(pseudoDisplay,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
+                        canvas.printTcod(tcodConsole,uiElement["offset"][0],uiElement["offset"][1]+1,warning=warning)
+                        if not src.gamestate.gamestate.mainChar.dead:
+                            position_string = str(src.gamestate.gamestate.mainChar.getTerrainPosition())
+                            position_string += " "+str(src.gamestate.gamestate.mainChar.getTerrain().tag)
+                            printUrwidToTcod(position_string,(2*uiElement["offset"][0]+2,uiElement["offset"][1]))
 
                     if uiElement["type"] == "healthInfo":
                         if src.gamestate.gamestate.dragState:

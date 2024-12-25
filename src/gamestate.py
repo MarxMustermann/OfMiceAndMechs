@@ -67,7 +67,8 @@ class GameState:
                         {"type":"time","offset":(74,5),},
                         {"type":"guiButtons","offset":(40,4),"width":82},
                         {"type":"rememberedMenu","offset":(2,18),"size":(35,80)},
-                        {"type":"rememberedMenu2","offset":(133,2),"size":(62,80)},
+                        {"type":"rememberedMenu2","offset":(132,18),"size":(50,80)},
+                        {"type":"zoneMap","offset":(66,1)},
                         ]
 
         self.clickMap = {}

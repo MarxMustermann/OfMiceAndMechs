@@ -438,7 +438,7 @@ class Terrain:
                         # remember the item for interaction and abort
                         return item
 
-                if len(room.itemByCoordinates[localisedEntry]) >= 15:
+                if len(room.itemByCoordinates[localisedEntry]) > 15:
                     char.addMessage("the entry is blocked by items.")
                     char.hurt(20,"getting stuck between rooms")
                     # char.addMessage("press "+commandChars.activate+" to apply")

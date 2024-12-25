@@ -102,9 +102,13 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
                 if item.type in ("Scrap","MetalBars"):
                     continue
-                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
-                return ([quest],None)
 
+                if character.container.isRoom:
+                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition())
+                    return ([quest],None)
 
             if not dryRun:
                 self.donePointsOfInterest.append(character.getBigPosition())

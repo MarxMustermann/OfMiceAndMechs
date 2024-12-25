@@ -277,7 +277,7 @@ This should be used in cases where you can not place the Painter on the position
             if self.paintMode == "buildSite":
                 room.addBuildSite(character.getPosition(offset=self.offset),self.paintType, self.paintExtraInfo)
                 if room.floorPlan:
-                    for buildSite in room.floorPlan.get("buildSites")[:]:
+                    for buildSite in room.floorPlan.get("buildSites",[])[:]:
                         if buildSite[0] == pos:
                             room.floorPlan["buildSites"].remove(buildSite)
                             break

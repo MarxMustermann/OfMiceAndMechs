@@ -128,8 +128,13 @@ To see your items open the your inventory by pressing i."""
                 #    character.timeTaken += 1
                 #    self.fail(reason="no storage available")
                 #return (None,None)
-                quest = src.quests.questMap["DropItemsOutside"]()
-                return ([quest],None)
+                if not character.getTerrain().alarm or self.tryHard:
+                    quest = src.quests.questMap["DropItemsOutside"]()
+                    return ([quest],None)
+                if not dryRun:
+                    character.timeTaken += 1
+                    self.fail(reason="no storage available")
+                return (None,None)
 
             if self.returnToTile and character.getBigPosition() != self.returnToTile:
                 quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")

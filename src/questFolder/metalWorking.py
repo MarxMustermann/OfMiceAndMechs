@@ -47,7 +47,7 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.InputMenu.InputMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.inputMenu.InputMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if self.toProduce == submenue.text:
                 return (None,(["enter"],"set the name of the item to produce"))
@@ -63,7 +63,7 @@ Press d to move the cursor and show the subquests description.
 
             return (None,(self.toProduce[correctIndex:],"enter name of the tem to produce"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "metalWorkingProductSelection":
                 index = None

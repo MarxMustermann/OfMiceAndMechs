@@ -315,7 +315,7 @@ class Character:
         return resultList
 
     def showTextMenu(self,text):
-        submenu = src.menuFolder.TextMenu.TextMenu(text)
+        submenu = src.menuFolder.textMenu.TextMenu(text)
         self.macroState["submenue"] = submenu
 
     def callIndirect(self, callback, extraParams=None):
@@ -1274,7 +1274,7 @@ press l/L for light attack
         text += """
 
 press any other key to attack normally"""
-        submenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         self.macroState["submenue"] = submenu
         self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)
@@ -2348,7 +2348,7 @@ press any other key to attack normally"""
             # notify listeners
             self.changed("examine", mainItem)
 
-        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
+        self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         self.macroState["submenue"] = self.submenue
 
     def examine(self, item):
@@ -2368,7 +2368,7 @@ press any other key to attack normally"""
         info = item.getLongInfo()
         if info:
             info += "\n\nregisterinformation:\n\n" + registerInfo
-            self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(info)
+            self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(info)
             self.macroState["submenue"] = self.submenue
 
         # notify listeners

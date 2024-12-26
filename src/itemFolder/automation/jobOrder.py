@@ -86,7 +86,7 @@ class JobOrder(src.items.Item):
             taskStr += f"{task} \n"
 
         # spawn the submenu showing the information
-        submenue = src.menuFolder.TextMenu.TextMenu(
+        submenue = src.menuFolder.textMenu.TextMenu(
             f"""
 taskName:
 {self.taskName}
@@ -120,7 +120,7 @@ tasks:
             options.append((index, task["task"]))
             index += 1
 
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "On what task do you want to set the breakpoint?", options
         )
         character.macroState["submenue"] = self.submenue

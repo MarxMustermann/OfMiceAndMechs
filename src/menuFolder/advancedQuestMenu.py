@@ -240,9 +240,9 @@ class AdvancedQuestMenu(src.subMenu.SubMenu):
                         return False
             elif self.quest:
                 if self.character == "ALL":
-                    self.activeChar.macroState["submenue"] = src.menuFolder.CreateQuestMenu.CreateQuestMenu(self.quest, self.activeChar.subordinates, self.activeChar)
+                    self.activeChar.macroState["submenue"] = src.menuFolder.createQuestMenu.CreateQuestMenu(self.quest, self.activeChar.subordinates, self.activeChar)
                 else:
-                    self.activeChar.macroState["submenue"] = src.menuFolder.CreateQuestMenu.CreateQuestMenu(self.quest, [self.character], self.activeChar)
+                    self.activeChar.macroState["submenue"] = src.menuFolder.createQuestMenu.CreateQuestMenu(self.quest, [self.character], self.activeChar)
                 return False
             else:
                 # skip parameter selection

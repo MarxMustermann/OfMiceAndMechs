@@ -45,7 +45,7 @@ class Statue(src.items.Item):
         options.append((6,[(src.interaction.urwid.AttrSpec("#ff0","black"),"6 - god of life")]))
         options.append((7,[(src.interaction.urwid.AttrSpec("#fff","black"),"7 - god of crushing")]))
 
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "Select what god to pray to", options,
             targetParamName="god",
         )

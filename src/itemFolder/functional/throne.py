@@ -37,7 +37,7 @@ A throne. Take control over the throne to win the game.
             foundMissingHeart = True
 
         if foundMissingHeart:
-            submenu = src.menuFolder.TextMenu.TextMenu("""
+            submenu = src.menuFolder.textMenu.TextMenu("""
 The throne rejects you.
 
 You need to collect all GlassHarts to be accepted as supreme leader.

@@ -46,7 +46,7 @@ class RoomSourceMenu(src.subMenu.SubMenu):
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         if key == "c":
-            self.submenu = src.menuFolder.InputMenu.InputMenu(f"input source.\nCurrent tile is {character.container.getTilePosition()}.\nFormat to input source is \nresourceType: tilecoordinate")
+            self.submenu = src.menuFolder.inputMenu.InputMenu(f"input source.\nCurrent tile is {character.container.getTilePosition()}.\nFormat to input source is \nresourceType: tilecoordinate")
             self.submenu.handleKey("~", noRender, character)
             return False
 

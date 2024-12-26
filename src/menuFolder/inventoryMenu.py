@@ -106,7 +106,7 @@ class InventoryMenu(src.subMenu.SubMenu):
 
             # do drop
             if key == "L":
-                self.subMenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu("Drop where?\n\n w - north\n s - south\n a - left\n d - right")
+                self.subMenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("Drop where?\n\n w - north\n s - south\n a - left\n d - right")
                 self.subMenu.handleKey("~", noRender=noRender, character=character)
                 self.drop = True
                 return False

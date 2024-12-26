@@ -101,7 +101,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         """
 
         if key == "e":
-            submenue = src.menuFolder.StatusEffectMenu.StatusEffectMenu(char=character)
+            submenue = src.menuFolder.statusEffectMenu.StatusEffectMenu(char=character)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             return True

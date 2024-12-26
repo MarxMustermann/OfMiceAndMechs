@@ -87,7 +87,7 @@ restrictStoredItemWalkable: {self.restrictStoredItemWalkable}
                 ("clearInventory", "clear inventory"),
                 ("fillInventory", "fill inventory"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -113,7 +113,7 @@ restrictStoredItemWalkable: {self.restrictStoredItemWalkable}
 
         self.lastAction = "configure"
 
-        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
+        self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
             """
 a: addCommand
 s: machine settings
@@ -160,7 +160,7 @@ r: reset
             options.append(("full", "set full command"))
             options.append(("wrong", "wrong item type or item"))
 
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Setting command for handling triggers.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -173,7 +173,7 @@ r: reset
             options.append(("restrictStoredItemWalkable", "restict item size"))
             options.append(("storedItemWalkable", "stored item size"))
 
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "select setting to change.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -199,7 +199,7 @@ r: reset
         if self.settingType is None:
             self.settingType = self.submenue.selection
 
-            self.submenue = src.menuFolder.InputMenu.InputMenu("input the value")
+            self.submenue = src.menuFolder.inputMenu.InputMenu("input the value")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setMachineSettings
 

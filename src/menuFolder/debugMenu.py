@@ -30,7 +30,7 @@ class DebugMenu(src.subMenu.SubMenu):
                 case "Execute Code":
                     text+= debug
                     if current_change:
-                        submenue = src.menuFolder.InputMenu.InputMenu("Type the code to execute",targetParamName="code")
+                        submenue = src.menuFolder.inputMenu.InputMenu("Type the code to execute",targetParamName="code")
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {"container":self,"method":"action","params":{"character":character}}
                         return True
@@ -75,7 +75,7 @@ class DebugMenu(src.subMenu.SubMenu):
                             mapContent[room.yPosition][room.xPosition] = room.displayChar
                         for scrapField in terrain.scrapFields:
                             mapContent[scrapField[1]][scrapField[0]] = "ss"
-                        submenue = src.menuFolder.MapMenu.MapMenu(
+                        submenue = src.menuFolder.mapMenu.MapMenu(
                             mapContent=mapContent,
                             functionMap=functionMap,
                             cursor=character.getBigPosition(),

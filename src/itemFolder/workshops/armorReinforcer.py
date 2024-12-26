@@ -22,7 +22,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         if "choice" not in params:
             options = [("Reinforce Equipped Armor", "Reinforce Equipped Armor"), ("Reinforce Armor", "Reinforce Armor")]
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Choose item To Reinforce", options, targetParamName="choice"
             )
             submenue.tag = "ArmorReinforceerSelection"

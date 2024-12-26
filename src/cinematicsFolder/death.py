@@ -148,15 +148,15 @@ def Death(extraParam):
 
                     src.gamestate.gamestate.mainChar = chosen_candidate
 
-                    questMenu = src.menuFolder.QuestMenu.QuestMenu(chosen_candidate)
+                    questMenu = src.menuFolder.questMenu.QuestMenu(chosen_candidate)
                     questMenu.sidebared = True
                     chosen_candidate.rememberedMenu.append(questMenu)
-                    messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(chosen_candidate)
+                    messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(chosen_candidate)
                     chosen_candidate.rememberedMenu2.append(messagesMenu)
-                    inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(chosen_candidate)
+                    inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(chosen_candidate)
                     inventoryMenu.sidebared = True
                     chosen_candidate.rememberedMenu2.append(inventoryMenu)
-                    combatMenu = src.menuFolder.CombatInfoMenu.CombatInfoMenu(chosen_candidate)
+                    combatMenu = src.menuFolder.combatInfoMenu.CombatInfoMenu(chosen_candidate)
                     combatMenu.sidebared = True
                     chosen_candidate.rememberedMenu.insert(0,combatMenu)
                     for quest in chosen_candidate.quests[:]:

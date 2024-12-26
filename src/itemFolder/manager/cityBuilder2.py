@@ -497,7 +497,7 @@ class CityBuilder2(src.items.Item):
             for _item in self.prefabs["ScrapToMetalBars"]:
                 index += 1
                 options.append((index,f"prefab{index}"))
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what floorplan to use?",options,targetParamName="type")
+            submenue = src.menuFolder.selectionMenu.SelectionMenu("what floorplan to use?",options,targetParamName="type")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"addScrapCompactorFromMap","params":params}
             return
@@ -706,7 +706,7 @@ class CityBuilder2(src.items.Item):
         options.append(("s","toggle south"))
         options.append(("d","toggle east"))
         options.append(("done","done"))
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu("What do you want to do?",options)
+        submenue = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?",options)
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"setConnectionsFromMap","params":params}
         return
@@ -954,7 +954,7 @@ class CityBuilder2(src.items.Item):
         for task in reversed(self.tasks):
             extraText += f"{task}\n"
 
-        self.submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
+        self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText)
         character.macroState["submenue"] = self.submenue
 
     def getFloorPlanFromDict(self,rawFloorplan):

@@ -49,7 +49,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
             for potionType in src.items.potionTypes:
                 options.append((potionType.type,potionType.name))
             options.append(("byName","produce by name"))
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
+            submenue = src.menuFolder.selectionMenu.SelectionMenu("what item to produce?",options,targetParamName="type")
             submenue.tag = "alchemyTableProductSelection"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"producePotion","params":params}

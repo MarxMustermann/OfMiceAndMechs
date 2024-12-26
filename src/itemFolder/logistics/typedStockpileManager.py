@@ -83,7 +83,7 @@ needs to be placed in the center of a tile. The tile should be emtpy and mold fr
             character: the character trying to use the machine
         """
 
-        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
+        self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
             "what do you want to do?\n\nj: use job order"
         )
         character.macroState["submenue"] = self.submenue
@@ -141,7 +141,7 @@ slotsByItemtype
             ("fetchItem", "fetch item"),
             ("fetchByJobOrder", "fetch by job order"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -230,7 +230,7 @@ slotsByItemtype
             options = []
             for key in self.slotsByItemtype:
                 options.append((key, key))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "what do you want to do?", options
             )
             self.character.macroState["submenue"] = self.submenue

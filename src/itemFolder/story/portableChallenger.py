@@ -37,7 +37,7 @@ class PortableChallenger(src.items.Item):
             self.done = True
 
         if self.done:
-            self.submenue = src.menuFolder.TextMenu.TextMenu(
+            self.submenue = src.menuFolder.textMenu.TextMenu(
                 "all challenges completed return to auto tutor"
             )
         else:
@@ -53,9 +53,9 @@ class PortableChallenger(src.items.Item):
                     if character.yPosition // 15 > 1:
                         text += "go futher north\n"
 
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(text)
+                    self.submenue = src.menuFolder.textMenu.TextMenu(text)
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoWestNorthTile":
                 if not (
@@ -69,9 +69,9 @@ class PortableChallenger(src.items.Item):
                     if character.yPosition // 15 > 1:
                         text += "go futher north\n"
 
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(text)
+                    self.submenue = src.menuFolder.textMenu.TextMenu(text)
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoWestSouthTile":
                 if not (
@@ -85,9 +85,9 @@ class PortableChallenger(src.items.Item):
                     if character.yPosition // 15 < 13:
                         text += "go futher south\n"
 
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(text)
+                    self.submenue = src.menuFolder.textMenu.TextMenu(text)
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "gotoEastSouthTile":
                 if not (
@@ -101,9 +101,9 @@ class PortableChallenger(src.items.Item):
                     if character.yPosition // 15 < 13:
                         text += "go futher south\n"
 
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(text)
+                    self.submenue = src.menuFolder.textMenu.TextMenu(text)
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "9livingBlooms":
                 baseCoordinateX = character.xPosition - (character.xPosition % 15)
@@ -119,11 +119,11 @@ class PortableChallenger(src.items.Item):
                                 numFound += 1
 
                 if not numFound >= 9:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(
+                    self.submenue = src.menuFolder.textMenu.TextMenu(
                         "challenge: find 9 living blooms\n\nchallenge in progress:\ngo to tile with 9 living blooms on it and activate challenger"
                     )
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "3livingSickBlooms":
                 baseCoordinateX = character.xPosition - (character.xPosition % 15)
@@ -139,11 +139,11 @@ class PortableChallenger(src.items.Item):
                                 numFound += 1
 
                 if not numFound >= 3:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(
+                    self.submenue = src.menuFolder.textMenu.TextMenu(
                         "challenge: find 3 living sick blooms\n\nchallenge in progress:\ngo to tile with 3 living sick blooms on it and activate challenger"
                     )
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             elif self.challenges[-1] == "fullMoldCover":
                 baseCoordinateX = character.xPosition - (character.xPosition % 15)
@@ -173,14 +173,14 @@ class PortableChallenger(src.items.Item):
                             emptyFound = True
 
                 if emptyFound:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu(
+                    self.submenue = src.menuFolder.textMenu.TextMenu(
                         "challenge: find tile completely covered in mold\n\nchallenge in progress:\ngo to a tile completed covered in mold and activate challenger"
                     )
                 else:
-                    self.submenue = src.menuFolder.TextMenu.TextMenu("challenge done")
+                    self.submenue = src.menuFolder.textMenu.TextMenu("challenge done")
                     self.challenges.pop()
             else:
-                self.submenue = src.menuFolder.TextMenu.TextMenu("unkown challenge")
+                self.submenue = src.menuFolder.textMenu.TextMenu("unkown challenge")
 
         character.macroState["submenue"] = self.submenue
 

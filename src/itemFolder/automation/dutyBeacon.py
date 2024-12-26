@@ -34,7 +34,7 @@ class DutyBeacon(src.items.Item):
         options.append(("increase", "increase priority"))
         options.append(("decrease", "decrease priority"))
 
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu(f"select the mode for the duty beacon.\n(current priority: {self.container.priority})",options)
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(f"select the mode for the duty beacon.\n(current priority: {self.container.priority})",options)
         character.macroState["submenue"] = submenue
         params = {"character":character}
         character.macroState["submenue"].followUp = {"container":self,"method":"setRoomPrio","params":params}

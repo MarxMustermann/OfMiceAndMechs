@@ -49,7 +49,7 @@ class Command(src.items.Item):
             if self.level > 3:
                 options.append(("rememberCommand", "store command in memory"))
 
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Do you want to reconfigure the machine?", options
             )
             character.macroState["submenue"] = self.submenue
@@ -66,11 +66,11 @@ class Command(src.items.Item):
         if self.submenue.selection == "runCommand":
             self.runPayload(self.character)
         elif self.submenue.selection == "setName":
-            self.submenue = src.menuFolder.InputMenu.InputMenu("Enter the name")
+            self.submenue = src.menuFolder.inputMenu.InputMenu("Enter the name")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setName
         elif self.submenue.selection == "setDescription":
-            self.submenue = src.menuFolder.InputMenu.InputMenu("Enter the description")
+            self.submenue = src.menuFolder.inputMenu.InputMenu("Enter the description")
             self.character.macroState["submenue"] = self.submenue
             self.character.macroState["submenue"].followUp = self.setDescription
         elif self.submenue.selection == "rememberCommand":

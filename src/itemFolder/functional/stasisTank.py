@@ -59,7 +59,7 @@ The ejected character will be placed to the south of the stasis tank and will st
             options = []
             options.append(("enter", "yes"))
             options.append(("noEnter", "no"))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "The stasis tank is empty. You will not be able to leave it on your on.\nDo you want to enter it?",
                 options,
             )

@@ -27,32 +27,32 @@ class IdleChatNPCMenu(src.subMenu.SubMenu):
                 options.append(("showInventory","What is in your inventory?"))
                 options.append(("showFeelings","How are you feeling?"))
                 options.append(("reset","You are behaving eratically. Get yourself together!"))
-                self.subMenu = src.menuFolder.SelectionMenu.SelectionMenu("", options)
+                self.subMenu = src.menuFolder.selectionMenu.SelectionMenu("", options)
                 self.handleKey("~", noRender=noRender, character=character)
                 return False
             self.instructionType = self.subMenu.selection
             self.subMenu = None
 
         if self.instructionType == "charInfo":
-            submenue = src.menuFolder.CharacterInfoMenu.CharacterInfoMenu(char=self.npc)
+            submenue = src.menuFolder.characterInfoMenu.CharacterInfoMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
         if self.instructionType == "showQuests":
-            submenue = src.menuFolder.QuestMenu.QuestMenu(char=self.npc)
+            submenue = src.menuFolder.questMenu.QuestMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
         if self.instructionType == "showInventory":
-            submenue = src.menuFolder.InventoryMenu.InventoryMenu(char=self.npc)
+            submenue = src.menuFolder.inventoryMenu.InventoryMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None
             return True
         if self.instructionType == "showFeelings":
-            submenue = src.menuFolder.InventoryMenu.InventoryMenu(char=self.npc)
+            submenue = src.menuFolder.inventoryMenu.InventoryMenu(char=self.npc)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
             self.subMenu = None

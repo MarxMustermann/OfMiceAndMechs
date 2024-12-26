@@ -22,7 +22,7 @@ class Popup(ABC):
         if self.conditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
-            submenue = src.menuFolder.TextMenu.TextMenu(self.text())
+            submenue = src.menuFolder.textMenu.TextMenu(self.text())
             submenue.tag = "popup"
             self.character.macroState["submenue"] = submenue
             self.character.runCommandString("~",nativeKey=True)

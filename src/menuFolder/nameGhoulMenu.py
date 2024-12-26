@@ -19,7 +19,7 @@ class NameGhoulMenu(src.subMenu.SubMenu):
             return True
 
         if not self.subMenu:
-            self.subMenu = src.menuFolder.InputMenu.InputMenu("enter the new name for this Ghoul")
+            self.subMenu = src.menuFolder.inputMenu.InputMenu("enter the new name for this Ghoul")
             self.handleKey("~", noRender=noRender, character=character)
             return False
         self.npc.name = self.subMenu.text

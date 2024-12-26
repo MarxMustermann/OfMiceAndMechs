@@ -45,7 +45,7 @@ class GameTestingProducer(src.items.Item):
 
     def change_apply_1(self, character, token):
         options = [(("yes", character, token), "yes"), (("no", character, token), "no")]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "Do you want to reconfigure the machine?", options
         )
         character.macroState["submenue"] = self.submenue

@@ -60,7 +60,7 @@ select the skill you want to train:
             character.changed("learnedSkill",character)
             return
 
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu(text,options,targetParamName="skillType")
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(text,options,targetParamName="skillType")
         character.macroState["submenue"] = submenue
         params = {"character":character}
         character.macroState["submenue"].followUp = {"container":self,"method":"startTraining","params":params}
@@ -134,7 +134,7 @@ This happens rarely but can interrupt a base.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("cleaning")
 
@@ -150,7 +150,7 @@ Examine the stockpiles to see their type.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("hauling")
 
@@ -167,7 +167,7 @@ Read the amnual to understand how the amchine works.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("machine operation")
 
@@ -196,7 +196,7 @@ Return to the room and fill the scrap input stockpiles.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("gathering")
 
@@ -214,7 +214,7 @@ The scrap field is marked with a white ss on the mini map.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
 
         quest = src.quests.questMap["GatherScrap"](lifetime=500)
@@ -259,7 +259,7 @@ so do try to keep them charged.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("trap maintence")
 
@@ -274,7 +274,7 @@ You will fetch the lightning rod directly from the production line.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
 
         quest = src.quests.questMap["FetchItems"](toCollect="LightningRod",lifetime=500)
@@ -317,7 +317,7 @@ You can auto fight by pressing gg
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
         character.learnSkill("fighting")
 
@@ -335,7 +335,7 @@ This quality will have a big effect on your combat power.
 """
         character.addMessage("----------------"+text+"-----------------")
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
 
         quest = src.quests.questMap["Equip"](lifetime=500)

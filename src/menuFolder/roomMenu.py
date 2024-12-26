@@ -73,10 +73,10 @@ class RoomMenu(src.subMenu.SubMenu):
             return None
 
         if character and key in ("q",):
-            character.macroState["submenue"] = src.menuFolder.RoomDutyMenu.RoomDutyMenu(self.room)
+            character.macroState["submenue"] = src.menuFolder.roomDutyMenu.RoomDutyMenu(self.room)
 
         if character and key in ("r",):
-            character.macroState["submenue"] = src.menuFolder.RoomSourceMenu.RoomSourceMenu(self.room)
+            character.macroState["submenue"] = src.menuFolder.roomSourceMenu.RoomSourceMenu(self.room)
 
         if character and key in ("o",):
             homeRoom = character.getHomeRoom()

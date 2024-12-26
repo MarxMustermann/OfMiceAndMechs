@@ -33,7 +33,7 @@ Use a CityPlaner to do this.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.MapMenu.MapMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             command = ""
             if submenue.cursor[0] > self.roomPosition[0]:
@@ -50,7 +50,7 @@ Use a CityPlaner to do this.
                 command += "r"
             return (None,(command,"schedule building a room"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
 
             submenue = character.macroState["submenue"]
             rewardIndex = 0

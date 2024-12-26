@@ -79,7 +79,7 @@ This should be used in cases where you can not place the Painter on the position
         return "x?"
 
     def configure(self, character):
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                "what do you want to do?\n\nm: set painting mode\nt: set type\ne: set extra info\nc: clear extra info\nd: set direction"
                                        )
         character.macroState["submenue"] = submenue
@@ -95,7 +95,7 @@ This should be used in cases where you can not place the Painter on the position
             return
 
         if keyPressed == "d":
-           submenue = src.menuFolder.InputMenu.InputMenu(
+           submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the direction to set\n\n"+
                "(w,a,s,d)"
                )
@@ -104,7 +104,7 @@ This should be used in cases where you can not place the Painter on the position
            return
 
         if keyPressed == "m":
-           submenue = src.menuFolder.InputMenu.InputMenu(
+           submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the mode you want to set\n\n"+
                "inputSlot, outputSlot, storageSlot, walkingSpace, buildSite, delete (i,o,s,w,b,d)"
                )
@@ -114,7 +114,7 @@ This should be used in cases where you can not place the Painter on the position
            return
 
         if keyPressed == "t":
-           submenue = src.menuFolder.InputMenu.InputMenu(
+           submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the type you want to set"
                                        )
            character.macroState["submenue"] = submenue
@@ -123,7 +123,7 @@ This should be used in cases where you can not place the Painter on the position
            return
 
         if keyPressed == "e":
-           submenue = src.menuFolder.InputMenu.InputMenu(
+           submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the name of the extra parameter you want to set",
                targetParamName="name",
                                        )
@@ -135,7 +135,7 @@ This should be used in cases where you can not place the Painter on the position
 
     def addExtraInfo1(self,extraInfo):
         character = extraInfo["character"]
-        submenue = src.menuFolder.InputMenu.InputMenu(
+        submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the type of the extra parameter you want to set (empty for string)",
                targetParamName="type",
                                        )
@@ -145,7 +145,7 @@ This should be used in cases where you can not place the Painter on the position
     def addExtraInfo2(self,extraInfo):
         character = extraInfo["character"]
 
-        submenue = src.menuFolder.InputMenu.InputMenu(
+        submenue = src.menuFolder.inputMenu.InputMenu(
                "type in the value of the extra parameter you want to set",
                targetParamName="value",
                                        )

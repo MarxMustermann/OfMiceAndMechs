@@ -40,7 +40,7 @@ class StockTracker(src.items.Item):
         for (itemType,num) in itemsFound.items():
             text += f"{itemType}: {num}\n"
 
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
 
 

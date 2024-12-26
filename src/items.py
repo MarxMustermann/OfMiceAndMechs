@@ -304,7 +304,7 @@ class Item:
         options = []
         for option in self.applyOptions:
             options.append(option)
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = submenu
@@ -576,7 +576,7 @@ class Item:
                 text += f"{key}: {value[0]}\n"
 
         # spawn menu
-        submenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         character.macroState["submenue"] = submenu
 
         # register callback
@@ -641,7 +641,7 @@ class Item:
         """
 
         options = self.commandOptions
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what command do you want to set?", options
         )
         character.macroState["submenue"] = submenu

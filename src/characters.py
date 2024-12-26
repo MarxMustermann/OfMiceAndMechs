@@ -6,12 +6,7 @@ import random
 import regex
 
 import config
-import src.canvas
-import src.chats
-import src.gamestate
-import src.interaction
-import src.menuFolder
-import src.menuFolder.TextMenu
+import src
 
 urwid = None
 logger = logging.getLogger(__name__)

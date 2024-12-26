@@ -11,6 +11,6 @@ import src.quests
 import src.magic
 import src.menuFolder
 import src.helpers
-import src.StateFolder
+import src.cinematicsFolder
 import src.popups
 import src.popupFolder

@@ -13,18 +13,7 @@ import random
 
 import requests
 
-import src.StateFolder
-import src.StateFolder.death
-import src.canvas
-import src.characters
-import src.chats
-import src.cinematics
-import src.events
-import src.gamestate
-import src.interaction
-import src.popups
-import src.quests
-import src.rooms
+import src
 
 logger = logging.getLogger(__name__)
 phasesByName = None
@@ -1160,7 +1149,7 @@ class MainGame(BasicPhase):
         if not src.gamestate.gamestate.mainChar.dead:
             return
         else:
-            src.StateFolder.death.Death(extraParam)
+            src.cinematicsFolder.death.Death(extraParam)
 
     def kickoff(self):
         if self.activeStory["type"] == "story start":
@@ -3266,7 +3255,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
-        mainChar.addListener(src.StateFolder.death.Death,"died_pre")
+        mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain

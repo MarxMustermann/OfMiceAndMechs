@@ -285,8 +285,6 @@ class Character:
         rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
 
-
-        print(self.terrainInfo)
         return rawMap
 
     def applyNativeMeleeAttackEffects(self,target):
@@ -429,23 +427,17 @@ class Character:
     def getStrengthSelfEstimate(self,healthWeight=1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,movementSpeedWeight = 1,attackSpeedWeight = 1,specialAttackWeight = 10,totalWeight=0.009):
         weight = 0
         weight += self.health*healthWeight
-        # print("healthweight")
-        # print(self.health*healthWeight)
 
         baseDamage = self.baseDamage
         if self.weapon:
             baseDamage += self.weapon.baseDamage
         weight += baseDamage*damageWeight
-        # print("damageWeight")
-        # print(baseDamage*damageWeight)
 
         if self.hasSpecialAttacks:
             weight += specialAttackWeight
 
         if self.armor:
             weight += self.armor.getArmorValue("attacked")*armorWeight
-            # print("armorWeight")
-            # print(self.armor.getArmorValue("attacked")*armorWeight)
 
         numVialCharges = 0
         for item in self.inventory:
@@ -453,14 +445,8 @@ class Character:
                 continue
             numVialCharges += item.uses
         weight += numVialCharges*vialChargeWeight
-        # print("vial Weight")
-        # print(numVialCharges*vialChargeWeight)
         weight-= self.adjustedMovementSpeed* movementSpeedWeight
-        # print("MovementSpeed Weight")
-        # print(self.adjustedMovementSpeed* movementSpeedWeight)
         weight-= self.attackSpeed* attackSpeedWeight
-        # print("AttackSpeed Weight")
-        # print(self.attackSpeed* attackSpeedWeight)
 
         weight = weight*totalWeight
 

@@ -116,7 +116,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             if manaCrystalAvailable and not bloomAvailable:
                 if not terrain.alarm:
                     if character.inventory:
-                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True,reason="be able to pick up potion ingredients")
                         return ([quest],None)
                     quest = src.quests.questMap["FarmMold"](lifetime=1000)
                     return ([quest],None)
@@ -130,7 +130,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if character.inventory:
-            quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
+            quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True,reason="be able to collect as much items as possible")
             return ([quest],None)
 
         quest = src.quests.questMap["Adventure"]()

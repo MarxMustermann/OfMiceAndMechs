@@ -15,6 +15,7 @@ Be careful and don't step onto the triggerPlates (_~)
 press esc to close this menu press q to get more detailed information.
 """
 
-    def ConditionMet(self, params) -> bool:
+    def conditionMet(self, params) -> bool:
         return self.character.container.tag == "traproom"
+
 src.popups.popupsArray.append(EnterTrapRoom)

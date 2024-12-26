@@ -19,7 +19,7 @@ Use the quest menu to get more information how to beat this enemy.
 """])
         return text
 
-    def ConditionMet(self, params) -> bool:
+    def conditionMet(self, params) -> bool:
         return self.character.container.tag == "arena"
 
 

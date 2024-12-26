@@ -15,11 +15,11 @@ class Popup(ABC):
     @abstractmethod
     def text(self): ...
 
-    def ConditionMet(self,params) -> bool:
+    def conditionMet(self,params) -> bool:
         return True
 
     def onEvent(self,params = None):
-        if self.ConditionMet(params):
+        if self.conditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
             submenue = src.menuFolder.TextMenu.TextMenu(self.text())

@@ -1,5 +1,6 @@
-import src
 import random
+
+import src
 
 class Adventure(src.quests.MetaQuestSequence):
     type = "Adventure"

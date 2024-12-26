@@ -1,6 +1,5 @@
 import src
 
-
 class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
     type = "PermaMaxHealthPotion"
     description = "Increases max health permanently"

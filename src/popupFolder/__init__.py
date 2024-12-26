@@ -1,2 +1,2 @@
-import src.popupFolder.EnterTrapRoom
-import src.popupFolder.EnterArenaRoom
+import src.popupFolder.enterTrapRoom
+import src.popupFolder.enterArenaRoom

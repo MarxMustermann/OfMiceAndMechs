@@ -337,7 +337,7 @@ class Character:
             else:
                 function()
 
-    def triggerAutoMoveFixedTarget(self,extraParam):
+    def triggerAutoMoveFixedTileTarget(self,extraParam):
         extraParam["coordinate"] = extraParam["targetCoordinate"]
         self.triggerAutoMoveToTile(extraParam)
 

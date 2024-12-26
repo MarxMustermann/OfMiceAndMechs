@@ -628,15 +628,15 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["c"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
-                        "params":{"targetCoordinate":(7,7,0)},
+                        "method":"triggerAutoMoveFixedTileTarget",
+                        "params":{"coordinate":(7,7,0)},
                     },
                     "description":"move to center",
                 }
                 functionMap[(x,y)]["W"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(7,1,0)},
                     },
                     "description":"move to north crossing",
@@ -644,7 +644,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["A"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(1,7,0)},
                     },
                     "description":"move to west crossing",
@@ -652,7 +652,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["S"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(7,13,0)},
                     },
                     "description":"move to south crossing",
@@ -660,7 +660,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["D"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(13,7,0)},
                     },
                     "description":"move to east crossing",

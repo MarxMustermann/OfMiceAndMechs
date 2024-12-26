@@ -3,8 +3,8 @@ import src
 
 class PotionOfSpeed(src.items.itemMap["BuffPotion"]):
     type = "PotionOfSpeed"
-    description = "Increases movement and combat speed"
-    name = "Potion of speed"
+    description = "temporarily increases movement and combat speed"
+    name = "Potion of temporary speed"
 
     def getBuffsToAdd(self):
         return [
@@ -20,6 +20,6 @@ class PotionOfSpeed(src.items.itemMap["BuffPotion"]):
         super().__init__()
 
     def getLongInfo(self):
-        return f"This Potion increases your the time you need to move by {(1-self.speedUp)*100}%"
+        return f"This Potion decreases your the time you need to move by {(1-self.speedUp)*100}% for {self.duration} ticks"
 
 src.items.addType(PotionOfSpeed,potion=True)

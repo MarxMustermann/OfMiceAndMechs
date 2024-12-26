@@ -1,6 +1,6 @@
 import src
 
-class MessagesMenu(src.SubMenu.SubMenu):
+class MessagesMenu(src.subMenu.SubMenu):
     def render(self,char):
         if self.scrollIndex:
             return "\n".join(reversed(char.messages[-46-self.scrollIndex:-self.scrollIndex]))

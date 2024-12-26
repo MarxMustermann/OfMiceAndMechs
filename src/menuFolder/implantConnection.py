@@ -1,6 +1,6 @@
 import src
 
-class ImplantConnection(src.SubMenu.SubMenu):
+class ImplantConnection(src.subMenu.SubMenu):
     type = "ImplantConnection"
 
     def __init__(self, connectionTarget):

@@ -2,7 +2,7 @@ import src
 
 # bad code: should be abstracted
 # bad code: uses global functions to render
-class InventoryMenu(src.SubMenu.SubMenu):
+class InventoryMenu(src.subMenu.SubMenu):
     """
     shows and interacts with a characters inventory
     """

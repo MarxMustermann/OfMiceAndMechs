@@ -14,7 +14,7 @@ import src
 
 logger = logging.getLogger(__name__)
 
-class Chat(src.SubMenu.SubMenu):
+class Chat(src.subMenu.SubMenu):
     """
     the main class for chats
     """
@@ -307,7 +307,7 @@ Activate these, while having a full bottle in your inventory, but leave the full
             src.gamestate.gamestate.mainChar.addMessage(
                 "please refill your flask and use it to refill the growthtanks"
             )
-            src.menuFolder.SubMenu.SubMenue = None
+            src.menuFolder.subMenu.SubMenue = None
             self.set_text(self.persistentText)
             # remove chat option
             # bad code: this removal results in bugs if chats of the same type exist
@@ -388,7 +388,7 @@ class TutorialSpeechTest(Chat):
             # show fluffed up information
             self.persistentText = "indeed. There are some things that need to be done.\n\nFirst examine the room a bit and find your way around, but try not activate anything important.\n\nYour implant will store the orders given. When you press q you will get a list of your current orders.\nTry to get familiar with the implant, it is an important tool for keeping things in order.\n\n"
             src.gamestate.gamestate.mainChar.addMessage("press q to see your questlist")
-            src.menuFolder.SubMenu.SubMenue = None
+            src.menuFolder.subMenu.SubMenue = None
             self.set_text(self.persistentText)
 
             # remove chat option
@@ -539,7 +539,7 @@ class FurnaceChat(Chat):
 
                 # clear submenu
                 # bad code: direct state setting
-                src.menuFolder.SubMenu.SubMenue = None
+                src.menuFolder.subMenu.SubMenue = None
                 src.interaction.loop.set_alarm_in(
                     0.0, src.interaction.callShow_or_exit, "~"
                 )
@@ -734,7 +734,7 @@ for a brain.\n\n"""
 
 # bad code: story specific
 # obsolete: needs to be reintegrated
-class ReReport(src.SubMenu.SubMenu):
+class ReReport(src.subMenu.SubMenu):
     """
     a dialog for reentering the command chain
     """

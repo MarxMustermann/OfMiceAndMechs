@@ -3,7 +3,7 @@ import collections
 import src
 
 # bad code: this does nothing the Submenu doesn't do
-class ListActionMenu(src.SubMenu.SubMenu):
+class ListActionMenu(src.subMenu.SubMenu):
     """
     does a simple selection and terminates
     """

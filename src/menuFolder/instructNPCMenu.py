@@ -1,13 +1,13 @@
 import src
 
-class InstructSubordinatesMenu(src.SubMenu.SubMenu):
-    def __init__(self,npcs=None):
-        self.type = "InstructSubordinatesMenu"
+class InstructNPCMenu(src.subMenu.SubMenu):
+    def __init__(self,npc=None):
+        self.npc = npc
+        self.type = "InstructNPCMenu"
         self.subMenu = None
         self.instructionType = None
         self.dutyType = None
         self.commandType = None
-        self.addFront = True
         super().__init__()
 
     def handleKey(self, key, noRender=False, character = None):
@@ -43,15 +43,10 @@ class InstructSubordinatesMenu(src.SubMenu.SubMenu):
             if not self.commandType:
                 if not self.subMenu:
                     options = []
-                    options.append(("defendTile","defend tile"))
                     options.append(("attackNorth","attack north"))
                     options.append(("attackWest","attack west"))
                     options.append(("attackEast","attack east"))
                     options.append(("attackSouth","attack south"))
-                    options.append(("scavengeTile","scavenge tile"))
-                    options.append(("clearInventory","clear inventory"))
-                    options.append(("equip","equip"))
-                    options.append(("abortLast","abort last command"))
                     options.append(("stop","stop what you are doing"))
                     options.append(("continue","continue working"))
                     options.append(("wait","wait until further command"))
@@ -64,10 +59,6 @@ class InstructSubordinatesMenu(src.SubMenu.SubMenu):
                     self.subMenu = src.menuFolder.SelectionMenu.SelectionMenu("what command do you want to give?", options)
                     self.handleKey("~", noRender=noRender, character=character)
                     return False
-
-                if self.subMenu.origKey == "k":
-                    self.addFront = False
-
                 self.commandType = self.subMenu.selection
                 self.subMenu = None
 
@@ -86,11 +77,10 @@ class InstructSubordinatesMenu(src.SubMenu.SubMenu):
                 self.npc.runCommandString("*",clear=True)
                 return True
             if self.commandType == "beUseful":
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["BeUsefull"]()
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=self.addFront)
+                quest = src.quests.questMap["BeUsefull"]()
+                quest.autoSolve = True
                 self.subMenu = None
+                self.npc.assignQuest(quest,active=True)
                 return True
             if self.commandType == "dropAll":
                 self.npc.runCommandString("10l")
@@ -113,64 +103,13 @@ class InstructSubordinatesMenu(src.SubMenu.SubMenu):
                     self.subMenu = None
                     self.npc.assignQuest(quest,active=True)
                 return True
-            if self.commandType in ("defendTile",):
+            if self.commandType == "attackWest":
                 pos = character.getBigPosition()
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["SecureTile"](toSecure=pos,endWhenCleared=False)
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=self.addFront)
+                pos = (pos[0]-1,pos[1],0)
+                quest = src.quests.questMap["SecureTile"](toSecure=pos,endWhenCleared=True)
+                quest.autoSolve = True
                 self.subMenu = None
-
-            if self.commandType in ("abortLast",):
-                for npc in character.subordinates:
-                    if npc.quests:
-                        npc.quests[0].fail()
-                self.subMenu = None
-
-            if self.commandType in ("attackWest","attackEast","attackNorth","attackSouth"):
-                pos = character.getBigPosition()
-                if self.commandType == "attackWest":
-                    pos = (pos[0]-1,pos[1],0)
-                if self.commandType == "attackEast":
-                    pos = (pos[0]+1,pos[1],0)
-                if self.commandType == "attackNorth":
-                    pos = (pos[0],pos[1]-1,0)
-                if self.commandType == "attackSouth":
-                    pos = (pos[0],pos[1]+1,0)
-
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["SecureTile"](toSecure=pos,endWhenCleared=True)
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=self.addFront)
-
-                self.subMenu = None
-            if self.commandType in ("scavengeTile",):
-                pos = character.getBigPosition()
-
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["ScavengeTile"](targetPosition=pos)
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=self.addFront)
-
-                self.subMenu = None
-            if self.commandType in ("equip",):
-                pos = character.getBigPosition()
-
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["Equip"]()
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=True)
-
-                self.subMenu = None
-            if self.commandType in ("clearInventory",):
-                pos = character.getBigPosition()
-
-                for npc in character.subordinates:
-                    quest = src.quests.questMap["ClearInventory"]()
-                    quest.autoSolve = True
-                    npc.assignQuest(quest,active=True)
-
-                self.subMenu = None
+                self.npc.assignQuest(quest,active=True)
             if self.commandType in ("doDutyHere","doDuty"):
                 if not self.dutyType:
                     if not self.subMenu:

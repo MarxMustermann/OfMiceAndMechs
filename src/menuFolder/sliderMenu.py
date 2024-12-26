@@ -1,7 +1,7 @@
 import src
 
 
-class SliderMenu(src.SubMenu.SubMenu):
+class SliderMenu(src.subMenu.SubMenu):
     """
     menu to get a string input from the user
     """

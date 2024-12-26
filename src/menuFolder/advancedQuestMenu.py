@@ -2,7 +2,7 @@ import collections
 
 import src
 
-class AdvancedQuestMenu(src.SubMenu.SubMenu):
+class AdvancedQuestMenu(src.subMenu.SubMenu):
     """
     player interaction for delegating a quest
     """

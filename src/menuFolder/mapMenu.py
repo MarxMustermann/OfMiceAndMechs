@@ -1,6 +1,6 @@
 import src
 
-class MapMenu(src.SubMenu.SubMenu):
+class MapMenu(src.subMenu.SubMenu):
     """
     a menu for triggering actions from a map
     """

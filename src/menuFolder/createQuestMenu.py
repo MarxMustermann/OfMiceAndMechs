@@ -2,7 +2,7 @@ import collections
 
 import src
 
-class CreateQuestMenu(src.SubMenu.SubMenu):
+class CreateQuestMenu(src.subMenu.SubMenu):
     type = "CreateQuestMenu"
 
     def __init__(self, questType=None, assignTo=None, activeChar=None):

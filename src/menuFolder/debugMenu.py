@@ -2,7 +2,7 @@ import collections
 
 import src
 
-class DebugMenu(src.SubMenu.SubMenu):
+class DebugMenu(src.subMenu.SubMenu):
     """
     menu offering debug ability
     """

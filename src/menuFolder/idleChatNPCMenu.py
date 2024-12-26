@@ -1,6 +1,6 @@
 import src
 
-class IdleChatNPCMenu(src.SubMenu.SubMenu):
+class IdleChatNPCMenu(src.subMenu.SubMenu):
     def __init__(self,npc=None):
         self.npc = npc
         self.type = "IdleChatNPCMenu"

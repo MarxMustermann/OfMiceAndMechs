@@ -1,61 +1,44 @@
+import json
+
 import src
 
 # bad code: should be abstracted
 # bad code: uses global function to render
-class CombatInfoMenu(src.SubMenu.SubMenu):
+class StatusEffectMenu(src.subMenu.SubMenu):
     """
     menu to show the players attributes
     """
 
-    type = "CombatInfoMenu"
+    type = "StatusEffectMenu"
 
-    def __init__(self, char=None):
+    def __init__(self, char=None,cursor=0):
         self.char = char
+        self.cursor = cursor
         super().__init__()
 
     def render(self,char):
         if char.dead:
             return ""
 
-        text = ""
+        if not char.statusEffects:
+            text = "no status effects"
+        else:
+            text = []
+            if len(char.statusEffects) > 1:
+                text.append("""
+use w/s to select the status effect to show the details for.
 
-        text += "you: \n\n"
-        text += "name:        %s\n" % char.name
-        text += "health:      %s\n" % char.health
-        text += "exhaustion:  %s\n" % char.exhaustion
-        text += "timeTaken:   %f\n" % char.timeTaken
+""")
 
-        text += """
-
-nearby enemies:
-
-"""
-
-        enemies = char.getNearbyEnemies()
-        for enemy in enemies:
-            text += "-------------  \n"
-            text += "name:        %s\n" % enemy.name
-            text += "health:     %s\n" % enemy.health
-            text += "exhaustion:  %s\n" % enemy.exhaustion
-            timeTaken = enemy.timeTaken
-            if timeTaken > 1:
-                timeTaken -= 1
-            text += f"timeTaken:   {timeTaken:f}\n"
-
-        text += """
-
-subordinates:
-
-"""
-        for ally in char.subordinates:
-            text += "-------------  \n"
-            text += "name:        %s\n" % ally.name
-            text += "health:     %s\n" % ally.health
-            text += "exhaustion:  %s\n" % ally.exhaustion
-            timeTaken = ally.timeTaken
-            if timeTaken > 1:
-                timeTaken -= 1
-            text += f"timeTaken:   {timeTaken:f}\n"
+            index = 0
+            for statusEffect in char.statusEffects:
+                text.append(f"== {statusEffect.type} ({statusEffect.getShortCode()}) ==")
+                if index == self.cursor:
+                    text.append(f"\n\n")
+                    text.append(statusEffect.getDescription())
+                    text.append(f"\n")
+                text.append(f"\n")
+                index += 1
 
         return text
 
@@ -70,6 +53,18 @@ subordinates:
             returns True when done
         """
 
+        if key == "w":
+            self.cursor -= 1 
+        if self.cursor < 0:
+            self.cursor = len(character.statusEffects)-1
+
+        if key == "s":
+            self.cursor += 1 
+        if self.cursor >= len(character.statusEffects):
+            self.cursor = 0
+
+        if key == "esc":
+            return True
         # exit the submenu
         if key == "esc":
             return True

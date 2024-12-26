@@ -1,7 +1,7 @@
 import src
 
 # bad code: uses global function to render
-class HelpMenu(src.SubMenu.SubMenu):
+class HelpMenu(src.subMenu.SubMenu):
     """
     the help submenue
     """

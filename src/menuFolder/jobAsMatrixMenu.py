@@ -1,6 +1,6 @@
 import src
 
-class JobAsMatrixMenu(src.SubMenu.SubMenu):
+class JobAsMatrixMenu(src.subMenu.SubMenu):
     type = "JobAsMatrixMenu"
 
     def __init__(self,dutyArtwork):

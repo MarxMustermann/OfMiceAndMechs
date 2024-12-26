@@ -1,6 +1,6 @@
 import src
 
-class ViewNPCsMenu(src.SubMenu.SubMenu):
+class ViewNPCsMenu(src.subMenu.SubMenu):
     type = "ViewNPCsMenu"
 
     def __init__(self,personnelArtwork):

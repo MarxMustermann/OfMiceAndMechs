@@ -4,7 +4,7 @@ import src
 
 logger = logging.getLogger(__name__)
 
-class RoomMenu(src.SubMenu.SubMenu):
+class RoomMenu(src.subMenu.SubMenu):
     type = "RoomMenu"
 
     def __init__(self, room):

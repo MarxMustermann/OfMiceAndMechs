@@ -138,7 +138,7 @@ def Death(extraParam):
                     if src.gamestate.gamestate.difficulty == "difficult":
                         chosen_candidate.health = int(chosen_candidate.health/2)
                         chosen_candidate.maxHealth = int(chosen_candidate.maxHealth/2)
-                    chosen_candidate.addListener(src.StateFolder.death.Death,"died_pre")
+                    chosen_candidate.addListener(src.cinematicsFolder.death.Death,"died_pre")
                     chosen_candidate.autoExpandQuests = src.gamestate.gamestate.mainChar.autoExpandQuests
                     chosen_candidate.autoExpandQuests2 = src.gamestate.gamestate.mainChar.autoExpandQuests2
                     chosen_candidate.disableCommandsOnPlus = src.gamestate.gamestate.mainChar.disableCommandsOnPlus

@@ -176,8 +176,9 @@ Remove all items that are not bolted down."""
                 continue
             if item_pos[0] > 12:
                 continue
-            if item.name in ("scrap","metal bars"):
+            if item.type in ("Scrap","MetalBars"):
                 continue
+
             invalidStack = False
             for stackedItem in character.container.getItemByPosition(item.getPosition()):
                 if stackedItem == item:

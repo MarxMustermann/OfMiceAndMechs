@@ -7,15 +7,17 @@ class EnterArenaRoom(src.popups.Popup):
         return "entered room"
 
     def text(self):
-        return """Your implant interrupts:
+        text = []
+        text.extend(["""Your implant interrupts:
 
 You made it through the trap room into the base.
 
-There is an enemy (EE) in the base. Be careful.
+There is an enemy (""",(src.interaction.urwid.AttrSpec("#f00", "black"),"EE"),""") in the base. Be careful.
 
 Use the quest menu to get more information how to beat this enemy.
 
-"""
+"""])
+        return text
 
     def ConditionMet(self, params) -> bool:
         return self.character.container.tag == "arena"

@@ -32,7 +32,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         chitinPlates = []
         for item in character.inventory:
-            if not isinstance(item, src.items.itemMap["CitinPlates"]):
+            if not isinstance(item, src.items.itemMap["ChitinPlates"]):
                 continue
             chitinPlates.append(item)
 

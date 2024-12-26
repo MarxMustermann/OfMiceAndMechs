@@ -1,9 +1,9 @@
 import src
 
 
-class CitinPlates(src.items.Item):
-    type = "CitinPlates"
-    name = "Citin Plates"
+class ChitinPlates(src.items.Item):
+    type = "ChitinPlates"
+    name = "chitin plates"
     description = "item dropped from golems that can be used to improve armors"
     walkable = True
     bolted = False
@@ -16,4 +16,4 @@ class CitinPlates(src.items.Item):
         super().__init__(display=">")
 
 
-src.items.addType(CitinPlates)
+src.items.addType(ChitinPlates)

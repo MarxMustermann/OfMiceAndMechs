@@ -47,7 +47,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
 
     @staticmethod
     def lootTable():
-        return [(None, 1), (src.items.itemMap["CitinPlates"], 1)]
+        return [(None, 1), (src.items.itemMap["ChitinPlates"], 1)]
 
 
 src.characters.add_character(ShieldBug)

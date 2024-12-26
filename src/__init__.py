@@ -1,7 +1,7 @@
 import src.SubMenu
 import src.characters
-import src.characterFolder
 import src.monster
+import src.characterFolder
 import src.statusEffects
 import src.statusEffectFolder
 import src.items

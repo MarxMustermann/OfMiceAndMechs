@@ -264,7 +264,7 @@ Place the items in the correct input or storage stockpile.
                     self.fail(reason="no dropoff found")
                 return (None,None)
 
-            quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile")
+            quest = src.quests.questMap["GoToPosition"](reason="get to the stockpile and be able to fill it")
             quest.setParameters({"targetPosition":foundNeighbour[0]})
             return ([quest],None)
 

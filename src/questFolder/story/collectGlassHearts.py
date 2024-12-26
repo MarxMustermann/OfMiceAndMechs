@@ -177,7 +177,7 @@ You reach out to your implant and it answers:
 
 You were not accepted by the Throne as the supreme leader.
 As long as you don't control all Glasshearts you can't ascend.
-Fetch all GlassHearts and rule the world.
+Fetch all GlassHearts, to be able to take the throne and rule the world.
 
 The GlassHearts can be found in dungeons and are guarded.
 Those dungeons can be accessed using the GlassStatues in the Temple.

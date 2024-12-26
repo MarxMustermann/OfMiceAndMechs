@@ -1,0 +1,12 @@
+import src.characterFolder.Mouse
+import src.characterFolder.Golem
+import src.characterFolder.Mechanical_Crawler
+import src.characterFolder.Exploder
+import src.characterFolder.Ghoul
+import src.characterFolder.Maggot
+import src.characterFolder.Spider
+import src.characterFolder.Spiderling
+import src.characterFolder.Hunter
+import src.characterFolder.Snatcher
+import src.characterFolder.Insect
+import src.characterFolder.Shieldbug

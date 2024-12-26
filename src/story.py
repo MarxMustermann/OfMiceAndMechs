@@ -1112,7 +1112,7 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.mainChar = mainChar
         mainChar.addListener(self.mainCharacterDeath,"died")
         for popup in src.popups.popupsArray:
-            popup().AddToChar(mainChar)
+            popup().addToChar(mainChar)
 
         if self.difficulty == "tutorial":
             mainChar.maxHealth *= 2

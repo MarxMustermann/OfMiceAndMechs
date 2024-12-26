@@ -27,7 +27,7 @@ class Popup(ABC):
             self.character.macroState["submenue"] = submenue
             self.character.runCommandString("~",nativeKey=True)
 
-    def AddToChar(self, character):
+    def addToChar(self, character):
         self.character = character
         character.addListener(self.onEvent, self.subscribedEvent())
 

@@ -86,7 +86,7 @@ This will allow you to focus on other tasks.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "rewardSelection":
                 rewardIndex = 0

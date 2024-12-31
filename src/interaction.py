@@ -654,7 +654,7 @@ def handleActivitySelection(key,char):
                     "function": {
                         "container":char,
                         "method":"triggerAutoMoveFixedTileTarget",
-                        "params":{"coordinate":(7,7,0)},
+                        "params":{"targetCoordinate":(7,7,0)},
                     },
                     "description":"move to center",
                 }

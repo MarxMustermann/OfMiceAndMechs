@@ -557,6 +557,7 @@ press key to select action
 
 * w/s/a/d = move one tile north/south/west/east
 * m = move to tile
+* M = move to terrain
 * g = run guard mode for 10 ticks
 * h = get emergency heatlh
 """
@@ -596,6 +597,30 @@ def handleActivitySelection(key,char):
         char.startGuarding(1)
     if key == "h":
         char.getEmergencyHealth()
+    if key == "M":
+        terrain = char.getTerrain()
+
+        # render empty map
+        mapContent = char.renderZoneInfo()
+        functionMap = {}
+        extraText = "test"
+
+        submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition())
+        char.macroState["submenue"] = submenue
+        char.runCommandString("~",nativeKey=True)
+
+        for x in range(1,14):
+            for y in range(1,14):
+                functionMap[(x,y)] = {}
+                functionMap[(x,y)]["j"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveToTerrain",
+                        "params":{},
+                    },
+                    "description":"move to tile",
+                }
+
     if key == "m":
         terrain = char.getTerrain()
 

@@ -337,6 +337,27 @@ class Character:
             else:
                 function()
 
+    def triggerAutoMoveFixedTerrainTarget(self,extraParam):
+        extraParam["coordinate"] = extraParam["targetCoordinate"]
+        self.triggerAutoMoveToTerrain(extraParam)
+
+    def triggerAutoMoveToTerrain(self,extraParam):
+        """
+        makes the character auto move to a given tile
+        parameters:
+        extraParam["coordinate"]: the coordinate to go to
+        """
+        targetPosition = extraParam["coordinate"]
+        targetPosition = (targetPosition[0],targetPosition[1],0)
+
+        quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetPosition)
+        quest.selfAssigned = True
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+
+        self.quests.insert(0,quest)
+
     def triggerAutoMoveFixedTileTarget(self,extraParam):
         extraParam["coordinate"] = extraParam["targetCoordinate"]
         self.triggerAutoMoveToTile(extraParam)
@@ -350,7 +371,7 @@ class Character:
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,paranoid=True)
+        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition)
         quest.selfAssigned = True
         quest.autoSolve = True
         quest.assignToCharacter(self)

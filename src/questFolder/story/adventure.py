@@ -10,7 +10,6 @@ class Adventure(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
-        self.visited_terrain = []
         self.track = []
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
@@ -36,19 +35,17 @@ class Adventure(src.quests.MetaQuestSequence):
             if currentTerrain.tag == "shrine":
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
-        try:
-            self.visited_terrain
-        except:
-            self.visited_terrain = []
 
         candidates = []
+        extraWeight = {}
         for x in range(1,14):
             for y in range(1,14):
-                if (x, y, 0) in self.visited_terrain:
-                    continue
-                if (x, y, 0) in character.terrainInfo:
-                    info = character.terrainInfo[(x, y, 0)]
+                coordinate = (x, y, 0)
+                extraWeight[coordinate] = 0
+                if coordinate in character.terrainInfo:
+                    info = character.terrainInfo[coordinate]
                     if character.getFreeInventorySpace() < 2:
+                        extraWeight[coordinate] = 2
                         if not info.get("tag") == "shrine":
                             continue
                     else:
@@ -56,7 +53,7 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         if info.get("looted"):
                             continue
-                candidates.append((x, y, 0))
+                candidates.append(coordinate)
 
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
         if homeCoordinate in candidates:
@@ -64,10 +61,8 @@ class Adventure(src.quests.MetaQuestSequence):
 
         if len(candidates):
             random.shuffle(candidates)
-            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random())
+            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()-extraWeight[x])
             targetTerrain = candidates[0]
-            if not dryRun:
-                self.visited_terrain.append(targetTerrain)
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
             return ([quest], None)
 
@@ -76,8 +71,12 @@ class Adventure(src.quests.MetaQuestSequence):
         return (None, None)
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = f", to {self.reason}"
+        
         text = ["""
-Go out and adventure.
+Go out and adventure{reason}.
 
 track:
 
@@ -95,19 +94,6 @@ track:
                     rawMap[y].append("  ")
             rawMap[y].append("\n")
 
-        for (pos,info) in self.character.terrainInfo.items():
-            if info["tag"] == "nothingness":
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#550", "black"),".`")
-            elif info["tag"] == "shrine":
-                color = "#999"
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"\\/")
-            elif info["tag"] == "ruin":
-                color = "#666"
-                if info.get("looted"):
-                    color = "#550"
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"&%")
-            else:
-                rawMap[pos[1]][pos[0]] = info["tag"][:2]
         rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
 

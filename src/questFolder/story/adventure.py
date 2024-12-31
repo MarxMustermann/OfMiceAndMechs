@@ -31,11 +31,21 @@ class Adventure(src.quests.MetaQuestSequence):
         
         currentTerrain = character.getTerrain()
 
-        if character.getFreeInventorySpace() < 2:
-            if currentTerrain.tag == "shrine":
+        if currentTerrain.tag == "shrine":
+            # go home directly
+            if character.getFreeInventorySpace() < 2:
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
 
+        if currentTerrain.tag == "ruin":
+            if character.getFreeInventorySpace():
+                # loot on current terrain
+                info = character.terrainInfo[currentTerrain.getPosition()]
+                if not info.get("looted"):
+                    quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition())
+                    return ([quest], None)
+
+        # get all reasonable candidates to move to
         candidates = []
         extraWeight = {}
         for x in range(1,14):
@@ -55,6 +65,7 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                 candidates.append(coordinate)
 
+        # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
         if character.getFreeInventorySpace() < 2:
             candidates.append(homeCoordinate)
@@ -63,16 +74,22 @@ class Adventure(src.quests.MetaQuestSequence):
             if homeCoordinate in candidates:
                 candidates.remove(homeCoordinate)
 
-        if len(candidates):
-            random.shuffle(candidates)
-            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()-extraWeight[x])
-            targetTerrain = candidates[0]
-            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
-            return ([quest], None)
+        if not len(candidates):
+            if dryRun:
+                self.fail()
+            return (None, None)
 
-        if dryRun:
-            self.fail()
-        return (None, None)
+        # sort weighted with slight random
+        random.shuffle(candidates)
+        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()-extraWeight[x])
+        targetTerrain = candidates[0]
+
+        # move to the actual target terrain
+        if character.getFreeInventorySpace():
+            quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
+        else:
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
+        return ([quest], None)
 
     def generateTextDescription(self):
         reason = ""

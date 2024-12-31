@@ -799,6 +799,11 @@ class Terrain:
                 if char.faction == other.faction:
                     continue
 
+                if other not in self.characters:
+                    logger.error("bumped into ghost")
+                    self.charactersByTile.get((bigX, bigY, 0)).remove(other)
+                    continue
+
                 char.messages.append("*thump*")
                 char.collidedWith(other,actor=char)
                 other.collidedWith(char,actor=char)

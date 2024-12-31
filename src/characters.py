@@ -2556,6 +2556,10 @@ press any other key to attack normally"""
                 src.interaction.playSound("electroRoom","roomMusic",loop=True)
         """
 
+        if tag == "changedTerrain":
+            terrain = self.getTerrain()
+            self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
+
         # do nothing if nobody listens
         if tag not in self.listeners:
             return

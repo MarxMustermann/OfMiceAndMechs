@@ -56,8 +56,12 @@ class Adventure(src.quests.MetaQuestSequence):
                 candidates.append(coordinate)
 
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
-        if homeCoordinate in candidates:
-            candidates.remove(homeCoordinate)
+        if character.getFreeInventorySpace() < 2:
+            candidates.append(homeCoordinate)
+            extraWeight[coordinate] = 3
+        else:
+            if homeCoordinate in candidates:
+                candidates.remove(homeCoordinate)
 
         if len(candidates):
             random.shuffle(candidates)

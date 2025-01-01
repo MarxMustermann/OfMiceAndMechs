@@ -45,6 +45,29 @@ class Adventure(src.quests.MetaQuestSequence):
                     quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition())
                     return ([quest], None)
 
+        if character.searchInventory("Scrap"):
+            if not character.container.getItemByPosition(character.getPosition()):
+                index = 0
+                command = ""
+                while index < len(character.inventory):
+                    if character.inventory[-(1+index)].type != "Scrap":
+                        break
+                    index += 1
+                    command = "l"
+
+                if command:
+                    return (None, (command,"drop scrap"))
+
+                index = 0
+                command = ["i"]
+                for item in character.inventory:
+                    if item.type != "Scrap":
+                        command.append("s")
+                    else:
+                        command.append("l")
+                command.append("esc")
+                return (None, (command,"drop scrap"))
+
         # get all reasonable candidates to move to
         candidates = []
         extraWeight = {}

@@ -133,7 +133,6 @@ track:
         pos = terrain.getPosition()
         tag = terrain.tag
         self.track.append({"pos":pos,"tag":tag})
-        self.character.terrainInfo[pos] = {"tag":tag}
 
     def assignToCharacter(self, character):
         if self.character:

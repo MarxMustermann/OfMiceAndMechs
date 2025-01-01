@@ -2558,7 +2558,7 @@ press any other key to attack normally"""
 
         if tag == "changedTerrain":
             terrain = self.getTerrain()
-            if not terrain.getPosition() in self.terrainInfo:
+            if terrain.getPosition() not in self.terrainInfo:
                 self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
 
         # do nothing if nobody listens

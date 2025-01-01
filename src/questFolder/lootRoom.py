@@ -98,7 +98,7 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
-            if items[0].name in ("Scrap","MetalBars"):
+            if items[0].type in ("Scrap","MetalBars"):
                 continue
 
             foundOffset = offset

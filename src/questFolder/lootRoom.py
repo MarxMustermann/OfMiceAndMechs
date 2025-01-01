@@ -98,15 +98,15 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
-            if items[0].type in ("Scrap","MetalBars"):
-                continue
-
             foundOffset = offset
 
             foundItems = []
             for item in items:
                 if item.bolted:
                     break
+                if item.type in ("Scrap","MetalBars"):
+                    continue
+
                 foundItems.append(item)
             break
 

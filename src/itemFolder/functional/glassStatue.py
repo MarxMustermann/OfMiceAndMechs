@@ -220,6 +220,7 @@ class GlassStatue(src.items.Item):
         self.numTeleportsDone += 1
 
         character.changed("glass statue used",{})
+        character.changed("changedTerrain",{"character":character})
 
     def showInfo(self,character):
         character.addMessage(f"mana: {self.getTerrain().mana}\ncharges: {self.charges}")

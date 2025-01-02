@@ -98,15 +98,22 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
+            invalidStack = False
+            for stackedItem in character.container.getItemByPosition(checkPos):
+                if stackedItem == items[0]:
+                    break
+                if not stackedItem.bolted:
+                    continue
+                invalidStack = True
+            if invalidStack:
+                continue
+
             foundOffset = offset
 
             foundItems = []
             for item in items:
                 if item.bolted:
                     break
-                if item.type in ("Scrap","MetalBars"):
-                    continue
-
                 foundItems.append(item)
             break
 

@@ -98,6 +98,14 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
+            foundValuableItem = False
+            for item in items:
+                if item.type in ("Scrap","MetalBars"):
+                    continue
+                foundValuableItem = True
+            if not foundValuableItem:
+                continue
+
             invalidStack = False
             for stackedItem in character.container.getItemByPosition(checkPos):
                 if stackedItem == items[0]:

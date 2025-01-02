@@ -5737,7 +5737,7 @@ You """+"."*stageState["substep"]+"""
                     removeList = []
                     for character in room.characters+terrain.characters:
                         character.timeTaken -= 1
-                        advanceChar(character,render=False)
+                        advanceChar(character,render=False, pull_events = False)
 
                 if src.gamestate.gamestate.tick > 10470 and not stageState["endless"]:
                     stageState = None
@@ -6738,7 +6738,7 @@ def clearMessages(char):
 
 skipNextRender = False
 lastRender = None
-def advanceChar(char,render=True):
+def advanceChar(char,render=True, pull_events = True):
     global skipNextRender
 
     state = char.macroState
@@ -6748,7 +6748,7 @@ def advanceChar(char,render=True):
     global lastRender
 
     lastLoop = time.time()
-    if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1:
+    if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1 and render:
         renderGameDisplay()
         lastRender = time.time()
     while char.timeTaken < 1:
@@ -6769,7 +6769,7 @@ def advanceChar(char,render=True):
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
-            newInputs = getTcodEvents()
+            newInputs = getTcodEvents() if pull_events else None
 
             if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
                 skipNextRender = True
@@ -6836,7 +6836,7 @@ def advanceChar(char,render=True):
             char.runCommandString("+",nativeKey=True)
         else:
             if (char == src.gamestate.gamestate.mainChar):
-                if getTcodEvents():
+                if pull_events and getTcodEvents():
                     skipNextRender = False
             else:
                 char.timeTaken = 1

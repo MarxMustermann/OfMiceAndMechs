@@ -50,6 +50,19 @@ class QuestMenu(src.subMenu.SubMenu):
             self.sidebared = True
             return True
 
+        # reset broken cursors
+        baseList = self.char.quests
+        for index in self.questCursor:
+            if index >= len(baseList):
+                self.questCursor = [0]
+                break
+            quest = baseList[index]
+            try:
+                baseList = quest.subQuests
+            except:
+                self.questCursor = [0]
+                break
+
         # move the marker that marks the selected quest
         if key == "w" and self.questCursor[0] > 0:
             self.questCursor[0] -= 1
@@ -179,6 +192,7 @@ class QuestMenu(src.subMenu.SubMenu):
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), self.persistentText))
 
         return False
+
     # bad code: the asList and questIndex parameters are out of place
     @staticmethod
     def renderQuests(maxQuests=0, char=None, asList=False, questCursor=None,sidebared=False):

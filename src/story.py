@@ -3054,10 +3054,12 @@ but they are likely to explode when disturbed.
 
             # handle invalid state (by crashing and burning, lol)
             if not candidatePositions:
-                1/0
+                break
 
             # schedule next room to add
             nextMainRoomPos = random.choice(candidatePositions)
+            if nextMainRoomPos[0] in (1,13,) or nextMainRoomPos[1] in (1,13,):
+                break
 
         # add entry room
         attachmentRoom = rooms[-1]

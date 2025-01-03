@@ -76,6 +76,19 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
+            # ensure traprooms don't fill up
+            for room in terrain.rooms:
+                if not room.tag == "traproom":
+                    continue
+                numItems = 0
+                for item in room.itemsOnFloor:
+                    if item.bolted == False:
+                        numItems += 1
+                if numItems > 4:
+                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    return ([quest],None)
+
+            # farm for blooms
             newQuest = src.quests.questMap["FarmMold"](tryHard=True)
             self.addQuest(newQuest)
             self.startWatching(newQuest,self.handleQuestFailure,"failed")

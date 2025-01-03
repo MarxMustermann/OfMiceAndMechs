@@ -1,8 +1,6 @@
 import random
 
 import src
-import src.characters
-
 
 # bad code: there is very specific code in here, so it it stopped to be a generic class
 class Monster(src.characters.Character):

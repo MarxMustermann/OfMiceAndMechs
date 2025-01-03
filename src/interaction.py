@@ -3431,6 +3431,11 @@ def keyboardListener(key, targetCharacter=None):
                 continue
             quest.autoSolve = False
 
+        for quest in src.gamestate.gamestate.mainChar.quests:
+            if not quest.autoSolve:
+                continue
+            quest.autoSolve = False
+
         char.guarding = 0
         char.hasOwnAction = False
         char.runCommandString("~")

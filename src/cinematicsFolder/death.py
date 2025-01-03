@@ -19,6 +19,13 @@ def in_dest(source, target, radius):
 
 def Death(extraParam):
     character = extraParam["character"]
+    print(character.macroState)
+
+    runStar = False
+    for key in character.macroState["commandKeyQueue"]:
+        if key[0] == "*":
+            runStar = True
+    
     reason = extraParam["reason"]
     killer = extraParam["killer"]
     pre = False
@@ -104,8 +111,14 @@ def Death(extraParam):
 
     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
     while 1:
-        for event in tcod.event.get():
-            if isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN:
+        events = list(tcod.event.get())
+        while events or runStar:
+            if events:
+                event = events[0]
+            else:
+                event = None
+
+            if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
                 src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console,19, 6, False)
                 src.helpers.draw_frame_text(new_console, width, height, text, x, y)
@@ -165,6 +178,9 @@ def Death(extraParam):
                     src.gamestate.gamestate.story.reachImplant()
                     src.gamestate.gamestate.story.activeStory["mainChar"] = chosen_candidate
                     chosen_candidate.rank = 6
+
+                    if runStar:
+                        chosen_candidate.runCommandString("*")
 
                     chosen_candidate.addListener(src.gamestate.gamestate.story.enteredRoom,"entered room")
                     chosen_candidate.addListener(src.gamestate.gamestate.story.itemPickedUp,"itemPickedUp")

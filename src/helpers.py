@@ -30,10 +30,10 @@ def draw_frame_text(con, width, height, t, x, y):
 
     con.rgb[x + width+1, y - 2] = ord("+"), (255, 255, 255), (0, 0, 0)
     con.rgb[x + width+1, y - 3] = ord("|"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x + width + 1, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x + width+2, y - 2] = ord("-"), (255, 255, 255), (0, 0, 0)
 
     con.rgb[x - 2, y + height + 1] = ord("+"), (255, 255, 255), (0, 0, 0)
-    con.rgb[x - 2, y + height + 1] = ord("|"), (255, 255, 255), (0, 0, 0)
+    con.rgb[x - 2, y + height + 2] = ord("|"), (255, 255, 255), (0, 0, 0)
     con.rgb[x - 3, y + height + 1] = ord("-"), (255, 255, 255), (0, 0, 0)
 
     con.rgb[x + width + 1, y + height + 1] = ord("+"), (255, 255, 255), (0, 0, 0)

@@ -97,7 +97,6 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                         if item.bolted == False:
                             numItems += 1
                     if numItems > 4:
-                        print(room.getPosition())
                         quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
                         return ([quest],None)
 

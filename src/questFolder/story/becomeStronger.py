@@ -129,10 +129,24 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["Heal"]()
             return ([quest],None)
 
+        # ensure traprooms don't fill up
+        for room in terrain.rooms:
+            if not room.tag == "traproom":
+                continue
+            numItems = 0
+            for item in room.itemsOnFloor:
+                if item.bolted == False:
+                    numItems += 1
+            if numItems > 4:
+                quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                return ([quest],None)
+
+        # ensure to have free inventory space
         if character.inventory:
             quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True,reason="be able to collect as much items as possible")
             return ([quest],None)
 
+        # fetch new valuable items
         quest = src.quests.questMap["Adventure"]()
         return ([quest],None)
 

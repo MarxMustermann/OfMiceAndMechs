@@ -11,10 +11,14 @@ class Vanish(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
+        if not character:
+            return (None,None)
+
         if character.container:
             character.container.removeCharacter(character)
             self.postHandler()
             return (None,None)
+
         return (None,None)
 
 

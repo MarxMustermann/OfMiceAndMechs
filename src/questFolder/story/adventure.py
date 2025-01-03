@@ -108,7 +108,7 @@ class Adventure(src.quests.MetaQuestSequence):
         targetTerrain = candidates[0]
 
         # move to the actual target terrain
-        if character.getFreeInventorySpace():
+        if character.getFreeInventorySpace() and (targetTerrain != homeCoordinate):
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
         else:
             quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)

@@ -88,6 +88,19 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                     if item.charges:
                         hasDispenserCharges += 1
 
+            if npcCount < 2:
+                for room in terrain.rooms:
+                    if not room.tag == "traproom":
+                        continue
+                    numItems = 0
+                    for item in room.itemsOnFloor:
+                        if item.bolted == False:
+                            numItems += 1
+                    if numItems > 4:
+                        print(room.getPosition())
+                        quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                        return ([quest],None)
+
             if npcCount < 2 or hasDispenserCharges:
                 quest = src.quests.questMap["SpawnClone"]()
                 return ([quest],None)

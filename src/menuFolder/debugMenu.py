@@ -14,8 +14,8 @@ class DebugMenu(src.subMenu.SubMenu):
         super().__init__()
 
     def handleKey(self, key, noRender=False, character=None):
-        if key in ("w", "s"):
-            self.index += 1 if key == "s" else -1
+        if key in ("w", "s","up","down"):
+            self.index += 1 if key in ("s","down") else -1
             self.index = src.helpers.clamp(self.index, 0, len(self.debug_options) - 1)
 
         change_event = key in ("enter", "j")

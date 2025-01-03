@@ -53,12 +53,12 @@ use w/s to select the status effect to show the details for.
             returns True when done
         """
 
-        if key == "w":
+        if key in ("w","up"):
             self.cursor -= 1 
         if self.cursor < 0:
             self.cursor = len(character.statusEffects)-1
 
-        if key == "s":
+        if key in ("s","down"):
             self.cursor += 1 
         if self.cursor >= len(character.statusEffects):
             self.cursor = 0

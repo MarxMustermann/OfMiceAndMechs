@@ -16,10 +16,10 @@ class SettingMenu(src.subMenu.SubMenu):
                 json.dump(src.interaction.settings, f)
             return True
         change_event = False
-        if key in ("a", "d"):
+        if key in ("a", "d","left","right"):
             change_event = True
-        if key in ("w", "s"):
-            self.index += 1 if key == "s" else -1
+        if key in ("w", "s","up","down"):
+            self.index += 1 if key in ("s","down") else -1
             self.index = src.helpers.clamp(self.index, 0, len(self.setting_options)-1)
 
         # show info

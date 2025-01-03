@@ -112,9 +112,9 @@ class InventoryMenu(src.subMenu.SubMenu):
                 return False
 
             # handle cursor movement
-            if key == "w":
+            if key in ("w","up"):
                 self.cursor -= 1
-            if key == "s":
+            if key in ("s","down"):
                 self.cursor += 1
 
             # handle out of bounds cursor

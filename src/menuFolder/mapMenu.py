@@ -42,13 +42,13 @@ class MapMenu(src.subMenu.SubMenu):
             self.callIndirect(mappedFunctions[key]["function"],{"coordinate":self.cursor})
 
         # exit the submenu
-        if key in ("w",) and self.cursor[1] > 1:
+        if key in ("w","up")  and self.cursor[1] > 1:
             self.cursor = (self.cursor[0],self.cursor[1]-1)
-        if key in ("s",) and self.cursor[1] < 13:
+        if key in ("s","down") and self.cursor[1] < 13:
             self.cursor = (self.cursor[0],self.cursor[1]+1)
-        if key in ("a",) and self.cursor[0] > 1:
+        if key in ("a","left") and self.cursor[0] > 1:
             self.cursor = (self.cursor[0]-1,self.cursor[1])
-        if key in ("d",) and self.cursor[0] < 13:
+        if key in ("d","right") and self.cursor[0] < 13:
             self.cursor = (self.cursor[0]+1,self.cursor[1])
 
         if closeMenu or key in (

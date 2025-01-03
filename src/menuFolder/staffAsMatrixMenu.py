@@ -27,13 +27,13 @@ class StaffAsMatrixMenu(src.subMenu.SubMenu):
 
         text = ["press wasd to move cursor\npress j to increase\npress k to decrease\n"]
 
-        if key in ("w",) and self.index[1] > 0:
+        if key in ("w","up") and self.index[1] > 0:
             self.index[1] -= 1
-        if key in ("s",) and self.index[1] < len(self.roomTypes)-1:
+        if key in ("s","down") and self.index[1] < len(self.roomTypes)-1:
             self.index[1] += 1
-        if key in ("a",) and self.index[0] > 0:
+        if key in ("a","left") and self.index[0] > 0:
             self.index[0] -= 1
-        if key in ("d",):
+        if key in ("d","right"):
             self.index[0] += 1
 
         if key in ("j",):

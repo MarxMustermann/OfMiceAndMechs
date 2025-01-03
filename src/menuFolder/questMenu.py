@@ -64,11 +64,11 @@ class QuestMenu(src.subMenu.SubMenu):
                 break
 
         # move the marker that marks the selected quest
-        if key == "w" and self.questCursor[0] > 0:
+        if key in ("w","up") and self.questCursor[0] > 0:
             self.questCursor[0] -= 1
-        if key == "s" and self.questCursor[0] < len(character.quests)-1:
+        if key in ("s","down") and self.questCursor[0] < len(character.quests)-1:
             self.questCursor[0] += 1
-        if key == "d":
+        if key in ("d","right"):
             baseList = self.char.quests
             failed = False
             for index in self.questCursor:
@@ -82,7 +82,7 @@ class QuestMenu(src.subMenu.SubMenu):
                     failed = True
             if not failed:
                 self.questCursor.append(0)
-        if key == "a" and len(self.questCursor) > 1:
+        if key in ("a","left") and len(self.questCursor) > 1:
             self.questCursor.pop()
 
         # make the selected quest active

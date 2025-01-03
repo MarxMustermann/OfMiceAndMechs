@@ -228,6 +228,8 @@ class QuestMenu(src.subMenu.SubMenu):
             if not sidebared:
                 baseList = char.quests
                 for index in questCursor:
+                    if index >= len(baseList):
+                        index = 0
                     quest = baseList[index]
                     try:
                         baseList = quest.subQuests

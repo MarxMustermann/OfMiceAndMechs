@@ -3866,6 +3866,10 @@ def getTcodEvents():
                     translatedKey = "right"
                 if key == tcod.event.KeySym.LEFT:
                     translatedKey = "left"
+                if key == tcod.event.KeySym.UP:
+                    translatedKey = "up"
+                if key == tcod.event.KeySym.DOWN:
+                    translatedKey = "down"
                 if translatedKey is None:
                     continue
 

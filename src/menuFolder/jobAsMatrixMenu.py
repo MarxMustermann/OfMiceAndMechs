@@ -45,13 +45,13 @@ class JobAsMatrixMenu(src.subMenu.SubMenu):
         if key == "C":
             for npc in npcs:
                 npc.duties = []
-        if key == "w" and not self.index[0] < 1:
+        if key in ("w","up") and not self.index[0] < 1:
             self.index[0] -= 1
-        if key == "s":
+        if key in ("s","down"):
             self.index[0] += 1
-        if key == "a" and not self.index[1] < 1:
+        if key in ("a","left") and not self.index[1] < 1:
             self.index[1] -= 1
-        if key == "d" and not self.index[1] > len(duties)-2:
+        if key in ("d","right") and not self.index[1] > len(duties)-2:
             self.index[1] += 1
         if key in ("j","k","l","c"):
             rowCounter = 0

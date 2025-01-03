@@ -36,14 +36,14 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
         if key in (".",):
             character.timeTaken += 1
 
-        if key in ("w","a",):
+        if key in ("w","a","up","left"):
             if self.index > 0:
                 self.index -= 1
             else:
                 self.index = len(characters)-1
             self.lastSelectedCharacter = None
 
-        if key in ("s","d"):
+        if key in ("s","d","down","right"):
             if self.index < len(characters)-1:
                 self.index += 1
             else:

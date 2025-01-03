@@ -32,13 +32,13 @@ class RoomDutyMenu(src.subMenu.SubMenu):
         """
 
         # exit the submenu
-        if key in ("w",) and self.index[1] > 0:
+        if key in ("w","up") and self.index[1] > 0:
             self.index = (self.index[0],self.index[1]-1)
-        if key in ("s",) and self.index[1] < len(self.room.duties)-1:
+        if key in ("s","down") and self.index[1] < len(self.room.duties)-1:
             self.index = (self.index[0],self.index[1]+1)
-        if key in ("a",) and self.index[0] > 0:
+        if key in ("a","left") and self.index[0] > 0:
             self.index = (self.index[0]-1,self.index[1])
-        if key in ("d",) and self.index[0] < len(self.room.staff)-1:
+        if key in ("d","right") and self.index[0] < len(self.room.staff)-1:
             self.index = (self.index[0]+1,self.index[1])
 
         if key in ("j","enter"):

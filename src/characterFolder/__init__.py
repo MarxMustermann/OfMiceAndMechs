@@ -10,3 +10,4 @@ import src.characterFolder.hunter
 import src.characterFolder.snatcher
 import src.characterFolder.insect
 import src.characterFolder.shieldbug
+import src.characterFolder.spectre

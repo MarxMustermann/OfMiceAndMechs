@@ -110,6 +110,10 @@ Press d to move the cursor and show the subquests description.
         if not character:
             return
 
+        if character.getNearbyEnemies():
+            self.fail("enemies nearby")
+            return True
+
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):

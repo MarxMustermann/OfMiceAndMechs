@@ -408,7 +408,7 @@ class Item:
 
         return [self.__vanillaPickUp ,self.pickUpNonWalkable]
 
-    def degrade(self):
+    def degrade(self,multiplier=1,character=None):
         return
 
     def pickUp(self, character):

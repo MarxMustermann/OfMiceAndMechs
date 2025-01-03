@@ -174,7 +174,13 @@ def Death(extraParam):
                     return
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()
-            if isinstance(event, tcod.event.WindowEvent) and event.type == "WINDOWCLOSE":
-                raise SystemExit()
+            if isinstance(event, tcod.event.WindowEvent):
+                match event.type:
+                    case "WINDOWCLOSE":
+                        raise SystemExit()
+                    case "WindowHidden":
+                        pass
+                    case _:
+                        src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
         src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
         time.sleep(0.2)

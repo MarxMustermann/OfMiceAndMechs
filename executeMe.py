@@ -223,6 +223,7 @@ if __name__ == '__main__':
                                             },
                                         )
                                         print(res)
+                                        print(res.text)
                                         diff = time.time() - t
                                         if diff < 2:
                                             time.sleep(diff)

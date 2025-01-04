@@ -64,6 +64,18 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["Pray"](targetPosition=foundStatue.getPosition(),targetPositionBig=foundStatue.getBigPosition(),shrine=False)
             return ([quest],None)
 
+        # clear any input stockpiles with wrong content
+        for checkRoom in character.getTerrain().rooms:
+            glassStatues = checkRoom.getItemsByType("GlassStatue")
+            if not glassStatues:
+                continue
+
+            for inputSlot in checkRoom.inputSlots:
+                for item in checkRoom.getItemByPosition(inputSlot[0]):
+                    if item.type != inputSlot[1]:
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),pickUpBolted=True)
+                        return ([quest],None)
+
         # saccrifice from inventory if possible
         for checkRoom in character.getTerrain().rooms:
             glassStatues = checkRoom.getItemsByType("GlassStatue")

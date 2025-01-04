@@ -1,5 +1,6 @@
-import src
 import random
+
+import src
 
 class Adventure(src.quests.MetaQuestSequence):
     type = "Adventure"
@@ -9,7 +10,6 @@ class Adventure(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator,lifetime=lifetime)
         self.metaDescription = description
         self.reason = reason
-        self.visited_terrain = []
         self.track = []
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
@@ -31,23 +31,54 @@ class Adventure(src.quests.MetaQuestSequence):
         
         currentTerrain = character.getTerrain()
 
-        if character.getFreeInventorySpace() < 2:
-            if currentTerrain.tag == "shrine":
+        if currentTerrain.tag == "shrine":
+            # go home directly
+            if character.getFreeInventorySpace() < 2:
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
-        try:
-            self.visited_terrain
-        except:
-            self.visited_terrain = []
 
+        if currentTerrain.tag == "ruin":
+            if character.getFreeInventorySpace():
+                # loot on current terrain
+                info = character.terrainInfo[currentTerrain.getPosition()]
+                if not info.get("looted"):
+                    quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=currentTerrain.getPosition())
+                    return ([quest], None)
+
+        if character.searchInventory("Scrap"):
+            if not character.container.getItemByPosition(character.getPosition()):
+                index = 0
+                command = ""
+                while index < len(character.inventory):
+                    if character.inventory[-(1+index)].type != "Scrap":
+                        break
+                    index += 1
+                    command = "l"
+
+                if command:
+                    return (None, (command,"drop scrap"))
+
+                index = 0
+                command = ["i"]
+                for item in character.inventory:
+                    if item.type != "Scrap":
+                        command.append("s")
+                    else:
+                        command.append("l")
+                command.append("esc")
+                return (None, (command,"drop scrap"))
+
+        # get all reasonable candidates to move to
         candidates = []
+        extraWeight = {}
         for x in range(1,14):
             for y in range(1,14):
-                if (x, y, 0) in self.visited_terrain:
-                    continue
-                if (x, y, 0) in character.terrainInfo:
-                    info = character.terrainInfo[(x, y, 0)]
+                coordinate = (x, y, 0)
+                extraWeight[coordinate] = 0
+                if coordinate in character.terrainInfo:
+                    info = character.terrainInfo[coordinate]
                     if character.getFreeInventorySpace() < 2:
+                        extraWeight[coordinate] = 2
                         if not info.get("tag") == "shrine":
                             continue
                     else:
@@ -55,28 +86,41 @@ class Adventure(src.quests.MetaQuestSequence):
                             continue
                         if info.get("looted"):
                             continue
-                candidates.append((x, y, 0))
+                candidates.append(coordinate)
 
+        # do special handling of the characters home
         homeCoordinate = (character.registers["HOMETx"], character.registers["HOMETy"], 0)
-        if homeCoordinate in candidates:
-            candidates.remove(homeCoordinate)
+        if character.getFreeInventorySpace() < 2:
+            candidates.append(homeCoordinate)
+            extraWeight[coordinate] = 3
+        else:
+            if homeCoordinate in candidates:
+                candidates.remove(homeCoordinate)
 
-        if len(candidates):
-            random.shuffle(candidates)
-            candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random())
-            targetTerrain = candidates[0]
-            if not dryRun:
-                self.visited_terrain.append(targetTerrain)
+        if not len(candidates):
+            if dryRun:
+                self.fail()
+            return (None, None)
+
+        # sort weighted with slight random
+        random.shuffle(candidates)
+        candidates.sort(key=lambda x: src.helpers.distance_between_points(character.getTerrainPosition(), x)+random.random()-extraWeight[x])
+        targetTerrain = candidates[0]
+
+        # move to the actual target terrain
+        if character.getFreeInventorySpace() and (targetTerrain != homeCoordinate):
             quest = src.quests.questMap["AdventureOnTerrain"](targetTerrain=targetTerrain)
-            return ([quest], None)
-
-        if dryRun:
-            self.fail()
-        return (None, None)
+        else:
+            quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetTerrain)
+        return ([quest], None)
 
     def generateTextDescription(self):
+        reason = ""
+        if self.reason:
+            reason = f", to {self.reason}"
+        
         text = ["""
-Go out and adventure.
+Go out and adventure{reason}.
 
 track:
 
@@ -94,19 +138,6 @@ track:
                     rawMap[y].append("  ")
             rawMap[y].append("\n")
 
-        for (pos,info) in self.character.terrainInfo.items():
-            if info["tag"] == "nothingness":
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#550", "black"),".`")
-            elif info["tag"] == "shrine":
-                color = "#999"
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"\\/")
-            elif info["tag"] == "ruin":
-                color = "#666"
-                if info.get("looted"):
-                    color = "#550"
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"&%")
-            else:
-                rawMap[pos[1]][pos[0]] = info["tag"][:2]
         rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
 
@@ -125,7 +156,6 @@ track:
         pos = terrain.getPosition()
         tag = terrain.tag
         self.track.append({"pos":pos,"tag":tag})
-        self.character.terrainInfo[pos] = {"tag":tag}
 
     def assignToCharacter(self, character):
         if self.character:

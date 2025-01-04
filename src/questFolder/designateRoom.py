@@ -61,7 +61,7 @@ Use the CityPlaner to designate the room.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.MapMenu.MapMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             command = ""
             if submenue.cursor[0] > self.roomPosition[0]:
@@ -93,7 +93,7 @@ Use the CityPlaner to designate the room.
                 command += "x"
                 return (None,(command,"undesignate room"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.InputMenu.InputMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.inputMenu.InputMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.text == "":
                 return (None,(list(self.roomTag),"enter the rooms tag"))
@@ -112,7 +112,7 @@ Use the CityPlaner to designate the room.
             if correctIndex < len(self.roomTag):
                 return (None,((list(self.roomTag[correctIndex:])),"enter the room tag"))
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             rewardIndex = 0
             if rewardIndex == 0:

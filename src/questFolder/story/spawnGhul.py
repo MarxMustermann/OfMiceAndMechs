@@ -118,7 +118,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                     continue
                 
                 if not character.getFreeInventorySpace():
-                    quest = src.quests.questMap["CliearInventory"](returnToTile=False,tryHard=True)
+                    quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
                     return ([quest],None)
                 quest = src.quests.questMap["CleanSpace"](description="grab enemy remains", targetPositionBig=room.getPosition(), targetPosition=corpse.getPosition(), reason="have a corpse to reanimate", abortOnfullInventory=True)
                 return ([quest],None)

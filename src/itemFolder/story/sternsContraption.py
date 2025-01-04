@@ -120,7 +120,8 @@ class SternsContraption(src.items.Item):
 
             if self.meltdownLevel > 4:
                 for character in self.container.characters[:]:
-                    character.die(reason="explosion")
+                    if not character.dead:
+                        character.die(reason="you died from explosion")
 
             self.container.addAnimation(self.getPosition(),"smoke",2,{})
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})

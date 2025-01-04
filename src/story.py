@@ -13,18 +13,7 @@ import random
 
 import requests
 
-import src.StateFolder
-import src.StateFolder.death
-import src.canvas
-import src.characters
-import src.chats
-import src.cinematics
-import src.events
-import src.gamestate
-import src.interaction
-import src.popups
-import src.quests
-import src.rooms
+import src
 
 logger = logging.getLogger(__name__)
 phasesByName = None
@@ -222,12 +211,12 @@ class PrefabDesign(BasicPhase):
         with open("gamestate/globalInfo.json", "w") as globalInfoFile:
             json.dump(rawState,globalInfoFile)
 
-        submenu = src.menuFolder.TextMenu.TextMenu("""
+        submenu = src.menuFolder.textMenu.TextMenu("""
 the floorplan is available in basebuilder mode and main game now""")
 
     def askAction(self):
         options = [("generateFloorPlan", "generate floor plan"), ("simulateUsage", "simulate usage"), ("submitFloorPlan", "submit floor plan"), ("addFloorPlan", "add floor plan to loadable prefabs"),("donateFloorPlan", "donate floor plan")]
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options,
         )
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -252,7 +241,7 @@ the floorplan is available in basebuilder mode and main game now""")
 
     def donateFloorPlan(self):
         options = [("yes", "Yes"), ("no", "No")]
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "Do you want to donate the room?\n\nSelect \"Yes\" to make the rooms design public domain and upload the room.\nThis will require an internet connection", options,
             targetParamName="upload",
         )
@@ -679,7 +668,7 @@ the floorplan is available in basebuilder mode and main game now""")
         self.maintananceLoop()
 
         ticksPerBar = 15000/self.stats["current"]["15000"]["produced"]
-        submenu = src.menuFolder.TextMenu.TextMenu(f"""
+        submenu = src.menuFolder.textMenu.TextMenu(f"""
 your room produces a MetalBar every {ticksPerBar} ticks on average.""")
 
         src.gamestate.gamestate.mainChar.macroState["submenue"] = submenu
@@ -1112,7 +1101,7 @@ class MainGame(BasicPhase):
         src.gamestate.gamestate.mainChar = mainChar
         mainChar.addListener(self.mainCharacterDeath,"died")
         for popup in src.popups.popupsArray:
-            popup().AddToChar(mainChar)
+            popup().addToChar(mainChar)
 
         if self.difficulty == "tutorial":
             mainChar.maxHealth *= 2
@@ -1125,11 +1114,11 @@ class MainGame(BasicPhase):
             mainChar.health = int(mainChar.health*0.5)
 
         if not self.difficulty == "tutorial":
-            questMenu = src.menuFolder.QuestMenu.QuestMenu(mainChar)
+            questMenu = src.menuFolder.questMenu.QuestMenu(mainChar)
             questMenu.sidebared = True
             mainChar.rememberedMenu.append(questMenu)
 
-        messagesMenu = src.menuFolder.MessagesMenu.MessagesMenu(mainChar)
+        messagesMenu = src.menuFolder.messagesMenu.MessagesMenu(mainChar)
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests2 = True
@@ -1160,7 +1149,7 @@ class MainGame(BasicPhase):
         if not src.gamestate.gamestate.mainChar.dead:
             return
         else:
-            src.StateFolder.death.Death(extraParam)
+            src.cinematicsFolder.death.Death(extraParam)
 
     def kickoff(self):
         if self.activeStory["type"] == "story start":
@@ -1203,7 +1192,7 @@ Then go and claim their heart.
 You should start with the GlassStatue on the top right.
 That GlassStatue leads to the next easiest dungeon.
 """
-                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1235,7 +1224,7 @@ Use that to spawn a NPC. That is pretty important actually.
 Use the leftmost Shrine (\\/) to wish for a NPC.
 What the NPC does does not matter on easy.
 """
-                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1259,7 +1248,7 @@ On easy this means that you collected all GlassHearts.
 Now there is only one step left to do.
 Use the Throne (TT) in the middle of the Temple to win the game.
 """
-                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1282,7 +1271,7 @@ You claimed all GlassHearts.
 
 And when you are done then try medium difficulty, much more will be explained there.
 """
-                submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1312,7 +1301,7 @@ Bring the GlassHeart to your temple.
 Use the GlassStatue marked as (kk) to claim the GlassHeart as yours.
 When the GlassHeart is properly set it will show as KK.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1342,7 +1331,7 @@ To get basic production active you need the following NPCs:
 a resource gatherer
 a scrap hammerer
 a metal worker"""
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1369,7 +1358,7 @@ Now return to your base to put the GlassHeart to use.
 
 To return back to the base use the Shrine (\\/).
 Select the "teleport home" option to get back to base."""
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1393,7 +1382,7 @@ Until you bring set it into a GlassStatue again you are cursed.
 
 Your movement speed is halfed, so running from enemies is much harder.
 Bring the GlassHeart back to your base to lift that curse."""
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1420,7 +1409,7 @@ For this you have to have a healing item like the Vial in you inventory.
 
 The less health you have the stronger the Vials healing effect.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1449,7 +1438,7 @@ The GooFlask is destroyed in the progress though.
 
 So bring it with you to be able to spawn one NPC cheaper.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
     """)
@@ -1484,7 +1473,7 @@ Fight the enemies by bumping into them.
 
 There are more complex fighting systems,
 but you won't need them on easy difficulty."""
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1513,7 +1502,7 @@ This room contains LandMines.
 Active LandMines are shown as red "_~".
 
 Try not to step onto them and avoid standing next to them."""
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1547,7 +1536,7 @@ Pick up the GlassHeart (!!) afterwards.
 
 press ? after closing this menu to see what keys you need to use.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1598,7 +1587,7 @@ Keep in mind that the GlassHeart is not the only reward in this room.
 
 Remember to take the additional items with you.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1627,7 +1616,7 @@ If you have more than 10 exhaustion then you get penalities.
 
 To reduce your exhaustion press .
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1651,7 +1640,7 @@ The ranged combat allows you to fire bolts by pressing f.
 As long as you have Bolts in your inventory, you can shoot in straight lines.
 Each shot will consume a Bolt.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1677,7 +1666,7 @@ I can hurt you quite a lot, too. So remember to keep a distance.
 
 
 """
-                        submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                        submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1700,7 +1689,7 @@ Another thing you can to is to bait/kite enemies
 When you enter and leave a room sometimes enemies will chase you.
 You can use this to divide enemy groups and kite enemies into traps.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1724,7 +1713,7 @@ When time passes you slowly heal, so you can just wait
 The more hurt you are the faster you heal.
 So this works best when you are near dead.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1750,7 +1739,7 @@ but destroys the item itself.
 If you can reach and use it without getting killed,
 it is a very fast and HP saving way to clear a room.
 """
-                    submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                    submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -1785,7 +1774,7 @@ this can easily kill you if enemies are nearby.
 You can also pick up active LandMines,
 but they are likely to explode when disturbed.
 """
-                        submenu = src.menuFolder.TextMenu.TextMenu(text+"""
+                        submenu = src.menuFolder.textMenu.TextMenu(text+"""
 
 = press esc to close this menu =
 """)
@@ -2414,6 +2403,10 @@ but they are likely to explode when disturbed.
         alarmBell.bolted = True
         trapRoom2.addItem(alarmBell,(11,7,0))
 
+        alarmBell = src.items.itemMap["Wall"]()
+        alarmBell.bolted = True
+        trapRoom2.addItem(alarmBell,(11,5,0))
+
         # block some of the trap
         for pos in ((1,6,0),(2,6,0),(6,1,0),(6,2,0),(6,11,0),(6,10,0)):
             moldFeed = src.items.itemMap["MoldFeed"]()
@@ -2427,7 +2420,7 @@ but they are likely to explode when disturbed.
         labPosition = (6,10,0)
         labPositionExit = (6,9,0)
         specialSpots = [(4,6,0),(4,8,0),(3,10,0),(3,7,0),(5,8,0),(7,9,0)]
-        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
+        moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0),(3,3,0),(12,5,0),(5,12,0)]
         farmPlotTiles = [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
         fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
         wallTiles = [(4,3,0),(2,2,0),(6,3,0),(10,3,0),(12,4,0),(11,11,0),(11,12,0),(9,12,0)]
@@ -3061,10 +3054,12 @@ but they are likely to explode when disturbed.
 
             # handle invalid state (by crashing and burning, lol)
             if not candidatePositions:
-                1/0
+                break
 
             # schedule next room to add
             nextMainRoomPos = random.choice(candidatePositions)
+            if nextMainRoomPos[0] in (1,13,) or nextMainRoomPos[1] in (1,13,):
+                break
 
         # add entry room
         attachmentRoom = rooms[-1]
@@ -3262,7 +3257,7 @@ but they are likely to explode when disturbed.
         mainChar.personality["autoFlee"] = False
         mainChar.personality["abortMacrosOnAttack"] = False
         mainChar.personality["autoCounterAttack"] = False
-        mainChar.addListener(src.StateFolder.death.Death,"died_pre")
+        mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
 
         storyStartInfo = {}
         storyStartInfo["terrain"] = homeTerrain
@@ -3321,7 +3316,7 @@ but they are likely to explode when disturbed.
         if mainChar.health < mainChar.maxHealth - 10:
 
             if len(mainChar.rememberedMenu2) < 2:
-                inventoryMenu = src.menuFolder.InventoryMenu.InventoryMenu(mainChar)
+                inventoryMenu = src.menuFolder.inventoryMenu.InventoryMenu(mainChar)
                 inventoryMenu.sidebared = True
                 mainChar.rememberedMenu2.append(inventoryMenu)
 

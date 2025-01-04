@@ -36,25 +36,33 @@ To stop using the room controls press j again.
             """
             move room to north
             """
-            self.container.moveDirection("north", force=self.container.engineStrength)
+            #self.container.moveDirection("north", force=self.container.engineStrength)
+            for _i in range(15):
+                self.container.moveDirection("north", force=10000)
 
         def moveSouth():
             """
             move room to south
             """
-            self.container.moveDirection("south", force=self.container.engineStrength)
+            #self.container.moveDirection("south", force=self.container.engineStrength)
+            for _i in range(15):
+                self.container.moveDirection("south", force=10000)
 
         def moveWest():
             """
             move room to west
             """
-            self.container.moveDirection("west", force=self.container.engineStrength)
+            #self.container.moveDirection("west", force=self.container.engineStrength)
+            for _i in range(15):
+                self.container.moveDirection("west", force=10000)
 
         def moveEast():
             """
             move room to east
             """
-            self.container.moveDirection("east", force=self.container.engineStrength)
+            #self.container.moveDirection("east", force=self.container.engineStrength)
+            for _i in range(15):
+                self.container.moveDirection("east", force=10000)
 
         if "stealKey" not in character.macroState:
             character.macroState["stealKey"] = {}

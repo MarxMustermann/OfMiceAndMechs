@@ -49,11 +49,14 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         npcCount = 0
         enemyCount = 0
         snatcherCount = 0
+        spectreCount = 0
         for otherChar in terrain.characters:
             if otherChar.faction != "city #1":
                 enemyCount += 1 
                 if otherChar.charType == "Snatcher":
                     snatcherCount += 1 
+                if otherChar.charType == "Spectre":
+                    spectreCount += 1
             else:
                 if otherChar.charType == "Ghoul":
                     continue
@@ -104,6 +107,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
         # kill snatchers (redundant to GetRank2Promotion)
         if snatcherCount:
             quest = src.quests.questMap["ConfrontSnatchers"]()
+            return ([quest],None)
+
+        # handle an ongoing wave
+        if spectreCount:
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
             return ([quest],None)
 
         # unrestrict outside movement

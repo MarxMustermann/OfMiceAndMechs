@@ -346,6 +346,10 @@ The room has to be a rectangle.
             alarmBell.bolted = True 
             room.addItem(alarmBell,(11,7,0))
 
+            wall = src.items.itemMap["Wall"]()
+            wall.bolted = True 
+            room.addItem(wall,(11,5,0))
+
         if not hasTraproomNeighbour:
             westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))
             if westNeighbours:

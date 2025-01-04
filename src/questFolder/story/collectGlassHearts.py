@@ -86,9 +86,21 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
             for room in terrain.rooms:
                 for item in room.getItemsByType("GooDispenser",needsBolted=True):
                     if item.charges:
-                        hasDispenserCharges += 1
+                        hasDispenserCharges += item.charges
 
-            if npcCount < 2 or hasDispenserCharges:
+            if npcCount < 2:
+                for room in terrain.rooms:
+                    if not room.tag == "traproom":
+                        continue
+                    numItems = 0
+                    for item in room.itemsOnFloor:
+                        if item.bolted == False:
+                            numItems += 1
+                    if numItems > 4:
+                        quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                        return ([quest],None)
+
+            if npcCount < 2 or hasDispenserCharges > 2:
                 quest = src.quests.questMap["SpawnClone"]()
                 return ([quest],None)
 
@@ -177,7 +189,7 @@ You reach out to your implant and it answers:
 
 You were not accepted by the Throne as the supreme leader.
 As long as you don't control all Glasshearts you can't ascend.
-Fetch all GlassHearts and rule the world.
+Fetch all GlassHearts, to be able to take the throne and rule the world.
 
 The GlassHearts can be found in dungeons and are guarded.
 Those dungeons can be accessed using the GlassStatues in the Temple.

@@ -22,7 +22,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         if "choice" not in params:
             options = [("Reinforce Equipped Armor", "Reinforce Equipped Armor"), ("Reinforce Armor", "Reinforce Armor")]
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Choose item To Reinforce", options, targetParamName="choice"
             )
             submenue.tag = "ArmorReinforceerSelection"
@@ -32,7 +32,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         chitinPlates = []
         for item in character.inventory:
-            if not isinstance(item, src.items.itemMap["CitinPlates"]):
+            if not isinstance(item, src.items.itemMap["ChitinPlates"]):
                 continue
             chitinPlates.append(item)
 

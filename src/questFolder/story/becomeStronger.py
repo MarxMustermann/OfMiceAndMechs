@@ -58,7 +58,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             if character.armor.armorValue < 3:
                 shouldReinforce = True
             elif character.armor.armorValue < 8:
-                if character.searchInventory("CitinPlates"):
+                if character.searchInventory("ChitinPlates"):
                     shouldReinforce = True
 
             if shouldReinforce:
@@ -69,8 +69,8 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
             if character.armor.armorValue < 8:
                 for room in terrain.rooms:
-                    if room.getNonEmptyOutputslots("CitinPlates"):
-                        quest = src.quests.questMap["FetchItems"](toCollect="CitinPlates")
+                    if room.getNonEmptyOutputslots("ChitinPlates"):
+                        quest = src.quests.questMap["FetchItems"](toCollect="ChitinPlates")
                         return ([quest],None)
 
         if character.maxHealth < 500:
@@ -116,7 +116,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             if manaCrystalAvailable and not bloomAvailable:
                 if not terrain.alarm:
                     if character.inventory:
-                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
+                        quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True,reason="be able to pick up potion ingredients")
                         return ([quest],None)
                     quest = src.quests.questMap["FarmMold"](lifetime=1000)
                     return ([quest],None)
@@ -129,10 +129,50 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["Heal"]()
             return ([quest],None)
 
-        if character.inventory:
-            quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True)
+        # count the number of enemies/allies
+        npcCount = 0
+        enemyCount = 0
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction != character.faction:
+                    enemyCount += 1
+                    if not room.alarm:
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,description="kill enemies that breached the defences")
+                        return ([quest],None)
+                else:
+                    if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
+                        npcCount += 1
+        for otherChar in terrain.characters:
+            if otherChar.faction != character.faction:
+                enemyCount += 1
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                return ([quest],None)
+            else:
+                if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
+                    npcCount += 1
+        if npcCount < 2:
+            quest = src.quests.questMap["SpawnClone"]()
             return ([quest],None)
 
+        # ensure traprooms don't fill up
+        for room in terrain.rooms:
+            if not room.tag == "traproom":
+                continue
+            numItems = 0
+            for item in room.itemsOnFloor:
+                if item.bolted == False:
+                    numItems += 1
+            if numItems > 4:
+                quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                return ([quest],None)
+
+        # ensure to have free inventory space
+        if character.inventory:
+            quest = src.quests.questMap["ClearInventory"](returnToTile=False,tryHard=True,reason="be able to collect as much items as possible")
+            return ([quest],None)
+
+        # fetch new valuable items
         quest = src.quests.questMap["Adventure"]()
         return ([quest],None)
 

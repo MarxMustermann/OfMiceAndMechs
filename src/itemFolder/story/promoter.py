@@ -46,7 +46,7 @@ class Promoter(src.items.Item):
             if numCharacters < 2:
                 character.addMessage(f"promotions locked")
 
-                submenu = src.menuFolder.TextMenu.TextMenu("""
+                submenu = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 5 are blocked.
 
 There need to be at least 1 clone besides you on the base to allow any promptions.
@@ -61,7 +61,7 @@ There need to be at least 1 clone besides you on the base to allow any promption
             character.hasSpecialAttacks = True
             
             character.addMessage(f"you were promoted to rank 5")
-            submenu = src.menuFolder.TextMenu.TextMenu("""
+            submenu = src.menuFolder.textMenu.TextMenu("""
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.
@@ -88,7 +88,7 @@ This means you can do special attacks now.""")
             if foundEnemies:
                 character.addMessage(f"promotions locked")
 
-                submenu = src.menuFolder.TextMenu.TextMenu("""
+                submenu = src.menuFolder.textMenu.TextMenu("""
 Promotions to rank 2 are blocked.
 Enemies are nearby.
 
@@ -102,7 +102,7 @@ Kill all enemies on this terrain, to unlock the promotions to rank 2.
 
             character.rank = 2
             character.addMessage(f"you were promoted to base commander")
-            submenu = src.menuFolder.TextMenu.TextMenu("""
+            submenu = src.menuFolder.textMenu.TextMenu("""
 You put your head into the machine.
 
 Its tendrils reach out and touch your implant.

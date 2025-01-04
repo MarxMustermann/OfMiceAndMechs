@@ -382,7 +382,10 @@ class Room:
         roomMap[12][6] = 1
 
         if ignoreEndBlocked or clearing:
-            roomMap[targetPos[0]][targetPos[1]] = 1
+            try:
+                roomMap[targetPos[0]][targetPos[1]] = 1
+            except:
+                pass
         return roomMap
 
     def convertRoomMap(self,roomMap):
@@ -1467,6 +1470,10 @@ class Room:
             items: a list containing a tuples of a item and its position
         """
         self.cachedPathfinder = None
+
+        for itemPair in items[:]:
+            if (itemPair[1][0] in (0,12,) or itemPair[1][1] in (0,12,)) and self.getItemByPosition(itemPair[1]):
+                items.remove(itemPair)
 
         # add the items to the item list
         for itemPair in items:

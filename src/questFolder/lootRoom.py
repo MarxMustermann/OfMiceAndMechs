@@ -98,7 +98,22 @@ Remove all items that are not bolted down."""
             if items[0].bolted:
                 continue
 
-            if items[0].name in ("Scrap","MetalBars"):
+            foundValuableItem = False
+            for item in items:
+                if item.type in ("Scrap","MetalBars"):
+                    continue
+                foundValuableItem = True
+            if not foundValuableItem:
+                continue
+
+            invalidStack = False
+            for stackedItem in character.container.getItemByPosition(checkPos):
+                if stackedItem == items[0]:
+                    break
+                if not stackedItem.bolted:
+                    continue
+                invalidStack = True
+            if invalidStack:
                 continue
 
             foundOffset = offset
@@ -167,14 +182,18 @@ Remove all items that are not bolted down."""
             if item.bolted:
                 continue
 
+            if item.xPosition == None:
+                logger.error("found ghost item")
+                continue
             item_pos =item.getSmallPosition()
             if item_pos[0] == None:
                 logger.error("found ghost item")
                 continue
             if item_pos[0] > 12:
                 continue
-            if item.name in ("scrap","metal bars"):
+            if item.type in ("Scrap","MetalBars"):
                 continue
+
             invalidStack = False
             for stackedItem in character.container.getItemByPosition(item.getPosition()):
                 if stackedItem == item:

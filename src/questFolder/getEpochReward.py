@@ -86,7 +86,7 @@ This will allow you to focus on other tasks.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
             if submenue.tag == "rewardSelection":
                 rewardIndex = 0
@@ -250,7 +250,7 @@ This will allow you to focus on other tasks.
 
         chargesUsed = 0
         quests = []
-        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
+        for duty in ["room building","cleaning","scavenging","manufacturing","resource gathering","scrap hammering","mold farming","hauling","metal working","resource fetching","painting","machining","machine placing","machine operation","maggot gathering",]:
 
             if duty not in npcDuties:
                 cost = foundShrine.getBurnedInCharacterSpawningCost(character)

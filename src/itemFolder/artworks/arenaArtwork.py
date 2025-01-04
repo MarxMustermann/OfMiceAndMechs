@@ -59,7 +59,7 @@ class ArenaArtwork(src.items.Item):
         options.append(("combat settings","combat settings"))
         options.append(("heavy attack settings","heavy attack settings"))
 
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu(text,options,targetParamName="settingCategory")
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(text,options,targetParamName="settingCategory")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"changeArenaSettingSwitch","params":{"character":character}}
 
@@ -106,7 +106,7 @@ flatExhaustionAttackCost          = s  self.exhaustion += self.flatExhaustionAtt
         options.append(("increaseDamageOnTargetExhausted","increaseDamageOnTargetExhausted"))
         options.append(("addRandomExhaustionOnAttack","addRandomExhaustionOnAttack"))
 
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu(text,options,targetParamName="settingType")
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(text,options,targetParamName="settingType")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"setSetting","params":{"character":character}}
 
@@ -140,7 +140,7 @@ playerDamage         = {self.playerDamage}
         options.append(("setPlayerHP","setPlayerHP"))
         options.append(("setPlayerDamage","setPlayerDamage"))
 
-        submenue = src.menuFolder.SelectionMenu.SelectionMenu(text,options,targetParamName="settingType")
+        submenue = src.menuFolder.selectionMenu.SelectionMenu(text,options,targetParamName="settingType")
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"setSetting","params":{"character":character}}
 
@@ -209,7 +209,7 @@ playerDamage         = {self.playerDamage}
             return
 
         if "value" not in extraParam:
-            submenue = src.menuFolder.InputMenu.InputMenu("input the value you want to set for %s."%(extraParam["settingType"]),targetParamName="value")
+            submenue = src.menuFolder.inputMenu.InputMenu("input the value you want to set for %s."%(extraParam["settingType"]),targetParamName="value")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"setSetting","params":extraParam}
             return

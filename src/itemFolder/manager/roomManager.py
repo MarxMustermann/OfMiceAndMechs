@@ -119,7 +119,7 @@ class RoomManager(src.items.Item):
             ("spawnMaintenanceNpc", "spawn maintenance npc"),
             ("startJoborderLoop", "start job order loop"),
         ]
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what action do you want to do?", options
         )
         character.macroState["submenue"] = submenu
@@ -158,7 +158,7 @@ class RoomManager(src.items.Item):
             ("clear all", "clear all"),
             ("clear item slot", "clear item slot"),
         ]
-        submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+        submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what task do you want to add?", options
         )
         character.macroState["submenue"] = submenu
@@ -230,7 +230,7 @@ class RoomManager(src.items.Item):
             params["tasksType"] = params["selection"]
 
             if params["tasksType"] in ("add machine", "add item", "add resource terminal"):
-                submenu = src.menuFolder.InputMenu.InputMenu("item type")
+                submenu = src.menuFolder.inputMenu.InputMenu("item type")
                 character.macroState["submenue"] = submenu
                 character.macroState["submenue"].followUp = {
                     "method": "addTask",
@@ -246,7 +246,7 @@ class RoomManager(src.items.Item):
                     ("RoadManager", "RoadManager"),
                     ("MiningManager", "MiningManager"),
                 ]
-                submenu = src.menuFolder.SelectionMenu.SelectionMenu(
+                submenu = src.menuFolder.selectionMenu.SelectionMenu(
                     "select manager type", options
                 )
                 character.macroState["submenue"] = submenu

@@ -99,7 +99,7 @@ To see your items open the your inventory by pressing i."""
             if len(character.inventory) and room:
                 emptyInputSlots = room.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                 if emptyInputSlots:
-                    quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="remove items from your inventory")
+                    quest = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
                     return ([quest],None)
 
             if "HOMEx" not in character.registers:
@@ -117,7 +117,7 @@ To see your items open the your inventory by pressing i."""
                     emptyInputSlots = checkRoom.getEmptyInputslots(character.inventory[-1].type, allowAny=True)
                     if emptyInputSlots:
                         quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")
-                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="remove items from your inventory")
+                        quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
                         return ([quest2,quest1],None)
 
                 if "HOMEx" not in character.registers:
@@ -128,8 +128,13 @@ To see your items open the your inventory by pressing i."""
                 #    character.timeTaken += 1
                 #    self.fail(reason="no storage available")
                 #return (None,None)
-                quest = src.quests.questMap["DropItemsOutside"]()
-                return ([quest],None)
+                if not character.getTerrain().alarm or self.tryHard:
+                    quest = src.quests.questMap["DropItemsOutside"]()
+                    return ([quest],None)
+                if not dryRun:
+                    character.timeTaken += 1
+                    self.fail(reason="no storage available")
+                return (None,None)
 
             if self.returnToTile and character.getBigPosition() != self.returnToTile:
                 quest = src.quests.questMap["GoToTile"](description="return to tile",targetPosition=self.tileToReturnTo,reason="get back where your inventory was filled up")

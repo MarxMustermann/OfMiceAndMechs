@@ -30,6 +30,9 @@ class RodTower(src.items.Item):
         except:
             self.coolDown = 10
 
+        if not self.container:
+            return
+
         if self.isInCoolDown():
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "black"), "XX")]})
             return

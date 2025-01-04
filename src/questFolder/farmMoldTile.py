@@ -5,7 +5,7 @@ import src
 class FarmMoldTile(src.quests.MetaQuestSequence):
     type = "FarmMoldTile"
 
-    def __init__(self, description="farm mold tile", creator=None, targetPosition=None, reason=None, endOnFullInventory=False, stimulateMoldGrowth=True):
+    def __init__(self, description="farm mold tile", creator=None, targetPosition=None, reason=None, endOnFullInventory=False, stimulateMoldGrowth=True,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -13,6 +13,7 @@ class FarmMoldTile(src.quests.MetaQuestSequence):
         self.reason = reason
         self.endOnFullInventory = endOnFullInventory
         self.stimulateMoldGrowth = stimulateMoldGrowth
+        self.tryHard = tryHard
 
         self.targetPosition = targetPosition
 
@@ -49,9 +50,14 @@ farm mold on the tile {self.targetPosition}"""
         if self.subQuests:
             return (None,None)
 
-        if character.getTerrain().alarm:
+        if character.getTerrain().alarm and not self.tryHard:
             if not dryRun:
                 self.fail("alarm")
+            return (None,None)
+
+        if character.getTerrain().getRoomByPosition(self.targetPosition):
+            if not dryRun:
+                self.fail("blocked by room")
             return (None,None)
 
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):

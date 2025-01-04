@@ -6,12 +6,7 @@ import random
 import regex
 
 import config
-import src.canvas
-import src.chats
-import src.gamestate
-import src.interaction
-import src.menuFolder
-import src.menuFolder.TextMenu
+import src
 
 urwid = None
 logger = logging.getLogger(__name__)
@@ -290,8 +285,6 @@ class Character:
         rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
 
-
-        print(self.terrainInfo)
         return rawMap
 
     def applyNativeMeleeAttackEffects(self,target):
@@ -315,7 +308,7 @@ class Character:
         return resultList
 
     def showTextMenu(self,text):
-        submenu = src.menuFolder.TextMenu.TextMenu(text)
+        submenu = src.menuFolder.textMenu.TextMenu(text)
         self.macroState["submenue"] = submenu
 
     def callIndirect(self, callback, extraParams=None):
@@ -344,7 +337,28 @@ class Character:
             else:
                 function()
 
-    def triggerAutoMoveFixedTarget(self,extraParam):
+    def triggerAutoMoveFixedTerrainTarget(self,extraParam):
+        extraParam["coordinate"] = extraParam["targetCoordinate"]
+        self.triggerAutoMoveToTerrain(extraParam)
+
+    def triggerAutoMoveToTerrain(self,extraParam):
+        """
+        makes the character auto move to a given tile
+        parameters:
+        extraParam["coordinate"]: the coordinate to go to
+        """
+        targetPosition = extraParam["coordinate"]
+        targetPosition = (targetPosition[0],targetPosition[1],0)
+
+        quest = src.quests.questMap["GoToTerrain"](targetTerrain=targetPosition)
+        quest.selfAssigned = True
+        quest.autoSolve = True
+        quest.assignToCharacter(self)
+        quest.activate()
+
+        self.quests.insert(0,quest)
+
+    def triggerAutoMoveFixedTileTarget(self,extraParam):
         extraParam["coordinate"] = extraParam["targetCoordinate"]
         self.triggerAutoMoveToTile(extraParam)
 
@@ -357,7 +371,7 @@ class Character:
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,paranoid=True)
+        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition)
         quest.selfAssigned = True
         quest.autoSolve = True
         quest.assignToCharacter(self)
@@ -434,23 +448,17 @@ class Character:
     def getStrengthSelfEstimate(self,healthWeight=1,damageWeight=0.7,armorWeight=4,vialChargeWeight=1,movementSpeedWeight = 1,attackSpeedWeight = 1,specialAttackWeight = 10,totalWeight=0.009):
         weight = 0
         weight += self.health*healthWeight
-        # print("healthweight")
-        # print(self.health*healthWeight)
 
         baseDamage = self.baseDamage
         if self.weapon:
             baseDamage += self.weapon.baseDamage
         weight += baseDamage*damageWeight
-        # print("damageWeight")
-        # print(baseDamage*damageWeight)
 
         if self.hasSpecialAttacks:
             weight += specialAttackWeight
 
         if self.armor:
             weight += self.armor.getArmorValue("attacked")*armorWeight
-            # print("armorWeight")
-            # print(self.armor.getArmorValue("attacked")*armorWeight)
 
         numVialCharges = 0
         for item in self.inventory:
@@ -458,14 +466,8 @@ class Character:
                 continue
             numVialCharges += item.uses
         weight += numVialCharges*vialChargeWeight
-        # print("vial Weight")
-        # print(numVialCharges*vialChargeWeight)
         weight-= self.adjustedMovementSpeed* movementSpeedWeight
-        # print("MovementSpeed Weight")
-        # print(self.adjustedMovementSpeed* movementSpeedWeight)
         weight-= self.attackSpeed* attackSpeedWeight
-        # print("AttackSpeed Weight")
-        # print(self.attackSpeed* attackSpeedWeight)
 
         weight = weight*totalWeight
 
@@ -1274,7 +1276,7 @@ press l/L for light attack
         text += """
 
 press any other key to attack normally"""
-        submenu = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         self.macroState["submenue"] = submenu
         self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)
@@ -1959,6 +1961,9 @@ press any other key to attack normally"""
             reason: the reason for dieing
             addCorpse: flag to control adding a corpse
         """
+        if self.dead:
+            logger.error("Tried to kill Dead Charc",self,exc_info= 1)
+            return
         self.changed("died_pre", {"character": self, "reason": reason,"killer": killer, "pre": True})
         self.quests = []
 
@@ -2348,7 +2353,7 @@ press any other key to attack normally"""
             # notify listeners
             self.changed("examine", mainItem)
 
-        self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(text)
+        self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
         self.macroState["submenue"] = self.submenue
 
     def examine(self, item):
@@ -2368,7 +2373,7 @@ press any other key to attack normally"""
         info = item.getLongInfo()
         if info:
             info += "\n\nregisterinformation:\n\n" + registerInfo
-            self.submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(info)
+            self.submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(info)
             self.macroState["submenue"] = self.submenue
 
         # notify listeners
@@ -2553,6 +2558,11 @@ press any other key to attack normally"""
             elif isinstance(info[1],src.rooms.TrapRoom):
                 src.interaction.playSound("electroRoom","roomMusic",loop=True)
         """
+
+        if tag == "changedTerrain":
+            terrain = self.getTerrain()
+            if terrain.getPosition() not in self.terrainInfo:
+                self.terrainInfo[terrain.getPosition()] = {"tag":terrain.tag}
 
         # do nothing if nobody listens
         if tag not in self.listeners:

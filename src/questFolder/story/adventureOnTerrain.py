@@ -88,7 +88,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         char_big_pos = character.getBigPosition()
 
-
         if character.container.isRoom:
             itemsOnFloor = character.container.itemsOnFloor
         else:
@@ -96,6 +95,9 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         for item in itemsOnFloor:
             if item.bolted or not item.walkable:
+                continue
+            if item.xPosition == None:
+                logger.error("found ghost item")
                 continue
             item_pos =item.getSmallPosition()
             if item_pos[0] == None:
@@ -105,6 +107,16 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 continue
 
             if item.type in ("Scrap","MetalBars"):
+                continue
+
+            invalidStack = False
+            for stackedItem in character.container.getItemByPosition(item.getPosition()):
+                if stackedItem == item:
+                    break
+                if not stackedItem.bolted:
+                    continue
+                invalidStack = True
+            if invalidStack:
                 continue
 
             if character.container.isRoom:
@@ -129,7 +141,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         elif offset[1] < 0:
             moves += "w" * -offset[1]
         return (None,(moves+"j","go to tile"))
-
 
     def generateTextDescription(self):
         return [f"""

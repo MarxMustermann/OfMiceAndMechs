@@ -15,19 +15,19 @@ class Popup(ABC):
     @abstractmethod
     def text(self): ...
 
-    def ConditionMet(self,params) -> bool:
+    def conditionMet(self,params) -> bool:
         return True
 
     def onEvent(self,params = None):
-        if self.ConditionMet(params):
+        if self.conditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
-            submenue = src.menuFolder.TextMenu.TextMenu(self.text())
+            submenue = src.menuFolder.textMenu.TextMenu(self.text())
             submenue.tag = "popup"
             self.character.macroState["submenue"] = submenue
             self.character.runCommandString("~",nativeKey=True)
 
-    def AddToChar(self, character):
+    def addToChar(self, character):
         self.character = character
         character.addListener(self.onEvent, self.subscribedEvent())
 

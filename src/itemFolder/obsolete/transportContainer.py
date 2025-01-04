@@ -22,7 +22,7 @@ class TransportContainer(src.items.Item):
             ("transportItem", "transport item"),
             ("getJobOrder", "set transport command"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue

@@ -161,31 +161,114 @@ if __name__ == '__main__':
                 logger.info("ended game")
 
             while 1:
-                interaction.showMainMenu(args)
                 try:
-                    interaction.gameLoop(None, None)
-                except src.interaction.EndGame:
-                    logger.info("ended game")
-            """
-            while 1:
-                try:
-                    interaction.gameLoop(None, None)
+                    interaction.showMainMenu(args)
+                    try:
+                        interaction.gameLoop(None, None)
+                    except src.interaction.EndGame:
+                        logger.info("ended game")
                 except Exception as e:
-                    interaction.tcodContext.close()
-                    answer = input("something happened and the game crashed. Do you consent to uploading the bug report? (type yes for yes)\n")
+                    import sys
+                    has_trace = hasattr(sys, 'gettrace') and sys.gettrace() is not None
+                    has_breakpoint = sys.breakpointhook.__module__ != "sys"
+                    is_debug = has_trace or has_breakpoint
+                    if is_debug:
+                        raise e
+
+                    import time
+                    import traceback
+                    from datetime import datetime
+                    from threading import Thread
+
+                    import tcod
+
+
+                    interaction.tcodConsole.clear()
+
+                    text = "something happened and the game crashed. Do you consent to uploading the bug report?\n"
+                    text+= "press y to accept or press n to deny\n"
+                    text+= "(the report doesn't include any personal data)\n"
+
+                    splitted = text.splitlines()
+                    width = len(max(splitted, key=len))
+                    height = len(splitted)
+                    x = int(src.interaction.tcodConsole.width / 2 - width / 2)
+                    y = int(src.interaction.tcodConsole.height / 2 - 3 - height)
+
+                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,width, height, text, x, y)
+
+                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+
 
                     exceptionText = ''.join(traceback.format_exception(None, e, e.__traceback__))
 
-                    if answer == "yes":
-                        import requests
-                        requests.post("http://ofmiceandmechs.com/bugReportDump.php",{"bugReport":exceptionText})
-                        print("thanks a lot, i hope i'll get to fixing the bug soon")
-                        raise SystemExit()
-                    else:
-                        print("okay then, here is the trace as text in case you feel better writing me an email")
-                        print(exceptionText)
-                        raise SystemExit()
-            """
+                    while 1:
+                        events = tcod.event.get()
+                        for event in events:
+                            if isinstance(event, tcod.event.KeyDown):
+                                if event.sym == tcod.event.KeySym.y:
+                                    import requests
+                                    def send_d():
+                                        t = time.time()
+                                        res = requests.post(
+                                            "http://ofmiceandmechs.com/bugReportDump.php",
+                                            {
+                                                "bugReport": exceptionText,
+                                                "time": datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
+                                            },
+                                            files={
+                                                "upload_file": open(
+                                                    f"gamestate/gamestate_{src.gamestate.gamestate.gameIndex}", "rb"
+                                                )
+                                            },
+                                        )
+                                        print(res)
+                                        print(res.text)
+                                        diff = time.time() - t
+                                        if diff < 2:
+                                            time.sleep(diff)
+
+                                    t = Thread(target=send_d)
+                                    t.start()
+                                    interaction.tcodConsole.clear()
+                                    text = "thanks a lot, i hope i'll get to fixing the bug soon\n"
+                                    text+= "the window will close as soon as the report upload be done"
+                                    w = len(max(text.splitlines(), key=len))
+                                    x = int(src.interaction.tcodConsole.width / 2 - w / 2 )
+                                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
+                                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                                    while t.is_alive():
+                                        for _ in tcod.event.get():
+                                            if isinstance(event, tcod.event.WindowEvent):
+                                                match event.type:
+                                                    case "WINDOWCLOSE":
+                                                        raise e
+                                    raise e
+                                elif event.sym == tcod.event.KeySym.n:
+                                    t = Thread(target=lambda: time.sleep(1.5))
+                                    interaction.tcodConsole.clear()
+                                    text = "okay then, here is the trace copied to your clipboard in case you feel better writing me an email"
+                                    x = int(src.interaction.tcodConsole.width / 2 - len(text) / 2)
+                                    tcod.sdl.sys._set_clipboard(exceptionText)
+                                    src.helpers.draw_frame_text(src.interaction.tcodConsole ,len(text), 1, text, x, y)
+                                    src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+                                    t.start()
+                                    while t.is_alive():
+                                        for _ in tcod.event.get():
+                                            if isinstance(event, tcod.event.WindowEvent):
+                                                match event.type:
+                                                    case "WINDOWCLOSE":
+                                                        raise e
+                                    raise e
+                            if isinstance(event, tcod.event.Quit):
+                                raise e
+                            if isinstance(event, tcod.event.WindowEvent):
+                                match event.type:
+                                    case "WINDOWCLOSE":
+                                        raise e
+                                    case _:
+                                        src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
+
     except Exception as e:
         if src.interaction.tcodMixer:
             src.interaction.tcodMixer.close()

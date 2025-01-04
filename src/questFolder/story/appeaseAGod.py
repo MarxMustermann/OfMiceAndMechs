@@ -19,6 +19,32 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        # count the number of enemies/allies
+        npcCount = 0
+        enemyCount = 0
+        terrain = character.getTerrain()
+        for room in terrain.rooms:
+            for otherChar in room.characters:
+                if otherChar.faction != character.faction:
+                    enemyCount += 1
+                    if not room.alarm:
+                        quest = src.quests.questMap["SecureTile"](toSecure=room.getPosition(),endWhenCleared=True,description="kill enemies that breached the defences")
+                        return ([quest],None)
+                else:
+                    if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
+                        npcCount += 1
+        for otherChar in terrain.characters:
+            if otherChar.faction != character.faction:
+                enemyCount += 1
+                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+                return ([quest],None)
+            else:
+                if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
+                    npcCount += 1
+        if npcCount < 2:
+            quest = src.quests.questMap["SpawnClone"]()
+            return ([quest],None)
+
         # pray if possible
         for checkRoom in character.getTerrain().rooms:
             glassStatues = checkRoom.getItemsByType("GlassStatue")
@@ -107,7 +133,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
         if character.getTerrain().alarm:
-            if src.gamestate.gamestate.tick%(15*15*15) < 2000:
+            if src.gamestate.gamestate.tick%(15*15*15) < 2000 and src.gamestate.gamestate.tick%(15*15*15) > 10:
                 quest = src.quests.questMap["LiftOutsideRestrictions"]()
                 return ([quest],None)
             return (None,("...........","wait for the wave of enemies"))

@@ -13,7 +13,6 @@ class GoHome(src.quests.MetaQuestSequence):
         self.type = "GoHome"
         self.addedSubQuests = False
         self.paranoid = paranoid
-        self.cityLocation = None
         self.reason = reason
 
     def generateTextDescription(self):
@@ -43,10 +42,8 @@ Press control-d to stop your character from moving.
     def triggerCompletionCheck(self, character=None):
         if not character:
             return None
-        if not self.cityLocation:
-            return None
 
-        if character.getTerrainPosition() == self.terrainLocation and character.getBigPosition() == self.cityLocation:
+        if character.getTerrainPosition() == self.getHomeLocation() and character.getBigPosition() == self.getCityLocation():
             self.postHandler()
             return True
         return False
@@ -59,19 +56,26 @@ Press control-d to stop your character from moving.
         self.triggerCompletionCheck(extraInfo[0])
 
     def assignToCharacter(self, character):
-        self.setHomeLocation(character)
-
         if self.character:
             return
+
+        self.recalcDescription()
 
         self.startWatching(character,self.wrapedTriggerCompletionCheck, "moved")
 
         super().assignToCharacter(character)
 
-    def setHomeLocation(self,character):
-        self.cityLocation = (character.registers["HOMEx"],character.registers["HOMEy"],0)
-        self.terrainLocation = (character.registers["HOMETx"],character.registers["HOMETy"],0)
-        self.metaDescription = self.baseDescription+f" {self.cityLocation[0]}/{self.cityLocation[1]} on {self.terrainLocation[0]}/{self.terrainLocation[1]}"
+    def getCityLocation(self):
+        return (self.character.registers["HOMEx"],self.character.registers["HOMEy"],0)
+
+    def getHomeLocation(self):
+        return (self.character.registers["HOMETx"],self.character.registers["HOMETy"],0)
+
+    def recalcDescription(self):
+        if self.character:
+            cityLocation = self.getCityLocation()
+            terrainLocation = self.getHomeLocation()
+            self.metaDescription = self.baseDescription+f" {cityLocation[0]}/{cityLocation[1]} on {terrainLocation[0]}/{terrainLocation[1]}"
 
     def getNextStep(self, character=None, ignoreCommands=False, dryRun=True):
         if self.subQuests:
@@ -91,7 +95,7 @@ Press control-d to stop your character from moving.
         
         currentTerrain = character.getTerrain()
 
-        if character.getTerrainPosition() != self.terrainLocation:
+        if character.getTerrainPosition() != self.getHomeLocation():
             foundShrine = None
             if isinstance(character.container, src.rooms.Room):
                 items = character.container.getItemsByType("Shrine")
@@ -99,7 +103,7 @@ Press control-d to stop your character from moving.
                     for item in items:
                         if character.getDistance(item.getPosition()) <= 1:
 
-                            if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.SelectionMenu.SelectionMenu) and not ignoreCommands:
+                            if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
                                 submenue = character.macroState["submenue"]
 
                                 targetIndex = 5
@@ -144,12 +148,12 @@ Press control-d to stop your character from moving.
                 )
                 return ([quest], None)
             else:
-                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.terrainLocation)
+                quest = src.quests.questMap["GoToTerrain"](targetTerrain=self.getHomeLocation())
                 return ([quest], None)
 
-        if character.getBigPosition() != self.cityLocation:
+        if character.getBigPosition() != self.getCityLocation():
             quest = src.quests.questMap["GoToTile"](
-                paranoid=self.paranoid, targetPosition=self.cityLocation, reason="go to the command center"
+                paranoid=self.paranoid, targetPosition=self.getCityLocation(), reason="go to the command center"
             )
             return ([quest], None)
 
@@ -170,7 +174,7 @@ Press control-d to stop your character from moving.
 
     def getQuestMarkersTile(self, character):
         result = super().getQuestMarkersTile(character)
-        result.append(((self.cityLocation[0],self.cityLocation[1]),"target"))
+        result.append(((self.getCityLocation()[0],self.getCityLocation()[1]),"target"))
         return result
 
 src.quests.addType(GoHome)

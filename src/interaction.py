@@ -557,6 +557,7 @@ press key to select action
 
 * w/s/a/d = move one tile north/south/west/east
 * m = move to tile
+* M = move to terrain
 * g = run guard mode for 10 ticks
 * h = get emergency heatlh
 """
@@ -596,6 +597,30 @@ def handleActivitySelection(key,char):
         char.startGuarding(1)
     if key == "h":
         char.getEmergencyHealth()
+    if key == "M":
+        terrain = char.getTerrain()
+
+        # render empty map
+        mapContent = char.renderZoneInfo()
+        functionMap = {}
+        extraText = "test"
+
+        submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition())
+        char.macroState["submenue"] = submenue
+        char.runCommandString("~",nativeKey=True)
+
+        for x in range(1,14):
+            for y in range(1,14):
+                functionMap[(x,y)] = {}
+                functionMap[(x,y)]["j"] = {
+                    "function": {
+                        "container":char,
+                        "method":"triggerAutoMoveToTerrain",
+                        "params":{},
+                    },
+                    "description":"move to tile",
+                }
+
     if key == "m":
         terrain = char.getTerrain()
 
@@ -628,7 +653,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["c"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(7,7,0)},
                     },
                     "description":"move to center",
@@ -636,7 +661,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["W"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(7,1,0)},
                     },
                     "description":"move to north crossing",
@@ -644,7 +669,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["A"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(1,7,0)},
                     },
                     "description":"move to west crossing",
@@ -652,7 +677,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["S"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(7,13,0)},
                     },
                     "description":"move to south crossing",
@@ -660,7 +685,7 @@ def handleActivitySelection(key,char):
                 functionMap[(x,y)]["D"] = {
                     "function": {
                         "container":char,
-                        "method":"triggerAutoMoveFixedTarget",
+                        "method":"triggerAutoMoveFixedTileTarget",
                         "params":{"targetCoordinate":(13,7,0)},
                     },
                     "description":"move to east crossing",
@@ -680,7 +705,7 @@ def handleActivitySelection(key,char):
 
         extraText = "\n\n"
 
-        submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
+        submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
     del char.interactionState["runaction"]
@@ -2296,7 +2321,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                ("toggleCommandOnPlus", "toggleCommandOnPlus"),
                ("change personality settings", "change personality settings"),
                ("change setting", "change setting")]
-    submenu = src.menuFolder.SelectionMenu.SelectionMenu("What do you want to do?", options)
+    submenu = src.menuFolder.selectionMenu.SelectionMenu("What do you want to do?", options)
     char.macroState["submenue"] = submenu
 
     def trigger():
@@ -2324,7 +2349,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
 
                 if settingName is None:
                     return
-                submenu3 = src.menuFolder.InputMenu.InputMenu("input value")
+                submenu3 = src.menuFolder.inputMenu.InputMenu("input value")
                 char.macroState["submenue"] = submenu3
                 char.macroState["submenue"].followUp = setValue
                 return
@@ -2332,7 +2357,7 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
             options = []
             for (key, value) in char.personality.items():
                 options.append((key, f"{key}: {value}"))
-            submenu2 = src.menuFolder.SelectionMenu.SelectionMenu("select personality setting", options)
+            submenu2 = src.menuFolder.selectionMenu.SelectionMenu("select personality setting", options)
             char.macroState["submenue"] = submenu2
             char.macroState["submenue"].followUp = getValue
             return
@@ -2366,11 +2391,11 @@ def doShowMenu(char,charState,flags,key,main,header,footer,urwid,noAdvanceGame):
                 char.faction = "player"
             pass
         elif selection == "help":
-            charState["submenue"] = src.menuFolder.HelpMenu.HelpMenu()
+            charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
         elif selection == "keybinding":
             pass
         elif selection == "change setting":
-            charState["submenue"] = src.menuFolder.SettingMenu.SettingMenu() 
+            charState["submenue"] = src.menuFolder.settingMenu.SettingMenu() 
         elif selection == "main menu":
             char.macroState["submenue"] = None
             char.specialRender = False
@@ -2456,7 +2481,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
     else:
         # open the debug menue
         if key in ("\'",):
-            charState["submenue"] = src.menuFolder.DebugMenu.DebugMenu()
+            charState["submenue"] = src.menuFolder.debugMenu.DebugMenu()
 
         # destroy save and quit
         if key in (commandChars.quit_delete,):
@@ -2849,13 +2874,13 @@ press key for advanced drop
 
         # open chat partner selection
         if key in (commandChars.hail,):
-            charState["submenue"] = src.menuFolder.ChatPartnerselection.ChatPartnerselection()
+            charState["submenue"] = src.menuFolder.chatPartnerselection.ChatPartnerselection()
 
         if key in ("H",):
-            charState["submenue"] = src.menuFolder.InstructSubordinatesMenu.InstructSubordinatesMenu()
+            charState["submenue"] = src.menuFolder.instructSubordinatesMenu.InstructSubordinatesMenu()
 
         if key in ("r",) and char.room:
-            charState["submenue"] = src.menuFolder.RoomMenu.RoomMenu(char.room)
+            charState["submenue"] = src.menuFolder.roomMenu.RoomMenu(char.room)
 
         """
         # recalculate the questmarker since it could be tainted
@@ -2887,37 +2912,37 @@ press key for advanced drop
 
     # open quest menu
     if key in (commandChars.show_quests,):
-        charState["submenue"] = src.menuFolder.QuestMenu.QuestMenu()
+        charState["submenue"] = src.menuFolder.questMenu.QuestMenu()
         char.changed("opened quest menu",(char,))
 
     # open help menu
     if key in (commandChars.show_help,"z"):
-        charState["submenue"] = src.menuFolder.HelpMenu.HelpMenu()
+        charState["submenue"] = src.menuFolder.helpMenu.HelpMenu()
         char.changed("openedHelp")
 
     # open inventory
     if key in (commandChars.show_inventory,):
-        charState["submenue"] = src.menuFolder.InventoryMenu.InventoryMenu(char)
+        charState["submenue"] = src.menuFolder.inventoryMenu.InventoryMenu(char)
 
     # open the menu for giving quests
     if key in (commandChars.show_quests_detailed,):
-        charState["submenue"] = src.menuFolder.AdvancedQuestMenu.AdvancedQuestMenu(char)
+        charState["submenue"] = src.menuFolder.advancedQuestMenu.AdvancedQuestMenu(char)
 
     # open the character information
     if key in (commandChars.show_characterInfo,"v",):
-        charState["submenue"] = src.menuFolder.CharacterInfoMenu.CharacterInfoMenu(char=char)
+        charState["submenue"] = src.menuFolder.characterInfoMenu.CharacterInfoMenu(char=char)
 
     # open the character information
     if key in ("o",):
-        charState["submenue"] = src.menuFolder.CombatInfoMenu.CombatInfoMenu(char=char)
+        charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
     if key in ("t",):
-        charState["submenue"] = src.menuFolder.ChangeViewsMenu.ChangeViewsMenu()
+        charState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
 
     # open the character information
     if key in ("x",):
-        charState["submenue"] = src.menuFolder.MessagesMenu.MessagesMenu(char=char)
+        charState["submenue"] = src.menuFolder.messagesMenu.MessagesMenu(char=char)
 
     # open the help screen
     if key in (commandChars.show_help,):
@@ -3122,7 +3147,7 @@ def renderHeader(character):
     return ""
 
     # render the sections to display
-    questSection = src.menuFolder.QuestMenu.QuestMenu.renderQuests(maxQuests=2)
+    questSection = src.menuFolder.questMenu.QuestMenu.renderQuests(maxQuests=2)
     messagesSection = renderMessages(character)
 
     # calculate the size of the elements
@@ -3402,6 +3427,11 @@ def keyboardListener(key, targetCharacter=None):
             char.interactionState["ifParam1"].clear()
             char.interactionState["ifParam2"].clear()
         for quest in src.gamestate.gamestate.mainChar.getActiveQuests():
+            if not quest.autoSolve:
+                continue
+            quest.autoSolve = False
+
+        for quest in src.gamestate.gamestate.mainChar.quests:
             if not quest.autoSolve:
                 continue
             quest.autoSolve = False
@@ -3833,9 +3863,17 @@ def getTcodEvents():
                         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
                     )
                 if key == tcod.event.KeySym.RIGHT:
-                    translatedKey = "right"
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                         translatedKey = "right"
                 if key == tcod.event.KeySym.LEFT:
-                    translatedKey = "left"
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                        translatedKey = "left"
+                if key == tcod.event.KeySym.UP:
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                        translatedKey = "up"
+                if key == tcod.event.KeySym.DOWN:
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                        translatedKey = "down"
                 if translatedKey is None:
                     continue
 
@@ -5712,7 +5750,7 @@ You """+"."*stageState["substep"]+"""
                     removeList = []
                     for character in room.characters+terrain.characters:
                         character.timeTaken -= 1
-                        advanceChar(character,render=False)
+                        advanceChar(character,render=False, pull_events = False)
 
                 if src.gamestate.gamestate.tick > 10470 and not stageState["endless"]:
                     stageState = None
@@ -6713,7 +6751,7 @@ def clearMessages(char):
 
 skipNextRender = False
 lastRender = None
-def advanceChar(char,render=True):
+def advanceChar(char,render=True, pull_events = True):
     global skipNextRender
 
     state = char.macroState
@@ -6723,7 +6761,7 @@ def advanceChar(char,render=True):
     global lastRender
 
     lastLoop = time.time()
-    if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1:
+    if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1 and render:
         renderGameDisplay()
         lastRender = time.time()
     while char.timeTaken < 1:
@@ -6744,7 +6782,7 @@ def advanceChar(char,render=True):
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
-            newInputs = getTcodEvents()
+            newInputs = getTcodEvents() if pull_events else None
 
             if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
                 skipNextRender = True
@@ -6811,7 +6849,7 @@ def advanceChar(char,render=True):
             char.runCommandString("+",nativeKey=True)
         else:
             if (char == src.gamestate.gamestate.mainChar):
-                if getTcodEvents():
+                if pull_events and getTcodEvents():
                     skipNextRender = False
             else:
                 char.timeTaken = 1

@@ -48,7 +48,7 @@ Cosume a potion of the type {self.potionType} from your inventory{reason}.
             return (None,None)
 
         if character.macroState["submenue"] and not ignoreCommands:
-            if not isinstance(character.macroState["submenue"],src.menuFolder.InventoryMenu.InventoryMenu):
+            if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
                 return (None,(["esc"],"close the menu"))
 
         counter = 0

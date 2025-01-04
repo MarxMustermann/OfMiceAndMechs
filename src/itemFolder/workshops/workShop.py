@@ -25,7 +25,7 @@ class WorkShop(src.items.Item):
             baseProgressbar = baseProgressbar[10:]
         progressBar += baseProgressbar
 
-        submenue = src.menuFolder.OneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
+        submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressBar, targetParamName="abortKey")
         submenue.tag = "metalWorkingProductWait"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {

@@ -73,7 +73,7 @@ That should usually be around 10-20 ticks."""
             options.append(("idle rank 6","idle rank 6 NPCs"))
             options.append(("idle non staff","idle non staff NPCs"))
             options.append(("idle non staff rank 6","idle rank 6 non staff NPCs"))
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what group to assign the quest to?",options,targetParamName="groupType")
+            submenue = src.menuFolder.selectionMenu.SelectionMenu("what group to assign the quest to?",options,targetParamName="groupType")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"assignQuest","params":extraInfo}
             return
@@ -90,14 +90,14 @@ That should usually be around 10-20 ticks."""
             options.append(("BeUsefull","be usefull"))
             options.append(("cancel","cancel current quest"))
             options.append(("cancelAll","cancel all quests"))
-            submenue = src.menuFolder.SelectionMenu.SelectionMenu("what quest to assign?",options,targetParamName="questType")
+            submenue = src.menuFolder.selectionMenu.SelectionMenu("what quest to assign?",options,targetParamName="questType")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"assignQuest","params":extraInfo}
             return
 
         if "amount" not in extraInfo:
             options = []
-            submenue = src.menuFolder.InputMenu.InputMenu("how many NPCs to assign? (0 for all)",targetParamName="amount")
+            submenue = src.menuFolder.inputMenu.InputMenu("how many NPCs to assign? (0 for all)",targetParamName="amount")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"assignQuest","params":extraInfo}
             return
@@ -341,7 +341,7 @@ That should usually be around 10-20 ticks."""
 
         extraText = "\n\n"
 
-        self.submenue = src.menuFolder.MapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=character.getBigPosition())
+        self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=character.getBigPosition())
         character.macroState["submenue"] = self.submenue
 
     def fetchCityleader(self):
@@ -407,7 +407,7 @@ That should usually be around 10-20 ticks."""
         text = "current active quest:\n"
         for (key,value) in questsCount.items():
             text += f"{key}: {value}\n"
-        submenue = src.menuFolder.TextMenu.TextMenu(text)
+        submenue = src.menuFolder.textMenu.TextMenu(text)
         character.macroState["submenue"] = submenue
 
     def assignQuestToNumNPCs(self, character, questType, numNPCs, params=None):
@@ -444,7 +444,7 @@ That should usually be around 10-20 ticks."""
             extraInfo["numNPCs"] = int(extraInfo["numNPCs"])
 
         if "numNPCs" not in extraInfo:
-            submenue = src.menuFolder.InputMenu.InputMenu("how many NPCs to send?",targetParamName="numNPCs")
+            submenue = src.menuFolder.inputMenu.InputMenu("how many NPCs to send?",targetParamName="numNPCs")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"beusefulFromMap","params":extraInfo}
             return

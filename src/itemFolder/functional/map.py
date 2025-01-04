@@ -48,7 +48,7 @@ You can select the routes and run the stored route.
         options.append(("addNode", "add node"))
         options.append(("abort", "abort"))
         self.character = character
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "where do you want to do?", options
         )
         self.character.macroState["submenue"] = self.submenue
@@ -89,7 +89,7 @@ You can select the routes and run the stored route.
             for (startNode, routePart) in self.routes.items():
                 for (endNode, route) in routePart.items():
                     text += f"{startNode} => {endNode} ({route})\n"
-            self.submenue = src.menuFolder.TextMenu.TextMenu(text)
+            self.submenue = src.menuFolder.textMenu.TextMenu(text)
             self.character.macroState["submenue"] = self.submenue
         elif self.submenue.selection == "addMarker":
             self.addMarker()
@@ -187,7 +187,7 @@ You can select the routes and run the stored route.
                 target = self.markers[target]
             options.append((target, str(target)))
         options.append(("abort", "abort"))
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "where do you want to go?", options
         )
         self.character.macroState["submenue"] = self.submenue

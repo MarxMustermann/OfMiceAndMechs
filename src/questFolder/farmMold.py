@@ -5,7 +5,7 @@ import src
 class FarmMold(src.quests.MetaQuestSequence):
     type = "FarmMold"
 
-    def __init__(self, description="farm mold", creator=None, toCollect=None, lifetime=None, reason=None):
+    def __init__(self, description="farm mold", creator=None, toCollect=None, lifetime=None, reason=None, tryHard=False):
         self.lastMoveDirection = None
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
@@ -14,6 +14,7 @@ class FarmMold(src.quests.MetaQuestSequence):
         if toCollect:
             self.metaDescription += " for "+toCollect
         self.toCollect = toCollect
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         out = []
@@ -33,7 +34,7 @@ farm mold"""
         if not character.getFreeInventorySpace():
             self.postHandler()
             return True
-        if character.getTerrain().alarm:
+        if character.getTerrain().alarm and not self.tryHard:
             self.postHandler()
             return True
         return False
@@ -50,6 +51,9 @@ farm mold"""
 
         candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
+            if character.getTerrain().getRoomByPosition(coord):
+                continue
+
             for item in itemList:
                 if not item.type == "Bloom":
                     continue
@@ -58,11 +62,14 @@ farm mold"""
 
         if candidates:
             coord = random.choice(candidates)
-            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False)
+            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,stimulateMoldGrowth=False,tryHard=self.tryHard)
             return ([quest],None)
 
         candidates = []
         for (coord,itemList) in terrain.itemsByBigCoordinate.items():
+            if character.getTerrain().getRoomByPosition(coord):
+                continue
+
             numSprouts = 0
             for item in itemList:
                 if not item.type == "Sprout":
@@ -78,7 +85,7 @@ farm mold"""
 
         if candidates:
             coord = random.choice(candidates)
-            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord)
+            quest = src.quests.questMap["FarmMoldTile"](targetPosition=coord,tryHard=self.tryHard)
             return ([quest],None)
 
         return (None,None)

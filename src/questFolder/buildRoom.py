@@ -102,6 +102,10 @@ Press d to move the cursor and show the subquests description.
                 if submenue:
                     return (None,(["esc"],"exit submenu"))
 
+            if character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"]()
+                return ([quest],None)
+
             items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
             if not items or items[-1].type != "RoomBuilder":
                 quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room")
@@ -187,6 +191,9 @@ Press d to move the cursor and show the subquests description.
     def triggerCompletionCheck(self,character=None):
         if not character:
             return False
+        if character.getNearbyEnemies() and not self.tryHard:
+            self.fail("enemies nearby")
+            return True
         if character.getTerrain().getRoomByPosition(self.targetPosition):
             self.postHandler()
             return True

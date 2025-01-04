@@ -22,7 +22,7 @@ class Regenerator(src.items.Item):
         if not self.activated:
             self.addTickingEvent()
             character.addMessage("You activated the regenerator")
-            submenue = src.menuFolder.TextMenu.TextMenu(
+            submenue = src.menuFolder.textMenu.TextMenu(
                 f"You activated the Regenerator.\nIt will heal every creature in this room when it pulses.\nIt pulses every 15 ticks"
             )
             character.macroState["submenue"] = submenue

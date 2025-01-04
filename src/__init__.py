@@ -1,7 +1,7 @@
-import src.SubMenu
+import src.subMenu
 import src.characters
 import src.monster
-import src.CharcFolder
+import src.characterFolder
 import src.statusEffects
 import src.statusEffectFolder
 import src.items
@@ -11,6 +11,6 @@ import src.quests
 import src.magic
 import src.menuFolder
 import src.helpers
-import src.StateFolder
+import src.cinematicsFolder
 import src.popups
-import src.PopupFolder
+import src.popupFolder

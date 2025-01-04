@@ -82,13 +82,14 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
                 command = "k"
             return (None,(command,"pickup maggot"))
 
-        items = character.container.getNearbyItems(character)
         maggotFound = None
         treeFound = None
-        for item in items:
-            if item.type == "VatMaggot":
-                maggotFound = item
-                break
+        if not character.container.isRoom:
+            items = character.container.getNearbyItems(character)
+            for item in items:
+                if item.type == "VatMaggot":
+                    maggotFound = item
+                    break
             if item.type == "Tree":
                 treeFound = item
 
@@ -125,6 +126,7 @@ class GatherVatMaggots(src.quests.MetaQuestSequence):
 
         self.fail(reason="no tree")
         return (None,None)
+
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()

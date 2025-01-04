@@ -73,7 +73,7 @@ commands:
             ("recordCommand", optionText),
             ("addCommand", "add command"),
         ]
-        self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+        self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
         character.macroState["submenue"] = self.submenue
@@ -130,7 +130,7 @@ commands:
                 options = []
                 for key in itemMap:
                     options.append((key, key))
-                self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+                self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                     "Setting command for producing item. What item do you want to set the command for?",
                     options,
                 )
@@ -149,7 +149,7 @@ commands:
                 self.character.addMessage("there are no commands set")
                 return
 
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Run command for producing item. select item to produce.", options
             )
             self.character.macroState["submenue"] = self.submenue
@@ -158,7 +158,7 @@ commands:
             options = []
             for key in itemMap:
                 options.append((key, key))
-            self.submenue = src.menuFolder.SelectionMenu.SelectionMenu(
+            self.submenue = src.menuFolder.selectionMenu.SelectionMenu(
                 "Setting command for producing item. What item do you want to set the command for?",
                 options,
             )

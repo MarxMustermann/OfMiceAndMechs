@@ -28,4 +28,4 @@ import src.itemFolder.resources.token
 import src.itemFolder.resources.wall
 import src.itemFolder.resources.spiderEye
 import src.itemFolder.resources.grindstone
-import src.itemFolder.resources.citinplates
+import src.itemFolder.resources.chitinPlates

@@ -217,6 +217,7 @@ class Terrain:
         ):
             event = self.events[0]
             if event.tick < src.gamestate.gamestate.tick:
+                self.events.remove(event)
                 continue
             event.handleEvent()
             self.events.remove(event)
@@ -427,9 +428,10 @@ class Terrain:
                         # print some info
                         if isinstance(item, src.items.itemMap["Door"]):
                             char.addMessage("you need to open the door first")
+                            char.hurt(20,"getting stuck between rooms")
                         else:
                             char.addMessage("the entry is blocked")
-                            char.die("getting stuck between rooms")
+                            char.hurt(20,"getting stuck between rooms")
                         # char.addMessage("press "+commandChars.activate+" to apply")
                         # if noAdvanceGame == False:
                         #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -437,9 +439,9 @@ class Terrain:
                         # remember the item for interaction and abort
                         return item
 
-                if len(room.itemByCoordinates[localisedEntry]) >= 15:
+                if len(room.itemByCoordinates[localisedEntry]) > 15:
                     char.addMessage("the entry is blocked by items.")
-                    char.die("getting stuck between rooms")
+                    char.hurt(20,"getting stuck between rooms")
                     # char.addMessage("press "+commandChars.activate+" to apply")
                     # if noAdvanceGame == False:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
@@ -796,6 +798,11 @@ class Terrain:
                     continue
 
                 if char.faction == other.faction:
+                    continue
+
+                if other not in self.characters:
+                    logger.error("bumped into ghost")
+                    self.charactersByTile.get((bigX, bigY, 0)).remove(other)
                     continue
 
                 char.messages.append("*thump*")

@@ -114,7 +114,7 @@ def Death(extraParam):
         events = list(tcod.event.get())
         while events or runStar:
             if events:
-                event = events[0]
+                event = events.pop(0)
             else:
                 event = None
 
@@ -198,5 +198,4 @@ def Death(extraParam):
                         pass
                     case _:
                         src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
-        src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
-        time.sleep(0.2)
+            src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)

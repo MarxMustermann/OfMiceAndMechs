@@ -3863,13 +3863,17 @@ def getTcodEvents():
                         0 if fullscreen else tcod.lib.SDL_WINDOW_FULLSCREEN_DESKTOP,
                     )
                 if key == tcod.event.KeySym.RIGHT:
-                    translatedKey = "right"
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                         translatedKey = "right"
                 if key == tcod.event.KeySym.LEFT:
-                    translatedKey = "left"
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                        translatedKey = "left"
                 if key == tcod.event.KeySym.UP:
-                    translatedKey = "up"
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                        translatedKey = "up"
                 if key == tcod.event.KeySym.DOWN:
-                    translatedKey = "down"
+                    if not (event.mod & tcod.event.Modifier.CTRL or event.mod & tcod.event.Modifier.SHIFT):
+                        translatedKey = "down"
                 if translatedKey is None:
                     continue
 

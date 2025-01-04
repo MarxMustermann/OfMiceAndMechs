@@ -1,0 +1,40 @@
+name: Package Game
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build-win:
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+      - name: Download Python Windows Embeddable
+        uses: gamedev-thingy/Download-Extract@done
+        with:
+          # The URL to download from
+          url: https://www.python.org/ftp/python/3.12.8/python-3.12.8-embed-amd64.zip
+          # Where the files will be extracted to
+          destination: .
+          # Name of the downloaded ZIP file
+          ZIPname: python-3.12.8-embed-amd64
+      - name: install dep and finishing up
+        run: |
+          Add-Content -Path ./python312._pth -Value "./Lib/site-packages/"
+          Add-Content -Path ./python312._pth -Value "import site"
+          curl -L https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+          ./python get-pip.py
+          ./Scripts/pip install -r requirements.txt
+          echo "python.exe executeMe.py" | out-file lunch_game.bat
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OfMiceAndMechs-Win
+          path: |
+            *
+          compression-level: 9

@@ -6,7 +6,7 @@ class DebugMenu(src.subMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Teleport", "Add Mana", "Execute Code"]
+    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash"]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -27,6 +27,10 @@ class DebugMenu(src.subMenu.SubMenu):
             current_change = change_event and self.index == i
             text += ">" if self.index == i else ""
             match debug:
+                case "Test Crash":
+                    text+= debug
+                    if current_change:
+                        1/0
                 case "Execute Code":
                     text+= debug
                     if current_change:

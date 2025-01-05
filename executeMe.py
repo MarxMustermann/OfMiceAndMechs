@@ -260,6 +260,7 @@ if __name__ == '__main__':
                                                     case "WINDOWCLOSE":
                                                         raise e
                                     raise e
+                                src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
                             if isinstance(event, tcod.event.Quit):
                                 raise e
                             if isinstance(event, tcod.event.WindowEvent):

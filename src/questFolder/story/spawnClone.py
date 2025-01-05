@@ -125,6 +125,15 @@ class SpawnClone(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["GoToPosition"](targetPosition=growthTank.getPosition(),reason="to be able to use the growth tank",description="go to growth tank",ignoreEndBlocked=True)
             return ([quest],None)
 
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "GrowthTank":
+                if character.macroState["itemMarkedLast"].filled:
+                    return (None,("j","spawn clone"))
+                else:
+                    return (None,("j","refill growth tank"))
+            else:
+                return (None,(".","undo selection"))
+
         direction = ""
         if character.getPosition(offset=(1,0,0)) == itemPos:
             direction = "d"

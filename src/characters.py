@@ -1277,6 +1277,7 @@ press l/L for light attack
 
 press any other key to attack normally"""
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu.tag = "specialAttackSelection"
         self.macroState["submenue"] = submenu
         self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)

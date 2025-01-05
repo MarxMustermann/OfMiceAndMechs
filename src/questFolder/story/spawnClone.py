@@ -37,15 +37,16 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     self.startWatching(newQuest,self.handleQuestFailure,"failed")
                     return
 
-            for item in self.character.container.getItemsByType("GooDispenser"):
-                if item.charges > 0:
-                    newQuest = src.quests.questMap["FillFlask"]()
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    newQuest = src.quests.questMap["FetchItems"](toCollect="Flask",tryHard=True,amount=1)
-                    self.addQuest(newQuest)
-                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
-                    return
+            for room in self.character.getTerrain().rooms:
+                for item in room.getItemsByType("GooDispenser"):
+                    if item.charges > 0:
+                        newQuest = src.quests.questMap["FillFlask"]()
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        newQuest = src.quests.questMap["FetchItems"](toCollect="Flask",tryHard=True,amount=1)
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
 
             if self.character.container.isRoom:
                 for item in self.character.container.getItemsByType("GooProducer"):
@@ -77,7 +78,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     return
 
             # ensure traprooms don't fill up
-            for room in terrain.rooms:
+            for room in self.character.getTerrain().rooms:
                 if not room.tag == "traproom":
                     continue
                 numItems = 0
@@ -109,6 +110,14 @@ class SpawnClone(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter tile"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter tile"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter tile"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter tile"))
             return (None,None)
 
         growthTank = character.container.getItemByType("GrowthTank")

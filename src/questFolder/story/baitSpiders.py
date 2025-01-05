@@ -53,6 +53,16 @@ class BaitSpiders(src.quests.MetaQuestSequence):
                     self.postHandler()
                 return (None,None)
 
+            if not character.container.isRoom:
+                if character.xPosition%15 == 0:
+                    return (None,("d","enter tile"))
+                if character.xPosition%15 == 14:
+                    return (None,("a","enter tile"))
+                if character.yPosition%15 == 0:
+                    return (None,("s","enter tile"))
+                if character.yPosition%15 == 14:
+                    return (None,("w","enter tile"))
+
             return (None,(".","wait for the spider to attack"))
 
         if phase == "run":

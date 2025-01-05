@@ -44,13 +44,13 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
             if foundSnatcher:
                 if not character.container.isRoom:
                     if character.xPosition%15 == 0:
-                        return (None,("d","enter room"))
+                        return (None,("d","enter tile"))
                     if character.xPosition%15 == 14:
-                        return (None,("a","enter room"))
+                        return (None,("a","enter tile"))
                     if character.yPosition%15 == 0:
-                        return (None,("s","enter room"))
+                        return (None,("s","enter tile"))
                     if character.yPosition%15 == 14:
-                        return (None,("w","enter room"))
+                        return (None,("w","enter tile"))
 
                 return (None,("...........","wait for Snatchers"))
 

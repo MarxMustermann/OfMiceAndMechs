@@ -231,13 +231,25 @@ Place the items in the correct input or storage stockpile.
                             return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
                 else:
                     if foundDirectDrop[1] == (-1,0):
-                        return (None,("Ja"*10,"put scrap on scrap pile"))
+                        command = "Ja"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (1,0):
-                        return (None,("Jd"*10,"put scrap on scrap pile"))
+                        command = "Jd"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,-1):
-                        return (None,("Jw"*10,"put scrap on scrap pile"))
+                        command = "Jw"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,1):
-                        return (None,("Js"*10,"put scrap on scrap pile"))
+                        command = "Js"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,0):
                         return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
 

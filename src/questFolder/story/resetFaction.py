@@ -17,6 +17,12 @@ class ResetFaction(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "FactionSetter":
+                return (None,("j","reset faction"))
+            else:
+                return (None,(".","undo selection"))
+
         if not character.getBigPosition() == (7,8,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,8,0),reason="go to spawning room",description="go to spawning room")
             return ([quest],None)

@@ -945,7 +945,7 @@ class Room:
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
+                    if "city" not in character.faction or character.charType not in ("Character","Ghoul","Clone"):
                         try:
                             character.specialDisplay
                         except:

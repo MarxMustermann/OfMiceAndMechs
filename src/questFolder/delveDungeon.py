@@ -239,8 +239,6 @@ After fetching the glass heart return the glass heart to your base and set it in
         if rooms:
             character.addMessage(f"char strength: {character.getStrengthSelfEstimate()}")
             character.addMessage(f"room strength: {rooms[0].getEstimatedStrength()}")
-            print(f"char strength: {character.getStrengthSelfEstimate()}")
-            print(f"room strength: {rooms[0].getEstimatedStrength()}")
 
         if not dryRun:
             homeTerrain = src.gamestate.gamestate.terrainMap[character.registers["HOMETy"]][character.registers["HOMETx"]]

@@ -213,10 +213,6 @@ Place the items in the correct input or storage stockpile.
                         if inventoryCommand == "":
                             if "advancedDrop" in character.interactionState:
                                 interactionCommand = ""
-                            if character.macroState.get("submenue"):
-                                print("submenue")
-                                print(character.macroState.get("submenue"))
-                                print(character.macroState.get("submenue").tag)
                             if character.macroState.get("submenue") and character.macroState.get("submenue").tag == "dropDirection":
                                 interactionCommand = ""
                         if foundDirectDrop[1] == (-1,0):

@@ -55,9 +55,6 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             for item in room.getItemsByType("CityPlaner",needsBolted=True):
                 cityPlaner = item
 
-        print(edgeTrapRooms)
-        print(cityPlaner.plannedRooms)
-
         offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
         roomPos = edgeTrapRooms[0].getPosition()
         plannedTraproomPositions = []
@@ -68,10 +65,6 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
                 plannedTraproomPositions.append(offsetedPosition)
             if not terrain.getRoomByPosition(offsetedPosition) and offsetedPosition not in terrain.forests and offsetedPosition not in terrain.scrapFields:
                 candidateTraproomPositions.append(offsetedPosition)
-
-        print(plannedTraproomPositions)
-        print("candidateTraproomPositions")
-        print(candidateTraproomPositions)
 
         if plannedTraproomPositions:
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)

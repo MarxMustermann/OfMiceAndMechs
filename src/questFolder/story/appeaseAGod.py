@@ -209,8 +209,6 @@ Your goal is to reach {self.targetNumGods} unlocked GlassStatues.
                     continue
                 numGlassStatues += 1
 
-        print(numGlassStatues)
-
         if self.targetNumGods:
             if self.targetNumGods <= numGlassStatues:
                 self.postHandler()

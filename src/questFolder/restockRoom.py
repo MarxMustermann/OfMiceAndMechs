@@ -195,9 +195,9 @@ Place the items in the correct input or storage stockpile.
                         if not item.walkable:
                             numToDrop = 1
     
+                        submenue = character.macroState["submenue"]
                         inventoryCommand = ""
                         if counter > -1:
-                            submenue = character.macroState["submenue"]
                             if not submenue:
                                 inventoryCommand += "i"+"s"*counter
                             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
@@ -209,12 +209,16 @@ Place the items in the correct input or storage stockpile.
 
                         numToDrop = 1
 
+                        print("start")
                         interactionCommand = "L"
                         if inventoryCommand == "":
                             if "advancedDrop" in character.interactionState:
                                 interactionCommand = ""
-                            if character.macroState.get("submenue") and character.macroState.get("submenue").tag == "dropDirection":
+                            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
                                 interactionCommand = ""
+
+                        print("interactionCommand")
+                        print(interactionCommand)
                         if foundDirectDrop[1] == (-1,0):
                             return (None,((inventoryCommand+interactionCommand+"a")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):

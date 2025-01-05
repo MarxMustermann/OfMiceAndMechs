@@ -72,7 +72,7 @@ class SpawnGhul(src.quests.MetaQuestSequence):
                 return ([quest],None)
 
             if not character.container.isRoom:
-                pos = character.getSmallPosition()
+                pos = character.getSpacePosition()
                 if pos == (14,7,0):
                     return (None,("a","enter room"))
                 if pos == (0,7,0):

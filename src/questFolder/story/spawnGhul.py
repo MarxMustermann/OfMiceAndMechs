@@ -100,7 +100,10 @@ class SpawnGhul(src.quests.MetaQuestSequence):
             if (pos[0],pos[1]+1,pos[2]) == targetPos:
                 direction = "s"
 
-            return (None,("J"+direction,"spawn ghul"))
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
+            return (None,(interactionCommand+direction,"spawn ghul"))
 
         # ensure corpse in inventory
         corpses = character.searchInventory("Corpse")
@@ -160,7 +163,10 @@ class SpawnGhul(src.quests.MetaQuestSequence):
         if (pos[0],pos[1]+1,pos[2]) == targetPos:
             direction = "s"
 
-        return (None,("J"+direction,"fill the CorpseAnimator"))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
+        return (None,(interactionCommand+direction,"fill the CorpseAnimator"))
 
     def generateTextDescription(self):
         text = ["""

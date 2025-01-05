@@ -64,14 +64,17 @@ Use the Promotor to do this.
             if item.type != "Promoter":
                 continue
 
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
             if item.getPosition() == (character.xPosition-1,character.yPosition,0):
-                return (None,("Ja","get promotion"))
+                return (None,(interactionCommand+"a","get promotion"))
             if item.getPosition() == (character.xPosition+1,character.yPosition,0):
-                return (None,("Jd","get promotion"))
+                return (None,(interactionCommand+"d","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition-1,0):
-                return (None,("Jw","get promotion"))
+                return (None,(interactionCommand+"w","get promotion"))
             if item.getPosition() == (character.xPosition,character.yPosition+1,0):
-                return (None,("Js","get promotion"))
+                return (None,(interactionCommand+"s","get promotion"))
             
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
             return  ([quest],None)

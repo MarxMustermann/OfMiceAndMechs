@@ -67,7 +67,7 @@ So if an enemy is to directly east of you:
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
-            if submenue:
+            if submenue and not submenue.tag == "specialAttackSelection":
                 return (None,(["esc"],"exit the menu"))
 
         # check for direct attacks
@@ -111,6 +111,9 @@ So if an enemy is to directly east of you:
                 directionCommand = "S"
             if directionCommand == "w":
                 directionCommand = "W"
+
+            if character.macroState.get("submenue") and character.macroState["submenue"].tag == "specialAttackSelection":
+                directionCommand = ""
 
             return (None,(directionCommand+specialAttack,"attack enemy"))
 

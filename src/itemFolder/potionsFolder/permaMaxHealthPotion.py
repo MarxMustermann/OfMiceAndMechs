@@ -18,7 +18,7 @@ class PermaMaxHealthPotion(src.items.itemMap["Potion"]):
         increaseValue = min(500-character.maxHealth,increaseValue)
         character.maxHealth += increaseValue
 
-        character.addMessage(f"you drink from the flask and feal a lot healthier\nYour max health is increased by {increaseValue}")
+        character.addMessage(f"you drink from the flask and feal a lot healthier\nYour max health is increased by {increaseValue} to {character.maxHealth}")
 
         super().apply(character)
 

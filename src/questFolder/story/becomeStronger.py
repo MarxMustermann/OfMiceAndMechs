@@ -19,6 +19,14 @@ class BecomeStronger(src.quests.MetaQuestSequence):
 
         terrain = character.getTerrain()
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"](suicidal=True)
+            return ([quest],None)
+
+        if character.health < character.maxHealth//2:
+            quest = src.quests.questMap["Heal"]()
+            return ([quest],None)
+
         if not character.weapon:
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots("Sword"):

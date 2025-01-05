@@ -209,14 +209,24 @@ Place the items in the correct input or storage stockpile.
 
                         numToDrop = 1
 
+                        interactionCommand = "L"
+                        if inventoryCommand == "":
+                            if "advancedDrop" in character.interactionState:
+                                interactionCommand = ""
+                            if character.macroState.get("submenue"):
+                                print("submenue")
+                                print(character.macroState.get("submenue"))
+                                print(character.macroState.get("submenue").tag)
+                            if character.macroState.get("submenue") and character.macroState.get("submenue").tag == "dropDirection":
+                                interactionCommand = ""
                         if foundDirectDrop[1] == (-1,0):
-                            return (None,((inventoryCommand+"La")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"a")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):
-                            return (None,((inventoryCommand+"Ld")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"d")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,-1):
-                            return (None,((inventoryCommand+"Lw")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"w")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,1):
-                            return (None,((inventoryCommand+"Ls")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"s")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,0):
                             return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
                 else:

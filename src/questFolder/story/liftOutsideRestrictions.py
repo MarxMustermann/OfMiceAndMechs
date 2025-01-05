@@ -36,6 +36,31 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             return (None,None)
         
         if character.macroState["submenue"] and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                foundOption = False
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == "unrestrict outside":
+                            foundOption = True
+                            break
+                        counter += 1
+                    rewardIndex = counter
+
+                if not foundOption:
+                    return (None,(["esc"],"to close menu"))
+
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"contact command"))
+            
             return (None,(["esc"],"to close menu"))
         
         terrain = character.getTerrain()
@@ -71,7 +96,11 @@ class LiftOutsideRestrictions(src.quests.MetaQuestSequence):
             direction = "w"
         if (pos[0],pos[1]+1,pos[2]) == target_pos:
             direction = "s"
-        return (None,("J"+direction+"sj","disable the outside restrictions"))
+
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
+        return (None,(interactionCommand+direction+"sj","disable the outside restrictions"))
 
     def generateTextDescription(self):
         text = ["""

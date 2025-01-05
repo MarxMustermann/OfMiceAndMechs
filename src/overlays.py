@@ -141,7 +141,10 @@ class NPCsOverlay:
                     char = "@"+health
                 elif viewChar == "name":
                     if not isinstance(character,src.characters.characterMap["Ghoul"]):
-                        char = character.name[0]+character.name.split(" ")[1][0]
+                        if len(character.name.split(" ")) > 1:
+                            char = character.name[0]+character.name.split(" ")[1][0]
+                        else:
+                            char = character.name[0]+character.name[1]
                     else:
                         char = "Gu"
                 elif viewChar == "faction":

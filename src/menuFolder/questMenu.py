@@ -244,6 +244,8 @@ class QuestMenu(src.subMenu.SubMenu):
                 for index in questCursor:
                     if index >= len(baseList):
                         index = 0
+                    if not len(baseList):
+                        break
                     quest = baseList[index]
                     try:
                         baseList = quest.subQuests

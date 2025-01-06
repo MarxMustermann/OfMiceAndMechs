@@ -45,6 +45,9 @@ or use this item with MoldFeed in your inventory.
         return text
 
     def getMoldFeed(self,character):
+        if not self.container:
+            return []
+
         moldFeed = []
 
         for offset in [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]:

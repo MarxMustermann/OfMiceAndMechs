@@ -6920,7 +6920,6 @@ def advanceChar_disabled(char):
                     startTime = time.time()
 
                     while (not state["commandKeyQueue"]) and char.timeTaken < 1:
-                        renderGameDisplay()
                         hasAutosolveQuest = False
                         for quest in char.getActiveQuests():
                             if not quest.autoSolve:

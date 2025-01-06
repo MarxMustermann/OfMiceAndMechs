@@ -13,7 +13,7 @@ class Clone(src.characters.Character):
         yPosition=0,
         quests=None,
         automated=True,
-        name="Clone",
+        name=None,
         creator=None,
         characterId=None,
     ):

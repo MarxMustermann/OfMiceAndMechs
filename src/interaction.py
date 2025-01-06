@@ -6765,8 +6765,8 @@ def advanceChar(char,render=True, pull_events = True):
     lastLoop = time.time()
     if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1 and render:
         renderGameDisplay()
-        lastRender = time.time()
         sendNetworkDraw(src.gamestate.gamestate.mainChar)
+        lastRender = time.time()
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
             #char.getTerrain().animations = []
@@ -6786,8 +6786,12 @@ def advanceChar(char,render=True, pull_events = True):
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
-            getNetworkedEvents()
-            newInputs = getTcodEvents() if pull_events else None
+            if pull_events:
+                newInputs = getTcodEvents() 
+                if getNetworkedEvents():
+                    newInputs = True
+            else:
+                newInputs = None
 
             if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
                 skipNextRender = True
@@ -6799,8 +6803,8 @@ def advanceChar(char,render=True, pull_events = True):
                     if room.animations:
                         skipNextRender = False
 
-                renderGameDisplay()
                 sendNetworkDraw(src.gamestate.gamestate.mainChar)
+                renderGameDisplay()
                 lastRender = time.time()
 
             if newInputs:
@@ -6926,8 +6930,6 @@ def advanceChar_disabled(char):
                     startTime = time.time()
 
                     while (not state["commandKeyQueue"]) and char.timeTaken < 1:
-                        renderGameDisplay()
-                        sendNetworkDraw(src.gamestate.gamestate.mainChar)
                         hasAutosolveQuest = False
                         for quest in char.getActiveQuests():
                             if not quest.autoSolve:
@@ -6938,7 +6940,6 @@ def advanceChar_disabled(char):
                             getTcodEvents()
 
                             renderGameDisplay()
-                            sendNetworkDraw(src.gamestate.gamestate.mainChar)
                             if char.getTerrain():
                                 char.getTerrain().lastRender = None
 
@@ -7018,6 +7019,7 @@ def getNetworkedEvents():
     if not len(chunkData):
         return
 
+    foundCommand = False
     for data in chunkData.split(b"\n"):
         print(data)
         print("got data!")
@@ -7030,7 +7032,8 @@ def getNetworkedEvents():
 
         for command in raw["commands"]:
             keyboardListener(command,targetCharacter=src.gamestate.gamestate.mainChar)
-            sendNetworkDraw(src.gamestate.gamestate.mainChar)
+            foundCommand = True
+    return foundCommand
 
 def sendNetworkDraw(character):
     """

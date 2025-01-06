@@ -133,6 +133,14 @@ def getTcodEvents():
                 src.gamestate.gamestate.dragState = None
             """
 
+        if isinstance(event,tcod.event.TextInput):
+            translatedKey = event.text
+
+            if translatedKey is None:
+                continue
+
+            commands.append(translatedKey)
+
         if isinstance(event,tcod.event.KeyDown):
             key = event.sym
             translatedKey = None
@@ -160,183 +168,9 @@ def getTcodEvents():
                     translatedKey = "ESC"
                 else:
                     translatedKey = "esc"
-            if key == tcod.event.KeySym.N1:
-                translatedKey = "1"
-            if key == tcod.event.KeySym.N2:
-                translatedKey = "2"
-            if key == tcod.event.KeySym.N3:
-                translatedKey = "3"
-            if key == tcod.event.KeySym.N4:
-                translatedKey = "4"
-            if key == tcod.event.KeySym.N5:
-                translatedKey = "5"
-            if key == tcod.event.KeySym.N6:
-                translatedKey = "6"
-            if key == tcod.event.KeySym.N7:
-                translatedKey = "7"
-            if key == tcod.event.KeySym.N8:
-                translatedKey = "8"
-            if key == tcod.event.KeySym.N9:
-                translatedKey = "9"
-            if key == tcod.event.KeySym.N0:
-                translatedKey = "0"
-            if key == tcod.event.KeySym.COMMA:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = ";"
-                else:
-                    translatedKey = ","
-            if key == tcod.event.KeySym.MINUS:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "_"
-                else:
-                    translatedKey = "-"
-            if key == tcod.event.KeySym.PLUS or key == tcod.event.KeySym.KP_PLUS:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "*"
-                else:
-                    translatedKey = "+"
-            if key == tcod.event.KeySym.a:
-                if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                    translatedKey = "ctrl a"
-                elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "A"
-                else:
-                    translatedKey = "a"
-            if key == tcod.event.KeySym.b:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "B"
-                else:
-                    translatedKey = "b"
-            if key == tcod.event.KeySym.c:
-                if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                    translatedKey = "ctrl c"
-                elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "C"
-                else:
-                    translatedKey = "c"
-            if key == tcod.event.KeySym.d:
-                if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                    translatedKey = "ctrl d"
-                elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "D"
-                else:
-                    translatedKey = "d"
-            if key == tcod.event.KeySym.e:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "E"
-                else:
-                    translatedKey = "e"
-            if key == tcod.event.KeySym.f:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "F"
-                else:
-                    translatedKey = "f"
-            if key == tcod.event.KeySym.g:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "G"
-                else:
-                    translatedKey = "g"
-            if key == tcod.event.KeySym.h:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "H"
-                else:
-                    translatedKey = "h"
             if key == tcod.event.KeySym.i:
                 if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
                     translatedKey = "ctrl i"
-                elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "I"
-                else:
-                    translatedKey = "i"
-            if key == tcod.event.KeySym.j:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "J"
-                else:
-                    translatedKey = "j"
-            if key == tcod.event.KeySym.k:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "K"
-                else:
-                    translatedKey = "k"
-            if key == tcod.event.KeySym.l:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "L"
-                else:
-                    translatedKey = "l"
-            if key == tcod.event.KeySym.m:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "M"
-                else:
-                    translatedKey = "m"
-            if key == tcod.event.KeySym.n:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "N"
-                else:
-                    translatedKey = "n"
-            if key == tcod.event.KeySym.o:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "O"
-                else:
-                    translatedKey = "o"
-            if key == tcod.event.KeySym.p:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "P"
-                else:
-                    translatedKey = "p"
-            if key == tcod.event.KeySym.q:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "Q"
-                else:
-                    translatedKey = "q"
-            if key == tcod.event.KeySym.r:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "R"
-                else:
-                    translatedKey = "r"
-            if key == tcod.event.KeySym.s:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "S"
-                else:
-                    translatedKey = "s"
-            if key == tcod.event.KeySym.t:
-                if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                    translatedKey = "ctrl t"
-                elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "T"
-                else:
-                    translatedKey = "t"
-            if key == tcod.event.KeySym.u:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "U"
-                else:
-                    translatedKey = "u"
-            if key == tcod.event.KeySym.v:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "V"
-                else:
-                    translatedKey = "v"
-            if key == tcod.event.KeySym.w:
-                if event.mod in (tcod.event.Modifier.LCTRL,tcod.event.Modifier.RCTRL,):
-                    translatedKey = "ctrl w"
-                elif event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "W"
-                else:
-                    translatedKey = "w"
-            if key == tcod.event.KeySym.x:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "X"
-                else:
-                    translatedKey = "x"
-            if key == tcod.event.KeySym.y:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "Y"
-                else:
-                    translatedKey = "y"
-            if key == tcod.event.KeySym.z:
-                if event.mod in (tcod.event.Modifier.SHIFT,tcod.event.Modifier.RSHIFT,tcod.event.Modifier.LSHIFT,):
-                    translatedKey = "Z"
-                else:
-                    translatedKey = "z"
 
             if translatedKey is None:
                 print(event)

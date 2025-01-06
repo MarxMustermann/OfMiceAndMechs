@@ -32,6 +32,7 @@ class DebugMenu(src.subMenu.SubMenu):
                     if current_change:
                         1/0
                 case "Execute Code":
+                    raise Exception("lol, nope")
                     text+= debug
                     if current_change:
                         submenue = src.menuFolder.inputMenu.InputMenu("Type the code to execute",targetParamName="code")

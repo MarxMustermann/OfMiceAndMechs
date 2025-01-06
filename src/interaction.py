@@ -4417,7 +4417,8 @@ def renderGameDisplay(renderChar=None):
                 printUrwidToDummy(pseudoDisplay, main.get_text(),(offsetLeft+2,offsetTop+2))
 
     if renderChar:
-        sendNetworkDraw(pseudoDisplay)
+        #sendNetworkDraw(pseudoDisplay)
+        pass
     else:
         if shadowCharacter:
             renderGameDisplay(shadowCharacter)
@@ -6765,6 +6766,7 @@ def advanceChar(char,render=True, pull_events = True):
     if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1 and render:
         renderGameDisplay()
         lastRender = time.time()
+        sendNetworkDraw(src.gamestate.gamestate.mainChar)
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
             #char.getTerrain().animations = []
@@ -6778,11 +6780,13 @@ def advanceChar(char,render=True, pull_events = True):
                 """
                 if src.gamestate.gamestate.tick%3 == 0:
                     renderGameDisplay()
+                    sendNetworkDraw(src.gamestate.gamestate.mainChar)
             lastRender = time.time()
             rerender = False
         if (char == src.gamestate.gamestate.mainChar):
             if char.dead:
                 return
+            getNetworkedEvents()
             newInputs = getTcodEvents() if pull_events else None
 
             if (time.time()-lastRender) > 0.1 and render and not skipNextRender:
@@ -6796,6 +6800,7 @@ def advanceChar(char,render=True, pull_events = True):
                         skipNextRender = False
 
                 renderGameDisplay()
+                sendNetworkDraw(src.gamestate.gamestate.mainChar)
                 lastRender = time.time()
 
             if newInputs:
@@ -6922,6 +6927,7 @@ def advanceChar_disabled(char):
 
                     while (not state["commandKeyQueue"]) and char.timeTaken < 1:
                         renderGameDisplay()
+                        sendNetworkDraw(src.gamestate.gamestate.mainChar)
                         hasAutosolveQuest = False
                         for quest in char.getActiveQuests():
                             if not quest.autoSolve:
@@ -6932,6 +6938,7 @@ def advanceChar_disabled(char):
                             getTcodEvents()
 
                             renderGameDisplay()
+                            sendNetworkDraw(src.gamestate.gamestate.mainChar)
                             if char.getTerrain():
                                 char.getTerrain().lastRender = None
 
@@ -6965,7 +6972,7 @@ s = None
 conn = None
 
 HOST = "127.0.0.1"
-PORT = 65475
+PORT = 65481
 
 shadowCharacter = None
 
@@ -6991,6 +6998,7 @@ def getNetworkedEvents():
     if not conn:
         return
 
+    """
     if not shadowCharacter:
         shadowCharacter = src.characters.Character()
         shadowCharacter.personality["doIdleAction"] = False
@@ -6998,6 +7006,7 @@ def getNetworkedEvents():
         src.gamestate.gamestate.mainChar.personality["doIdleAction"] = False
         pos = src.gamestate.gamestate.mainChar.getPosition()
         src.gamestate.gamestate.mainChar.container.addCharacter(shadowCharacter,pos[0],pos[1])
+    """
 
     s.setblocking(False)
     conn.setblocking(False)
@@ -7010,6 +7019,9 @@ def getNetworkedEvents():
         return
 
     for data in chunkData.split(b"\n"):
+        print(data)
+        print("got data!")
+
         if not len(data):
             continue
 
@@ -7017,9 +7029,10 @@ def getNetworkedEvents():
         raw = json.loads(data)
 
         for command in raw["commands"]:
-            keyboardListener(command,targetCharacter=shadowCharacter)
+            keyboardListener(command,targetCharacter=src.gamestate.gamestate.mainChar)
+            sendNetworkDraw(src.gamestate.gamestate.mainChar)
 
-def sendNetworkDraw(pseudoDisplay):
+def sendNetworkDraw(character):
     """
     basically a copy of the main loop for networked multiplayer
 
@@ -7027,6 +7040,8 @@ def sendNetworkDraw(pseudoDisplay):
         loop: the main loop (urwids main loop)
         user_data: parameter that needs to be there but is not used
     """
+
+    pseudoDisplay = render(character)
 
     global s
     global conn
@@ -7048,9 +7063,14 @@ def sendNetworkDraw(pseudoDisplay):
     if not conn:
         return
 
-    import json
+    canvas = render(src.gamestate.gamestate.mainChar)
 
-    #data = conn.recv(1024 * 1024 * 1024)
+    pseudoDisplay = []
+    for y in range(50):
+        pseudoDisplay.append([])
+        for x in range(200):
+            pseudoDisplay[y].append("xx")
+    canvas.getAsDummy(pseudoDisplay,0,0,warning=False)
 
     info = {"pseudoDisplay":pseudoDisplay}
     info = json.dumps(info)

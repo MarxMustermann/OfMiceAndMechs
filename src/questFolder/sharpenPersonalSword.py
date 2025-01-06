@@ -40,6 +40,10 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"](description="defend yourself")
+            return ([quest],None)
+
         terrain = character.getTerrain()
 
         if character.container.isRoom:

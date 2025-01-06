@@ -67,6 +67,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             improvementAmount += min(0.5,8-armor.armorValue-improvementAmount)
 
         if not improvementAmount:
+            character.changed("improved armor")
             character.addMessage("you can't improve your armor")
             return
 

@@ -70,6 +70,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         if not improvementAmount:
             character.addMessage("you can't improve your sword")
+            character.changed("sharpened sword")
             return
 
         params["sword"] = sword

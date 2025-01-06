@@ -1711,6 +1711,9 @@ class Terrain:
         Returns:
             the rendered terrain
         """
+        print(size)
+        print(coordinateOffset)
+        print(self.lastRender)
 
         if not self.lastRender:
             # hide/show map
@@ -2044,7 +2047,6 @@ class Terrain:
                 display = "??"
                 chars[pos[1]][pos[0]] = display
                 #self.animations.remove(animation)
-
 
         return chars
 

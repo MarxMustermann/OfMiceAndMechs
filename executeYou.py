@@ -13,7 +13,7 @@ import time
 import tcod
 
 HOST = "127.0.0.1" #input("enter server address")  # The server's hostname or IP address
-PORT = 65481  # The port used by the server
+PORT = 65485  # The port used by the server
 
 screen_width = 200
 screen_height = 51

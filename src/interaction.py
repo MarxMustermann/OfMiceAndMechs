@@ -3245,7 +3245,7 @@ lastCenterX = None
 lastCenterY = None
 
 # bad code: should be contained somewhere
-def render(char):
+def render(char,debug=False):
     """
     render the map
 
@@ -3283,6 +3283,10 @@ def render(char):
             + char.yPosition
         )
     else:
+        if debug:
+            print("----------__")
+            print(char)
+            print(char.xPosition)
         centerX = char.xPosition
         centerY = char.yPosition
 
@@ -3321,6 +3325,9 @@ def render(char):
     ):
         chars = char.room.render()
     else:
+        if debug:
+            print("centerX")
+            print(centerX)
         chars = thisTerrain.render(size=(viewsize, viewsize),coordinateOffset=(centerY - halfviewsite -1, centerX - halfviewsite-1))
         miniMapChars = []
 
@@ -6765,7 +6772,9 @@ def advanceChar(char,render=True, pull_events = True):
     lastLoop = time.time()
     if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1 and render:
         renderGameDisplay()
-        sendNetworkDraw(src.gamestate.gamestate.mainChar)
+        if not ghost:
+            #sendNetworkDraw(src.gamestate.gamestate.mainChar)
+            pass
         lastRender = time.time()
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
@@ -6780,7 +6789,11 @@ def advanceChar(char,render=True, pull_events = True):
                 """
                 if src.gamestate.gamestate.tick%3 == 0:
                     renderGameDisplay()
-                    sendNetworkDraw(src.gamestate.gamestate.mainChar)
+                    if not ghost:
+                        #sendNetworkDraw(src.gamestate.gamestate.mainChar)
+                        pass
+                    else:
+                        sendNetworkDraw(ghost)
             lastRender = time.time()
             rerender = False
         if (char == src.gamestate.gamestate.mainChar):
@@ -6803,8 +6816,10 @@ def advanceChar(char,render=True, pull_events = True):
                     if room.animations:
                         skipNextRender = False
 
-                sendNetworkDraw(src.gamestate.gamestate.mainChar)
                 renderGameDisplay()
+                if not ghost:
+                    #sendNetworkDraw(src.gamestate.gamestate.mainChar)
+                    pass
                 lastRender = time.time()
 
             if newInputs:
@@ -6973,8 +6988,9 @@ s = None
 conn = None
 
 HOST = "127.0.0.1"
-PORT = 65481
+PORT = 65485
 
+ghost = None
 shadowCharacter = None
 
 def getNetworkedEvents():
@@ -7031,7 +7047,11 @@ def getNetworkedEvents():
         raw = json.loads(data)
 
         for command in raw["commands"]:
-            keyboardListener(command,targetCharacter=src.gamestate.gamestate.mainChar)
+            if ghost:
+                processInput((command,["norecord"]),charState=ghost.macroState, noAdvanceGame=True, char=ghost)
+                sendNetworkDraw(ghost)
+            else:
+                keyboardListener(command,targetCharacter=src.gamestate.gamestate.mainChar)
             foundCommand = True
     return foundCommand
 
@@ -7044,7 +7064,8 @@ def sendNetworkDraw(character):
         user_data: parameter that needs to be there but is not used
     """
 
-    pseudoDisplay = render(character)
+    if character == None:
+        character = src.gamestate.gamestate.mainChar
 
     global s
     global conn
@@ -7066,7 +7087,7 @@ def sendNetworkDraw(character):
     if not conn:
         return
 
-    canvas = render(src.gamestate.gamestate.mainChar)
+    canvas = render(character)
 
     pseudoDisplay = []
     for y in range(50):

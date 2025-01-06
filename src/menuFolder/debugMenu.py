@@ -6,7 +6,7 @@ class DebugMenu(src.subMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash"]
+    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash","Spawn Ghost"]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -27,14 +27,21 @@ class DebugMenu(src.subMenu.SubMenu):
             current_change = change_event and self.index == i
             text += ">" if self.index == i else ""
             match debug:
+                case "Spawn Ghost":
+                    text+= debug
+                    if current_change:
+                        ghost = src.characters.characterMap["Spectre"]()
+                        ghost.faction = character.faction
+                        src.interaction.ghost = ghost
+                        character.container.addCharacter(ghost,character.xPosition,character.yPosition)
                 case "Test Crash":
                     text+= debug
                     if current_change:
                         1/0
                 case "Execute Code":
-                    raise Exception("lol, nope")
                     text+= debug
                     if current_change:
+                        raise Exception("lol, nope")
                         submenue = src.menuFolder.inputMenu.InputMenu("Type the code to execute",targetParamName="code")
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {"container":self,"method":"action","params":{"character":character}}

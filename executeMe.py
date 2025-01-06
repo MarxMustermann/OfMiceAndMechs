@@ -168,6 +168,7 @@ if __name__ == '__main__':
                     except src.interaction.EndGame:
                         logger.info("ended game")
                 except Exception as e:
+                    print("CRASH HAPPENED")
                     import sys
                     has_trace = hasattr(sys, 'gettrace') and sys.gettrace() is not None
                     has_breakpoint = sys.breakpointhook.__module__ != "sys"

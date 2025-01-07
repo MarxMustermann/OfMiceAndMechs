@@ -209,7 +209,6 @@ Place the items in the correct input or storage stockpile.
 
                         numToDrop = 1
 
-                        print("start")
                         interactionCommand = "L"
                         if inventoryCommand == "":
                             if "advancedDrop" in character.interactionState:
@@ -217,8 +216,6 @@ Place the items in the correct input or storage stockpile.
                             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
                                 interactionCommand = ""
 
-                        print("interactionCommand")
-                        print(interactionCommand)
                         if foundDirectDrop[1] == (-1,0):
                             return (None,((inventoryCommand+interactionCommand+"a")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):

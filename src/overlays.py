@@ -109,7 +109,7 @@ class NPCsOverlay:
                   character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
                 continue
 
-            if "city" not in character.faction or character.charType not in ("Character","Ghoul",):
+            if "city" not in character.faction or character.charType not in ("Character","Ghoul","Clone",):
                 #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
                 if character.specialDisplay:
                     char = character.specialDisplay
@@ -141,7 +141,10 @@ class NPCsOverlay:
                     char = "@"+health
                 elif viewChar == "name":
                     if not isinstance(character,src.characters.characterMap["Ghoul"]):
-                        char = character.name[0]+character.name.split(" ")[1][0]
+                        if len(character.name.split(" ")) > 1:
+                            char = character.name[0]+character.name.split(" ")[1][0]
+                        else:
+                            char = character.name[0]+character.name[1]
                     else:
                         char = "Gu"
                 elif viewChar == "faction":

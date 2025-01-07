@@ -17,6 +17,50 @@ class ContactCommand(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter room"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter room"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter room"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter room"))
+
+        if character.macroState.get("submenue"):
+            submenue = character.macroState.get("submenue")
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                foundOption = False
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == "contact base leader":
+                            foundOption = True
+                            break
+                        counter += 1
+                    rewardIndex = counter
+
+                if not foundOption:
+                    return (None,(["esc"],"to close menu"))
+
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"contact command"))
+            
+            return (None,(["esc"],"close the menu"))
+
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "Communicator":
+                return (None,("j","activate communicator"))
+            else:
+                return (None,(".","undo selection"))
+
         if not character.getBigPosition() == (7,7,0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="reach the communicator",description="go to command centre")
             return ([quest],None)

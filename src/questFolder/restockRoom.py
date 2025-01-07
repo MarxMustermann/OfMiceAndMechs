@@ -195,9 +195,9 @@ Place the items in the correct input or storage stockpile.
                         if not item.walkable:
                             numToDrop = 1
     
+                        submenue = character.macroState["submenue"]
                         inventoryCommand = ""
                         if counter > -1:
-                            submenue = character.macroState["submenue"]
                             if not submenue:
                                 inventoryCommand += "i"+"s"*counter
                             if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
@@ -209,25 +209,47 @@ Place the items in the correct input or storage stockpile.
 
                         numToDrop = 1
 
+                        print("start")
+                        interactionCommand = "L"
+                        if inventoryCommand == "":
+                            if "advancedDrop" in character.interactionState:
+                                interactionCommand = ""
+                            if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and submenue.subMenu and submenue.subMenu.tag == "dropDirection":
+                                interactionCommand = ""
+
+                        print("interactionCommand")
+                        print(interactionCommand)
                         if foundDirectDrop[1] == (-1,0):
-                            return (None,((inventoryCommand+"La")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"a")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (1,0):
-                            return (None,((inventoryCommand+"Ld")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"d")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,-1):
-                            return (None,((inventoryCommand+"Lw")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"w")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,1):
-                            return (None,((inventoryCommand+"Ls")*numToDrop,"store an item"))
+                            return (None,((inventoryCommand+interactionCommand+"s")*numToDrop,"store an item"))
                         if foundDirectDrop[1] == (0,0):
                             return (None,((inventoryCommand+"l")*numToDrop,"store an item"))
                 else:
                     if foundDirectDrop[1] == (-1,0):
-                        return (None,("Ja"*10,"put scrap on scrap pile"))
+                        command = "Ja"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (1,0):
-                        return (None,("Jd"*10,"put scrap on scrap pile"))
+                        command = "Jd"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,-1):
-                        return (None,("Jw"*10,"put scrap on scrap pile"))
+                        command = "Jw"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,1):
-                        return (None,("Js"*10,"put scrap on scrap pile"))
+                        command = "Js"*10
+                        if "advancedInteraction" in character.interactionState:
+                            command = command[1:]
+                        return (None,(command,"put scrap on scrap pile"))
                     if foundDirectDrop[1] == (0,0):
                         return (None,("j"*self.getNumDrops(character),"put scrap on scrap pile"))
 

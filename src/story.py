@@ -2024,7 +2024,7 @@ but they are likely to explode when disturbed.
         siegeManager.handleTick()
 
         # spawn npc
-        actualCharacter = src.characters.Character()
+        actualCharacter = src.characters.characterMap["Clone"]()
         sword = src.items.itemMap["Sword"]()
         sword.baseDamage = 10
         actualCharacter.weapon = sword
@@ -3230,7 +3230,7 @@ but they are likely to explode when disturbed.
     def createStoryStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
 
-        mainChar = src.characters.Character()
+        mainChar = src.characters.characterMap["Clone"]()
         mainChar.flask = src.items.itemMap["GooFlask"]()
         mainChar.flask.uses = 100
         mainChar.duties = ["praying","city planning","clone spawning",]

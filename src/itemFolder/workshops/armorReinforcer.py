@@ -82,13 +82,13 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
     def produceItem_done(self, params):
         character = params["character"]
         improvement = params["improvementAmount"]
-        character.addMessage(f"You improved the Armor by {improvement!s} points")
 
         character.changed("improved armor")
 
         armor = params["Armor"]
-        armor.name = "improved Armor"
         armor.armorValue += improvement
+
+        character.addMessage(f"You improved the Armor by {improvement!s} to {armor.armorValue}")
 
 
 src.items.addType(ArmorReinforcer)

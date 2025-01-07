@@ -55,6 +55,10 @@ This quest will end when the target tile has no items left."""
         self.triggerCompletionCheck(character=character)
 
         if not self.subQuests:
+            if character.getNearbyEnemies():
+                quest = src.quests.questMap["Fight"]()
+                return ([quest],None)
+                
             hasIdleSubordinate = False
             for subordinate in character.subordinates:
                 if len(subordinate.quests) < 2:

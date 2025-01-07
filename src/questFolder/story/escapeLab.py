@@ -23,9 +23,7 @@ class EscapeLab(src.quests.MetaQuestSequence):
         if character.yPosition%15 == 14:
             return (None,("w","leave room"))
         if not character.container.isRoom:
-            return (None,("w","leave room"))
-        if character.yPosition%15 == 14:
-            return (None,("w","leave room"))
+            return (None,("w","gain distance to room"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=(6,0,0),reason="reach the door",description="reach the door")
         return ([quest],None)

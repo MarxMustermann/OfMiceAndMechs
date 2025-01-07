@@ -131,16 +131,20 @@ Remove all items from the walkways that are not bolted down."""
             break
 
         if foundOffset:
+            interactionCommand = "K"
+            if "advancedPickup" in character.interactionState:
+                interactionCommand = ""
+
             if foundOffset == (0,0,0):
                 command = "k"
-            elif foundOffset == (1,0,0):
-                command = "Kd"
-            elif foundOffset == (-1,0,0):
-                command = "Ka"
-            elif foundOffset == (0,1,0):
-                command = "Ks"
-            elif foundOffset == (0,-1,0):
-                command = "Kw"
+            if foundOffset == (1,0,0):
+                command = interactionCommand+"d"
+            if foundOffset == (-1,0,0):
+                command = interactionCommand+"a"
+            if foundOffset == (0,1,0):
+                command = interactionCommand+"s"
+            if foundOffset == (0,-1,0):
+                command = interactionCommand+"w"
 
             return (None,(command*len(foundItems),"clear spot"))
 

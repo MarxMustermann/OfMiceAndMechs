@@ -28,7 +28,7 @@ class Promoter(src.items.Item):
             for checkChar in terrain.characters:
                 if not checkChar.faction == character.faction:
                     continue
-                if not checkChar.charType == "Character":
+                if not checkChar.charType == "Clone":
                     continue
                 if checkChar.burnedIn:
                     continue
@@ -37,7 +37,7 @@ class Promoter(src.items.Item):
                 for checkChar in room.characters:
                     if not checkChar.faction == character.faction:
                         continue
-                    if not checkChar.charType == "Character":
+                    if not checkChar.charType == "Clone":
                         continue
                     if checkChar.burnedIn:
                         continue

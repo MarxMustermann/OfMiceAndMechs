@@ -110,6 +110,10 @@ Press d to move the cursor and show the subquests description.
         if not character:
             return
 
+        if character.getNearbyEnemies():
+            self.fail("enemies nearby")
+            return True
+
         if self.amount:
             numItems = 0
             for item in reversed(character.inventory):
@@ -217,16 +221,19 @@ Press d to move the cursor and show the subquests description.
                                 foundDirection = offset
 
                 if foundDirection:
+                    interactionCommand = "K"
+                    if "advancedPickup" in character.interactionState:
+                        interactionCommand = ""
                     if foundDirection == (0,0,0):
-                        return (None,("K.","pick up item"))
+                        return (None,(interactionCommand+".","pick up item"))
                     if foundDirection == (1,0,0):
-                        return (None,("Kd","pick up item"))
+                        return (None,(interactionCommand+"d","pick up item"))
                     if foundDirection == (-1,0,0):
-                        return (None,("Ka","pick up item"))
+                        return (None,(interactionCommand+"a","pick up item"))
                     if foundDirection == (0,1,0):
-                        return (None,("Ks","pick up item"))
+                        return (None,(interactionCommand+"s","pick up item"))
                     if foundDirection == (0,-1,0):
-                        return (None,("Kw","pick up item"))
+                        return (None,(interactionCommand+"w","pick up item"))
 
                 outputSlot = random.choice(outputSlots)
                 quest = src.quests.questMap["GoToPosition"](targetPosition=outputSlot[0],ignoreEndBlocked=True,description="go to "+self.toCollect,reason=f"be able to pick up the {self.toCollect}")
@@ -258,16 +265,19 @@ Press d to move the cursor and show the subquests description.
                                         foundDirection = offset
 
                     if foundDirection:
+                        interactionCommand = "K"
+                        if "advancedPickup" in character.interactionState:
+                            interactionCommand = ""
                         if foundDirection == (0,0,0):
-                            return (None,("K.","pick up item"))
+                            return (None,(interactionCommand+".","pick up item"))
                         if foundDirection == (1,0,0):
-                            return (None,("Kd","pick up item"))
+                            return (None,(interactionCommand+"d","pick up item"))
                         if foundDirection == (-1,0,0):
-                            return (None,("Ka","pick up item"))
+                            return (None,(interactionCommand+"a","pick up item"))
                         if foundDirection == (0,1,0):
-                            return (None,("Ks","pick up item"))
+                            return (None,(interactionCommand+"s","pick up item"))
                         if foundDirection == (0,-1,0):
-                            return (None,("Kw","pick up item"))
+                            return (None,(interactionCommand+"w","pick up item"))
 
                     item = random.choice(candidates)
                     quests = []

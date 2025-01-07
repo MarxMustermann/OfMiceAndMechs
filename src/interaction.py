@@ -2497,6 +2497,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 char.exhaustion = max(1,char.exhaustion-10)
             else:
                 char.exhaustion = 0
+            charState["itemMarkedLast"] = None
             char.lastMoveSkipped = True
             return None
         if key in (commandChars.move_north, "up"):

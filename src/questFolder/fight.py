@@ -67,7 +67,7 @@ So if an enemy is to directly east of you:
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")
-            if submenue:
+            if submenue and not submenue.tag == "specialAttackSelection":
                 return (None,(["esc"],"exit the menu"))
 
         # check for direct attacks
@@ -112,12 +112,40 @@ So if an enemy is to directly east of you:
             if directionCommand == "w":
                 directionCommand = "W"
 
+            if character.macroState.get("submenue") and character.macroState["submenue"].tag == "specialAttackSelection":
+                directionCommand = ""
+
             return (None,(directionCommand+specialAttack,"attack enemy"))
 
         if character.exhaustion > 1:
             return (None,(".","catch breath"))
 
-        # move toward enemies
+        # move toward enemies (smarter)
+        if character.rank:
+            shortestPath = None
+            for enemy in character.getNearbyEnemies():
+                if character.container.isRoom:
+                    path = character.container.getPathTile(character.getPosition(),enemy.getPosition(),ignoreEndBlocked=True,character=character)
+                else:
+                    path = character.container.getPathTile(character.getBigPosition(),character.getSpacePosition(),enemy.getSpacePosition(),ignoreEndBlocked=True,character=character)
+
+                if shortestPath == None or len(shortestPath) > len(path):
+                    shortestPath = path
+            if shortestPath:
+                command = None
+                step = shortestPath[0]
+                if step == (-1,0):
+                    command = "a"
+                if step == (1,0):
+                    command = "d"
+                if step == (0,-1):
+                    command = "w"
+                if step == (0,1):
+                    command = "s"
+
+                if command:
+                    return (None,(command,"approach enemy"))
+
         commands = []
         command = None
         for foundEnemy in character.getNearbyEnemies():

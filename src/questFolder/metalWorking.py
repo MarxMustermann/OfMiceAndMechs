@@ -41,6 +41,10 @@ Press d to move the cursor and show the subquests description.
         if not character:
             return False
 
+        if character.getNearbyEnemies():
+            self.fail("enemies nearby")
+            return True
+
         return False
 
     def getNextStep(self,character,ignoreCommands=False,dryRun=True):

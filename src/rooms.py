@@ -945,7 +945,7 @@ class Room:
                 if character.yPosition < len(chars) and character.xPosition < len(
                     chars[character.yPosition]
                 ):
-                    if "city" not in character.faction or character.charType not in ("Character","Ghoul"):
+                    if "city" not in character.faction or character.charType not in ("Character","Ghoul","Clone"):
                         try:
                             character.specialDisplay
                         except:
@@ -985,7 +985,10 @@ class Room:
                             char = "@"+health
                         elif viewChar == "name":
                             if not isinstance(character,src.characters.characterMap["Ghoul"]):
-                                char = character.name[0]+character.name.split(" ")[1][0]
+                                if len(character.name.split(" ")) > 1:
+                                    char = character.name[0]+character.name.split(" ")[1][0]
+                                else:
+                                    char = character.name[0]+character.name[1]
                             else:
                                 char = "Gu"
                         elif viewChar == "faction":

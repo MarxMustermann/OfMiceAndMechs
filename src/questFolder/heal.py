@@ -77,7 +77,10 @@ Press JH to auto heal.
                     direction = "w"
 
                 if direction:
-                    return (None,("J"+direction,"inhale smoke"))
+                    interactionCommand = "J"
+                    if "advancedInteraction" in character.interactionState:
+                        interactionCommand = ""
+                    return (None,(interactionCommand+direction,"inhale smoke"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=random.choice(foundBurners).getPosition(),ignoreEndBlocked=True)
             return ([quest],None)

@@ -168,6 +168,7 @@ if __name__ == '__main__':
                     except src.interaction.EndGame:
                         logger.info("ended game")
                 except Exception as e:
+                    print("CRASH HAPPENED")
                     import sys
                     has_trace = hasattr(sys, 'gettrace') and sys.gettrace() is not None
                     has_breakpoint = sys.breakpointhook.__module__ != "sys"
@@ -223,6 +224,7 @@ if __name__ == '__main__':
                                             },
                                         )
                                         print(res)
+                                        print(res.text)
                                         diff = time.time() - t
                                         if diff < 2:
                                             time.sleep(diff)
@@ -259,6 +261,7 @@ if __name__ == '__main__':
                                                     case "WINDOWCLOSE":
                                                         raise e
                                     raise e
+                                src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
                             if isinstance(event, tcod.event.Quit):
                                 raise e
                             if isinstance(event, tcod.event.WindowEvent):

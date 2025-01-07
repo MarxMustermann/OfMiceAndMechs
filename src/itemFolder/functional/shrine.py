@@ -738,7 +738,7 @@ class Shrine(src.items.Item):
             self.getTerrain().mana -= cost
             src.gamestate.gamestate.gods[self.god]["mana"] += cost/2
 
-            npc = src.characters.Character()
+            npc = src.characters.characterMap["Clone"]()
             npc.questsDone = [
                 "NaiveMoveQuest",
                 "MoveQuestMeta",

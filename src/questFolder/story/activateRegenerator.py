@@ -62,7 +62,11 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
             direction = "w"
         if (pos[0],pos[1]+1,pos[2]) == t_pos:
             direction = "s"
-        return (None,("J"+direction,"activate the Regenerator"))
+
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
+        return (None,(interactionCommand+direction,"activate the Regenerator"))
 
     def generateTextDescription(self):
         text = ["""

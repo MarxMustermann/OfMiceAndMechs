@@ -22,7 +22,8 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         if character.macroState["submenue"] and not ignoreCommands:
-            return (None,(["esc"],"to close menu"))
+            if character.macroState["submenue"].tag != "specialAttackSelection":
+                return (None,(["esc"],"to close menu"))
 
         targetPos = (5,6,0)
         if not character.getBigPosition() == targetPos:
@@ -41,6 +42,16 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 break
 
             if foundSnatcher:
+                if not character.container.isRoom:
+                    if character.xPosition%15 == 0:
+                        return (None,("d","enter tile"))
+                    if character.xPosition%15 == 14:
+                        return (None,("a","enter tile"))
+                    if character.yPosition%15 == 0:
+                        return (None,("s","enter tile"))
+                    if character.yPosition%15 == 14:
+                        return (None,("w","enter tile"))
+
                 return (None,("...........","wait for Snatchers"))
 
             if not dryRun:
@@ -79,10 +90,14 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                     hasBerserk = True
 
                 if not hasBerserk:
+                    interactionCommand = direction.upper()
+                    if character.macroState.get("submenue") and character.macroState["submenue"].tag == "specialAttackSelection":
+                        interactionCommand = ""
+
                     if character.exhaustion < 1:
-                        return (None,(direction.upper()+"k","attack Snatcher"))
+                        return (None,(interactionCommand+"k","attack Snatcher"))
                     if character.exhaustion < 10:
-                        return (None,(direction.upper()+"h","attack Snatcher"))
+                        return (None,(interactionCommand+"h","attack Snatcher"))
                 return (None,(direction,"attack Snatcher"))
 
         return (None,(".","let Snatchers approach"))

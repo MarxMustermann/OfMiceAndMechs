@@ -371,7 +371,7 @@ class Character:
         targetPosition = extraParam["coordinate"]
         targetPosition = (targetPosition[0],targetPosition[1],0)
 
-        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition)
+        quest = src.quests.questMap["GoToTile"](targetPosition=targetPosition,lifetime=1000)
         quest.selfAssigned = True
         quest.autoSolve = True
         quest.assignToCharacter(self)
@@ -383,8 +383,8 @@ class Character:
         """
         gives the charachter an extra health boost, but reduces the characters max health
         """
-        if self.adjustedMaxHealth > 10:
-            self.adjustedMaxHealth -= 10
+        if self.maxHealth > 10:
+            self.maxHealth -= 10
             self.heal(50)
 
     def addGrievance(self,grievance):
@@ -1277,6 +1277,7 @@ press l/L for light attack
 
 press any other key to attack normally"""
         submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu.tag = "specialAttackSelection"
         self.macroState["submenue"] = submenu
         self.macroState["submenue"].followUp = {"container":self,"method":"doSpecialAttack","params":{"target":target,"attacksOffered":attacksOffered}}
         self.runCommandString("~",nativeKey=True)

@@ -108,6 +108,12 @@ Press d to move the cursor and show the subquests description.
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))
 
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "MetalWorkingBench":
+                return (None,("j","activate metal working bench"))
+            else:
+                return (None,(".","undo selection"))
+
         if character.getBigPosition() != (7, 7, 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")
             return ([quest],None)

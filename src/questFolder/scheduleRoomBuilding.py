@@ -97,7 +97,10 @@ Use a CityPlaner to do this.
             command = "."
 
         if command:
-            return (None,("J"+command,"activate the CityPlaner"))
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
+            return (None,(interactionCommand+command,"activate the CityPlaner"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True, reason="go to the CityPlaner")
         return ([quest],None)

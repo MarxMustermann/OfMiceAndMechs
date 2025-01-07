@@ -34,6 +34,43 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         if self.subQuests:
             return (None,None)
 
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+        
+            index = None
+            counter = 1
+            for option in submenue.options.items():
+                if option[1] == "produce item":
+                    index = counter
+                    break
+                counter += 1
+
+            if index is None:
+                index = counter-1
+
+            if self.produceToInventory:
+                activationCommand = "j"
+            else:
+                activationCommand = "k"
+
+            offset = index-submenue.selectionIndex
+            command = ""
+            if offset > 0:
+                command += "s"*offset
+            else:
+                command += "w"*(-offset)
+            command += activationCommand
+            return (None,(command,"hammer scrap"))
+
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"exit submenu"))
+
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "Anvil":
+                return (None,("j","activate anvil"))
+            else:
+                return (None,(".","undo selection"))
+
         if character.getBigPosition() != (7, 7, 0):
             quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")
             return ([quest],None)

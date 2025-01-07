@@ -103,7 +103,7 @@ Press d to move the cursor and show the subquests description.
                 if submenue.selectionIndex < counter:
                     command += "s"*(counter-submenue.selectionIndex)
                 command += "j"
-                return (None,(command,"get your reward"))
+                return (None,(command,"start producing items"))
 
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"exit submenu"))

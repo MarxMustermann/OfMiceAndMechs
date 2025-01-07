@@ -74,14 +74,17 @@ Take the place of supreme leader and rule the world!
 
         if (pos[0],pos[1],pos[2]) == targetPosition:
             return (None,("j","activate the Throne"))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
         if (pos[0]-1,pos[1],pos[2]) == targetPosition:
-            return (None,("Ja","activate the Throne"))
+            return (None,(interactionCommand+"a","activate the Throne"))
         if (pos[0]+1,pos[1],pos[2]) == targetPosition:
-            return (None,("Jd","activate the Throne"))
+            return (None,(interactionCommand+"d","activate the Throne"))
         if (pos[0],pos[1]-1,pos[2]) == targetPosition:
-            return (None,("Jw","activate the Throne"))
+            return (None,(interactionCommand+"w","activate the Throne"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
-            return (None,("Js","activate the Throne"))
+            return (None,(interactionCommand+"s","activate the Throne"))
         return None
 
     def assignToCharacter(self, character):

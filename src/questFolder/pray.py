@@ -105,14 +105,17 @@ pray on {self.targetPosition}{reason}.
             activationCommand = "sj"
         if (pos[0],pos[1],pos[2]) == self.targetPosition:
             return (None,("j"+activationCommand,description))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
         if (pos[0]-1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Ja"+activationCommand,description))
+            return (None,(interactionCommand+"a"+activationCommand,description))
         if (pos[0]+1,pos[1],pos[2]) == self.targetPosition:
-            return (None,("Jd"+activationCommand,description))
+            return (None,(interactionCommand+"d"+activationCommand,description))
         if (pos[0],pos[1]-1,pos[2]) == self.targetPosition:
-            return (None,("Jw"+activationCommand,description))
+            return (None,(interactionCommand+"w"+activationCommand,description))
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
-            return (None,("Js"+activationCommand,description))
+            return (None,(interactionCommand+"s"+activationCommand,description))
         return None
 
     @staticmethod

@@ -85,6 +85,9 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
         for otherChar in terrain.characters:
             if otherChar.faction != character.faction:
                 enemyCount += 1
+                if not terrain.alarm and enemyCount > 2:
+                    quest = src.quests.questMap["ReadyBaseDefences"]()
+                    return ([quest],None)
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
             else:

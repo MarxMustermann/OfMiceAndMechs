@@ -52,7 +52,7 @@ This quest will end when your inventory is empty."""
             if not terrain.getItemByPosition(character.getPosition()):
                 return (None,("l","drop item"))
             # go somewhere else
-            pos = (random.randint(1,13),random.randint(1,13),0)
+            pos = (random.randint(2,13),random.randint(2,13),0)
             quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="move to a random point to drop items")
             return ([quest],None)
 

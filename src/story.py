@@ -2423,7 +2423,7 @@ but they are likely to explode when disturbed.
         moldTiles = [(2,9,0),(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0),(3,3,0),(12,5,0),(5,12,0)]
         farmPlotTiles = [(5,9,0),(5,8,0),(4,9,0),(4,8,0),(4,7,0)]
         fightingSpots = [(6,5,0),(1,8,0),(2,10,0),(6,8,0),(9,8,0),(10,6,0),(9,5,0),(7,5,0),(3,8,0),(3,6,0)]
-        wallTiles = [(4,3,0),(2,2,0),(6,3,0),(10,3,0),(12,4,0),(11,11,0),(11,12,0),(9,12,0)]
+        wallTiles = [(4,3,0),(2,2,0),(6,3,0),(10,3,0),(12,4,0),(11,11,0),(11,12,0),(9,12,0),(8,8,0)]
         genericEnemyGroups = [(2,3,0),(5,2,0),(8,1,0),(11,4,0),(11,8,0),(12,11,0),(10,13,0),(7,12,0)]
         snatcherNests = [(4,12,0),(8,3,0),]
         forestPositions = [(6,6,0)]
@@ -2553,6 +2553,8 @@ but they are likely to explode when disturbed.
                         continue
                     wallSpots.append((x,y,0))
             for wallSpot in wallSpots:
+                if random.random() < 0.3:
+                    continue
                 item = src.items.itemMap["Wall"]()
                 item.bolted = False
                 currentTerrain.addItem(item,(15*wallTile[0]+wallSpot[0],15*wallTile[1]+wallSpot[1],0))

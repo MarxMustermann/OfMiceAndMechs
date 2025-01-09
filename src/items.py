@@ -307,6 +307,7 @@ class Item:
         submenu = src.menuFolder.selectionMenu.SelectionMenu(
             "what do you want to do?", options
         )
+        submenu.extraInfo["item"] = self
         character.macroState["submenue"] = submenu
         character.macroState["submenue"].followUp = {
             "method": "handleApplyMenu",

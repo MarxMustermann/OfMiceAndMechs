@@ -119,7 +119,10 @@ Set the floor plan: {self.floorPlanType}
             command = "."
 
         if command:
-            return (None,("J"+command,"activate the CityPlaner"))
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
+            return (None,(interactionCommand+command,"activate the CityPlaner"))
 
         quest = src.quests.questMap["GoToPosition"](targetPosition=cityPlaner.getPosition(), description="go to CityPlaner",ignoreEndBlocked=True)
         return ([quest],None)

@@ -54,6 +54,16 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["FetchItems"](toCollect="Grindstone")
                         return ([quest],None)
 
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if terrain.getRoomByPosition((x,y,0)):
+                            continue
+                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                            if item.type != "Grindstone":
+                                continue
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch grindstone")
+                            return ([quest],None)
+
         if not character.armor:
             for room in terrain.rooms:
                 if room.getNonEmptyOutputslots("Armor"):
@@ -81,6 +91,16 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["FetchItems"](toCollect="ChitinPlates")
                         return ([quest],None)
 
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if terrain.getRoomByPosition((x,y,0)):
+                            continue
+                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                            if item.type != "ChitinPlates":
+                                continue
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch chitin plates")
+                            return ([quest],None)
+
         if character.maxHealth < 500:
             if character.searchInventory("PermaMaxHealthPotion"):
                 quest = src.quests.questMap["ConsumePotion"](potionType="PermaMaxHealthPotion")
@@ -98,6 +118,16 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("ManaCrystal"):
                     manaCrystalAvailable = True
                     break
+            if not manaCrystalAvailable:
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if terrain.getRoomByPosition((x,y,0)):
+                            continue
+                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                            if item.type != "ManaCrystal":
+                                continue
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch mana crystal")
+                            return ([quest],None)
 
             bloomAvailable = False
             if character.searchInventory("Bloom"):
@@ -106,6 +136,16 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("Bloom"):
                     bloomAvailable = True
                     break
+            if not bloomAvailable:
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if terrain.getRoomByPosition((x,y,0)):
+                            continue
+                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                            if item.type != "Flask":
+                                continue
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch bloom")
+                            return ([quest],None)
 
             flaskAvailable = False
             if character.searchInventory("Flask"):
@@ -114,6 +154,16 @@ class BecomeStronger(src.quests.MetaQuestSequence):
                 if room.getNonEmptyOutputslots("Flask"):
                     flaskAvailable = True
                     break
+            if not flaskAvailable:
+                for x in range(1,14):
+                    for y in range(1,14):
+                        if terrain.getRoomByPosition((x,y,0)):
+                            continue
+                        for item in terrain.itemsByBigCoordinate.get((x,y,0),[]):
+                            if item.type != "Flask":
+                                continue
+                            quest = src.quests.questMap["CleanSpace"](targetPosition=item.getSmallPosition(),targetPositionBig=(x,y,0),abortOnfullInventory=False,description="fetch flask")
+                            return ([quest],None)
 
             if manaCrystalAvailable and bloomAvailable and flaskAvailable:
                 for room in terrain.rooms:

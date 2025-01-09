@@ -22,7 +22,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
         # defend yourself
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Fight"](suicidal=True)
             return ([quest],None)
 
         # loot tile

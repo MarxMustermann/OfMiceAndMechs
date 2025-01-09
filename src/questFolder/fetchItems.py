@@ -166,6 +166,10 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        # close open menues
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"to close menu"))
+
         if not self.amount:
             numItemsCollected = 0
             for item in reversed(character.inventory):

@@ -119,7 +119,7 @@ Press d to move the cursor and show the subquests description.
 
             items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
             if not items or items[-1].type != "RoomBuilder":
-                quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room")
+                quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room",clearPath=True)
                 return ([quest],None)
 
             wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]
@@ -151,7 +151,7 @@ Press d to move the cursor and show the subquests description.
                 for missingWallPos in missingWallPositions:
                     if not (len(character.inventory) > counter and character.inventory[-1-counter].type == "Wall"):
                         break
-                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingWallPos,targetPositionBig=self.targetPosition,itemType="Wall",tryHard=self.tryHard,reason="build the outline of the room")
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingWallPos,targetPositionBig=self.targetPosition,itemType="Wall",tryHard=self.tryHard,reason="build the outline of the room",clearPath=True)
                     quests.append(quest)
                     counter += 1
                 return (list(reversed(quests)),None)
@@ -181,7 +181,7 @@ Press d to move the cursor and show the subquests description.
                     if not numDoors:
                         break
                     numDoors -= 1
-                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingDoorPos,targetPositionBig=self.targetPosition,itemType="Door",tryHard=self.tryHard,reason="add doors to the room")
+                    quest = src.quests.questMap["PlaceItem"](targetPosition=missingDoorPos,targetPositionBig=self.targetPosition,itemType="Door",tryHard=self.tryHard,reason="add doors to the room",clearPath=True)
                     quests.append(quest)
                     counter += 1
                 return (list(reversed(quests)),None)

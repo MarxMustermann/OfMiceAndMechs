@@ -96,7 +96,16 @@ Press d to move the cursor and show the subquests description.
                 return (None,(command,"produce item"))
             else:
                 submenue = character.macroState["submenue"]
+
+                menuEntry = "produce item"
+                if submenue.extraInfo.get("item").lastProduction == self.toProduce:
+                    menuEntry = "repeat last production"
                 counter = 1
+                for option in submenue.options.items():
+                    if option[1] == "produce item":
+                        index = counter
+                        break
+                    counter += 1
                 command = ""
                 if submenue.selectionIndex > counter:
                     command += "w"*(submenue.selectionIndex-counter)
@@ -138,16 +147,28 @@ Press d to move the cursor and show the subquests description.
 
         pos = character.getPosition()
         benchPos = benchNearBy.getPosition()
-        if (pos[0],pos[1],pos[2]) == benchPos:
-            return (None,("jj","start metal working"))
-        if (pos[0]-1,pos[1],pos[2]) == benchPos:
-            return (None,("ajj","start metal working"))
-        if (pos[0]+1,pos[1],pos[2]) == benchPos:
-            return (None,("djj","start metal working"))
-        if (pos[0],pos[1]-1,pos[2]) == benchPos:
-            return (None,("wjj","start metal working"))
-        if (pos[0],pos[1]+1,pos[2]) == benchPos:
-            return (None,("sjj","start metal working"))
+        if benchNearBy.lastProduction == self.toProduce:
+            if (pos[0],pos[1],pos[2]) == benchPos:
+                return (None,("jwj","start metal working"))
+            if (pos[0]-1,pos[1],pos[2]) == benchPos:
+                return (None,("ajwj","start metal working"))
+            if (pos[0]+1,pos[1],pos[2]) == benchPos:
+                return (None,("djwj","start metal working"))
+            if (pos[0],pos[1]-1,pos[2]) == benchPos:
+                return (None,("wjwj","start metal working"))
+            if (pos[0],pos[1]+1,pos[2]) == benchPos:
+                return (None,("sjwj","start metal working"))
+        else:
+            if (pos[0],pos[1],pos[2]) == benchPos:
+                return (None,("jj","start metal working"))
+            if (pos[0]-1,pos[1],pos[2]) == benchPos:
+                return (None,("ajj","start metal working"))
+            if (pos[0]+1,pos[1],pos[2]) == benchPos:
+                return (None,("djj","start metal working"))
+            if (pos[0],pos[1]-1,pos[2]) == benchPos:
+                return (None,("wjj","start metal working"))
+            if (pos[0],pos[1]+1,pos[2]) == benchPos:
+                return (None,("sjj","start metal working"))
 
         return (None,None)
 

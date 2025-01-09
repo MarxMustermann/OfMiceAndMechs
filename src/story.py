@@ -2008,6 +2008,7 @@ but they are likely to explode when disturbed.
         # add management items
         cityPlaner = src.items.itemMap["CityPlaner"]()
         cityPlaner.bolted = True
+        cityPlaner.autoExtensionThreashold = 0
         mainRoom.addItem(cityPlaner,(2,2,0))
         promoter = src.items.itemMap["Promoter"]()
         promoter.bolted = True
@@ -2075,6 +2076,10 @@ but they are likely to explode when disturbed.
         roomBuilder = src.items.itemMap["RoomBuilder"]()
         roomBuilder.bolted = False
         storageRoom.addItem(roomBuilder,(3,2,0))
+        roomBuilder = src.items.itemMap["RoomBuilder"]()
+        roomBuilder.bolted = False
+        storageRoom.addItem(roomBuilder,(4,2,0))
+
 
         ####
         # create spawn room
@@ -2141,6 +2146,33 @@ but they are likely to explode when disturbed.
         item = src.items.itemMap["GooDispenser"]()
         item.charges = 5
         spawnRoom.addItem(item,(8,10,0))
+
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(2,8,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(3,8,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(4,8,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(5,8,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(2,7,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(3,7,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(4,7,0))
+        roomBuilder = src.items.itemMap["Door"]()
+        roomBuilder.bolted = False
+        spawnRoom.addItem(roomBuilder,(5,7,0))
+
+
 
         ####
         # create temple
@@ -2427,6 +2459,7 @@ but they are likely to explode when disturbed.
         genericEnemyGroups = [(2,3,0),(5,2,0),(8,1,0),(11,4,0),(11,8,0),(12,11,0),(10,13,0),(7,12,0)]
         snatcherNests = [(4,12,0),(8,3,0),]
         forestPositions = [(6,6,0)]
+        specialWallTiles = [(8,8,0)]
 
         ###############################################
         ###
@@ -2559,16 +2592,28 @@ but they are likely to explode when disturbed.
                 item.bolted = False
                 currentTerrain.addItem(item,(15*wallTile[0]+wallSpot[0],15*wallTile[1]+wallSpot[1],0))
 
-            # add enemies
-            for _i in range(0,random.randint(1,3)):
-                enemy = src.characters.characterMap["ShieldBug"]()
-                enemy.faction = "insects"
-                quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
-                quest.autoSolve = True
-                quest.assignToCharacter(enemy)
-                quest.activate()
-                enemy.quests.append(quest)
-                currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
+            if not wallTile in specialWallTiles:
+                # add enemies
+                for _i in range(0,random.randint(1,3)):
+                    enemy = src.characters.characterMap["ShieldBug"]()
+                    enemy.faction = "insects"
+                    quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+                    currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
+            else:
+                # add enemies
+                for _i in range(random.randint(8,10)):
+                    enemy = src.characters.characterMap["Spider"]()
+                    enemy.faction = "insects"
+                    quest = src.quests.questMap["SecureTile"](toSecure=wallTile)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(enemy)
+                    quest.activate()
+                    enemy.quests.append(quest)
+                    currentTerrain.addCharacter(enemy,wallTile[0]*15+random.randint(3,12),wallTile[1]*15+random.randint(3,12))
 
         # add mold spots
         for moldTile in moldTiles:

@@ -125,6 +125,10 @@ class SpawnClone(src.quests.MetaQuestSequence):
             self.fail(reason="no growth tank found")
             return (None,None)
 
+        if len(growthTank.container.getItemByPosition(growthTank.getPosition(offset=(1,0,0)))) > 1:
+            quest = src.quests.questMap["CleanSpace"](targetPosition=growthTank.getPosition(offset=(1,0,0)),targetPositionBig=growthTank.getBigPosition(),abortOnfullInventory=False)
+            return ([quest],None)
+
         if not growthTank.filled and len(growthTank.getFlasks(character)) < 1:
             quest = src.quests.questMap["FetchItems"](toCollect="GooFlask",amount=1)
             return ([quest],None)

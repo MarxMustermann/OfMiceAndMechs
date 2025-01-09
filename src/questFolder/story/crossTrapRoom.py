@@ -39,8 +39,11 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
             return (None,(baseCommand,"move"))
 
         # block trigger plates
+        interactionCommand = "L"
+        if "advancedDrop" in character.interactionState:
+            interactionCommand = ""
         if character.inventory and character.inventory[-1].walkable:
-            return (None,("L"+baseCommand,"block TrickerPlate"))
+            return (None,(interactionCommand+baseCommand,"block TrickerPlate"))
 
         # check of traps are in cooldown
         foundActiveTrap = False
@@ -58,7 +61,10 @@ class CrossTrapRoom(src.quests.MetaQuestSequence):
         if not foundActiveTrap:
             return (None,(baseCommand,"step on disabled trap"))
         
-        return (None,("J"+baseCommand,"trigger trap"))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
+        return (None,(interactionCommand+baseCommand,"trigger trap"))
 
 
     def generateTextDescription(self):

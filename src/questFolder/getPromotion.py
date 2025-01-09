@@ -52,6 +52,17 @@ Use the Promotor to do this.
         if character.macroState["submenue"]:
             return (None,(["esc"],"close the menu"))
 
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
         room = character.container
 
         if not isinstance(character.container, src.rooms.Room):

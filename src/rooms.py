@@ -1268,7 +1268,10 @@ class Room:
                     else:
                         display = ".."
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     if duration > 10:
                         animation[2] -= 10
@@ -1282,7 +1285,10 @@ class Room:
                     if animationType == "shielded":
                         display = (src.interaction.urwid.AttrSpec("#fff","#555"),display)
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     if duration > 10:
                         animation[2] -= 10
@@ -1334,7 +1340,10 @@ class Room:
                     display = "##"
                     display = (src.interaction.urwid.AttrSpec(["#fa0","#f00"][duration%2],["#f00","#fa0"][duration%2],),display)
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     animation[2] -= 1
 
@@ -1348,7 +1357,10 @@ class Room:
                         logger.error(f"draw animation without position {animation}")
                         continue
 
-                    chars[pos[1]][pos[0]] = display
+                    try:
+                        chars[pos[1]][pos[0]] = display
+                    except:
+                        pass
 
                     animation[2] -= 1
 

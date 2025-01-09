@@ -26,7 +26,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             return ([quest],None)
 
         # loot tile
-        if not character.getTerrain().alarm and not character.container.isRoom:
+        if not character.getTerrain().alarm and not character.container.isRoom and not character.getBigPosition() == (8,7,0):
             if character.getFreeInventorySpace():
                 for item in character.container.itemsByBigCoordinate.get(character.getBigPosition(),[]):
                     if item.bolted:
@@ -131,6 +131,30 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
             if hasEnemy:
                 quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
                 return ([quest],None)
+
+        # complete build site
+        if not terrain.getRoomByPosition((8,7,0)):
+            enemyOnBuildSite = False
+            for otherChar in terrain.charactersByTile.get((8,7,0),[]):
+                if otherChar.faction == character.faction:
+                    continue
+                enemyOnBuildSite = True
+
+            if not enemyOnBuildSite:
+                wallsInStorage = False
+                for room in character.getTerrain().rooms:
+                    if room.getNonEmptyOutputslots("Wall"):
+                        wallsInStorage = True
+                if character.inventory and character.inventory[-1].type == "Wall":
+                    wallsInStorage = True
+
+                numDoorsInStorage = 0
+                for room in character.getTerrain().rooms:
+                    numDoorsInStorage += len(room.getItemsByType("Door",needsUnbolted=True))
+
+                if wallsInStorage and numDoorsInStorage >= 4:
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True)
+                    return ([quest],None)
 
         # check for spider lairs
         targets_found = []

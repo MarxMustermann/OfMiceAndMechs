@@ -186,12 +186,19 @@ Press d to move the cursor and show the subquests description.
                     counter += 1
                 return (list(reversed(quests)),None)
 
+            if not character.getBigPosition() == self.targetPosition:
+                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
+                return ([quest], None)
+
             roomBuilderPos = (7,7,0)
             if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=roomBuilderPos,ignoreEndBlocked=True,reason="get next to the RoomBuilder")
                 return ([quest], None)
 
-            offsets = {(0,0,0):"j",(1,0,0):"Jd",(-1,0,0):"Ja",(0,1,0):"Js",(0,-1,0):"Jw"}
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
+            offsets = {(0,0,0):"j",(1,0,0):interactionCommand+"d",(-1,0,0):interactionCommand+"a",(0,1,0):interactionCommand+"s",(0,-1,0):interactionCommand+"w"}
             for (offset,command) in offsets.items():
                 if character.getPosition(offset=offset) == (15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0):
                     return (None, (command,"activate the RoomBuilder"))

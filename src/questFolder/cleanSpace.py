@@ -4,7 +4,7 @@ import random
 class CleanSpace(src.quests.MetaQuestSequence):
     type = "CleanSpace"
 
-    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True,pickUpBolted=False):
+    def __init__(self, description="clean space", creator=None, targetPositionBig=None, targetPosition=None, reason=None, abortOnfullInventory=True,pickUpBolted=False,tryHard=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
@@ -15,6 +15,7 @@ class CleanSpace(src.quests.MetaQuestSequence):
         self.reason = reason
         self.abortOnfullInventory = abortOnfullInventory
         self.pickUpBolted = pickUpBolted
+        self.tryHard = tryHard
 
     def generateTextDescription(self):
         reason = ""

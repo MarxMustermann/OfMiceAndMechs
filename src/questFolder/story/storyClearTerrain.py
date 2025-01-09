@@ -155,6 +155,12 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 if wallsInStorage and numDoorsInStorage >= 4:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True)
                     return ([quest],None)
+        else:
+            room = terrain.getRoomByPosition((8,7,0))[0]
+            if not room.tag and not room.floorPlan:
+                quest = src.quests.questMap["AssignFloorPlan"](floorPlanType="storage",roomPosition=(8,7,0))
+                return ([quest],None)
+
 
         # check for spider lairs
         targets_found = []

@@ -2131,6 +2131,7 @@ but they are likely to explode when disturbed.
 
         command = src.items.itemMap["Command"]()
         command.command = list("dj")+["enter"]+list("sdddJwaaaw")
+        command.bolted = True
         spawnRoom.addItem(command,(4,3,0))
 
         flask = src.items.itemMap["GooFlask"]()

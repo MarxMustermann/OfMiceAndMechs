@@ -140,6 +140,8 @@ Press d to move the cursor and show the subquests description.
         self.checkPlacedItem(item)
 
     def checkPlacedItem(self,item):
+        if not item.container:
+            return
         if item.type == self.itemType:
             if item.container.isRoom:
                 if item.container.getPosition() == self.targetPositionBig and item.getPosition() == self.targetPosition:

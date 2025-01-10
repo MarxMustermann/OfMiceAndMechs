@@ -2179,6 +2179,10 @@ but they are likely to explode when disturbed.
         door.bolted = False
         spawnRoom.addItem(door,(5,7,0))
 
+        spawnRoom.addStorageSlot((7,8,0),"ManaCrystal",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((8,8,0),"SpiderEye",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((9,8,0),"ChitinPlates",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((10,8,0),"Grindstone",{"desiredState":"filled"})
 
 
         ####
@@ -2234,7 +2238,6 @@ but they are likely to explode when disturbed.
         dutyBeacon.bolted = True
         throneRoom.addItem(dutyBeacon,(6,9,0))
         throneRoom.addItem(src.items.itemMap["Regenerator"](), (6, 10, 0))
-
 
         for basePos in [(1,2,0),(11,2,0),(1,10,0),(11,10,0)]:
             motionSensor = src.items.itemMap["MotionSensor"]()

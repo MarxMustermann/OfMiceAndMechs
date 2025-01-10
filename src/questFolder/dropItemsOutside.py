@@ -49,15 +49,15 @@ This quest will end when your inventory is empty."""
 
         # drop items
         if not terrain.getRoomByPosition(character.getBigPosition()):
-            if not terrain.getItemByPosition(character.getPosition()):
+            if not terrain.getItemByPosition(character.getPosition()) and not (character.getSpacePosition()[0] in (1,13) or character.getSpacePosition()[1] in (1,13)):
                 return (None,("l","drop item"))
             # go somewhere else
-            pos = (random.randint(2,13),random.randint(2,13),0)
+            pos = (random.randint(2,12),random.randint(2,12),0)
             quest = src.quests.questMap["GoToPosition"](targetPosition=pos,reason="move to a random point to drop items")
             return ([quest],None)
 
         # go somewhere else
-        bigPos = (random.randint(1,13),random.randint(1,13),0)
+        bigPos = (random.randint(2,12),random.randint(2,12),0)
         quest = src.quests.questMap["GoToTile"](targetPosition=bigPos,reason="move to a random tile to drop items")
         return ([quest],None)
 

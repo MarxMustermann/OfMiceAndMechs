@@ -52,7 +52,7 @@ This quest will end when your inventory is empty."""
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)
 
-        dropPositions = [(0,6,0),(13,6,0),(6,0,0),(6,13,0)]
+        dropPositions = [(0,6,0),(12,6,0),(6,0,0),(6,12,0)]
         if character.getPosition() in dropPositions:
             return (None,("l","drop item"))
 

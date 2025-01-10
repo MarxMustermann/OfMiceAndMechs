@@ -128,8 +128,11 @@ To see your items open the your inventory by pressing i."""
                 #    character.timeTaken += 1
                 #    self.fail(reason="no storage available")
                 #return (None,None)
-                if not character.getTerrain().alarm or self.tryHard:
+                if not character.getTerrain().alarm:
                     quest = src.quests.questMap["DropItemsOutside"]()
+                    return ([quest],None)
+                else:
+                    quest = src.quests.questMap["DiscardItemsInside"]()
                     return ([quest],None)
                 if not dryRun:
                     character.timeTaken += 1

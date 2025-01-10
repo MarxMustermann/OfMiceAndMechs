@@ -2235,7 +2235,7 @@ press any other key to attack normally"""
 
         itemList = self.container.getItemByPosition(position)
 
-        if item.walkable is False and len(itemList):
+        if item.walkable is False and len(itemList) and not (self.container.isRoom and (self.xPosition in (0,12) or self.yPosition in (0,12))):
             self.addMessage("you need a clear space to drop big items")
             self.container.addAnimation(self.getPosition(),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
             if position:

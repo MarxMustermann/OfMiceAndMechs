@@ -161,6 +161,20 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["AssignFloorPlan"](floorPlanType="storage",roomPosition=(8,7,0))
                 return ([quest],None)
 
+            foundCityPlaner = None
+            for room in terrain.rooms:
+                items = room.getItemsByType("CityPlaner",needsBolted=True)
+                if not items:
+                    continue
+                foundCityPlaner = items[0]
+                break
+
+            if foundCityPlaner:
+                for position in [(8,6,0),(8,8,0)]:
+                    if not foundCityPlaner.plannedRooms:
+                        rooms = terrain.getRoomByPosition(position)
+                        quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
+                        return ([quest],None)
 
         # check for spider lairs
         targets_found = []

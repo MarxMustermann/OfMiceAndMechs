@@ -2821,8 +2821,8 @@ press key for advanced drop
 
 * w = drop north
 * a = drop west
-* s = drop east
-* d = drop south
+* s = drop south
+* d = drop east
 * . = drop on floor
 
 """

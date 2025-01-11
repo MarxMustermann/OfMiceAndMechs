@@ -215,6 +215,6 @@ Scrapfields are shown on the minimap as white ss"""]
                     if not dryRun:
                         beUsefull.idleCounter = 0
                     return (quests,None)
-        return None
+        return (None,None)
 
 src.quests.addType(GatherScrap)

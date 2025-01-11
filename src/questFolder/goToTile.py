@@ -180,6 +180,8 @@ The target tile is {direction[4:]}
             return (None,None)
 
         if self.allowMapMenu and len(self.path) > 2:
+            if self.targetPosition == (7,7,0):
+                return (None,("gmc","use fast travel to reach your destination"))
             currentPos = character.getBigPosition()
             offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
             return (None,("gm"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))

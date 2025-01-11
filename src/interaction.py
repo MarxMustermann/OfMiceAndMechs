@@ -2716,8 +2716,8 @@ press key for the advanced interaction
 
 * w = activate north
 * a = activate west
-* s = activate east
-* d = activate south
+* s = activate south
+* d = activate east
 * . = activate item on floor
 * i = activate last item in inventory
 * f = eat food
@@ -2745,8 +2745,8 @@ press key for the configuration interaction
 
 * w = configure north
 * a = configure west
-* s = configure east
-* d = configure south
+* s = configure south
+* d = configure east
 * . = configure item on floor
 * i = configure last item in inventory
 
@@ -2797,8 +2797,8 @@ press key for advanced pickup
 
 * w = pick up north
 * a = pick up west
-* s = pick up east
-* d = pick up south
+* s = pick up south
+* d = pick up east
 * . = pick item on floor
 
 """

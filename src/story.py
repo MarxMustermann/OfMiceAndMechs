@@ -2184,6 +2184,11 @@ but they are likely to explode when disturbed.
         spawnRoom.addStorageSlot((9,8,0),"ChitinPlates",{"desiredState":"filled"})
         spawnRoom.addStorageSlot((10,8,0),"Grindstone",{"desiredState":"filled"})
 
+        spawnRoom.addStorageSlot((2,5,0),"Door",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((3,5,0),"Door",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((4,5,0),"Door",{"desiredState":"filled"})
+        spawnRoom.addStorageSlot((5,5,0),"Door",{"desiredState":"filled"})
+
 
         ####
         # create temple

@@ -6,7 +6,7 @@ import src
 class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
 
-    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None):
+    def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True):
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = f"{description} {targetPosition}"
@@ -20,6 +20,7 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.reason = reason
         self.abortHealthPercentage = abortHealthPercentage
         self.story = story
+        self.allowMapMenu = allowMapMenu
 
     def sanatiyCheckPath(self):
         1/0
@@ -177,6 +178,11 @@ The target tile is {direction[4:]}
 
         if not self.path:
             return (None,None)
+
+        if self.allowMapMenu:
+            currentPos = character.getBigPosition()
+            offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
+            return (None,("gm"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(1-offset[1])+"j","use fast travel to reach your destination"))
 
         if self.subQuests:
             return (None,None)

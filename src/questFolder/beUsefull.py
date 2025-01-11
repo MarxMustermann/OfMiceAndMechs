@@ -451,7 +451,7 @@ Press d to move the cursor and show the subquests description.
                     step = src.quests.questMap["Pray"].generateDutyQuest(self,character,room,dryRun)
                 case "mold farming":
                     step = src.quests.questMap["FarmMold"].generateDutyQuest(self,character,room,dryRun)
-            if step != (None,None):
+            if step != (None,None) and (not step[0] and not step[1]):
                 if not dryRun:
                     self.numTasksDone += 1
                 return step

@@ -456,7 +456,7 @@ Press d to move the cursor and show the subquests description.
                 print(duty)
                 print(step)
                 raise Exception("invalid step format")
-            if step != (None,None) and (not step[0] and not step[1]):
+            if step != (None,None) and not (not step[0] and not step[1]):
                 if not dryRun:
                     self.numTasksDone += 1
                 return step

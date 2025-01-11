@@ -247,9 +247,16 @@ This quest will end when your inventory is full."""
             if not dryRun:
                 beUsefull.idleCounter = 0
             return ([quest],None)
+
+        freeStorageSpace = 0
+        for room in terrain.rooms:
+            freeStorageSpace += len(room.getEmptyInputslots(forceGenericStorage=True))
+        if freeStorageSpace < 12:
+            return (None,None)
+
         quest =  src.quests.questMap["Scavenge"](lifetime=1000)
         if not dryRun:
-                beUsefull.idleCounter = 0
+            beUsefull.idleCounter = 0
         return ([quest],None)
 
 src.quests.addType(Scavenge)

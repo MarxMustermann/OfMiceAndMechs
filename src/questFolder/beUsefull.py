@@ -405,10 +405,12 @@ Press d to move the cursor and show the subquests description.
                     dutySkip -= 1
                 
                 if dutySkip > 0:
-                    self.dutySkipps[duty] = dutySkip
+                    if not dryRun:
+                        self.dutySkipps[duty] = dutySkip
                     continue
                 else:
-                    del self.dutySkipps[duty]
+                    if not dryRun:
+                        del self.dutySkipps[duty]
 
             match (duty):
                 case "flask filling":

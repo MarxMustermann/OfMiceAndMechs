@@ -253,9 +253,12 @@ class Room:
 
         return result
 
-    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False):
+    def getEmptyInputslots(self,itemType=None,allowAny=False,allowStorage=True,fullyEmpty=False,forceGenericStorage=False):
         result = []
         for inputSlot in self.inputSlots:
+            if forceGenericStorage:
+                continue
+
             if (itemType and inputSlot[1] != itemType) and (not allowAny or inputSlot[1] is not None):
                 continue
 
@@ -287,7 +290,9 @@ class Room:
 
         if allowStorage:
             for storageSlot in self.storageSlots:
-                if (itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None):
+                if (not forceGenericStorage) and ((itemType and storageSlot[1] != itemType) and (not allowAny or  storageSlot[1] is not None)):
+                    continue
+                if forceGenericStorage and (storageSlot[1] is not None):
                     continue
 
                 pos = storageSlot[0]
@@ -297,11 +302,13 @@ class Room:
                 if not items:
                     result.append(storageSlot)
                     continue
+                elif forceGenericStorage:
+                    continue
 
                 if fullyEmpty:
                     continue
 
-                if (itemType and not storageSlot[1] and items[0].type != itemType):
+                if (not forceGenericStorage) and (itemType and not storageSlot[1] and items[0].type != itemType):
                     continue
 
                 if items[0].type == "Scrap":

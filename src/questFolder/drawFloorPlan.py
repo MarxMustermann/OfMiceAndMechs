@@ -327,7 +327,8 @@ Draw a floor plan assigned to a room{reason}.
                             quest = src.quests.questMap["DrawStockpile"](tryHard=True,itemType=None,stockpileType="s",targetPositionBig=generalPurposeRoom,targetPosition=(x,y,0),reason="extend the storage capacity temporarily")
                             quests.append(quest)
                     quests.reverse()
-                    return (quests,None)
+                    if quests:
+                        return (quests,None)
 
         # get storage stockpiles that have the filled tag
         desireFilledStorageSlots = {}
@@ -359,6 +360,7 @@ Draw a floor plan assigned to a room{reason}.
                         continue
                     quest = src.quests.questMap["DrawStockpile"](stockpileType="s",targetPositionBig=room.getPosition(),targetPosition=storageSlot[0],reason="designate special storage for basic items",itemType=checkDesireFilledStorageSlot[0],extraInfo={"desiredState":"filled"})
                     return ([quest],None)
+
         return (None,None)
 
 src.quests.addType(DrawFloorPlan)

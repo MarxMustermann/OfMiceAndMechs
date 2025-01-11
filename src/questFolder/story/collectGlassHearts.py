@@ -150,6 +150,20 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["StrengthenBaseDefences"](numTrapRoomsBuild=numGlassHearts//2,numTrapRoomsPlanned=numGlassHearts//2+1,lifetime=1000)
                 return ([quest],None)
 
+        # ensure the base is set to auto expand
+        foundCityPlaner = None
+        for room in terrain.rooms:
+            items = room.getItemsByType("CityPlaner",needsBolted=True)
+            if not items:
+                continue
+            foundCityPlaner = items[0]
+            break
+
+        if foundCityPlaner:
+            if not foundCityPlaner.autoExtensionThreashold:
+                quest = src.quests.questMap["SetBaseAutoExpansion"](targetLevel=2)
+                return ([quest],None)
+
         # get statues ready for teleport
         strengthRating = character.getStrengthSelfEstimate()
         readyStatues = {}

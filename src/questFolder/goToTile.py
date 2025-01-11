@@ -179,10 +179,10 @@ The target tile is {direction[4:]}
         if not self.path:
             return (None,None)
 
-        if self.allowMapMenu:
+        if self.allowMapMenu and len(self.path) > 2:
             currentPos = character.getBigPosition()
             offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
-            return (None,("gm"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(1-offset[1])+"j","use fast travel to reach your destination"))
+            return (None,("gm"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
 
         if self.subQuests:
             return (None,None)

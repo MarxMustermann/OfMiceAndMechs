@@ -51,6 +51,16 @@ Take the place of supreme leader and rule the world!
         if self.subQuests:
             return (None,None)
 
+        if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter room"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter room"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter room"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter room"))
+
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)

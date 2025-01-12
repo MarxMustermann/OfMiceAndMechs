@@ -11,7 +11,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
     def __init__(self, description="adventure on terrain", creator=None, lifetime=None, reason=None, targetTerrain=None):
         questList = []
         super().__init__(questList, creator=creator,lifetime=lifetime)
-        self.metaDescription = description
+        self.metaDescription = description+f" {targetTerrain}"
         self.reason = reason
         self.targetTerrain = targetTerrain
         self.donePointsOfInterest = []

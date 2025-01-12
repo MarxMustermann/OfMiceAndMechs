@@ -22,9 +22,6 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.story = story
         self.allowMapMenu = allowMapMenu
 
-    def sanatiyCheckPath(self):
-        1/0
-
     def handleChangedTile(self):
         if not self.active:
             return

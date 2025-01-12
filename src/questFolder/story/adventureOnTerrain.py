@@ -130,17 +130,12 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
             self.donePointsOfInterest.append(character.getBigPosition())
 
         pointOfInterest = random.choice(pointsOfInterest)
-        offset = (pointOfInterest[0] - char_big_pos[0] , pointOfInterest[1] - char_big_pos[1])
-        moves = "gm"
-        if offset[0] > 0:
-            moves += "d" * offset[0]
-        elif offset[0] < 0:
-            moves += "a" * -offset[0]
-        if offset[1] > 0:
-            moves += "s" * offset[1]
-        elif offset[1] < 0:
-            moves += "w" * -offset[1]
-        return (None,(moves+"j","go to tile"))
+        if currentTerrain.getRoomByPosition(pointOfInterest):
+            quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest)
+            return ([quest],None)
+        else:
+            quest = src.quests.questMap["ScavengeTile"](targetPosition=pointOfInterest)
+            return ([quest],None)
 
     def generateTextDescription(self):
         return [f"""

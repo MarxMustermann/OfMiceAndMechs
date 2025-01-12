@@ -193,7 +193,7 @@ The target tile is {direction[4:]}
         if not self.path:
             return (None,None)
 
-        if self.allowMapMenu and len(self.path) > 2:
+        if self.allowMapMenu and len(self.path) > 3:
             menuCommand = "g"
             if "runaction" in character.interactionState:
                 menuCommand = ""

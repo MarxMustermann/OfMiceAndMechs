@@ -40,6 +40,37 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if character.macroState.get("submenue"):
+            submenue = character.macroState.get("submenue")
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                foundOption = False
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == "sharpen sword":
+                            foundOption = True
+                            break
+                        if option[1] == "Sharpen Equipped Sword":
+                            foundOption = True
+                            break
+                        counter += 1
+                    rewardIndex = counter
+
+                if not foundOption:
+                    return (None,(["esc"],"to close menu"))
+
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"contact command"))
+            
+            return (None,(["esc"],"close the menu"))
+
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")
             return ([quest],None)
@@ -59,14 +90,17 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
                 
                 if offset == (0,0,0):
                     return (None,("jjj","sharpen personal sword"))
+                interactionCommand = "J"
+                if "advancedInteraction" in character.interactionState:
+                    interactionCommand = ""
                 if offset == (1,0,0):
-                    return (None,("Jdjj","sharpen personal sword"))
+                    return (None,(interactionCommand+"djj","sharpen personal sword"))
                 if offset == (-1,0,0):
-                    return (None,("Jajj","sharpen personal sword"))
+                    return (None,(interactionCommand+"ajj","sharpen personal sword"))
                 if offset == (0,1,0):
-                    return (None,("Jsjj","sharpen personal sword"))
+                    return (None,(interactionCommand+"sjj","sharpen personal sword"))
                 if offset == (0,-1,0):
-                    return (None,("Jwjj","sharpen personal sword"))
+                    return (None,(interactionCommand+"wjj","sharpen personal sword"))
 
 
             for item in character.container.itemsOnFloor:

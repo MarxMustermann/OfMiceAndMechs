@@ -1022,6 +1022,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "s":
         items = char.container.getItemByPosition(
@@ -1029,6 +1030,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "d":
         items = char.container.getItemByPosition(
@@ -1036,6 +1038,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "a":
         items = char.container.getItemByPosition(
@@ -1043,6 +1046,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == ".":
         items = char.container.getItemByPosition(
@@ -1050,6 +1054,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         )
         if items:
             items[0].configure(char)
+            char.runCommandString("~",nativeKey=True)
             char.timeTaken += char.movementSpeed
     elif key == "i" and char.inventory:
         char.inventory[-1].configure(char)

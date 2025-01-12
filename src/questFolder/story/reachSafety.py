@@ -34,7 +34,7 @@ class ReachSafety(src.quests.MetaQuestSequence):
             if not character.armor or not character.weapon:
                 quest = src.quests.questMap["GetCombatReady"](reason="get combat ready",description="get combat ready")
                 return ([quest],None)
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="reach the main room",description="reach the main room",paranoid=True)
+            quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="reach the main room",description="reach the main room",paranoid=True,allowMapMenu=False)
             return ([quest],None)
         if character.getBigPosition() == (7,7,0):
             if not character.container.isRoom:
@@ -43,7 +43,7 @@ class ReachSafety(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["Fight"](description="kill the last enemy")
                 return ([quest],None)
             return (None,None)
-        quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance")
+        quest = src.quests.questMap["GoToTileStory"](targetPosition=(5,7,0),reason="reach the base entrance",description="reach the base entrance",allowMapMenu=False)
         return ([quest],None)
 
 

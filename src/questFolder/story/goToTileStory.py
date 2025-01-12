@@ -4,8 +4,8 @@ import src
 class GoToTileStory(src.quests.questMap["GoToTile"]):
     type = "GoToTileStory"
 
-    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,reason=None):
-        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates, reason=reason)
+    def __init__(self, description="go to tile", creator=None, lifetime=None, targetPosition=None, paranoid=False, showCoordinates=True,reason=None,allowMapMenu=True):
+        super().__init__(description=description, creator=creator, lifetime=lifetime, targetPosition=targetPosition, paranoid=paranoid, showCoordinates=showCoordinates, reason=reason, allowMapMenu=allowMapMenu)
 
     def generateTextDescription(self):
         command = ""

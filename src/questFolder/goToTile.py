@@ -162,6 +162,23 @@ The target tile is {direction[4:]}
         if character is None:
             return (None,None)
 
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+            if self.targetPosition == (7,7,0):
+                return (None,("c","auto move to tile"))
+
+            submenue = character.macroState["submenue"]
+            command = ""
+            if submenue.cursor[0] > self.targetPosition[0]:
+                command += "a"*(submenue.cursor[0]-self.targetPosition[0])
+            if submenue.cursor[0] < self.targetPosition[0]:
+                command += "d"*(self.targetPosition[0]-submenue.cursor[0])
+            if submenue.cursor[1] > self.targetPosition[1]:
+                command += "w"*(submenue.cursor[1]-self.targetPosition[1])
+            if submenue.cursor[1] < self.targetPosition[1]:
+                command += "s"*(self.targetPosition[1]-submenue.cursor[1])
+            command += "j"
+            return (None,(command,"auto move to tile"))
+
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
 
@@ -177,11 +194,15 @@ The target tile is {direction[4:]}
             return (None,None)
 
         if self.allowMapMenu and len(self.path) > 2:
+            menuCommand = "g"
+            if "runaction" in character.interactionState:
+                menuCommand = ""
+
             if self.targetPosition == (7,7,0):
-                return (None,("gmc","use fast travel to reach your destination"))
+                return (None,(menuCommand+"mc","use fast travel to reach your destination"))
             currentPos = character.getBigPosition()
             offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
-            return (None,("gm"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
+            return (None,(menuCommand+"m"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
 
         if self.subQuests:
             return (None,None)

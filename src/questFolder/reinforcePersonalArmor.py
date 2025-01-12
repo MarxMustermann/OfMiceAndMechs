@@ -34,6 +34,16 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter room"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter room"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter room"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter room"))
+
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")
             return ([quest],None)

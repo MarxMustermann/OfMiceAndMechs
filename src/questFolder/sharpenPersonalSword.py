@@ -40,6 +40,16 @@ class SharpenPersonalSword(src.quests.MetaQuestSequence):
         if not character:
             return (None,None)
 
+        if not character.container.isRoom:
+            if character.xPosition%15 == 0:
+                return (None,("d","enter room"))
+            if character.xPosition%15 == 14:
+                return (None,("a","enter room"))
+            if character.yPosition%15 == 0:
+                return (None,("s","enter room"))
+            if character.yPosition%15 == 14:
+                return (None,("w","enter room"))
+
         if character.macroState.get("submenue"):
             submenue = character.macroState.get("submenue")
             if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):

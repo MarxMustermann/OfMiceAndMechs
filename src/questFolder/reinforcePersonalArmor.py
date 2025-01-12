@@ -44,6 +44,37 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        if character.macroState.get("submenue"):
+            submenue = character.macroState.get("submenue")
+            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
+                foundOption = False
+                rewardIndex = 0
+                if rewardIndex == 0:
+                    counter = 1
+                    for option in submenue.options.items():
+                        if option[1] == "Reinforce armor":
+                            foundOption = True
+                            break
+                        if option[1] == "Reinforce Equipped Armor":
+                            foundOption = True
+                            break
+                        counter += 1
+                    rewardIndex = counter
+
+                if not foundOption:
+                    return (None,(["esc"],"to close menu"))
+
+                offset = rewardIndex-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"contact command"))
+            
+            return (None,(["esc"],"close the menu"))
+
         if character.getNearbyEnemies():
             quest = src.quests.questMap["Fight"](description="defend yourself")
             return ([quest],None)

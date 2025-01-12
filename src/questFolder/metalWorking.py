@@ -99,10 +99,10 @@ Press d to move the cursor and show the subquests description.
 
                 menuEntry = "produce item"
                 if submenue.extraInfo.get("item").lastProduction == self.toProduce:
-                    menuEntry = "repeat last production"
+                    menuEntry = "repeat"
                 counter = 1
-                for option in submenue.options.items():
-                    if option[1] == "produce item":
+                for option in submenue.options.values():
+                    if option == menuEntry:
                         index = counter
                         break
                     counter += 1

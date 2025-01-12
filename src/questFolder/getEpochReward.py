@@ -181,7 +181,10 @@ This will allow you to focus on other tasks.
                 command = "w"
 
             if command:
-                return (None,("J"+command,"start praying at the shrine"))
+                interactionCommand = "J"
+                if "advancedInteraction" in character.interactionState:
+                    interactionCommand = ""
+                return (None,(interactionCommand+command,"start praying at the shrine"))
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=foundShrine.getPosition(), description="go to shrine",ignoreEndBlocked=True)
             return ([quest],None)

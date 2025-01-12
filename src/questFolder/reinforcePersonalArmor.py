@@ -94,14 +94,17 @@ class ReinforcePersonalArmor(src.quests.MetaQuestSequence):
                 
                 if offset == (0,0,0):
                     return (None,("jjj","improve personal armor"))
+                interactionCommand = "J"
+                if "advancedInteraction" in character.interactionState:
+                    interactionCommand = ""
                 if offset == (1,0,0):
-                    return (None,("Jdjj","improve personal armor"))
+                    return (None,(interactionCommand+"djj","improve personal armor"))
                 if offset == (-1,0,0):
-                    return (None,("Jajj","improve personal armor"))
+                    return (None,(interactionCommand+"ajj","improve personal armor"))
                 if offset == (0,1,0):
-                    return (None,("Jsjj","improve personal armor"))
+                    return (None,(interactionCommand+"sjj","improve personal armor"))
                 if offset == (0,-1,0):
-                    return (None,("Jwjj","improve personal armor"))
+                    return (None,(interactionCommand+"wjj","improve personal armor"))
 
 
             for item in character.container.itemsOnFloor:

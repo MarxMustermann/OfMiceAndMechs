@@ -4,7 +4,7 @@
 
 ### windows
 
-Download zip from http://ofmiceandmechs.com/ and double click lunch_game.bat
+Download zip from  https://github.com/MarxMustermann/OfMiceAndMechs/releases/latest/download/OfMiceAndMechs-Win.zip and double click lunch_game.bat
 
 ### Linux
 

@@ -46,30 +46,23 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
         
         if character.macroState["submenue"] and not ignoreCommands:
             submenue = character.macroState["submenue"]
-            if isinstance(submenue,src.menuFolder.selectionMenu.SelectionMenu):
-                foundOption = False
-                rewardIndex = 0
-                if rewardIndex == 0:
-                    counter = 1
-                    for option in submenue.options.items():
-                        if option[1] == "unrestrict outside":
-                            foundOption = True
-                            break
-                        counter += 1
-                    rewardIndex = counter
+            if submenue.tag == "configurationSelection":
+                return (None,("a","to select configuring the auto extension threashold"))
+            if submenue.tag == "autoExtensionThreasholdInput":
+                if submenue.text == str(self.targetLevel):
+                    return (None,(["enter"],"to set the auto extension threashold"))
 
-                if not foundOption:
-                    return (None,(["esc"],"to close menu"))
+                if len(submenue.text) > len(str(self.targetLevel)):
+                    return (None,(["backspace"],"remove input"))
 
-                offset = rewardIndex-submenue.selectionIndex
-                command = ""
-                if offset > 0:
-                    command += "s"*offset
-                else:
-                    command += "w"*(-offset)
-                command += "j"
-                return (None,(command,"contact command"))
-            
+                counter = 0
+                while counter < len(submenue.text):
+                    if submenue.text[counter] != str(self.targetLevel)[counter]:
+                        return (None,(["backspace"],"remove input"))
+                    counter += 1
+
+                return (None,(str(self.targetLevel),"to enter the auto extension threashold"))
+
             return (None,(["esc"],"to close menu"))
         
         terrain = character.getTerrain()
@@ -108,9 +101,9 @@ class SetBaseAutoExpansion(src.quests.MetaQuestSequence):
             direction = "s"
 
         interactionCommand = "C"
-        if "advancedInteraction" in character.interactionState:
+        if "advancedConfigure" in character.interactionState:
             interactionCommand = ""
-        return (None,(list(interactionCommand+direction+".a"+"2")+["enter"],"disable the outside restrictions"))
+        return (None,(list(interactionCommand+direction+"a"+"2")+["enter"],"disable the outside restrictions"))
 
     def generateTextDescription(self):
         text = ["""

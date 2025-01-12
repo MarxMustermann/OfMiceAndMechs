@@ -13,7 +13,7 @@ class ChitinPlates(src.items.Item):
         set up internal state
         """
 
-        super().__init__(display=">")
+        super().__init__(display="> ")
 
 
 src.items.addType(ChitinPlates)

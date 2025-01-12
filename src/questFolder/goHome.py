@@ -106,7 +106,15 @@ Press control-d to stop your character from moving.
                             if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
                                 submenue = character.macroState["submenue"]
 
-                                targetIndex = 5
+                                targetIndex = None
+                                counter = 0
+                                for item in submenue.options.values():
+                                    counter += 1
+                                    if item == "teleport":
+                                        targetIndex = counter
+                                        break
+                                if not targetIndex:
+                                    return (None,(["esc"],"close menu"))
 
                                 offset = targetIndex-submenue.selectionIndex
                                 command = ""
@@ -126,7 +134,11 @@ Press control-d to stop your character from moving.
                                 direction = "s"
                             if character.getPosition(offset=(0, -1, 0)) == item.getPosition():
                                 direction = "w"
-                            return (None, ("J" + direction + "wj", "activate the Shrine"))
+
+                            interactionCommand = "J"
+                            if "advancedInteraction" in character.interactionState:
+                                interactionCommand = ""
+                            return (None, (interactionCommand + direction + "wj", "activate the Shrine"))
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](
                         targetPosition=foundShrine.getPosition(), reason="get to a shrine", ignoreEndBlocked=True

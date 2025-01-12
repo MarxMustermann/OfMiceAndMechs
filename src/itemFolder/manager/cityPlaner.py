@@ -993,7 +993,7 @@ class CityPlaner(src.items.Item):
 
     def setAutoExtensionThreashold(self,character):
         submenue = src.menuFolder.inputMenu.InputMenu("This threashold determines at many empty rooms clones will stop building new rooms.\nSet the value",targetParamName="value",stealAllKeys=False)
-        submenue.tag = "tagInput"
+        submenue.tag = "autoExtensionThreasholdInput"
         character.macroState["submenue"] = submenue
         character.macroState["submenue"].followUp = {"container":self,"method":"setAutoExtensionThreashold2","params":{"character":character}}
 

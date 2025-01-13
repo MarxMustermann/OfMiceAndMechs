@@ -21,18 +21,19 @@ class Pony(src.monster.Monster):
         self.faction = "ponies"
 
     def changed(self, tag="default", info=None):
-        if not self.agressive:
+        if tag == "hurt":
+            if not self.agressive:
 
-            for quest in self.quests[:]:
-                quests.fail("aborted")
+                for quest in self.quests[:]:
+                    quests.fail("aborted")
 
-            quest = src.quests.questMap["ClearTerrain"]()
-            quest.autoSolve = True
-            quest.assignToCharacter(self)
-            quest.activate()
-            self.quests.append(quest)
+                quest = src.quests.questMap["ClearTerrain"]()
+                quest.autoSolve = True
+                quest.assignToCharacter(self)
+                quest.activate()
+                self.quests.append(quest)
 
-            self.agressive = True
+                self.agressive = True
         super().changed(tag=tag,info=info)
 
 src.characters.add_character(Pony)

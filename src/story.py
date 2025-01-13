@@ -1031,7 +1031,8 @@ class MainGame(BasicPhase):
         # reserve center position for throne room
         self.available_positions.remove((7,7))
 
-        self.preselection = "Story"
+        if not self.preselection:
+            self.preselection = "Story"
 
         difficultyModifier = 1
         if self.difficulty == "tutorial":
@@ -1077,8 +1078,12 @@ class MainGame(BasicPhase):
 
             dungeonPositions.append(self.get_free_position("dungeon2"))
 
-        self.sternsBasePosition = self.get_free_position("sterns base")
-        self.setUpSternsBase(self.sternsBasePosition)
+        if self.preselection == "Story":
+            self.sternsBasePosition = self.get_free_position("sterns base")
+            self.setUpSternsBase(self.sternsBasePosition)
+        elif self.preselection == "baseBuilder":
+            self.playerBasePosition = self.get_free_position("player base")
+            #self.setUpPlayerBase(self.playerBasePosition)
 
         for _i in range(1,20):
             self.get_free_position("nothingness")
@@ -1096,6 +1101,8 @@ class MainGame(BasicPhase):
         if self.preselection == "Story":
             self.dungeonCrawlInfos.append(self.createStoryStart())
             self.activeStory = self.dungeonCrawlInfos[0]
+        elif self.preselection == "baseBuilder":
+            self.activeStory = self.createBasebuilderStart()
 
         mainChar = self.activeStory["mainChar"]
         src.gamestate.gamestate.mainChar = mainChar
@@ -3283,6 +3290,86 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
+    def createBasebuilderStart(self):
+        homeTerrain = src.gamestate.gamestate.terrainMap[self.playerBasePosition[1]][self.playerBasePosition[0]]
+
+        mainChar = src.characters.characterMap["Clone"]()
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 100
+        mainChar.duties = ["praying","city planning","clone spawning",]
+        mainChar.rank = 6
+        mainChar.timeTaken = 1
+        mainChar.runCommandString(".",nativeKey=True)
+
+        mainChar.personality["viewChar"] = "name"
+        mainChar.personality["viewColour"] = "name"
+
+        thisFactionId = self.factionCounter
+        mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
+
+        vial = src.items.itemMap["Vial"]()
+        vial.uses = 1
+        mainChar.inventory.append(vial)
+
+        mainChar.registers["HOMETx"] = self.playerBasePosition[0]
+        mainChar.registers["HOMETy"] = self.playerBasePosition[1]
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+        mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+
+        storyStartInfo = {}
+        storyStartInfo["terrain"] = homeTerrain
+        storyStartInfo["mainChar"] = mainChar
+        storyStartInfo["type"] = "baseBuilder start"
+
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        homeTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        item = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(item,(3,3,0))
+
+        item = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(item,(9,3,0))
+
+        mainRoom.addCharacter(mainChar,7,7)
+
+        (bigX,bigY) = (6,6)
+        for x in range(1,14):
+            for y in range(1,14):
+                amount = random.randint(1,10)
+                if x in (1,13,) or y in (1,13,):
+                    amount = random.randint(8,15)
+                scrap = src.items.itemMap["Scrap"](amount=amount)
+                homeTerrain.addItem(scrap,(bigX*15+x,bigY*15+y,0))
+        homeTerrain.scrapFields.append((bigX,bigY,0))
+
+        for i in range(10):
+            item = src.items.itemMap["MoldSpore"]()
+            mainRoom.addItem(item,(3,9,0))
+
+        return storyStartInfo
             
     def createStoryStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.sternsBasePosition[1]][self.sternsBasePosition[0]]
@@ -3857,6 +3944,14 @@ Once you understand things try to find better solutions.
         terrain.addEvent(event)
 
 ###############################################################
+#    pseudo stories
+###############################################################
+
+class MainGameProduction(MainGame):
+    def __init__(self,seed=0):
+        super().__init__(preselection="baseBuilder",seed=seed)
+
+###############################################################
 #
 #    the glue to be able to call the phases from configs etc
 #
@@ -3875,4 +3970,5 @@ def registerPhases():
     phasesByName = src.gamestate.phasesByName
 
     phasesByName["MainGame"] = MainGame
+    phasesByName["MainGameProduction"] = MainGameProduction
     phasesByName["PrefabDesign"] = PrefabDesign

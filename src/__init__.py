@@ -14,3 +14,4 @@ import src.helpers
 import src.cinematicsFolder
 import src.popups
 import src.popupFolder
+import src.mods

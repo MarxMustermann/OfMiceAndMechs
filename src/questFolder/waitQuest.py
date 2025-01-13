@@ -9,7 +9,7 @@ class WaitQuest(src.quests.MetaQuestSequence):
     def __init__(
         self, followUp=None, startCinematics=None, lifetime=None, creator=None
     ):
-        self.description = "wait"
+        self.metaDescription = "wait"
         super().__init__(lifetime=lifetime, creator=creator)
 
         # save initial state and register

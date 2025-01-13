@@ -114,6 +114,7 @@ def advanceGame():
         if src.gamestate.gamestate.tick % 150 == 0:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")
+
 def advanceGame_disabled():
     """
     advance the game

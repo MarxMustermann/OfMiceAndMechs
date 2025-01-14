@@ -48,6 +48,9 @@ Remove all items that are not bolted down."""
         if not character:
             return False
 
+        if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
+            return False
+        
         if not self.getLeftoverItems(character):
             self.postHandler()
             return True

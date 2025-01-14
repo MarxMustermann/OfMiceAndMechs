@@ -4448,7 +4448,7 @@ def showMainMenu(args=None):
         "m",
         ),
         (
-        "mainGameSieged",
+        "mainGameRoguelike",
         "main game (sieged/roguelike)",
         "r",
         ),
@@ -4457,76 +4457,6 @@ def showMainMenu(args=None):
         "main game (production/base management)",
         "b",
         ),
-        (
-        "mainGameRaid",
-        "main game (raid/capture the flag)",
-        "c",
-        ),
-        (
-        "mainGameArena",
-        "main game (arena/hack and slay)",
-        "h",
-        ),
-        (
-        "mainGameArena2",
-        "main game (arena2/hack and slay)",
-        "H",
-        ),
-        #(
-        #"Tutorials",
-        #"tutorials",
-        #"t",
-        #),
-        (
-        "PrefabDesign",
-        "PrefabDesign",
-        "p",
-        ),
-        (
-        "Hero",
-        "Hero",
-        "x",
-        ),
-        #(
-        #"basebuilding",
-        #"basebuilding",
-        #"b",
-        #),
-        #(
-        #"RoguelikeStart",
-        #"RoguelikeStart",
-        #"r",
-        #),
-        #(
-        #"survival",
-        #"survival",
-        #"S",
-        #),
-        #(
-        #"creative",
-        #"creative mode",
-        #"c",
-        #),
-        #(
-        #"dungeon",
-        #"dungeon",
-        #"d",
-        #),
-        #(
-        #"mainGame",
-        #"mainGame",
-        #"s",
-        #),
-        #(
-        #"Tour",
-        #"(Tour)",
-        #"T",
-        #),
-        #(
-        #"siege",
-        #"(siege)",
-        #"x",
-        #),
     ]
 
     selectedScenario = "mainGame"
@@ -4707,9 +4637,9 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
                     elif selectedScenario == "mainGame":
                         terrain = "test"
                         phase = "MainGame"
-                    elif selectedScenario == "mainGameSieged":
+                    elif selectedScenario == "mainGameRoguelike":
                         terrain = "test"
-                        phase = "MainGameSieged"
+                        phase = "MainGameRoguelike"
                     elif selectedScenario == "mainGameProduction":
                         terrain = "test"
                         phase = "MainGameProduction"

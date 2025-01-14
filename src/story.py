@@ -1083,6 +1083,8 @@ class MainGame(BasicPhase):
             self.setUpSternsBase(self.sternsBasePosition)
         elif self.preselection == "baseBuilder":
             self.playerBasePosition = self.get_free_position("player base")
+        elif self.preselection == "roguelike":
+            self.playerBasePosition = self.get_free_position("teleportation hub")
             #self.setUpPlayerBase(self.playerBasePosition)
 
         for _i in range(1,20):
@@ -1103,6 +1105,8 @@ class MainGame(BasicPhase):
             self.activeStory = self.dungeonCrawlInfos[0]
         elif self.preselection == "baseBuilder":
             self.activeStory = self.createBasebuilderStart()
+        elif self.preselection == "roguelike":
+            self.activeStory = self.createRoguelikeStart()
 
         mainChar = self.activeStory["mainChar"]
         src.gamestate.gamestate.mainChar = mainChar
@@ -3290,6 +3294,80 @@ but they are likely to explode when disturbed.
 
                 currentTerrain.addCharacter(enemy, x*15+pos[0], y*15+pos[1])
 
+    def createRoguelikeStart(self):
+        homeTerrain = src.gamestate.gamestate.terrainMap[self.playerBasePosition[1]][self.playerBasePosition[0]]
+
+        mainChar = src.characters.characterMap["Clone"]()
+        mainChar.flask = src.items.itemMap["GooFlask"]()
+        mainChar.flask.uses = 100
+        mainChar.duties = ["praying","city planning","clone spawning",]
+        mainChar.rank = 6
+        mainChar.timeTaken = 1
+        mainChar.runCommandString(".",nativeKey=True)
+
+        mainChar.personality["viewChar"] = "name"
+        mainChar.personality["viewColour"] = "name"
+
+        thisFactionId = self.factionCounter
+        mainChar.faction = f"city #{thisFactionId}"
+        self.factionCounter += 1
+
+        vial = src.items.itemMap["Vial"]()
+        vial.uses = 1
+        mainChar.inventory.append(vial)
+
+        mainChar.registers["HOMETx"] = self.playerBasePosition[0]
+        mainChar.registers["HOMETy"] = self.playerBasePosition[1]
+        mainChar.registers["HOMEx"] = 7
+        mainChar.registers["HOMEy"] = 7
+
+        mainChar.personality["autoFlee"] = False
+        mainChar.personality["abortMacrosOnAttack"] = False
+        mainChar.personality["autoCounterAttack"] = False
+        mainChar.addListener(src.cinematicsFolder.death.Death,"died_pre")
+
+        storyStartInfo = {}
+        storyStartInfo["terrain"] = homeTerrain
+        storyStartInfo["mainChar"] = mainChar
+        storyStartInfo["type"] = "roguelike start"
+
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        homeTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        counter = 1
+        for x in range(3,10):
+            item = src.items.itemMap["Shrine"](god=counter)
+            mainRoom.addItem(item,(x,3,0))
+
+            item = src.items.itemMap["GlassStatue"](itemID=counter)
+            item.charges = 10
+            mainRoom.addItem(item,(x,5,0))
+            counter += 1
+
+        mainRoom.addCharacter(mainChar,7,7)
+
+        item = src.items.itemMap["Throne"]()
+        mainRoom.addItem(item,(6,9,0))
+
+        return storyStartInfo
+
     def createBasebuilderStart(self):
         homeTerrain = src.gamestate.gamestate.terrainMap[self.playerBasePosition[1]][self.playerBasePosition[0]]
 
@@ -3947,6 +4025,10 @@ Once you understand things try to find better solutions.
 #    pseudo stories
 ###############################################################
 
+class MainGameRoguelike(MainGame):
+    def __init__(self,seed=0):
+        super().__init__(preselection="roguelike",seed=seed)
+
 class MainGameProduction(MainGame):
     def __init__(self,seed=0):
         super().__init__(preselection="baseBuilder",seed=seed)
@@ -3972,3 +4054,4 @@ def registerPhases():
     phasesByName["MainGame"] = MainGame
     phasesByName["MainGameProduction"] = MainGameProduction
     phasesByName["PrefabDesign"] = PrefabDesign
+    phasesByName["MainGameRoguelike"] = MainGameRoguelike

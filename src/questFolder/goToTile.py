@@ -187,6 +187,16 @@ The target tile is {direction[4:]}
                 self.fail("low health")
             return (None,None)
 
+        bigPos = character.getBigPosition()
+        if bigPos[0] == 0:
+            return (None,("d","enter terrain"))
+        if bigPos[0] == 14:
+            return (None,("a","enter terrain"))
+        if bigPos[1] == 0:
+            return (None,("s","enter terrain"))
+        if bigPos[1] == 14:
+            return (None,("w","enter terrain"))
+
         if not self.path:
             self.generatePath(character)
 

@@ -37,6 +37,7 @@ class ChatPartnerselection(src.subMenu.SubMenu):
             return True
 
         # set title
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), "nobody to talk to"))
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nConversation menu\n"))
         out = "\n"
 

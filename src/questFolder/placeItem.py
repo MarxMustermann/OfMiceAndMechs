@@ -157,7 +157,7 @@ Press d to move the cursor and show the subquests description.
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         if not self.subQuests:
-            if not self.tryHard and character.getNearbyEnemies():
+            if character.getNearbyEnemies():
                 quest = src.quests.questMap["Fight"]()
                 return ([quest],None)
 

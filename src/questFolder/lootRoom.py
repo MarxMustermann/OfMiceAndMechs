@@ -70,6 +70,10 @@ Remove all items that are not bolted down."""
         if not character:
             return (None,None)
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         if not character.getFreeInventorySpace() > 0:
             quest = src.quests.questMap["ClearInventory"](reason="have inventory space to pick up more items",returnToTile=False)
             return ([quest],None)

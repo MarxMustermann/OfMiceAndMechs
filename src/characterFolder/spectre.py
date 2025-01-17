@@ -44,6 +44,6 @@ class Spectre(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Golem"
-        self.specialDisplay = (src.characters.urwid.AttrSpec((100,100,255),"black"),"0O")
+        self.specialDisplay = (src.interaction.urwid.AttrSpec((100,100,255),"black"),"0O")
 
 src.characters.add_character(Spectre)

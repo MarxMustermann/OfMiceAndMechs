@@ -28,7 +28,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
             characterId=characterId,
         )
         self.charType = "Insect"
-        self.specialDisplay = (src.characters.urwid.AttrSpec((46, 99, 67), "black"), "/>")
+        self.specialDisplay = (src.interaction.urwid.AttrSpec((46, 99, 67), "black"), "/>")
 
         self.baseDamage = 5
         self.baseDamage = int(self.baseDamage * (1 - runModifier))

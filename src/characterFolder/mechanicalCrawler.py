@@ -35,7 +35,7 @@ class Mechanical_Crawler(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Mechanical crawler"
-        self.specialDisplay = (src.characters.urwid.AttrSpec(src.characters.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"st")
+        self.specialDisplay = (src.interaction.urwid.AttrSpec(src.interaction.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"st")
         self.baseDamage = int(4+multiplier)
         self.baseDamage = int(self.baseDamage*(1+runModifier))
         self.maxHealth = int(20*multiplier)

@@ -101,6 +101,6 @@ Collect all glass hearts and activate it to attune it.
         else:
             return f"""The Throne is attuning to you.
 
-Survive {self.maxWaves-self.wavesSpawned} to complete the attuning proccess.
+Survive the wave to complete the attuning proccess.
 """
 src.items.addType(Throne)

@@ -28,9 +28,7 @@ class JobBoard(src.items.Item):
 
         # set up interaction menu
 
-        if not self.applyOptions:
-            self.applyOptions.extend(super().applyOptions)
-            self.applyOptions.extend(
+        self.applyOptions.extend(
                 [
                     ("doMaintenance", "do a job order"),
                     ("addComand", "add comand"),
@@ -38,6 +36,7 @@ class JobBoard(src.items.Item):
                     ("spawnNpc", "spawn npc"),
                 ]
             )
+
         self.applyMap = {
             "doMaintenance": self.doMaintenance,
             "addComand": self.addComand,

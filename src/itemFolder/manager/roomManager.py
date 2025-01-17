@@ -27,9 +27,7 @@ class RoomManager(src.items.Item):
         self.tasks = []
 
         # set up interaction menu
-        if not self.applyOptions:
-            self.applyOptions.extend(super().applyOptions)
-            self.applyOptions.extend(
+        self.applyOptions.extend(
                 [
                     ("doMaintence", "do maintenance"),
                     ("do action", "do action"),

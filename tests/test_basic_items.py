@@ -11,25 +11,6 @@ def test_creation():
             continue
         item = itemType()
 
-@pytest.fixture
-def character_room():
-    room = src.rooms.EmptyRoom()
-    character = src.characters.characterMap["Clone"]()
-    room.addCharacter(character,2,2)
-
-    room.xPosition = 7
-    room.yPosition = 7
-    room.offsetX = 0
-    room.offsetY = 0
-    room.hidden = False
-    room.reconfigure(15, 15, doorPos=[])
-
-    terrain = src.terrains.Nothingness()
-    terrain.addRooms([room])
-
-    return (character,room)
-
-
 @pytest.mark.parametrize("itemType", src.items.itemMap.values())
 def test_simple_apply(itemType,character_room):
     if itemType.isAbstract:
@@ -58,6 +39,22 @@ def test_simple_configure(itemType,character_room):
     room.addItem(item,(1,2,0))
 
     character.runCommandString("Ca")
+    for i in range(10):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+@pytest.mark.parametrize("itemType", src.items.itemMap.values())
+def test_simple_examine(itemType,character_room):
+    if itemType.isAbstract:
+        return
+
+    (character,room) = character_room
+
+    item = itemType()
+
+    room.addItem(item,(1,2,0))
+
+    character.runCommandString("ae")
     for i in range(10):
         character.timeTaken = 0
         character.advance(advanceMacros=True)

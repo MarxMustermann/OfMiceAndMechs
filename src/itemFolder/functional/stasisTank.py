@@ -92,6 +92,9 @@ The ejected character will be placed to the south of the stasis tank and will st
             character: the character trying to use the item
         """
 
+        if not self.characterTimeEntered:
+            return
+
         character.addMessage(src.gamestate.gamestate.tick)
         character.addMessage(self.characterTimeEntered)
         if src.gamestate.gamestate.tick > self.characterTimeEntered + 100:

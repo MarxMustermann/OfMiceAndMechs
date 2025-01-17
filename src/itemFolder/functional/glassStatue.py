@@ -348,6 +348,8 @@ A wave of enemies is approaching to steal the GlassHeart.
         character.changed("unboltedItem",{"character":character,"item":self})
 
     def getLongInfo(self):
+        if not self.itemID:
+            return f"""no god set"""
         godName = src.gamestate.gamestate.gods[self.itemID]["name"]
         sacrifice = src.gamestate.gamestate.gods[self.itemID]["sacrifice"]
         return f"""This is a GlassStatue of the god {godName}

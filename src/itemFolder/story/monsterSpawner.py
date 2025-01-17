@@ -94,8 +94,6 @@ class MonsterSpawner(src.items.Item):
         room = self.container
         super().destroy()
         room.destroy()
-        src.gamestate.gamestate.save()
-
 
     def render(self):
         return "MS"

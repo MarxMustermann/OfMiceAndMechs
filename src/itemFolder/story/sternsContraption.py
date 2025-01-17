@@ -19,9 +19,6 @@ class SternsContraption(src.items.Item):
         self.bolted = True
         self.meltdownLevel = 0
 
-    def getLongInfo(self):
-        return f"{self.itemID}"
-
     def startMeltdown(self):
         self.handleTick()
 

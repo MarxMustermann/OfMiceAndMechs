@@ -104,7 +104,10 @@ This will hit you with 50 more explosion damage.
 
         for offset in offsets[:-1]:
             new = src.items.itemMap["Explosion"]()
-            self.container.addItem(new,self.getPosition(offset=offset))
+            newPos = self.getPosition(offset=offset)
+            if newPos[0] == None:
+                continue
+            self.container.addItem(new,self.getPosition(newPos))
             event = src.events.RunCallbackEvent(
                 src.gamestate.gamestate.tick + 1
             )

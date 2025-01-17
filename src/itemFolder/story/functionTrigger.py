@@ -29,6 +29,7 @@ class FunctionTrigger(src.items.Item):
             character: the character trying to use the item
         """
 
-        self.callIndirect(self.function)
+        if self.function:
+            self.callIndirect(self.function)
 
 src.items.addType(FunctionTrigger)

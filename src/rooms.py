@@ -942,8 +942,11 @@ class Room:
                     continue
 
             # draw characters
-            viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
-            viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
+            viewChar = "name"
+            viewColour = "name"
+            if src.gamestate.gamestate.mainChar:
+                viewChar = src.gamestate.gamestate.mainChar.personality["viewChar"]
+                viewColour = src.gamestate.gamestate.mainChar.personality["viewColour"]
 
             foundMainchar = None
             for character in self.characters:

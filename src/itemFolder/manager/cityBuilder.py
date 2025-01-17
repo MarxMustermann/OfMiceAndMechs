@@ -66,6 +66,9 @@ class CityBuilder(src.items.Item):
         }
 
     def apply(self,character):
+        if not character.rank:
+            character.addMessage("you need to have a rank to use this machine")
+            return
         if not character.rank < 4:
             character.addMessage("you need to have rank 3 to use this machine")
             return

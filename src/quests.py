@@ -862,10 +862,9 @@ class MetaQuestSequence(Quest,ABC):
                 self.startWatching(quest,self.handleQuestFailure,"failed")
 
             return
+
 # map strings to Classes
 questMap = {
-    "Quest": Quest,
-    "MetaQuestSequence": MetaQuestSequence,
 }
 
 def addType(toRegister):

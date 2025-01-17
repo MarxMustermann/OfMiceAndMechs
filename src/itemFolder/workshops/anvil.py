@@ -21,7 +21,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
         self.outs = [(0,-1,0)]
         self.ins = [(1,0,0),(-1,0,0)]
-        self.scheduledItems = []
+        self.scheduledAmount = 0
 
         self.applyOptions.extend(
                         [
@@ -41,33 +41,15 @@ class Anvil(src.items.itemMap["WorkShop"]):
                         }
 
     def produce10ItemK(self,character):
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
-        self.produceItemK(character)
+        self.produceItem(character,preferInventoryOut=False,amount=10)
 
     def produceItemK(self,character):
         self.produceItem(character,preferInventoryOut=False)
 
     def produce10Item(self,character):
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
-        self.produceItem(character)
+        self.produceItem(character,preferInventoryOut=True,amount=10)
 
-    def produceItem(self,character,preferInventoryOut=True):
+    def produceItem(self,character,preferInventoryOut=True,amount=1):
 
         scrapFound = []
         for item in character.inventory:
@@ -89,8 +71,8 @@ class Anvil(src.items.itemMap["WorkShop"]):
             character.changed("inventory full error",{})
             return
 
-        if self.scheduledItems:
-            self.scheduledItems.pop()
+        if self.scheduledAmount:
+            self.scheduledAmount -= 1
 
         params = {
             "character": character,
@@ -101,6 +83,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
         params["productionTime"] = 10
         params["doneProductionTime"] = 0
         params["hitCounter"] = character.numAttackedWithoutResponse
+        params["extraAmount"] = amount-1
 
         self.produceItem_wait(params)
 
@@ -141,7 +124,10 @@ class Anvil(src.items.itemMap["WorkShop"]):
                     self.container.addItem(new,targetPos)
                     self.container.addAnimation(new.getPosition(),"showchar",1,{"char":"++"})
 
-        character.changed("hammered scrap",{})
+        if params["extraAmount"]:
+            self.produceItem(character,preferInventoryOut=preferInventoryOut,amount=params["extraAmount"])
+        else:
+            character.changed("hammered scrap",{})
 
     def checkForDropSpotsFull(self):
         targetFull = True
@@ -176,9 +162,9 @@ class Anvil(src.items.itemMap["WorkShop"]):
         return result
 
     def checkProductionScheduleHook(self,character):
-        character.addMessage(self.scheduledItems)
+        character.addMessage(self.scheduledAmount)
 
     def scheduleProductionHook(self,character):
-        self.scheduledItems.append("MetalBars")
+        self.scheduledAmount += 1
 
 src.items.addType(Anvil)

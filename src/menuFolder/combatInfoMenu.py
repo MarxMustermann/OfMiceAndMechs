@@ -85,7 +85,8 @@ subordinates:
         text = self.render(char)
 
         # show info
-        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\ncharacter overview"))
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
-        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
+        if src.interaction.main:
+            src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), [text]))
+        if src.interaction.header:
+            src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), ""))
         return None

@@ -184,7 +184,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
                     continue
 
                 hasReadyAnvil = True
-                if anvil.scheduledItems:
+                if anvil.scheduledAmount:
                     quest = src.quests.questMap["ScrapHammering"](amount=min(10,len(anvil.scheduledItems)))
                     if not dryRun:
                         beUsefull.idleCounter = 0

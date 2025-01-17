@@ -180,7 +180,7 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         hasReadyAnvil = False
         for room in beUsefull.getRandomPriotisedRooms(character,currentRoom):
             for anvil in room.getItemsByType("Anvil"):
-                if not anvil.checkForInputScrap():
+                if not anvil.checkForInputScrap(character):
                     continue
 
                 hasReadyAnvil = True

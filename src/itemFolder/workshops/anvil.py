@@ -148,10 +148,16 @@ class Anvil(src.items.itemMap["WorkShop"]):
 
         return targetFull
 
-    def checkForInputScrap(self):
+    def checkForInputScrap(self,character=None):
 
         # fetch input scrap
         result = []
+
+        if character:
+            for item in character.inventory:
+                if not item.type == "Scrap":
+                    continue
+                result.append(item)
 
         for offset in self.ins:
             for item in self.container.getItemByPosition(

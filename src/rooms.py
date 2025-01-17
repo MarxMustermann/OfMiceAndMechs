@@ -938,7 +938,7 @@ class Room:
                 try:
                     chars[item.yPosition][item.xPosition] = display
                 except:
-                    logger.error(f"item placed outside of room {pos}")
+                    logger.error(f"item placed outside of room {item.yPosition}/{item.xPosition}")
                     continue
 
             # draw characters

@@ -19,6 +19,10 @@ class Promoter(src.items.Item):
         self.bolted = True
 
     def apply(self,character):
+        if not character.rank:
+            character.addMessage("you need a rank to use this machine")
+            return
+
         if not self.faction:
             self.faction = character.faction
 

@@ -32,7 +32,7 @@ The seeded mold feed grows stronger then a mold spore on its own.
             character: the character activating the item
         """
 
-        if not self.terrain:
+        if self.container.isRoom:
             character.addMessage("this needs to be placed outside to be used")
             return
 

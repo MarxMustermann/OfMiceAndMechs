@@ -27,6 +27,7 @@ class Item:
     hasMaintenance = False
     hasStepOnAction = False
 
+    isAbstract = False
     isFood = False
     godMode = False
     isStepOnActive = False

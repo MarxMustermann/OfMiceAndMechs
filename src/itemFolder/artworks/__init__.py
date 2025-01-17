@@ -8,7 +8,6 @@ import src.itemFolder.artworks.performanceTester
 import src.itemFolder.artworks.personnelTracker
 import src.itemFolder.artworks.productionArtwork
 import src.itemFolder.artworks.resourceTerminal
-import src.itemFolder.artworks.siren
 import src.itemFolder.artworks.staffArtwork
 import src.itemFolder.artworks.teleporterArtwork
 import src.itemFolder.artworks.tradingArtwork

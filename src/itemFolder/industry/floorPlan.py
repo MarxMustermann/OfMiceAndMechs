@@ -40,6 +40,11 @@ class FloorPlan(src.items.Item):
         }
         """
 
+        self.walkingSpace = set()
+        self.inputSlots = []
+        self.outputSlots = []
+        self.buildSites = []
+
     def readFloorPlanFromRoom(self):
         room = self.container
 

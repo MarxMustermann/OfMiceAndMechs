@@ -1,6 +1,5 @@
 import src.itemFolder.obsolete.acid
 import src.itemFolder.obsolete.backTracker
-import src.itemFolder.obsolete.chain
 import src.itemFolder.obsolete.chemical
 import src.itemFolder.obsolete.Chute
 import src.itemFolder.obsolete.coalMine

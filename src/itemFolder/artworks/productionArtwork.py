@@ -85,7 +85,6 @@ Select the thing to produce and confirm."""
             "CommLink",
             "Display",
             "Pipe",
-            "Chain",
             "AutoTutor",
             "Winch",
             "Spray",

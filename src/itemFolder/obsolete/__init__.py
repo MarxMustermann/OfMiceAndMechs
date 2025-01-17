@@ -1,13 +1,9 @@
 import src.itemFolder.obsolete.acid
 import src.itemFolder.obsolete.backTracker
-import src.itemFolder.obsolete.chemical
 import src.itemFolder.obsolete.Chute
-import src.itemFolder.obsolete.coalMine
 import src.itemFolder.obsolete.commandBook
 import src.itemFolder.obsolete.commLink
-import src.itemFolder.obsolete.drill
 import src.itemFolder.obsolete.engraver
-import src.itemFolder.obsolete.gameTestingProducer
 import src.itemFolder.obsolete.globalMacroStorage
 import src.itemFolder.obsolete.hutch
 import src.itemFolder.obsolete.lever
@@ -21,7 +17,6 @@ import src.itemFolder.obsolete.pile
 import src.itemFolder.obsolete.pipe
 import src.itemFolder.obsolete.positioningDevice
 import src.itemFolder.obsolete.reactionChamber
-import src.itemFolder.obsolete.reactionChamber2
 import src.itemFolder.obsolete.simpleRunner
 import src.itemFolder.obsolete.spray
 import src.itemFolder.obsolete.trailHead

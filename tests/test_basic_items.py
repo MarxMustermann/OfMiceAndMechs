@@ -11,29 +11,40 @@ def test_creation():
             continue
         item = itemType()
 
-def test_apply():
-    for itemType in src.items.itemMap.values():
-        if itemType.isAbstract:
-            continue
+@pytest.fixture
+def character_room():
+    room = src.rooms.EmptyRoom()
+    character = src.characters.characterMap["Clone"]()
+    room.addCharacter(character,2,2)
 
-        item = itemType()
+    room.xPosition = 7
+    room.yPosition = 7
+    room.offsetX = 0
+    room.offsetY = 0
+    room.hidden = False
+    room.reconfigure(15, 15, doorPos=[])
 
-        room = src.rooms.EmptyRoom()
-        character = src.characters.characterMap["Clone"]()
-        room.addCharacter(character,2,2)
-        room.addItem(item,(1,2,0))
-        room.xPosition = 7
-        room.yPosition = 7
-        room.hidden = False
-        room.reconfigure(15, 15, doorPos=[])
+    terrain = src.terrains.Nothingness()
+    terrain.addRooms([room])
 
-        terrain = src.terrains.Nothingness()
-        terrain.addRooms([room])
+    return (character,room)
 
-        character.runCommandString("Ja")
-        for i in range(10):
-            character.timeTaken = 0
-            character.advance(advanceMacros=True)
+
+@pytest.mark.parametrize("itemType", src.items.itemMap.values())
+def test_simple_apply(itemType,character_room):
+    if itemType.isAbstract:
+        return
+
+    (character,room) = character_room
+
+    item = itemType()
+
+    room.addItem(item,(1,2,0))
+
+    character.runCommandString("Ja")
+    for i in range(10):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
 
 @pytest.fixture
 def anvil_room():

@@ -182,6 +182,21 @@ class Quest:
         target.delListener(callback, tag)
         self.watched.remove((target, callback, tag))
 
+    def stopWatchingTarget(self, target):
+        for (otherTarget, callback, tag) in self.watched:
+            target.delListener(callback, tag)
+            if (target, callback, tag) in self.watched:
+                self.watched.remove((target, callback, tag))
+
+    def disableAllListeners(self):
+        toDisable = []
+        for listeners in self.listeners.values():
+            for listener in listeners:
+                toDisable.append(listener)
+        
+        for listener in toDisable:
+            listener.__self__.stopWatchingTarget(self)
+
     """
     unregister all callback
     """
@@ -429,6 +444,8 @@ class Quest:
         if not self.completed:
             self.changed("completed",(self,))
         self.completed = True
+
+        self.disableAllListeners()
 
         # add quest type to quests done
         if self.type not in self.character.questsDone:
@@ -840,10 +857,10 @@ class MetaQuestSequence(Quest,ABC):
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
 
     def subQuestCompleted(self,extraInfo=None):
-        pass
+        self.stopWatchingTarget(extraParam["quest"])
 
     def handleQuestFailure(self,extraParam):
-        pass
+        self.stopWatchingTarget(extraParam["quest"])
     
     def getSolvingCommandString(self, character, dryRun=True):
         if self.triggerCompletionCheck(character):

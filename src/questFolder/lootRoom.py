@@ -149,10 +149,10 @@ Remove all items that are not bolted down."""
         items = self.getLeftoverItems(character)
         random.shuffle(items)
         for item in items:
-            if item.name in ("scrap","metal bars"):
+            if item.type in ("Scrap","MetalBars"):
                 continue
 
-            item_pos =item.getSmallPosition()
+            item_pos = item.getSmallPosition()
             if item_pos[0] == None:
                 logger.error("found ghost item")
                 continue

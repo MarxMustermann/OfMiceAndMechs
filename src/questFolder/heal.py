@@ -32,6 +32,10 @@ Press JH to auto heal.
         if character.macroState["submenue"]:
             return (None,(["esc"],"close the menu"))
 
+        if character.getNearbyEnemies():
+            quest = src.quests.questMap["Fight"]()
+            return ([quest],None)
+
         if not character.container.isRoom:
             if character.xPosition%15 == 0:
                 return (None,("d","enter room"))

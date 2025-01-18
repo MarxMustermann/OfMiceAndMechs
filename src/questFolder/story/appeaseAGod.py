@@ -35,12 +35,18 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                         npcCount += 1
         for otherChar in terrain.characters:
             if otherChar.faction != character.faction:
+                if otherChar.getBigPosition() in terrain.scrapFields:
+                    continue
                 enemyCount += 1
-                quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
-                return ([quest],None)
+                if not terrain.alarm and enemyCount > 2:
+                    quest = src.quests.questMap["ReadyBaseDefences"]()
+                    return ([quest],None)
             else:
                 if otherChar.charType != "Ghoul" and not otherChar.burnedIn:
                     npcCount += 1
+        if enemyCount:
+            quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0),endWhenCleared=False,lifetime=100,description="defend the arena",reason="ensure no attackers get into the base")
+            return ([quest],None)
         if npcCount < 2:
             quest = src.quests.questMap["SpawnClone"]()
             return ([quest],None)

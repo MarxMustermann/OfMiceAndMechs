@@ -856,8 +856,8 @@ class MetaQuestSequence(Quest,ABC):
     @abstractmethod
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...
 
-    def subQuestCompleted(self,extraInfo=None):
-        self.stopWatchingTarget(extraParam["quest"])
+    def subQuestCompleted(self,extraInfo):
+        self.stopWatchingTarget(extraInfo[0])
 
     def handleQuestFailure(self,extraParam):
         self.stopWatchingTarget(extraParam["quest"])

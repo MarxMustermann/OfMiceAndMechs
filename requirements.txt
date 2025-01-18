@@ -3,3 +3,4 @@ urwid
 soundfile
 requests
 regex
+objgraph

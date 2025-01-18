@@ -1,4 +1,6 @@
 import collections
+import objgraph
+import random
 
 import src
 
@@ -30,14 +32,8 @@ class DebugMenu(src.subMenu.SubMenu):
                 case "Debug Memory":
                     text+= debug
                     if current_change:
-                        import objgraph
-                        import random
                         objgraph.show_most_common_types()
-                        objgraph.show_chain(
-                            objgraph.find_backref_chain(
-                            random.choice(objgraph.by_type('ClearInventory')),
-                            objgraph.is_proper_module)
-                            )
+                        objgraph.show_growth()
                 case "Test Crash":
                     text+= debug
                     if current_change:

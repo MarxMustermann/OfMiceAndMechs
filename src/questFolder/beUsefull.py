@@ -159,6 +159,8 @@ Press d to move the cursor and show the subquests description.
             self.dutySkipps
         except:
             self.dutySkipps = {}
+
+        super().handleQuestFailure(extraParam)
     
     def handleChargedTrapRoom(self,extraInfo):
         # reload trap room

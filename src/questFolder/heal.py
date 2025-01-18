@@ -108,7 +108,8 @@ Press JH to auto heal.
                     quest = src.quests.questMap["GoToTile"](targetPosition=room.getPosition())
                     return ([quest],None)
 
-        self.fail("no way to heal")
+        if dryRun:
+            self.fail("no way to heal")
         return (None,None)
 
     def triggerCompletionCheck(self,character=None):

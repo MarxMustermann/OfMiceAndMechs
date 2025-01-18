@@ -6,7 +6,7 @@ class DebugMenu(src.subMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash"]
+    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash","Debug Memory"]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -27,6 +27,17 @@ class DebugMenu(src.subMenu.SubMenu):
             current_change = change_event and self.index == i
             text += ">" if self.index == i else ""
             match debug:
+                case "Debug Memory":
+                    text+= debug
+                    if current_change:
+                        import objgraph
+                        import random
+                        objgraph.show_most_common_types()
+                        objgraph.show_chain(
+                            objgraph.find_backref_chain(
+                            random.choice(objgraph.by_type('ClearInventory')),
+                            objgraph.is_proper_module)
+                            )
                 case "Test Crash":
                     text+= debug
                     if current_change:

@@ -18,11 +18,14 @@ class Popup(ABC):
     def conditionMet(self,params) -> bool:
         return True
 
+    def openQuestMenu(self, extraInfo = None):
+        extraInfo["character"].macroState["submenue"] = src.menuFolder.questMenu.QuestMenu()
+
     def onEvent(self,params = None):
         if self.conditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
-            submenue = src.menuFolder.textMenu.TextMenu(self.text())
+            submenue = src.menuFolder.textMenu.TextMenu(self.text(),specialKeys={"q":{"container":self,"method":"openQuestMenu","params":{"character":self.character}}})
             submenue.tag = "popup"
             self.character.macroState["submenue"] = submenue
             self.character.runCommandString("~",nativeKey=True)

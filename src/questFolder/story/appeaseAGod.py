@@ -102,6 +102,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
 
         # fetch items from storage if possible
         saccrificesNeeded = []
+        saccrificeAmountNeeded = {}
         for checkRoom in character.getTerrain().rooms:
             glassStatues = checkRoom.getItemsByType("GlassStatue")
             foundStatue = None
@@ -114,6 +115,10 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                 saccrificeType = src.gamestate.gamestate.gods[checkStatue.itemID]["sacrifice"][0]
 
                 saccrificesNeeded.append(saccrificeType)
+
+                amountLeft = src.gamestate.gamestate.gods[checkStatue.itemID]["sacrifice"][1]-checkStatue.numSubSacrifices
+                if not saccrificeType in saccrificeAmountNeeded or saccrificeAmountNeeded[saccrificeType] > amountLeft:
+                    saccrificeAmountNeeded[saccrificeType] = amountLeft
         for saccrificeType in saccrificesNeeded:
             for checkRoom in character.getTerrain().rooms:
                 if checkRoom.getNonEmptyOutputslots(itemType=saccrificeType,allowStorage=True,allowDesiredFilled=True):
@@ -124,9 +129,14 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["BeUsefull"](endOnIdle=True)
             return ([quest],None)
 
-        # fetch scrap
+        # produce scrap
         if "Scrap" in saccrificesNeeded:
-            quest = src.quests.questMap["GatherScrap"]()
+            quest = src.quests.questMap["GatherScrap"](amount=saccrificeAmountNeeded["Scrap"])
+            return ([quest],None)
+
+        # produce metal bars
+        if "MetalBars" in saccrificesNeeded:
+            quest = src.quests.questMap["ScrapHammering"](amount=saccrificeAmountNeeded["MetalBars"])
             return ([quest],None)
 
         # produce items
@@ -135,7 +145,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                 continue
             
             if not character.getTerrain().alarm:
-                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
+                quest = src.quests.questMap["MetalWorking"](amount=saccrificeAmountNeeded[saccrificeType],toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
                 return ([quest],None)
 
             hasScrap = False
@@ -147,7 +157,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
                     hasMetalbars = True
 
             if hasScrap and hasMetalBars:
-                quest = src.quests.questMap["MetalWorking"](amount=1,toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
+                quest = src.quests.questMap["MetalWorking"](amount=saccrificeAmountNeeded[saccrificeType],toProduce=saccrificeType,produceToInventory=True,reason="produce a saccrifice",tryHard=True)
                 return ([quest],None)
 
         if character.getTerrain().alarm:

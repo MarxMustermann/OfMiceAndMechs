@@ -33,7 +33,7 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         continue
                     if item.type in ("Wall","Scrap",):
                         continue
-                    quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition(),endOnFullInventory=True)
+                    quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
                     return ([quest],None)
 
         # ensure healing for the clones

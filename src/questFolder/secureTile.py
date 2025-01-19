@@ -97,7 +97,7 @@ Try luring enemies into landmines or detonating some bombs."""
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if not self.subQuests:
-            if character.macroState["submenue"] and not isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
+            if character.macroState["submenue"] and character.macroState["submenue"].tag != "tileMovementmenu" and not ignoreCommands:
                return (None,(["esc"],"exit the menu")) 
 
             if character.health < character.maxHealth - 20 and character.canHeal():

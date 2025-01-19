@@ -109,6 +109,8 @@ Remove all items that are not bolted down."""
             for item in items:
                 if item.type in ("Scrap","MetalBars"):
                     continue
+                if item.walkable == False:
+                    continue
                 foundValuableItem = True
             if not foundValuableItem:
                 continue
@@ -158,6 +160,8 @@ Remove all items that are not bolted down."""
                 continue
             if item_pos[0] > 12:
                 continue
+            if item.walkable == False:
+                continue
 
             quest = src.quests.questMap["GoToPosition"](targetPosition=item_pos,ignoreEndBlocked=True)
             return ([quest],None)
@@ -199,6 +203,8 @@ Remove all items that are not bolted down."""
             if item_pos[0] > 12:
                 continue
             if item.type in ("Scrap","MetalBars"):
+                continue
+            if item.walkable == False:
                 continue
 
             invalidStack = False

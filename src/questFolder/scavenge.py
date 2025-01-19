@@ -146,6 +146,9 @@ This quest will end when your inventory is full."""
                 if foundEnemy:
                     continue
 
+                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+                if centerItems and centerItems[0].type == "RoomBuilder":
+                    continue
 
                 self.lastMoveDirection = offset
                 quest = src.quests.questMap["GoToTile"](targetPosition=target,reason="move around to search for items")
@@ -163,6 +166,10 @@ This quest will end when your inventory is full."""
                         continue
                     foundEnemy = True
                 if foundEnemy:
+                    continue
+
+                centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
+                if centerItems and centerItems[0].type == "RoomBuilder":
                     continue
 
                 self.lastMoveDirection = offset

@@ -141,6 +141,11 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 enemyOnBuildSite = True
 
             if not enemyOnBuildSite:
+                roomBuilderItems = terrain.getItemByPosition((8*15+7,7*15+7,0))
+                if not roomBuilderItems or roomBuilderItems[0].type != "RoomBuilder":
+                    quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True)
+                    return ([quest],None)
+
                 wallsInStorage = False
                 for room in character.getTerrain().rooms:
                     if room.getNonEmptyOutputslots("Wall"):
@@ -154,6 +159,10 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
 
                 if wallsInStorage and numDoorsInStorage >= 4:
                     quest = src.quests.questMap["BuildRoom"](targetPosition=(8,7,0),takeAnyUnbolted=True)
+                    return ([quest],None)
+
+                if not wallsInStorage:
+                    quest = src.quests.questMap["Scavenge"](toCollect="Wall")
                     return ([quest],None)
         else:
             room = terrain.getRoomByPosition((8,7,0))[0]

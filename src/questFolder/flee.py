@@ -21,31 +21,28 @@ run,run,run!!!
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return None
+            return False
+
+        if not self.active:
+            return False
 
         if not character.getNearbyEnemies():
             self.postHandler()
             return True
 
-        return None
+        return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if self.subQuests:
             return (None,None)
 
-        character.personality["autoCounterAttack"] = False
-        character.personality["autoFlee"] = False
-
         if not character.getNearbyEnemies():
-            self.postHandler()
+            if not dryRun:
+                self.postHandler()
             return (None,None)
 
         if character.health < character.maxHealth//5 and character.canHeal():
             return (None,"JH","heal")
-
-        if character.health > character.maxHealth//2:
-            self.fail()
-            return (None,None)
 
         if not ignoreCommands:
             submenue = character.macroState.get("submenue")

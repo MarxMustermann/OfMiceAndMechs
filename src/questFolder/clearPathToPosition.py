@@ -132,16 +132,16 @@ Pick up and unbolt items that are in the way.
                 if items and items[0].bolted:
                     return (None,(direction+"cb","make item movable"))
                 else:
-                    return (None,("K"+direction,"clear next tile"))
+                    return (None,("K"+direction,"clear next spot"))
 
             if offset == (-1, 0,0):
-                return (None,("a","move to next tile"))
+                return (None,("a","move to next spot"))
             if offset == ( 1, 0,0):
-                return (None,("d","move to next tile"))
+                return (None,("d","move to next spot"))
             if offset == ( 0,-1,0):
-                return (None,("w","move to next tile"))
+                return (None,("w","move to next spot"))
             if offset == ( 0, 1,0):
-                return (None,("s","move to next tile"))
+                return (None,("s","move to next spot"))
 
             return (None,None)
 

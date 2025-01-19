@@ -185,6 +185,10 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                         quest = src.quests.questMap["ScheduleRoomBuilding"](roomPosition=position)
                         return ([quest],None)
 
+        if not character.getFreeInventorySpace():
+            quest = src.quests.questMap["ClearInventory"](returnToTile=False)
+            return ([quest],None)
+
         # check for spider lairs
         targets_found = []
         specialSpiderBlockersFound = []

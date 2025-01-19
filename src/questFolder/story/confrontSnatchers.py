@@ -18,8 +18,12 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
             return (None,None)
 
         if character.health < character.maxHealth/1.5:
-            quest = src.quests.questMap["Heal"]()
-            return ([quest],None)
+            if not character.getNearbyEnemies():
+                quest = src.quests.questMap["Heal"]()
+                return ([quest],None)
+            else:
+                quest = src.quests.questMap["GoHome"]()
+                return ([quest],None)
 
         if character.macroState["submenue"] and not ignoreCommands:
             if character.macroState["submenue"].tag != "specialAttackSelection":

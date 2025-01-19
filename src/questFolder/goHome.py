@@ -138,7 +138,7 @@ Press control-d to stop your character from moving.
                             interactionCommand = "J"
                             if "advancedInteraction" in character.interactionState:
                                 interactionCommand = ""
-                            return (None, (interactionCommand + direction + "wj", "activate the Shrine"))
+                            return (None, (interactionCommand + direction + "sssj", "activate the Shrine"))
                     foundShrine = items[0]
                     quest = src.quests.questMap["GoToPosition"](
                         targetPosition=foundShrine.getPosition(), reason="get to a shrine", ignoreEndBlocked=True

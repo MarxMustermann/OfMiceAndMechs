@@ -97,6 +97,9 @@ Press d to move the cursor and show the subquests description.
             else:
                 submenue = character.macroState["submenue"]
 
+                if not submenue.extraInfo.get("item"):
+                    return (None,(["esc"],"exit submenu"))
+
                 menuEntry = "produce item"
                 if submenue.extraInfo.get("item").lastProduction == self.toProduce:
                     menuEntry = "repeat"

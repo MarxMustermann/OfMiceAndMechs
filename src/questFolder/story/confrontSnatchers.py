@@ -22,6 +22,15 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 quest = src.quests.questMap["Heal"]()
                 return ([quest],None)
             else:
+                if character.getBigPosition() == (5,6,0):
+                    quest = src.quests.questMap["GoTile"](targetPosition=(5,7,0))
+                    return ([quest],None)
+                if character.getBigPosition() == (5,7,0):
+                    quest = src.quests.questMap["GoTile"](targetPosition=(6,7,0))
+                    return ([quest],None)
+                if character.getBigPosition() == (6,7,0):
+                    quest = src.quests.questMap["Fight"]()
+                    return ([quest],None)
                 quest = src.quests.questMap["GoHome"]()
                 return ([quest],None)
 

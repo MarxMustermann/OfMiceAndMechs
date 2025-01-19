@@ -825,7 +825,7 @@ class MetaQuestSequence(Quest,ABC):
 
         while len(self.subQuests):
             if self.subQuests[0].completed:
-                quest = self.subQuests.pop()
+                quest = self.subQuests.pop(0)
                 self.stopWatchingTarget(quest)
                 continue
             break
@@ -861,7 +861,7 @@ class MetaQuestSequence(Quest,ABC):
         self.stopWatchingTarget(extraInfo[0])
 
     def handleQuestFailure(self,extraParam):
-        self.stopWatchingTarget(extraParam["quest"])
+        pass
     
     def getSolvingCommandString(self, character, dryRun=True):
         if self.triggerCompletionCheck(character):

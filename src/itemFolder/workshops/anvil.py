@@ -124,10 +124,10 @@ class Anvil(src.items.itemMap["WorkShop"]):
                     self.container.addItem(new,targetPos)
                     self.container.addAnimation(new.getPosition(),"showchar",1,{"char":"++"})
 
+        character.changed("hammered scrap",{})
+
         if params["extraAmount"]:
             self.produceItem(character,preferInventoryOut=preferInventoryOut,amount=params["extraAmount"])
-        else:
-            character.changed("hammered scrap",{})
 
     def checkForDropSpotsFull(self):
         targetFull = True

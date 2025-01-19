@@ -151,6 +151,8 @@ Press d to move the cursor and show the subquests description.
             failedDuty = "room building"
         if quest.type == "MetalWorking":
             failedDuty = "metal working"
+        if quest.type == "DrawFloorPlan":
+            failedDuty = "painting"
 
         if failedDuty:
             self.dutySkipps[failedDuty] = 3

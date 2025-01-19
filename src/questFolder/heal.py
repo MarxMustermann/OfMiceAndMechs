@@ -33,7 +33,7 @@ Press JH to auto heal.
             return (None,(["esc"],"close the menu"))
 
         if character.getNearbyEnemies():
-            quest = src.quests.questMap["Fight"]()
+            quest = src.quests.questMap["Flee"]()
             return ([quest],None)
 
         if not character.container.isRoom:

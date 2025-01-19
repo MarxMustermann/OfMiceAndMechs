@@ -163,7 +163,8 @@ Close this menu by pressing esc and follow the instructions on the left hand men
 
     def generatePath(self,character,dryRun=True):
         if not character.container:
-            self.fail()
+            if not dryRun:
+                self.fail()
             return
 
         if character.container.isRoom:
@@ -190,14 +191,14 @@ Close this menu by pressing esc and follow the instructions on the left hand men
             return (None,None)
 
         if not self.path:
-            self.generatePath(character,dryRun=False)
+            self.generatePath(character,dryRun=dryRun)
 
         if not self.isPathSane(character):
-            self.generatePath(character,dryRun=False)
+            self.generatePath(character,dryRun=dryRun)
             if not self.path:
                 character.addMessage("moving failed - no path found (solver)")
                 self.fail("no path found")
-                return (None,None)
+            return (None,None)
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
         

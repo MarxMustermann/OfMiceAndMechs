@@ -183,7 +183,7 @@ class Quest:
         self.watched.remove((target, callback, tag))
 
     def stopWatchingTarget(self, target):
-        for (otherTarget, callback, tag) in self.watched:
+        for (otherTarget, callback, tag) in self.watched[:]:
             target.delListener(callback, tag)
             if (target, callback, tag) in self.watched:
                 self.watched.remove((target, callback, tag))
@@ -825,7 +825,8 @@ class MetaQuestSequence(Quest,ABC):
 
         while len(self.subQuests):
             if self.subQuests[0].completed:
-                self.subQuests.pop()
+                quest = self.subQuests.pop()
+                self.stopWatchingTarget(quest)
                 continue
             break
 
@@ -834,10 +835,10 @@ class MetaQuestSequence(Quest,ABC):
             if len(self.subQuests):
                 self.subQuests[0].solver(character)
             return
-        NextStep = self.getNextStep(character, dryRun=False)
-        if NextStep is not None:
+        nextStep = self.getNextStep(character, dryRun=False)
+        if nextStep is not None:
             try:
-                (nextQuests, nextCommand) = NextStep
+                (nextQuests, nextCommand) = nextStep
             except:
                 print(self)
                 print(NextStep)

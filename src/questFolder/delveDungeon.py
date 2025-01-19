@@ -246,6 +246,13 @@ After fetching the glass heart return the glass heart to your base and set it in
 
                         if statue.numTeleportsDone < calculatedTries:
                             statue.numTeleportsDone = calculatedTries
+
+            text = """
+The implant interrupts. This dungeon is too hard for you.
+
+Become stronger and return."""
+            character.macroState["submenue"] = src.menuFolder.textMenu.TextMenu(text)
+
             self.fail("dungeon too tough")
         return (None,None)
 

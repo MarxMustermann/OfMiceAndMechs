@@ -158,7 +158,7 @@ Remove all items that are not bolted down."""
             if item_pos[0] == None:
                 logger.error("found ghost item")
                 continue
-            if item_pos[0] > 12:
+            if item_pos[0] > 13:
                 continue
             if item.walkable == False:
                 continue
@@ -200,7 +200,7 @@ Remove all items that are not bolted down."""
             if item_pos[0] == None:
                 logger.error("found ghost item")
                 continue
-            if item_pos[0] > 12:
+            if item_pos[0] > 13:
                 continue
             if item.type in ("Scrap","MetalBars"):
                 continue

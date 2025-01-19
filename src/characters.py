@@ -266,7 +266,9 @@ class Character:
                     rawMap[y].append("  ")
             rawMap[y].append("\n")
 
-        homeCoordinate = (self.registers["HOMETx"],self.registers["HOMETy"],0)
+        homeCoordinate = None
+        if "HOMETx" in self.registers:
+            homeCoordinate = (self.registers["HOMETx"],self.registers["HOMETy"],0)
         characterCoordinate = self.getTerrainPosition()
 
         for (pos,info) in self.terrainInfo.items():
@@ -282,7 +284,8 @@ class Character:
                 rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"&%")
             else:
                 rawMap[pos[1]][pos[0]] = info["tag"][:2]
-        rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
+        if homeCoordinate:
+            rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
         rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
 
         return rawMap

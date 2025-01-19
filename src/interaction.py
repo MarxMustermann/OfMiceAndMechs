@@ -607,6 +607,7 @@ def handleActivitySelection(key,char):
         extraText = "test"
 
         submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getTerrain().getPosition())
+        submenue.tag = "terrainMovementmenu"
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
 
@@ -707,6 +708,7 @@ def handleActivitySelection(key,char):
         extraText = "\n\n"
 
         submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=char.getBigPosition())
+        submenue.tag = "tileMovementmenu"
         char.macroState["submenue"] = submenue
         char.runCommandString("~",nativeKey=True)
     del char.interactionState["runaction"]

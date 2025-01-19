@@ -130,9 +130,6 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 self.gooCharges += flask.uses
                 character.addMessage(f"you fill the GrowthTank with {flask.uses} now it has {self.gooCharges}")
 
-                if self.gooCharges > 100:
-                    break
-
                 if flask in character.inventory:
                     character.inventory.remove(flask)
                     character.inventory.append(src.items.itemMap["Flask"]())
@@ -140,6 +137,9 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                     pos = flask.getPosition()
                     self.container.removeItem(flask)
                     self.container.addItem(src.items.itemMap["Flask"](),pos)
+
+                if self.gooCharges > 100:
+                    break
             break
 
         if self.gooCharges > 100:

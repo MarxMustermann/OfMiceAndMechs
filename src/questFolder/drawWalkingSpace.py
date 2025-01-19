@@ -135,4 +135,9 @@ Try as hard as you can to achieve this.
                 result.append(((self.targetPosition[0],self.targetPosition[1]),"target"))
         return result
 
+
+    def handleQuestFailure(self,extraParam):
+        self.fail(reason=extraParam["reason"])
+        super().handleQuestFailure(extraParam)
+
 src.quests.addType(DrawWalkingSpace)

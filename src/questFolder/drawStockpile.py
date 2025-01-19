@@ -118,6 +118,7 @@ Try as hard as you can to achieve this.
         self.fail(extraParam["reason"])
 
     def handleQuestFailure(self,extraParam):
+        super().handleQuestFailure(extraParam)
         self.fail(extraParam["reason"])
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
@@ -316,5 +317,8 @@ Try as hard as you can to achieve this.
 
         return super().assignToCharacter(character)
 
+    def handleQuestFailure(self,extraParam):
+        self.fail(reason=extraParam["reason"])
+        super().handleQuestFailure(extraParam)
 
 src.quests.addType(DrawStockpile)

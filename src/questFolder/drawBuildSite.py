@@ -218,4 +218,8 @@ Try as hard as you can to achieve this.
 
         return super().assignToCharacter(character)
 
+    def handleQuestFailure(self,extraParam):
+        self.fail(reason=extraParam["reason"])
+        super().handleQuestFailure(extraParam)
+
 src.quests.addType(DrawBuildSite)

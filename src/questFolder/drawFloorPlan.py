@@ -13,6 +13,7 @@ class DrawFloorPlan(src.quests.MetaQuestSequence):
         self.shortCode = "d"
         self.targetPosition = targetPosition
         self.reason = reason
+        self.type = "DrawFloorPlan"
 
     def generateTextDescription(self):
         out = []
@@ -253,6 +254,10 @@ Draw a floor plan assigned to a room{reason}.
                 self.postHandler()
             return (None,None)
         return (None,None)
+
+    def handleQuestFailure(self,extraParam):
+        super().handleQuestFailure(extraParam)
+        self.fail(reason=extraParam["reason"])
 
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):

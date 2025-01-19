@@ -9,6 +9,7 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         super().__init__(questList, creator=creator)
         self.metaDescription = description
         self.regenerator = None
+
     def handleRegeneratorActivated(self, extraInfo):
         self.postHandler()
 
@@ -36,6 +37,15 @@ class ActivateRegenerator(src.quests.MetaQuestSequence):
         if character.macroState["submenue"] and not ignoreCommands:
             return (None,(["esc"],"to close menu"))
         
+        if character.xPosition%15 == 7 and character.yPosition%15 == 14:
+            return (None,("w","enter the tile"))
+        if character.xPosition%15 == 7 and character.yPosition%15 == 0:
+            return (None,("s","enter the tile"))
+        if character.xPosition%15 == 14 and character.yPosition%15 == 7:
+            return (None,("a","enter the tile"))
+        if character.xPosition%15 == 0 and character.yPosition%15 == 7:
+            return (None,("d","enter the tile"))
+
         if not self.regenerator:
             terrain = character.getTerrain()
             for room in terrain.rooms:

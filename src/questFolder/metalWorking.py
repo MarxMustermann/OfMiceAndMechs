@@ -149,15 +149,15 @@ Press d to move the cursor and show the subquests description.
         benchPos = benchNearBy.getPosition()
         if benchNearBy.lastProduction == self.toProduce:
             if (pos[0],pos[1],pos[2]) == benchPos:
-                return (None,("jwj","start metal working"))
+                return (None,("jsssj","start metal working"))
             if (pos[0]-1,pos[1],pos[2]) == benchPos:
-                return (None,("ajwj","start metal working"))
+                return (None,("ajsssj","start metal working"))
             if (pos[0]+1,pos[1],pos[2]) == benchPos:
-                return (None,("djwj","start metal working"))
+                return (None,("djsssj","start metal working"))
             if (pos[0],pos[1]-1,pos[2]) == benchPos:
-                return (None,("wjwj","start metal working"))
+                return (None,("wjsssj","start metal working"))
             if (pos[0],pos[1]+1,pos[2]) == benchPos:
-                return (None,("sjwj","start metal working"))
+                return (None,("sjsssj","start metal working"))
         else:
             if (pos[0],pos[1],pos[2]) == benchPos:
                 return (None,("jj","start metal working"))

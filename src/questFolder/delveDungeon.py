@@ -1,9 +1,6 @@
 import src
 import random
 
-# equip
-# rest
-
 class DelveDungeon(src.quests.MetaQuestSequence):
     type = "DelveDungeon"
 

@@ -23,10 +23,10 @@ class ConfrontSnatchers(src.quests.MetaQuestSequence):
                 return ([quest],None)
             else:
                 if character.getBigPosition() == (5,6,0):
-                    quest = src.quests.questMap["GoTile"](targetPosition=(5,7,0))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=(5,7,0))
                     return ([quest],None)
                 if character.getBigPosition() == (5,7,0):
-                    quest = src.quests.questMap["GoTile"](targetPosition=(6,7,0))
+                    quest = src.quests.questMap["GoToTile"](targetPosition=(6,7,0))
                     return ([quest],None)
                 if character.getBigPosition() == (6,7,0):
                     quest = src.quests.questMap["Fight"]()

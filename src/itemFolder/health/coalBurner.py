@@ -22,8 +22,6 @@ class CoalBurner(src.items.Item):
 
         self.walkable = False
         self.bolted = False
-        self.charges = 0
-        self.consumption_amount = 5
 
     def getLongInfo(self):
         """
@@ -70,17 +68,13 @@ or use this item with MoldFeed in your inventory.
         Parameters:
             character: the character trying to use this item
         """
-        try:
-            self.consumption_amount
-        except:
-            self.consumption_amount = 5
 
         moldFeed = self.getMoldFeed(character)
         if len(moldFeed) == 0:
             character.addMessage("you need to have a MoldFeed in your inventory or in the coal burners input stockpile")
             return
 
-        amount_to_burn = min(len(moldFeed), self.consumption_amount, math.ceil((character.maxHealth - character.health) / 5))
+        amount_to_burn = min(len(moldFeed), math.ceil((character.maxHealth - character.health) / 5))
         
         if not amount_to_burn:
             character.addMessage("you need no healing and burn no corpses")

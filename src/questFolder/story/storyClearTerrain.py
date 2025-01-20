@@ -198,6 +198,9 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                 numSpiderlings = 0
 
                 for otherChar in terrain.charactersByTile.get((x,y,0),[]):
+                    if otherChar.dead or otherChar.getBigPosition() != (x,y,0):
+                        terrain.charactersByTile[(x,y,0)].remove(otherChar)
+                        break
                     if otherChar.charType == "Spider":
                         numSpiders += 1
                     if otherChar.charType == "Spiderling":

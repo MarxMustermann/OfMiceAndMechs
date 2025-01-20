@@ -72,6 +72,8 @@ class Shrine(src.items.Item):
             newTerrain.addCharacter(character,15*bigPos[0]+7,15*bigPos[1]+7)
         character.changed("changedTerrain",{"character":character})
 
+        character.interactionState["itemMarkedLast"] = None
+
     def isChallengeDone(self):
         if self.god == 1:
             terrain = self.getTerrain()

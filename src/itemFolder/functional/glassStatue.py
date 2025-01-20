@@ -229,6 +229,8 @@ class GlassStatue(src.items.Item):
         character.changed("glass statue used",{})
         character.changed("changedTerrain",{"character":character})
 
+        character.interactionState["itemMarkedLast"] = None
+
     def showInfo(self,character):
         character.addMessage(f"mana: {self.getTerrain().mana}\ncharges: {self.charges}")
 

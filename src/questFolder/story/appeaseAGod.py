@@ -136,7 +136,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
 
         # produce metal bars
         if "MetalBars" in saccrificesNeeded:
-            quest = src.quests.questMap["ScrapHammering"](amount=saccrificeAmountNeeded["MetalBars"])
+            quest = src.quests.questMap["ScrapHammering"](amount=saccrificeAmountNeeded["MetalBars"], tryHard=True)
             return ([quest],None)
 
         # produce items

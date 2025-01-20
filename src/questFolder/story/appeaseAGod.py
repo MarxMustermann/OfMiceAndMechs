@@ -79,7 +79,7 @@ class AppeaseAGod(src.quests.MetaQuestSequence):
             for inputSlot in checkRoom.inputSlots:
                 for item in checkRoom.getItemByPosition(inputSlot[0]):
                     if item.type != inputSlot[1]:
-                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),pickUpBolted=True)
+                        quest = src.quests.questMap["CleanSpace"](targetPosition=item.getPosition(),targetPositionBig=checkRoom.getPosition(),pickUpBolted=True,abortOnfullInventory=False)
                         return ([quest],None)
 
         # saccrifice from inventory if possible

@@ -141,9 +141,6 @@ Press d to move the cursor and show the subquests description.
                 return
         return
 
-    def unhandledSubQuestFail(self,extraParam):
-        self.fail(extraParam["reason"])
-
     def getSource(self):
         if not isinstance(self.character.container,src.rooms.Room):
             return None
@@ -189,8 +186,6 @@ Press d to move the cursor and show the subquests description.
                 numItemsCollected += 1
             if (numItemsCollected+character.getFreeInventorySpace()) < 5:
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
-                if not dryRun:
-                    self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest],None)
 
         if self.amount:
@@ -202,8 +197,6 @@ Press d to move the cursor and show the subquests description.
 
             if character.getFreeInventorySpace() < self.amount-numItemsCollected:
                 quest = src.quests.questMap["ClearInventory"](reason="be able to store the needed amount of items",returnToTile=False,tryHard=True)
-                if not dryRun:
-                    self.startWatching(quest,self.unhandledSubQuestFail,"failed")
                 return ([quest],None)
 
         if self.collectedItems and self.tileToReturnTo:
@@ -472,4 +465,35 @@ Press d to move the cursor and show the subquests description.
                                 beUsefull.idleCounter = 0
                             return (quests,None)
         return (None,None)
+
+    def handleQuestFailure(self,extraParam):
+        if extraParam["quest"] not in self.subQuests:
+            return
+
+        self.subQuests.remove(extraParam["quest"])
+
+        quest = extraParam["quest"]
+
+        reason = extraParam.get("reason")
+        print(reason)
+
+        if reason == "no path found":
+            character = self.character
+            if character.container.isRoom:
+                for walkingSpace in character.container.walkingSpace:
+                    for item in character.room.getItemByPosition(walkingSpace):
+                        if item.bolted:
+                            break
+                        newQuest = src.quests.questMap["ClearTile"](targetPosition=character.getBigPosition())
+                        self.addQuest(newQuest)
+                        self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                        return
+
+            newQuest = src.quests.questMap["ClearPathToPosition"](targetPosition=quest.targetPosition)
+            self.addQuest(newQuest)
+            self.startWatching(newQuest,self.handleQuestFailure,"failed")
+            return
+
+        self.fail(reason)
+
 src.quests.addType(FetchItems)

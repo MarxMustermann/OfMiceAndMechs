@@ -15,6 +15,7 @@ class SpawnClone(src.quests.MetaQuestSequence):
             return
 
         self.subQuests.remove(extraParam["quest"])
+
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
@@ -86,8 +87,10 @@ class SpawnClone(src.quests.MetaQuestSequence):
                     if item.bolted == False:
                         numItems += 1
                 if numItems > 4:
-                    quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
-                    return ([quest],None)
+                    newQuest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
+                    self.addQuest(newQuest)
+                    self.startWatching(newQuest,self.handleQuestFailure,"failed")
+                    return
 
             # farm for blooms
             newQuest = src.quests.questMap["FarmMold"](tryHard=True)

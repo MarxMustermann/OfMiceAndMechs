@@ -162,6 +162,9 @@ class StoryClearTerrain(src.quests.MetaQuestSequence):
                     return ([quest],None)
 
                 if not wallsInStorage:
+                    if not character.getFreeInventorySpace():
+                        quest = src.quests.questMap["ClearInventory"](tryHard=True)
+                        return ([quest],None)
                     quest = src.quests.questMap["Scavenge"](toCollect="Wall")
                     return ([quest],None)
         else:

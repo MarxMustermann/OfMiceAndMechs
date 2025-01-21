@@ -15,6 +15,7 @@ class Scavenge(src.quests.MetaQuestSequence):
         if toCollect:
             self.metaDescription += " for "+toCollect
         self.toCollect = toCollect
+        self.doneTiles = []
 
     def generateTextDescription(self):
         out = []
@@ -31,6 +32,11 @@ Scavenge the outside area"""
 
 This quest will end when your inventory is full."""
 
+        if self.doneTiles:
+            text += f"""
+
+done tiles: {self.doneTiles}"""
+
         out.append(text)
         return out
 
@@ -43,6 +49,11 @@ This quest will end when your inventory is full."""
         return False
 
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
+
+        try:
+            self.doneTiles
+        except:
+            self.doneTiles = []
 
         if self.triggerCompletionCheck(character=character):
             return
@@ -60,6 +71,9 @@ This quest will end when your inventory is full."""
                     continue
 
                 target = character.getBigPosition()
+
+                if target in self.doneTiles:
+                    continue
 
                 centerItems = terrain.getItemByPosition((target[0]*15+7,target[1]*15+7,0))
                 if centerItems and centerItems[0].type == "RoomBuilder":
@@ -81,6 +95,9 @@ This quest will end when your inventory is full."""
                     quest = src.quests.questMap["ScavengeTile"](targetPosition=target,toCollect=self.toCollect,reason="fill your inventory")
                     return ([quest],None)
 
+            if not dryRun:
+                self.doneTiles.append(character.getBigPosition())
+
             offsets = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0)]
 
             if self.lastMoveDirection:
@@ -96,6 +113,10 @@ This quest will end when your inventory is full."""
             for offset in offsets:
 
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+
+                if target in self.doneTiles:
+                    continue
+
                 if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
 
@@ -131,8 +152,13 @@ This quest will end when your inventory is full."""
             for offset in offsets:
 
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
+
+                if target in self.doneTiles:
+                    continue
+
                 if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
                     continue
+
                 if not (target not in terrain.scrapFields and target not in terrain.forests and not terrain.getRoomByPosition(target)):
                     continue
                 if terrain.getRoomByPosition(target):
@@ -158,6 +184,9 @@ This quest will end when your inventory is full."""
             for offset in offsets:
                 target = (pos[0]+offset[0],pos[1]+offset[1],pos[2]+offset[2])
                 if terrain.getRoomByPosition(target):
+                    continue
+
+                if target in self.doneTiles:
                     continue
 
                 foundEnemy = False

@@ -140,8 +140,6 @@ done tiles: {self.doneTiles}"""
                 for item in terrain.itemsByBigCoordinate.get(target,[]):
                     if self.toCollect and item.type != self.toCollect:
                         continue
-                    #if item.type == "Scrap":
-                    #    continue
                     if item.bolted:
                         continue
 

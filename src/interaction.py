@@ -4171,7 +4171,33 @@ def renderGameDisplay(renderChar=None):
                             pseudoDisplay[offsetY+extraY][offsetX+extraX] = "XX"
                     extraY += 1
 
-                for uiElement in src.gamestate.gamestate.uiElements:
+                uiElements = src.gamestate.gamestate.uiElements
+                uiElements = []
+                assumedScreenWidth = tcodConsole.width
+
+                mapWidth = 88
+                if assumedScreenWidth < mapWidth:
+                    assumedScreenWidth = mapWidth
+                uiElements.append({"type":"gameMap","offset":[(assumedScreenWidth-mapWidth)//4,6]})
+                
+                if tcodConsole.width > mapWidth + 15*4:
+                    left = (tcodConsole.width-(mapWidth + 15*4))//8
+                    uiElements.append({"type":"miniMap","offset":[left,1]})
+
+                if tcodConsole.width > mapWidth + 15*4:
+                    right = (tcodConsole.width-(mapWidth + 15*4))//8
+                    uiElements.append({"type":"zoneMap","offset":[tcodConsole.width//2-15-right,1]})
+
+                uiElements.append({"type":"healthInfo","offset":[(assumedScreenWidth-mapWidth)//2,1],"width":mapWidth})
+                uiElements.append({"type":"indicators","offset":[(assumedScreenWidth-mapWidth)//2,2],"width":mapWidth})
+                uiElements.append({"type":"text","offset":[(assumedScreenWidth-mapWidth)//2+37,3], "text":[src.interaction.ActionMeta(content="press ? for help",payload="z")]})
+                uiElements.append({"type":"time","offset":[(assumedScreenWidth-mapWidth)//2+35,4]})
+
+                if tcodConsole.width > mapWidth + 15*4:
+                    uiElements.append({"type":"rememberedMenu","offset":[2,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
+                    uiElements.append({"type":"rememberedMenu2","offset":[(assumedScreenWidth+mapWidth)//2+4,18],"size":(max(0,(assumedScreenWidth-mapWidth)//2-4),tcodConsole.height-18)})
+
+                for uiElement in uiElements:
                     if uiElement["type"] == "gameMap":
                         canvas = render(char)
                         if not renderChar:

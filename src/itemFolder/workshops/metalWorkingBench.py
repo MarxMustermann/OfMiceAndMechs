@@ -76,6 +76,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
+        if params.get("key") not in ("J","K",):
+            params["amount"] = 1
+
         if params.get("type") == "byName":
             submenue = src.menuFolder.inputMenu.InputMenu("Type the name of the item to produce",targetParamName="type")
             submenue.tag = "metalWorkingProductInput"
@@ -94,6 +97,17 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
+            return
+
+        if "rawAmount" in params:
+            params["amount"] = int(params["rawAmount"])
+            del params["rawAmount"]
+
+        if not "amount" in params:
+            submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
+            submenue.tag = "metalWorkingAmountInput"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
         metalBarsFound = []
@@ -152,7 +166,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
         dropsSpotsFull = self.checkForDropSpotsFull()
 
         preferInventoryOut = True
-        if params.get("key") == "k":
+        if params.get("key") in ("k","K",):
             preferInventoryOut = False
 
         if (dropsSpotsFull or preferInventoryOut) and character.getFreeInventorySpace() > 0:
@@ -176,6 +190,10 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
                     break
 
         character.changed("worked metal",{"item":new})
+
+        params["amount"] -= 1
+        if params["amount"]:
+            self.produceItem(params)
 
     def getInputItems(self):
 

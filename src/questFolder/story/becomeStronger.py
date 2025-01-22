@@ -234,7 +234,7 @@ class BecomeStronger(src.quests.MetaQuestSequence):
             for item in room.itemsOnFloor:
                 if item.bolted == False:
                     numItems += 1
-            if numItems > 4:
+            if numItems > 2:
                 quest = src.quests.questMap["ClearTile"](targetPosition=room.getPosition())
                 return ([quest],None)
 

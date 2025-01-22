@@ -4379,11 +4379,8 @@ def renderGameDisplay(renderChar=None):
                 height += 1
                 width = max(width,len(line))
 
-            screen_width = 200
-            screen_width = 150
-            screen_height = 51
-            offsetLeft = max(screen_width//2-width//2,1)
-            offsetTop = max(screen_height//2-height//2,1)
+            offsetLeft = max(src.interaction.tcodConsole.width//2-width//2,1)
+            offsetTop = max(min(src.interaction.tcodConsole.height//2-height//2,17),1)
 
             try:
                 counter = offsetTop

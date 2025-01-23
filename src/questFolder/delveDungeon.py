@@ -63,6 +63,33 @@ After fetching the glass heart return the glass heart to your base and set it in
         if self.subQuests:
             return (None,None)
 
+        if character.macroState.get("itemMarkedLast"):
+            if character.macroState["itemMarkedLast"].type == "GlassStatue":
+                return (None,("j","activate glass statue"))
+            else:
+                return (None,(".","undo selection"))
+
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+
+            if not submenue.extraInfo.get("item"):
+                return (None,(["esc"],"exit submenu"))
+
+            menuEntry = "getSetHeart"
+            counter = 1
+            for option in submenue.options.values():
+                if option == menuEntry:
+                    index = counter
+                    break
+                counter += 1
+            command = ""
+            if submenue.selectionIndex > counter:
+                command += "w"*(submenue.selectionIndex-counter)
+            if submenue.selectionIndex < counter:
+                command += "s"*(counter-submenue.selectionIndex)
+            command += "j"
+            return (None,(command,"get/set glass heart"))
+
         # check if the character has the glass heart
         hasSpecialItem = None
         for item in character.inventory:
@@ -157,7 +184,7 @@ After fetching the glass heart return the glass heart to your base and set it in
                     if self.directSendback:
                         return (None,(directionCommand+"cr","return GlassHeart"))
                     else:
-                        return (None,(directionCommand+"cg","eject GlassHeart"))
+                        return (None,(directionCommand+"jssj","eject GlassHeart"))
 
                 if not dryRun:
                     self.fail("no GlassStatue found")
@@ -213,7 +240,7 @@ After fetching the glass heart return the glass heart to your base and set it in
             directionCommand = "a"
         if character.getPosition(offset=(0,-1,0)) == glassStatue.getPosition():
             directionCommand = "w"
-        return (None,(directionCommand+"cg","insert glass heart"))
+        return (None,(directionCommand+"jssj","insert glass heart"))
 
     def delveToRoomIfSafe(self,character,path,dryRun=True):
         new_pos = (path[0][0] + character.getBigPosition()[0], path[0][1] + character.getBigPosition()[1])

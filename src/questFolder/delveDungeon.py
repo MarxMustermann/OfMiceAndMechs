@@ -63,6 +63,17 @@ After fetching the glass heart return the glass heart to your base and set it in
         if self.subQuests:
             return (None,None)
 
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+        
         if character.macroState.get("itemMarkedLast"):
             if character.macroState["itemMarkedLast"].type == "GlassStatue":
                 return (None,("j","activate glass statue"))

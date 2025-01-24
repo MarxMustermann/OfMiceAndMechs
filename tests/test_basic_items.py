@@ -119,7 +119,7 @@ def metalWorking_room(character_room):
     room.addItem(item,(1,2,0))
     return (character,room)
 
-def test_MetalWorkingBench_production(metalWorking_room):
+def test_MetalWorkingBench_production1(metalWorking_room):
     character = metalWorking_room[0]
 
     item = src.items.itemMap["MetalBars"]()
@@ -133,3 +133,89 @@ def test_MetalWorkingBench_production(metalWorking_room):
 
     assert len(character.inventory) == 1
     assert character.inventory[0].type != "MetalBars"
+
+def test_MetalWorkingBench_production2(metalWorking_room):
+    character = metalWorking_room[0]
+
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+
+    character.runCommandString("Jajj")
+
+    for i in range(1000):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    assert len(character.inventory) == 2
+    assert character.inventory[0].type == "MetalBars"
+    assert character.inventory[-1].type != "MetalBars"
+
+def test_MetalWorkingBench_production3(metalWorking_room):
+    character = metalWorking_room[0]
+
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+
+    character.runCommandString("Jajk")
+
+    for i in range(1000):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    assert len(character.inventory) == 1
+    assert character.inventory[0].type == "MetalBars"
+
+def test_MetalWorkingBench_production4(metalWorking_room):
+    character = metalWorking_room[0]
+
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+
+    character.runCommandString(list("JajJ3")+["enter"])
+
+    for i in range(1000):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    assert len(character.inventory) == 5
+    assert character.inventory[0].type == "MetalBars"
+    assert character.inventory[1].type == "MetalBars"
+    assert character.inventory[-1].type != "MetalBars"
+    assert character.inventory[-2].type != "MetalBars"
+    assert character.inventory[-3].type != "MetalBars"
+
+def test_MetalWorkingBench_production5(metalWorking_room):
+    character = metalWorking_room[0]
+
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+    item = src.items.itemMap["MetalBars"]()
+    character.inventory.append(item)
+
+    character.runCommandString(list("JajK3")+["enter"])
+
+    for i in range(1000):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    assert len(character.inventory) == 2
+    assert character.inventory[0].type == "MetalBars"
+    assert character.inventory[1].type == "MetalBars"

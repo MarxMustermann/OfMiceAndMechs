@@ -34,6 +34,23 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
         if self.subQuests:
             return (None,None)
 
+        if character.macroState["submenue"] and character.macroState["submenue"].tag == "anvilAmountInput":
+            submenue = character.macroState["submenue"]
+            targetAmount = str(self.amount - self.amountDone)
+            if submenue.text == targetAmount:
+                return (None,(["enter"],"set how many of the item to produce"))
+
+            correctIndex = 0
+            while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
+                if targetAmount[correctIndex] != submenue.text[correctIndex]:
+                    break
+                correctIndex += 1
+
+            if correctIndex < len(submenue.text):
+                return (None,(["backspace"],"delete input"))
+
+            return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
+
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
         
@@ -97,6 +114,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             activationCommand = "j"
         else:
             activationCommand = "k"
+        if self.amount-self.amountDone > 1:
+            activationCommand = activationCommand.upper()
         if (pos[0],pos[1],pos[2]) == anvilPos:
             return (None,("j"+activationCommand,"hammer some scrap"))
         if (pos[0]-1,pos[1],pos[2]) == anvilPos:

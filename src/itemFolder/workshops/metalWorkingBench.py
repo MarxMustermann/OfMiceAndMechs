@@ -31,6 +31,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
                     "check schedule production": self.checkProductionScheduleHook,
                     "schedule production": self.scheduleProductionHook,
                     "repeat": self.repeat,
+                    "repeat_k": self.repeat_k,
+                    "repeat_J": self.repeat_J,
+                    "repeat_K": self.repeat_K,
                         }
 
         self.ins = [(1,0,0),]
@@ -229,11 +232,20 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
     def scheduleProductionHook(self,character):
         self.scheduleProduction({"character":character})
 
-    def repeat(self,character):
+    def repeat_K(self,character):
+        self.repeat(character,key="K")
+
+    def repeat_J(self,character):
+        self.repeat(character,key="J")
+
+    def repeat_k(self,character):
+        self.repeat(character,key="k")
+
+    def repeat(self,character,key="j"):
         if not self.lastProduction:
             character.addMessage("no last produced item found")
             return
-        params = {"character":character,"type":self.lastProduction}
+        params = {"character":character,"type":self.lastProduction,"key":key}
         self.produceItem(params)
 
     def scheduleProduction(self,params):

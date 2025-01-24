@@ -21,6 +21,12 @@ from config import commandChars
 from src import cinematics
 from multiprocessing import Process
 
+import time
+import threading
+import queue
+
+from flask import Flask
+
 ################################################################################
 #
 #        setting up the basic user interaction library
@@ -43,7 +49,7 @@ noFlicker = False
 class EndGame(Exception):
     pass
 
-minRoundTime = 1
+minRoundTime = None
 def advanceGame():
     """
     advance the game
@@ -123,6 +129,8 @@ def advanceGame():
             timeTaken = time.time()-roundStart
             if timeTaken < minRoundTime:
                 time.sleep(minRoundTime-timeTaken)
+
+    handeAPIrequests()
 
     if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0:
@@ -6814,6 +6822,7 @@ def advanceChar(char,render=True, pull_events = True):
                 return
             if pull_events:
                 newInputs = getTcodEvents() 
+                handeAPIrequests()
                 if getNetworkedEvents():
                     newInputs = True
             else:
@@ -6994,6 +7003,72 @@ def advanceChar_disabled(char):
                 if not quest.autoSolve:
                     continue
                 hasAutosolveQuest = True
+
+app = Flask(__name__)
+flaskProcess = None
+requestQueue = queue.Queue()
+responseQueue = queue.Queue()
+def runAPIServer(requestQueue,responseQueue):
+    counterLock = threading.Lock()
+    requestIdCounter = [0]
+
+    responseLock = threading.Lock()
+    localResponseList = []
+
+    @app.route('/')
+    def hello_world3():
+        with counterLock:
+            requestId = requestIdCounter[0]
+            requestIdCounter[0] += 1
+
+        request = {"id":requestId,"type":"b"}
+        requestQueue.put(request)
+
+        while True:
+            while True:
+                if responseQueue.empty():
+                    break
+                try:
+                    response = responseQueue.get_nowait()
+                except queue.Empty:
+                    break
+
+                with responseLock:
+                    localResponseList.append(response)
+
+            with responseLock:
+                for response in localResponseList:
+                    if not response["id"] == requestId:
+                        continue
+                    localResponseList.remove(response)
+
+                    return 'hello, World! + '+str(response)
+            time.sleep(0.01)
+
+    @app.route('/alive')
+    def hello_world():
+        return 'still living'
+
+    app.run(debug=True, use_reloader=False, host='0.0.0.0', port=5000)
+
+def handeAPIrequests():
+    global flaskProcess
+    
+    if not flaskProcess:
+        input("started http server")
+        flaskProcess = threading.Thread(target=runAPIServer, daemon=True, args=[requestQueue,responseQueue])
+        flaskProcess.start()
+
+    while True:
+        if requestQueue.empty():
+            break
+        try:
+            request = requestQueue.get_nowait()
+        except queue.Empty:
+            break
+
+        response = {"id":request["id"],"data":"test"}
+        responseQueue.put(response)
 
 loop = None
 

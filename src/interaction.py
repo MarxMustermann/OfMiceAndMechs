@@ -9,7 +9,7 @@ import os
 import random
 import time
 import gzip
-
+import copy
 
 import src.canvas
 import src.chats
@@ -24,8 +24,10 @@ from multiprocessing import Process
 import time
 import threading
 import queue
+import traceback
 
 from flask import Flask
+from flask import request
 
 ################################################################################
 #
@@ -7021,8 +7023,10 @@ def runAPIServer(requestQueue,responseQueue):
             requestId = requestIdCounter[0]
             requestIdCounter[0] += 1
 
-        request = {"id":requestId,"type":"b"}
-        requestQueue.put(request)
+        data = request.get_json()
+        if data["type"] == "runCode":
+            rawRequest = {"id":requestId,"type":"runCode","code":data["code"]}
+        requestQueue.put(rawRequest)
 
         while True:
             while True:
@@ -7042,7 +7046,7 @@ def runAPIServer(requestQueue,responseQueue):
                         continue
                     localResponseList.remove(response)
 
-                    return 'hello, World! + '+str(response)
+                    return response["result"]
             time.sleep(0.01)
 
     @app.route('/alive')
@@ -7055,7 +7059,6 @@ def handeAPIrequests():
     global flaskProcess
     
     if not flaskProcess:
-        input("started http server")
         flaskProcess = threading.Thread(target=runAPIServer, daemon=True, args=[requestQueue,responseQueue])
         flaskProcess.start()
 
@@ -7067,7 +7070,17 @@ def handeAPIrequests():
         except queue.Empty:
             break
 
-        response = {"id":request["id"],"data":"test"}
+        if request["type"] == "runCode":
+            try:
+                ldict = {}
+                exec(request["code"],globals(), ldict)
+                result = copy.deepcopy(ldict["result"])
+            except:
+                result = {"error":traceback.format_exc()}
+            response = {"id":request["id"],"result":result}
+            responseQueue.put(response)
+            continue
+        response = {"id":request["id"],"result":"test"}
         responseQueue.put(response)
 
 loop = None

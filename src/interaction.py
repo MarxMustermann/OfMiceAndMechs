@@ -43,11 +43,14 @@ noFlicker = False
 class EndGame(Exception):
     pass
 
+minRoundTime = 1
 def advanceGame():
     """
     advance the game
     """
     global multi_chars
+
+    roundStart = time.time()
 
     mainCharTerrain = src.gamestate.gamestate.mainChar.getTerrain()
     multi_chars = set()
@@ -110,10 +113,22 @@ def advanceGame():
 
         if not src.gamestate.gamestate.difficulty == "tutorial":
             src.magic.spawnWaves()
+
+    if minRoundTime:
+        timeTaken = time.time()-roundStart
+        if timeTaken < minRoundTime:
+            renderGameDisplay()
+            if not ghost:
+                sendNetworkDraw(src.gamestate.gamestate.mainChar)
+            timeTaken = time.time()-roundStart
+            if timeTaken < minRoundTime:
+                time.sleep(minRoundTime-timeTaken)
+
     if settings.get("auto save"):
         if src.gamestate.gamestate.tick % 150 == 0:
             src.gamestate.gamestate.save()
             src.gamestate.gamestate.mainChar.addMessage("auto saved")
+
 def advanceGame_disabled():
     """
     advance the game
@@ -6773,8 +6788,7 @@ def advanceChar(char,render=True, pull_events = True):
     if (char == src.gamestate.gamestate.mainChar) and char.timeTaken > 1 and render:
         renderGameDisplay()
         if not ghost:
-            #sendNetworkDraw(src.gamestate.gamestate.mainChar)
-            pass
+            sendNetworkDraw(src.gamestate.gamestate.mainChar)
         lastRender = time.time()
     while char.timeTaken < 1:
         if (char == src.gamestate.gamestate.mainChar) and rerender and char.getTerrain():
@@ -6790,8 +6804,7 @@ def advanceChar(char,render=True, pull_events = True):
                 if src.gamestate.gamestate.tick%3 == 0:
                     renderGameDisplay()
                     if not ghost:
-                        #sendNetworkDraw(src.gamestate.gamestate.mainChar)
-                        pass
+                        sendNetworkDraw(src.gamestate.gamestate.mainChar)
                     else:
                         sendNetworkDraw(ghost)
             lastRender = time.time()
@@ -6818,7 +6831,7 @@ def advanceChar(char,render=True, pull_events = True):
 
                 renderGameDisplay()
                 if not ghost:
-                    #sendNetworkDraw(src.gamestate.gamestate.mainChar)
+                    sendNetworkDraw(src.gamestate.gamestate.mainChar)
                     pass
                 lastRender = time.time()
 
@@ -6988,7 +7001,7 @@ s = None
 conn = None
 
 HOST = "127.0.0.1"
-PORT = 65485
+PORT = 65487
 
 ghost = None
 shadowCharacter = None
@@ -6997,6 +7010,7 @@ def getNetworkedEvents():
     global shadowCharacter
     global s
     global conn
+    global minRoundTime
 
     if not s:
         import socket
@@ -7053,6 +7067,28 @@ def getNetworkedEvents():
             else:
                 keyboardListener(command,targetCharacter=src.gamestate.gamestate.mainChar)
             foundCommand = True
+        for action in raw["actions"]:
+            if action == "spawn enemy":
+                container = src.gamestate.gamestate.mainChar.container
+                pos = src.gamestate.gamestate.mainChar.getPosition(offset=(-1,-1,0))
+
+                enemy = src.characters.characterMap["Spider"]()
+                container.addCharacter(enemy,pos[0],pos[1])
+                sendNetworkDraw(src.gamestate.gamestate.mainChar)
+            if action == "stun":
+                src.gamestate.gamestate.mainChar.timeTaken += 20
+            if action == "heal":
+                src.gamestate.gamestate.mainChar.heal(20)
+            if action == "increase game speed":
+                if minRoundTime:
+                    minRoundTime = minRoundTime * 0.7
+                    if minRoundTime < 0.01:
+                        minRoundTime = None
+            if action == "decrease game speed":
+                if not minRoundTime:
+                    minRoundTime = 0.01
+                minRoundTime = minRoundTime * 1.3
+
     return foundCommand
 
 def sendNetworkDraw(character):
@@ -7093,7 +7129,7 @@ def sendNetworkDraw(character):
     for y in range(50):
         pseudoDisplay.append([])
         for x in range(200):
-            pseudoDisplay[y].append("xx")
+            pseudoDisplay[y].append("  ")
     canvas.getAsDummy(pseudoDisplay,0,0,warning=False)
 
     info = {"pseudoDisplay":pseudoDisplay}

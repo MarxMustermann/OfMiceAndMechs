@@ -33,23 +33,48 @@ class Anvil(src.items.itemMap["WorkShop"]):
                         )
         self.applyMap = {
                     "produce item": self.produceItem,
-                    "produce item_k": self.produceItemK,
+                    "produce item_J": self.produceItem_J,
+                    "produce item_k": self.produceItem_k,
+                    "produce item_K": self.produceItem_K,
                     "produce 10 item": self.produce10Item,
-                    "produce 10 item_k": self.produce10ItemK,
+                    "produce 10 item_k": self.produce10Item_k,
                     "check schedule production": self.checkProductionScheduleHook,
                     "schedule production": self.scheduleProductionHook,
                         }
 
-    def produce10ItemK(self,character):
+    def produceItem_K(self,character):
+        self.produceItem(character,preferInventoryOut=False,amount=None)
+
+    def produceItem_J(self,character):
+        self.produceItem(character,preferInventoryOut=True,amount=None)
+
+    def produce10Item_k(self,character):
         self.produceItem(character,preferInventoryOut=False,amount=10)
 
-    def produceItemK(self,character):
+    def produceItem_k(self,character):
         self.produceItem(character,preferInventoryOut=False)
 
     def produce10Item(self,character):
         self.produceItem(character,preferInventoryOut=True,amount=10)
 
     def produceItem(self,character,preferInventoryOut=True,amount=1):
+        self.produceItemLooped({"amount":amount,"character":character,"preferInventoryOut":preferInventoryOut})
+
+    def produceItemLooped(self,params):
+        if "rawAmount" in params:
+            params["amount"] = int(params["rawAmount"])
+            del params["rawAmount"]
+
+        amount = params.get("amount")
+        character = params.get("character")
+        preferInventoryOut = params.get("preferInventoryOut")
+
+        if amount == None:
+            submenue = src.menuFolder.inputMenu.InputMenu("Type how many of the items produce",targetParamName="rawAmount")
+            submenue.tag = "anvilAmountInput"
+            character.macroState["submenue"] = submenue
+            character.macroState["submenue"].followUp = {"container":self,"method":"produceItemLooped","params":params}
+            return
 
         scrapFound = []
         for item in character.inventory:
@@ -71,7 +96,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
             character.changed("inventory full error",{})
             return
 
-        if self.scheduledAmount:
+        if self.scheduledAmount != None and self.scheduledAmount > 0:
             self.scheduledAmount -= 1
 
         params = {

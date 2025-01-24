@@ -92,7 +92,10 @@ class ActivateGlassStatue(src.quests.MetaQuestSequence):
             direction = "w"
         if (pos[0],pos[1]+1,pos[2]) == self.targetPosition:
             direction = "s"
-        return (None,("J"+direction+"wj","activate the GlassStatue"))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
+        return (None,(interactionCommand+direction+"sssj","activate the GlassStatue"))
 
     def generateTextDescription(self):
         text = ["""

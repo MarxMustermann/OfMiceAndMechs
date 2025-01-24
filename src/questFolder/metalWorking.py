@@ -51,7 +51,7 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
-        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.inputMenu.InputMenu) and not ignoreCommands:
+        if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductInput":
             submenue = character.macroState["submenue"]
             if self.toProduce == submenue.text:
                 return (None,(["enter"],"set the name of the item to produce"))
@@ -66,6 +66,23 @@ Press d to move the cursor and show the subquests description.
                 return (None,(["backspace"],"delete input"))
 
             return (None,(self.toProduce[correctIndex:],"enter name of the tem to produce"))
+
+        if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingAmountInput":
+            submenue = character.macroState["submenue"]
+            targetAmount = str(self.amount - self.amountDone)
+            if submenue.text == targetAmount:
+                return (None,(["enter"],"set how many of the item to produce"))
+
+            correctIndex = 0
+            while correctIndex < len(targetAmount) and correctIndex < len(submenue.text):
+                if targetAmount[correctIndex] != submenue.text[correctIndex]:
+                    break
+                correctIndex += 1
+
+            if correctIndex < len(submenue.text):
+                return (None,(["backspace"],"delete input"))
+
+            return (None,(targetAmount[correctIndex:],"enter name of the tem to produce"))
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
             submenue = character.macroState["submenue"]
@@ -85,6 +102,9 @@ Press d to move the cursor and show the subquests description.
                     activationCommand = "j"
                 else:
                     activationCommand = "k"
+
+                if self.amount - self.amountDone > 1:
+                    activationCommand = activationCommand.upper()
 
                 offset = index-submenue.selectionIndex
                 command = ""

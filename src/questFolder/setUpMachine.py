@@ -16,6 +16,7 @@ class SetUpMachine(src.quests.MetaQuestSequence):
         self.tryHard = tryHard
         self.room = room
         self.reason = reason
+        self.type = "SetUpMachine"
 
     def generateTextDescription(self):
         reason = ""

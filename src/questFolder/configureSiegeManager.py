@@ -56,22 +56,65 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
 
         submenue = character.macroState.get("submenue")
         if submenue:
+            if submenue.tag == None:
+                menuEntry = "setSchedule"
+                counter = 1
+                for option in submenue.options.values():
+                    if option == menuEntry:
+                        index = counter
+                        break
+                    counter += 1
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+                command += "j"
+                return (None,(command,"open the scheduling menu"))
+
             if submenue.tag == "configure siege manager main":
-                return (None,("sj","add a new action"))
+                menuEntry = "add"
+                counter = 1
+                for option in submenue.options.values():
+                    if option == menuEntry:
+                        index = counter
+                        break
+                    counter += 1
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+                command += "j"
+                return (None,(command,"add a new action"))
+
             if submenue.tag == "configure siege manager task selection":
                 existingActions = []
                 for actionDefintion in siegeManager.schedule.values():
                     existingActions.append(actionDefintion["type"])
 
-                if "restrict outside" not in existingActions:
-                    return (None,("j","add restrict outside action"))
-                if "sound alarms" not in existingActions:
-                    return (None,("ssj","add sound alarm bells action"))
-                if "unrestrict outside" not in existingActions:
-                    return (None,("sj","add unrestrict outside action"))
-                if "silence alarms" not in existingActions:
-                    return (None,("sssj","add silence alarm bells action"))
-                return (None,None)
+                desiredActions = ["restrict outside","sound alarms","unrestrict outside","silence alarms"]
+
+                toSelect = None
+                for desiredAction in desiredActions:
+                    if desiredAction not in existingActions:
+                        toSelect = desiredAction
+                        break
+
+                menuEntry = toSelect
+                counter = 1
+                for option in submenue.options.values():
+                    if option == menuEntry:
+                        index = counter
+                        break
+                    counter += 1
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+                command += "j"
+                return (None,(command,"add "+toSelect+" action"))
             if submenue.tag == "configure siege manager time selection":
                 targetValue = 0
                 if submenue.followUp["params"].get("actionType") == "restrict outside":
@@ -123,7 +166,10 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
         if (pos[0],pos[1]+1,pos[2]) == target_pos:
             direction = "s"
 
-        return (None,("J"+direction+"wj","open the configuration menu"))
+        interactionCommand = "J"
+        if "advancedInteraction" in character.interactionState:
+            interactionCommand = ""
+        return (None,(interactionCommand+direction+"sssssj","open the configuration menu"))
 
     def generateTextDescription(self):
         text = ["""

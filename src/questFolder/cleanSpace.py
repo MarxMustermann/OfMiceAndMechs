@@ -48,64 +48,67 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         return None
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
-        if not self.subQuests:
-            terrain = character.getTerrain()
-            rooms = terrain.getRoomByPosition(self.targetPositionBig)
-            if not character.getFreeInventorySpace():
-                if self.abortOnfullInventory:
-                    if not dryRun:
-                        self.fail("full inventory")
-                    return (None,None)
-                quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False)
-                return ([quest],None)
+        if self.subQuests:
+            return (None,None)
 
-            if character.getBigPosition() != self.targetPositionBig:
-                quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
+        terrain = character.getTerrain()
+        rooms = terrain.getRoomByPosition(self.targetPositionBig)
+        if not character.getFreeInventorySpace():
+            if self.abortOnfullInventory:
+                if not dryRun:
+                    self.fail("full inventory")
+                return (None,None)
+            quest = src.quests.questMap["ClearInventory"](reason="be able to pick up more items",returnToTile=False)
+            return ([quest],None)
+
+        if character.getBigPosition() != self.targetPositionBig:
+            quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPositionBig,reason="get near the target tile")
+            return ([quest], None)
+
+        if rooms:
+            room = rooms[0]
+            items = room.getItemByPosition(self.targetPosition)
+            if not items or ((not self.pickUpBolted) and items[0].bolted):
+                if not dryRun:
+                    self.postHandler()
+                return (None,None)
+        else:
+            items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
+            if not items or ((not self.pickUpBolted) and items[0].bolted):
+                if not dryRun:
+                    self.postHandler()
+                return (None,None)
+
+        if character.container.isRoom:
+            if character.getDistance(self.targetPosition) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
+                return ([quest], None)
+        else:
+            if character.getDistance((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0)) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
                 return ([quest], None)
 
-            if rooms:
-                room = rooms[0]
-                items = room.getItemByPosition(self.targetPosition)
-                if not items or ((not self.pickUpBolted) and items[0].bolted):
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,None)
-            else:
-                items = terrain.getItemByPosition((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0))
-                if not items or ((not self.pickUpBolted) and items[0].bolted):
-                    if not dryRun:
-                        self.postHandler()
-                    return (None,None)
-
+        offsets = {(0,0,0):".",(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w"}
+        for (offset,direction) in offsets.items():
             if character.container.isRoom:
-                if character.getDistance(self.targetPosition) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
-                    return ([quest], None)
+                if character.getPosition(offset=offset) == self.targetPosition:
+                    if direction == ".":
+                        direction = ""
+                    if self.pickUpBolted and items[0].bolted:
+                        return (None, (direction+"cb","unbolt item"))
+                    return (None, (direction+"k","pick up item"))
             else:
-                if character.getDistance((self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0)) > 1:
-                    quest = src.quests.questMap["GoToPosition"](targetPosition=self.targetPosition,ignoreEndBlocked=True,reason="get to the target space")
-                    return ([quest], None)
-
-            offsets = {(0,0,0):".",(1,0,0):"d",(-1,0,0):"a",(0,1,0):"s",(0,-1,0):"w"}
-            for (offset,direction) in offsets.items():
-                if character.container.isRoom:
-                    if character.getPosition(offset=offset) == self.targetPosition:
+                if character.getPosition(offset=offset) == (self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0):
+                    if self.pickUpBolted and items[0].bolted:
                         if direction == ".":
                             direction = ""
-                        if self.pickUpBolted and items[0].bolted:
-                            return (None, (direction+"cb","unbolt item"))
-                        return (None, (direction+"k","pick up item"))
-                else:
-                    if character.getPosition(offset=offset) == (self.targetPositionBig[0]*15+self.targetPosition[0],self.targetPositionBig[1]*15+self.targetPosition[1],0):
-                        if self.pickUpBolted and items[0].bolted:
-                            if direction == ".":
-                                direction = ""
-                            return (None, (direction+"cb","unbolt item"))
+                        return (None, (direction+"cb","unbolt item"))
 
-                        interactionCommand = "K"
-                        if "advancedPickup" in character.interactionState:
-                            interactionCommand = ""
-                        return (None, (interactionCommand+direction,"pick up item"))
+                    interactionCommand = "K"
+                    if "advancedPickup" in character.interactionState:
+                        interactionCommand = ""
+                    return (None, (interactionCommand+direction,"pick up item"))
+
         return (None,None)
 
     def pickedUpItem(self,extraInfo):

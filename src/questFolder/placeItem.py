@@ -163,6 +163,20 @@ Press d to move the cursor and show the subquests description.
 
             if not ignoreCommands:
                 submenue = character.macroState.get("submenue")
+
+                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                    targetIndex = 0
+                    for item in character.inventory:
+                        if item.type == self.itemType:
+                            break
+                        targetIndex += 1
+
+                    inventoryCommand = ""
+                    inventoryCommand += "s"*(targetIndex-submenue.cursor)
+                    inventoryCommand += "w"*(submenue.cursor-targetIndex)
+                    inventoryCommand += "l"
+                    return (None,(inventoryCommand,"drop the item"))
+
                 if submenue:
                     return (None,(["esc"],"exit the menu"))
 
@@ -224,7 +238,12 @@ Press d to move the cursor and show the subquests description.
 
                 if not itemPlaced:
                     if itemIndex > 1:
-                        dropCommand = "i"+itemIndex*"w"+"l"
+                        dropCommand = "i"
+                        for item in character.inventory:
+                            if item.type == self.itemType:
+                                break
+                            dropCommand += "s"
+                        dropCommand += "l"
                     else:
                         dropCommand = "l"
 

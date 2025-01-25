@@ -51,11 +51,15 @@ Cosume a potion of the type {self.potionType} from your inventory{reason}.
             if not isinstance(character.macroState["submenue"],src.menuFolder.inventoryMenu.InventoryMenu):
                 return (None,(["esc"],"close the menu"))
 
-        counter = 0
-        for item in character.inventory:
-            if item.type == self.potionType:
-                break
-            counter += 1
-        return (None,("i"+"s"*counter+"j","drink the potion"))
+            counter = 0
+            for item in character.inventory:
+                if item.type == self.potionType:
+                    break
+                counter += 1
+
+            offset = counter-character.macroState["submenue"].cursor
+
+            return (None,("s"*offset+"w"*(-offset)+"j","drink the potion"))
+        return (None,("i","open inventory"))
 
 src.quests.addType(ConsumePotion)

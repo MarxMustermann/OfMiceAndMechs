@@ -7026,6 +7026,8 @@ def runAPIServer(requestQueue,responseQueue):
         data = request.get_json()
         if data["type"] == "runCode":
             rawRequest = {"id":requestId,"type":"runCode","code":data["code"]}
+        if data["type"] == "renderTerrain":
+            rawRequest = {"id":requestId,"type":"renderTerrain","x":int(data["x"]),"y":int(data["y"])}
         requestQueue.put(rawRequest)
 
         while True:
@@ -7078,6 +7080,40 @@ def handeAPIrequests():
             except:
                 result = {"error":traceback.format_exc()}
             response = {"id":request["id"],"result":result}
+            responseQueue.put(response)
+            continue
+        if request["type"] == "renderTerrain":
+            terrain = src.gamestate.gamestate.terrainMap[request["y"]][request["x"]]
+
+            result = []
+            rawRender = terrain.render()
+
+            y = 0
+            for line in rawRender:
+                x = 0
+                for entry in line:
+                    while True:
+                        entry = rawRender[y][x]
+                        if isinstance(entry,int):
+                            rawRender[y][x] = src.canvas.displayChars.indexedMapping[entry]
+                            continue
+                        if not isinstance(entry,list):
+                            rawRender[y][x] = [entry]
+                            continue
+
+                        prepared = []
+                        for item in entry:
+                            if isinstance(item, str):
+                                prepared.append(((255,255,255),(0,0,0),item))
+                            if isinstance(item, tuple):
+                                prepared.append((tuple(item[0].get_rgb_values()[:3]),tuple(item[0].get_rgb_values()[3:]),item[1]))
+
+                        rawRender[y][x] = prepared
+                        break
+                    x += 1
+                y += 1
+
+            response = {"id":request["id"],"result":rawRender}
             responseQueue.put(response)
             continue
         response = {"id":request["id"],"result":"test"}

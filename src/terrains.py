@@ -1711,9 +1711,9 @@ class Terrain:
         Returns:
             the rendered terrain
         """
-        print(size)
-        print(coordinateOffset)
-        print(self.lastRender)
+        
+        if not size:
+            size = (15*15,15*15)
 
         if not self.lastRender:
             # hide/show map

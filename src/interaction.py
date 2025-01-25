@@ -7019,6 +7019,8 @@ def runAPIServer(requestQueue,responseQueue):
 
     @app.route('/')
     def hello_world3():
+        print("registered request")
+        print(time.time())
         with counterLock:
             requestId = requestIdCounter[0]
             requestIdCounter[0] += 1
@@ -7026,8 +7028,10 @@ def runAPIServer(requestQueue,responseQueue):
         data = request.get_json()
         if data["type"] == "runCode":
             rawRequest = {"id":requestId,"type":"runCode","code":data["code"]}
-        if data["type"] == "renderTerrain":
+        elif data["type"] == "renderTerrain":
             rawRequest = {"id":requestId,"type":"renderTerrain","x":int(data["x"]),"y":int(data["y"])}
+        else:
+            rawRequest = {"id":requestId,"type":"renderTerrain","x":3,"y":4}
         requestQueue.put(rawRequest)
 
         while True:
@@ -7048,6 +7052,8 @@ def runAPIServer(requestQueue,responseQueue):
                         continue
                     localResponseList.remove(response)
 
+                    print("prepared request")
+                    print(time.time())
                     return response["result"]
             time.sleep(0.01)
 
@@ -7083,11 +7089,14 @@ def handeAPIrequests():
             responseQueue.put(response)
             continue
         if request["type"] == "renderTerrain":
+            print("starting to generate answer")
+            print(time.time())
             terrain = src.gamestate.gamestate.terrainMap[request["y"]][request["x"]]
 
             result = []
             rawRender = terrain.render()
 
+            lookUp = {}
             y = 0
             for line in rawRender:
                 x = 0
@@ -7095,8 +7104,15 @@ def handeAPIrequests():
                     while True:
                         entry = rawRender[y][x]
                         if isinstance(entry,int):
-                            rawRender[y][x] = src.canvas.displayChars.indexedMapping[entry]
-                            continue
+                            if not entry in lookUp:
+                                item = src.canvas.displayChars.indexedMapping[entry]
+                                expanded = "  "
+                                if isinstance(item, str):
+                                    expanded = item
+                                if isinstance(item, tuple):
+                                    expanded = (tuple(item[0].get_rgb_values()[:3]),tuple(item[0].get_rgb_values()[3:]),item[1])
+                                lookUp[entry] = expanded
+                            break
                         if not isinstance(entry,list):
                             rawRender[y][x] = [entry]
                             continue
@@ -7104,7 +7120,7 @@ def handeAPIrequests():
                         prepared = []
                         for item in entry:
                             if isinstance(item, str):
-                                prepared.append(((255,255,255),(0,0,0),item))
+                                prepared.append(item)
                             if isinstance(item, tuple):
                                 prepared.append((tuple(item[0].get_rgb_values()[:3]),tuple(item[0].get_rgb_values()[3:]),item[1]))
 
@@ -7113,8 +7129,14 @@ def handeAPIrequests():
                     x += 1
                 y += 1
 
-            response = {"id":request["id"],"result":rawRender}
+            print("generated answer")
+            print(time.time())
+
+            response = {"id":request["id"],"result":{"map":rawRender,"lookUp":lookUp}}
             responseQueue.put(response)
+
+            print("added answer")
+            print(time.time())
             continue
         response = {"id":request["id"],"result":"test"}
         responseQueue.put(response)

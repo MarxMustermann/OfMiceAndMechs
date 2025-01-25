@@ -18,7 +18,10 @@ class WorkShop(src.items.Item):
         character.timeTaken += 1
         params["doneProductionTime"] += 1
 
-        baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(ticksLeft//10)
+        barLength = params["productionTime"]//10
+        if params["productionTime"]%10:
+            barLength += 1
+        baseProgressbar = "X"*(params["doneProductionTime"]//10)+"."*(barLength-(params["doneProductionTime"]//10))
         progressBar = ""
         while len(baseProgressbar) > 10:
             progressBar += baseProgressbar[:10]+"\n"

@@ -51,6 +51,17 @@ Press d to move the cursor and show the subquests description.
         if self.subQuests:
             return (None,None)
 
+        if not character.container.isRoom:
+            pos = character.getSpacePosition()
+            if pos == (14,7,0):
+                return (None,("a","enter room"))
+            if pos == (0,7,0):
+                return (None,("d","enter room"))
+            if pos == (7,14,0):
+                return (None,("w","enter room"))
+            if pos == (7,0,0):
+                return (None,("s","enter room"))
+
         if character.macroState["submenue"] and character.macroState["submenue"].tag == "metalWorkingProductInput":
             submenue = character.macroState["submenue"]
             if self.toProduce == submenue.text:

@@ -51,6 +51,12 @@ Remove all items from the space {self.targetPosition} on tile {self.targetPositi
         if self.subQuests:
             return (None,None)
 
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if submenue.tag == "configurationSelection":
+                return (None,("b","unbolt the item"))
+            return (None,(["esc"],"exit the menu"))
+
         terrain = character.getTerrain()
         rooms = terrain.getRoomByPosition(self.targetPositionBig)
         if not character.getFreeInventorySpace():

@@ -4,10 +4,11 @@ import src
 class GoToTerrain(src.quests.MetaQuestSequence):
     type = "GoToTerrain"
 
-    def __init__(self, description="go to terrain", creator=None, targetTerrain=None):
+    def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True):
         questList = []
         super().__init__(questList, creator=creator)
         self.targetTerrain = targetTerrain
+        self.allowTerrainMenu = allowTerrainMenu
         self.metaDescription = description + " " + str(self.targetTerrain)
 
     def triggerCompletionCheck(self,character=None):
@@ -23,8 +24,25 @@ class GoToTerrain(src.quests.MetaQuestSequence):
     def getNextStep(self,character,ignoreCommands=False, dryRun = True):
         if self.subQuests:
             return (None,None)
-        if character.macroState.get("submenue"):
+
+        submenue = character.macroState.get("submenue")
+        if submenue:
+            if submenue.tag == "terrainMovementmenu":
+                return (None,("j","start the auto movement"))
             return (None,(["esc"],"close the menu"))
+
+        try:
+            self.allowTerrainMenu
+        except:
+            self.allowTerrainMenu = True
+
+        if self.allowTerrainMenu:
+            movementCommand = ""
+            movementCommand += "s"*(self.targetTerrain[1]-character.getTerrain().yPosition)
+            movementCommand += "w"*(character.getTerrain().yPosition-self.targetTerrain[1])
+            movementCommand += "d"*(self.targetTerrain[0]-character.getTerrain().xPosition)
+            movementCommand += "a"*(character.getTerrain().xPosition-self.targetTerrain[0])
+            return (None,("gM"+movementCommand+"j","auto move to terrain"))
 
         if character.getTerrain().yPosition > self.targetTerrain[1]:
             if character.getBigPosition()[0] == 0:

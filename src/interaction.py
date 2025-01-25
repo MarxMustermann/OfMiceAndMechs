@@ -7017,7 +7017,7 @@ def runAPIServer(requestQueue,responseQueue):
     responseLock = threading.Lock()
     localResponseList = []
 
-    @app.route('/')
+    @app.route('/', methods=["GET","POST"])
     def hello_world3():
         print("registered request")
         print(time.time())
@@ -7025,11 +7025,20 @@ def runAPIServer(requestQueue,responseQueue):
             requestId = requestIdCounter[0]
             requestIdCounter[0] += 1
 
-        data = request.get_json()
-        if data["type"] == "runCode":
+        data = request.form
+        if not data:
+            data = request.args
+
+        if not "type" in data:
+            rawRequest = {"id":requestId,"type":"renderTerrain","x":3,"y":4}
+        elif data["type"] == "runCode":
             rawRequest = {"id":requestId,"type":"runCode","code":data["code"]}
         elif data["type"] == "renderTerrain":
             rawRequest = {"id":requestId,"type":"renderTerrain","x":int(data["x"]),"y":int(data["y"])}
+            if "vSizeX" in data and "vSizeY" in data:
+                rawRequest["size"] = (int(data["vSizeX"]),int(data["vSizeY"]))
+            if "vOffsetX" in data and "vOffsetY" in data:
+                rawRequest["offset"] = (int(data["vOffsetX"]),int(data["vOffsetY"]))
         else:
             rawRequest = {"id":requestId,"type":"renderTerrain","x":3,"y":4}
         requestQueue.put(rawRequest)
@@ -7094,7 +7103,7 @@ def handeAPIrequests():
             terrain = src.gamestate.gamestate.terrainMap[request["y"]][request["x"]]
 
             result = []
-            rawRender = terrain.render()
+            rawRender = terrain.render(size=request.get("size"),coordinateOffset=request.get("offset"))
 
             lookUp = {}
             y = 0

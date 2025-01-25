@@ -1711,6 +1711,9 @@ class Terrain:
         Returns:
             the rendered terrain
         """
+
+        if coordinateOffset is None:
+            coordinateOffset = (0,0)
         
         if not size:
             size = (15*15,15*15)

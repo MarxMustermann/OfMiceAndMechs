@@ -116,9 +116,6 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
         return (None,None)
 
-        quest = src.quests.questMap["TeleportToTerrain"](targetPosition=self.targetTerrain)
-        return ([quest],None)
-
     def handleChangedTerrain(self,extraInfo):
         self.triggerCompletionCheck(extraInfo["character"])
 

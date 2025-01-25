@@ -46,6 +46,48 @@ class BrewPotion(src.quests.MetaQuestSequence):
             if pos == (7,0,0):
                 return (None,("s","enter room"))
 
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+            if submenue.tag == "alchemyTableProductSelection":
+                index = None
+                counter = 1
+                for option in submenue.options.items():
+                    if option[1] == self.potionType:
+                        index = counter
+                        break
+                    counter += 1
+
+                if index is None:
+                    index = counter-1
+
+                offset = index-submenue.selectionIndex
+                command = ""
+                if offset > 0:
+                    command += "s"*offset
+                else:
+                    command += "w"*(-offset)
+                command += "j"
+                return (None,(command,"produce item"))
+            else:
+                menuEntry = "produce potion"
+                counter = 1
+                for option in submenue.options.values():
+                    if option == menuEntry:
+                        index = counter
+                        break
+                    counter += 1
+                command = ""
+                if submenue.selectionIndex > counter:
+                    command += "w"*(submenue.selectionIndex-counter)
+                if submenue.selectionIndex < counter:
+                    command += "s"*(counter-submenue.selectionIndex)
+
+                command += "j"
+                return (None,(command,"start brewing"))
+
+        if character.macroState["submenue"] and not ignoreCommands:
+            return (None,(["esc"],"exit submenu"))
+
         terrain = character.getTerrain()
 
         if not character.searchInventory("Flask"):
@@ -71,23 +113,22 @@ class BrewPotion(src.quests.MetaQuestSequence):
                 if not items[0].type == "AlchemyTable":
                     continue
                 
-                message = "brewing a potion"
-                command = list("jwj"+self.potionType)+["enter"]
+                message = "start brewing a potion"
                 if offset == (0,0,0):
-                    return (None,(list("j")+command,message))
+                    return (None,(list("j"),message))
 
                 interactionCommand = "J"
                 if "advancedInteraction" in character.interactionState:
                     interactionCommand = ""
 
                 if offset == (1,0,0):
-                    return (None,(list(interactionCommand+"d")+command,message))
+                    return (None,(list(interactionCommand+"d"),message))
                 if offset == (-1,0,0):
-                    return (None,(list(interactionCommand+"a")+command,message))
+                    return (None,(list(interactionCommand+"a"),message))
                 if offset == (0,1,0):
-                    return (None,(list(interactionCommand+"s")+command,message))
+                    return (None,(list(interactionCommand+"s"),message))
                 if offset == (0,-1,0):
-                    return (None,(list(interactionCommand+"w")+command,message))
+                    return (None,(list(interactionCommand+"w"),message))
 
 
             for item in character.container.itemsOnFloor:

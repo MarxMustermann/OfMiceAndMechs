@@ -75,14 +75,19 @@ class BrewPotion(src.quests.MetaQuestSequence):
                 command = list("jwj"+self.potionType)+["enter"]
                 if offset == (0,0,0):
                     return (None,(list("j")+command,message))
+
+                interactionCommand = "J"
+                if "advancedInteraction" in character.interactionState:
+                    interactionCommand = ""
+
                 if offset == (1,0,0):
-                    return (None,(list("Jd")+command,message))
+                    return (None,(list(interactionCommand+"d")+command,message))
                 if offset == (-1,0,0):
-                    return (None,(list("Ja")+command,message))
+                    return (None,(list(interactionCommand+"a")+command,message))
                 if offset == (0,1,0):
-                    return (None,(list("Js")+command,message))
+                    return (None,(list(interactionCommand+"s")+command,message))
                 if offset == (0,-1,0):
-                    return (None,(list("Jw")+command,message))
+                    return (None,(list(interactionCommand+"w")+command,message))
 
 
             for item in character.container.itemsOnFloor:

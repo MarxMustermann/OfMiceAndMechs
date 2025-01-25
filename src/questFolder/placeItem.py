@@ -224,7 +224,7 @@ Press d to move the cursor and show the subquests description.
 
                 if not itemPlaced:
                     if itemIndex > 1:
-                        dropCommand = "il"+itemIndex*"w"+"j"
+                        dropCommand = "i"+itemIndex*"w"+"l"
                     else:
                         dropCommand = "l"
 

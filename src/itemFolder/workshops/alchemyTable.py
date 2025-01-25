@@ -21,16 +21,10 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
         self.applyOptions.extend(
                         [
                                                                 ("produce potion", "produce potion"),
-                                                                ("check schedule production", "check schedule"),
-                                                                ("schedule production", "schedule production"),
-                                                                ("repeat", "repeat last production"),
                         ]
                         )
         self.applyMap = {
                     "produce potion": self.producePotionHook,
-                    "check schedule production": self.checkProductionScheduleHook,
-                    "schedule production": self.scheduleProductionHook,
-                    "repeat": self.repeat,
                         }
 
         self.ins = [(-1,0,0),(0,1,0)]

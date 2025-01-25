@@ -48,6 +48,29 @@ class FillFlask(src.quests.MetaQuestSequence):
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if self.triggerCompletionCheck(character):
             return (None,None)
+
+        if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.selectionMenu.SelectionMenu) and not ignoreCommands:
+            submenue = character.macroState["submenue"]
+
+            if not submenue.extraInfo.get("item"):
+                return (None,(["esc"],"exit submenu"))
+
+            menuEntry = "fill_empty_flask"
+            counter = 1
+            for option in submenue.options.values():
+                if option == menuEntry:
+                    index = counter
+                    break
+                counter += 1
+            command = ""
+            if submenue.selectionIndex > counter:
+                command += "w"*(submenue.selectionIndex-counter)
+            if submenue.selectionIndex < counter:
+                command += "s"*(counter-submenue.selectionIndex)
+
+            command += "j"
+            return (None,(command,"fill flasks"))
+
         pos = character.getBigPosition()
         pos = (pos[0],pos[1])
 
@@ -68,14 +91,19 @@ class FillFlask(src.quests.MetaQuestSequence):
 
                 if offset == (0,0,0):
                     return (None,("jsj","fill flask"))
+
+                interactionCommand = "J"
+                if "advancedInteraction" in character.interactionState:
+                    interactionCommand = ""
+
                 if offset == (1,0,0):
-                    return (None,("Jdsj","fill flask"))
+                    return (None,(interactionCommand+"dsj","fill flask"))
                 if offset == (-1,0,0):
-                    return (None,("Jasj","fill flask"))
+                    return (None,(interactionCommand+"asj","fill flask"))
                 if offset == (0,1,0):
-                    return (None,("Jssj","fill flask"))
+                    return (None,(interactionCommand+"ssj","fill flask"))
                 if offset == (0,-1,0):
-                    return (None,("Jwsj","fill flask"))
+                    return (None,(interactionCommand+"wsj","fill flask"))
 
             for item in character.container.itemsOnFloor:
                 if not item == character.container.getItemByPosition(item.getPosition())[0]:

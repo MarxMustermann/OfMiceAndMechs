@@ -28,7 +28,12 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         submenue = character.macroState.get("submenue")
         if submenue:
             if submenue.tag == "terrainMovementmenu":
-                return (None,("j","start the auto movement"))
+                movementCommand = ""
+                movementCommand += "s"*(self.targetTerrain[1]-submenue.cursor[1])
+                movementCommand += "w"*(submenue.cursor[1]-self.targetTerrain[1])
+                movementCommand += "d"*(self.targetTerrain[0]-submenue.cursor[0])
+                movementCommand += "a"*(submenue.cursor[0]-self.targetTerrain[0])
+                return (None,(movementCommand+"j","start the auto movement"))
             return (None,(["esc"],"close the menu"))
 
         try:
@@ -42,7 +47,12 @@ class GoToTerrain(src.quests.MetaQuestSequence):
             movementCommand += "w"*(character.getTerrain().yPosition-self.targetTerrain[1])
             movementCommand += "d"*(self.targetTerrain[0]-character.getTerrain().xPosition)
             movementCommand += "a"*(character.getTerrain().xPosition-self.targetTerrain[0])
-            return (None,("gM"+movementCommand+"j","auto move to terrain"))
+
+            menuCommand = "g"
+            if "runaction" in character.interactionState:
+                menuCommand = ""
+
+            return (None,(menuCommand+"M"+movementCommand+"j","auto move to terrain"))
 
         if character.getTerrain().yPosition > self.targetTerrain[1]:
             if character.getBigPosition()[0] == 0:

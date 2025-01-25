@@ -7033,6 +7033,8 @@ def runAPIServer(requestQueue,responseQueue):
             rawRequest = {"id":requestId,"type":"renderTerrain","x":3,"y":4}
         elif data["type"] == "runCode":
             rawRequest = {"id":requestId,"type":"runCode","code":data["code"]}
+        elif data["type"] == "addItem":
+            rawRequest = {"id":requestId,"type":"addItem","terrainX":int(data["terrainX"]),"terrainY":int(data["terrainY"]),"x":int(data["x"]),"y":int(data["y"]),"itemType":data["itemType"]}
         elif data["type"] == "renderTerrain":
             rawRequest = {"id":requestId,"type":"renderTerrain","x":int(data["x"]),"y":int(data["y"])}
             if "vSizeX" in data and "vSizeY" in data:
@@ -7146,6 +7148,15 @@ def handeAPIrequests():
 
             print("added answer")
             print(time.time())
+            continue
+        if request["type"] == "addItem":
+            terrain = src.gamestate.gamestate.terrainMap[request["terrainY"]][request["terrainX"]]
+
+            newItem = src.items.itemMap[request["itemType"]]()
+            terrain.addItem(newItem,(request["x"],request["y"],0))
+
+            response = {"id":request["id"],"result":[]}
+            responseQueue.put(response)
             continue
         response = {"id":request["id"],"result":"test"}
         responseQueue.put(response)

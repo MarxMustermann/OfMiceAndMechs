@@ -13,9 +13,19 @@ class GoToTerrain(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if character is None:
-            return None
+            return False
         if len(self.targetTerrain) < 3:
             self.targetTerrain = (self.targetTerrain[0],self.targetTerrain[1],0)
+
+        if character.getBigPosition()[0] == 0:
+            return False
+        if character.getBigPosition()[0] == 14:
+            return False
+        if character.getBigPosition()[1] == 0:
+            return False
+        if character.getBigPosition()[1] == 14:
+            return False
+
         if self.targetTerrain == character.getTerrainPosition():
             self.postHandler()
             return True
@@ -114,16 +124,29 @@ class GoToTerrain(src.quests.MetaQuestSequence):
                 return ([quest],None)
             return (None,("d","go to terrain"))
 
+        if character.getBigPosition()[0] == 14:
+            return (None, ("a","enter the terrain"))
+        if character.getBigPosition()[0] == 0:
+            return (None, ("d","enter the terrain"))
+        if character.getBigPosition()[1] == 0:
+            return (None, ("s","enter the terrain"))
+        if character.getBigPosition()[1] == 14:
+            return (None, ("w","enter the terrain"))
+
         return (None,None)
 
     def handleChangedTerrain(self,extraInfo):
         self.triggerCompletionCheck(extraInfo["character"])
+
+    def handleChangedTile(self,extraInfo=None):
+        self.triggerCompletionCheck(self.character)
 
     def assignToCharacter(self, character):
         if self.character:
             return
 
         self.startWatching(character,self.handleChangedTerrain, "changedTerrain")
+        self.startWatching(character,self.handleChangedTile, "changedTile")
         super().assignToCharacter(character)
 
 src.quests.addType(GoToTerrain)

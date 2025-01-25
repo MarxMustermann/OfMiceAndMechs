@@ -8,13 +8,14 @@ logger = logging.getLogger(__name__)
 class LootRoom(src.quests.MetaQuestSequence):
     type = "LootRoom"
 
-    def __init__(self, description="loot room", creator=None, targetPosition=None, reason=None, story=None):
+    def __init__(self, description="loot room", creator=None, targetPosition=None, reason=None, story=None, endWhenFull=False):
         questList = []
         super().__init__(questList, creator=creator)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
         self.reason = reason
         self.story = story
+        self.endWhenFull = endWhenFull
 
         if targetPosition:
             self.setParameters({"targetPosition":targetPosition})
@@ -50,6 +51,10 @@ Remove all items that are not bolted down."""
 
         if character.getBigPosition() != (self.targetPosition[0], self.targetPosition[1], 0):
             return False
+
+        if self.endWhenFull and character.getFreeInventorySpace() == 0:
+            self.postHandler()
+            return True
         
         if not self.getLeftoverItems(character):
             self.postHandler()

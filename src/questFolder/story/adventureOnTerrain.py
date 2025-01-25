@@ -120,7 +120,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
                 continue
 
             if character.container.isRoom:
-                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition())
+                quest = src.quests.questMap["LootRoom"](targetPosition=character.getBigPosition(),endWhenFull=True)
                 return ([quest],None)
             else:
                 quest = src.quests.questMap["ScavengeTile"](targetPosition=character.getBigPosition())

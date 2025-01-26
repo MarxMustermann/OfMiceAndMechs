@@ -47,6 +47,11 @@ class Adventure(src.quests.MetaQuestSequence):
 
         if character.searchInventory("Scrap"):
             if not character.container.getItemByPosition(character.getPosition()):
+                submenue = character.macroState["submenue"]
+                if submenue and not ignoreCommands:
+                    if not isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                        return (None,(["esc"],"close the menu"))
+
                 index = 0
                 command = ""
                 while index < len(character.inventory):
@@ -59,13 +64,24 @@ class Adventure(src.quests.MetaQuestSequence):
                     return (None, (command,"drop scrap"))
 
                 index = 0
-                command = ["i"]
+                command = []
+                if not isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                    command.append("i")
+
+                startIndex = 0
+                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                    startIndex = submenue.cursor
+
+                targetIndex = 0
                 for item in character.inventory:
                     if item.type != "Scrap":
-                        command.append("s")
-                    else:
-                        command.append("l")
-                command.append("esc")
+                        continue
+                    targetIndex += 1
+                
+                command.extend(["s"]*(targetIndex-startIndex))
+                command.extend(["w"]*(startIndex-targetIndex))
+                command.append("l")
+
                 return (None, (command,"drop scrap"))
 
         # get all reasonable candidates to move to

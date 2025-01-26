@@ -74,8 +74,8 @@ class Adventure(src.quests.MetaQuestSequence):
 
                 targetIndex = 0
                 for item in character.inventory:
-                    if item.type != "Scrap":
-                        continue
+                    if item.type == "Scrap":
+                        break
                     targetIndex += 1
                 
                 command.extend(["s"]*(targetIndex-startIndex))

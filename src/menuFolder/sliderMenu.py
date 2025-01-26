@@ -32,7 +32,7 @@ class SliderMenu(src.subMenu.SubMenu):
         self.stepValue = stepValue
 
         super().__init__()
-        self.footerText = "press enter to confirm\npress a and d to change the value\npressing q and e will modify the value by " + str(stepValue * 10)
+        self.footerText = "press enter to confirm\npress a and d to change the value\npressing A and D will modify the value by " + str(stepValue * 10)
         self.targetParamName = targetParamName
         self.done = False
 

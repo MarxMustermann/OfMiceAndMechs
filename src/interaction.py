@@ -1168,6 +1168,7 @@ def doAdvancedDrop(params):
     urwid = params[7]
 
     char.timeTaken += char.movementSpeed
+    pos = None
     if key == "w":
         pos = (char.xPosition, char.yPosition - 1, char.zPosition)
     elif key == "s":
@@ -1176,13 +1177,80 @@ def doAdvancedDrop(params):
         pos = (char.xPosition + 1, char.yPosition + 0, char.zPosition)
     elif key == "a":
         pos = (char.xPosition - 1, char.yPosition + 0, char.zPosition)
-    else:
+    elif key == ".":
         pos = (char.xPosition, char.yPosition, char.zPosition)
+    if pos:
+        char.drop(
+            None,
+            pos
+        )
 
-    char.drop(
-        None,
-        pos
-    )
+    pos = None
+    if key == "W":
+        pos = (char.xPosition, char.yPosition - 1, char.zPosition)
+    elif key == "S":
+        pos = (char.xPosition, char.yPosition + 1, char.zPosition)
+    elif key == "D":
+        pos = (char.xPosition + 1, char.yPosition + 0, char.zPosition)
+    elif key == "A":
+        pos = (char.xPosition - 1, char.yPosition + 0, char.zPosition)
+    if pos:
+        doDrop = True
+        dropType = None
+        if char.container.isRoom:
+            room = char.container
+
+            foundInputSlot = None
+            for checkInputSlot in room.inputSlots:
+                if not checkInputSlot[0] == pos:
+                    continue
+                foundInputSlot = checkInputSlot
+                break
+
+            if foundInputSlot:
+                dropType = foundInputSlot[1]
+
+            foundStorageSlot = None
+            for checkStorageSlot in room.storageSlots:
+                if not checkStorageSlot[0] == pos:
+                    continue
+                foundStorageSlot = checkStorageSlot
+                break
+
+            if foundStorageSlot:
+                dropType = foundStorageSlot[1]
+
+                if not dropType:
+                    items = room.getItemByPosition(pos)
+                    if not items:
+                        if char.inventory:
+                            dropType = char.inventory[-1].type
+                    else:
+                        dropType = items[-1].type
+
+            foundOutputSlot = None
+            for checkOutputSlot in room.outputSlots:
+                if not checkOutputSlot[0] == pos:
+                    continue
+                foundOutputSlot = checkOutputSlot
+                break
+
+            if foundOutputSlot:
+                dropType = foundOutputSlot[1]
+
+            if pos in room.walkingSpace:
+                doDrop = False
+
+        if doDrop:
+            if not dropType:
+                for item in char.inventory[:]:
+                    char.drop(item,pos)
+            else:
+                for item in char.inventory[:]:
+                    if not item.type == dropType:
+                        continue
+                    char.drop(item,pos)
+
     del char.interactionState["advancedDrop"]
 
 def doStateChange(key,char,charState,main,header,footer,urwid,flags):
@@ -2806,6 +2874,10 @@ press key for advanced pickup
 * s = pick up south
 * d = pick up east
 * . = pick item on floor
+* W = auto pick up north
+* A = auto pick up west
+* S = auto pick up south
+* D = auto pick up east
 
 """
 
@@ -2830,6 +2902,10 @@ press key for advanced drop
 * s = drop south
 * d = drop east
 * . = drop on floor
+* W = auto drop north
+* A = auto drop west
+* S = auto drop south
+* D = auto drop east
 
 """
 

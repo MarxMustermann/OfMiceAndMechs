@@ -18,10 +18,6 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
     def getRemainingPointsOfInterests(self):
         result = []
-        try:
-            self.donePointsOfInterest
-        except:
-            self.donePointsOfInterest = []
 
         currentTerrain = self.character.getTerrain()
 
@@ -33,6 +29,11 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
         for room in currentTerrain.rooms:
             if room.getPosition() not in result and room.getPosition() not in self.donePointsOfInterest:
                 result.append(room.getPosition())
+
+        for donePoi in self.donePointsOfInterest:
+            if not donePoi in result:
+                continue
+            result.remove(donePoi)
 
         return result
 
@@ -131,7 +132,7 @@ class AdventureOnTerrain(src.quests.MetaQuestSequence):
 
         pointOfInterest = random.choice(pointsOfInterest)
         if currentTerrain.getRoomByPosition(pointOfInterest):
-            quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest)
+            quest = src.quests.questMap["LootRoom"](targetPosition=pointOfInterest,endWhenFull=True)
             return ([quest],None)
         else:
             quest = src.quests.questMap["ScavengeTile"](targetPosition=pointOfInterest)

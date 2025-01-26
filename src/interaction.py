@@ -1093,52 +1093,84 @@ def doAdvancedPickup(params):
         pass
     else:
         container = char.container
-        if key == "w":
+        if key in ("w","W"):
             items = container.getItemByPosition(
                 (char.xPosition, char.yPosition - 1, char.zPosition)
             )
             if items:
-                item = items[0]
-                item.pickUp(char)
+                if key == "w":
+                    item = items[0]
+                    item.pickUp(char)
+                else:
+                    for item in items[:]:
+                        if item.type == "Scrap":
+                            for i in range(item.amount):
+                                item.pickUp(char)
+                        else:
+                            item.pickUp(char)
                 container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",1,{"chars":["--",item.render()]})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
                 container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-        elif key == "s":
+        elif key in ("s","S"):
             items = char.container.getItemByPosition(
                 (char.xPosition, char.yPosition + 1, char.zPosition)
             )
             if items:
-                item = items[0]
-                item.pickUp(char)
+                if key == "s":
+                    item = items[0]
+                    item.pickUp(char)
+                else:
+                    for item in items[:]:
+                        if item.type == "Scrap":
+                            for i in range(item.amount):
+                                item.pickUp(char)
+                        else:
+                            item.pickUp(char)
                 container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",1,{"chars":["--",item.render()]})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
                 container.addAnimation(char.getPosition(offset=(0,1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-        elif key == "d":
+        elif key in ("d","D"):
             items = char.container.getItemByPosition(
                 (char.xPosition + 1, char.yPosition, char.zPosition)
             )
             if items:
-                item = items[0]
-                item.pickUp(char)
+                if key == "d":
+                    item = items[0]
+                    item.pickUp(char)
+                else:
+                    for item in items[:]:
+                        if item.type == "Scrap":
+                            for i in range(item.amount):
+                                item.pickUp(char)
+                        else:
+                            item.pickUp(char)
                 container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:
                 char.addMessage("no item to pick up")
                 container.addAnimation(char.getPosition(offset=(1,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"][")})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
-        elif key == "a":
+        elif key in ("a","A"):
             items = char.container.getItemByPosition(
                 (char.xPosition - 1, char.yPosition, char.zPosition)
             )
             if items:
-                item = items[0]
-                item.pickUp(char)
+                if key == "a":
+                    item = items[0]
+                    item.pickUp(char)
+                else:
+                    for item in items[:]:
+                        if item.type == "Scrap":
+                            for i in range(item.amount):
+                                item.pickUp(char)
+                        else:
+                            item.pickUp(char)
                 container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",1,{"chars":["--",item.render()]})
                 container.addAnimation(char.getPosition(offset=(0,0,0)),"charsequence",1,{"chars":[item.render(),"++"]})
             else:

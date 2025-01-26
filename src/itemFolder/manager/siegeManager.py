@@ -123,7 +123,7 @@ class SiegeManager(src.items.Item):
                 return
 
             if not "actionTick" in params:
-                submenue = src.menuFolder.sliderMenu.SliderMenu("choose the tick to schedule the action for:\n\n",maxValue = 3375,targetParamName="actionTick")
+                submenue = src.menuFolder.sliderMenu.SliderMenu(f'choose the tick to schedule the action "{params["actionType"]}" for:\n\n',maxValue = 3375,targetParamName="actionTick")
                 character.macroState["submenue"] = submenue
                 submenue.tag = "configure siege manager time selection"
                 character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}

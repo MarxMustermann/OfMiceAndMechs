@@ -38,6 +38,10 @@ class Spider(src.monster.Monster):
         self.baseDamage = 10
         self.health = 50
         self.maxHealth = 50
+        if src.gamestate.gamestate.difficulty == "difficult":
+            self.baseDamage *= 2
+            self.health *= 2
+            self.maxHealth = 2
         self.autoAdvance = True
 
         self.solvers = [

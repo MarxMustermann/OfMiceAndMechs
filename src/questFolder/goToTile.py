@@ -7,6 +7,13 @@ class GoToTile(src.quests.MetaQuestSequence):
     type = "GoToTile"
 
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True):
+
+        if targetPosition:
+            if targetPosition[0] < 1 or targetPosition[0] > 13:
+                raise Exception("target position out of range")
+            if targetPosition[1] < 1 or targetPosition[1] > 13:
+                raise Exception("target position out of range")
+
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)
         self.metaDescription = f"{description} {targetPosition}"
@@ -160,6 +167,15 @@ The target tile is {direction[4:]}
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
         if character is None:
+            return (None,None)
+
+        if self.targetPosition[0] < 1 or self.targetPosition[0] > 13:
+            if not dryRun:
+                self.fail("target position out of range")
+            return (None,None)
+        if self.targetPosition[1] < 1 or self.targetPosition[1] > 13:
+            if not dryRun:
+                self.fail("target position out of range")
             return (None,None)
 
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:

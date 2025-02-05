@@ -187,6 +187,9 @@ done tiles: {self.doneTiles}"""
                 if target in self.doneTiles:
                     continue
 
+                if target[0] < 1 or target[0] > 13 or target[1] < 1 or target[1] > 13:
+                    continue
+
                 foundEnemy = False
                 for otherCharacter in terrain.charactersByTile.get(target,[]):
                     if otherCharacter.faction == character.faction:

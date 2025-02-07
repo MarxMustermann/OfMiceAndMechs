@@ -5,6 +5,12 @@ class GoToTerrain(src.quests.MetaQuestSequence):
     type = "GoToTerrain"
 
     def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True):
+        if targetTerrain:
+            if targetTerrain[0] < 1 or targetTerrain[0] > 13:
+                raise ValueError("target position out of range")
+            if targetTerrain[1] < 1 or targetTerrain[1] > 13:
+                raise ValueError("target position out of range")
+
         questList = []
         super().__init__(questList, creator=creator)
         self.targetTerrain = targetTerrain

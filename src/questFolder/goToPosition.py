@@ -79,15 +79,6 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         result.append(((self.targetPosition[0]+character.getBigPosition()[0]*15,self.targetPosition[1]%15+character.getBigPosition()[1]*15),"target"))
         return result
 
-    def recCheck(self,quest):
-        if quest == self:
-            return True
-
-        for subQuest in quest.subQuests:
-            if self.recCheck(subQuest):
-                return True
-        return None
-
     def handleMoved(self, extraInfo):
         if not self.active:
             return

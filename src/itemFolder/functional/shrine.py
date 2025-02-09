@@ -842,6 +842,11 @@ class Shrine(src.items.Item):
                     scrap = src.items.itemMap["Scrap"](amount=random.randint(15,20))
                     terrain.addItem(scrap,pos)
 
+                # WORKAROUND: this should not be needed, but helps working around bugs that corrupt the pathfinding cache
+                bigPos = scrapField
+                if bigPos in container.pathfinderCache:
+                    del container.pathfinderCache[bigPos]
+
         if character:
             character.addMessage(text)
 

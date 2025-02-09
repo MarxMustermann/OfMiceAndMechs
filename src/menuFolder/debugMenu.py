@@ -8,7 +8,7 @@ class DebugMenu(src.subMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash","Debug Memory"]
+    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash","Debug Memory","clear path cache"]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -29,6 +29,11 @@ class DebugMenu(src.subMenu.SubMenu):
             current_change = change_event and self.index == i
             text += ">" if self.index == i else ""
             match debug:
+                case "clear path cache":
+                    text+= debug
+                    if current_change:
+                        terrain = character.getTerrain()
+                        terrain.pathfinderCache = {}
                 case "Debug Memory":
                     text+= debug
                     if current_change:

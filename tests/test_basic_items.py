@@ -219,3 +219,27 @@ def test_MetalWorkingBench_production5(metalWorking_room):
     assert len(character.inventory) == 2
     assert character.inventory[0].type == "MetalBars"
     assert character.inventory[1].type == "MetalBars"
+
+def test_shrine_usage(character_room):
+    (character,room) = character_room
+
+    src.gamestate.gamestate.gods[2] = {}
+    src.gamestate.gamestate.gods[2]["lastHeartPos"] = (6,5,0)
+
+    terrain = character.getTerrain()
+    terrain.mana = 300
+
+    terrain.scrapFields.append((9,9,0))
+
+    characterPos = character.getPosition()
+    itemPos = (characterPos[0]-1,characterPos[1],characterPos[2])
+
+    shrine = src.items.itemMap["Shrine"]()
+    shrine.god = 2
+    room.addItem(shrine,itemPos)
+
+    character.runCommandString("Jasjsj")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)

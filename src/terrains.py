@@ -138,6 +138,8 @@ class Terrain:
         return (self.xPosition,self.yPosition,0)
 
     def addAnimation(self,coordinate,animationType,duration,extraInfo):
+        if not src.gamestate.gamestate.mainChar:
+            return
         if self != src.gamestate.gamestate.mainChar.getTerrain():
             return
         if src.interaction.noFlicker:

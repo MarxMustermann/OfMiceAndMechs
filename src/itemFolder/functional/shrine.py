@@ -844,8 +844,8 @@ class Shrine(src.items.Item):
 
                 # WORKAROUND: this should not be needed, but helps working around bugs that corrupt the pathfinding cache
                 bigPos = scrapField
-                if bigPos in container.pathfinderCache:
-                    del container.pathfinderCache[bigPos]
+                if bigPos in self.getTerrain().pathfinderCache:
+                    del self.getTerrain().pathfinderCache[bigPos]
 
         if character:
             character.addMessage(text)

@@ -94,7 +94,7 @@ class InventoryMenu(src.subMenu.SubMenu):
             if key == "l":
                 item = self.char.inventory[self.cursor]
                 self.char.addMessage(f"you drop a {item.type}")
-                self.char.drop(self.char.inventory[self.cursor])
+                self.char.drop(item)
                 self.char.timeTaken += self.char.movementSpeed
 
             # equip as tool

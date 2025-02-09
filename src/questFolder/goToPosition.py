@@ -127,6 +127,17 @@ Close this menu by pressing esc and follow the instructions on the left hand men
         self.smallPath = []
         self.path = []
 
+        # WORKAROUND: this should not be needed, but helps working around bugs that corrupt the pathfinding cache
+        if self.character:
+            container = self.character.container
+        if container.isRoom:
+            container.cachedPathfinder = None
+            container.pathCache = {}
+        else:
+            bigPos = self.character.getBigPosition()
+            if bigPos in container.pathfinderCache:
+                del container.pathfinderCache[bigPos]
+
     def assignToCharacter(self, character):
         if self.character:
             return

@@ -235,6 +235,9 @@ class Terrain:
         if src.gamestate.gamestate.tick%(15*15*15) == 0:
             self.add_mana(self.manaRegen)
 
+            # WORKAROUND: this should not be needed, but helps working around bugs that corrupt the pathfinding cache
+            self.pathfinderCache = {}
+
     def add_mana(self, amount):
         increaseAmount = min(amount,self.maxMana-self.mana)
         self.mana += increaseAmount

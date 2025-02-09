@@ -9,9 +9,9 @@ def test_gotoPosition_bounds(character_room):
     src.quests.questMap["GoToPosition"](targetPosition=(9,9,0))
 
     with pytest.raises(ValueError):
-        src.quests.questMap["GoToPosition"](targetPosition=(9,0,0))
+        src.quests.questMap["GoToPosition"](targetPosition=(9,-1,0))
     with pytest.raises(ValueError):
-        src.quests.questMap["GoToPosition"](targetPosition=(0,9,0))
+        src.quests.questMap["GoToPosition"](targetPosition=(-1,9,0))
     with pytest.raises(ValueError):
         src.quests.questMap["GoToPosition"](targetPosition=(14,9,0))
     with pytest.raises(ValueError):

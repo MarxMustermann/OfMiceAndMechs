@@ -83,34 +83,41 @@ class InventoryMenu(src.subMenu.SubMenu):
                 self.sidebared = True
                 return True
 
-            # do activation
-            if key == "j":
-                item = self.char.inventory[self.cursor]
-                self.char.addMessage(f"you activate the {item.type}")
-                item.apply(self.char)
-                self.char.timeTaken += self.char.movementSpeed
+            # handle out of bounds cursor
+            if self.cursor > len(self.char.inventory) - 1:
+                self.cursor = 0
+            if self.cursor < 0:
+                self.cursor = len(self.char.inventory) - 1
 
-            # do drop
-            if key == "l":
-                item = self.char.inventory[self.cursor]
-                self.char.addMessage(f"you drop a {item.type}")
-                self.char.drop(item)
-                self.char.timeTaken += self.char.movementSpeed
+            if self.char.inventory:
+                # do activation
+                if key == "j":
+                    item = self.char.inventory[self.cursor]
+                    self.char.addMessage(f"you activate the {item.type}")
+                    item.apply(self.char)
+                    self.char.timeTaken += self.char.movementSpeed
 
-            # equip as tool
-            if key == "t":
-                item = self.char.inventory[self.cursor]
-                self.char.tool = item
-                self.char.addMessage(f"you equiped {item.type} as tool")
-                self.char.inventory.remove(item)
+                # do drop
+                if key == "l":
+                    item = self.char.inventory[self.cursor]
+                    self.char.addMessage(f"you drop a {item.type}")
+                    self.char.drop(item)
+                    self.char.timeTaken += self.char.movementSpeed
 
-            # do drop
-            if key == "L":
-                self.subMenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("What direcetion do you want to drop the item?\n\n w - north\n s - south\n a - west\n d - east")
-                self.subMenu.handleKey("~", noRender=noRender, character=character)
-                self.subMenu.tag = "dropDirection"
-                self.drop = True
-                return False
+                # equip as tool
+                if key == "t":
+                    item = self.char.inventory[self.cursor]
+                    self.char.tool = item
+                    self.char.addMessage(f"you equiped {item.type} as tool")
+                    self.char.inventory.remove(item)
+
+                # do drop
+                if key == "L":
+                    self.subMenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu("What direcetion do you want to drop the item?\n\n w - north\n s - south\n a - west\n d - east")
+                    self.subMenu.handleKey("~", noRender=noRender, character=character)
+                    self.subMenu.tag = "dropDirection"
+                    self.drop = True
+                    return False
 
             # handle cursor movement
             if key in ("w","up"):

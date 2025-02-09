@@ -1,4 +1,7 @@
 import src
+import logging
+
+logger = logging.getLogger(__name__)
 
 # bad code: should be abstracted
 # bad code: uses global functions to render
@@ -118,6 +121,9 @@ class InventoryMenu(src.subMenu.SubMenu):
                     self.subMenu.tag = "dropDirection"
                     self.drop = True
                     return False
+            else:
+                if key in ("j","l","t","L",):
+                    logger.warning("doing action on an empty inventory")
 
             # handle cursor movement
             if key in ("w","up"):

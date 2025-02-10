@@ -1,5 +1,8 @@
 import src
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class RefillPersonalFlask(src.quests.MetaQuestSequence):
     type = "RefillPersonalFlask"
@@ -29,12 +32,12 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
 
     def triggerCompletionCheck(self,character=None):
         if not character:
-            return
+            return False
 
         if character.flask and character.flask.uses > 80:
             self.postHandler()
-            return
-        return
+            return True
+        return False
 
     def clearCompletedSubquest(self):
         while self.subQuests and self.subQuests[0].completed:
@@ -70,7 +73,19 @@ class RefillPersonalFlask(src.quests.MetaQuestSequence):
                         continue
 
                     if not item == character.container.getItemByPosition(item.getPosition())[0]:
-                        return (None,("k","remove item from flask"))
+                        pickupCommand = None
+                        if offset == (0,0,0):
+                            pickupCommand = "k"
+                        if offset == (1,0,0):
+                            pickupCommand = "Kd"
+                        if offset == (-1,0,0):
+                            pickupCommand = "Ka"
+                        if offset == (0,1,0):
+                            pickupCommand = "Kw"
+                        if offset == (0,-1,0):
+                            pickupCommand = "Ks"
+
+                        return (None,(pickupCommand,"remove item from flask"))
                 
                     if offset == (0,0,0):
                         return (None,("jj","refill"))

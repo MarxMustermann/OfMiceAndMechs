@@ -116,3 +116,118 @@ def test_refill_flask_2(character_room):
     for i in range(50):
         character.timeTaken = 0
         character.advance(advanceMacros=True)
+
+def test_placeItem_1(terrain,character):
+    bigPos = (4,4,0)
+    charPos = (5,5,0)
+
+    terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
+
+    wall = src.items.itemMap["Wall"]()
+    character.inventory.append(wall)
+
+    targetPos = (charPos[0],charPos[1]+1,charPos[2])
+
+    quest = src.quests.questMap["PlaceItem"](targetPosition=targetPos,targetPositionBig=character.getBigPosition(),itemType="Wall",tryHard=False,reason="build the outline of the room",clearPath=True)
+    character.assignQuest(quest)
+
+    character.runCommandString("*")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    items = terrain.getItemByPosition((bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    assert items == [wall]
+
+def test_placeItem_2(terrain,character):
+    bigPos = (4,4,0)
+    charPos = (5,5,0)
+
+    terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
+
+    wall = src.items.itemMap["Wall"]()
+    character.inventory.append(wall)
+
+    targetPos = (charPos[0],charPos[1]+1,charPos[2])
+
+    mold = src.items.itemMap["Mold"]()
+    terrain.addItem(mold,(bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    quest = src.quests.questMap["PlaceItem"](targetPosition=targetPos,targetPositionBig=character.getBigPosition(),itemType="Wall",tryHard=False,reason="build the outline of the room",clearPath=True)
+    character.assignQuest(quest)
+
+    character.runCommandString("*")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    items = terrain.getItemByPosition((bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    assert items == [wall]
+
+def test_placeItem_3(terrain,character):
+    bigPos = (4,4,0)
+    charPos = (5,5,0)
+
+    terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
+
+    wall = src.items.itemMap["Wall"]()
+    character.inventory.append(wall)
+
+    bloom = src.items.itemMap["Bloom"]()
+    character.inventory.append(bloom)
+    
+    targetPos = (charPos[0],charPos[1]+1,charPos[2])
+
+    mold = src.items.itemMap["Mold"]()
+    terrain.addItem(mold,(bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    quest = src.quests.questMap["PlaceItem"](targetPosition=targetPos,targetPositionBig=character.getBigPosition(),itemType="Wall",tryHard=False,reason="build the outline of the room",clearPath=True)
+    character.assignQuest(quest)
+
+    character.runCommandString("*")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    items = terrain.getItemByPosition((bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    assert items == [wall]
+
+def test_placeItem_4(terrain,character):
+    bigPos = (4,4,0)
+    charPos = (5,5,0)
+
+    terrain.addCharacter(character,bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1])
+
+    wall = src.items.itemMap["Wall"]()
+    character.inventory.append(wall)
+
+    bloom = src.items.itemMap["Bloom"]()
+    character.inventory.append(bloom)
+    
+    targetPos = (charPos[0],charPos[1]+1,charPos[2])
+
+    wall2 = src.items.itemMap["Wall"]()
+    wall2.bolted = True
+    terrain.addItem(wall2,(bigPos[0]*15+charPos[0],bigPos[1]*15+charPos[1],0))
+
+    mold = src.items.itemMap["Mold"]()
+    terrain.addItem(mold,(bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    quest = src.quests.questMap["PlaceItem"](targetPosition=targetPos,targetPositionBig=character.getBigPosition(),itemType="Wall",tryHard=False,reason="build the outline of the room",clearPath=True)
+    character.assignQuest(quest)
+
+    character.runCommandString("*")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    items = terrain.getItemByPosition((bigPos[0]*15+targetPos[0],bigPos[1]*15+targetPos[1],0))
+
+    assert items == [wall]

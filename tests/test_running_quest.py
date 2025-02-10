@@ -67,3 +67,52 @@ def test_movement_working_GoToTile(terrain,character):
     bigPos = (6,10,0)
     targetBigPos = (6,9,0)
 
+def test_refill_flask_1(character_room):
+    (character,room) = character_room
+
+    char_flask = src.items.itemMap["GooFlask"]()
+    character.flask = char_flask
+
+    characterPos = character.getPosition()
+    itemPos = (characterPos[0],characterPos[1],characterPos[2])
+
+    flask = src.items.itemMap["GooFlask"]()
+    flask.uses = 100
+    room.addItem(flask,itemPos)
+
+    quest = src.quests.questMap["RefillPersonalFlask"]()
+    character.assignQuest(quest)
+
+    assert char_flask.uses == 0
+
+    character.runCommandString("*")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    assert char_flask.uses > 0
+
+def test_refill_flask_2(character_room):
+    (character,room) = character_room
+
+    char_flask = src.items.itemMap["GooFlask"]()
+    character.flask = char_flask
+
+    characterPos = character.getPosition()
+    itemPos = (characterPos[0]-1,characterPos[1],characterPos[2])
+
+    flask = src.items.itemMap["GooFlask"]()
+    flask.uses = 100
+    room.addItem(flask,itemPos)
+
+    quest = src.quests.questMap["RefillPersonalFlask"]()
+    character.assignQuest(quest)
+
+    assert char_flask.uses == 0
+
+    character.runCommandString("*")
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)

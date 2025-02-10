@@ -164,7 +164,7 @@ Press d to move the cursor and show the subquests description.
             if not ignoreCommands:
                 submenue = character.macroState.get("submenue")
 
-                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu):
+                if isinstance(submenue,src.menuFolder.inventoryMenu.InventoryMenu) and character.getSpacePosition() == self.targetPosition:
                     targetIndex = 0
                     for item in character.inventory:
                         if item.type == self.itemType:

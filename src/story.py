@@ -3184,7 +3184,10 @@ but they are likely to explode when disturbed.
 
             counter += 1
 
-        # spawn monsters on dead ends
+        # spawn monsters and items on dead ends
+        implants = 0
+        max_implants = 1
+
         for room in reversed(extraRooms):
             for _i in range(1):
                 pos = (random.randint(1,11),random.randint(1,11),0)
@@ -3222,6 +3225,11 @@ but they are likely to explode when disturbed.
                 item = src.items.itemMap["RodTower"]()
                 room.addItem(item,(random.randint(1,11),random.randint(1,11),0))
 
+            implant_chance = 0.06  # %6 chance to spawn
+            if random.random() < implant_chance and implants < max_implants:
+                item = src.items.itemMap["Implant"]()
+                room.addItem(item, (random.randint(1, 11), random.randint(1, 11), 0))
+                implants += 1
         # spawn special items
         endIndex = len(rooms)-3
         counter = 0

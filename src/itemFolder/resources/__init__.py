@@ -29,3 +29,4 @@ import src.itemFolder.resources.wall
 import src.itemFolder.resources.spiderEye
 import src.itemFolder.resources.grindstone
 import src.itemFolder.resources.chitinPlates
+import src.itemFolder.resources.implant

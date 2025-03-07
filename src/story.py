@@ -2136,6 +2136,13 @@ but they are likely to explode when disturbed.
         integrator = src.items.itemMap["Integrator"]()
         spawnRoom.addItem(integrator,(7,3,0))
 
+        spawnRoom.addStorageSlot(
+            (3, 2, 0),
+            "Implant",
+        )
+        implant = src.items.itemMap["Implant"]()
+        spawnRoom.addItem(implant, (3, 2, 0))
+
         spawnRoom.addStorageSlot((2,3,0),"GooFlask",{"desiredState":"filled"})
         growthTank = src.items.itemMap["GrowthTank"]()
         spawnRoom.addItem(growthTank,(3,3,0))

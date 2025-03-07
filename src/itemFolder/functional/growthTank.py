@@ -1,5 +1,5 @@
 import src
-import config
+from src.helpers import getRandomName
 
 
 class GrowthTank(src.items.Item):
@@ -66,15 +66,15 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             options["b"] = ("bolt down", self.boltAction)
         return options
 
-    def boltAction(self,character):
+    def boltAction(self, character):
         self.bolted = True
         character.addMessage("you bolt down the GrowthTank")
-        character.changed("boltedItem",{"character":character,"item":self})
+        character.changed("boltedItem", {"character": character, "item": self})
 
-    def unboltAction(self,character):
+    def unboltAction(self, character):
         self.bolted = False
         character.addMessage("you unbolt the GrowthTank")
-        character.changed("unboltedItem",{"character":character,"item":self})
+        character.changed("unboltedItem", {"character": character, "item": self})
 
     """
     manually eject character
@@ -89,24 +89,29 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         """
 
         if self.filled:
-            self.eject()
+            self.eject(character)
             character.changed("spawned clone")
             character.timeTaken += 2
         else:
             self.refill(character)
 
-    def getFlasks(self, character=None):
-
-        flasks = []
-        for offset in [(-1,0,0),(1,0,0),(0,1,0),(0,-1,0)]:
+    def getItems(self, character, item_type):
+        items = []
+        for offset in [(-1, 0, 0), (1, 0, 0), (0, 1, 0), (0, -1, 0)]:
             for item in self.container.getItemByPosition(self.getPosition(offset=offset)):
-                if isinstance(item, src.items.itemMap["GooFlask"]):
-                    flasks.append(item)
+                if isinstance(item, item_type):
+                    items.append(item)
         for item in character.inventory:
-            if isinstance(item, src.items.itemMap["GooFlask"]):
-                flasks.append(item)
+            if isinstance(item, item_type):
+                items.append(item)
 
-        return flasks
+        return items
+
+    def getFlasks(self, character=None):
+        return self.getItems(character, src.items.itemMap["GooFlask"])
+
+    def getImplants(self, character):
+        return self.getItems(character, src.items.itemMap["Implant"])
 
     def refill(self, character):
         """
@@ -116,13 +121,10 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             character: the character trying to refill the growth tank
         """
 
-
         flasks = self.getFlasks(character)
         if not flasks:
-            character.changed("no flask",{})
-            character.addMessage(
-                "you need to have 2 full goo flasks to refill the growth tank"
-            )
+            character.changed("no flask", {})
+            character.addMessage("you need to have 2 full goo flasks to refill the growth tank")
             return
 
         while self.gooCharges <= 100:
@@ -136,7 +138,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
                 else:
                     pos = flask.getPosition()
                     self.container.removeItem(flask)
-                    self.container.addItem(src.items.itemMap["Flask"](),pos)
+                    self.container.addItem(src.items.itemMap["Flask"](), pos)
 
                 if self.gooCharges > 100:
                     break
@@ -145,75 +147,55 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         if self.gooCharges > 100:
             self.gooCharges -= 100
             self.filled = True
-            character.addMessage(f"the growthtank is filled now")
+            character.addMessage("the growthtank is filled now")
 
     def eject(self, character=None):
         """
         spawn a new npc
-
-        Parameters:
-            character: the character to eject (only used in story)
         """
+
+        implants = self.getImplants(character)
+
+        if not len(implants):
+            character.addMessage("you need to supply an implant to grow a clone")
+            return None
+
+        implant = implants[0]
+
+        if implant in character.inventory:
+            character.inventory.remove(implant)
+        else:
+            self.container.removeItem(implant)
 
         # emtpy growth tank
         self.filled = False
 
-        #bad code: should be somewhere else
-        #bad code: redundant code
-        def getRandomName(seed1=0, seed2=None):
-            """
-            generates a random name
+        name = getRandomName(
+            self.xPosition + self.container.timeIndex,
+            self.yPosition + self.container.timeIndex,
+        )
+        character = src.characters.characterMap["Clone"](
+            src.canvas.displayChars.staffCharactersByLetter[name[0].lower()],
+            name=name,
+        )
 
-            Parameters:
-                seed1: rng seed
-                seed2: rng seed
-
-            Returns:
-                the generated name
-            """
-
-            if seed2 is None:
-                seed2 = seed1 + (seed1 // 5)
-
-            firstName = config.names.characterFirstNames[
-                seed1 % len(config.names.characterFirstNames)
-            ]
-            lastName = config.names.characterLastNames[
-                seed2 % len(config.names.characterLastNames)
-            ]
-
-            name = "%s %s"%(firstName,lastName,)
-
-            return name
-
-        # add character
-        if not character:
-            name = getRandomName(
-                self.xPosition + self.container.timeIndex,
-                self.yPosition + self.container.timeIndex,
-            )
-            character = src.characters.characterMap["Clone"](
-                src.canvas.displayChars.staffCharactersByLetter[name[0].lower()],
-                name=name,
-            )
-
-            character.solvers = [
-                "SurviveQuest",
-                "Serve",
-                "NaiveMoveQuest",
-                "MoveQuestMeta",
-                "NaiveActivateQuest",
-                "ActivateQuestMeta",
-                "NaivePickupQuest",
-                "PickupQuestMeta",
-                "DrinkQuest",
-                "ExamineQuest",
-                "FireFurnaceMeta",
-                "CollectQuestMeta",
-                "WaitQuest",
-                "NaiveDropQuest",
-                "DropQuestMeta",
-            ]
+        character.solvers = [
+            "SurviveQuest",
+            "Serve",
+            "NaiveMoveQuest",
+            "MoveQuestMeta",
+            "NaiveActivateQuest",
+            "ActivateQuestMeta",
+            "NaivePickupQuest",
+            "PickupQuestMeta",
+            "DrinkQuest",
+            "ExamineQuest",
+            "FireFurnaceMeta",
+            "CollectQuestMeta",
+            "WaitQuest",
+            "NaiveDropQuest",
+            "DropQuestMeta",
+        ]
 
         flask = src.items.itemMap["GooFlask"]()
         flask.uses = self.gooCharges

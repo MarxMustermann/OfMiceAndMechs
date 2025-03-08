@@ -12,3 +12,4 @@ import src.itemFolder.story.factionSetter
 import src.itemFolder.story.integrator
 import src.itemFolder.story.promoter
 import src.itemFolder.story.communicator
+import src.itemFolder.story.implantManipulator

@@ -1099,6 +1099,9 @@ class MainGame(BasicPhase):
         for _i in range(1,2):
             for itemID in [1,2,3,4,5,6,7]:
                 self.setUpStatueRoom(self.get_free_position("statue room"),itemID)
+
+        # prepare state to switch between good and bad ending
+        src.gamestate.gamestate.stern["fixedImplant"] = False
             
         if self.preselection == "Story":
             self.dungeonCrawlInfos.append(self.createStoryStart())

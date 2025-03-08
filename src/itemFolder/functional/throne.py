@@ -54,9 +54,15 @@ You need to collect all GlassHarts to be accepted as supreme leader.
             return
 
         if character == src.gamestate.gamestate.mainChar:
+            if src.gamestate.gamestate.stern.get("fixedImplant",False):
+                endingType = "good"
+            else:
+                endingType = "bad"
             src.interaction.showRunOutro()
             text = f"""
 You won the game! congratulations
+
+You got the {endingType} ending.
 
 Feel free to continue building your base.
 I'll try to keep things interesting, but you reached official end of content now.

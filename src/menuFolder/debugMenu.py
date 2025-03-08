@@ -1,14 +1,26 @@
 import collections
-import objgraph
 import random
 
+import objgraph
+import regex
+
 import src
+
 
 class DebugMenu(src.subMenu.SubMenu):
     """
     menu offering debug ability
     """
-    debug_options = ["Teleport", "Add Mana", "Execute Code", "Test Crash","Debug Memory","clear path cache"]
+
+    debug_options = [
+        "Teleport",
+        "Add Mana",
+        "Execute Code",
+        "Test Crash",
+        "Debug Memory",
+        "clear path cache",
+        "Get Item",
+    ]
 
     def __init__(self):
         self.type = "DebugMenu"
@@ -18,7 +30,12 @@ class DebugMenu(src.subMenu.SubMenu):
     def handleKey(self, key, noRender=False, character=None):
         if key in ("w", "s","up","down"):
             self.index += 1 if key in ("s","down") else -1
-            self.index = src.helpers.clamp(self.index, 0, len(self.debug_options) - 1)
+
+            if self.index == -1:
+                self.index = len(self.debug_options) - 1
+
+            if self.index == len(self.debug_options):
+                self.index = 0
 
         change_event = key in ("enter", "j")
 
@@ -28,36 +45,32 @@ class DebugMenu(src.subMenu.SubMenu):
         for i, debug in enumerate(self.debug_options):
             current_change = change_event and self.index == i
             text += ">" if self.index == i else ""
+            text += debug
+
             match debug:
                 case "clear path cache":
-                    text+= debug
                     if current_change:
                         terrain = character.getTerrain()
                         terrain.pathfinderCache = {}
                 case "Debug Memory":
-                    text+= debug
                     if current_change:
                         objgraph.show_most_common_types()
                         objgraph.show_growth()
                 case "Test Crash":
-                    text+= debug
                     if current_change:
                         1/0
                 case "Execute Code":
-                    text+= debug
                     if current_change:
                         submenue = src.menuFolder.inputMenu.InputMenu("Type the code to execute",targetParamName="code")
                         character.macroState["submenue"] = submenue
                         character.macroState["submenue"].followUp = {"container":self,"method":"action","params":{"character":character}}
                         return True
                 case "Add Mana":
-                    text+= debug
                     if current_change:
                         terrain = character.getTerrain()
                         terrain.mana += 100
                         return True
                 case "Teleport":
-                    text += debug
                     if current_change:
                         terrain = character.getTerrain()
                         mapContent = []
@@ -98,6 +111,16 @@ class DebugMenu(src.subMenu.SubMenu):
                         )
                         character.macroState["submenue"] = submenue
                         return True
+                case "Get Item":
+                    if current_change:
+                        submenue = src.menuFolder.inputMenu.InputMenu("Type item name to spawn", targetParamName="item")
+                        character.macroState["submenue"] = submenue
+                        character.macroState["submenue"].followUp = {
+                            "container": self,
+                            "method": "action",
+                            "params": {"character": character},
+                        }
+                        return True
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
@@ -124,3 +147,23 @@ class DebugMenu(src.subMenu.SubMenu):
                 room[0].addCharacter(character,7,7)
             else:
                 terrain.addCharacter(character,15*params["coordinate"][0]+7,15*params["coordinate"][1]+7)
+
+        if "item" in params:
+            print(params["item"])
+            item_name: str = params["item"].lower()
+            m = regex.search("x(\\d+)", item_name)
+            if m:
+                item_name = item_name.removesuffix("x" + m.group()[1:])
+
+            for key, item_ty in src.items.itemMap.items():
+                if key.lower() == item_name:
+                    if m:
+                        for _ in range(int(m.group()[1:])):
+                            character.inventory.append(item_ty())
+                    else:
+                        character.inventory.append(item_ty())
+
+                    character.addMessage(f"added {item_name}")
+                    return
+
+            character.addMessage(f"item ({item_name}) not found")

@@ -64,7 +64,7 @@ def Death(extraParam):
     #         if src.interaction.tcodConsole.rgb[width, height]["ch"] == ord("@"):
     #             if width > playerpos[0] and height > playerpos[1]:
     #                 playerpos = (width, height)
-    playerpos = (82,28)
+    playerpos = (src.interaction.tcodConsole.width // 2 - 1, src.interaction.tcodConsole.height // 2 - 1)
     src.interaction.tcodConsole.rgb[playerpos[0], playerpos[1]]["ch"] = ord("@")
     p = {}
     max_dist = -99999
@@ -120,7 +120,7 @@ def Death(extraParam):
 
             if (isinstance(event, tcod.event.KeyDown) and event.sym == tcod.event.KeySym.RETURN) or runStar:
                 new_console = tcod.console.Console(src.interaction.tcodConsole.width,src.interaction.tcodConsole.height,src.interaction.tcodConsole._order)
-                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console,19, 6, False)
+                src.interaction.render(src.gamestate.gamestate.mainChar).printTcod(new_console, 34, 6, False)
                 src.helpers.draw_frame_text(new_console, width, height, text, x, y)
                 target_console = new_console.rgb
                 total_frames = 5

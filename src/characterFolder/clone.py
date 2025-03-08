@@ -35,4 +35,13 @@ class Clone(src.characters.Character):
 
         self.charType = "Clone"
 
+    def die(self, reason=None, addCorpse=True, killer=None):
+        if not addCorpse:
+            super().die(reason=reason, addCorpse=addCorpse, killer=killer)
+            return
+
+        self.container.addItem(src.items.itemMap["Implant"](), self.getPosition())
+        super().die(reason=reason, addCorpse=addCorpse, killer=killer)
+
+
 src.characters.add_character(Clone)

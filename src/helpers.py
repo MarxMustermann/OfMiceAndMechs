@@ -2,6 +2,7 @@ import math
 
 import tcod
 
+import config
 import src
 
 
@@ -64,3 +65,24 @@ def fade_between_consoles_rgb(current, target, t):
 
 def distance_between_points(a, b):
     return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+
+def getRandomName(seed1=0, seed2=None):
+    """
+    generates a random name
+
+    Parameters:
+        seed1: rng seed
+        seed2: rng seed
+
+    Returns:
+        the generated name
+    """
+
+    if seed2 is None:
+        seed2 = seed1 + (seed1 // 5)
+
+    firstName = config.names.characterFirstNames[seed1 % len(config.names.characterFirstNames)]
+    lastName = config.names.characterLastNames[seed2 % len(config.names.characterLastNames)]
+
+    return f"{firstName} {lastName}"

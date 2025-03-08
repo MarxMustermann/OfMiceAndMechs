@@ -1,4 +1,5 @@
 import src
+from src.helpers import getRandomName
 
 
 class CorpseAnimator(src.items.Item):
@@ -122,37 +123,6 @@ Activate a filled corpse animator to spawn a ghoul
 
         # emtpy growth tank
         self.filled = False
-
-        #bad code: should be somewhere else
-        #bad code: redundant code
-        def getRandomName(seed1=0, seed2=None):
-            """
-            generates a random name
-
-            Parameters:
-                seed1: rng seed
-                seed2: rng seed
-
-            Returns:
-                the generated name
-            """
-
-            if seed2 is None:
-                seed2 = seed1 + (seed1 // 5)
-
-            """
-            firstName = config.names.characterFirstNames[
-                seed1 % len(config.names.characterFirstNames)
-            ]
-            lastName = config.names.characterLastNames[
-                seed2 % len(config.names.characterLastNames)
-            ]
-
-            name = "%s %s"%(firstName,lastName,)
-            """
-            name = "worker"
-
-            return name
 
         # add character
         if not character:

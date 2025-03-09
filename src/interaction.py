@@ -4603,6 +4603,8 @@ def showMainMenu(args=None):
     src.gamestate.gamestate.mainChar = src.characters.Character()
 
     terrain = src.terrains.Nothingness()
+    terrain.xPosition = 0
+    terrain.yPosition = 0
     mainChar = src.gamestate.gamestate.mainChar
 
     item = src.items.itemMap["ArchitectArtwork"]()
@@ -4616,15 +4618,15 @@ def showMainMenu(args=None):
     src.gamestate.gamestate.mainChar.faction = "city test"
 
     mainRoom = architect.doAddRoom(
-                        {
-                            "coordinate": (7,7),
-                            "roomType": "EmptyRoom",
-                            "doors": "0,6 6,0 12,6 6,12",
-                            "offset": [1,1],
-                            "size": [13, 13],
-                        },
-                        None,
-                  )
+        {
+            "coordinate": (10, 7),
+            "roomType": "EmptyRoom",
+            "doors": "0,6 6,0 12,6 6,12",
+            "offset": [1, 1],
+            "size": [13, 13],
+        },
+        None,
+    )
     mainRoom.storageRooms = []
 
     cityBuilder = src.items.itemMap["CityBuilder2"]()
@@ -4718,6 +4720,17 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
                 scrap = src.items.itemMap["Scrap"](amount=random.randint(1,13))
                 terrain.addItem(scrap,(xPos,yPos,0))
+
+            monsterType = random.choice(["Golem", "ShieldBug"])
+            pos = (random.randint(1, 11), random.randint(1, 11), 0)
+            golem = src.characters.characterMap[monsterType]()
+            golem.godMode = True
+            quest = src.quests.questMap["SecureTile"](toSecure=(x, y), wandering=True)
+            quest.autoSolve = True
+            quest.assignToCharacter(golem)
+            quest.activate()
+            golem.quests.append(quest)
+            terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
 
     lastStep = time.time()
     submenu = None
@@ -4875,7 +4888,8 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
             for room in terrain.rooms:
                 charList.extend(room.characters)
 
-            removeList = []
+            for character in charList:
+                character.timeTaken -= 1
             for character in charList:
                 advanceChar(character)
 
@@ -4884,7 +4898,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(50,126))),(0,0))
 
-        offsetX = 51
+        offsetX = int(tcodConsole.width / 2) - 25
         offsetY = 10
 
         printUrwidToTcod("|",(offsetX,offsetY))

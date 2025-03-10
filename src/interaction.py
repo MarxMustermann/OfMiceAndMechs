@@ -5251,6 +5251,8 @@ def showIntro():
     room = None
     skip = False
     while 1:
+        c_offset = int(tcodConsole.width / 2 - 65)
+
         if not skip:
             tcodConsole.clear()
 
@@ -5264,8 +5266,8 @@ You """+"."*stageState["substep"]+"""
 
 
 """
-                printUrwidToTcod(text,(60,24))
-                printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(63,27))
+                printUrwidToTcod(text, (60 + c_offset, 24))
+                printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 1 or skip:
@@ -5360,13 +5362,19 @@ You """+"."*stageState["substep"]+"""
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[6+mapStep][6+mapStep] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
                 if stageState["substep"] < 4:
-                    printUrwidToTcod(roomRender,(51,21))
+                    printUrwidToTcod(roomRender, (51 + c_offset, 21))
                 else:
-                    printUrwidToTcod(terrainRender,(51-2*mapStep,21-mapStep))
+                    printUrwidToTcod(terrainRender, (51 - 2 * mapStep + +c_offset, 21 - mapStep))
                 if stageState["substep"] < 5:
-                    printUrwidToTcod(text,(47-min(9,stageState["animationStep"]//2),19-min(stageState["animationStep"],17)))
+                    printUrwidToTcod(
+                        text,
+                        (
+                            47 - min(9, stageState["animationStep"] // 2) + c_offset,
+                            19 - min(stageState["animationStep"], 17),
+                        ),
+                    )
                 else:
-                    printUrwidToTcod(text,(38,2))
+                    printUrwidToTcod(text, (38 + c_offset, 2))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:
@@ -5652,8 +5660,8 @@ You """+"."*stageState["substep"]+"""
                 terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-                printUrwidToTcod(text,(38,2))
-                printUrwidToTcod(terrainRender,(19,5))
+                printUrwidToTcod(text, (38 + c_offset, 2))
+                printUrwidToTcod(terrainRender, (19 + c_offset, 5))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["walkingSpaces"] and stageState["subStep"] > 1:
@@ -5745,9 +5753,9 @@ You """+"."*stageState["substep"]+"""
                 terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
                 terrainRender[22][22] = (src.interaction.urwid.AttrSpec("#ff2", "black"), "@ ")
-                printUrwidToTcod(text1,(38,2))
-                printUrwidToTcod(text2,(42,3))
-                printUrwidToTcod(terrainRender,(19,5))
+                printUrwidToTcod(text1, (38 + c_offset, 2))
+                printUrwidToTcod(text2, (42 + c_offset, 3))
+                printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
@@ -5808,15 +5816,15 @@ You """+"."*stageState["substep"]+"""
 
             terrainRender = terrain.render(coordinateOffset=(15*6,15*6),size=(44,44))
             terrainRender = fixRoomRender(terrainRender)
-            printUrwidToTcod(text1,(38,2))
-            printUrwidToTcod(text2,(42,3))
-            printUrwidToTcod(terrainRender,(19,5))
+            printUrwidToTcod(text1, (38 + c_offset, 2))
+            printUrwidToTcod(text2, (42 + c_offset, 3))
+            printUrwidToTcod(terrainRender, (19 + c_offset, 5))
 
             if src.gamestate.gamestate.tick > 10400:
                 if stageState["endless"]:
-                    printUrwidToTcod("press space to stop watching",(47,4))
+                    printUrwidToTcod("press space to stop watching", (47 + c_offset, 4))
                 else:
-                    printUrwidToTcod("press space to continue watching",(46,4))
+                    printUrwidToTcod("press space to continue watching", (46 + c_offset, 4))
             tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] < 1 and time.time()-stageState["lastChange"] > 0:
@@ -5856,9 +5864,9 @@ You """+"."*stageState["substep"]+"""
                 if not stageState["substep"] > 16:
                     terrainRender = terrain.render(coordinateOffset=(15*6+offset,15*6+offset),size=(44-2*offset,44-2*offset))
                     terrainRender = fixRoomRender(terrainRender)
-                    printUrwidToTcod(terrainRender,(19+2*offset,5+offset))
-                printUrwidToTcod(text1,(38,2+offset))
-                printUrwidToTcod(text2,(42,3+offset))
+                    printUrwidToTcod(terrainRender, (19 + 2 * offset + c_offset, 5 + offset))
+                printUrwidToTcod(text1, (38 + c_offset, 2 + offset))
+                printUrwidToTcod(text2, (42 + c_offset, 3 + offset))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if time.time()-stageState["lastChange"] > 0.3:
@@ -5886,11 +5894,11 @@ FOLLOW YOUR ORDERS
 """
 
             if stageState["substep"] > 0 and stageState["substep"] < 5:
-                printUrwidToTcod(text1,(27,19))
+                printUrwidToTcod(text1, (27 + c_offset, 19))
             if stageState["substep"] > 2 and stageState["substep"] < 5:
-                printUrwidToTcod(text2,(44,23))
+                printUrwidToTcod(text2, (44 + c_offset, 23))
             if stageState["substep"] > 3:
-                printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[:stageState["animationStep"]],(55,25))
+                printUrwidToTcod(src.urwidSpecials.makeRusty(text3)[: stageState["animationStep"]], (55 + c_offset, 25))
             tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] == 4 and stageState["animationStep"] < len(text3):

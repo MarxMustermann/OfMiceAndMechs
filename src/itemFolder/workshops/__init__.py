@@ -8,3 +8,4 @@ import src.itemFolder.workshops.alchemyTable
 import src.itemFolder.workshops.swordSharpener
 import src.itemFolder.workshops.armorReinforcer
 import src.itemFolder.workshops.implantresearchcenter
+import src.itemFolder.workshops.memoryReader

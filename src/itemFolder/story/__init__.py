@@ -13,3 +13,4 @@ import src.itemFolder.story.integrator
 import src.itemFolder.story.promoter
 import src.itemFolder.story.communicator
 import src.itemFolder.story.implantManipulator
+import src.itemFolder.story.memoryFragment

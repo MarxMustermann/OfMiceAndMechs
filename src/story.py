@@ -2870,7 +2870,7 @@ but they are likely to explode when disturbed.
                     currentTerrain.addCharacter(golem, pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15)
 
                 for i in range(random.randint(1,3)):
-                    loot_types = ["Flask","GooFlask","Scrap"]
+                    loot_types = ["Flask", "GooFlask", "Scrap", "Scrap", "MemoryFragment"]
                     item = src.items.itemMap[random.choice(loot_types)]()
                     currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
             rand_pos = (random.randint(3,11),random.randint(3,11))

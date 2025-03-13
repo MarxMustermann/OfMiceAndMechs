@@ -5251,7 +5251,7 @@ def showIntro():
     room = None
     skip = False
     while 1:
-        c_offset = int(tcodConsole.width / 2 - 65)
+        c_offset = int(tcodConsole.width / 2 - 64)
 
         if not skip:
             tcodConsole.clear()
@@ -5266,7 +5266,7 @@ You """+"."*stageState["substep"]+"""
 
 
 """
-                printUrwidToTcod(text, (60 + c_offset, 24))
+                printUrwidToTcod(text, (64 + c_offset - int(len(text) / 2), 24))
                 printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (63 + c_offset, 27))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
@@ -5369,12 +5369,12 @@ You """+"."*stageState["substep"]+"""
                     printUrwidToTcod(
                         text,
                         (
-                            47 - min(9, stageState["animationStep"] // 2) + c_offset,
+                            47 + c_offset - int(len(text) / 2),
                             19 - min(stageState["animationStep"], 17),
                         ),
                     )
                 else:
-                    printUrwidToTcod(text, (38 + c_offset, 2))
+                    printUrwidToTcod(text, (40 + c_offset - int(len(text) / 2), 2))
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
 
             if stageState["substep"] == 4 and (time.time()-stageState["lastChange"] > 0.2 or skip) and stageState["animationStep"] < 17:

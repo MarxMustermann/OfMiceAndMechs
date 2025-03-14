@@ -6519,6 +6519,7 @@ press enter to continue
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
+            c_offset -= 2
             text = """
 You."""
             if subStep > 0:
@@ -6538,7 +6539,7 @@ try to remember how you got here ..."""
                     src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text)
                     addedText = True
 
-            printUrwidToTcod(text, (133 + c_offset, 6))
+            printUrwidToTcod(text, (131 + c_offset, 22))
             if subStep == 0:
                 text = """
 suggested action:
@@ -6566,7 +6567,7 @@ suggested action:
 press enter
 to remember"""
 
-            printUrwidToTcod(text, (2 + c_offset, 19))
+            printUrwidToTcod(text, (-28 + c_offset, 19))
             if subStep == 1:
                 wall = src.items.itemMap["Wall"]()
                 totalOffsetX = 56+26-offset[0]*2
@@ -6600,7 +6601,7 @@ to remember"""
 
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)
-                printUrwidToTcod(miniMapChars, (4 + c_offset, 2))
+                printUrwidToTcod(miniMapChars, (c_offset - 12, 2))
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
             printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (76 + 6 + c_offset, 22 + 6))

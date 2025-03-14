@@ -36,7 +36,7 @@ urwid = None
 fixedTicks = False
 speed = None
 libtcodpy = None
-noFlicker = True
+noFlicker = False
 
 
 
@@ -6250,10 +6250,8 @@ You know that something is wrong within your implant.     \n\
 
 It eats your mind and           \n\
 starts to burn your flesh.                                                \n\
-"""]
-            if not noFlicker and not subStep < len(textBase)-1:
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
-                time.sleep(0.01)
+""",
+            ]
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
@@ -6280,8 +6278,6 @@ starts to burn your flesh.                                                \n\
                     (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
                 )
 
-            if not noFlicker:
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.01)
             text = """
                                                                                    \n\
@@ -6306,8 +6302,6 @@ starts to burn your flesh.                                                \n\
                                                                                    \n\
 """
             printUrwidToTcod(text, (38 + c_offset, 13))
-            if not noFlicker:
-                tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.02)
             textBase = """
 The pain grows and grows and grows and grows and grows and grows and
@@ -6567,7 +6561,7 @@ suggested action:
 press enter
 to remember"""
 
-            printUrwidToTcod(text, (-28 + c_offset, 19))
+            printUrwidToTcod(text, (2, 19))
             if subStep == 1:
                 wall = src.items.itemMap["Wall"]()
                 totalOffsetX = 56+26-offset[0]*2

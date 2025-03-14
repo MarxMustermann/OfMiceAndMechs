@@ -36,7 +36,7 @@ urwid = None
 fixedTicks = False
 speed = None
 libtcodpy = None
-noFlicker = False
+noFlicker = True
 
 
 
@@ -6213,7 +6213,7 @@ def showRunIntro():
     painPositions = []
     while 1:
         tcodConsole.clear()
-
+        c_offset = int(tcodConsole.width / 2 - 81)
         if stage == 0:
             if stageState is None:
                 stageState = {"substep":1,"lastChange":time.time()}
@@ -6238,7 +6238,7 @@ def showRunIntro():
   |                                                                         |
 
 """
-            printUrwidToTcod(text,(40,14))
+            printUrwidToTcod(text, (40 + c_offset, 14))
             textBase = ["""
 You see """,".",".",".",""" nothing
 ""","You hear ",".",".",".",""" nothing
@@ -6257,7 +6257,7 @@ starts to burn your flesh.                                                \n\
             text = "".join(textBase[0:subStep])
             if not subStep < len(textBase)-1:
                 text += textBase[-1][0:subStep2]
-            printUrwidToTcod(text,(45,17))
+            printUrwidToTcod(text, (45 + c_offset, 17))
             tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             if subStep < len(textBase)-1:
                 time.sleep(0.5)
@@ -6276,7 +6276,9 @@ starts to burn your flesh.                                                \n\
             for painPos in painPositions:
                 painChar = random.choice(painChars)
                 painColor = random.choice(painColors)
-                printUrwidToTcod((src.interaction.urwid.AttrSpec(painColor, "black"), painChar),painPos)
+                printUrwidToTcod(
+                    (src.interaction.urwid.AttrSpec(painColor, "black"), painChar), (painPos[0] + c_offset, painPos[1])
+                )
 
             if not noFlicker:
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
@@ -6303,7 +6305,7 @@ starts to burn your flesh.                                                \n\
     |                                                                         |    \n\
                                                                                    \n\
 """
-            printUrwidToTcod(text,(38,13))
+            printUrwidToTcod(text, (38 + c_offset, 13))
             if not noFlicker:
                 tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.02)
@@ -6315,7 +6317,7 @@ grows and grows and grows and grows and grows and grows and grows and
 grows and grows and grows and grows
 """.split(" ")
             text = " ".join(textBase[0:subStep])
-            printUrwidToTcod(text,(45,17))
+            printUrwidToTcod(text, (45 + c_offset, 17))
             tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             for _i in range(100):
                 pos = (random.randint(1,199),random.randint(1,50))
@@ -6457,9 +6459,9 @@ grows and grows and grows and grows
             x = 0
             y = 0
             for _i in range(150):
-                printUrwidToTcod((attrSpec,part1),(x,y))
-                printUrwidToTcod((attrSpec3,part2),(x+part1len,y))
-                printUrwidToTcod((attrSpec2,part3),(x+part1len+1,y))
+                printUrwidToTcod((attrSpec, part1), (x + c_offset, y))
+                printUrwidToTcod((attrSpec3, part2), (x + part1len + c_offset, y))
+                printUrwidToTcod((attrSpec2, part3), (x + part1len + 1 + c_offset, y))
                 offset = 200 - x
                 x += width
                 if x > 200:
@@ -6487,7 +6489,7 @@ grows and grows and grows and grows
       |                                                                         |      \n\
                                                                                        \n\
 """
-            printUrwidToTcod(text,(36,13))
+            printUrwidToTcod(text, (36 + c_offset, 13))
             text = ""
             text += """
 until something breaks."""
@@ -6512,11 +6514,12 @@ and you hear that familiar voice again."""
 suggested action:
 press enter to continue
 """
-            printUrwidToTcod(text,(45,17))
+            printUrwidToTcod(text, (45 + c_offset, 17))
             tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.2)
             subStep += 1
         elif stage ==  3:
+            c_offset -= 2
             text = """
 You."""
             if subStep > 0:
@@ -6536,7 +6539,7 @@ try to remember how you got here ..."""
                     src.gamestate.gamestate.mainChar.addMessage("----------\n\n"+text)
                     addedText = True
 
-            printUrwidToTcod(text,(133,6))
+            printUrwidToTcod(text, (131 + c_offset, 22))
             if subStep == 0:
                 text = """
 suggested action:
@@ -6564,7 +6567,7 @@ suggested action:
 press enter
 to remember"""
 
-            printUrwidToTcod(text,(2,19))
+            printUrwidToTcod(text, (-28 + c_offset, 19))
             if subStep == 1:
                 wall = src.items.itemMap["Wall"]()
                 totalOffsetX = 56+26-offset[0]*2
@@ -6572,31 +6575,36 @@ to remember"""
                 for i in range(13):
                     if i == 6:
                         continue
-                    printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY))
-                    printUrwidToTcod(wall.render(),(totalOffsetX,totalOffsetY+i))
-                    printUrwidToTcod(wall.render(),(totalOffsetX+2*i,totalOffsetY+12))
-                    printUrwidToTcod(wall.render(),(totalOffsetX+12*2,totalOffsetY+i))
+                    printUrwidToTcod(wall.render(), (totalOffsetX + 2 * i + c_offset, totalOffsetY))
+                    printUrwidToTcod(wall.render(), (totalOffsetX + c_offset, totalOffsetY + i))
+                    printUrwidToTcod(wall.render(), (totalOffsetX + 2 * i + c_offset, totalOffsetY + 12))
+                    printUrwidToTcod(wall.render(), (totalOffsetX + 12 * 2 + c_offset, totalOffsetY + i))
             if subStep == 2:
                 room = src.rooms.EmptyRoom(None,None,None,None)
                 room.reconfigure(13, 13, doorPos=[(12,6),(6,12),(0,6),(6,0)])
                 room.hidden = False
-                printUrwidToTcod(fixRoomRender(room.render()),(56+26-offset[0]*2,15+13-offset[1]))
+                printUrwidToTcod(
+                    fixRoomRender(room.render()), (56 + 26 - offset[0] * 2 + c_offset, 15 + 13 - offset[1])
+                )
             if subStep == 3:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
-                printUrwidToTcod(fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),(56+26-offset[0]*2,15+13-offset[1]))
+                printUrwidToTcod(
+                    fixRoomRender(src.gamestate.gamestate.mainChar.container.render()),
+                    (56 + 26 - offset[0] * 2 + c_offset, 15 + 13 - offset[1]),
+                )
             if subStep == 4:
                 offset = src.gamestate.gamestate.mainChar.getPosition()
                 roomPos = src.gamestate.gamestate.mainChar.container.getPosition()
                 terrainRender = src.gamestate.gamestate.mainChar.getTerrain().render(coordinateOffset=(15*(roomPos[1]-1)-6+offset[1],15*(roomPos[0]-1)-6+offset[0]),size=(44,44))
                 terrainRender = fixRoomRender(terrainRender)
-                printUrwidToTcod(terrainRender,(38,6))
+                printUrwidToTcod(terrainRender, (38 + c_offset, 6))
 
                 miniMapChars = src.gamestate.gamestate.mainChar.getTerrain().renderTiles()
                 miniMapChars = fixRoomRender(miniMapChars)
-                printUrwidToTcod(miniMapChars,(4,2))
+                printUrwidToTcod(miniMapChars, (c_offset - 12, 2))
 
             offset = src.gamestate.gamestate.mainChar.getPosition()
-            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "),(76+6,22+6))
+            printUrwidToTcod((src.interaction.urwid.AttrSpec("#ff2", "black"), "@ "), (76 + 6 + c_offset, 22 + 6))
             tcodContext.present(tcodConsole,integer_scaling=True,keep_aspect=True)
             time.sleep(0.1)
         else:

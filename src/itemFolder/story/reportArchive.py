@@ -22,9 +22,16 @@ class ReportArchive(src.items.Item):
 
         self.fragments_unlocked = 0
 
-        self.reports = [("example report 1","this is example message 1"), ("example report 2","this is example message 2"), ("example report 3","this is example message 3")]
+        self.reports = [
+                ("Survey complete","This terrain (x,y,z) is pretty unremarkable, but has the ressource we need.\nSome scrap to proccess, enough moisture to grow mold.\nEven a small forrest to harvest maggots from is here!\n\nThat is a nice change from the terrains (x,y,z),(x,y,z),(x,y,z)\nthose were so dry you couldn't grow a single mold bloom on it."),
+                ("Base established","The base has been established, technically.\nThe colony mech has arrived and was placed.\nThere is little space available and production capacity is severly limited.\n\nThat half of the crew were killed by Spiders doesn't help either,\nbut they will continue to be useful as ghuls.\nAll spider eggs will have to be destroyed or they will be a long term problem.\n\nAt least it is not as bad as on (x,y,z).\nThe Spiders there had a posion strong enough to kill a clone with a single bite!"),
+                ("Base extension complete","The Base now has several additional rooms to allow for more storage and production.\n\nWe were ordered to experiment with the room layouts.\nSo we will use the wall production FloorPlan from (x,y,z)\nand the storage room layout like the one we have seen on terrain (x,y,z)"), 
+                ("Remote bases established","To get some ressources we are missing here remote bases were established.\n\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n\nI hope they will stay active even without additional protection."),
+                ("Expedition started","The base leader and the leading officers are starting an expedition to (x,y,z) soon.\nWe are ordered to stay on standby until they return."),
+            ]
 
     def showReports(self,character):
+
         if self.fragments_unlocked < 1:
             submenue = src.menuFolder.textMenu.TextMenu(
                 "== database error ==\n\n\nThe database cannot be accessed.\n\nCollect MemoryFragments to repair the database and make it accessible again."

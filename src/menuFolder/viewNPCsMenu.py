@@ -161,7 +161,19 @@ class ViewNPCsMenu(src.subMenu.SubMenu):
         else:
             self.persistentText.append("\narmor: None")
         self.persistentText.append("\nstaff: %s"%(selectedCharacter.isStaff))
-        self.persistentText.append("\nduties: {}".format(", ".join(selectedCharacter.duties)))
+        dutyString = ""
+        dutyStringPart = ""
+        for duty in selectedCharacter.duties:
+            if len(dutyStringPart) > 50:
+                dutyString += dutyStringPart+"\n   ...  "
+                dutyStringPart = ""
+            if len(dutyStringPart) > 0:
+                dutyStringPart += ", "
+
+            dutyStringPart += duty
+        dutyString += dutyStringPart
+
+        self.persistentText.append("\nduties: {}".format(dutyString))
         quest = selectedCharacter.getActiveQuest()
         if quest:
             self.persistentText.append(f"\nactive quest: {quest.description}")

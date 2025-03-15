@@ -154,6 +154,8 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         spawn a new npc
         """
 
+        """
+        tmpdisabled implant requirement
         implants = self.getImplants(character)
 
         if not len(implants):
@@ -166,6 +168,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
             character.inventory.remove(implant)
         else:
             self.container.removeItem(implant)
+        """
 
         # emtpy growth tank
         self.filled = False

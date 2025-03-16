@@ -1088,8 +1088,13 @@ class MainGame(BasicPhase):
             self.playerBasePosition = self.get_free_position("teleportation hub")
             #self.setUpPlayerBase(self.playerBasePosition)
 
-        for _i in range(1,20):
+        for _i in range(1, 10):
             self.get_free_position("nothingness")
+
+        for _i in range(1, 10):
+            t_pos = self.get_free_position("remote base")
+            currentTerrain = src.gamestate.gamestate.terrainMap[t_pos[1]][t_pos[0]]
+            src.magic.spawnControlRoom(currentTerrain, (7, 7))
 
         for _i in range(1,40):
             self.setUpShrine(self.get_free_position("shrine"))

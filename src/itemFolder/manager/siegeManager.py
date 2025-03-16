@@ -43,33 +43,38 @@ class SiegeManager(src.items.Item):
     def scheduleLoop(self,params):
         character = params["character"]
 
-        try:
-            self.schedule
-        except:
-            self.schedule = {}
-
+        # draw header
         text = "schedules:\n\n"
         text+= "0" + " " * 14 + "tick"+ " " * 12 + "3375" + "\n"
         text+= "-" * 35 + "\n"
-        items = {}
-        for (tick,sch) in self.schedule.items():
-            items[int((tick/3375)*35)] = sch
+        actions_by_index = {}
+        indices_by_arrow = {}
+        counter = 1
+        for (tick,action) in self.schedule.items():
+            
+            indices_by_arrow[int((tick/3375)*35)] = counter
+            actions_by_index[counter] = action
 
+            counter += 1
+
+        # draw arrows
         for i in range(35):
-            if i in items:
+            if i in indices_by_arrow:
                 text+= "^"
             else:
                 text+= " "
         text+= "\n"
         for i in range(35):
-            if i in items:
+            if i in indices_by_arrow:
                 text+= "|"
             else:
                 text+= " "
         text+= "\n"
-        num = 1
+
+        # draw numbers
         for i in range(35):
-            if i in items:
+            if i in indices_by_arrow:
+                num = indices_by_arrow[i]
                 if num > 9:
                     text = text[:-1] + str(num)
                 else:
@@ -86,7 +91,6 @@ class SiegeManager(src.items.Item):
             text += str(i+1) + "- tick: "+str(tick)+" - "+str(schedule["type"])+"\n"
         text += "\n"
 
-        print(params)
         if not "action" in params:
             options = []
             index = 0

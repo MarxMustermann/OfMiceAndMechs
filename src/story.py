@@ -1108,6 +1108,7 @@ class MainGame(BasicPhase):
 
         # prepare state to switch between good and bad ending
         src.gamestate.gamestate.stern["fixedImplant"] = False
+        self.setUpLab(self.get_free_position("lab"))
             
         if self.preselection == "Story":
             self.dungeonCrawlInfos.append(self.createStoryStart())
@@ -2385,6 +2386,33 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
             rand_pos = (random.randint(3,11),random.randint(3,11))
             make_room = random.random() < 0.4
+
+    def setUpLab(self,pos):
+        # get basic info
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "lab"
+
+        # set up helper item to spawn stuff
+        # bad code: spawning stuff should be in a "magic" class or similar
+        item = src.items.itemMap["ArchitectArtwork"]()
+        architect = item
+        item.godMode = True
+        currentTerrain.addItem(item,(1,1,0))
+
+        # create the basic room
+        room = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 12,6 6,12",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        mana_crystal = src.items.itemMap["ImplantManipulator"]()
+        room.addItem(mana_crystal,(6,6,0))
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod

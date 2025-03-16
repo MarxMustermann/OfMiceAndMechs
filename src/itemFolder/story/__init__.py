@@ -14,3 +14,4 @@ import src.itemFolder.story.promoter
 import src.itemFolder.story.communicator
 import src.itemFolder.story.implantManipulator
 import src.itemFolder.story.memoryFragment
+import src.itemFolder.story.reportArchive

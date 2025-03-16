@@ -4898,7 +4898,7 @@ MM     MM  EEEEEE  CCCCCC  HH   HH  SSSSSSS
 
         printUrwidToTcod(fixRoomRender(terrain.render(coordinateOffset=(15*5,15*5),size=(50,126))),(0,0))
 
-        offsetX = int(tcodConsole.width / 2) - 25
+        offsetX = int(tcodConsole.width / 2) - 23
         offsetY = 10
 
         printUrwidToTcod("|",(offsetX,offsetY))

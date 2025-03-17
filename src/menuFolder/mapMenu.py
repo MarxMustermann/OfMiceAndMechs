@@ -7,7 +7,16 @@ class MapMenu(src.subMenu.SubMenu):
 
     type = "MapMenu"
 
-    def __init__(self, mapContent=None,functionMap=None, extraText = "", cursor = None):
+    def __init__(
+        self,
+        mapContent=None,
+        functionMap=None,
+        extraText="",
+        cursor=None,
+        applyKey="coordinate",
+        gridSize=15,
+        limits=(1, 13),
+    ):
         """
         initialise internal state
 
@@ -19,10 +28,13 @@ class MapMenu(src.subMenu.SubMenu):
         self.mapContent = mapContent
         self.functionMap = functionMap
         self.extraText = extraText
+        self.applyKey = applyKey
+        self.gridSize = gridSize
+        self.limits = limits
         if cursor:
             self.cursor = (cursor[0],cursor[1],)
         else:
-            self.cursor = (7,7)
+            self.cursor = (int(self.gridSize / 2), int(self.gridSize / 2))
 
     def handleKey(self, key, noRender=False, character = None):
         """
@@ -39,16 +51,16 @@ class MapMenu(src.subMenu.SubMenu):
         mappedFunctions = self.functionMap.get(self.cursor, {})
         if key in mappedFunctions:
             closeMenu = True
-            self.callIndirect(mappedFunctions[key]["function"],{"coordinate":self.cursor})
+            self.callIndirect(mappedFunctions[key]["function"], {self.applyKey: self.cursor})
 
         # exit the submenu
-        if key in ("w","up")  and self.cursor[1] > 1:
+        if key in ("w", "up") and self.cursor[1] > self.limits[0]:
             self.cursor = (self.cursor[0],self.cursor[1]-1)
-        if key in ("s","down") and self.cursor[1] < 13:
+        if key in ("s", "down") and self.cursor[1] < self.limits[1]:
             self.cursor = (self.cursor[0],self.cursor[1]+1)
-        if key in ("a","left") and self.cursor[0] > 1:
+        if key in ("a", "left") and self.cursor[0] > self.limits[1]:
             self.cursor = (self.cursor[0]-1,self.cursor[1])
-        if key in ("d","right") and self.cursor[0] < 13:
+        if key in ("d", "right") and self.cursor[0] < self.limits[1]:
             self.cursor = (self.cursor[0]+1,self.cursor[1])
 
         if closeMenu or key in (
@@ -90,9 +102,9 @@ class MapMenu(src.subMenu.SubMenu):
 
         # show rendered map
         mapText = []
-        for y in range(15):
+        for y in range(self.gridSize):
             mapText.append([])
-            for x in range(15):
+            for x in range(self.gridSize):
                 if (x,y) == self.cursor:
                     mapText[-1].append("██")
                 else:

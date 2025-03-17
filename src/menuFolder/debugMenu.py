@@ -14,6 +14,7 @@ class DebugMenu(src.subMenu.SubMenu):
 
     debug_options = [
         "Teleport",
+        "Teleport Terrain",
         "Add Mana",
         "Execute Code",
         "Test Crash",
@@ -111,6 +112,44 @@ class DebugMenu(src.subMenu.SubMenu):
                         )
                         character.macroState["submenue"] = submenue
                         return True
+                case "Teleport Terrain":
+                    if current_change:
+                        mapContent = []
+                        functionMap = {}
+                        for x in range(15):
+                            mapContent.append([])
+                            for y in range(15):
+                                tag: str = src.gamestate.gamestate.terrainMap[x][y].tag
+                                if tag:
+                                    if tag.endswith("base"):
+                                        displayChar = "RB"
+                                    else:
+                                        displayChar = "  "
+                                else:
+                                    displayChar = "  "
+                                mapContent[x].append(displayChar)
+                        for x in range(15):
+                            for y in range(15):
+                                mapContent[x].append(displayChar)
+                                functionMap[(y, x)] = {
+                                    "j": {
+                                        "function": {
+                                            "container": self,
+                                            "method": "action",
+                                            "params": {"character": character},
+                                        },
+                                        "description": "move to it",
+                                    }
+                                }
+
+                        submenue = src.menuFolder.mapMenu.MapMenu(
+                            mapContent=mapContent,
+                            functionMap=functionMap,
+                            cursor=character.getTerrain().getPosition(),
+                            applyKey="big_coordinate",
+                        )
+                        character.macroState["submenue"] = submenue
+                        return True
                 case "Get Item":
                     if current_change:
                         submenue = src.menuFolder.inputMenu.InputMenu("Type item name to spawn", targetParamName="item")
@@ -167,3 +206,15 @@ class DebugMenu(src.subMenu.SubMenu):
                     return
 
             character.addMessage(f"item ({item_name}) not found")
+
+        if "big_coordinate" in params:
+            print(params["big_coordinate"])
+            x, y = params["big_coordinate"]
+            terrain = character.getTerrain()
+            character.container.removeCharacter(character)
+            terrain = src.gamestate.gamestate.terrainMap[y][x]
+            room = terrain.getRoomByPosition((7, 7))
+            if len(room):
+                room[0].addCharacter(character, 7, 7)
+            else:
+                terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)

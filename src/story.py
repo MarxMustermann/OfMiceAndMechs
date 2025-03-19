@@ -1112,7 +1112,11 @@ class MainGame(BasicPhase):
             c_faction = f"remote base {i}"
             src.magic.spawnSpawnRoom(currentTerrain, remove((base_tile[0], base_tile[1] + 1)), c_faction)
 
-            # TODO spawn manufacturing room
+            floorPlanNum = random.randint(1, 9)
+            src.magic.spawnRoomFromFloorPlan(
+                currentTerrain, remove((base_tile[0], base_tile[1] - 1)), f"scrapToMetalbars{floorPlanNum}.json"
+            )
+
             src.magic.spawnScrapField(currentTerrain, available_tiles.pop())
 
             if remote_base_npc.pop():

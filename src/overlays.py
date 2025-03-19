@@ -109,7 +109,7 @@ class NPCsOverlay:
                   character.yPosition < coordinateOffset[0] or character.yPosition > coordinateOffset[0]+size[0]):
                 continue
 
-            if "city" not in character.faction or character.charType not in ("Character","Ghoul","Clone",):
+            if character.charType not in ("Character","Ghoul","Clone",):
                 #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
                 if character.specialDisplay:
                     char = character.specialDisplay

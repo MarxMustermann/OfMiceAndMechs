@@ -119,7 +119,7 @@ Press d to move the cursor and show the subquests description.
 
             items = terrain.getItemByPosition((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0))
             if not items or items[-1].type != "RoomBuilder":
-                quest = src.quests.questMap["PlaceItem"](targetPosition=(7,7,0),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room",clearPath=True)
+                quest = src.quests.questMap["PlaceItem"](targetPosition=character.getHomeRoomCord(),targetPositionBig=self.targetPosition,itemType="RoomBuilder",reason="start building the room",clearPath=True)
                 return ([quest],None)
 
             wallPositions = [(1,1,0),(1,13,0),(13,1,0),(13,13,0)]
@@ -190,7 +190,7 @@ Press d to move the cursor and show the subquests description.
                 quest = src.quests.questMap["GoToTile"](targetPosition=self.targetPosition)
                 return ([quest], None)
 
-            roomBuilderPos = (7,7,0)
+            roomBuilderPos = character.getHomeRoomCord()
             if character.getDistance((15*self.targetPosition[0]+7,15*self.targetPosition[1]+7,0)) > 1:
                 quest = src.quests.questMap["GoToPosition"](targetPosition=roomBuilderPos,ignoreEndBlocked=True,reason="get next to the RoomBuilder")
                 return ([quest], None)
@@ -242,7 +242,7 @@ Press d to move the cursor and show the subquests description.
                         beUsefull.idleCounter = 0
                     return ([quest],None)
 
-        rooms = terrain.getRoomByPosition((7,7,0))
+        rooms = terrain.getRoomByPosition(character.getHomeRoomCord())
         if rooms:
             room = rooms[0]
             cityPlaner = room.getItemByType("CityPlaner")

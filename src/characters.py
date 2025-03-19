@@ -559,13 +559,16 @@ class Character:
 
         # get the current terrain
         # (bug: it should not just take the current terrain)
-        terrain = self.getTerrain()
+        terrain = src.gamestate.gamestate.terrainMap[self.registers["HOMETx"]][self.registers["HOMETy"]]
 
         # get the home room
         homeRoom = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))[0]
 
         # return the home room
         return homeRoom
+
+    def getHomeRoomCord(self):
+        return (self.registers["HOMEx"], self.registers["HOMEy"], 0)
 
     def getRoom(self):
         """

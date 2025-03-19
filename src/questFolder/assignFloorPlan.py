@@ -98,7 +98,7 @@ Set the floor plan: {self.floorPlanType}
 
         pos = character.getBigPosition()
 
-        if pos != (7, 7, 0):
+        if pos != character.getHomeRoomCord():
             quest = src.quests.questMap["GoHome"](description="go to command centre")
             return ([quest],None)
 
@@ -167,7 +167,7 @@ Set the floor plan: {self.floorPlanType}
     @staticmethod
     def generateDutyQuest(beUsefull,character,currentRoom, dryRun):
         terrain = character.getTerrain()
-        cityCore = terrain.getRoomByPosition((7,7,0))[0]
+        cityCore = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
 
         # do inventory of scrap fields
@@ -183,7 +183,7 @@ Set the floor plan: {self.floorPlanType}
             return (quests,None)
 
         if not cityPlaner:
-            quest = src.quests.questMap["PlaceItem"](targetPositionBig=(7,7,0),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="be able to plan city expansion")
+            quest = src.quests.questMap["PlaceItem"](targetPositionBig=character.getHomeRoomCord(),targetPosition=(4,1,0),itemType="CityPlaner",tryHard=True,boltDown=True,reason="be able to plan city expansion")
             return ([quest],None)
 
         numEmptyRooms = 0

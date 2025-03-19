@@ -75,7 +75,7 @@ Use a CityPlaner to do this.
             return (None,(["esc"],"exit submenu"))
 
         pos = character.getBigPosition()
-        if pos != (7, 7, 0):
+        if pos != character.getHomeRoomCord():
             quest = src.quests.questMap["GoHome"](description="go to command centre",reason="go to command centre")
             return ([quest],None)
 
@@ -113,7 +113,7 @@ Use a CityPlaner to do this.
             return None
 
         terrain = character.getTerrain()
-        room = terrain.getRoomByPosition((7,7,0))[0]
+        room = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
         cityPlaner = room.getItemsByType("CityPlaner")[0]
 
         if self.roomPosition in cityPlaner.plannedRooms:

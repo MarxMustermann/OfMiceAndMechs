@@ -493,9 +493,9 @@ Press d to move the cursor and show the subquests description.
                 character.timeTaken += self.idleCounter
                 return ([quest],None)
 
-        room = character.getTerrain().getRoomByPosition((7,7,0))[0]
+        room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
         if room != character.container:
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to meeting hall")
+            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),description="go to meeting hall")
             if not dryRun:
                 self.idleCounter += 1
             return ([quest],None)

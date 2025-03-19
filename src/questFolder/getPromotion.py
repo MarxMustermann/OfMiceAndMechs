@@ -90,7 +90,7 @@ Use the Promotor to do this.
             quest = src.quests.questMap["GoToPosition"](targetPosition=item.getPosition(),ignoreEndBlocked=True,description="go to promoter ")
             return  ([quest],None)
         
-        quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),description="go to command centre")
+        quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),description="go to command centre")
         return  ([quest],None)
 
 

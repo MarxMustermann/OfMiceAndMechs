@@ -58,7 +58,7 @@ class MapMenu(src.subMenu.SubMenu):
             self.cursor = (self.cursor[0],self.cursor[1]-1)
         if key in ("s", "down") and self.cursor[1] < self.limits[1]:
             self.cursor = (self.cursor[0],self.cursor[1]+1)
-        if key in ("a", "left") and self.cursor[0] > self.limits[1]:
+        if key in ("a", "left") and self.cursor[0] > self.limits[0]:
             self.cursor = (self.cursor[0]-1,self.cursor[1])
         if key in ("d", "right") and self.cursor[0] < self.limits[1]:
             self.cursor = (self.cursor[0]+1,self.cursor[1])

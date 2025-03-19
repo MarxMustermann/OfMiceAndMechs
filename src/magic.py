@@ -1,7 +1,62 @@
+import json
 import random
 
 import src
 
+
+def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
+    room = spawnRoom(terrain, "EmptyRoom", coordinate)
+    with open("data/floorPlans/" + floorplan) as fileHandle:
+        rawFloorplan = json.load(fileHandle)
+        room.floorPlan = getFloorPlanFromDict(rawFloorplan)
+    room.spawnPlaned()
+    room.spawnPlaned()
+
+
+def getFloorPlanFromDict(rawFloorplan):
+    converted = {}
+    if "buildSites" in rawFloorplan:
+        buildSites = []
+        for item in rawFloorplan["buildSites"]:
+            buildSites.append((tuple(item[0]), item[1], item[2]))
+        converted["buildSites"] = buildSites
+    if "inputSlots" in rawFloorplan:
+        inputSlots = []
+        for item in rawFloorplan["inputSlots"]:
+            inputSlots.append((tuple(item[0]), item[1], item[2]))
+        converted["inputSlots"] = inputSlots
+    if "outputSlots" in rawFloorplan:
+        outputSlots = []
+        for item in rawFloorplan["outputSlots"]:
+            outputSlots.append((tuple(item[0]), item[1], item[2]))
+        converted["outputSlots"] = outputSlots
+    if "storageSlots" in rawFloorplan:
+        outputSlots = []
+        for item in rawFloorplan["storageSlots"]:
+            outputSlots.append((tuple(item[0]), item[1], item[2]))
+        converted["storageSlots"] = outputSlots
+    if "walkingSpace" in rawFloorplan:
+        walkingSpace = []
+        for item in rawFloorplan["walkingSpace"]:
+            walkingSpace.append(tuple(item))
+        converted["walkingSpace"] = walkingSpace
+    return converted
+def spawnScrapField(terrain, coordinate):
+    bigX, bigY = coordinate
+    for x in range(1, 14):
+        for y in range(1, 14):
+            amount = random.randint(1, 10)
+            if x in (
+                1,
+                13,
+            ) or y in (
+                1,
+                13,
+            ):
+                amount = random.randint(8, 15)
+            scrap = src.items.itemMap["Scrap"](amount=amount)
+            terrain.addItem(scrap, (bigX * 15 + x, bigY * 15 + y, 0))
+    terrain.scrapFields.append((bigX, bigY, 0))
 
 def spawnTrapRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     trapRoom2 = spawnRoom(terrain, "EmptyRoom", coordinate, doors)

@@ -283,7 +283,7 @@ Draw a floor plan assigned to a room{reason}.
 
         if numFreeStorage < 10:
             cityPlaner = None
-            rooms = terrain.getRoomByPosition((7,7,0))
+            rooms = terrain.getRoomByPosition(character.getHomeRoomCord())
             if rooms:
                 room = rooms[0]
                 cityPlaner = room.getItemByType("CityPlaner")

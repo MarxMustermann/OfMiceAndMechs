@@ -220,7 +220,7 @@ class MachinePlacing(src.quests.MetaQuestSequence):
 
         # spawn city planer if there is none
         terrain = character.getTerrain()
-        cityCore = terrain.getRoomByPosition((7,7,0))[0]
+        cityCore = terrain.getRoomByPosition(character.getHomeRoomCord())[0]
         cityPlaner = cityCore.getItemByType("CityPlaner",needsBolted=True)
 
         """

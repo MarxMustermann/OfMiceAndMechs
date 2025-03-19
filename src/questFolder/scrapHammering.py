@@ -88,8 +88,8 @@ Hammer {self.amount} Scrap to MetalBars. {self.amountDone} done.
             else:
                 return (None,(".","undo selection"))
 
-        if character.getBigPosition() != (7, 7, 0):
-            quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to anvil")
+        if character.getBigPosition() != character.getHomeRoomCord():
+            quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),reason="go to anvil")
             return ([quest],None)
 
         anvils = []

@@ -95,7 +95,7 @@ If you don't find a {self.itemType} blueprint, research it.
                     while not validTargetPosition and counter < 10:
                         counter += 1
                         targetPosition = (random.randint(3,9),random.randint(3,9),0)
-                        cityPlanner = terrain.getRoomByPosition((7,7,0))[0].getItemByPosition((5,2,0))[0]
+                        cityPlanner = terrain.getRoomByPosition(character.getHomeRoomCord())[0].getItemByPosition((5,2,0))[0]
                         if cityPlanner.generalPurposeRooms:
                             roomPos = random.choice(cityPlanner.generalPurposeRooms)
                             room = terrain.getRoomByPosition(roomPos)[0]
@@ -199,8 +199,8 @@ If you don't find a {self.itemType} blueprint, research it.
                     quest = src.quests.questMap["ClearInventory"](returnToTile=False,reason="be able to pick up a machine to place")
                     return ([quest],None)
 
-                if character.getBigPosition() != (7, 7, 0):
-                    quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="go to the tile the Machine to pick up is on")
+                if character.getBigPosition() != character.getHomeRoomCord():
+                    quest = src.quests.questMap["GoToTile"](targetPosition=character.getHomeRoomCord(),reason="go to the tile the Machine to pick up is on")
                     return ([quest],None)
 
                 if character.getDistance(items[-1].getPosition()) > 1:

@@ -1091,10 +1091,100 @@ class MainGame(BasicPhase):
         for _i in range(1, 10):
             self.get_free_position("nothingness")
 
-        for _i in range(1, 10):
+        remote_base_npc = [True] * 9 + [False]
+        random.shuffle(remote_base_npc)
+        for i in range(1, 10):
             t_pos = self.get_free_position("remote base")
             currentTerrain = src.gamestate.gamestate.terrainMap[t_pos[1]][t_pos[0]]
-            src.magic.spawnControlRoom(currentTerrain, (7, 7))
+
+            available_tiles = [(x, y) for x in range(3, 12) for y in range(3, 12)]
+            random.shuffle(available_tiles)
+
+            def remove(x):
+                if x in available_tiles:
+                    available_tiles.remove(x)
+                return x
+
+            base_tile = available_tiles.pop()
+            controlRoom = src.magic.spawnControlRoom(currentTerrain, base_tile)
+            src.magic.spawnArenaRoom(currentTerrain, remove((base_tile[0] - 1, base_tile[1])), self.difficulty)
+
+            c_faction = f"remote base {i}"
+            src.magic.spawnSpawnRoom(currentTerrain, remove((base_tile[0], base_tile[1] + 1)), c_faction)
+
+            # TODO spawn manufacturing room
+            src.magic.spawnScrapField(currentTerrain, available_tiles.pop())
+
+            if remote_base_npc.pop():
+                for _ in range(random.randint(1, 2)):
+                    npc = src.characters.characterMap["Clone"]()
+                    npc.questsDone = [
+                        "NaiveMoveQuest",
+                        "MoveQuestMeta",
+                        "NaiveActivateQuest",
+                        "ActivateQuestMeta",
+                        "NaivePickupQuest",
+                        "PickupQuestMeta",
+                        "DrinkQuest",
+                        "CollectQuestMeta",
+                        "FireFurnaceMeta",
+                        "ExamineQuest",
+                        "NaiveDropQuest",
+                        "DropQuestMeta",
+                        "LeaveRoomQuest",
+                    ]
+
+                    npc.solvers = [
+                        "SurviveQuest",
+                        "Serve",
+                        "NaiveMoveQuest",
+                        "MoveQuestMeta",
+                        "NaiveActivateQuest",
+                        "ActivateQuestMeta",
+                        "NaivePickupQuest",
+                        "PickupQuestMeta",
+                        "DrinkQuest",
+                        "ExamineQuest",
+                        "FireFurnaceMeta",
+                        "CollectQuestMeta",
+                        "WaitQuest" "NaiveDropQuest",
+                        "NaiveDropQuest",
+                        "DropQuestMeta",
+                    ]
+
+                    npc.faction = c_faction
+                    controlRoom.addCharacter(npc, random.randint(1, 13), random.randint(1, 13))
+                    npc.flask = src.items.itemMap["GooFlask"]()
+                    npc.flask.uses = 100
+
+                    npc.duties = []
+                    npc.registers["HOMEx"] = base_tile[0]
+                    npc.registers["HOMEy"] = base_tile[1]
+                    npc.registers["HOMETx"] = currentTerrain.xPosition
+                    npc.registers["HOMETy"] = currentTerrain.yPosition
+
+                    npc.personality["autoFlee"] = False
+                    npc.personality["abortMacrosOnAttack"] = False
+                    npc.personality["autoCounterAttack"] = False
+
+                    quest = src.quests.questMap["BeUsefull"](strict=True)
+                    quest.autoSolve = True
+                    quest.assignToCharacter(npc)
+                    quest.activate()
+                    npc.assignQuest(quest, active=True)
+                    npc.foodPerRound = 1
+                    npc.duties.append("resource gathering")
+                    npc.duties.append("scrap hammering")
+                    npc.duties.append("resource fetching")
+                    npc.duties.append("hauling")
+                    npc.duties.append("metal working")
+                    npc.duties.append("machine placing")
+                    npc.duties.append("maggot gathering")
+                    npc.duties.append("painting")
+                    npc.duties.append("cleaning")
+                    npc.duties.append("machine operation")
+                    npc.duties.append("manufacturing")
+                    npc.duties.append("praying")
 
         for _i in range(1,40):
             self.setUpShrine(self.get_free_position("shrine"))

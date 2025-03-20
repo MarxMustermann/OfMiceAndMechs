@@ -2015,7 +2015,135 @@ but they are likely to explode when disturbed.
         ####
         # create the control room
         ##
+<<<<<<< Updated upstream
         mainRoom = src.magic.spawnControlRoom(currentTerrain, (7, 7))
+=======
+
+        # create the basic room
+        mainRoom = architect.doAddRoom(
+                {
+                       "coordinate": (7,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+        for item in mainRoom.getItemByPosition((12,6,0)):
+            if item.type != "Door":
+                continue
+            item.walkable = False
+
+        # place anvil
+        anvilPos = (10,2,0)
+        machinemachine = src.items.itemMap["Anvil"]()
+        mainRoom.addItem(machinemachine,(anvilPos[0],anvilPos[1],0))
+        mainRoom.addInputSlot((anvilPos[0]-1,anvilPos[1],0),"Scrap")
+        mainRoom.addInputSlot((anvilPos[0]+1,anvilPos[1],0),"Scrap")
+        mainRoom.addOutputSlot((anvilPos[0],anvilPos[1]-1,0),None)
+        mainRoom.walkingSpace.add((anvilPos[0],anvilPos[1]+1,0))
+
+        # place metal working bench
+        metalWorkBenchPos = (8,3,0)
+        machinemachine = src.items.itemMap["MetalWorkingBench"]()
+        mainRoom.addItem(machinemachine,(metalWorkBenchPos[0],metalWorkBenchPos[1],0))
+        mainRoom.addInputSlot((metalWorkBenchPos[0]+1,metalWorkBenchPos[1],0),"MetalBars")
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]-1,0),None)
+        mainRoom.addOutputSlot((metalWorkBenchPos[0],metalWorkBenchPos[1]+1,0),None)
+        mainRoom.walkingSpace.add((metalWorkBenchPos[0]-1,metalWorkBenchPos[1],0))
+
+        # add walking space cross
+        for y in range(1,12):
+            mainRoom.walkingSpace.add((6,y,0))
+        for x in range(1,6):
+            mainRoom.walkingSpace.add((x,6,0))
+
+        # add storage section
+        mainRoom.walkingSpace.add((11,6,0))
+        for y in (11,9,8,6):
+            for x in range(7,12):
+                if (x,y) == (11,6):
+                    continue
+                mainRoom.addStorageSlot((x,y,0),None,{})
+                #if y == 11:
+                #    scrap = src.items.itemMap["Scrap"](amount=20)
+                #    mainRoom.addItem(scrap,(x,y,0))
+                if y == 9 and x in (8,9,10,):
+                    flask = src.items.itemMap["GooFlask"]()
+                    flask.uses = 100
+                    mainRoom.addItem(flask,(x,y,0))
+
+        # add walking space in storage section
+        for y in (10,7,5):
+            for x in range(7,12):
+                mainRoom.walkingSpace.add((x,y,0))
+        for y in (8,11):
+            for x in range(1,7):
+                mainRoom.walkingSpace.add((x,y,0))
+
+        for x in range(2,6):
+            mainRoom.walkingSpace.add((x,3,0))
+
+        # add items
+        painter = src.items.itemMap["Painter"]()
+        mainRoom.addItem(painter,(7,8,0))
+
+        # add mini wall production
+        mainRoom.addInputSlot((1,7,0),"MetalBars")
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Rod"
+        mainRoom.addItem(manufacturingTable,(2,7,0))
+        mainRoom.addStorageSlot((3,7,0),"Rod",{"desiredState":"filled"})
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Frame"
+        mainRoom.addItem(manufacturingTable,(4,7,0))
+        mainRoom.addStorageSlot((5,7,0),"Frame",{"desiredState":"filled"})
+        mainRoom.addInputSlot((1,10,0),"Frame",None)
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Case"
+        mainRoom.addItem(manufacturingTable,(2,10,0))
+        mainRoom.addStorageSlot((3,10,0),"Case",{"desiredState":"filled"})
+        mainRoom.addInputSlot((4,9,0),"MetalBars")
+        manufacturingTable = src.items.itemMap["ManufacturingTable"]()
+        manufacturingTable.bolted = True
+        manufacturingTable.toProduce = "Wall"
+        mainRoom.addItem(manufacturingTable,(4,10,0))
+        mainRoom.addStorageSlot((5,10,0),"Wall")
+
+        # add scrap compactor
+        mainRoom.addInputSlot((1,9,0),"Scrap")
+        scrapCompactor = src.items.itemMap["ScrapCompactor"]()
+        scrapCompactor.bolted = True
+        mainRoom.addItem(scrapCompactor,(2,9,0))
+        mainRoom.addStorageSlot((3,9,0),"MetalBars",None)
+
+        # add management items
+        cityPlaner = src.items.itemMap["CityPlaner"]()
+        cityPlaner.bolted = True
+        cityPlaner.autoExtensionThreashold = 0
+        mainRoom.addItem(cityPlaner,(2,2,0))
+        promoter = src.items.itemMap["Promoter"]()
+        promoter.bolted = True
+        mainRoom.addItem(promoter,(4,2,0))
+        archive = src.items.itemMap["ReportArchive"]()
+        archive.bolted = True
+        mainRoom.addItem(archive,(5,1,0))
+        communicator = src.items.itemMap["Communicator"]()
+        communicator.bolted = True
+        mainRoom.addItem(communicator,(1,3,0))
+        dutyArtwork = src.items.itemMap["DutyArtwork"]()
+        dutyArtwork.bolted = True
+        mainRoom.addItem(dutyArtwork,(2,4,0))
+        siegeManager = src.items.itemMap["SiegeManager"]()
+        siegeManager.bolted = True
+        mainRoom.addItem(siegeManager,(4,4,0))
+        siegeManager.handleTick()
+>>>>>>> Stashed changes
 
         # spawn npc
         actualCharacter = src.characters.characterMap["Clone"]()

@@ -2077,7 +2077,7 @@ but they are likely to explode when disturbed.
         ####
         # create secondary trap room (arena)
         ##
-        src.magic.spawnArenaRoom(currentTerrain, (6, 7), self.difficulty)
+        src.magic.spawnArenaRoom(currentTerrain, (6, 7), self.difficulty,  doors="0,6 12,6")
 
         ###############################################
         ###

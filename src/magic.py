@@ -41,6 +41,7 @@ def getFloorPlanFromDict(rawFloorplan):
             walkingSpace.append(tuple(item))
         converted["walkingSpace"] = walkingSpace
     return converted
+
 def spawnScrapField(terrain, coordinate):
     bigX, bigY = coordinate
     for x in range(1, 14):
@@ -406,7 +407,7 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     spawnedRoom.addStorageSlot((5, 5, 0), "Door", {"desiredState": "filled"})
 
 
-def spawnControlRoom(terrain, coordinate, doors="0,6 6,0 6,12"):
+def spawnControlRoom(terrain, coordinate, doors="0,6 6,0 6,12", spawnReportArchive=False):
     mainRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
 
     # for item in mainRoom.getItemByPosition((12, 6, 0)):
@@ -512,6 +513,10 @@ def spawnControlRoom(terrain, coordinate, doors="0,6 6,0 6,12"):
     promoter = src.items.itemMap["Promoter"]()
     promoter.bolted = True
     mainRoom.addItem(promoter, (4, 2, 0))
+    if spawnReportArchive:
+        reportArchive = src.items.itemMap["ReportArchive"]()
+        reportArchive.bolted = True
+        mainRoom.addItem(reportArchive, (5, 1, 0))
     communicator = src.items.itemMap["Communicator"]()
     communicator.bolted = True
     mainRoom.addItem(communicator, (1, 3, 0))

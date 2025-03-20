@@ -2015,7 +2015,7 @@ but they are likely to explode when disturbed.
         ####
         # create the control room
         ##
-        mainRoom = src.magic.spawnControlRoom(currentTerrain, (7, 7))
+        mainRoom = src.magic.spawnControlRoom(currentTerrain, (7, 7), spawnReportArchive=True)
 
         # spawn npc
         actualCharacter = src.characters.characterMap["Clone"]()

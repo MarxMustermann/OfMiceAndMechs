@@ -109,6 +109,10 @@ To see your items open the your inventory by pressing i."""
             if character.inventory:
                 homeRoom = character.getHomeRoom()
 
+                if not homeRoom:
+                    self.fail(reason="no home")
+                    return (None,None)
+
                 if hasattr(homeRoom,"storageRooms") and homeRoom.storageRooms:
                     quest = src.quests.questMap["GoToTile"](targetPosition=(homeRoom.storageRooms[0].xPosition,homeRoom.storageRooms[0].yPosition,0),reason="go to a storage room")
                     return ([quest],None)
@@ -119,10 +123,6 @@ To see your items open the your inventory by pressing i."""
                         quest1 = src.quests.questMap["GoToTile"](targetPosition=checkRoom.getPosition(),reason="go to a room with empty stockpiles")
                         quest2 = src.quests.questMap["RestockRoom"](toRestock=character.inventory[-1].type, allowAny=True, reason="reduce the number of item in your inventory")
                         return ([quest2,quest1],None)
-
-                if "HOMEx" not in character.registers:
-                    self.fail(reason="no home")
-                    return (None,None)
 
                 #if not dryRun:
                 #    character.timeTaken += 1

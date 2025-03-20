@@ -562,7 +562,10 @@ class Character:
         terrain = src.gamestate.gamestate.terrainMap[self.registers["HOMETx"]][self.registers["HOMETy"]]
 
         # get the home room
-        homeRoom = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))[0]
+        rooms = terrain.getRoomByPosition((self.registers["HOMEx"],self.registers["HOMEy"]))
+        if not rooms:
+            return None
+        homeRoom = rooms[0]
 
         # return the home room
         return homeRoom

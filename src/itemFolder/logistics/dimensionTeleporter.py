@@ -2,8 +2,6 @@ import random
 from functools import partial
 
 import src
-import src.rooms
-
 
 class DimensionTeleporter(src.items.Item):
     type = "DimensionTeleporter"

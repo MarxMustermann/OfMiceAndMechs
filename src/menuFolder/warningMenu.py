@@ -8,7 +8,7 @@ class WarningMenu(src.subMenu.SubMenu):
         self.stealAllKeys = False  # HACK
 
     def handleKey(self, key, noRender=False, character=None):
-        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\Warning\n\n"))
+        src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nWarning\n\n"))
 
         src.interaction.main.set_text(
             (

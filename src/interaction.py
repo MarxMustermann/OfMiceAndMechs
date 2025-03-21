@@ -78,6 +78,23 @@ def advanceGame():
     for character in multi_chars:
         advanceChar(character)
 
+    try:
+        src.gamestate.gamestate.itemToUpdatePerTick
+    except:
+        src.gamestate.gamestate.itemToUpdatePerTick = []
+
+    try:
+        src.gamestate.gamestate.teleporterGroups
+    except:
+        src.gamestate.gamestate.teleporterGroups = {"default": ([], [])}
+
+    for item in src.gamestate.gamestate.itemToUpdatePerTick:
+        item.tick()
+
+    for group in src.gamestate.gamestate.teleporterGroups:
+        (senders, _recivers) = src.gamestate.gamestate.teleporterGroups[group]
+        for sender in senders:
+            sender.tick()
 
     if src.gamestate.gamestate.tick%(15*15*15) == 0:
         for god in src.gamestate.gamestate.gods.values():

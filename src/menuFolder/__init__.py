@@ -30,3 +30,5 @@ import src.menuFolder.viewNPCsMenu
 import src.menuFolder.messagesMenu
 import src.menuFolder.statusEffectMenu
 import src.menuFolder.sliderMenu
+import src.menuFolder.teleporterGroupMenu
+import src.menuFolder.confirmMenu

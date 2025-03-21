@@ -73,6 +73,8 @@ class GameState:
 
         self.clickMap = {}
         self.story = None
+        self.teleporterGroups = {"default": ([], [])}
+        self.itemToUpdatePerTick = []
     # bad code: initialization should happen in story or from loading
     def setup(self, phase=None, seed=0):
         """

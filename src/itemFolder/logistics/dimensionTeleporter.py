@@ -20,13 +20,36 @@ class DimensionTeleporter(src.items.Item):
         self.mode = self.SenderMode
         self.group = "default"
         self.bolted = False
+        self.direction = None
+
         self.applyOptions.extend(
-            [("change to receiver", "change to receiver"), ("change to sender", "change to sender")]
+            [
+                ("change to receiver", "change to receiver"),
+                ("change input direction", "change input direction"),
+            ]
         )
         self.applyMap = {
             "change to receiver": partial(self.changeMode, self.ReceiverMode),
             "change to sender": partial(self.changeMode, self.SenderMode),
+            "change input direction": self.changeInputDirection,
+            "change output direction": self.changeOutputDirection,
         }
+
+    def changeInputDirection(self, character):
+        def d_change(offset):
+            self.direction = offset
+
+        character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
+            "choose input direction", self.direction, d_change
+        )
+
+    def changeOutputDirection(self, f, character):
+        def d_change(offset):
+            self.direction = offset
+
+        character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
+            "choose output direction", self.direction, d_change
+        )
 
     def getConfigurationOptions(self, character):
         options = super().getConfigurationOptions(character)
@@ -59,7 +82,10 @@ class DimensionTeleporter(src.items.Item):
 
     def getInputItems(self):
         result = []
-        for offset in [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]:
+
+        offset_to_check = [self.direction] if self.direction else [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
+
+        for offset in offset_to_check:
             for item in self.container.getItemByPosition(
                 (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
             ):
@@ -71,7 +97,14 @@ class DimensionTeleporter(src.items.Item):
     def TeleportItem(self, item_offset):
         item, offset = item_offset
 
-        pos = (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
+        if self.direction:
+            pos = (
+                self.xPosition + self.direction[0],
+                self.yPosition + self.direction[1],
+                self.zPosition + self.direction[2],
+            )
+        else:
+            pos = (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
 
         for i in range(2):
             if isinstance(self.container, src.rooms.Room):

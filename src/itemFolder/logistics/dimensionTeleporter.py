@@ -35,20 +35,17 @@ class DimensionTeleporter(src.items.Item):
             "change output direction": self.changeOutputDirection,
         }
 
-    def changeInputDirection(self, character):
-        def d_change(offset):
-            self.direction = offset
+    def d_change(self, offset):
+        self.direction = offset
 
+    def changeInputDirection(self, character):
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
-            "choose input direction", self.direction, d_change
+            "choose input direction", self.direction, self.d_change
         )
 
     def changeOutputDirection(self, f, character):
-        def d_change(offset):
-            self.direction = offset
-
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
-            "choose output direction", self.direction, d_change
+            "choose output direction", self.direction, self.d_change
         )
 
     def getConfigurationOptions(self, character):

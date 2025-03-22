@@ -6,67 +6,51 @@ class DirectionMenu(src.subMenu.SubMenu):
     def __init__(self, text, current_dir, dirChosen):
         self.type = "DirectionMenu"
         if current_dir:
-            self.x_index = current_dir[0] + 1
-            self.y_index = current_dir[1] + 1
+            self.dir = current_dir
         else:
-            self.x_index = 0
-            self.y_index = 0
+            self.dir = (0, 0)
+
         self.text = text
         self.dirChosen = dirChosen
         super().__init__()
 
     def handleKey(self, key, noRender=False, character=None):
-        if key in ("w", "s", "up", "down"):
-            if key in ("s", "down") and self.y_index + 1 == 1 and self.x_index == 1:
-                self.y_index = 2
-            elif key in ("w", "up") and self.y_index - 1 == 1 and self.x_index == 1:
-                self.y_index = 0
-            else:
-                self.y_index += 1 if key in ("s", "down") else -1
+        if key in ("s", "down"):
+            self.dir = (0, 1, 0)
+        elif key in ("w", "up"):
+            self.dir = (0, -1, 0)
+        elif key in ("d", "right"):
+            self.dir = (1, 0, 0)
+        elif key in ("a", "left"):
+            self.dir = (-1, 0, 0)
 
-        if key in ("d", "right", "a", "left"):
-            if key in ("d", "right") and self.x_index + 1 == 1 and self.y_index == 1:
-                self.x_index = 2
-            elif key in ("a", "left") and self.x_index - 1 == 1 and self.y_index == 1:
-                self.x_index = 0
-            else:
-                self.x_index += 1 if key in ("d", "right") else -1
-
-        self.x_index = clamp(self.x_index, 0, 2)
-        self.y_index = clamp(self.y_index, 0, 2)
 
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nDirection\n\n"))
         text = ""
 
         text += self.text + "\n\n"
 
-        offset_index = (self.x_index, self.y_index)
+        N = " N " if self.dir != (0, -1, 0) else ">N<"
+        W = " W " if self.dir != (-1, 0, 0) else ">W<"
+        E = " E " if self.dir != (1, 0, 0) else ">E<"
+        S = " S " if self.dir != (0, 1, 0) else ">S<"
 
-        NW = " NW " if offset_index != (0, 0) else ">NW<"
-        N = " N " if offset_index != (1, 0) else ">N<"
-        NE = " NE " if offset_index != (2, 0) else ">NE<"
-        W = " W " if offset_index != (0, 1) else ">W<"
-        E = " E " if offset_index != (2, 1) else ">E<"
-        SW = " SW " if offset_index != (0, 2) else ">SW<"
-        S = " S " if offset_index != (1, 2) else ">S<"
-        SE = " SE " if offset_index != (2, 2) else ">SE<"
-
-        text += f"  {NW}      {N}     {NE}   " + "\n"
-        text += r"      \      |      /      " + "\n"
-        text += r"        \    |    /        " + "\n"
-        text += r"          \  |  /          " + "\n"
-        text += r"            \|/            " + "\n"
+        text += f"            {N}            " + "\n"
+        text += r"             |             " + "\n"
+        text += r"             |             " + "\n"
+        text += r"             |             " + "\n"
+        text += r"             |             " + "\n"
         text += f"{W}----------+----------{E}" + "\n"
-        text += r"            /|\            " + "\n"
-        text += r"          /  |  \          " + "\n"
-        text += r"        /    |    \        " + "\n"
-        text += r"      /      |      \      " + "\n"
-        text += f"   {SW}     {S}     {SE}   " + "\n"
+        text += r"             |             " + "\n"
+        text += r"             |             " + "\n"
+        text += r"             |             " + "\n"
+        text += r"             |             " + "\n"
+        text += f"            {S}            " + "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 
         if key in ("enter", "j"):
-            self.dirChosen(([-1, 0, 1][self.x_index], [-1, 0, 1][self.y_index], 0))
+            self.dirChosen(self.dir)
             return True
 
         # exit submenu

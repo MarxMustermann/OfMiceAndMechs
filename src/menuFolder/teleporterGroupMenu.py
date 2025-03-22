@@ -87,6 +87,22 @@ class TeleporterGroupMenu(src.subMenu.SubMenu):
                 self.teleporter.group = g_name
                 self.teleporter.mode = self.new_mode
 
+                self.teleporter.applyOptions.clear()
+                if self.teleporter.SenderMode == self.new_mode:
+                    self.teleporter.applyOptions.extend(
+                        [
+                            ("change to receiver", "change to receiver"),
+                            ("change input direction", "change input direction"),
+                        ]
+                    )
+                else:
+                    self.teleporter.applyOptions.extend(
+                        [
+                            ("change to sender", "change to sender"),
+                            ("change output direction", "change output direction"),
+                        ]
+                    )
+
                 src.gamestate.gamestate.teleporterGroups[g_name][self.teleporter.mode].append(self.teleporter)
 
                 return True

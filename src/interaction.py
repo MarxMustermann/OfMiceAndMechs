@@ -92,9 +92,10 @@ def advanceGame():
         item.tick()
 
     for group in src.gamestate.gamestate.teleporterGroups:
-        (senders, _recivers) = src.gamestate.gamestate.teleporterGroups[group]
-        for sender in senders:
-            sender.tick()
+        (senders, receivers) = src.gamestate.gamestate.teleporterGroups[group]
+        if len(receivers):
+            for sender in senders:
+                sender.tick()
 
     if src.gamestate.gamestate.tick%(15*15*15) == 0:
         for god in src.gamestate.gamestate.gods.values():

@@ -2,7 +2,7 @@ import src
 
 
 class WarningMenu(src.subMenu.SubMenu):
-    def __init__(self, text, onReturn):
+    def __init__(self, text, onReturn=None):
         self.text = text
         self.onReturn = onReturn
         self.stealAllKeys = False  # HACK
@@ -18,6 +18,7 @@ class WarningMenu(src.subMenu.SubMenu):
         )
         # exit submenu
         if key in ("enter", "j", "esc"):
-            self.onReturn()
+            if self.onReturn:
+                self.onReturn()
             return True
         return False

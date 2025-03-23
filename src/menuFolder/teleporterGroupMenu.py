@@ -7,11 +7,10 @@ import src.menuFolder.warningMenu
 
 
 class TeleporterGroupMenu(src.subMenu.SubMenu):
-    def __init__(self, teleporter, new_mode):
+    def __init__(self, teleporter):
         self.type = "TeleporterGroupMenu"
         self.index = 0
         self.teleporter = teleporter
-        self.new_mode = new_mode
         super().__init__()
 
     def handleKey(self, key, noRender=False, character=None):
@@ -85,23 +84,6 @@ class TeleporterGroupMenu(src.subMenu.SubMenu):
                     self.teleporter.bolted = True
 
                 self.teleporter.group = g_name
-                self.teleporter.mode = self.new_mode
-
-                self.teleporter.applyOptions.clear()
-                if self.teleporter.SenderMode == self.new_mode:
-                    self.teleporter.applyOptions.extend(
-                        [
-                            ("change to receiver", "change to receiver"),
-                            ("change input direction", "change input direction"),
-                        ]
-                    )
-                else:
-                    self.teleporter.applyOptions.extend(
-                        [
-                            ("change to sender", "change to sender"),
-                            ("change output direction", "change output direction"),
-                        ]
-                    )
 
                 src.gamestate.gamestate.teleporterGroups[g_name][self.teleporter.mode].append(self.teleporter)
 

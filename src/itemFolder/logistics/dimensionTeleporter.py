@@ -9,11 +9,10 @@ class DimensionTeleporter(src.items.Item):
     type = "DimensionTeleporter"
     name = "Dimension Teleporter"
 
-    capacity = 15
-    cost_per_terrain = 1.15
-
     ReceiverMode = 1
     SenderMode = 0
+
+    default_offsets = [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
 
     def __init__(self):
         super().__init__(display="DH", name=self.name)
@@ -22,15 +21,22 @@ class DimensionTeleporter(src.items.Item):
         self.bolted = False
         self.direction = None
 
+        self.charges = 100
+        self.chargePerLightingRod = 100
+
         self.applyOptions.extend(
             [
+                ("examine properties", "examine properties"),
+                ("change group", "change group"),
                 ("change to receiver", "change to receiver"),
                 ("change input direction", "change input direction"),
             ]
         )
         self.applyMap = {
-            "change to receiver": partial(self.changeMode, self.ReceiverMode),
-            "change to sender": partial(self.changeMode, self.SenderMode),
+            "examine properties": self.showProperties,
+            "change group": self.changeGroup,
+            "change to receiver": self.changeMode,
+            "change to sender": self.changeMode,
             "change input direction": self.changeInputDirection,
             "change output direction": self.changeOutputDirection,
         }
@@ -74,13 +80,26 @@ class DimensionTeleporter(src.items.Item):
 
         src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
-    def changeMode(self, mode, character):
-        character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self, mode)
+    def changeGroup(self, character):
+        character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
+
+    def changeMode(self, character):
+        if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
+            src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
+
+        if self.mode == self.SenderMode:
+            self.mode = self.ReceiverMode
+            self.applyOptions[2] = ("change to sender", "change to sender")
+        else:
+            self.mode = self.SenderMode
+            self.applyOptions[2] = ("change to receiver", "change to receiver")
+
+        src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def getInputItems(self):
         result = []
 
-        offset_to_check = [self.direction] if self.direction else [(0, 1, 0), (0, -1, 0), (1, 0, 0), (-1, 0, 0)]
+        offset_to_check = [self.direction] if self.direction else self.default_offsets
 
         for offset in offset_to_check:
             for item in self.container.getItemByPosition(
@@ -119,19 +138,54 @@ class DimensionTeleporter(src.items.Item):
         return True
 
     def tick(self):
-        items = self.getInputItems()
-        if len(items):
-            # TODO add charges
-            (_senders, receivers) = src.gamestate.gamestate.teleporterGroups[self.group]
-            sending_tries = 0
-            if len(receivers):
-                while sending_tries != len(receivers):
-                    random_receiver: DimensionTeleporter = random.choice(receivers)
-                    random_item = items.pop(random.randint(0, len(items) - 1))
-                    if not random_receiver.TeleportItem(random_item):
-                        sending_tries += 1
-                    else:
-                        break
+        if self.charges:
+            items = self.getInputItems()
+            if len(items):
+                (_senders, receivers) = src.gamestate.gamestate.teleporterGroups[self.group]
+                sending_tries = 0
+                if len(receivers):
+                    while sending_tries != len(receivers):
+                        random_receiver: DimensionTeleporter = random.choice(receivers)
+                        random_item = items.pop(random.randint(0, len(items) - 1))
+                        if not random_receiver.TeleportItem(random_item):
+                            sending_tries += 1
+                        else:
+                            self.charges -= 1
+                            return
+        else:
+            for offset in self.default_offsets:
+                for item in self.container.getItemByPosition(
+                    (self.xPosition + offset[0], self.yPosition + offset[1], self.zPosition + offset[2])
+                ):
+                    if item.type == "Rod":
+                        item.container.removeItem(item)
+                        self.charges = self.chargePerLightingRod
+                        return
 
+    def showProperties(self, character):
+        character.macroState["submenue"] = src.menuFolder.warningMenu.WarningMenu(
+            self.getLongInfo() + f"\nCharges: {self.charges}"
+        )
+
+    def getLongInfo(self):
+        text = "Operation Mode:"
+        text += " Sender" if self.mode == self.SenderMode else " Receiver"
+        text += "\n"
+
+        code = "Input Direction:" if self.mode == self.SenderMode else "Output Direction:"
+
+        if self.direction:
+            cases = {(0, -1, 0): "North", (-1, 0, 0): "West", (1, 0, 0): "East", (0, 1, 0): "South"}
+
+            text += code + " " + cases[self.direction]
+        else:
+            if self.mode == self.SenderMode:
+                text += code + " From all Directions"
+            else:
+                text += code + " To all Directions"
+
+        text += "\nGroup Name: " + self.group
+
+        return text
 
 src.items.addType(DimensionTeleporter)

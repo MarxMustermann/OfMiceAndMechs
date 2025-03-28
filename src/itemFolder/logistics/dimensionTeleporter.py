@@ -47,7 +47,7 @@ class DimensionTeleporter(src.items.Item):
             "choose input direction", self.direction, self.d_change
         )
 
-    def changeOutputDirection(self, f, character):
+    def changeOutputDirection(self, character):
         character.macroState["submenue"] = src.menuFolder.directionMenu.DirectionMenu(
             "choose output direction", self.direction, self.d_change
         )

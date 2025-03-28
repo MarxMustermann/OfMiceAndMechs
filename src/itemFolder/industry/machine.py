@@ -520,4 +520,4 @@ Currently the machine has no charges
         character.addMessage("you unbolt the Machine")
         character.changed("unboltedItem",{"character":character,"item":self})
 
-src.items.addType(Machine)
+src.items.addType(Machine, nonManufactured=True)

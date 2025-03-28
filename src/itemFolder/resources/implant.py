@@ -10,4 +10,4 @@ class Implant(src.items.Item):
         self.bolted = False
 
 
-src.items.addType(Implant)
+src.items.addType(Implant, nonManufactured=True)

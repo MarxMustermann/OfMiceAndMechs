@@ -22,4 +22,4 @@ class GlassHeart(src.items.Item):
 A glass heart. You need it to win the game.
 """
 
-src.items.addType(GlassHeart)
+src.items.addType(GlassHeart, nonManufactured=True)

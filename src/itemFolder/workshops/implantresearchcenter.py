@@ -78,4 +78,4 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
             character.changed("researched implant", {})
 
 
-src.items.addType(ImplantResearchCenter)
+src.items.addType(ImplantResearchCenter, nonManufactured=True)

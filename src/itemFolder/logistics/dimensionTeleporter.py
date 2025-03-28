@@ -188,4 +188,4 @@ class DimensionTeleporter(src.items.Item):
 
         return text
 
-src.items.addType(DimensionTeleporter)
+src.items.addType(DimensionTeleporter, nonManufactured=True)

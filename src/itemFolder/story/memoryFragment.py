@@ -10,4 +10,4 @@ class MemoryFragment(src.items.Item):
         self.bolted = False
 
 
-src.items.addType(MemoryFragment)
+src.items.addType(MemoryFragment, nonManufactured=True)

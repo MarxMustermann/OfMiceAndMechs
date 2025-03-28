@@ -128,12 +128,9 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"configureItem","params":params}
             return
 
-        if params.get("type") == "Machine":
-            character.addMessage("Not possible. Use a MachiningTable.")
-            return
-        blackListed = ["GlassHeart","Machine",]
-        if params.get("type") in blackListed:
-            character.addMessage("Not possible.")
+        if params.get("type") in src.items.nonManufacturedTypes:
+            ty = params.get("type")
+            character.addMessage(f"cannot produce item type {ty}")
             return
 
         if params.get("type") == "None":

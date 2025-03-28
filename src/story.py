@@ -2486,27 +2486,35 @@ but they are likely to explode when disturbed.
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "lab"
 
-        # set up helper item to spawn stuff
-        # bad code: spawning stuff should be in a "magic" class or similar
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
+        central_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (7, 7))
 
-        # create the basic room
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
+        implant_m = src.items.itemMap["ImplantManipulator"]()
+        central_room.addItem(implant_m, (6, 6, 0))
 
-        mana_crystal = src.items.itemMap["ImplantManipulator"]()
-        room.addItem(mana_crystal,(6,6,0))
+        teleporter_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (6, 7))
+
+        teleporter = src.items.itemMap["DimensionTeleporter"]()
+        teleporter_room.addItem(teleporter, (6, 6, 0))
+
+        teleporter_manufacturer = src.items.itemMap["TeleporterManufacturer"]()
+        teleporter_room.addItem(teleporter_manufacturer, (1, 1, 0))
+
+        caller_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (8, 7))
+
+        enemy_caller = src.items.itemMap["EnemyCaller"]()
+        caller_room.addItem(enemy_caller, (11, 11, 0))
+        enemy_caller.SpawnEnemiesEveryEpoch()
+        for _i in range(random.randint(5, 7)):
+            monsterType = random.choice(["Golem", "ShieldBug"])
+            pos = (random.randint(1, 11), random.randint(1, 11), 0)
+            golem = src.characters.characterMap[monsterType]()
+            golem.godMode = True
+            quest = src.quests.questMap["SecureTile"](toSecure=(8, 7), wandering=False)
+            quest.autoSolve = True
+            quest.assignToCharacter(golem)
+            quest.activate()
+            golem.quests.append(quest)
+            caller_room.addCharacter(golem, pos[0], pos[1])
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod

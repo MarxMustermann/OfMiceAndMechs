@@ -123,6 +123,8 @@ class DebugMenu(src.subMenu.SubMenu):
                                 if tag:
                                     if tag.endswith("base"):
                                         displayChar = "RB"
+                                    elif tag == "lab":
+                                        displayChar = "LA"
                                     else:
                                         displayChar = "  "
                                 else:

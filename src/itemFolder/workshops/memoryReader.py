@@ -89,4 +89,4 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
         character.inventory.append(src.items.itemMap["Implant"]())
         character.addMessage("you got a functional implant")
 
-src.items.addType(MemoryReader)
+src.items.addType(MemoryReader, nonManufactured=True)

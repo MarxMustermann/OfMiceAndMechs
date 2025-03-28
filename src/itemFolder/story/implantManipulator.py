@@ -22,4 +22,4 @@ class ImplantManipulator(src.items.Item):
         character.addMessage("you fix your implant and can use the throne safely now")
         src.gamestate.gamestate.stern["fixedImplant"] = True
 
-src.items.addType(ImplantManipulator)
+src.items.addType(ImplantManipulator, nonManufactured=True)

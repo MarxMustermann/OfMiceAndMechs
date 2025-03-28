@@ -1072,7 +1072,7 @@ rare = [
 ]
 
 
-def addType(toRegister,potion=False):
+def addType(toRegister, potion=False, nonManufactured=False):
     """
     add a item type to the item map
     This is used to be able to store the item classes without knowing where everything exactly is.
@@ -1084,6 +1084,11 @@ def addType(toRegister,potion=False):
     if potion:
         potionTypes.append(toRegister)
 
+    if nonManufactured:
+        nonManufacturedTypes.add(toRegister.type)
+
+
+nonManufacturedTypes = set()
 potionTypes = []
 
 # mapping from strings to all items

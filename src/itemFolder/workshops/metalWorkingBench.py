@@ -89,17 +89,14 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"].followUp = {"container":self,"method":"produceItem","params":params}
             return
 
-        if params.get("type") == "Machine":
-            character.addMessage("Not possible. Use a MachiningTable.")
-            return
-        blackListed = ["GlassHeart","Machine",]
-        if params.get("type") in blackListed:
-            character.addMessage("Not possible.")
-            return
-
         if params.get("type") not in src.items.itemMap:
             if params.get("type"):
                 character.addMessage("Item type unknown.")
+            return
+
+        if params.get("type") in src.items.nonManufacturedTypes:
+            ty = params.get("type")
+            character.addMessage(f"cannot produce item type {ty}")
             return
 
         if "rawAmount" in params:
@@ -293,6 +290,9 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleProduction","params":params}
             return
+
+        if params.get("type") in self.reserved_manufactured_items:
+            character.addMessage("cannot produce item type")
 
         if "amount" not in params:
             options = []

@@ -42,8 +42,5 @@ class TeleporterManufacturer(src.items.itemMap["WorkShop"]):
 
         character.inventory.append(src.items.itemMap["DimensionTeleporter"]())
 
-    def apply(self, character):  # TODO delete function to enable it
-        character.addMessage("the machine is disabled")
-
 
 src.items.addType(TeleporterManufacturer, nonManufactured=True)

@@ -17,11 +17,12 @@ class DebugMenu(src.subMenu.SubMenu):
         "Teleport Terrain",
         "Clear Fog",
         "Add Mana",
+        "Get Item",
+        "Obtain Glass hearts",
         "Execute Code",
         "Test Crash",
         "Debug Memory",
         "clear path cache",
-        "Get Item",
     ]
 
     def __init__(self):
@@ -50,6 +51,14 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "Obtain Glass hearts":
+                    if current_change:
+                        terrain = character.getHomeTerrain()
+                        for (godId,godInfo) in src.gamestate.gamestate.gods.items():
+                            lastPos = godInfo["lastHeartPos"]
+                            godInfo["lastHeartPos"] = (terrain.xPosition,terrain.yPosition)
+                            print(godInfo)
+                        print(src.gamestate.gamestate.gods)
                 case "clear path cache":
                     if current_change:
                         terrain = character.getTerrain()

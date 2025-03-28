@@ -1,3 +1,5 @@
+import random
+
 import src
 
 class ReportArchive(src.items.Item):
@@ -25,14 +27,43 @@ class ReportArchive(src.items.Item):
         self.reports = None
 
     def generateReports(self):
-        self.reports = [
-                ("Survey complete","This terrain (x,y,z) is pretty unremarkable, but has the ressource we need.\nSome scrap to proccess, enough moisture to grow mold.\nEven a small forrest to harvest maggots from is here!\n\nThat is a nice change from the terrains (x,y,z),(x,y,z),(x,y,z)\nthose were so dry you couldn't grow a single mold bloom on it."),
-                ("Base established","The base has been established, technically.\nThe colony mech has arrived and was placed.\nThere is little space available and production capacity is severly limited.\n\nThat half of the crew were killed by Spiders doesn't help either,\nbut they will continue to be useful as ghuls.\nAll spider eggs will have to be destroyed or they will be a long term problem.\n\nAt least it is not as bad as on (x,y,z).\nThe Spiders there had a posion strong enough to kill a clone with a single bite!"),
-                ("Base extension complete","The Base now has several additional rooms to allow for more storage and production.\n\nWe were ordered to experiment with the room layouts.\nSo we will use the wall production FloorPlan from (x,y,z)\nand the storage room layout like the one we have seen on terrain (x,y,z)"), 
-                ("Remote bases established","To get some ressources we are missing here remote bases were established.\n\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n\nI hope they will stay active even without additional protection."),
-                ("Expedition started","The base leader and the leading officers are starting an expedition to (x,y,z) soon.\nWe are ordered to stay on standby until they return."),
-            ]
+        self.reports = []
 
+        ownPos = self.getTerrain().getPosition()
+        emptyPlaces = []
+
+        for x in range(1,14):
+            for y in range(1,14):
+                checkTerrain = src.gamestate.gamestate.terrainMap[y][x]
+
+                match checkTerrain.tag:
+                    case "nothingness":
+                        emptyPlaces.append(checkTerrain.getPosition())
+
+        random.shuffle(emptyPlaces)
+        emptyPlaces = emptyPlaces[:min(3,len(emptyPlaces))]
+
+        emptyPlacesString = ""
+        for place in emptyPlaces:
+            emptyPlacesString += f"{place}, "
+        if len(emptyPlacesString) > 0:
+            emptyPlacesString = emptyPlacesString[:-2]
+                
+        self.reports.append(
+                ("Survey complete",f"The terrain {ownPos} is pretty unremarkable, but has the ressource we need.\nSome scrap to proccess, enough moisture to grow mold.\nEven a small forrest to harvest maggots from is here!\n\nThat is a nice change from the terrains {emptyPlacesString}\nthose were so dry you couldn't grow a single mold bloom on it.")
+            )
+        self.reports.append(
+                ("Base established","The base has been established, technically.\nThe colony mech has arrived and was placed.\nThere is little space available and production capacity is severly limited.\n\nThat half of the crew were killed by Spiders doesn't help either,\nbut they will continue to be useful as ghuls.\nAll spider eggs will have to be destroyed or they will be a long term problem.\n\nAt least it is not as bad as on (x,y,z).\nThe Spiders there had a posion strong enough to kill a clone with a single bite!")
+            )
+        self.reports.append(
+                ("Base extension complete","The Base now has several additional rooms to allow for more storage and production.\n\nWe were ordered to experiment with the room layouts.\nSo we will use the wall production FloorPlan from (x,y,z)\nand the storage room layout like the one we have seen on terrain (x,y,z)")
+            )
+        self.reports.append(
+                ("Remote bases established","To get some ressources we are missing here remote bases were established.\n\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n\nI hope they will stay active even without additional protection.")
+            )
+        self.reports.append(
+                ("Expedition started","The base leader and the leading officers are starting an expedition to (x,y,z) soon.\nWe are ordered to stay on standby until they return."),
+            )
 
     def showReports(self,character):
 

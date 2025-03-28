@@ -2492,10 +2492,14 @@ but they are likely to explode when disturbed.
         room.addItem(mana_crystal, (1, 1, 0))
 
         teleporter = src.items.itemMap["DimensionTeleporter"]()
-        room.addItem(teleporter, (13, 13, 0))
+        room.addItem(teleporter, (11, 1, 0))
 
-        teleporter = src.items.itemMap["TeleporterManufacturer"]()
-        room.addItem(teleporter, (6, 6, 0))
+        teleporter_manufacturer = src.items.itemMap["TeleporterManufacturer"]()
+        room.addItem(teleporter_manufacturer, (6, 6, 0))
+
+        enemy_caller = src.items.itemMap["EnemyCaller"]()
+        room.addItem(enemy_caller, (11, 11, 0))
+        enemy_caller.SpawnEnemiesEveryEpoch()
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod

@@ -9,3 +9,4 @@ import src.itemFolder.workshops.swordSharpener
 import src.itemFolder.workshops.armorReinforcer
 import src.itemFolder.workshops.implantresearchcenter
 import src.itemFolder.workshops.memoryReader
+import src.itemFolder.workshops.teleporterManufacturer

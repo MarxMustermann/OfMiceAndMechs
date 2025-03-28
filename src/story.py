@@ -2486,27 +2486,16 @@ but they are likely to explode when disturbed.
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "lab"
 
-        # set up helper item to spawn stuff
-        # bad code: spawning stuff should be in a "magic" class or similar
-        item = src.items.itemMap["ArchitectArtwork"]()
-        architect = item
-        item.godMode = True
-        currentTerrain.addItem(item,(1,1,0))
-
-        # create the basic room
-        room = architect.doAddRoom(
-                {
-                       "coordinate": (7,7),
-                       "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
-                       "offset": [1,1],
-                       "size": [13, 13],
-                },
-                None,
-           )
+        room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (7, 7))
 
         mana_crystal = src.items.itemMap["ImplantManipulator"]()
-        room.addItem(mana_crystal,(6,6,0))
+        room.addItem(mana_crystal, (1, 1, 0))
+
+        teleporter = src.items.itemMap["DimensionTeleporter"]()
+        room.addItem(teleporter, (13, 13, 0))
+
+        teleporter = src.items.itemMap["TeleporterManufacturer"]()
+        room.addItem(teleporter, (6, 6, 0))
 
     def setUpGlassHeartDungeon(self,pos,itemID,multiplier):
         # bad code: should be named function: setUpGod

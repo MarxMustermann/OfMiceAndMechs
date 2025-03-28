@@ -9,27 +9,30 @@ class EnemyCaller(src.items.Item):
     bolted = True
     walkable = False
 
+    enemy_limit = 50
+
     def __init__(self):
         super().__init__(display="EC")
 
     def SpawnEnemiesEveryEpoch(self):
         terrain = self.getTerrain()
-        for x in range(1, 14):
-            for y in range(1, 14):
-                if terrain.getRoomByPosition((x, y)):
-                    continue
+        if not len(terrain.characters) >= self.enemy_limit:
+            for x in range(1, 14):
+                for y in range(1, 14):
+                    if terrain.getRoomByPosition((x, y)):
+                        continue
 
-                for _i in range(random.randint(0, 2)):
-                    monsterType = random.choice(["Golem", "ShieldBug"])
-                    pos = (random.randint(1, 11), random.randint(1, 11), 0)
-                    golem = src.characters.characterMap[monsterType]()
-                    golem.godMode = True
-                    quest = src.quests.questMap["SecureTile"](toSecure=(x, y), wandering=False)
-                    quest.autoSolve = True
-                    quest.assignToCharacter(golem)
-                    quest.activate()
-                    golem.quests.append(quest)
-                    terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
+                    for _i in range(random.randint(0, 2)):
+                        monsterType = random.choice(["Golem", "ShieldBug"])
+                        pos = (random.randint(1, 11), random.randint(1, 11), 0)
+                        golem = src.characters.characterMap[monsterType]()
+                        golem.godMode = True
+                        quest = src.quests.questMap["SecureTile"](toSecure=(x, y), wandering=False)
+                        quest.autoSolve = True
+                        quest.assignToCharacter(golem)
+                        quest.activate()
+                        golem.quests.append(quest)
+                        terrain.addCharacter(golem, pos[0] + x * 15, pos[1] + y * 15)
 
         self.event = src.events.RunCallbackEvent(
             src.gamestate.gamestate.tick + (15 * 15 * 15 - src.gamestate.gamestate.tick % (15 * 15 * 15)) + 10

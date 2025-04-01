@@ -530,7 +530,10 @@ class Terrain:
                         return None
                     else:
                         # char.stasis = True
-                        char.runCommandString("aa")
+                        if char == src.gamestate.gamestate.mainChar:
+                            char.runCommandString("aa", nativeKey=True)
+                        else:
+                            char.runCommandString("aa")
                         char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
@@ -562,7 +565,10 @@ class Terrain:
                         return None
                     else:
                         # char.stasis = True
-                        char.runCommandString("dd")
+                        if char == src.gamestate.gamestate.mainChar:
+                            char.runCommandString("dd", nativeKey=True)
+                        else:
+                            char.runCommandString("dd")
                         char.container.addAnimation(char.getPosition(offset=(2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
@@ -596,7 +602,10 @@ class Terrain:
                         return None
                     else:
                         # char.stasis = True
-                        char.runCommandString("ww")
+                        if char == src.gamestate.gamestate.mainChar:
+                            char.runCommandString("ww", nativeKey=True)
+                        else:
+                            char.runCommandString("ww")
                         char.container.addAnimation(char.getPosition(offset=(0,-2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
@@ -628,7 +637,10 @@ class Terrain:
                         return None
                     else:
                         # char.stasis = True
-                        char.runCommandString("ss")
+                        if char == src.gamestate.gamestate.mainChar:
+                            char.runCommandString("ss", nativeKey=True)
+                        else:
+                            char.runCommandString("ss")
                         char.container.addAnimation(char.getPosition(offset=(0,2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
                         pass
                 char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
@@ -1465,7 +1477,7 @@ class Terrain:
             self.charactersByTile[bigPos] = []
         self.charactersByTile[bigPos].append(character)
 
-        character.changed()
+        character.changed("entered terrain")
         self.changed("entered terrain", character)
 
     def addRooms(self, rooms):

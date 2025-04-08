@@ -10,9 +10,9 @@ class GoToTile(src.quests.MetaQuestSequence):
 
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:
-                raise ValueError("target position out of range")
+                raise ValueError(f"target position {targetPosition} out of range")
             if targetPosition[1] < 1 or targetPosition[1] > 13:
-                raise ValueError("target position out of range")
+                raise ValueError(f"target position {targetPosition} out of range")
 
         questList = []
         super().__init__(questList, creator=creator, lifetime=lifetime)

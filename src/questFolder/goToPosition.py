@@ -9,9 +9,9 @@ class GoToPosition(src.quests.MetaQuestSequence):
     def __init__(self, description="go to position", creator=None,targetPosition=None,ignoreEndBlocked=False,reason=None):
         if targetPosition:
             if targetPosition[0] < 0 or targetPosition[0] > 13:
-                raise ValueError("target position out of range")
+                raise ValueError(f"target position {targetPosition} out of range")
             if targetPosition[1] < 0 or targetPosition[1] > 13:
-                raise ValueError("target position out of range")
+                raise ValueError(f"target position {targetPosition} out of range")
 
         questList = []
         super().__init__(questList, creator=creator)

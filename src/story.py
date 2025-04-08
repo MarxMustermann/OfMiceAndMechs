@@ -1088,7 +1088,7 @@ class MainGame(BasicPhase):
             self.playerBasePosition = self.get_free_position("teleportation hub")
             #self.setUpPlayerBase(self.playerBasePosition)
 
-        for _i in range(1, 10):
+        for _i in range(1, 25):
             self.get_free_position("nothingness")
 
         remote_base_npc = [True] * 9 + [False]

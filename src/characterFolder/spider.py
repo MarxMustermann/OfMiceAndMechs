@@ -16,6 +16,7 @@ class Spider(src.monster.Monster):
         name="Spider",
         creator=None,
         characterId=None,
+        mutated = False,
     ):
         """
         basic state setting
@@ -53,11 +54,26 @@ class Spider(src.monster.Monster):
 
         self.defending = None
 
+        self.mutated = False
+        if mutated:
+            self.mutate()
+
+
+    def mutate(self):
+        if self.mutated:
+            self.die()
+        else:
+            self.mutated = True
+            self.baseDamage *= 10
+
     def render(self):
         """
         force static render
         """
-        return "SP"
+        color = (255,255,255)
+        if self.mutated:
+            color = (240,30,30)
+        return (src.interaction.urwid.AttrSpec((46, 99, 67), "black"), "SP")
 
     def generateQuests(self):
 

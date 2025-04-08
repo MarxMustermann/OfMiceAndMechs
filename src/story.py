@@ -1241,6 +1241,8 @@ class MainGame(BasicPhase):
         print("len(self.available_positions)")
         print(len(self.available_positions))
 
+        self.setUpSpidersPit(self.get_free_position("spider pit"))
+
         while self.available_positions:
             self.setUpRuin(self.get_free_position("ruin"))
 
@@ -2001,6 +2003,22 @@ but they are likely to explode when disturbed.
         statue.charges = 5
         room.addItem(statue,(6,6,0))
 
+    def setUpSpidersPit(self,pos):
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "spider pit"
+        currentTerrain.maxMana = 0
+
+        for i in range(50):
+            bigX = random.randint(1,13)
+            bigY = random.randint(1,13)
+
+            smallX = random.randint(1,13)
+            smallY = random.randint(1,13)
+
+            mutantSpider = src.characters.characterMap["Spider"](mutated=True)
+
+            currentTerrain.addCharacter(mutantSpider,bigX*15+smallX, bigY*15+smallY)
+
     def setUpSternsBase(self,pos):
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "sterns base"
@@ -2012,6 +2030,7 @@ but they are likely to explode when disturbed.
         self.factionCounter += 1
 
         architect = src.magic.getArchitect(currentTerrain)
+
         ####
         # create the control room
         ##

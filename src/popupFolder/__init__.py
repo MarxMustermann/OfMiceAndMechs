@@ -1,2 +1,5 @@
 import src.popupFolder.enterTrapRoom
 import src.popupFolder.enterArenaRoom
+import src.popupFolder.enterRuinTerrain
+import src.popupFolder.entreLabTerrain
+import src.popupFolder.enterShrineTerrain

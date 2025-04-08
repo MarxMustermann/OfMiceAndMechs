@@ -125,6 +125,10 @@ class DebugMenu(src.subMenu.SubMenu):
                                         displayChar = "RB"
                                     elif tag == "lab":
                                         displayChar = "LA"
+                                    elif tag == "ruin":
+                                        displayChar = "R "
+                                    elif tag == "shrine":
+                                        displayChar = "S "
                                     else:
                                         displayChar = "  "
                                 else:

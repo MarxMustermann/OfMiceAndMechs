@@ -136,11 +136,19 @@ class DebugMenu(src.subMenu.SubMenu):
                                     elif tag == "lab":
                                         displayChar = "LA"
                                     elif tag == "ruin":
-                                        displayChar = "R "
+                                        displayChar = "RU"
                                     elif tag == "shrine":
-                                        displayChar = "S "
+                                        displayChar = "SH"
+                                    elif tag == "abbandoned Factory":
+                                        displayChar = "af"
+                                    elif tag == "statue room":
+                                        displayChar = "sr"
+                                    elif tag == "dungeon":
+                                        displayChar = "du"
+                                    elif tag == "spider pit":
+                                        displayChar = "sp"
                                     else:
-                                        displayChar = "  "
+                                        displayChar = ".."
                                 else:
                                     displayChar = "  "
                                 mapContent[x].append(displayChar)

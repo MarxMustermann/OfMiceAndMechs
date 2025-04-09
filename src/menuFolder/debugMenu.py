@@ -15,6 +15,7 @@ class DebugMenu(src.subMenu.SubMenu):
     debug_options = [
         "Teleport",
         "Teleport Terrain",
+        "Clear Fog",
         "Add Mana",
         "Execute Code",
         "Test Crash",
@@ -166,6 +167,13 @@ class DebugMenu(src.subMenu.SubMenu):
                             "params": {"character": character},
                         }
                         return True
+                case "Clear Fog":
+                    if current_change:
+                        for x in range(1, 14):
+                            for y in range(1, 14):
+                                current_terrain = src.gamestate.gamestate.terrainMap[x][y]
+                                character.terrainInfo[current_terrain.getPosition()] = {"tag": current_terrain.tag}
+                                return True
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))

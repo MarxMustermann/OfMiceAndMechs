@@ -2044,6 +2044,11 @@ but they are likely to explode when disturbed.
         actualCharacter.faction = faction
         mainRoom.addCharacter(actualCharacter,5,5)
 
+        actualCharacter.registers["HOMETx"] = pos[0]
+        actualCharacter.registers["HOMETy"] = pos[1]
+        actualCharacter.registers["HOMEx"] = 7
+        actualCharacter.registers["HOMEy"] = 7
+
         # make npc protect the room
         quest = src.quests.questMap["SecureTile"](toSecure=mainRoom.getPosition())
         quest.autoSolve = True

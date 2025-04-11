@@ -15,9 +15,9 @@ class EnemyCaller(src.items.Item):
         super().__init__(display="EC")
 
     def handleEpochChange(self):
-        pass
+        self.spawnEnemiesEveryEpoch()
 
-    def SpawnEnemiesEveryEpoch(self):
+    def spawnEnemiesEveryEpoch(self):
         terrain = self.getTerrain()
         if not len(terrain.characters) >= self.enemy_limit:
             for x in range(1, 14):

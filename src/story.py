@@ -2527,7 +2527,7 @@ but they are likely to explode when disturbed.
 
         enemy_caller = src.items.itemMap["EnemyCaller"]()
         caller_room.addItem(enemy_caller, (11, 11, 0))
-        enemy_caller.SpawnEnemiesEveryEpoch()
+        enemy_caller.spawnEnemiesEveryEpoch()
         for _i in range(random.randint(5, 7)):
             monsterType = random.choice(["Golem", "ShieldBug"])
             pos = (random.randint(1, 11), random.randint(1, 11), 0)

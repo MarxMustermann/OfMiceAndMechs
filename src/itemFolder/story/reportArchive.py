@@ -32,6 +32,7 @@ class ReportArchive(src.items.Item):
         ownPos = self.getTerrain().getPosition()
         emptyPlaces = []
         spiderPits = []
+        labs = []
 
         for x in range(1,14):
             for y in range(1,14):
@@ -42,6 +43,8 @@ class ReportArchive(src.items.Item):
                         emptyPlaces.append(checkTerrain.getPosition())
                     case "spider pit":
                         spiderPits.append(checkTerrain.getPosition())
+                    case "lab":
+                        labs.append(checkTerrain.getPosition())
 
         random.shuffle(emptyPlaces)
         emptyPlaces = emptyPlaces[:min(3,len(emptyPlaces))]
@@ -65,7 +68,7 @@ class ReportArchive(src.items.Item):
                 ("Remote bases established","To get some ressources we are missing here remote bases were established.\n\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n\nI hope they will stay active even without additional protection.")
             )
         self.reports.append(
-                ("Expedition started","The base leader and the leading officers are starting an expedition to (x,y,z) soon.\nWe are ordered to stay on standby until they return."),
+                ("Expedition started",f"The base leader and the leading officers are starting an expedition to {random.choice(labs)} soon.\nWe are ordered to stay on standby until they return."),
             )
 
     def showReports(self,character):

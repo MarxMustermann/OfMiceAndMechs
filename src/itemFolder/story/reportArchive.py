@@ -70,9 +70,9 @@ class ReportArchive(src.items.Item):
         self.reports.append(
                 ("Base established",f"The base has been established, technically.\nThe colony mech has arrived and was placed.\nThere is little space available and production capacity is severly limited.\n\nThat half of the crew were killed by Spiders doesn't help either,\nbut they will continue to be useful as ghuls.\nAll spider eggs will have to be destroyed or they will be a long term problem.\n\nAt least it is not as bad as on {random.choice(spiderPits)}.\nThe Spiders there had a posion strong enough to kill a clone with a single bite!")
             )
-        self.reports.append(
-                ("Base extension complete","The Base now has several additional rooms to allow for more storage and production.\n\nWe were ordered to experiment with the room layouts.\nSo we will use the wall production FloorPlan from (x,y,z)\nand the storage room layout like the one we have seen on terrain (x,y,z)")
-            )
+        #self.reports.append(
+        #        ("Base extension complete","The Base now has several additional rooms to allow for more storage and production.\n\nWe were ordered to experiment with the room layouts.\nSo we will use the wall production FloorPlan from (x,y,z)\nand the storage room layout like the one we have seen on terrain (x,y,z)")
+        #    )
         self.reports.append(
                 ("Remote bases established",f"To get some ressources we are missing here remote bases were established:\n\n{remoteBasesString}\n\nI hope they will stay active even without additional protection.")
             )

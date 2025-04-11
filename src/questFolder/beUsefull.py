@@ -318,6 +318,11 @@ Press d to move the cursor and show the subquests description.
 
 
         terrain = character.getTerrain()
+        if not character.registers.get("HOMETx") or not character.registers.get("HOMETy"):
+            if not dryRun:
+                logger.error("Character without home")
+                self.fail("no home")
+            return (None,None)
         if terrain.xPosition != character.registers["HOMETx"] or terrain.yPosition != character.registers["HOMETy"]:
             quest = src.quests.questMap["GoHome"]()
             return ([quest],None)

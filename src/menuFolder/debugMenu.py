@@ -57,8 +57,7 @@ class DebugMenu(src.subMenu.SubMenu):
                         for (godId,godInfo) in src.gamestate.gamestate.gods.items():
                             lastPos = godInfo["lastHeartPos"]
                             godInfo["lastHeartPos"] = (terrain.xPosition,terrain.yPosition)
-                            print(godInfo)
-                        print(src.gamestate.gamestate.gods)
+                        return True
                 case "clear path cache":
                     if current_change:
                         terrain = character.getTerrain()

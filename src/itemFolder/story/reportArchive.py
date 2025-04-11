@@ -33,6 +33,7 @@ class ReportArchive(src.items.Item):
         emptyPlaces = []
         spiderPits = []
         labs = []
+        remoteBases = []
 
         for x in range(1,14):
             for y in range(1,14):
@@ -45,15 +46,23 @@ class ReportArchive(src.items.Item):
                         spiderPits.append(checkTerrain.getPosition())
                     case "lab":
                         labs.append(checkTerrain.getPosition())
+                    case "remote base":
+                        labs.append(remoteBases.getPosition())
 
         random.shuffle(emptyPlaces)
         emptyPlaces = emptyPlaces[:min(3,len(emptyPlaces))]
-
         emptyPlacesString = ""
         for place in emptyPlaces:
             emptyPlacesString += f"{place}, "
         if len(emptyPlacesString) > 0:
             emptyPlacesString = emptyPlacesString[:-2]
+
+        random.shuffle(remoteBases)
+        remoteBases = emptyPlaces[:min(3,len(remoteBases))]
+        for place in remoteBases:
+            remoteBasesString += f"{place}, "
+        if len(remoteBasesString) > 0:
+            remoteBasesString = remoteBasesString[:-2]
                 
         self.reports.append(
                 ("Survey complete",f"The terrain {ownPos} is pretty unremarkable, but has the ressource we need.\nSome scrap to proccess, enough moisture to grow mold.\nEven a small forrest to harvest maggots from is here!\n\nThat is a nice change from the terrains {emptyPlacesString}\nthose were so dry you couldn't grow a single mold bloom on it.")
@@ -65,7 +74,7 @@ class ReportArchive(src.items.Item):
                 ("Base extension complete","The Base now has several additional rooms to allow for more storage and production.\n\nWe were ordered to experiment with the room layouts.\nSo we will use the wall production FloorPlan from (x,y,z)\nand the storage room layout like the one we have seen on terrain (x,y,z)")
             )
         self.reports.append(
-                ("Remote bases established","To get some ressources we are missing here remote bases were established.\n\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n(x,y,z) for XYZ\n\nI hope they will stay active even without additional protection.")
+                ("Remote bases established",f"To get some ressources we are missing here remote bases were established:\n\n{remoteBasesString}\n\nI hope they will stay active even without additional protection.")
             )
         self.reports.append(
                 ("Expedition started",f"The base leader and the leading officers are starting an expedition to {random.choice(labs)} soon.\nWe are ordered to stay on standby until they return."),

@@ -6,9 +6,9 @@ import src
 class ScavengeTile(src.quests.MetaQuestSequence):
     type = "ScavengeTile"
 
-    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False):
+    def __init__(self, description="scavenge tile", creator=None, targetPosition=None,toCollect=None, reason=None, endOnFullInventory=False,tryHard=False,lifetime=None):
         questList = []
-        super().__init__(questList, creator=creator)
+        super().__init__(questList, creator=creator,lifetime=None)
         self.metaDescription = description+" "+str(targetPosition)
         self.baseDescription = description
         self.toCollect = toCollect

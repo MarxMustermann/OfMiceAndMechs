@@ -579,6 +579,7 @@ press key to select action
 * M = move to terrain
 * g = run guard mode for 10 ticks
 * h = get emergency heatlh
+* c = mark terrain as explored
 """
         header.set_text(
             (urwid.AttrSpec("default", "default"), "action menu")
@@ -616,6 +617,8 @@ def handleActivitySelection(key,char):
         char.startGuarding(1)
     if key == "h":
         char.getEmergencyHealth()
+    if key == "c":
+        char.terrainInfo[char.getTerrain().getPosition()]["looted"] = True
     if key == "M":
         terrain = char.getTerrain()
 

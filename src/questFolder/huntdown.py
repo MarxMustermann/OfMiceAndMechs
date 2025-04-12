@@ -61,6 +61,11 @@ class Huntdown(src.quests.MetaQuestSequence):
                         self.fail()                     
                     return (None,None)
 
+                if newPos[0] in (0,14,) or newPos[1] in (0,14):
+                    if not dryRun:
+                        self.fail("target left terrain")
+                    return (None,None)
+
                 quest = src.quests.questMap["GoToTile"](paranoid=True,targetPosition=newPos)
                 return ([quest],None)
             quest = src.quests.questMap["Fight"](suicidal=True)

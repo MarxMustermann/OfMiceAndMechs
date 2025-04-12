@@ -47,7 +47,7 @@ class ReportArchive(src.items.Item):
                     case "lab":
                         labs.append(checkTerrain.getPosition())
                     case "remote base":
-                        labs.append(remoteBases.getPosition())
+                        remoteBases.append(checkTerrain.getPosition())
 
         random.shuffle(emptyPlaces)
         emptyPlaces = emptyPlaces[:min(3,len(emptyPlaces))]
@@ -59,6 +59,7 @@ class ReportArchive(src.items.Item):
 
         random.shuffle(remoteBases)
         remoteBases = emptyPlaces[:min(3,len(remoteBases))]
+        remoteBasesString = ""
         for place in remoteBases:
             remoteBasesString += f"{place}, "
         if len(remoteBasesString) > 0:

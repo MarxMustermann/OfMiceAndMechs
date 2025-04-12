@@ -5,3 +5,4 @@ import src.itemFolder.logistics.sorter
 import src.itemFolder.logistics.typedStockpileManager
 import src.itemFolder.logistics.uniformStockpileManager
 import src.itemFolder.logistics.dimensionTeleporter
+import src.itemFolder.logistics.mapTable

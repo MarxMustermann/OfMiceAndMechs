@@ -2451,7 +2451,7 @@ but they are likely to explode when disturbed.
                 )
 
                 # decide between mixed or pure loot room
-                loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable"]
+                loot_types = ["ScrapCompactor","MetalBars","Vial","MoldFeed","Bolt","Flask","GooFlask","Rod","Sword","Scrap","ManufacturingTable","MemoryFragment"]
                 if random.random() > 0.5:
                     loot_types = [random.choice(loot_types)]
 

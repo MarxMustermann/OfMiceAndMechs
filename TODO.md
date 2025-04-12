@@ -18,4 +18,3 @@ Add a formulaic good ending where the solver points to and a bad ending
 * ability to mark terrain as explored
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
-* more places to find memory fragments. In ruins?

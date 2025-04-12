@@ -35,8 +35,6 @@ class MapTable(src.items.Item):
     def showMap(self, character, cursor = None):
         """
         """
-        print(self.terrainInfo)
-
         terrain = self.getTerrain()
 
         # render empty map

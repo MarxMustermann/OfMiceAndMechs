@@ -10,7 +10,6 @@ Add a formulaic good ending where the solver points to and a bad ending
 * add teleporter infrastructure to remote bases
 * add a way to tell a NPC to stop and wait
 * fix teleporter globals
-* make debug terrain teleport use terrain menu
 * save on death / respawn
 * make NPC reconsider when entering rooms with alarms
 * fix shades of red for dungeon enemies for difficult mode

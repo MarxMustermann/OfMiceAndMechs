@@ -123,37 +123,9 @@ class DebugMenu(src.subMenu.SubMenu):
                         return True
                 case "Teleport Terrain":
                     if current_change:
-                        mapContent = []
                         functionMap = {}
                         for x in range(15):
-                            mapContent.append([])
                             for y in range(15):
-                                tag: str = src.gamestate.gamestate.terrainMap[x][y].tag
-                                if tag:
-                                    if tag.endswith("base"):
-                                        displayChar = "RB"
-                                    elif tag == "lab":
-                                        displayChar = "LA"
-                                    elif tag == "ruin":
-                                        displayChar = "RU"
-                                    elif tag == "shrine":
-                                        displayChar = "SH"
-                                    elif tag == "abbandoned Factory":
-                                        displayChar = "af"
-                                    elif tag == "statue room":
-                                        displayChar = "sr"
-                                    elif tag == "dungeon":
-                                        displayChar = "du"
-                                    elif tag == "spider pit":
-                                        displayChar = "sp"
-                                    else:
-                                        displayChar = ".."
-                                else:
-                                    displayChar = "  "
-                                mapContent[x].append(displayChar)
-                        for x in range(15):
-                            for y in range(15):
-                                mapContent[x].append(displayChar)
                                 functionMap[(y, x)] = {
                                     "j": {
                                         "function": {
@@ -165,8 +137,7 @@ class DebugMenu(src.subMenu.SubMenu):
                                     }
                                 }
 
-                        submenue = src.menuFolder.mapMenu.MapMenu(
-                            mapContent=mapContent,
+                        submenue = src.menuFolder.TerrainMenu.TerrainMenu(
                             functionMap=functionMap,
                             cursor=character.getTerrain().getPosition(),
                             applyKey="big_coordinate",

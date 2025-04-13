@@ -52,3 +52,5 @@ Add a formulaic good ending where the solver points to and a bad ending
 * reduce shrine amount
 * add way more memory fragments
 * disable traproom cheating
+* expain "press f to shoot"
+* integrate the map item

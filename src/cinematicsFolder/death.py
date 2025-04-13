@@ -187,6 +187,9 @@ def Death(extraParam):
                     chosen_candidate.addListener(src.gamestate.gamestate.story.changedTerrain,"changedTerrain")
                     chosen_candidate.addListener(src.gamestate.gamestate.story.deliveredSpecialItem,"deliveredSpecialItem")
                     chosen_candidate.addListener(src.gamestate.gamestate.story.gotEpochReward,"got epoch reward")
+
+                    #  do autosave
+                    src.gamestate.gamestate.save()
                     return
             if isinstance(event, tcod.event.Quit):
                 raise SystemExit()

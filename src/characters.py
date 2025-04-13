@@ -255,41 +255,6 @@ class Character:
 
         self.statusEffects = []
 
-    def renderZoneInfo(self):
-        rawMap = []
-        for y in range(15):
-            rawMap.append([])
-            for x in range(15):
-                if x == 0 or y == 0 or x == 14 or y == 14:
-                    rawMap[y].append(src.canvas.displayChars.forceField)
-                else:
-                    rawMap[y].append("  ")
-            rawMap[y].append("\n")
-
-        homeCoordinate = None
-        if "HOMETx" in self.registers:
-            homeCoordinate = (self.registers["HOMETx"],self.registers["HOMETy"],0)
-        characterCoordinate = self.getTerrainPosition()
-
-        for (pos,info) in self.terrainInfo.items():
-            if info["tag"] == "nothingness":
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec("#550", "black"),".`")
-            elif info["tag"] == "shrine":
-                color = "#999"
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"\\/")
-            elif info["tag"] == "ruin":
-                color = "#666"
-                if info.get("looted"):
-                    color = "#550"
-                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"),"&%")
-            else:
-                rawMap[pos[1]][pos[0]] = info["tag"][:2]
-        if homeCoordinate:
-            rawMap[homeCoordinate[1]][homeCoordinate[0]] = "HH"
-        rawMap[characterCoordinate[1]][characterCoordinate[0]] = "@@"
-
-        return rawMap
-
     def applyNativeMeleeAttackEffects(self,target):
         pass
 

@@ -10,10 +10,8 @@ Add a formulaic good ending where the solver points to and a bad ending
 * add teleporter infrastructure to remote bases
 * add a way to tell a NPC to stop and wait
 * fix teleporter globals
-* save on death / respawn
 * make NPC reconsider when entering rooms with alarms
 * fix shades of red for dungeon enemies for difficult mode
-* ability to mark terrain as explored
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
 * make grindstones less OP
@@ -24,7 +22,7 @@ Add a formulaic good ending where the solver points to and a bad ending
 ** make timinds in scheduling changeable
 * change names
 * add meny/way to show list of nearby items 
-* make room fast travel menu use 
+* make room fast travel use shared menu
 * add way to create mana crystals from terrain
 * fix base door
 * render unbolted manufacturing tables differently

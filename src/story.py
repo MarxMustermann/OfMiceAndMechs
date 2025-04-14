@@ -1097,7 +1097,8 @@ class MainGame(BasicPhase):
             t_pos = self.get_free_position("remote base")
             currentTerrain = src.gamestate.gamestate.terrainMap[t_pos[1]][t_pos[0]]
 
-            available_tiles = [(x, y) for x in range(3, 12) for y in range(3, 12)]
+            available_range = range(4, 11)
+            available_tiles = [(x, y) for x in available_range for y in available_range]
             random.shuffle(available_tiles)
 
             def remove(x):
@@ -1116,6 +1117,8 @@ class MainGame(BasicPhase):
             src.magic.spawnRoomFromFloorPlan(
                 currentTerrain, remove((base_tile[0], base_tile[1] - 1)), f"scrapToMetalbars{floorPlanNum}.json"
             )
+
+            src.magic.SpawnStorageRoom(currentTerrain, remove((base_tile[0], base_tile[1] - 2)), controlRoom)
 
             src.magic.spawnScrapField(currentTerrain, available_tiles.pop())
 

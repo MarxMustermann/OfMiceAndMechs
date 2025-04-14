@@ -366,7 +366,7 @@ numUsed: {self.numUsed}
         return text
 
     def render(self):
-        if self.disabled or self.toProduce == None:
+        if self.disabled or self.toProduce == None or self.bolted == False:
             return "mT"
         if self.inUse:
             return "mt"

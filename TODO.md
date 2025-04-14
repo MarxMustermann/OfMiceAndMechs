@@ -24,7 +24,6 @@ Add a formulaic good ending where the solver points to and a bad ending
 * add meny/way to show list of nearby items 
 * make room fast travel use shared menu
 * add way to create mana crystals from terrain
-* render unbolted manufacturing tables differently
 * add item to store/excange map memory
 * show enemy coordinates in 
 * spawn stuff in ruins more randomised

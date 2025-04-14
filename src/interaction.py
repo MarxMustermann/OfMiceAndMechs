@@ -3776,7 +3776,7 @@ def getTcodEvents():
                 translatedKey = None
                 if key in (tcod.event.KeySym.LSHIFT,4097):
                     continue
-                if key == tcod.event.KeySym.RETURN:
+                if key in (tcod.event.KeySym.RETURN, tcod.event.KeySym.KP_ENTER):
                     translatedKey = "enter"
                 if key == tcod.event.KeySym.BACKSPACE:
                     translatedKey = "backspace"

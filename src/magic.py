@@ -407,13 +407,13 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
     spawnedRoom.addStorageSlot((5, 5, 0), "Door", {"desiredState": "filled"})
 
 
-def spawnControlRoom(terrain, coordinate, doors="0,6 6,0 6,12", spawnReportArchive=False):
-    mainRoom = spawnRoom(terrain, "EmptyRoom", coordinate, doors)
+def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
+    mainRoom = spawnRoom(terrain, "EmptyRoom", coordinate, "0,6 6,0 6,12 12,6")
 
-    # for item in mainRoom.getItemByPosition((12, 6, 0)):
-    #     if item.type != "Door":
-    #         continue
-    #     item.walkable = False
+    for item in mainRoom.getItemByPosition((12, 6, 0)):
+         if item.type != "Door":
+             continue
+         item.walkable = False
 
     # place anvil
     anvilPos = (10, 2, 0)

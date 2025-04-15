@@ -23,6 +23,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "Test Crash",
         "Debug Memory",
         "clear path cache",
+        "pass time",
     ]
 
     def __init__(self):
@@ -161,6 +162,17 @@ class DebugMenu(src.subMenu.SubMenu):
                                 current_terrain = src.gamestate.gamestate.terrainMap[x][y]
                                 character.terrainInfo[current_terrain.getPosition()] = {"tag": current_terrain.tag}
                         return True
+                case "pass time":
+                    if current_change:
+                        submenue = src.menuFolder.inputMenu.InputMenu(
+                            "Type amount of ticks to pass", targetParamName="ticks"
+                        )
+                        character.macroState["submenue"] = submenue
+                        character.macroState["submenue"].followUp = {
+                            "container": self,
+                            "method": "action",
+                            "params": {"character": character},
+                        }
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
@@ -219,3 +231,16 @@ class DebugMenu(src.subMenu.SubMenu):
                 room[0].addCharacter(character, 7, 7)
             else:
                 terrain.addCharacter(character, 15 * 7 + 7, 15 * 7 + 7)
+
+        if "ticks" in params:
+            params["productionTime"] = int(params["ticks"])
+            params["doneProductionTime"] = 0
+            params["hitCounter"] = character.numAttackedWithoutResponse
+
+            class Dummy(src.items.itemMap["WorkShop"]):
+                def produceItem_done(self, params):
+                    ticks = params["productionTime"]
+                    character = params["character"]
+                    character.addMessage(f"passed {ticks} tick")
+
+            Dummy().produceItem_wait(params)

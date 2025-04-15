@@ -3,6 +3,26 @@ import random
 
 import src
 
+def SpawnStorageRoom(terrain, coordinate, controlRoom):
+    room = spawnRoomFromFloorPlan(terrain, coordinate, "storage1.json")
+    pos = room.getPosition()
+
+    controlRoom.storageRooms.append(room)
+
+    for otherRoom in terrain.rooms:
+        otherRoom.sources.insert(0, (pos, "Corpse"))
+        otherRoom.sources.insert(0, (pos, "Scrap"))
+        otherRoom.sources.insert(0, (pos, "Sheet"))
+        otherRoom.sources.insert(0, (pos, "Frame"))
+        otherRoom.sources.insert(0, (pos, "ScrapCompactor"))
+        otherRoom.sources.insert(0, (pos, "Rod"))
+        otherRoom.sources.insert(0, (pos, "Armor"))
+        otherRoom.sources.insert(0, (pos, "MetalBars"))
+        otherRoom.sources.insert(0, (pos, "Sword"))
+        otherRoom.sources.insert(0, (pos, "Painter"))
+        otherRoom.sources.insert(0, (pos, "ScratchPlate"))
+        otherRoom.sources.insert(0, (pos, "CorpseAnimator"))
+        otherRoom.sources.insert(0, (pos, "LightningRod"))
 
 def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
     room = spawnRoom(terrain, "EmptyRoom", coordinate)
@@ -11,6 +31,7 @@ def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
         room.floorPlan = getFloorPlanFromDict(rawFloorplan)
     room.spawnPlaned()
     room.spawnPlaned()
+    return room
 
 
 def getFloorPlanFromDict(rawFloorplan):
@@ -41,6 +62,36 @@ def getFloorPlanFromDict(rawFloorplan):
             walkingSpace.append(tuple(item))
         converted["walkingSpace"] = walkingSpace
     return converted
+
+def convertFloorPlanToDict(self, floorPlan):
+    converted = {}
+    if "buildSites" in floorPlan:
+        buildSites = []
+        for item in floorPlan["buildSites"]:
+            buildSites.append([list(item[0]), item[1], item[2]])
+        converted["buildSites"] = buildSites
+    if "inputSlots" in floorPlan:
+        inputSlots = []
+        for item in floorPlan["inputSlots"]:
+            inputSlots.append([list(item[0]), item[1], item[2]])
+        converted["inputSlots"] = inputSlots
+    if "outputSlots" in floorPlan:
+        outputSlots = []
+        for item in floorPlan["outputSlots"]:
+            outputSlots.append([list(item[0]), item[1], item[2]])
+        converted["outputSlots"] = outputSlots
+    if "storageSlots" in floorPlan:
+        outputSlots = []
+        for item in floorPlan["storageSlots"]:
+            outputSlots.append([list(item[0]), item[1], item[2]])
+        converted["storageSlots"] = outputSlots
+    if "walkingSpace" in floorPlan:
+        walkingSpace = []
+        for item in floorPlan["walkingSpace"]:
+            walkingSpace.append(list(item))
+        converted["walkingSpace"] = walkingSpace
+    return converted
+
 
 def spawnScrapField(terrain, coordinate):
     bigX, bigY = coordinate
@@ -409,7 +460,7 @@ def spawnSpawnRoom(terrain, coordinate, faction, doors="0,6 6,0 6,12 12,6"):
 
 def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
     mainRoom = spawnRoom(terrain, "EmptyRoom", coordinate, "0,6 6,0 6,12 12,6")
-
+    mainRoom.storageRooms = []
     for item in mainRoom.getItemByPosition((12, 6, 0)):
          if item.type != "Door":
              continue

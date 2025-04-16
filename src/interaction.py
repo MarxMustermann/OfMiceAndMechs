@@ -86,7 +86,7 @@ def advanceGame():
     try:
         src.gamestate.gamestate.teleporterGroups
     except:
-        src.gamestate.gamestate.teleporterGroups = {"default": ([], [])}
+        src.gamestate.gamestate.teleporterGroups = {}
 
     for item in src.gamestate.gamestate.itemToUpdatePerTick:
         item.tick()

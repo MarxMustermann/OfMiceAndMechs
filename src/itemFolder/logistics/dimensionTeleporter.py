@@ -15,24 +15,24 @@ class DimensionTeleporter(src.items.Item):
     def __init__(self):
         super().__init__(display="DH", name=self.name)
         self.mode = self.SenderMode
-        self.group = "default"
+        self.group = None
         self.bolted = False
         self.direction = None
 
         self.charges = 100
         self.chargePerLightingRod = 100
-
+        self.numUsed = 0
         self.applyOptions.extend(
             [
                 ("examine properties", "examine properties"),
-                ("change group", "change group"),
+                ("change Frequency", "change Frequency"),
                 ("change to receiver", "change to receiver"),
                 ("change input direction", "change input direction"),
             ]
         )
         self.applyMap = {
             "examine properties": self.showProperties,
-            "change group": self.changeGroup,
+            "change Frequency": self.changeGroup,
             "change to receiver": self.changeMode,
             "change to sender": self.changeMode,
             "change input direction": self.changeInputDirection,
@@ -67,7 +67,8 @@ class DimensionTeleporter(src.items.Item):
         if hasattr(self, "numUsed"):
             self.numUsed = 0
 
-        src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
+        if self.group:
+            self.addToGroup()
 
     def unboltAction(self, character):
         self.bolted = False
@@ -76,23 +77,33 @@ class DimensionTeleporter(src.items.Item):
         if hasattr(self, "numUsed"):
             self.numUsed = 0
 
-        src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
+        self.removeFromGroup()
+
+    def removeFromGroup(self):
+        if self.group:
+            src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
+
+    def addToGroup(self):
+        if self.group not in src.gamestate.gamestate.teleporterGroups:
+            src.gamestate.gamestate.teleporterGroups[self.group] = ([], [])
+        src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def changeGroup(self, character):
         character.macroState["submenue"] = src.menuFolder.teleporterGroupMenu.TeleporterGroupMenu(self)
 
     def changeMode(self, character):
-        if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
-            src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
+        if self.group:
+            if self in src.gamestate.gamestate.teleporterGroups[self.group][self.mode]:
+                src.gamestate.gamestate.teleporterGroups[self.group][self.mode].remove(self)
 
-        if self.mode == self.SenderMode:
-            self.mode = self.ReceiverMode
-            self.applyOptions[2] = ("change to sender", "change to sender")
-        else:
-            self.mode = self.SenderMode
-            self.applyOptions[2] = ("change to receiver", "change to receiver")
+            if self.mode == self.SenderMode:
+                self.mode = self.ReceiverMode
+                self.applyOptions[2] = ("change to sender", "change to sender")
+            else:
+                self.mode = self.SenderMode
+                self.applyOptions[2] = ("change to receiver", "change to receiver")
 
-        src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
+            src.gamestate.gamestate.teleporterGroups[self.group][self.mode].append(self)
 
     def getInputItems(self):
         result = []
@@ -149,6 +160,7 @@ class DimensionTeleporter(src.items.Item):
                             sending_tries += 1
                         else:
                             self.charges -= 1
+                            self.numUsed += 1
                             return
         else:
             for offset in self.default_offsets:
@@ -182,7 +194,7 @@ class DimensionTeleporter(src.items.Item):
             else:
                 text += code + " To all Directions"
 
-        text += "\nGroup Name: " + self.group
+        text += "\nFrequency: " + self.group if str(self.group) else "Not Set"
 
         return text
 

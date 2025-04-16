@@ -5,6 +5,8 @@ import src
 import src.helpers
 import src.menuFolder
 import src.menuFolder.confirmMenu
+import src.menuFolder.inputMenu
+import src.menuFolder.textMenu
 import src.menuFolder.warningMenu
 
 
@@ -41,6 +43,14 @@ class TeleporterGroupMenu(src.subMenu.SubMenu):
             self.teleporter.group = None
             return True
 
+        if key == "i":
+            character.macroState["submenue"] = src.menuFolder.inputMenu.InputMenu("enter frequency")
+            character.macroState["submenue"].followUp = {
+                "container": self,
+                "method": "setGroup",
+                "params": {"character": character},
+            }
+            return True
         text = ""
         width = 20
         points = []
@@ -72,8 +82,19 @@ class TeleporterGroupMenu(src.subMenu.SubMenu):
         src.interaction.main.set_text(
             (
                 src.interaction.urwid.AttrSpec("default", "default"),
-                text + "\n\npress a d to change the frequency\npress shift to change with bigger steps",
+                text
+                + "\n\npress a d to change the frequency\npress shift to change with bigger steps\nyou can press i to enter manually",
             )
         )
         # exit submenu
         return key == "esc"
+
+    def setGroup(self, params):
+        try:
+            output = D(params["text"])
+            if D(87.5) <= output and output <= D(108):
+                self.teleporter.removeFromGroup()
+                self.teleporter.group = output
+                self.teleporter.addToGroup()
+        except:
+            params["character"].macroState["submenue"] = src.menuFolder.textMenu.TextMenu("Wrong input for Frequency")

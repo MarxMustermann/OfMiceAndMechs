@@ -25,14 +25,14 @@ class DimensionTeleporter(src.items.Item):
         self.applyOptions.extend(
             [
                 ("examine properties", "examine properties"),
-                ("change Frequency", "change Frequency"),
+                ("change frequency", "change frequency"),
                 ("change to receiver", "change to receiver"),
                 ("change input direction", "change input direction"),
             ]
         )
         self.applyMap = {
             "examine properties": self.showProperties,
-            "change Frequency": self.changeGroup,
+            "change frequency": self.changeGroup,
             "change to receiver": self.changeMode,
             "change to sender": self.changeMode,
             "change input direction": self.changeInputDirection,
@@ -194,7 +194,8 @@ class DimensionTeleporter(src.items.Item):
             else:
                 text += code + " To all Directions"
 
-        text += "\nFrequency: " + self.group if str(self.group) else "Not Set"
+        f_text = str(self.group) if self.group else "Not Set"
+        text += "\nFrequency: " + f_text
 
         return text
 

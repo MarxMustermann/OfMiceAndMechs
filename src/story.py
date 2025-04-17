@@ -10,10 +10,12 @@ import copy
 import json
 import logging
 import random
+from decimal import Decimal as D
 
 import requests
 
 import src
+import src.helpers
 import src.magic
 
 logger = logging.getLogger(__name__)
@@ -1092,6 +1094,11 @@ class MainGame(BasicPhase):
             self.get_free_position("nothingness")
 
         remote_base_npc = [True] * 9 + [False]
+
+        def random_freq():
+            return D(random.choice(range(88, 107))) + random.choice([D(0.5), D(0)])
+
+        remote_base_teleporter_group = random_freq()
         random.shuffle(remote_base_npc)
         for i in range(1, 10):
             t_pos = self.get_free_position("remote base")
@@ -1118,7 +1125,11 @@ class MainGame(BasicPhase):
                 currentTerrain, remove((base_tile[0], base_tile[1] - 1)), f"scrapToMetalbars{floorPlanNum}.json"
             )
 
-            src.magic.SpawnStorageRoom(currentTerrain, remove((base_tile[0], base_tile[1] - 2)), controlRoom)
+            if src.helpers.percentage_chance(0.2):
+                remote_base_teleporter_group = random_freq()
+            src.magic.SpawnStorageRoom(
+                currentTerrain, remove((base_tile[0], base_tile[1] - 2)), controlRoom, remote_base_teleporter_group
+            )
 
             src.magic.spawnScrapField(currentTerrain, available_tiles.pop())
 

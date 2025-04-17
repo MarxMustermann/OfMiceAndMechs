@@ -62,8 +62,9 @@ class DimensionTeleporter(src.items.Item):
 
     def boltAction(self, character):
         self.bolted = True
-        character.addMessage("you bolt down the " + self.name + " and activate it")
-        character.changed("boltedItem", {"character": character, "item": self})
+        if character:
+            character.addMessage("you bolt down the " + self.name + " and activate it")
+            character.changed("boltedItem", {"character": character, "item": self})
         if hasattr(self, "numUsed"):
             self.numUsed = 0
 
@@ -72,8 +73,9 @@ class DimensionTeleporter(src.items.Item):
 
     def unboltAction(self, character):
         self.bolted = False
-        character.addMessage("you unbolt the " + self.name)
-        character.changed("unboltedItem", {"character": character, "item": self})
+        if character:
+            character.addMessage("you unbolt the " + self.name)
+            character.changed("unboltedItem", {"character": character, "item": self})
         if hasattr(self, "numUsed"):
             self.numUsed = 0
 
@@ -200,6 +202,10 @@ class DimensionTeleporter(src.items.Item):
         f_text = str(self.group) if self.group else "Not Set"
         text += "\nFrequency: " + f_text
 
+        if self.group:
+            g = src.gamestate.gamestate.teleporterGroups[self.group]
+            network_size = len(g[0]) + len(g[1])
+            text += f"\nNetwork Size: {network_size}"
         return text
 
 src.items.addType(DimensionTeleporter, nonManufactured=True)

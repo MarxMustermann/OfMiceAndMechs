@@ -1,4 +1,5 @@
 import math
+import random
 
 import tcod
 
@@ -137,3 +138,7 @@ def clockwiseangle_and_distance(origin, point):
     # I return first the angle because that's the primary sorting criterium
     # but if two vectors have the same angle then the shorter distance should come first.
     return angle, lenvector
+
+
+def percentage_chance(p):
+    return random.random() < p

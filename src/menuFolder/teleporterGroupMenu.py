@@ -64,7 +64,7 @@ class TeleporterGroupMenu(src.subMenu.SubMenu):
                     text += "  "
             text += "\n"
 
-        new_var = int(self.value - D(87.5)) / (D(108) - D(87.5))
+        new_var = (self.value - D(87.5)) / (D(108) - D(87.5))
         points.sort(key=partial(src.helpers.clockwiseangle_and_distance, (width / 2, width / 2)))
         target = points[len(points) - 1 - int(len(points) * new_var)]
 

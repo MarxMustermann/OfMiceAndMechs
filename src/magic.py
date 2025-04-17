@@ -3,7 +3,7 @@ import random
 
 import src
 
-def SpawnStorageRoom(terrain, coordinate, controlRoom):
+def SpawnStorageRoom(terrain, coordinate, controlRoom, teleporter_group):
     room = spawnRoomFromFloorPlan(terrain, coordinate, "storage1.json")
     pos = room.getPosition()
 
@@ -23,6 +23,13 @@ def SpawnStorageRoom(terrain, coordinate, controlRoom):
         otherRoom.sources.insert(0, (pos, "ScratchPlate"))
         otherRoom.sources.insert(0, (pos, "CorpseAnimator"))
         otherRoom.sources.insert(0, (pos, "LightningRod"))
+
+    teleporter = src.items.itemMap["DimensionTeleporter"]()
+    teleporter.group = teleporter_group
+    teleporter.mode = random.choice([0, 1])
+    teleporter.boltAction(None)
+    room.addItem(teleporter, (1, 1, 0))
+
 
 def spawnRoomFromFloorPlan(terrain, coordinate, floorplan):
     room = spawnRoom(terrain, "EmptyRoom", coordinate)

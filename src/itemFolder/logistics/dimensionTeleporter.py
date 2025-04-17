@@ -179,7 +179,10 @@ class DimensionTeleporter(src.items.Item):
 
     def getLongInfo(self):
         text = "Operation Mode:"
-        text += " Sender" if self.mode == self.SenderMode else " Receiver"
+        if self.group:
+            text += " Sender" if self.mode == self.SenderMode else " Receiver"
+        else:
+            text += "OFF"
         text += "\n"
 
         code = "Input Direction:" if self.mode == self.SenderMode else "Output Direction:"

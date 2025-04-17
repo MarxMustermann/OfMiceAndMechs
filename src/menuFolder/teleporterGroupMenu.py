@@ -83,7 +83,8 @@ class TeleporterGroupMenu(src.subMenu.SubMenu):
             (
                 src.interaction.urwid.AttrSpec("default", "default"),
                 text
-                + "\n\npress a d to change the frequency\npress shift to change with bigger steps\nyou can press i to enter manually",
+                + "\n\npress a d to change the frequency\npress shift to change with bigger steps\nyou can press i to enter manually"
+                "\nyou can press x to turn the teleporter off",
             )
         )
         # exit submenu

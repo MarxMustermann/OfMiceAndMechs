@@ -4,7 +4,7 @@ import src
 
 class SettingMenu(src.subMenu.SubMenu):
     type = "SettingMenu"
-    setting_options = ["auto save","enable sound","set sound volume","toggle fullscreen"]
+    setting_options = ["auto save", "enable sound", "set sound volume", "toggle fullscreen", "change npc rendering"]
 
     def __init__(self, default=None, targetParamName="selection"):
         self.index = 0
@@ -16,7 +16,7 @@ class SettingMenu(src.subMenu.SubMenu):
                 json.dump(src.interaction.settings, f)
             return True
         change_event = False
-        if key in ("a", "d","left","right"):
+        if key in ("a", "d", "left", "right", "j", "enter"):
             change_event = True
         if key in ("w", "s","up","down"):
             self.index += 1 if key in ("s","down") else -1
@@ -44,6 +44,10 @@ class SettingMenu(src.subMenu.SubMenu):
                         )
                     case "auto save":
                         src.interaction.settings["auto save"] = not src.interaction.settings.get("auto save",False)
+
+                    case "change npc rendering":
+                        character.macroState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
+
         for i,setting in enumerate(self.setting_options):
             text+= ">" if self.index == i else ""
             match setting:
@@ -60,6 +64,9 @@ class SettingMenu(src.subMenu.SubMenu):
                 case "auto save":
                     text+= "auto save:    "
                     text += "On" if src.interaction.settings.get("auto save") else "Off"
+                case "change npc rendering":
+                    text += "change npc rendering"
+
             text+="\n"
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 

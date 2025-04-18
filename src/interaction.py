@@ -3074,10 +3074,6 @@ press key for advanced drop
         charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
-    if key in ("t",):
-        charState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
-
-    # open the character information
     if key in ("x",):
         charState["submenue"] = src.menuFolder.messagesMenu.MessagesMenu(char=char)
 

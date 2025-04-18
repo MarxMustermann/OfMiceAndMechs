@@ -5,8 +5,6 @@ Solution:
 Add a formulaic good ending where the solver points to and a bad ending
 ** 
 
-
-* add a way to tell a NPC to stop and wait
 * make NPC reconsider when entering rooms with alarms
 * fix shades of red for dungeon enemies for difficult mode
 * more weapon upgrades and weapon upgrade requirements

@@ -14,6 +14,7 @@ import gzip
 import src.canvas
 import src.chats
 import src.gamestate
+import src.menuFolder
 import src.quests
 import src.rooms
 import src.terrains
@@ -3073,16 +3074,15 @@ press key for advanced drop
         charState["submenue"] = src.menuFolder.combatInfoMenu.CombatInfoMenu(char=char)
 
     # open the character information
-    if key in ("t",):
-        charState["submenue"] = src.menuFolder.changeViewsMenu.ChangeViewsMenu()
-
-    # open the character information
     if key in ("x",):
         charState["submenue"] = src.menuFolder.messagesMenu.MessagesMenu(char=char)
 
     # open the help screen
     if key in (commandChars.show_help,):
         char.specialRender = True
+
+    if key == "t":
+        charState["submenue"] = src.menuFolder.shoutMenu.ShoutMenu()
 
     return (1,key)
 

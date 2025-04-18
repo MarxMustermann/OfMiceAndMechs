@@ -32,6 +32,12 @@ This quest will end in {self.lifetimeEvent.tick - src.gamestate.gamestate.tick} 
             return True
         return False
 
+    def triggerCompletionCheck(self, character=None):
+        if (self.lifetimeEvent.tick - src.gamestate.gamestate.tick) <= 0:
+            self.postHandler()
+            return True
+        return None
+
     def getNextStep(self,character=None,ignoreCommands=False, dryRun = True):
         self.randomSeed = random.random()
         if self.lifetimeEvent:

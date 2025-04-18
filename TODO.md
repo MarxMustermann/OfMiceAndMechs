@@ -23,8 +23,6 @@ Add a formulaic good ending where the solver points to and a bad ending
 * show enemy coordinates in 
 * spawn stuff in ruins more randomised
 * remove "test" from tile movement menu
-* add manacrystal to dungeon won room
-* add memoryfragment to dungeon won room
 * make healing take time
 * better shrine rewards
 * show allies on terrain map

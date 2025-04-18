@@ -2961,6 +2961,13 @@ but they are likely to explode when disturbed.
         item.god = itemID
         mainRoom.addItem(item,(6,2,0))
 
+        if src.helpers.percentage_chance(0.35):
+            mana_crystal = src.items.itemMap["ManaCrystal"]()
+            mainRoom.addItem(mana_crystal, (4, 6, 0))
+
+        if src.helpers.percentage_chance(0.35):
+            fragment = src.items.itemMap["MemoryFragment"]()
+            mainRoom.addItem(fragment, (6, 4, 0))
         # add monsters outside of the dungeon
         for x in range(1,13):
             for y in range(1,13):

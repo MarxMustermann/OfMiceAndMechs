@@ -58,15 +58,32 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
                 return
 
         improvementAmount = 0
+        grindstone_consumed = 0
         if sword.baseDamage < 15:
             improvementAmount += 15-sword.baseDamage
 
-        for grindStone in grindstones:
-            if improvementAmount+sword.baseDamage >= 30:
+        elif sword.baseDamage == 30:
+            character.addMessage("you can't further improve the sword")
+            return
+
+        while grindstone_consumed <= len(grindstones):
+            current_damage_output = sword.baseDamage + improvementAmount
+            if current_damage_output < 25:
+                improvementAmount += 1
+                grindstone_consumed += 1
+            elif current_damage_output < 30:
+                grindStone_amount_needed = (current_damage_output - 24) * 3
+                if len(grindstones) - grindstone_consumed - grindStone_amount_needed >= 0:
+                    grindstone_consumed += grindStone_amount_needed
+                    improvementAmount += 1
+                else:
+                    break
+            else:
                 break
 
-            character.inventory.remove(grindStone)
-            improvementAmount += min(5,30-sword.baseDamage-improvementAmount)
+        if grindstone_consumed:
+            for grindStone in grindstones[:grindstone_consumed]:
+                character.inventory.remove(grindStone)
 
         if not improvementAmount:
             character.addMessage("you can't improve your sword")
@@ -77,6 +94,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         params["productionTime"] = 20*improvementAmount
         params["doneProductionTime"] = 0
         params["improvementAmount"] = improvementAmount
+        params["cost"] = grindstone_consumed
         params["hitCounter"] = character.numAttackedWithoutResponse
 
 
@@ -90,8 +108,13 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         sword = params["sword"]
         sword.baseDamage += improvement
 
-        character.addMessage(f"You improved the sword by {improvement!s} to {sword.baseDamage}")
+        cost = params["cost"]
 
+        character.addMessage(f"You improved the sword by {improvement!s} to {sword.baseDamage}")
+        character.addMessage(f"it costed {cost} grindstone to improve the sword")
+        if sword.baseDamage < 30:
+            amount_to_next_level = (sword.baseDamage - 24) * 3
+            character.addMessage(f"you will need {amount_to_next_level} grindstone to improve the sword again")
 
 
 src.items.addType(SwordSharpener)

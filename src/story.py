@@ -1216,7 +1216,7 @@ class MainGame(BasicPhase):
 
         # prepare state to switch between good and bad ending
         src.gamestate.gamestate.stern["fixedImplant"] = False
-        self.setUpLab(self.get_free_position("lab"))
+        self.setUpLab(self.get_free_position("lab"), remote_base_teleporter_group)
             
         if self.preselection == "Story":
             self.dungeonCrawlInfos.append(self.createStoryStart())
@@ -2519,7 +2519,7 @@ but they are likely to explode when disturbed.
             rand_pos = (random.randint(3,11),random.randint(3,11))
             make_room = random.random() < 0.4
 
-    def setUpLab(self,pos):
+    def setUpLab(self, pos, freq):
         # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "lab"
@@ -2532,6 +2532,9 @@ but they are likely to explode when disturbed.
         teleporter_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (6, 7))
 
         teleporter = src.items.itemMap["DimensionTeleporter"]()
+        teleporter.group = freq
+        teleporter.mode = random.choice([0, 1])
+        teleporter.boltAction(None)
         teleporter_room.addItem(teleporter, (6, 6, 0))
 
         teleporter_manufacturer = src.items.itemMap["TeleporterManufacturer"]()

@@ -2324,7 +2324,14 @@ but they are likely to explode when disturbed.
                 enemy = src.characters.characterMap["Snatcher"]()
                 enemy.faction = "insects"
 
-                quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=300, wandering=True, endWhenCleared=False)
+                lifetime = 300
+                if self.difficulty == "easy":
+                    lifetime = 300
+                if self.difficulty == "medium":
+                    lifetime = 100
+                if self.difficulty == "difficult":
+                    lifetime = 10
+                quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=lifetime, wandering=True, endWhenCleared=False)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)
                 quest.activate()

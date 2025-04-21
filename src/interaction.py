@@ -624,7 +624,7 @@ def handleActivitySelection(key,char):
         terrain = char.getTerrain()
 
         # render empty map
-        mapContent = char.renderZoneInfo()
+        mapContent = src.menuFolder.TerrainMenu.TerrainMenu.renderZoneInfo(char)
         functionMap = {}
         extraText = "test"
 

@@ -4,7 +4,7 @@ import src
 class Berserk(src.statusEffects.DamageBuff,src.statusEffects.MovementBuff):
     type = "Berserk"
 
-    def __init__(self, damageBonus=2, duration=10, speedUp=0.1,reason=None,inventoryItem=None):
+    def __init__(self, damageBonus=10, duration=10, speedUp=0.1,reason=None,inventoryItem=None):
         self.damageBonus = damageBonus
         self.speedUp = speedUp
         super().__init__(duration=duration,reason=reason,inventoryItem=inventoryItem)

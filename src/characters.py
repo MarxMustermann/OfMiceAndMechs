@@ -1443,10 +1443,23 @@ press any other key to attack normally"""
             if issubclass(type(statusEffect), src.statusEffects.DamageBuff):
                 damage, bonus = statusEffect.modDamage(attacker=self,attacked= target, damage = damage, bonus = bonus)
                 bonus+= " "
+
+        enemyHP = target.health
         target.hurt(damage, reason=reason, actor=self)
         self.addMessage(
-            f"you attack the enemy for {damage} damage {bonus}, the enemy has {target.health}/{target.maxHealth} health left"
+            f"you attack the enemy for {damage} damage {bonus}"
         )
+        if not target.dead:
+            self.addMessage(
+                f"the enemy has {target.health}/{target.maxHealth} health left"
+                )
+        else:
+            overkill = damage-enemyHP
+            self.addMessage(
+                f"the enemy is dead. You overkilled by {overkill}"
+                )
+            if self.weapon:
+                self.weapon.degrade(multiplier=overkill,character=self)
 
         if self.addRandomExhaustionOnAttack:
             self.exhaustion += random.randint(1,4)
@@ -1485,7 +1498,10 @@ press any other key to attack normally"""
             self.addMessage(f"exhaustion: you {self.exhaustion} enemy {target.exhaustion}")
 
         if target.dead:
-            self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
+            overkill = damage-enemyHP
+            while overkill > 0:
+                self.statusEffects.append(src.statusEffects.statusEffectMap["Berserk"](reason="You killed somebody"))
+                overkill -= 20
         else:
             self.applyNativeMeleeAttackEffects(target)
 

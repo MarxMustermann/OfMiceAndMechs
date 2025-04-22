@@ -1,8 +1,6 @@
 import random
 
 import src
-import src.items
-
 
 class SwordSharpener(src.items.itemMap["WorkShop"]):
     type = "SwordSharpener"
@@ -113,8 +111,10 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         character.addMessage(f"You improved the sword by {improvement!s} to {sword.baseDamage}")
         character.addMessage(f"it costed {cost} grindstone to improve the sword")
         if sword.baseDamage < 30:
-            amount_to_next_level = (sword.baseDamage - 24) * 3
+            if sword.baseDamage < 25:
+                amount_to_next_level = 1
+            else:
+                amount_to_next_level = (sword.baseDamage - 24) * 3
             character.addMessage(f"you will need {amount_to_next_level} grindstone to improve the sword again")
-
 
 src.items.addType(SwordSharpener)

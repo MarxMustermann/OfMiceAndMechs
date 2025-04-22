@@ -40,7 +40,7 @@ class ShieldBug(src.characters.characterMap["Insect"]):
         if src.gamestate.gamestate.difficulty == "difficult":
             self.baseDamage *= 2
             self.health *= 2
-            self.maxHealth = 2
+            self.maxHealth *= 2
 
         self.godMode = True
         self.movementSpeed = 2.2

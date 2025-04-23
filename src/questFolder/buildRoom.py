@@ -57,6 +57,13 @@ Press d to move the cursor and show the subquests description.
     def handleQuestFailure(self,extraParam):
         super().handleQuestFailure(extraParam)
         reason = extraParam.get("reason")
+
+        # ignore inability to fetch more walls if some were collected already
+        if reason:
+            if reason.split(" ")[4] in ("Wall",):
+                if self.character.inventory and self.character.inventory[-1].type == "Wall":
+                    return
+
         if reason and self.tryHard:
             if reason.startswith("no source for item "):
                 if reason.split(" ")[4] not in ("Wall","MetalBars","Scrap",):

@@ -52,7 +52,7 @@ class MapTable(src.items.Item):
 
         functionMap = {}
 
-        self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap, extraText=extraText, cursor=cursor)
+        self.submenue = src.menuFolder.mapMenu.MapMenu(mapContent=mapContent,functionMap=functionMap)
         character.macroState["submenue"] = self.submenue
 
     def writeMap(self, character):

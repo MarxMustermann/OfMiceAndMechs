@@ -6,7 +6,6 @@ Add a formulaic good ending where the solver points to and a bad ending
 ** 
 
 * make NPC reconsider when entering rooms with alarms
-* fix shades of red for dungeon enemies for difficult mode
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
 * color dungeons on terrain map

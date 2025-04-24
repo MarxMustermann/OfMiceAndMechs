@@ -25,10 +25,17 @@ class Popup(ABC):
         if self.conditionMet(params):
             self.character.delListener(self.onEvent, self.subscribedEvent())
 
-            submenue = src.menuFolder.textMenu.TextMenu(self.text(),specialKeys={"q":{"container":self,"method":"openQuestMenu","params":{"character":self.character}}})
-            submenue.tag = "popup"
-            self.character.macroState["submenue"] = submenue
-            self.character.runCommandString("~",nativeKey=True)
+            self.open_Popup(self.character, self.text(), self)
+
+    @staticmethod
+    def open_Popup(character, text, container=None):
+        submenue = src.menuFolder.textMenu.TextMenu(
+            text,
+            specialKeys={"q": {"container": container, "method": "openQuestMenu", "params": {"character": character}}},
+        )
+        submenue.tag = "popup"
+        character.macroState["submenue"] = submenue
+        character.runCommandString("~", nativeKey=True)
 
     def addToChar(self, character):
         self.character = character

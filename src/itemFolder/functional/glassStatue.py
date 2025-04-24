@@ -1,6 +1,8 @@
 import src
 import random
 
+import src.popups
+
 
 class GlassStatue(src.items.Item):
     '''
@@ -297,8 +299,12 @@ class GlassStatue(src.items.Item):
         newItem.itemID = self.itemID
         if not character.getFreeInventorySpace() > 0:
             self.container.addItem(newItem,character.getPosition())
+
+            src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it")
         else:
             character.inventory.append(newItem)
+            src.popups.Popup.open_Popup(character, "you rip the GlassHeart and take it")
+
         self.hasItem = False
 
     def setGlassHeart(self,character):

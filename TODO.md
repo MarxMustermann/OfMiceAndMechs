@@ -38,3 +38,10 @@ Add a formulaic good ending where the solver points to and a bad ending
 * disable traproom cheating
 * expain "press f to shoot"
 * integrate the map item
+* add alternative use for memory fragments
+** uncover terrain
+** convert to other ressource
+* make base more useful
+* make reports carry coordinates and add option to remember them
+* show keybind for equiping item from inventory
+* add really difficult mode

@@ -8,7 +8,6 @@ Add a formulaic good ending where the solver points to and a bad ending
 * make NPC reconsider when entering rooms with alarms
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
-* color dungeons on terrain map
 * complete siege manager scheduling UI patches
 ** show overlapping entries properly
 ** make timinds in scheduling changeable

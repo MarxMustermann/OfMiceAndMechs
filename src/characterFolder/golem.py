@@ -46,7 +46,7 @@ class Golem(src.monster.Monster):
             characterId=characterId,
         )
         self.charType = "Golem"
-        self.specialDisplay = (src.interaction.urwid.AttrSpec(src.interaction.urwid.AttrSpec.interpolate((255,255,255),(255, 16, 8),src.helpers.clamp(multiplier / 4,0.0,1.0)),"black"),"@@")
+        self.specialDisplay = (*self.color_for_multiplier(multiplier), "@@")
         self.baseDamage = int(10+multiplier)
         self.baseDamage = int(self.baseDamage*(1-runModifier))
         self.maxHealth = int(60*multiplier)

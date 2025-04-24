@@ -1,6 +1,8 @@
 import src
 import random
 
+import src.popups
+
 
 class GlassStatue(src.items.Item):
     '''
@@ -147,21 +149,7 @@ class GlassStatue(src.items.Item):
         character.addMessage(text)
 
     def render(self):
-        color = "#888"
-        if self.itemID == 1:
-            color = "#f00"
-        elif self.itemID == 2:
-            color = "#0f0"
-        elif self.itemID == 3:
-            color = "#00f"
-        elif self.itemID == 4:
-            color = "#0ff"
-        elif self.itemID == 5:
-            color = "#f0f"
-        elif self.itemID == 6:
-            color = "#ff0"
-        elif self.itemID == 7:
-            color = "#fff"
+        color = self.color(self.itemID)
         displaychars = "GG"
 
         if not self.hasItem:
@@ -186,6 +174,25 @@ class GlassStatue(src.items.Item):
                 (src.interaction.urwid.AttrSpec(color, "black"), displaychars),
             ]
         return display
+
+    @staticmethod
+    def color(itemID):
+        color = "#888"
+        if itemID == 1:
+            color = "#f00"
+        elif itemID == 2:
+            color = "#0f0"
+        elif itemID == 3:
+            color = "#00f"
+        elif itemID == 4:
+            color = "#0ff"
+        elif itemID == 5:
+            color = "#f0f"
+        elif itemID == 6:
+            color = "#ff0"
+        elif itemID == 7:
+            color = "#fff"
+        return color
 
     def handleEpochChange(self):
         if self.stable:
@@ -292,8 +299,12 @@ class GlassStatue(src.items.Item):
         newItem.itemID = self.itemID
         if not character.getFreeInventorySpace() > 0:
             self.container.addItem(newItem,character.getPosition())
+
+            src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it")
         else:
             character.inventory.append(newItem)
+            src.popups.Popup.open_Popup(character, "you rip the GlassHeart and take it")
+
         self.hasItem = False
 
     def setGlassHeart(self,character):

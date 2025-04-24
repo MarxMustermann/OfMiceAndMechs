@@ -95,6 +95,18 @@ class TerrainMenu(src.subMenu.SubMenu):
                 if info.get("looted"):
                     color = "#550"
                 rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), "&%")
+            elif info["tag"] == "dungeon":
+                ItemID = None
+                HaveGlassHeart = False
+                for ID in src.gamestate.gamestate.gods:
+                    god = src.gamestate.gamestate.gods[ID]
+                    if god["home"][0] == pos[0] and god["home"][1] == pos[1]:
+                        ItemID = ID
+                        if god["lastHeartPos"][0] == pos[0] and god["lastHeartPos"][1] == pos[1]:
+                            HaveGlassHeart = True
+                color = src.items.itemMap["GlassStatue"].color(ItemID)
+                text = "DU" if HaveGlassHeart else "du"
+                rawMap[pos[1]][pos[0]] = (src.interaction.urwid.AttrSpec(color, "black"), text)
             else:
                 rawMap[pos[1]][pos[0]] = info["tag"][:2]
         if homeCoordinate:

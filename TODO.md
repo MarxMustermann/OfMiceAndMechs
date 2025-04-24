@@ -6,11 +6,8 @@ Add a formulaic good ending where the solver points to and a bad ending
 ** 
 
 * make NPC reconsider when entering rooms with alarms
-* fix shades of red for dungeon enemies for difficult mode
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
-* make grindstones less OP
-* make overshoot damage (damage done exceeding death) have negative effects
 * color dungeons on terrain map
 * complete siege manager scheduling UI patches
 ** show overlapping entries properly

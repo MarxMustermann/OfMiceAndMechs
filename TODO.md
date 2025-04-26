@@ -2,13 +2,12 @@
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
 * complete siege manager scheduling UI patches
-** show overlapping entries properly
-** make timinds in scheduling changeable
+ * show overlapping entries properly
+ * make timinds in scheduling changeable
 * change names
 * add meny/way to show list of nearby items 
 * make room fast travel use shared menu
 * add way to create mana crystals from terrain
-* add item to store/excange map memory
 * show enemy coordinates in 
 * spawn stuff in ruins more randomised
 * remove "test" from tile movement menu
@@ -30,10 +29,9 @@
 * add way more memory fragments
 * disable traproom cheating
 * expain "press f to shoot"
-* integrate the map item
 * add alternative use for memory fragments
-** uncover terrain
-** convert to other ressource
+ * uncover terrain
+ * convert to other ressource
 * make base more useful
 * make reports carry coordinates and add option to remember them
 * show keybind for equiping item from inventory
@@ -43,10 +41,51 @@
 * add ability to store scrap reserves in base
 * mix backgrounds for quest marker and enemy markers
 * add MapTable to reveal map sections
-** remote bases
-** dungeons
-** lab
+ * remote bases
+ * dungeons
+ * lab
 * add overkill = 0 bonus
 * remove rewards nameing from report archive
 * allow to convert a memory fragment to 1 mana?
 * integrate gc into solver
+* nerf berserk
+ * add max beserk
+ * add way to increase berserk
+  * cap berserk increases
+ * add negative effects on high berserk
+* cap weapon degradion to 10
+* track enemies killed stat
+* strong one time mele weapon
+* show message on promoter when already rank 2
+* add map item to starter base
+ * => add some starter content
+ * => add quest to use that item
+* implement show map on mapTable
+* make mapTable boltable
+* make Promoter unboltable
+* make Communicator unboltable
+* make DutyArtwork unboltable
+* make Regenerator unboltable
+* make PersonalTracker boltable
+* make ReportArchive boltable
+* make FactionSetter boltable
+* make Integrator boltable
+* fix siege manager unbolt message
+* fix ManufacturingManager unbolt message
+* fix BloomShredder unbolt message
+* fix BioPress unbolt message
+* fix GooProducer unbolt message
+* fix MotionSensor unbolt message
+* fix ShokTOwer descriptions
+* add scrap buffering with desired=filled stockpiles
+ * add floorplan for scrap storage
+
+== longer term goals =
+
+* a score
+ * global stats over whole playthrough
+  * add stats
+* add a big end dungeon
+* make world bigger
+* get a better tile based renderer
+* mouse UI

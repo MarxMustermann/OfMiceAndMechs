@@ -282,13 +282,7 @@ class Monster(src.characters.Character):
         return render
 
     def color_for_multiplier(self, multiplier):
-        match src.gamestate.gamestate.difficulty:
-            case "difficult":
-                range = multiplier / 2 / 7
-            case "medium":
-                range = multiplier / 1 / 4
-            case _:
-                range = multiplier / 0.5 / 4
+        range = self.multiplier_range(multiplier)
 
         return (
             src.interaction.urwid.AttrSpec(
@@ -298,6 +292,16 @@ class Monster(src.characters.Character):
                 "black",
             ),
         )
+
+    def multiplier_range(self, multiplier):
+        match src.gamestate.gamestate.difficulty:
+            case "difficult":
+                range = multiplier / 2 / 7
+            case "medium":
+                range = multiplier / 1 / 4
+            case _:
+                range = multiplier / 0.5 / 4
+        return range
 
 
 src.characters.add_character(Monster)

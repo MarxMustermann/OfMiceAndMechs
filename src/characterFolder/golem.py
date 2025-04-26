@@ -53,7 +53,8 @@ class Golem(src.monster.Monster):
         self.maxHealth = int(self.maxHealth*(1+runModifier))
         self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 1.3-0.1*multiplier
+        self.movementSpeed = 1.3
+        self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
 
 
     def changed(self, tag="default", info=None):

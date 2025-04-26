@@ -1,10 +1,3 @@
-* good ending / bad ending
-Problem:
-The game is too formulaic and the solver makes that worse
-Solution:
-Add a formulaic good ending where the solver points to and a bad ending
-** 
-
 * make NPC reconsider when entering rooms with alarms
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
@@ -45,3 +38,15 @@ Add a formulaic good ending where the solver points to and a bad ending
 * make reports carry coordinates and add option to remember them
 * show keybind for equiping item from inventory
 * add really difficult mode
+* add option to glass statue to teleport to dungeon or current glass heart position
+* add J/K for maufacturing batches on manufacturing table
+* add ability to store scrap reserves in base
+* mix backgrounds for quest marker and enemy markers
+* add MapTable to reveal map sections
+** remote bases
+** dungeons
+** lab
+* add overkill = 0 bonus
+* remove rewards nameing from report archive
+* allow to convert a memory fragment to 1 mana?
+* integrate gc into solver

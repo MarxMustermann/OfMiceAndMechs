@@ -59,6 +59,12 @@ done tiles: {self.doneTiles}"""
             return
 
         if not self.subQuests:
+            self.tryHard = False
+            if character.getTerrain().alarm and not self.tryHard:
+                if not dryRun:
+                    self.fail("alarm")
+                return (None,None)
+
             terrain = character.getTerrain()
 
 

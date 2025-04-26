@@ -60,9 +60,10 @@ Press d to move the cursor and show the subquests description.
 
         # ignore inability to fetch more walls if some were collected already
         if reason:
-            if reason.split(" ")[4] in ("Wall",):
-                if self.character.inventory and self.character.inventory[-1].type == "Wall":
-                    return
+            if reason.startswith("no source for item "):
+                if reason.split(" ")[4] in ("Wall",):
+                    if self.character.inventory and self.character.inventory[-1].type == "Wall":
+                        return
 
         if reason and self.tryHard:
             if reason.startswith("no source for item "):

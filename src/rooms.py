@@ -1769,7 +1769,7 @@ class Room:
                 if not dash:
                     if character.exhaustion > 0:
                         character.exhaustion -= min(1,character.exhaustion)
-                        character.timeTaken += 1
+                        character.timeTaken += character.adjustedMovementSpeed
             else:
                 character.timeTaken += character.adjustedMovementSpeed/2
                 character.exhaustion += 5

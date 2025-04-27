@@ -1,6 +1,6 @@
 * make NPC reconsider when entering rooms with alarms
 * more weapon upgrades and weapon upgrade requirements
-* add ability to set difficulty at statues
+* add note to set difficulty at statues
 * complete siege manager scheduling UI patches
   - show overlapping entries properly
   - make timinds in scheduling changeable

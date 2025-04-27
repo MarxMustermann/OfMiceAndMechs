@@ -1108,6 +1108,7 @@ class Character:
 
         if self.armor:
             damageAbsorbtion = self.armor.getArmorValue(reason)
+            self.armor.degrade(multiplier=damageAbsorbtion)
 
             if self.combatMode == "defensive":
                 damageAbsorbtion += 2

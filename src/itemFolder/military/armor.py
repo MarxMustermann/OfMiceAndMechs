@@ -21,10 +21,30 @@ class Armor(src.items.Item):
 
         super().__init__(display="ar")
 
+        self.damageTaken = 0
+
         if badQuality:
             self.armorValue = 1
         else:
             self.armorValue = random.randint(1, 5)
+
+    def getDamageThreashold(self):
+        return 2**self.armorValue*100
+
+    def degrade(self,multiplier=1,character=None):
+        try:
+            self.damageTaken
+        except:
+            self.damageTaken = 0
+
+        self.damageTaken += multiplier
+        if self.damageTaken > 2**self.armorValue*100:
+            if self.amorvalue > 1:
+                self.amorvalue -= 1
+                if self.amorvalue < 1:
+                    self.amorvalue = 1
+                if character:
+                    character.addMessage(f"your armor degrades and has {self.armorValue} armor value now.\nnext degradation at {self.getDamageThreashold()}")
 
     def getArmorValue(self, damageType):
         """
@@ -41,6 +61,10 @@ class Armor(src.items.Item):
         return 0
 
     def getLongInfo(self):
+        try:
+            self.damageTaken
+        except:
+            self.damageTaken = 0
         """
         returns a longer than normal description text
 
@@ -53,6 +77,9 @@ class Armor(src.items.Item):
         text += f"""
 armorvalue:
 {self.armorValue}
+
+degradation:
+{self.damageTaken}/{self.getDamageThreashold()}
 
 description:
 protects you in combat

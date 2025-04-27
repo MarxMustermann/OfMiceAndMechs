@@ -3963,8 +3963,6 @@ def getTcodEvents():
                 if key == tcod.event.KeySym.v:
                     if event.mod & tcod.event.Modifier.CTRL:
                         translatedKey = "ctrl v"
-                    else:
-                        translatedKey = "v"
 
                 if key == tcod.event.KeySym.w:
                     if event.mod & tcod.event.Modifier.CTRL:

@@ -99,6 +99,10 @@
 * add broder variance in enemy strengths in ruins
 * color code statue terrains
 * add item that can convert chitin plates to grindstones
+* remove duplicate message when dropping from inventory
+* make healing take some ingame time
+* add message for extend map
+* fix "massage" typos
 
 == longer term goals =
 

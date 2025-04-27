@@ -5,24 +5,24 @@ import src.popups
 
 
 class EnterRoom(src.popups.Popup):
-    def __init__(self, roomType, massage):
+    def __init__(self, roomType, message):
         self.roomType = roomType
-        self.massage = massage
+        self.message = message
         super().__init__()
 
     def subscribedEvent(self):
         return "entered room"
 
     def text(self):
-        if isinstance(self.massage, str):
-            return self.massage
+        if isinstance(self.message, str):
+            return self.message
         else:
-            return self.massage()
+            return self.message()
 
     def conditionMet(self, params) -> bool:
         return self.character.container.tag == self.roomType
 
-def arena_massage():
+def arena_message():
     return [
         """Your implant interrupts:
 
@@ -38,7 +38,7 @@ Use the quest menu by pressing q to get more information how to beat this enemy.
     ]
 
 
-room_massage = [
+room_message = [
     (
         "traproom",
         """Your implant interrupts:
@@ -51,9 +51,9 @@ press q to get more detailed information.
     ),
     (
         "arena",
-        arena_massage,
+        arena_message,
     ),
 ]
 
-for type, massage in room_massage:
-    src.popups.popupsArray.append(partial(EnterRoom, type, massage))
+for type, message in room_message:
+    src.popups.popupsArray.append(partial(EnterRoom, type, message))

@@ -68,15 +68,15 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
 
             character.changed("researched implant manipulator", {})
         else:
-            massages = [
+            messages = [
                 "you found a way to dissemble the outer shell",
                 "you know now how to get to the internals of it",
                 "you learnt how it works internally",
                 "you see a way to manipulate it but it doesn't work yet",
             ]
 
-            if self.research_level - 1 < len(massages):
-                character.addMessage(massages[self.research_level - 1])
+            if self.research_level - 1 < len(messages):
+                character.addMessage(messages[self.research_level - 1])
 
             character.changed("researched implant", {})
 

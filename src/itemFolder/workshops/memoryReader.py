@@ -23,15 +23,15 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
 
         self.fragments_decrypted = -1
 
-        self.massages = ["example massage 1", "example massage 2", "example massage 3"]
+        self.messages = ["example message 1", "example message 2", "example message 3"]
 
         self.fragment_per_implant = 5
 
     def read(self, fragment_number, character):
         submenue = src.menuFolder.textMenu.TextMenu(
-            "you decrypt new fragment:\n" + self.massages[fragment_number],
+            "you decrypt new fragment:\n" + self.messages[fragment_number],
         )
-        submenue.tag = "massage"
+        submenue.tag = "message"
         character.macroState["submenue"] = submenue
         character.runCommandString("~", nativeKey=True)
 
@@ -43,8 +43,8 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
         return fragments
 
     def decryptFragments(self, character):
-        if self.fragments_decrypted + 1 == len(self.massages):
-            character.addMessage("You can't decrypt more massages")
+        if self.fragments_decrypted + 1 == len(self.messages):
+            character.addMessage("You can't decrypt more messages")
             return
 
         fragments = self.getFragments(character)
@@ -58,7 +58,7 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
         self.fragments_decrypted += 1
 
         numbers = ["first", "second", "third", "forth", "fifth", "sixth", "seventh"]
-        option = f"read {numbers[self.fragments_decrypted]} massage"
+        option = f"read {numbers[self.fragments_decrypted]} message"
         self.applyOptions.append(
             (option, option),
         )

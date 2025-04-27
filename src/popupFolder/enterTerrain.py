@@ -5,22 +5,22 @@ import src.popups
 
 
 class EnterTerrain(src.popups.Popup):
-    def __init__(self, terrainType, massage):
+    def __init__(self, terrainType, message):
         self.terrainType = terrainType
-        self.massage = massage
+        self.message = message
         super().__init__()
 
     def subscribedEvent(self):
         return "entered terrain"
 
     def text(self):
-        return self.massage
+        return self.message
 
     def conditionMet(self, params) -> bool:
         return self.character.getTerrain().tag == self.terrainType
 
 
-terrain_massage = [
+terrain_message = [
     (
         "ruin",
         """you see the remains of a lost colony and a lot of rogue creatures, which begs the question what has happened to them""",
@@ -35,5 +35,5 @@ terrain_massage = [
     ),
 ]
 
-for type, massage in terrain_massage:
-    src.popups.popupsArray.append(partial(EnterTerrain, type, massage))
+for type, message in terrain_message:
+    src.popups.popupsArray.append(partial(EnterTerrain, type, message))

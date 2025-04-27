@@ -2,8 +2,8 @@
 * more weapon upgrades and weapon upgrade requirements
 * add ability to set difficulty at statues
 * complete siege manager scheduling UI patches
- * show overlapping entries properly
- * make timinds in scheduling changeable
+  - show overlapping entries properly
+  - make timinds in scheduling changeable
 * change names
 * add meny/way to show list of nearby items 
 * make room fast travel use shared menu
@@ -30,8 +30,8 @@
 * disable traproom cheating
 * expain "press f to shoot"
 * add alternative use for memory fragments
- * uncover terrain
- * convert to other ressource
+  - uncover terrain
+  - convert to other ressource
 * make base more useful
 * make reports carry coordinates and add option to remember them
 * show keybind for equiping item from inventory
@@ -41,25 +41,25 @@
 * add ability to store scrap reserves in base
 * mix backgrounds for quest marker and enemy markers
 * add MapTable to reveal map sections
- * remote bases
- * dungeons
- * lab
+  - remote bases
+  - dungeons
+  - lab
 * add overkill = 0 bonus
 * remove rewards nameing from report archive
 * allow to convert a memory fragment to 1 mana?
 * integrate gc into solver
 * nerf berserk
- * add max beserk
- * add way to increase berserk
-  * cap berserk increases
- * add negative effects on high berserk
+  - add max beserk
+  - add way to increase berserk
+    - cap berserk increases
+  - add negative effects on high berserk
 * cap weapon degradion to 10
 * track enemies killed stat
 * strong one time mele weapon
 * show message on promoter when already rank 2
 * add map item to starter base
- * => add some starter content
- * => add quest to use that item
+  - => add some starter content
+  - => add quest to use that item
 * implement show map on mapTable
 * make mapTable boltable
 * make Promoter unboltable
@@ -78,24 +78,24 @@
 * fix MotionSensor unbolt message
 * fix ShokTOwer descriptions
 * add scrap buffering with desired=filled stockpiles
- * add floorplan for scrap storage
+  - add floorplan for scrap storage
 * allow producing multiples on alchemy table
 * make armor get damage over time
 * place loot more randomly
 * show needed grindstones when sword can't be improved
 * add more potions
- * add movement speed potion
- * add perma movement speed potion
- * add attack speed potion
- * add perma attack speed potion
- * base damage potion
- * perma base damage potion
+  - add movement speed potion
+  - add perma movement speed potion
+  - add attack speed potion
+  - add perma attack speed potion
+  - base damage potion
+  - perma base damage potion
 * reduce amount of shrines
 * add potion reloading item to starter base
 * make gmW etc move the terrain
 * add a terrain menu
- * add a way to mark tiles as expored
- * add ability to add noted
+  - add a way to mark tiles as expored
+  - add ability to add noted
 * add a way to unmark a terrain as explored
 * add broder variance in enemy strengths in ruins
 * color code statue terrains
@@ -103,8 +103,8 @@
 == longer term goals =
 
 * a score
- * global stats over whole playthrough
-  * add stats
+  - global stats over whole playthrough
+    - add stats
 * add a big end dungeon
 * make world bigger
 * get a better tile based renderer

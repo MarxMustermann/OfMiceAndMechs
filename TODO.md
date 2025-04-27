@@ -53,7 +53,6 @@
   - add way to increase berserk
     - cap berserk increases
   - add negative effects on high berserk
-* cap weapon degradion to 10
 * track enemies killed stat
 * strong one time mele weapon
 * show message on promoter when already rank 2
@@ -99,6 +98,7 @@
 * add a way to unmark a terrain as explored
 * add broder variance in enemy strengths in ruins
 * color code statue terrains
+* add item that can convert chitin plates to grindstones
 
 == longer term goals =
 

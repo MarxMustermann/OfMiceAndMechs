@@ -29,6 +29,9 @@ class Sword(src.items.Item):
             self.baseDamage = int(random.triangular(10,25,15))
 
     def degrade(self,multiplier=1,character=None):
+        if self.baseDamage <= 10:
+            return
+
         if random.random()*self.baseDamage*multiplier > 200:
             self.baseDamage -= 1
             if character:

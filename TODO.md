@@ -79,6 +79,26 @@
 * fix ShokTOwer descriptions
 * add scrap buffering with desired=filled stockpiles
  * add floorplan for scrap storage
+* allow producing multiples on alchemy table
+* make armor get damage over time
+* place loot more randomly
+* show needed grindstones when sword can't be improved
+* add more potions
+ * add movement speed potion
+ * add perma movement speed potion
+ * add attack speed potion
+ * add perma attack speed potion
+ * base damage potion
+ * perma base damage potion
+* reduce amount of shrines
+* add potion reloading item to starter base
+* make gmW etc move the terrain
+* add a terrain menu
+ * add a way to mark tiles as expored
+ * add ability to add noted
+* add a way to unmark a terrain as explored
+* add broder variance in enemy strengths in ruins
+* color code statue terrains
 
 == longer term goals =
 

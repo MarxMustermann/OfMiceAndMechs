@@ -12,3 +12,4 @@ import src.characterFolder.insect
 import src.characterFolder.shieldbug
 import src.characterFolder.spectre
 import src.characterFolder.clone
+import src.characterFolder.guardian

@@ -1969,6 +1969,9 @@ but they are likely to explode when disturbed.
         glassHeart = src.items.itemMap["Throne"]()
         mainRoom.addItem(glassHeart,(6,6,0))
 
+        enemy = src.characters.characterMap["Guardian"](4,4)
+        guardRoom.addCharacter(enemy,11,6)
+
         for x in range(1,14):
             for y in range(1,14):
                 if x == 7 and y == 7:
@@ -1977,9 +1980,9 @@ but they are likely to explode when disturbed.
                     continue
 
                 enemy = src.characters.characterMap["Monster"](4,4)
-                enemy.health = 30
-                enemy.baseDamage = 7
-                enemy.maxHealth = 30
+                enemy.health = 300
+                enemy.baseDamage = 70
+                enemy.maxHealth = 300
                 enemy.godMode = True
                 enemy.movementSpeed = 0.8
 

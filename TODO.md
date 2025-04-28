@@ -102,6 +102,10 @@
 * remove duplicate message when dropping from inventory
 * make healing take some ingame time
 * add message for extend map
++ randomize dungeon stopstatue thing orientation
+* change "Rip the Glassheart" description
+* remove "corpse" from coal burner
+* show implnat status to player (good/bad ending)
 
 == longer term goals =
 

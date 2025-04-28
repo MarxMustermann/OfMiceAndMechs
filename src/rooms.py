@@ -1773,6 +1773,8 @@ class Room:
             else:
                 character.timeTaken += character.adjustedMovementSpeed/2
                 character.exhaustion += 5
+            character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
+
             return self.moveCharacter(character, tuple(newPosition))
 
         # move onto terrain
@@ -1823,6 +1825,7 @@ class Room:
             character.timeTaken += character.adjustedMovementSpeed/2
             character.exhaustion += 5
         self.terrain.addCharacter(character, newXPos, newYPos)
+        character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
         return None
 
     def moveCharacter(self, character, newPosition):

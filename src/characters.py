@@ -255,7 +255,13 @@ class Character:
 
         self.statusEffects = []
 
-        self.stats = {"total enemies killed": {}, "items produced": {}, "damage dealt": 0, "damage taken": {}}
+        self.stats = {
+            "total enemies killed": {},
+            "items produced": {},
+            "damage dealt": 0,
+            "damage taken": {},
+            "steps taken": 0,
+        }
 
     def applyNativeMeleeAttackEffects(self,target):
         pass

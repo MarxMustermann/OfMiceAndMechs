@@ -535,13 +535,13 @@ class Terrain:
                         else:
                             char.runCommandString("aa")
                         char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
 
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -570,12 +570,12 @@ class Terrain:
                         else:
                             char.runCommandString("dd")
                         char.container.addAnimation(char.getPosition(offset=(2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
                 try:
@@ -607,12 +607,12 @@ class Terrain:
                         else:
                             char.runCommandString("ww")
                         char.container.addAnimation(char.getPosition(offset=(0,-2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -642,12 +642,12 @@ class Terrain:
                         else:
                             char.runCommandString("ss")
                         char.container.addAnimation(char.getPosition(offset=(0,2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:

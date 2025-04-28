@@ -256,7 +256,7 @@ class Character:
         self.statusEffects = []
 
         self.stats = {
-            "total enemies killed": 0,
+            "total enemies killed": {},
         }
 
     def applyNativeMeleeAttackEffects(self,target):
@@ -1470,7 +1470,9 @@ press any other key to attack normally"""
             except:
                 self.stats = {}
 
-            self.stats["total enemies killed"] = self.stats.get("total enemies killed") + 1
+            self.stats["total enemies killed"][target.charType.capitalize()] = (
+                self.stats["total enemies killed"].get(target.charType.capitalize(), 0) + 1
+            )
 
         if self.addRandomExhaustionOnAttack:
             self.exhaustion += random.randint(1,4)

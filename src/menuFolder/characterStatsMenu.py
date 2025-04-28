@@ -20,12 +20,15 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
             elif isinstance(stat, dict):
                 stat_sum = sum(stat.values())
                 text += f"{stat_name}: {stat_sum}\n"
-                amount_to_number = len(max(stat.keys(), key=len)) + len(":")
-                for inner_stat_name in stat:
-                    inner_name = self.capitalize(inner_stat_name)
-                    text += (
-                        f" {inner_name}:" + " " * (amount_to_number - len(inner_name)) + f"{stat[inner_stat_name]}\n"
-                    )
+                if len(stat):
+                    amount_to_number = len(max(stat.keys(), key=len)) + len(":")
+                    for inner_stat_name in stat:
+                        inner_name = self.capitalize(inner_stat_name)
+                        text += (
+                            f" {inner_name}:"
+                            + " " * (amount_to_number - len(inner_name))
+                            + f"{stat[inner_stat_name]}\n"
+                        )
             text += "\n"
 
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))

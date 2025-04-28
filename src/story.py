@@ -1966,7 +1966,7 @@ but they are likely to explode when disturbed.
            )
 
 
-        glassHeart = src.items.itemMap["Throne"]()
+        glassHeart = src.items.itemMap["GlassThrone"]()
         mainRoom.addItem(glassHeart,(6,6,0))
 
         enemy = src.characters.characterMap["Guardian"](4,4)

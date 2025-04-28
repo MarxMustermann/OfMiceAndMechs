@@ -19,7 +19,7 @@ class Throne(src.items.Item):
         self.bolted = False
         self.name = "throne"
         self.description = """
-A throne. Take control over the throne to win the game.
+A throne. A symbol of power.
 """
         self.wavesSpawned = 0
         self.lastWave = None
@@ -54,24 +54,23 @@ You need to collect all GlassHarts to be accepted as supreme leader.
             return
 
         if character == src.gamestate.gamestate.mainChar:
-            if src.gamestate.gamestate.stern.get("fixedImplant",False):
-                endingType = "good"
-            else:
-                endingType = "bad"
-            src.interaction.showRunOutro()
             text = f"""
-You won the game! congratulations
+You sit on the Throne, but you realize:
 
-You got the {endingType} ending.
-
-Feel free to continue building your base.
-I'll try to keep things interesting, but you reached official end of content now.
+You need to take the glass throne at (7,7,0)
 
 = press enter to continue =
 """
-            src.interaction.showInterruptText(text)
-            character.rank = 1
-            character.changed("ascended")
+
+            noSeekerStatus = True
+            for statusEffect in character.statusEffects:
+                if not statusEffect.type == "ThroneSeeker":
+                    continue
+                noSeekerStatus = False
+
+            if noSeekerStatus:
+                newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
+                character.statusEffects.append(newEffect)
 
     def getConfigurationOptions(self, character):
         """

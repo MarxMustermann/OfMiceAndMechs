@@ -31,7 +31,7 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
                         )
             text += "\n"
 
-        text += f"terrains visited: {len(character.terrainInfo)}"
+        text += f"terrains known: {len(character.terrainInfo)}"
         src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
 
         # exit submenu

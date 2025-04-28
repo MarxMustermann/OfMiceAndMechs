@@ -261,6 +261,7 @@ class Character:
             "damage dealt": 0,
             "damage taken": {},
             "steps taken": 0,
+            "terrains visited": 0,
         }
 
     def applyNativeMeleeAttackEffects(self,target):

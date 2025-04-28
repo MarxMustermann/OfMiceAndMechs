@@ -1025,7 +1025,7 @@ class MainGame(BasicPhase):
         pos = (7,7)
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "center terrain"
-        self.setUpShrine(pos)
+        self.setUpThroneDungeon(pos)
 
         self.difficulty = difficulty
 
@@ -1251,9 +1251,6 @@ class MainGame(BasicPhase):
         mainChar.rememberedMenu2.append(messagesMenu)
         mainChar.disableCommandsOnPlus = True
         mainChar.autoExpandQuests2 = True
-
-        print("len(self.available_positions)")
-        print(len(self.available_positions))
 
         self.setUpSpidersPit(self.get_free_position("spider pit"))
 
@@ -1950,12 +1947,24 @@ but they are likely to explode when disturbed.
                 {
                        "coordinate": (7,7),
                        "roomType": "EmptyRoom",
-                       "doors": "0,6 6,0 12,6 6,12",
+                       "doors": "0,6",
                        "offset": [1,1],
                        "size": [13, 13],
                 },
                 None,
            )
+
+        guardRoom = architect.doAddRoom(
+                {
+                       "coordinate": (6,7),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
 
         glassHeart = src.items.itemMap["Throne"]()
         mainRoom.addItem(glassHeart,(6,6,0))
@@ -1963,6 +1972,8 @@ but they are likely to explode when disturbed.
         for x in range(1,14):
             for y in range(1,14):
                 if x == 7 and y == 7:
+                    continue
+                if x == 6 and y == 7:
                     continue
 
                 enemy = src.characters.characterMap["Monster"](4,4)

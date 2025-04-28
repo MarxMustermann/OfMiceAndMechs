@@ -243,6 +243,7 @@ class ManufacturingTable(src.items.itemMap["WorkShop"]):
                     self.container.addItem(new,targetPos)
                     break
 
+        character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.changed("manufactured",{"item":new,"table":self})
         self.inUse = False
 

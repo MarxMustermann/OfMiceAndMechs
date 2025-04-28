@@ -189,6 +189,7 @@ class MetalWorkingBench(src.items.itemMap["WorkShop"]):
                     self.container.addItem(new,targetPos)
                     break
 
+        character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.changed("worked metal",{"item":new})
 
         params["amount"] -= 1

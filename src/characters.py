@@ -255,6 +255,15 @@ class Character:
 
         self.statusEffects = []
 
+        self.stats = {
+            "total enemies killed": {},
+            "items produced": {},
+            "damage dealt": 0,
+            "damage taken": {},
+            "steps taken": 0,
+            "terrains visited": 0,
+        }
+
     def applyNativeMeleeAttackEffects(self,target):
         pass
 
@@ -1109,7 +1118,9 @@ class Character:
 
             self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
             self.container.addAnimation(self.getPosition(),"shielded",damageAbsorbtion,{})
-
+            self.stats["damage taken"]["damage absorbed by armor"] = (
+                self.stats["damage taken"].get("damage absorbed by armor", 0) + damageAbsorbtion
+            )
 
         if damage <= 0:
             return
@@ -1136,7 +1147,7 @@ class Character:
                 self.staggered += damage // staggerThreshold
 
             self.changed("hurt")
-            
+            self.stats["damage taken"]["pain felt"] = self.stats["damage taken"].get("pain felt", 0) + damage
             """
             if self.health < self.maxHealth//10 or (self.health < 50 and self.health < self.maxHealth):
                 self.addMessage("you are hurt you should heal")
@@ -1449,6 +1460,7 @@ press any other key to attack normally"""
         self.addMessage(
             f"you attack the enemy for {damage} damage {bonus}"
         )
+        self.stats["damage dealt"] = self.stats.get("damage dealt", 0) + damage
         if not target.dead:
             self.addMessage(
                 f"the enemy has {target.health}/{target.maxHealth} health left"
@@ -1460,6 +1472,15 @@ press any other key to attack normally"""
                 )
             if self.weapon:
                 self.weapon.degrade(multiplier=overkill,character=self)
+
+            try:
+                self.stats
+            except:
+                self.stats = {}
+
+            self.stats["total enemies killed"][target.charType] = (
+                self.stats["total enemies killed"].get(target.charType, 0) + 1
+            )
 
         if self.addRandomExhaustionOnAttack:
             self.exhaustion += random.randint(1,4)

@@ -35,3 +35,4 @@ import src.menuFolder.confirmMenu
 import src.menuFolder.directionMenu
 import src.menuFolder.TerrainMenu
 import src.menuFolder.shoutMenu
+import src.menuFolder.characterStatsMenu

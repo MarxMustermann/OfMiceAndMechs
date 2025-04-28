@@ -61,6 +61,9 @@ class ImplantResearchCenter(src.items.itemMap["WorkShop"]):
             character.addMessage("you finally found a way to manipulate it")
             character.addMessage("you created an Implant Manipulator")
 
+            character.stats["items produced"]["ImplantManipulator"] = (
+                self.stats["items produced"].get("ImplantManipulator", 0) + 1
+            )
             character.inventory.append(src.items.itemMap["ImplantManipulator"]())
 
             character.changed("researched implant manipulator", {})

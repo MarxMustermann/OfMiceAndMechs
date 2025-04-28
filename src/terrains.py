@@ -452,6 +452,7 @@ class Terrain:
                     #    header.set_text((urwid.AttrSpec("default","default"),renderHeader(char)))
                     return room.itemByCoordinates[localisedEntry][0]
 
+            char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             char.changed("moved", (char, direction))
 
             multiplier = 1
@@ -535,13 +536,13 @@ class Terrain:
                         else:
                             char.runCommandString("aa")
                         char.container.addAnimation(char.getPosition(offset=(-2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(-1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
 
             if char.xPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition-1,char.yPosition,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -550,6 +551,7 @@ class Terrain:
                 if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
         elif direction == "east":
             if char.yPosition % 15 == 0 or char.yPosition % 15 == 14:
                 return None
@@ -570,12 +572,12 @@ class Terrain:
                         else:
                             char.runCommandString("dd")
                         char.container.addAnimation(char.getPosition(offset=(2,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(1,0,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.xPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition+1,char.yPosition,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.xPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
                 try:
@@ -587,6 +589,7 @@ class Terrain:
                 if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
         elif direction == "north":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return None
@@ -607,12 +610,12 @@ class Terrain:
                         else:
                             char.runCommandString("ww")
                         char.container.addAnimation(char.getPosition(offset=(0,-2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 14:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition-1,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 0:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -622,6 +625,7 @@ class Terrain:
                     self.charactersByTile[bigPos] = []
 
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
         elif direction == "south":
             if char.xPosition % 15 == 0 or char.xPosition % 15 == 14:
                 return None
@@ -642,12 +646,12 @@ class Terrain:
                         else:
                             char.runCommandString("ss")
                         char.container.addAnimation(char.getPosition(offset=(0,2,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
-                        pass
+                        char.stats["steps taken"] = char.stats.get("steps taken", 0) + 2
                 char.container.addAnimation(char.getPosition(offset=(0,1,0)),"charsequence",0,{"chars":[(src.interaction.urwid.AttrSpec("#aaf", "black"), "##")]})
             if char.yPosition % 15 == 0:
                 char.changed("changedTile")
                 self.removeItems(self.getItemByPosition((char.xPosition,char.yPosition+1,char.zPosition)))
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
             if char.yPosition % 15 == 14:
                 oldBigPos = char.getBigPosition()
                 if char in self.charactersByTile[oldBigPos]:
@@ -656,6 +660,7 @@ class Terrain:
                 if bigPos not in self.charactersByTile:
                     self.charactersByTile[bigPos] = []
                 self.charactersByTile[bigPos].append(char)
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
 
         """
         if char.xPosition % 15 in (0, 14) and direction in ("north", "south"):
@@ -938,7 +943,7 @@ class Terrain:
 
                     if char == src.gamestate.gamestate.mainChar:
                         src.gamestate.gamestate.terrain = newTerrain
-
+                char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.changed("moved", (char, direction))
                 if not dash:
                     multiplier = 1
@@ -1478,6 +1483,7 @@ class Terrain:
         self.charactersByTile[bigPos].append(character)
 
         character.changed("entered terrain")
+        character.stats["terrains visited"] += 1
         self.changed("entered terrain", character)
 
     def addRooms(self, rooms):

@@ -87,6 +87,7 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
         text += f"burnedIn: %s\n" % char.burnedIn
         text += f"tool: %s\n" % char.tool
 
+        text += "\npress s to view the character statistics"
         return text
 
     def handleKey(self, key, noRender=False, character = None):
@@ -104,6 +105,12 @@ class CharacterInfoMenu(src.subMenu.SubMenu):
             submenue = src.menuFolder.statusEffectMenu.StatusEffectMenu(char=character)
             character.macroState["submenue"] = submenue
             submenue.handleKey("~", noRender=noRender,character=character)
+            return True
+
+        if key == "s":
+            submenue = src.menuFolder.characterStatsMenu.CharacterStatsMenu()
+            character.macroState["submenue"] = submenue
+            submenue.handleKey("~", noRender=noRender, character=character)
             return True
 
         # exit the submenu

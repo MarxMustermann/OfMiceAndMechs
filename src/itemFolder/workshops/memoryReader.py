@@ -87,6 +87,8 @@ class MemoryReader(src.items.itemMap["WorkShop"]):
             character.inventory.remove(fragments[i])
 
         character.inventory.append(src.items.itemMap["Implant"]())
+        character.stats["items produced"]["Implant"] = character.stats["items produced"].get("Implant", 0) + 1
+
         character.addMessage("you got a functional implant")
 
 src.items.addType(MemoryReader, nonManufactured=True)

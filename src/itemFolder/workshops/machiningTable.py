@@ -130,7 +130,7 @@ class MachiningTable(src.items.itemMap["WorkShop"]):
                 if not targetFull:
                     self.container.addItem(new,targetPos)
                     break
-
+        character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.changed("constructed machine",{})
 
     def getInputItems(self):

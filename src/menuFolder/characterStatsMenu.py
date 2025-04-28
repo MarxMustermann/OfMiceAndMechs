@@ -1,3 +1,5 @@
+import regex
+
 import src
 
 
@@ -20,10 +22,9 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
                 text += f"{stat_name}: {stat_sum}\n"
                 amount_to_number = len(max(stat.keys(), key=len)) + len(":")
                 for inner_stat_name in stat:
+                    inner_name = self.capitalize(inner_stat_name)
                     text += (
-                        f" {inner_stat_name}:"
-                        + " " * (amount_to_number - len(inner_stat_name))
-                        + f"{stat[inner_stat_name]}\n"
+                        f" {inner_name}:" + " " * (amount_to_number - len(inner_name)) + f"{stat[inner_stat_name]}\n"
                     )
             text += "\n"
 
@@ -31,3 +32,13 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
 
         # exit submenu
         return key == "esc"
+
+    @staticmethod
+    def capitalize(source: str):
+        r = regex.Regex(r"(?<!^)[A-Z]")
+
+        m = r.findall(source)
+        if m:
+            source = r.sub(" \\g<0>", source)
+
+        return source.capitalize()

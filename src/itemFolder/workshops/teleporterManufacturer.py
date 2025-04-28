@@ -40,6 +40,10 @@ class TeleporterManufacturer(src.items.itemMap["WorkShop"]):
         character.addMessage("You produce a teleporter")
         character.addMessage("It took you {} turns to do that".format(params["doneProductionTime"]))
 
+        character.stats["items produced"]["DimensionTeleporter"] = (
+            self.stats["items produced"].get("DimensionTeleporter", 0) + 1
+        )
+
         character.inventory.append(src.items.itemMap["DimensionTeleporter"]())
 
 

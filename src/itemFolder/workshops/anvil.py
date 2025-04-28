@@ -119,6 +119,7 @@ class Anvil(src.items.itemMap["WorkShop"]):
         dropsSpotsFull = params["dropsSpotsFull"]
 
         new = src.items.itemMap["MetalBars"]()
+        character.stats["items produced"]["MetalBars"] = character.stats["items produced"].get("MetalBars", 0) + 1
         character.addMessage("You produce a metal bar")
         character.addMessage("It takes you 10 turns to do that")
         if scrap in character.inventory:

@@ -121,6 +121,7 @@ class AlchemyTable(src.items.itemMap["WorkShop"]):
 
     def produceItem_done(self,params):
         character = params["character"]
+        character.stats["items produced"][params["type"]] = character.stats["items produced"].get(params["type"], 0) + 1
         character.addMessage("You produce a %s"%(params["type"],))
         character.addMessage("It took you %s turns to do that"%(params["doneProductionTime"],))
 

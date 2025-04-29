@@ -72,6 +72,8 @@ You need to take the glass throne at (7,7,0)
                 newEffect = src.statusEffects.statusEffectMap["ThroneSeeker"]()
                 character.statusEffects.append(newEffect)
 
+            character.changed("told to ascend")
+
     def getConfigurationOptions(self, character):
         """
         register the configuration options with superclass

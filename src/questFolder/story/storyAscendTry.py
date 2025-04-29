@@ -10,7 +10,7 @@ class StoryAscendTry(src.quests.MetaQuestSequence):
         self.metaDescription = description
         self.reason = reason
 
-    def handleAscended(self):
+    def handleAscended(self,extraParam=None):
         if self.completed:
             1/0
         if not self.active:

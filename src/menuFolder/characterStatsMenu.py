@@ -1,7 +1,8 @@
+import numpy
 import regex
 
 import src
-
+import tcod
 
 class CharacterStatsMenu(src.subMenu.SubMenu):
     def __init__(self):
@@ -11,6 +12,13 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
 
     def handleKey(self, key, noRender=False, character=None):
         src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\n\nStats\n\n"))
+        text = self.text(character)
+        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
+
+        # exit submenu
+        return key == "esc"
+
+    def text(self, character):
         text = "Character Statistics:\n\n"
 
         for stat_name in character.stats:
@@ -32,10 +40,7 @@ class CharacterStatsMenu(src.subMenu.SubMenu):
             text += "\n"
 
         text += f"terrains known: {len(character.terrainInfo)}"
-        src.interaction.main.set_text((src.interaction.urwid.AttrSpec("default", "default"), text))
-
-        # exit submenu
-        return key == "esc"
+        return text
 
     @staticmethod
     def capitalize(source: str):

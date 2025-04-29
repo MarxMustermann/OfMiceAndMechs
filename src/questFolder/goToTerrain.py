@@ -4,7 +4,7 @@ import src
 class GoToTerrain(src.quests.MetaQuestSequence):
     type = "GoToTerrain"
 
-    def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True):
+    def __init__(self, description="go to terrain", creator=None, targetTerrain=None, allowTerrainMenu=True, reason=None):
         if targetTerrain:
             if targetTerrain[0] < 1 or targetTerrain[0] > 13:
                 raise ValueError("target position out of range")
@@ -16,6 +16,7 @@ class GoToTerrain(src.quests.MetaQuestSequence):
         self.targetTerrain = targetTerrain
         self.allowTerrainMenu = allowTerrainMenu
         self.metaDescription = description + " " + str(self.targetTerrain)
+        self.reason = reason
 
     def triggerCompletionCheck(self,character=None):
         if character is None:

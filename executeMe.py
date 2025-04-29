@@ -239,11 +239,7 @@ if __name__ == '__main__':
                                     src.helpers.draw_frame_text(src.interaction.tcodConsole ,w, 2, text, x, y)
                                     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
                                     while t.is_alive():
-                                        for _ in tcod.event.get():
-                                            if isinstance(event, tcod.event.WindowEvent):
-                                                match event.type:
-                                                    case "WINDOWCLOSE":
-                                                        raise e
+                                        src.helpers.deal_with_window_events(e)
                                     raise e
                                 elif event.sym == tcod.event.KeySym.n:
                                     t = Thread(target=lambda: time.sleep(1.5))
@@ -255,11 +251,7 @@ if __name__ == '__main__':
                                     src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
                                     t.start()
                                     while t.is_alive():
-                                        for _ in tcod.event.get():
-                                            if isinstance(event, tcod.event.WindowEvent):
-                                                match event.type:
-                                                    case "WINDOWCLOSE":
-                                                        raise e
+                                        src.helpers.deal_with_window_events(e)
                                     raise e
                                 src.interaction.tcodContext.present(src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True)
                             if isinstance(event, tcod.event.Quit):

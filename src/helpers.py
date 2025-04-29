@@ -142,3 +142,21 @@ def clockwiseangle_and_distance(origin, point):
 
 def percentage_chance(p):
     return random.random() < p
+
+
+def deal_with_window_events(exception=None):
+    for event in tcod.event.get():
+        if isinstance(event, tcod.event.Quit):
+            raise SystemExit()
+        if isinstance(event, tcod.event.WindowEvent):
+            match event.type:
+                case "WINDOWCLOSE":
+                    if exception:
+                        raise exception
+                    raise SystemExit()
+                case "WindowHidden":
+                    pass
+                case _:
+                    src.interaction.tcodContext.present(
+                        src.interaction.tcodConsole, integer_scaling=True, keep_aspect=True
+                    )

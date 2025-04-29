@@ -63,6 +63,43 @@ Rule the world and put an end to those attacks!
             if character.yPosition%15 == 14:
                 return (None,("w","enter room"))
 
+        hasSeeker = False
+        for statusEffect in character.statusEffects:
+            if not statusEffect.type == "ThroneSeeker":
+                continue
+            hasSeeker = True
+
+        if hasSeeker:
+            terrain = character.getTerrain()
+            if terrain.xPosition != 7 or terrain.yPosition != 7:
+                quest = src.quests.questMap["GoToTerrain"](targetTerrain=(7,7,0),reason="get to the glass palace", description="go to glass palace")
+                return ([quest],None)
+
+            if character.getBigPosition() != (7,7,0):
+                quest = src.quests.questMap["GoToTile"](targetPosition=(7,7,0),reason="get to the throne room", description="go to throne room")
+                return ([quest],None)
+
+            if character.getDistance((6,6,0)) > 1:
+                quest = src.quests.questMap["GoToPosition"](targetPosition=(6,6,0),ignoreEndBlocked=True,reason="get near the glass throne", description="go to the glass throne")
+                return ([quest],None)
+            
+            pos = character.getPosition()
+            targetPosition = (6,6,0)
+            if (pos[0],pos[1],pos[2]) == targetPosition:
+                return (None,("j","activate the Throne"))
+            interactionCommand = "J"
+            if "advancedInteraction" in character.interactionState:
+                interactionCommand = ""
+            if (pos[0]-1,pos[1],pos[2]) == targetPosition:
+                return (None,(interactionCommand+"a","activate the Throne"))
+            if (pos[0]+1,pos[1],pos[2]) == targetPosition:
+                return (None,(interactionCommand+"d","activate the Throne"))
+            if (pos[0],pos[1]-1,pos[2]) == targetPosition:
+                return (None,(interactionCommand+"w","activate the Throne"))
+            if (pos[0],pos[1]+1,pos[2]) == targetPosition:
+                return (None,(interactionCommand+"s","activate the Throne"))
+            return (None,None)
+
         terrain = character.getTerrain()
         for room in terrain.rooms:
             throne = room.getItemByType("Throne",needsBolted=True)
@@ -97,7 +134,6 @@ Rule the world and put an end to those attacks!
             return (None,(interactionCommand+"w","activate the Throne"))
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,(interactionCommand+"s","activate the Throne"))
-        return None
-
+        return (None,None)
 
 src.quests.addType(Ascend)

@@ -3,8 +3,8 @@ import src
 class ThroneSeeker(src.statusEffects.StatusEffect):
     type = "ThroneSeeker"
 
-    def __init__(self, damageBonus=10, duration=10, speedUp=0.1,reason=None,inventoryItem=None):
-        super().__init__(duration=duration,reason=reason,inventoryItem=inventoryItem)
+    def __init__(self, reason=None):
+        super().__init__(reason=reason)
 
     def getShortCode(self):
         return "SEEK"

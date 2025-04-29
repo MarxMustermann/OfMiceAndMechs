@@ -22,7 +22,8 @@ class StoryAscendTry(src.quests.MetaQuestSequence):
         if self.character:
             return None
 
-        self.startWatching(character,self.handleAscended, "ascended")
+        self.startWatching(character,self.handleAscended, "told to ascend")
+        self.startWatching(character,self.handleAscended, "missing glass heart")
 
         return super().assignToCharacter(character)
 
@@ -96,20 +97,5 @@ Take the place of supreme leader and rule the world!
         if (pos[0],pos[1]+1,pos[2]) == targetPosition:
             return (None,(interactionCommand+"s","activate the Throne"))
         return None
-
-    def assignToCharacter(self, character):
-        if self.character:
-            return
-
-        self.startWatching(character,self.handeMissingGlassHeart, "missing glass heart")
-        super().assignToCharacter(character)
-
-    def handeMissingGlassHeart(self,extraInfo):
-        if self.completed:
-            1/0
-        if not self.active:
-            return
-
-        self.postHandler()
 
 src.quests.addType(StoryAscendTry)

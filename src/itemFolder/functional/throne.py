@@ -25,6 +25,9 @@ A throne. A symbol of power.
         self.lastWave = None
 
     def apply(self,character):
+        if character == src.gamestate.gamestate.mainChar:
+            src.gamestate.gamestate.stern["failedAscend"] = True
+
         hasAllSpecialItems = True
         currentTerrain = character.getTerrain()
 
@@ -44,9 +47,6 @@ You need to collect all GlassHarts to be accepted as supreme leader.
 """)
             character.macroState["submenue"] = submenu
             character.runCommandString("~",nativeKey=True)
-
-            if character == src.gamestate.gamestate.mainChar:
-                src.gamestate.gamestate.stern["failedAscend"] = True
 
             character.changed("missing glass heart",{})
 

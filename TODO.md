@@ -106,6 +106,8 @@
 * change "Rip the Glassheart" description
 * remove "corpse" from coal burner
 * show implnat status to player (good/bad ending)
+* [story] prevent ghul spawning quest when there is no ghul
+* add ghul control item that runs command A or command B depending on alarm or not
 
 == daily goal ==
 * fix solver for ascending using the endgame dungeon

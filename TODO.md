@@ -110,7 +110,6 @@
 * add ghul control item that runs command A or command B depending on alarm or not
 
 == daily goal ==
-* add debug command to gain "intended end gain strength"
 * add special attack to final "boss"
 * decorate endgame dungeon
 

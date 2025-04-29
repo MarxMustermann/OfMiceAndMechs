@@ -15,6 +15,7 @@ class DebugMenu(src.subMenu.SubMenu):
     debug_options = [
         "Teleport",
         "Teleport Terrain",
+        "kill enemies on Terrain",
         "Clear Fog",
         "Add Mana",
         "Get Item",
@@ -52,6 +53,22 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "kill enemies on Terrain":
+                    if current_change:
+                        terrain = character.getTerrain()
+                        
+                        candidates = []
+                        candidates.extend(terrain.characters)
+
+                        for room in terrain.rooms:
+                            candidates.extend(room.characters)
+                        
+                        for candidate in candidates[:]:
+                            if candidate.faction == character.faction:
+                                continue
+                            candidate.die("sudden death")
+
+                        return True
                 case "Obtain Glass hearts":
                     if current_change:
                         terrain = character.getHomeTerrain()

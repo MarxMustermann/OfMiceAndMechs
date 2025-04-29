@@ -107,6 +107,12 @@
 * remove "corpse" from coal burner
 * show implnat status to player (good/bad ending)
 
+== daily goal ==
+* fix solver for ascending using the endgame dungeon
+* add debug command to gain "intended end gain strength"
+* add special attack to final "boss"
+* decorate endgame dungeon
+
 == longer term goals =
 
 * a score

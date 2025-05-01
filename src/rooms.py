@@ -956,15 +956,8 @@ class Room:
                     chars[character.yPosition]
                 ):
                     if character.charType not in ("Character","Ghoul","Clone"):
-                        try:
-                            character.specialDisplay
-                        except:
-                            character.specialDisplay = None
 
-                        if character.specialDisplay:
-                            char = character.specialDisplay
-                        else:
-                            char = "<-"
+                        char = character.render()
 
                         if src.characters.Character.hasTimingBonus():
                             bgColor = "#f33"

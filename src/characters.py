@@ -17,8 +17,6 @@ class Character:
     this is the class for characters meaning both npc and pcs.
     """
 
-
-
     def __init__(
         self,
         display=None,
@@ -263,6 +261,8 @@ class Character:
             "steps taken": 0,
             "terrains visited": 0,
         }
+
+        self.hasPushbackAttack = False
 
     def applyNativeMeleeAttackEffects(self,target):
         pass
@@ -1608,9 +1608,10 @@ press any other key to attack normally"""
         """
         render the character
         """
-        if self.unconcious:
-            return src.canvas.displayChars.unconciousBody
+        if self.specialRender:
+            return self.specialRender
         else:
+            return "->"
             return self.displayOriginal
 
     # bad code: should be actual attribute

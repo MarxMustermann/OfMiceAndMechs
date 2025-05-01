@@ -1972,6 +1972,12 @@ but they are likely to explode when disturbed.
         enemy = src.characters.characterMap["Guardian"](4,4)
         guardRoom.addCharacter(enemy,11,6)
 
+        quest = src.quests.questMap["SecureTile"](toSecure=(6,7,0))
+        quest.autoSolve = True
+        quest.assignToCharacter(enemy)
+        quest.activate()
+        enemy.quests.append(quest)
+
         for x in range(1,14):
             for y in range(1,14):
                 if x == 7 and y == 7:

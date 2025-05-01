@@ -111,10 +111,9 @@ class NPCsOverlay:
 
             if character.charType not in ("Character","Ghoul","Clone",):
                 #chars[character.yPosition-coordinateOffset[0]][character.xPosition-coordinateOffset[1]] = character.display
-                if character.specialDisplay:
-                    char = character.specialDisplay
-                else:
-                    char = "<-"
+                char = character.render()
+                if isinstance(char, int):
+                    char = src.canvas.displayChars.indexedMapping[char]
 
                 if src.characters.Character.hasTimingBonus():
                     bgColor = "#f33"

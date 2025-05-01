@@ -26,6 +26,7 @@ class DebugMenu(src.subMenu.SubMenu):
         "clear path cache",
         "pass time",
         "gain endgame strength",
+        "gain full strength",
     ]
 
     def __init__(self):
@@ -54,6 +55,23 @@ class DebugMenu(src.subMenu.SubMenu):
             text += debug
 
             match debug:
+                case "gain full strength":
+                    if current_change:
+                        character.maxHealth = 500
+                        character.health = 500
+                        character.baseAttackSpeed = 0.50
+                        character.movementSpeed = 0.50
+                        character.baseDamage = 20
+                        character.hasSpecialAttacks = True
+
+                        weapon = src.items.itemMap["Sword"]()
+                        weapon.baseDamage = 30
+                        character.weapon = weapon
+                        armor = src.items.itemMap["Armor"]()
+                        armor.armorValue = 8
+                        character.armor = armor
+
+                        return True
                 case "gain endgame strength":
                     if current_change:
                         character.maxHealth = 370

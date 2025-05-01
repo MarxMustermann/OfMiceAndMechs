@@ -1138,7 +1138,7 @@ class Character:
             self.frustration += 10 * damage
             message = "you took " + str(damage) + f" damage. You have {self.health}/{self.adjustedMaxHealth} health left"
             if reason:
-                message += f"\ncause you got {reason}"
+                message += f"\nbecause you got {reason}"
             self.addMessage(message)
 
             if self.combatMode == "defensive":
@@ -1160,6 +1160,10 @@ class Character:
                     self.runCommandString("JH")
             """
         else:
+            message = "you took " + str(damage) + f" damage. This killed you"
+            if reason:
+                message += f"\nbecause you got {reason}"
+            self.addMessage(message)
             self.health = 0
             self.die(reason="you died from injuries",killer = actor)
 

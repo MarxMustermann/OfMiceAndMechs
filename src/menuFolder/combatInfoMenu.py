@@ -38,8 +38,6 @@ nearby enemies:
             text += "health:     %s\n" % enemy.health
             text += "exhaustion:  %s\n" % enemy.exhaustion
             timeTaken = enemy.timeTaken
-            if timeTaken > 1:
-                timeTaken -= 1
             text += f"timeTaken:   {timeTaken:f}\n"
 
         text += """
@@ -53,8 +51,6 @@ subordinates:
             text += "health:     %s\n" % ally.health
             text += "exhaustion:  %s\n" % ally.exhaustion
             timeTaken = ally.timeTaken
-            if timeTaken > 1:
-                timeTaken -= 1
             text += f"timeTaken:   {timeTaken:f}\n"
 
         return text

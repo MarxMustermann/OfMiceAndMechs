@@ -59,8 +59,8 @@ class DebugMenu(src.subMenu.SubMenu):
                     if current_change:
                         character.maxHealth = 500
                         character.health = 500
-                        character.baseAttackSpeed = 0.50
-                        character.movementSpeed = 0.50
+                        character.baseAttackSpeed = 0.10
+                        character.movementSpeed = 0.10
                         character.baseDamage = 20
                         character.hasSpecialAttacks = True
 

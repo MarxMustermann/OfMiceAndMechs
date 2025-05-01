@@ -50,8 +50,8 @@ class Guardian(src.monster.Monster):
         self.hasPushbackAttack = True
         self.health = self.maxHealth
         self.godMode = True
-        self.movementSpeed = 0.5
-        self.baseAttackSpeed = 0.5
+        self.movementSpeed = 0.1
+        self.baseAttackSpeed = 0.1
         self.specialCharges = 0
         self.rawBaseDame = 20
         self.baseDamage = 20

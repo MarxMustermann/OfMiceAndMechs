@@ -76,8 +76,18 @@ def advanceGame():
     for character in multi_chars:
         character.timeTaken -= 1
 
-    for character in multi_chars:
-        advanceChar(character)
+    while multi_chars:
+        selected_char = None
+        minTimeTaken = None
+        for character in multi_chars:
+            if minTimeTaken is None or minTimeTaken > character.timeTaken:
+                selected_char = character
+                minTimeTaken = character.timeTaken
+
+        advanceChar(selected_char, singleStep=True)
+
+        if selected_char.timeTaken >= 1:
+            multi_chars.remove(selected_char)
 
     try:
         src.gamestate.gamestate.itemToUpdatePerTick
@@ -6862,7 +6872,7 @@ def clearMessages(char):
 
 skipNextRender = False
 lastRender = None
-def advanceChar(char,render=True, pull_events = True):
+def advanceChar(char,render=True, pull_events = True, singleStep=False):
     global skipNextRender
 
     state = char.macroState
@@ -6947,6 +6957,9 @@ def advanceChar(char,render=True, pull_events = True):
             )
             rerender = True
             skipNextRender = False
+
+            if singleStep:
+                break
         elif char.autoAdvance:
             char.runCommandString("+")
             char.timeTaken += 1

@@ -1095,10 +1095,10 @@ class MainGame(BasicPhase):
 
         remote_base_npc = [True] * 9 + [False]
 
-        def random_freq():
+        def random_frequency():
             return D(random.choice(range(88, 107))) + random.choice([D(0.5), D(0)])
 
-        remote_base_teleporter_group = random_freq()
+        remote_base_teleporter_group = random_frequency()
         random.shuffle(remote_base_npc)
         for i in range(1, 10):
             t_pos = self.get_free_position("remote base")
@@ -1126,7 +1126,7 @@ class MainGame(BasicPhase):
             )
 
             if src.helpers.percentage_chance(0.2):
-                remote_base_teleporter_group = random_freq()
+                remote_base_teleporter_group = random_frequency()
             src.magic.SpawnStorageRoom(
                 currentTerrain, remove((base_tile[0], base_tile[1] - 2)), controlRoom, remote_base_teleporter_group
             )
@@ -2559,7 +2559,7 @@ but they are likely to explode when disturbed.
         implant_m = src.items.itemMap["MonsterSpawner"]()
         central_room.addItem(implant_m, (6, 6, 0))
 
-    def setUpLab(self, pos, freq):
+    def setUpLab(self, pos, frequency):
         # get basic info
         currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
         currentTerrain.tag = "lab"
@@ -2572,7 +2572,7 @@ but they are likely to explode when disturbed.
         teleporter_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (6, 7))
 
         teleporter = src.items.itemMap["DimensionTeleporter"]()
-        teleporter.group = freq
+        teleporter.group = frequency
         teleporter.mode = random.choice([0, 1])
         teleporter.boltAction(None)
         teleporter_room.addItem(teleporter, (6, 6, 0))

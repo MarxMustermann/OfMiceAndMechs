@@ -21,6 +21,7 @@ import src.terrains
 from config import commandChars
 from src import cinematics
 from multiprocessing import Process
+from queue import PriorityQueue
 
 ################################################################################
 #
@@ -76,18 +77,20 @@ def advanceGame():
     for character in multi_chars:
         character.timeTaken -= 1
 
-    while multi_chars:
-        selected_char = None
-        minTimeTaken = None
-        for character in multi_chars:
-            if minTimeTaken is None or minTimeTaken > character.timeTaken:
-                selected_char = character
-                minTimeTaken = character.timeTaken
+    character_queue = PriorityQueue()
+    counter = 1
+    for character in multi_chars:
+        counter += 1
+        character_queue.put((character.timeTaken, counter, character))
 
-        advanceChar(selected_char, singleStep=True)
+    while not character_queue.empty():
+        character = character_queue.get()[2]
 
-        if selected_char.timeTaken >= 1:
-            multi_chars.remove(selected_char)
+        advanceChar(character, singleStep=True)
+
+        if character.timeTaken < 1 and not character.dead:
+            counter += 1
+            character_queue.put((character.timeTaken, counter, character))
 
     try:
         src.gamestate.gamestate.itemToUpdatePerTick

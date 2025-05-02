@@ -1204,11 +1204,14 @@ class MainGame(BasicPhase):
                     npc.duties.append("manufacturing")
                     npc.duties.append("praying")
 
-        for _i in range(1,40):
+        for _i in range(1,20):
             self.setUpShrine(self.get_free_position("shrine"))
 
         for _i in range(1,15):
             self.setUpFactoryRemains(self.get_free_position("factory"))
+
+        for _i in range(1,20):
+            self.setUpCloningLab(self.get_free_position("cloning lab"))
 
         for _i in range(1,2):
             for itemID in [1,2,3,4,5,6,7]:
@@ -2545,6 +2548,16 @@ but they are likely to explode when disturbed.
                     currentTerrain.addItem(item, (pos[0] + rand_pos[0] * 15, pos[1] + rand_pos[1] * 15,0))
             rand_pos = (random.randint(3,11),random.randint(3,11))
             make_room = random.random() < 0.4
+
+    def setUpCloningLab(self, pos):
+        # get basic info
+        currentTerrain = src.gamestate.gamestate.terrainMap[pos[1]][pos[0]]
+        currentTerrain.tag = "cloning lab"
+
+        central_room = src.magic.spawnRoom(currentTerrain, "EmptyRoom", (7, 7))
+
+        implant_m = src.items.itemMap["MonsterSpawner"]()
+        central_room.addItem(implant_m, (6, 6, 0))
 
     def setUpLab(self, pos, freq):
         # get basic info

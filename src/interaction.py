@@ -2703,37 +2703,21 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                 charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("north",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
             if key in ("S",):
                 charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("south",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
             if key in ("D",):
                 charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("east",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
             if key in ("A",):
                 charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
                 if charState["itemMarkedLast"]:
                     handleCollision(char,charState)
-                if char.exhaustion < 10:
-                    charState["itemMarkedLast"] = moveCharacter("west",char,noAdvanceGame,header,urwid,dash=True)
-                    if charState["itemMarkedLast"]:
-                        handleCollision(char,charState)
                 return None
 
         """

@@ -507,9 +507,6 @@ class Terrain:
                 char.yPosition += 1
                 return None
 
-        if dash and char.exhaustion >= 10:
-            dash = False
-
         if not char.terrain:
             return None
         if not (char.xPosition and char.yPosition):
@@ -945,6 +942,7 @@ class Terrain:
                         src.gamestate.gamestate.terrain = newTerrain
                 char.stats["steps taken"] = char.stats.get("steps taken", 0) + 1
                 char.changed("moved", (char, direction))
+
                 if not dash:
                     multiplier = 1
                     if char.exhaustion:
@@ -952,8 +950,11 @@ class Terrain:
                         multiplier = 1.2
                     char.takeTime(char.adjustedMovementSpeed*multiplier,"moved")
                 else:
-                    char.takeTime(char.adjustedMovementSpeed/2,"moved")
-                    char.exhaustion += 5
+                    if not char.exhaustion > 5:
+                        char.takeTime(char.adjustedMovementSpeed/2,"moved")
+                        char.exhaustion += 5
+                    else:
+                        char.takeTime(char.adjustedMovementSpeed,"moved")
                 for item in stepOnActiveItems:
                     item.doStepOnAction(char)
 

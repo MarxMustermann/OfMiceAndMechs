@@ -264,6 +264,9 @@ class Character:
 
         self.hasPushbackAttack = False
 
+    def takeTime(self,amount,reason=None):
+        self.timeTaken += amount
+
     def applyNativeMeleeAttackEffects(self,target):
         pass
 
@@ -772,7 +775,7 @@ class Character:
 
         self.addMessage("you fire a bolt")
         self.inventory.remove(bolt)
-        self.timeTaken += 1
+        self.takeTime(1,"fired bolt")
 
         potentialTargets = []
         if direction == "w":
@@ -1383,8 +1386,8 @@ press any other key to attack normally"""
         if slow:
             speed *= 1.5
         else:
-            self.timeTaken += self.attackSpeed/2
-        self.timeTaken += speed
+            self.takeTime(self.attackSpeed/2,"attacked 2")
+        self.takeTime(speed,"attacked 1")
 
         if self.numAttackedWithoutResponse > 2:
             self.numAttackedWithoutResponse = int(self.numAttackedWithoutResponse/2)
@@ -1928,7 +1931,7 @@ press any other key to attack normally"""
         """
 
         # add exponentially increasing penality to prevent AI loops from locking up the game
-        self.timeTaken += 0.01*(self.implantLoad**2)
+        self.takeTime(0.01*(self.implantLoad**2),"AI loop prevention")
         self.implantLoad += 1
 
         if self.disableCommandsOnPlus:

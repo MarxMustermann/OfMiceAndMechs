@@ -61,9 +61,9 @@ class ShockTower(src.items.Item):
             if key == "r":
                 extraText = self.loadNearbyAmmo()
             if key == ".":
-                character.timeTaken += 1
+                character.takeTime(1,"waited")
             if key == "j":
-                character.timeTaken += 1
+                character.takeTime(1,"used shock tower")
                 extraText = self.shock(pos,character)
         params["pos"] = pos
 

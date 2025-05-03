@@ -126,6 +126,7 @@ To see your items open the your inventory by pressing i."""
 
                 #if not dryRun:
                 #    character.timeTaken += 1
+                #    character.takeTime(1,"failed quest")
                 #    self.fail(reason="no storage available")
                 #return (None,None)
                 if not character.getTerrain().alarm:
@@ -135,7 +136,7 @@ To see your items open the your inventory by pressing i."""
                     quest = src.quests.questMap["DiscardItemsInside"]()
                     return ([quest],None)
                 if not dryRun:
-                    character.timeTaken += 1
+                    character.takeTime(1,"failed quest")
                     self.fail(reason="no storage available")
                 return (None,None)
 

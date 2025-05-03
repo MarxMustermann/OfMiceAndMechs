@@ -59,7 +59,7 @@ class InventoryMenu(src.subMenu.SubMenu):
                 item = self.char.inventory[self.cursor]
                 self.char.addMessage(f"you drop a {item.type}")
                 self.char.drop(self.char.inventory[self.cursor], pos)
-                self.char.timeTaken += self.char.movementSpeed
+                self.char.takeTime(self.char.movementSpeed,"dropped item")
 
                 self.drop = False
                 self.subMenu = None
@@ -98,14 +98,14 @@ class InventoryMenu(src.subMenu.SubMenu):
                     item = self.char.inventory[self.cursor]
                     self.char.addMessage(f"you activate the {item.type}")
                     item.apply(self.char)
-                    self.char.timeTaken += self.char.movementSpeed
+                    self.char.takeTime(self.char.movementSpeed,"activated item")
 
                 # do drop
                 if key == "l":
                     item = self.char.inventory[self.cursor]
                     self.char.addMessage(f"you drop a {item.type}")
                     self.char.drop(item)
-                    self.char.timeTaken += self.char.movementSpeed
+                    self.char.takeTime(self.char.movementSpeed,"dropped item")
 
                 # equip as tool
                 if key == "t":

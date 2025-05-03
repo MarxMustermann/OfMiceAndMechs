@@ -1758,13 +1758,13 @@ class Room:
                 return None
 
             if not dash or character.exhaustion >= 10:
-                character.timeTaken += character.adjustedMovementSpeed
+                character.takeTime(character.adjustedMovementSpeed,"moved 1")
                 if not dash:
                     if character.exhaustion > 0:
                         character.exhaustion -= min(1,character.exhaustion)
-                        character.timeTaken += character.adjustedMovementSpeed
+                        character.takeTime(character.adjustedMovementSpeed,"moved 2")
             else:
-                character.timeTaken += character.adjustedMovementSpeed/2
+                character.takeTime(character.adjustedMovementSpeed/2,"moved 3")
                 character.exhaustion += 5
             character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1
 
@@ -1813,9 +1813,9 @@ class Room:
             if character.exhaustion:
                 character.exhaustion -= 1
                 multiplier = 1.2
-            character.timeTaken += character.adjustedMovementSpeed*multiplier
+            character.takeTime(character.adjustedMovementSpeed*multiplier,"moved 4")
         else:
-            character.timeTaken += character.adjustedMovementSpeed/2
+            character.takeTime(character.adjustedMovementSpeed/2,"moved 5")
             character.exhaustion += 5
         self.terrain.addCharacter(character, newXPos, newYPos)
         character.stats["steps taken"] = character.stats.get("steps taken", 0) + 1

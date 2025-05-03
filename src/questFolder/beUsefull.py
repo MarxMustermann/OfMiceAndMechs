@@ -495,7 +495,7 @@ Press d to move the cursor and show the subquests description.
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(random.randint(1,11),random.randint(1,11),0),description="wait for something to happen",reason="ensure nothing exciting will happening")
                 if not dryRun:
                     self.idleCounter += 1
-                character.timeTaken += self.idleCounter
+                character.takeTime(self.idleCounter,"was idle")
                 return ([quest],None)
 
         room = character.getTerrain().getRoomByPosition(character.getHomeRoomCord())[0]
@@ -508,7 +508,7 @@ Press d to move the cursor and show the subquests description.
         if not dryRun:
             self.idleCounter += 1
         if not dryRun:
-            character.timeTaken += self.idleCounter
+            character.takeTime(self.idleCounter,"was idle")
         return ([quest],None)
 
 src.quests.addType(BeUsefull)

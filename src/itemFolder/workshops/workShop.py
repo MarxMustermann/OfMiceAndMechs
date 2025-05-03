@@ -15,7 +15,7 @@ class WorkShop(src.items.Item):
             character.addMessage("You got hit while working")
             return
         ticksLeft = params["productionTime"] - params["doneProductionTime"]
-        character.timeTaken += 1
+        character.takeTime(1,"produced")
         params["doneProductionTime"] += 1
 
         barLength = params["productionTime"]//10

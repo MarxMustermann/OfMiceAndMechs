@@ -91,7 +91,7 @@ You talk to NPCs by pressing h and selecting the NPC to talk to.
         if self.filled:
             self.eject(character)
             character.changed("spawned clone")
-            character.timeTaken += 2
+            character.takeTime(2,"spawned clone")
         else:
             self.refill(character)
 

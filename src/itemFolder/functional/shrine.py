@@ -240,13 +240,13 @@ class Shrine(src.items.Item):
             progressbarWithNewlines = progressbarWithNewlines[:-1]
 
         if ticksLeft > 100:
-            character.timeTaken += 100
+            character.takeTime(100,"prayed")
             params["doneProductionTime"] += 100
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"waitPrayWait","params":params}
         else:
-            character.timeTaken += ticksLeft
+            character.takeTime(ticksLeft,"prayed")
             params["doneProductionTime"] += ticksLeft
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbarWithNewlines,targetParamName="abortKey")
             character.macroState["submenue"] = submenue

@@ -852,7 +852,7 @@ class MetaQuestSequence(Quest,ABC):
             if nextCommand:
                 character.runCommandString(nextCommand[0])
 
-            character.timeTaken += 0.01
+            character.takeTime(0.01,"thinking")
 
     @abstractmethod
     def getNextStep(self, character=None, ignoreCommands=False, dryRun = True): ...

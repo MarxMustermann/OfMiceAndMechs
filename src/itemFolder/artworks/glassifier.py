@@ -374,13 +374,13 @@ class Glassifier(src.items.Item):
         progressbar += f"prayer: {self.numPrayed+1}\n\n"
         progressbar += "X"*(params["timeTaken"]//10)+"."*((params["prayerTime"]//10)-(params["timeTaken"]//10))
         if params["prayerTime"] - params["timeTaken"] > 10:
-            character.timeTaken += 10
+            character.takeTime(10,"praying")
             params["timeTaken"] += 10
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"pray_wait","params":params}
         else:
-            character.timeTaken += params["prayerTime"] - params["timeTaken"]
+            character.takeTime(params["prayerTime"] - params["timeTaken"],"praying")
             params["timeTaken"] += params["prayerTime"] - params["timeTaken"]
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(progressbar,targetParamName="abortKey")
             character.macroState["submenue"] = submenue

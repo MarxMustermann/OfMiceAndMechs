@@ -363,7 +363,7 @@ class Item:
 
         # gather actions
         actions = self.gatherApplyActions(character)
-        character.timeTaken += 1
+        character.takeTime(1,"used item")
 
         # run actions
         if actions:

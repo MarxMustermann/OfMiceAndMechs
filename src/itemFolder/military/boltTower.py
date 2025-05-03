@@ -30,19 +30,19 @@ class BoltTower(src.items.Item):
             if key in ("enter","esc","lESC","rESC"):
                 return
             if key == "w":
-                character.timeTaken += 1
+                character.takeTime(1,"shot bolt")
                 extraText = self.shoot({"character":character,"direction":(0,-1,0)})
             if key == "a":
-                character.timeTaken += 1
+                character.takeTime(1,"shot bolt")
                 extraText = self.shoot({"character":character,"direction":(-1,0,0)})
             if key == "s":
-                character.timeTaken += 1
+                character.takeTime(1,"shot bolt")
                 extraText = self.shoot({"character":character,"direction":(0,1,0)})
             if key == "d":
-                character.timeTaken += 1
+                character.takeTime(1,"shot bolt")
                 extraText = self.shoot({"character":character,"direction":(1,0,0)})
             if key == ".":
-                character.timeTaken += 1
+                character.takeTime(1,"waiting")
 
         def rerender():
             if isinstance(self.container,Room) :

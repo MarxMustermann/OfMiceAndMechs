@@ -972,35 +972,35 @@ def doAdvancedInteraction(params):
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
         )
         if items:
             items[0].apply(char)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced interaction m")
     elif key == "i":
         if char.inventory:
             char.inventory[-1].apply(char)
@@ -1061,7 +1061,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "s":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition + 1, char.zPosition)
@@ -1069,7 +1069,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "d":
         items = char.container.getItemByPosition(
             (char.xPosition + 1, char.yPosition, char.zPosition)
@@ -1077,7 +1077,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "a":
         items = char.container.getItemByPosition(
             (char.xPosition - 1, char.yPosition, char.zPosition)
@@ -1085,7 +1085,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == ".":
         items = char.container.getItemByPosition(
             (char.xPosition, char.yPosition, char.zPosition)
@@ -1093,7 +1093,7 @@ def doAdvancedConfiguration(key,char,charState,main,header,footer,urwid,flags):
         if items:
             items[0].configure(char)
             char.runCommandString("~",nativeKey=True)
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"advanced configuration m")
     elif key == "i" and char.inventory:
         char.inventory[-1].configure(char)
     del char.interactionState["advancedConfigure"]
@@ -1112,7 +1112,7 @@ def doAdvancedPickup(params):
         del char.interactionState["advancedPickup"]
         return
 
-    char.timeTaken += char.movementSpeed
+    char.takeTime(char.movementSpeed,"advanced pickup")
     if len(char.inventory) >= 10:
         if key == "w":
             char.container.addAnimation(char.getPosition(offset=(0,-1,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
@@ -1234,7 +1234,7 @@ def doAdvancedDrop(params):
     footer = params[6]
     urwid = params[7]
 
-    char.timeTaken += char.movementSpeed
+    char.takeTime(char.movementSpeed,"advanced drop")
     pos = None
     if key == "w":
         pos = (char.xPosition, char.yPosition - 1, char.zPosition)
@@ -2633,7 +2633,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         """
         # move the player
         if key in (commandChars.wait):
-            char.timeTaken += 1
+            char.takeTime(1,"wait")
             if char.exhaustion > 1:
                 char.exhaustion = max(1,char.exhaustion-10)
             else:
@@ -2799,7 +2799,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
                     return None
 
                 charState["itemMarkedLast"].apply(char)
-                char.timeTaken += char.movementSpeed
+                char.takeTime(char.movementSpeed,"activate item marked")
 
             # activate an item on floor
             else:
@@ -2819,7 +2819,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
 
                     if entry:
                         entry[0].apply(char)
-                        char.timeTaken += char.movementSpeed
+                        char.takeTime(char.movementSpeed,"activate item not marked")
 
         # examine an item
         if key in (commandChars.examine,):
@@ -2834,7 +2834,7 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         # drop first item from inventory
         # bad pattern: the user has to have the choice for what item to drop
         if key in (commandChars.drop,):
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"drop item")
             if "NaiveDropQuest" not in char.solvers and not char.godMode:
                 char.addMessage("you do not have the nessecary solver yet (drop)")
             else:
@@ -2996,7 +2996,7 @@ press key for advanced drop
         # pick up items
         # bad code: picking up should happen in character
         if key in (commandChars.pickUp,):
-            char.timeTaken += char.movementSpeed
+            char.takeTime(char.movementSpeed,"pick up item")
             if len(char.inventory) >= 10:
                 char.container.addAnimation(char.getPosition(offset=(0,0,0)),"showchar",1,{"char":(src.interaction.urwid.AttrSpec("#f00", "black"),"XX")})
                 char.addMessage("you cannot carry more items")
@@ -3116,7 +3116,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     char.implantLoad += 1
 
     if char.implantLoad > 100:
-        char.timeTaken += 1
+        char.takeTime(1,"implant load")
         char.implantLoad = 0
 
     if char.dead:
@@ -6965,7 +6965,7 @@ def advanceChar(char,render=True, pull_events = True, singleStep=False):
                 break
         elif char.autoAdvance:
             char.runCommandString("+")
-            char.timeTaken += 1
+            #char.timeTaken += 1
         elif hasAutosolveQuest:
             rerender = True
             char.runCommandString("+")

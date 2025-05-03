@@ -89,7 +89,7 @@ or use this item with MoldFeed in your inventory.
 
         character.addMessage("you burn the corpses and inhale the smoke")
         character.heal(5 * amount_to_burn,reason="inhaling the smoke of " + str(amount_to_burn) + " corpse")
-        character.timeTaken += 30
+        character.takeTime(30,"burnig a corpse")
 
         character.container.addAnimation(character.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#f00", "#fff"), "++")]})
         for _i in range(1,10):

@@ -1931,7 +1931,6 @@ press any other key to attack normally"""
         """
 
         # add exponentially increasing penality to prevent AI loops from locking up the game
-        self.takeTime(0.01*(self.implantLoad**2),"AI loop prevention")
         self.implantLoad += 1
 
         if self.disableCommandsOnPlus:

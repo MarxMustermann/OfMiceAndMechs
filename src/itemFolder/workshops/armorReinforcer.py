@@ -37,7 +37,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             chitinPlates.append(item)
 
         if not chitinPlates:
-            character.addMessage("you don't have Chitin Plates, you can only improve your armor up to 3")
+            character.addMessage("you don't have ChitinPlates, you need ChitinPlates to upgrade your armor up to more than 3")
 
         armor = None
         if params["choice"] == "Reinforce Equipped Armor":

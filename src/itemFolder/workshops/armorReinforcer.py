@@ -11,8 +11,8 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
     def __init__(self):
         super().__init__(display="AR")
-        self.applyOptions.extend([("Reinforce armor", "Reinforce armor")])
-        self.applyMap = {"Reinforce armor": self.reinforceArmorHook}
+        self.applyOptions.extend([("Reinforce Armor", "Reinforce Armor")])
+        self.applyMap = {"Reinforce Armor": self.reinforceArmorHook}
 
     def reinforceArmorHook(self, character):
         self.reinforceArmor({"character": character})

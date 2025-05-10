@@ -47,10 +47,10 @@ class SternsContraption(src.items.Item):
                 for character in self.container.characters[:]:
                     character.hurt(20,reason="shrapnel")
 
-            if tick > 5:
+            if tick > 6:
                 self.container.addAnimation(self.getPosition(),"smoke",2,{})
                 self.container.addAnimation(self.getPosition(),"showchar",1,{"char":[(src.interaction.urwid.AttrSpec("#faa", "#f00"), "%%")]})
-            if tick == 5:
+            if tick == 6:
                 for character in self.container.characters[:]:
                     character.hurt(25,reason="shrapnel")
                 for i in range(1,2):

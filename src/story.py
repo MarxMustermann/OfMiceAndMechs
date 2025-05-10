@@ -2068,6 +2068,19 @@ but they are likely to explode when disturbed.
 
         architect = src.magic.getArchitect(currentTerrain)
 
+        # create shelter room
+        shelter = architect.doAddRoom(
+                {
+                       "coordinate": (1,9),
+                       "roomType": "EmptyRoom",
+                       "doors": "0,6 6,0 6,12 12,6",
+                       "offset": [1,1],
+                       "size": [13, 13],
+                },
+                None,
+           )
+
+
         ####
         # create the control room
         ##
@@ -2353,7 +2366,7 @@ but they are likely to explode when disturbed.
                 if self.difficulty == "medium":
                     lifetime = 100
                 if self.difficulty == "difficult":
-                    lifetime = 10
+                    lifetime = 20
                 quest = src.quests.questMap["SecureTile"](toSecure=snatcherNest,lifetime=lifetime, wandering=True, endWhenCleared=False)
                 quest.autoSolve = True
                 quest.assignToCharacter(enemy)

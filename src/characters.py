@@ -263,6 +263,7 @@ class Character:
         }
 
         self.hasPushbackAttack = False
+        self.outsideOnly = False
 
     def takeTime(self,amount,reason=None):
         self.timeTaken += amount

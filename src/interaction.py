@@ -3551,6 +3551,7 @@ def keyboardListener(key, targetCharacter=None):
     state = char.macroState
 
     if key == "ctrl d":
+        char.autoAdvance = False
         char.clearCommandString()
         state["loop"] = []
         state["replay"].clear()

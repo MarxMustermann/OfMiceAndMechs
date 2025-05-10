@@ -973,7 +973,7 @@ class Terrain:
             return "..."
         return command
 
-    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False,character=None,avoidEnemies=True):
+    def getPath(self,startPos,targetPos,localRandom=None,tryHard=False,character=None,avoidEnemies=True,outsideOnly=False):
         if startPos == targetPos:
             return []
 
@@ -1000,7 +1000,10 @@ class Terrain:
         tileMap[7*2+1][14*2+1] = 1
 
         for room in self.rooms:
-            tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
+            if not outsideOnly:
+                tileMap[room.xPosition*2+1][room.yPosition*2+1] = "9"
+            else:
+                tileMap[room.xPosition*2+1][room.yPosition*2+1] = "0"
             if not room.getPositionWalkable((0,6,0)):
                 tileMap[room.xPosition*2+0][room.yPosition*2+1] = "0"
             if not room.getPositionWalkable((12,6,0)):

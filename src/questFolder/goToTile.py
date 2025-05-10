@@ -345,7 +345,7 @@ The target tile is {direction[4:]}
 
 
     def generatePath(self,character):
-        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True)
+        self.path = character.getTerrain().getPath(character.getBigPosition(),self.targetPosition,character=character,avoidEnemies=True,outsideOnly=character.outsideOnly)
 
     def handleQuestFailure(self,extraParam):
         if extraParam["quest"] not in self.subQuests:

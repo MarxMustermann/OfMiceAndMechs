@@ -10,18 +10,21 @@ class Snatcher(src.monster.Monster):
         self.specialDisplay = "sn"
         self.baseDamage = 20
         self.maxHealth = 18
-        self.health = self.maxHealth
         if src.gamestate.gamestate.difficulty == "difficult":
             self.baseDamage *= 2
             self.health *= 2
-            self.maxHealth = 2
+        self.health = self.maxHealth
 
         self.homeTile = None
 
         self.charType = "Snatcher"
         self.autoAdvance = True
+        self.outsideOnly = True
 
     def generateQuests(self):
+
+        if not self.homeTile:
+            self.homeTile = self.getBigPosition()
 
         if random.random() < 0.5:
             quest = src.quests.questMap["ClearTerrain"](outsideOnly=True)
@@ -30,9 +33,6 @@ class Snatcher(src.monster.Monster):
             quest.activate()
             self.quests.append(quest)
         else:
-            if not self.homeTile:
-                self.homeTile = self.getBigPosition()
-
             quest = src.quests.questMap["SecureTile"](toSecure=self.homeTile,lifetime=random.randint(20,30), wandering=True, endWhenCleared=False)
             quest.autoSolve = True
             quest.assignToCharacter(self)

@@ -196,7 +196,7 @@ class Monster(src.characters.Character):
     def color_for_multiplier(self, multiplier):
         range = self.multiplier_range(multiplier)
 
-        return (
+        color = (
             src.interaction.urwid.AttrSpec(
                 src.interaction.urwid.AttrSpec.interpolate(
                     (255, 255, 255), (255, 16, 8), src.helpers.clamp(range, 0.0, 1.0)
@@ -204,6 +204,7 @@ class Monster(src.characters.Character):
                 "black",
             ),
         )
+        return color
 
     def multiplier_range(self, multiplier):
         match src.gamestate.gamestate.difficulty:

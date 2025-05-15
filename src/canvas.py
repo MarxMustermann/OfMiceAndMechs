@@ -448,6 +448,7 @@ class Canvas:
                         logger.error("error drawing stuff")
                         logger.error(item)
                         logger.error(tcodPrepared)
+                        logger.error(char)
                         continue
                     text = text.replace("ò","o")
                     text = text.replace("＠","@ ")

@@ -1618,9 +1618,14 @@ press any other key to attack normally"""
         """
         if self.specialRender:
             return self.specialRender
+        elif self.specialDisplay:
+            return self.specialDisplay
         else:
-            return "->"
-            return self.displayOriginal
+            if isinstance(self.displayOriginal,int):
+                mapped = src.canvas.displayChars.indexedMapping[self.displayOriginal]
+                return mapped
+            else:
+                return self.displayOriginal
 
     # bad code: should be actual attribute
     @property

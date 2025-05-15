@@ -56,7 +56,6 @@ class Golem(src.monster.Monster):
         self.movementSpeed = 1.3
         self.movementSpeed -= self.movementSpeed * 0.5 * self.multiplier_range(multiplier)
 
-
     def changed(self, tag="default", info=None):
         if tag == "pickup bolted fail":
             info["item"].destroy()

@@ -2249,6 +2249,10 @@ but they are likely to explode when disturbed.
                     wall.bolted = False
                     currentTerrain.addItem(wall,(15*x+random.randint(2,11),15*y+random.randint(2,11),0))
 
+        pos = (15*2+random.randint(2,13),15*7+random.randint(2,13),0)
+        rod = src.items.itemMap["Rod"]()
+        currentTerrain.addItem(rod,pos)
+
         # place initial fighting spots
         for fightingSpot in fightingSpots:
 
@@ -2264,8 +2268,11 @@ but they are likely to explode when disturbed.
 
             # spawn corpses
             if fightingSpot in [(6,8,0),]:
+                pos = (15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0)
+                rod = src.items.itemMap["Rod"]()
+                currentTerrain.addItem(rod,pos)
                 corpse = src.items.itemMap["Corpse"]()
-                currentTerrain.addItem(corpse,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+                currentTerrain.addItem(corpse,pos)
 
                 vial = src.items.itemMap["Vial"]()
                 vial.uses = 5
@@ -2274,8 +2281,11 @@ but they are likely to explode when disturbed.
                 if random.random() < 0.8:
                     choice = random.random()
                     if choice < 0.3:
+                        pos = (15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0)
+                        rod = src.items.itemMap["Rod"]()
+                        currentTerrain.addItem(rod,pos)
                         corpse = src.items.itemMap["Corpse"]()
-                        currentTerrain.addItem(corpse,(15*fightingSpot[0]+random.randint(2,11),15*fightingSpot[1]+random.randint(2,11),0))
+                        currentTerrain.addItem(corpse,pos)
                     elif choice < 0.7:
                         vial = src.items.itemMap["Vial"]()
                         vial.uses = 5
@@ -3255,6 +3265,9 @@ but they are likely to explode when disturbed.
         contraption = src.items.itemMap["SternsContraption"]()
         startRoom.addItem(contraption,(6,6,0))
         storyStartInfo["sternsContraption"] = contraption
+
+        item = src.items.itemMap["PotionOfSpeed"]()
+        startRoom.addItem(item,(10,6,0))
 
         return storyStartInfo
 

@@ -1386,8 +1386,6 @@ press any other key to attack normally"""
             speed *= 0.5
         if slow:
             speed *= 1.5
-        else:
-            self.takeTime(self.attackSpeed/2,"attacked 2")
         self.takeTime(speed,"attacked 1")
 
         if self.numAttackedWithoutResponse > 2:

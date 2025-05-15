@@ -2632,6 +2632,8 @@ def handleNoContextKeystroke(char,charState,flags,key,main,header,footer,urwid,n
         move the player into a direction
         """
         # move the player
+        if key in (":"):
+            char.takeTime(0.1,"short wait")
         if key in (commandChars.wait):
             char.takeTime(1,"wait")
             if char.exhaustion > 1:

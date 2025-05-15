@@ -108,6 +108,9 @@
 * show implnat status to player (good/bad ending)
 * [story] prevent ghul spawning quest when there is no ghul
 * add ghul control item that runs command A or command B depending on alarm or not
+* add boss spawner
+* add enemy bases that do dungeon delving
+* add more enemy types
 
 == daily goal ==
 * add special attack to final "boss"

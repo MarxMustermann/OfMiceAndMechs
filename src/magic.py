@@ -585,6 +585,9 @@ def spawnControlRoom(terrain, coordinate, spawnReportArchive=False):
     siegeManager.bolted = True
     mainRoom.addItem(siegeManager, (4, 4, 0))
     siegeManager.handleTick()
+    knowledge_base = src.items.itemMap["KnowledgeBase"]()
+    knowledge_base.bolted = True
+    mainRoom.addItem(knowledge_base, (4, 5, 0))
 
     # add most basic items
     painter = src.items.itemMap["Painter"]()

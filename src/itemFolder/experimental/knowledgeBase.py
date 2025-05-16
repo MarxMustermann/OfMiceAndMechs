@@ -10,21 +10,38 @@ class KnowledgeBase(src.items.Item):
         self.name = "knowledge base"
 
     def apply(self, character):
-        self.show_info(character)
+        self.show_info({"character":character,"search_term":""})
 
     def configure(self, character):
-        self.show_info(character)
+        self.show_info({"character":character,"search_term":""})
 
-    def show_info(self, character):
+    def show_info(self, params):
 
-        text = ""
+        character = params["character"]
+        search_term = params["search_term"]
+
+        key_pressed = params.get("keyPressed")
+        if key_pressed:
+            if key_pressed in ("ENTER","esc","rESC","lESC",):
+                return
+            if key_pressed == "backspace":
+                if len(search_term) > 0:
+                    search_term = search_term[:-1]
+            else:
+                search_term += params.get("keyPressed")
+
+        text = f"search for: {search_term}\n\nresults:\n\n"
 
         for (itemType,itemClass) in src.items.itemMap.items():
-            text += f"{itemType}:\n{itemClass.description}\n\n"
-            print(itemType)
-            print(itemClass.description)
+            itemText = f"{itemType}:\n{itemClass.description}\n\n"
+            if search_term.lower() in itemText.lower():
+                text += itemText
 
-        character.showTextMenu(text)
+        params["search_term"] = search_term
+
+        submenu = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text)
+        submenu.followUp = {"container":self,"method":"show_info","params":params}
+        character.macroState["submenue"] = submenu
 
     def getLongInfo(self):
         return """

@@ -45,6 +45,8 @@ class Item:
     container = None
     name = "unknown"
 
+    description = "abstract base item should never be used directly"
+
     def getTerrainPosition(self):
         return self.getTerrain().getPosition()
 

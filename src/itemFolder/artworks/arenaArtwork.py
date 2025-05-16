@@ -7,6 +7,7 @@ class ArenaArtwork(src.items.Item):
 
 
     type = "ArenaArtwork"
+    description = "manages the strength of nearby enemies"
 
     def __init__(self, name="ArenaArtwork"):
         """

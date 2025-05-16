@@ -111,6 +111,9 @@
 * add boss spawner
 * add enemy bases that do dungeon delving
 * add more enemy types
+* flatten sword upgrade costs
+* add information source listing items that can be build with a description
+* format info in glass statues better
 
 == daily goal ==
 * add special attack to final "boss"

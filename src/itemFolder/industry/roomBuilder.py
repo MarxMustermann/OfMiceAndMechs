@@ -82,7 +82,6 @@ The room has to be a rectangle.
             character.addMessage("no boundaries found")
             return
 
-        # check for items placed
         roomLeft = self.xPosition - wallLeft.xPosition
         roomRight = wallRight.xPosition - self.xPosition
         roomTop = self.yPosition - wallTop.yPosition
@@ -94,7 +93,6 @@ The room has to be a rectangle.
             character.addMessage("room to big")
             return
 
-        # check for items placed
         wallMissing = False
         items = []
         specialItems = []
@@ -159,7 +157,6 @@ The room has to be a rectangle.
                 character.addMessage("wall missing")
                 return
 
-            # check for items placed
             for item in specialItems:
                 for compareItem in specialItems:
                     if item == compareItem:
@@ -177,7 +174,6 @@ The room has to be a rectangle.
                     character.addMessage("special items to near to each other")
                     return
 
-        # check for items placed
         oldTerrain = self.container
         for item in specialItems:
             if item == self:

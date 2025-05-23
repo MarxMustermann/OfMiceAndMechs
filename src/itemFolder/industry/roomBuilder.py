@@ -40,7 +40,7 @@ The room has to be a rectangle.
             character.addMessage("this machine can not be used within rooms")
             return
 
-        # check for items placed
+        # find room edges
         wallLeft = False
         for offset in range(6, 7):
             pos = (self.xPosition - offset, self.yPosition,0)
@@ -82,6 +82,7 @@ The room has to be a rectangle.
             character.addMessage("no boundaries found")
             return
 
+        # check room dimensions
         roomLeft = self.xPosition - wallLeft.xPosition
         roomRight = wallRight.xPosition - self.xPosition
         roomTop = self.yPosition - wallTop.yPosition
@@ -93,6 +94,7 @@ The room has to be a rectangle.
             character.addMessage("room to big")
             return
 
+        # check if there are items where the room outlines are
         wallMissing = False
         items = []
         specialItems = []
@@ -174,6 +176,7 @@ The room has to be a rectangle.
                     character.addMessage("special items to near to each other")
                     return
 
+        # actually spawn the new room
         oldTerrain = self.container
         for item in specialItems:
             if item == self:
@@ -185,7 +188,6 @@ The room has to be a rectangle.
             item.xPosition = roomLeft + oldX - self.xPosition
             item.yPosition = roomTop + oldY - self.yPosition
             doorPos.append((roomLeft + oldX - self.xPosition,roomTop + oldY - self.yPosition))
-
         room = src.rooms.EmptyRoom(
             self.xPosition // 15,
             self.yPosition // 15,

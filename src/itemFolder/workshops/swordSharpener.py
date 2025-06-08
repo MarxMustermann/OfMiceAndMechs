@@ -71,32 +71,51 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if sword.baseDamage < 15:
             improvementAmount += 15-sword.baseDamage
 
-        # calculate how much improvement can be done using grindstones
-        grindstone_consumed = 0
-        while grindstone_consumed <= len(grindstones):
-            current_damage_output = sword.baseDamage + improvementAmount
-            if current_damage_output < 25:
-                improvementAmount += 1
-                grindstone_consumed += 1
-            elif current_damage_output < 30:
-                grindStone_amount_needed = (current_damage_output - 24) * 3
-                if len(grindstones) - grindstone_consumed - grindStone_amount_needed >= 0:
-                    grindstone_consumed += grindStone_amount_needed
-                    improvementAmount += 1
-                else:
-                    break
-            else:
+        # calculate how many upgrades can be done using grindstones
+        current_damage_output = sword.baseDamage
+        amount_grindstone_consumed = 0
+        while 1:
+
+            # about on maximum quality
+            if sword.baseDamage >= 30:
+                amount_grindstone_needed_for_upgrade = None
                 break
+
+            # increase the amount of grindstones needed for better upgrades
+            amount_grindstone_needed_for_upgrade = 1
+            if current_damage_output >= 20:
+                amount_grindstone_needed_for_upgrade += 1
+            if current_damage_output >= 23:
+                amount_grindstone_needed_for_upgrade += 1
+            if current_damage_output >= 25:
+                amount_grindstone_needed_for_upgrade += 1
+            if current_damage_output >= 26:
+                amount_grindstone_needed_for_upgrade += 1
+            if current_damage_output >= 27:
+                amount_grindstone_needed_for_upgrade += 2
+            if current_damage_output >= 28:
+                amount_grindstone_needed_for_upgrade += 4
+            if current_damage_output >= 29:
+                amount_grindstone_needed_for_upgrade += 8
+
+            # abort loop if no further upgrades can be afforded
+            if amount_grindstone_consumed+amount_grindstone_needed_for_upgrade > len(grindstones):
+                break
+
+            # add the update to do
+            improvementAmount += 1
+            amount_grindstone_consumed += amount_grindstone_needed_for_upgrade
+            current_damage_output += 1
 
         # abort and notify user if sword can't be improved
         if not improvementAmount:
-            character.addMessage("you can't improve your sword. You need more Grindstone")
+            character.addMessage(f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword.")
             character.changed("sharpened sword")
             return
 
         # remove/destroy grindstones used to upgrade sword
-        if grindstone_consumed:
-            for grindStone in grindstones[:grindstone_consumed]:
+        if amount_grindstone_consumed:
+            for grindStone in grindstones[:amount_grindstone_consumed]:
                 character.inventory.remove(grindStone)
 
         # trigger the actual productions process
@@ -104,7 +123,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         params["productionTime"] = 20*improvementAmount
         params["doneProductionTime"] = 0
         params["improvementAmount"] = improvementAmount
-        params["cost"] = grindstone_consumed
+        params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
+        params["cost"] = amount_grindstone_consumed
         params["hitCounter"] = character.numAttackedWithoutResponse
         self.produceItem_wait(params)
 
@@ -120,11 +140,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         character.addMessage(f"You improved the sword by {improvement!s} to {sword.baseDamage}")
         character.addMessage(f"it costed {cost} grindstone to improve the sword")
-        if sword.baseDamage < 30:
-            if sword.baseDamage < 25:
-                amount_to_next_level = 1
-            else:
-                amount_to_next_level = (sword.baseDamage - 24) * 3
-            character.addMessage(f"you will need {amount_to_next_level} grindstone to improve the sword again")
+        if params.get("nextUpgradeCost"):
+            character.addMessage(f'you will need {params.get("nextUpgradeCost")} grindstone to improve the sword again')
 
 src.items.addType(SwordSharpener)

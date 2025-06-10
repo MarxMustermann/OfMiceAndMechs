@@ -3101,7 +3101,7 @@ def processInput(key, charState=None, noAdvanceGame=False, char=None):
     """
     char.implantLoad += 1
 
-    if char.implantLoad > 100:
+    if char.implantLoad > 20:
         char.takeTime(1,"implant load")
         char.implantLoad = 0
 

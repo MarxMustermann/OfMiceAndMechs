@@ -1,6 +1,8 @@
 import random
 
 import src
+import src.menuFolder
+import src.menuFolder.sliderMenu
 
 class SwordSharpener(src.items.itemMap["WorkShop"]):
     type = "SwordSharpener"
@@ -13,7 +15,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         super().__init__(display="SH")
         self.applyOptions.extend([("sharpen sword", "sharpen sword")])
         self.applyMap = {"sharpen sword": self.sharpenSwordHook}
-
+        self.preferredMaxDamage = None
     def sharpenSwordHook(self, character):
         self.sharpenSword({"character": character})
 
@@ -142,5 +144,29 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         character.addMessage(f"it costed {cost} grindstone to improve the sword")
         if params.get("nextUpgradeCost"):
             character.addMessage(f'you will need {params.get("nextUpgradeCost")} grindstone to improve the sword again')
+
+    def SetDefaultMaxUpgradeAmount(self, character):
+        character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
+            "set the preferred max amount of damage to upgrade to",
+            self.preferredMaxDamage if self.preferredMaxDamage else 20,
+            15,
+            30,
+            1,
+        )
+        character.macroState["submenue"].followUp = {
+            "container": self,
+            "method": "SetterDefaultMaxUpgradeAmount",
+            "params": {"character": character},
+        }
+
+    def SetterDefaultMaxUpgradeAmount(self, params):
+        character = params["character"]
+        self.preferredMaxDamage = params["value"]
+
+    def getConfigurationOptions(self, character):
+        base: dict = super().getConfigurationOptions(character)
+        base["s"] = ("set upgrade amount", self.SetDefaultMaxUpgradeAmount)
+        return base
+
 
 src.items.addType(SwordSharpener)

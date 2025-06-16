@@ -89,7 +89,7 @@ class SliderMenu(src.subMenu.SubMenu):
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nvalue input\n\n"))
             src.interaction.footer.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nvalue input\n\n"))
 
-            additional = self.additionalInfoCallBack() if self.additionalInfoCallBack else ""
+            additional = self.additionalInfoCallBack(self.value) if self.additionalInfoCallBack else ""
             self.persistentText = (
                 src.interaction.urwid.AttrSpec("default", "default"),
                 "\n" + self.query + "\n\n" + text + "\n\n" + additional + "\n\n" + self.footerText,

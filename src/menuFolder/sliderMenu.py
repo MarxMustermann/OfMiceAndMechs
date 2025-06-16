@@ -33,7 +33,10 @@ class SliderMenu(src.subMenu.SubMenu):
         self.stepValue = stepValue
 
         super().__init__()
-        self.footerText = "press enter to confirm\npress a and d to change the value\npressing A and D will modify the value by " + str(stepValue * 10)
+        self.footerText = (
+            "press enter or j to confirm\npress a and d to change the value\npressing A and D will modify the value by "
+            + str(stepValue * 10)
+        )
         self.targetParamName = targetParamName
         self.done = False
         self.additionalInfoCallBack = additionalInfoCallBack
@@ -49,7 +52,7 @@ class SliderMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
-        if key == "enter":
+        if key in ("enter", "j"):
             if self.followUp:
                 self.callIndirect(self.followUp, extraParams={self.targetParamName: self.value})
             self.done = True

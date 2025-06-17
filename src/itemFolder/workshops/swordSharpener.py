@@ -20,6 +20,9 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         self.sharpenSword({"character": character})
 
     def amountNeededForOneUpgrade(self, current_damage_output):
+        if current_damage_output < 15:
+            return 0
+
         if current_damage_output >= 30:
             return None
         # increase the amount of grindstones needed for better upgrades
@@ -125,7 +128,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         while 1:
             amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount)
             if (
-                amount_grindstone_needed_for_upgrade
+                amount_grindstone_needed_for_upgrade is not None
                 and amount_grindstone_needed_for_upgrade + amount_grindstone_consumed <= len(grindstones)
             ):
                 improvementAmount += 1
@@ -151,10 +154,16 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the damage level to upgrade to",
-            max(min(self.preferredMaxDamage if self.preferredMaxDamage else 20, maxDamageAvailable), sword.baseDamage),
-            15,
+            max(sword.baseDamage + 1, self.preferredMaxDamage)
+            if self.preferredMaxDamage is not None
+            else min(
+                30,
+                maxDamageAvailable,
+            ),
+            sword.baseDamage + 1,
             min(30, maxDamageAvailable),
             1,
+            2,
             "amount",
             AmountNeededToLevel,
         )

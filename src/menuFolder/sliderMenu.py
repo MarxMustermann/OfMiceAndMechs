@@ -1,5 +1,6 @@
 import src
 
+from decimal import Decimal as D
 
 class SliderMenu(src.subMenu.SubMenu):
     """
@@ -14,7 +15,8 @@ class SliderMenu(src.subMenu.SubMenu):
         defaultValue=0,
         minValue=0,
         maxValue=9999,
-        stepValue=10,
+        stepValue=1,
+        bigStepValue=10,
         targetParamName="value",
         additionalInfoCallBack=None,
     ):
@@ -27,13 +29,16 @@ class SliderMenu(src.subMenu.SubMenu):
         """
 
         self.query = query
-        self.value = defaultValue
-        self.minValue = minValue
-        self.maxValue = maxValue
-        self.stepValue = stepValue
-
+        self.value = D(defaultValue)
+        self.minValue = D(minValue)
+        self.maxValue = D(maxValue)
+        self.stepValue = D(stepValue)
+        self.bigStepValue = D(bigStepValue)
         super().__init__()
-        self.footerText = "press enter to confirm\npress a and d to change the value\npressing A and D will modify the value by " + str(stepValue * 10)
+        self.footerText = (
+            "press enter or j to confirm\npress a and d to change the value\npressing A and D will modify the value by "
+            + str(self.bigStepValue)
+        )
         self.targetParamName = targetParamName
         self.done = False
         self.additionalInfoCallBack = additionalInfoCallBack
@@ -49,9 +54,16 @@ class SliderMenu(src.subMenu.SubMenu):
             returns True when done
         """
 
-        if key == "enter":
+        if key in ("enter", "j"):
             if self.followUp:
-                self.callIndirect(self.followUp, extraParams={self.targetParamName: self.value})
+                self.callIndirect(
+                    self.followUp,
+                    extraParams={
+                        self.targetParamName: float(self.value)
+                        if not (self.stepValue % 1).is_zero()
+                        else int(self.value)
+                    },
+                )
             self.done = True
             return True
 
@@ -62,18 +74,14 @@ class SliderMenu(src.subMenu.SubMenu):
             return True
         elif key in ("+", "*"):
             return None
-        elif key == "left":
-            self.value = max(self.minValue, self.value - 1)
-        elif key == "right":
-            self.value = min(self.maxValue, self.value + 1)
-        elif key == "a":
+        elif key in ("a", "left"):
             self.value = max(self.minValue, self.value - self.stepValue)
-        elif key == "d":
+        elif key in ("d", "right"):
             self.value = min(self.maxValue, self.value + self.stepValue)
         elif key == "A":
-            self.value = max(self.minValue, self.value - self.stepValue * 10)
+            self.value = max(self.minValue, self.value - self.bigStepValue)
         elif key == "D":
-            self.value = min(self.maxValue, self.value + self.stepValue * 10)
+            self.value = min(self.maxValue, self.value + self.bigStepValue)
 
         percentage = (self.value - self.minValue) / (self.maxValue - self.minValue)
         number_of_bars = 35
@@ -89,7 +97,13 @@ class SliderMenu(src.subMenu.SubMenu):
             src.interaction.header.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nvalue input\n\n"))
             src.interaction.footer.set_text((src.interaction.urwid.AttrSpec("default", "default"), "\nvalue input\n\n"))
 
-            additional = self.additionalInfoCallBack(self.value) if self.additionalInfoCallBack else ""
+            additional = (
+                self.additionalInfoCallBack(
+                    float(self.value) if not (self.stepValue % 1).is_zero() else int(self.value)
+                )
+                if self.additionalInfoCallBack
+                else ""
+            )
             self.persistentText = (
                 src.interaction.urwid.AttrSpec("default", "default"),
                 "\n" + self.query + "\n\n" + text + "\n\n" + additional + "\n\n" + self.footerText,

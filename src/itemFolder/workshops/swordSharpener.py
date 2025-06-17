@@ -128,7 +128,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         while 1:
             amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount)
             if (
-                amount_grindstone_needed_for_upgrade
+                amount_grindstone_needed_for_upgrade is not None
                 and amount_grindstone_needed_for_upgrade + amount_grindstone_consumed <= len(grindstones)
             ):
                 improvementAmount += 1
@@ -163,6 +163,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             sword.baseDamage + 1,
             min(30, maxDamageAvailable),
             1,
+            2,
             "amount",
             AmountNeededToLevel,
         )

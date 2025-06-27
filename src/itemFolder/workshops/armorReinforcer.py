@@ -40,6 +40,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             amount_ChitinPlates_needed_for_upgrade += 4
 
         return amount_ChitinPlates_needed_for_upgrade
+
     def reinforceArmorHook(self, character):
         """
         indirection to call the actual function
@@ -60,7 +61,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             amount_chitinPlates_consumed = 0
 
             ChitinPlates_consumed = 0
-            base = params["armor"].armorValue
+            base = D(params["armor"].armorValue)
             while base < chosenDefenseValue:
                 ChitinPlates_consumed += self.amountNeededForOneUpgrade(base)
                 base += D("0.5")
@@ -167,11 +168,11 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the Defense level to upgrade to",
-            defaultValue=sliderDefault,
-            minValue=D(armor.armorValue) + D("0.5"),
-            maxValue=min(8, maxDefenseAvailable),
-            stepValue=D("0.5"),
-            bigStepValue=D("1.0"),
+            defaultValue=D(sliderDefault),
+            minValue=D(armor.armorValue) + D(0.5),
+            maxValue=D(8),
+            stepValue=D(0.5),
+            bigStepValue=D(1.0),
             targetParamName="amount",
             additionalInfoCallBack=amountNeededToLevel,
         )

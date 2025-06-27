@@ -217,7 +217,7 @@ The room has to be a rectangle.
             rooms = terrain.getRoomByPosition((bigPos[0]+offset[0],bigPos[1]+offset[1],0))
             if not rooms:
                 continue
-            if not rooms[0].tag == "traproom":
+            if not rooms[0].tag or not (rooms[0].tag.lower() == "traproom" or rooms[0].tag.lower() == "entryroom"):
                 continue
 
             if offset == (1,0,0):
@@ -302,51 +302,14 @@ The room has to be a rectangle.
                             continue
                         item.walkable = False
 
-            ###########################################
-            ###
-            ##   draw markings for new trap room
-            #
-
-            faction = character.faction
-
-            # add walking space in the center
-            room.addWalkingSpace((6,6,0))
-            room.tag = "traproom"
-
-            # add north-south trap line
-            for y in (1,2,3,4,5,7,8,9,10,11):
-                triggerPlate = src.items.itemMap["TriggerPlate"]()
-                triggerPlate.faction = faction
-                triggerPlate.bolted = True 
-                room.addItem(triggerPlate,(6,y,0))
-                room.addWalkingSpace((6,y,0))
-                for x in (5,7):
-                    rodTower = src.items.itemMap["RodTower"]()
-                    room.addItem(rodTower,(x,y,0))
-                    triggerPlate.targets.append((x,y,0))
-
-            # add west-east trap line
-            for x in (1,2,3,4,5,7,8,9,10):
-                triggerPlate = src.items.itemMap["TriggerPlate"]()
-                triggerPlate.faction = faction
-                triggerPlate.bolted = True 
-                room.addItem(triggerPlate,(x,6,0))
-                room.addWalkingSpace((x,6,0))
-                for y in (5,7):
-                    if x not in (5,7,):
-                        rodTower = src.items.itemMap["RodTower"]()
-                        room.addItem(rodTower,(x,y,0))
-                    triggerPlate.targets.append((x,y,0))
-            room.addWalkingSpace((11,6,0))
-
+            # set new room as entry room
+            room.tag = "emptyRoom"
             # add alarm bell
             alarmBell = src.items.itemMap["AlarmBell"]()
             alarmBell.bolted = True 
             room.addItem(alarmBell,(11,7,0))
+            room.alarm = True
 
-            wall = src.items.itemMap["Wall"]()
-            wall.bolted = True 
-            room.addItem(wall,(11,5,0))
 
         if not hasTraproomNeighbour:
             westNeighbours = terrain.getRoomByPosition((bigPos[0]-1,bigPos[1],0))

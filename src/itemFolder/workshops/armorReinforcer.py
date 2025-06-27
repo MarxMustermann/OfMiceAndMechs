@@ -167,13 +167,13 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
 
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the Defense level to upgrade to",
-            sliderDefault,
-            D(armor.armorValue) + D("0.5"),
-            min(8, maxDefenseAvailable),
-            D("0.5"),
-            D("1.0"),
-            "amount",
-            amountNeededToLevel,
+            defaultValue=sliderDefault,
+            minValue=D(armor.armorValue) + D("0.5"),
+            maxValue=min(8, maxDefenseAvailable),
+            stepValue=D("0.5"),
+            bigStepValue=D("1.0"),
+            targetParamName="amount",
+            additionalInfoCallBack=amountNeededToLevel,
         )
         character.macroState["submenue"].followUp = {
             "container": self,

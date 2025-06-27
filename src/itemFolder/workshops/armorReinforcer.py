@@ -156,6 +156,11 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 base += D("0.5")
             return f"You will use {ChitinPlates_consumed} ChitinPlates"
 
+        try:
+            self.preferredMaxDefense
+        except:
+            self.preferredMaxDefense = 6
+
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the Defense level to upgrade to",
             max(armor.armorValue + D("0.5"), self.preferredMaxDefense)

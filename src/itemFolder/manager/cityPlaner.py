@@ -1148,6 +1148,15 @@ class CityPlaner(src.items.Item):
                 },
                 "description":"clear room",
             }
+            if room.tag == "entryRoom":
+                functionMap[(room.xPosition,room.yPosition)]["t"] = {
+                    "function": {
+                        "container":self,
+                        "method":"setFloorplanFromMap",
+                        "params":{"character":character,"type":"trapRoom"},
+                    },
+                    "description":"clear room",
+                }
 
         for scrapField in terrain.scrapFields:
             if (scrapField[0],scrapField[1]) in functionMap:

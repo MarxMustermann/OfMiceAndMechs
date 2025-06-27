@@ -123,13 +123,12 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         amount_chitinPlates_consumed = 0
         amount_ChitinPlates_needed_for_upgrade = 0
         while 1:
-            amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(
-                armor.armorValue + improvementAmount
-            )
-            if (
-                amount_ChitinPlates_needed_for_upgrade is not None
-                and amount_ChitinPlates_needed_for_upgrade + amount_chitinPlates_consumed <= len(chitinPlates)
-            ):
+            amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(D(armor.armorValue) + improvementAmount)
+
+            if (  
+                     amount_ChitinPlates_needed_for_upgrade is not None and
+                     amount_ChitinPlates_needed_for_upgrade + amount_chitinPlates_consumed <= len(chitinPlates)
+                  ):
                 improvementAmount += D("0.5")
                 amount_chitinPlates_consumed += amount_ChitinPlates_needed_for_upgrade
             else:
@@ -142,15 +141,15 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             character.changed("improved armor")
             return
 
-        maxDefenseAvailable = armor.armorValue + improvementAmount
+        maxDefenseAvailable = D(armor.armorValue) + improvementAmount
 
         params["armor"] = armor
         params["nextUpgradeCost"] = amount_ChitinPlates_needed_for_upgrade
         params["chitinPlates"] = chitinPlates
 
-        def AmountNeededToLevel(level):
+        def amountNeededToLevel(level):
             ChitinPlates_consumed = 0
-            base = armor.armorValue
+            base = D(armor.armorValue)
             while base < level:
                 ChitinPlates_consumed += self.amountNeededForOneUpgrade(base)
                 base += D("0.5")
@@ -161,20 +160,20 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         except:
             self.preferredMaxDefense = 6
 
+        if self.preferredMaxDefense is not None:
+            sliderDefault = max(D(armor.armorValue) + D("0.5"), self.preferredMaxDefense)
+        else:
+            sliderDefault = min(8,maxDefenseAvailable,)
+
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the Defense level to upgrade to",
-            max(armor.armorValue + D("0.5"), self.preferredMaxDefense)
-            if self.preferredMaxDefense is not None
-            else min(
-                8,
-                maxDefenseAvailable,
-            ),
-            armor.armorValue + D("0.5"),
+            sliderDefault,
+            D(armor.armorValue) + D("0.5"),
             min(8, maxDefenseAvailable),
             D("0.5"),
             D("1.0"),
             "amount",
-            AmountNeededToLevel,
+            amountNeededToLevel,
         )
         character.macroState["submenue"].followUp = {
             "container": self,

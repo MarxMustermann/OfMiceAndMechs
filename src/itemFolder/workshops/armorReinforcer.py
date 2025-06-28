@@ -26,7 +26,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if current_defense_output < D("3"):
             return 0
 
-        if current_defense_output >= D("8"):
+        if current_defense_output > D("8"):
             return None
 
         amount_ChitinPlates_needed_for_upgrade = 1

@@ -23,7 +23,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if current_damage_output < 15:
             return 0
 
-        if current_damage_output >= 30:
+        if current_damage_output > 30:
             return None
         # increase the amount of grindstones needed for better upgrades
         amount_grindstone_needed_for_upgrade = 1

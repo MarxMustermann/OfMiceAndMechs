@@ -56,14 +56,26 @@ class SliderMenu(src.subMenu.SubMenu):
 
         if key in ("enter", "j"):
             if self.followUp:
-                self.callIndirect(
-                    self.followUp,
-                    extraParams={
-                        self.targetParamName: float(self.value)
-                        if not (self.stepValue % 1).is_zero()
-                        else int(self.value)
-                    },
-                )
+                if self.additionalInfoCallBack and self.additionalInfoCallBack(
+                    float(self.value) if not (self.stepValue % 1).is_zero() else int(self.value), True
+                ):
+                    self.callIndirect(
+                        self.followUp,
+                        extraParams={
+                            self.targetParamName: float(self.value)
+                            if not (self.stepValue % 1).is_zero()
+                            else int(self.value)
+                        },
+                    )
+                else:
+                    self.callIndirect(
+                        self.followUp,
+                        extraParams={
+                            self.targetParamName: float(self.value)
+                            if not (self.stepValue % 1).is_zero()
+                            else int(self.value)
+                        },
+                    )
             self.done = True
             return True
 

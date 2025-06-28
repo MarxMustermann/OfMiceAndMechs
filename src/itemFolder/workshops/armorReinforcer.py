@@ -58,6 +58,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if "amount" in params:
             chosenDefenseValue = params["amount"]
             armorOriginalDamage = params["armor"].armorValue
+            if chosenDefenseValue == armorOriginalDamage:
+                return
+
             amount_chitinPlates_consumed = 0
 
             ChitinPlates_consumed = 0
@@ -71,9 +74,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 for chitinPlate in chitinPlates[:amount_chitinPlates_consumed]:
                     character.inventory.remove(chitinPlate)
 
-            improvementAmount = chosenDefenseValue - armorOriginalDamage
+            improvementAmount = int(chosenDefenseValue - armorOriginalDamage)
             # trigger the actual productions process
-            params["productionTime"] = 20 * improvementAmount
+            params["productionTime"] = 20 * improvementAmount * 2
             params["doneProductionTime"] = 0
             params["improvementAmount"] = improvementAmount
             params["cost"] = amount_chitinPlates_consumed
@@ -119,57 +122,58 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 character.addMessage("you don't have any Armor in the inventory")
                 return
 
-        # calculate how much to improve the armor by
-        improvementAmount = D("0")
-        amount_chitinPlates_consumed = 0
-        amount_ChitinPlates_needed_for_upgrade = 0
-        while 1:
-            amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(D(armor.armorValue) + improvementAmount)
+        improvementAmount = (D("3") - D(armor.armorValue)) if D(armor.armorValue) < D("3") else 0
+        amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(
+            D(armor.armorValue) + D("0.5") + improvementAmount
+        )
 
-            if (  
-                     amount_ChitinPlates_needed_for_upgrade is not None and
-                     amount_ChitinPlates_needed_for_upgrade + amount_chitinPlates_consumed <= len(chitinPlates)
-                  ):
-                improvementAmount += D("0.5")
-                amount_chitinPlates_consumed += amount_ChitinPlates_needed_for_upgrade
-            else:
-                break
+        if amount_ChitinPlates_needed_for_upgrade is None:
+            character.addMessage("you can't improve your armor further.")
+            return
 
-        if not improvementAmount:
+        if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
             character.addMessage(
                 f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
             )
             character.changed("improved armor")
             return
-
-        maxDefenseAvailable = D(armor.armorValue) + improvementAmount
-
         params["armor"] = armor
-        params["nextUpgradeCost"] = amount_ChitinPlates_needed_for_upgrade
         params["chitinPlates"] = chitinPlates
 
-        def amountNeededToLevel(level):
+        def amountNeededToLevel(level, allowed=None):
             ChitinPlates_consumed = 0
             base = D(armor.armorValue)
+            if base == level:
+                return "the armor won't be upgraded"
+
             while base < level:
                 ChitinPlates_consumed += self.amountNeededForOneUpgrade(base)
                 base += D("0.5")
-            return f"You will use {ChitinPlates_consumed} ChitinPlates"
+
+            available = ChitinPlates_consumed <= len(chitinPlates)
+
+            if allowed:
+                return available
+
+            if available:
+                return f"You will use {ChitinPlates_consumed} ChitinPlates"
+            else:
+                return f"You will need {ChitinPlates_consumed} ChitinPlates to be able to upgrade"
 
         try:
             self.preferredMaxDefense
         except:
             self.preferredMaxDefense = 6
 
-        if self.preferredMaxDefense is not None:
-            sliderDefault = max(D(armor.armorValue) + D("0.5"), self.preferredMaxDefense)
-        else:
-            sliderDefault = min(8,maxDefenseAvailable,)
-
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the Defense level to upgrade to",
-            defaultValue=D(sliderDefault),
-            minValue=D(armor.armorValue) + D(0.5),
+            defaultValue=max(
+                armor.armorValue,
+                self.preferredMaxDefense
+                if self.preferredMaxDefense and amountNeededToLevel(self.preferredMaxDefense, True) <= len(chitinPlates)
+                else 0,
+            ),
+            minValue=D(armor.armorValue),
             maxValue=D(8),
             stepValue=D(0.5),
             bigStepValue=D(1.0),

@@ -53,6 +53,8 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             chosenDamageValue = params["amount"]
             swordOriginalDamage = params["sword"].baseDamage
             amount_grindstone_consumed = 0
+            if chosenDamageValue == swordOriginalDamage:
+                return
 
             for i in range(swordOriginalDamage, chosenDamageValue):
                 amount_grindstone_consumed += self.amountNeededForOneUpgrade(i)
@@ -121,51 +123,57 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if sword.baseDamage < 15:
             improvementAmount += 15-sword.baseDamage
 
-        # calculate how many upgrades can be done using grindstones
+        amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount + 1)
 
-        amount_grindstone_consumed = 0
-        amount_grindstone_needed_for_upgrade = 0
-        while 1:
-            amount_grindstone_needed_for_upgrade = self.amountNeededForOneUpgrade(sword.baseDamage + improvementAmount)
-            if (
-                amount_grindstone_needed_for_upgrade is not None
-                and amount_grindstone_needed_for_upgrade + amount_grindstone_consumed <= len(grindstones)
-            ):
-                improvementAmount += 1
-                amount_grindstone_consumed += amount_grindstone_needed_for_upgrade
-            else:
-                break
-        # abort and notify user if sword can't be improved
-        if not improvementAmount:
+        if amount_grindstone_needed_for_upgrade is None:
+            character.addMessage("you can't improve your sword further.")
+            return
+
+        if amount_grindstone_needed_for_upgrade > len(grindstones):
             character.addMessage(f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword.")
             character.changed("sharpened sword")
             return
 
-        maxDamageAvailable = sword.baseDamage + improvementAmount
         params["sword"] = sword
         params["nextUpgradeCost"] = amount_grindstone_needed_for_upgrade
         params["grindstones"] = grindstones
 
-        def AmountNeededToLevel(level):
+        def AmountNeededToLevel(level, allowed=None):
             grindstone_consumed = 0
+            if sword.baseDamage == level:
+                return "the sword won't be upgraded"
             for i in range(sword.baseDamage, level):
                 grindstone_consumed += self.amountNeededForOneUpgrade(i)
-            return f"You will use {grindstone_consumed} grindstone"
+
+            available = grindstone_consumed <= len(grindstones)
+
+            if allowed:
+                return available
+
+            if available:
+                return f"You will use {grindstone_consumed} grindstone"
+            else:
+                return f"You will need {grindstone_consumed} grindstone to be able to upgrade"
+
+        try:
+            self.preferredMaxDamage
+        except:
+            self.preferredMaxDamage = 25
 
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
-            "choose the damage level to upgrade to",
-            max(sword.baseDamage + 1, self.preferredMaxDamage)
-            if self.preferredMaxDamage is not None
-            else min(
-                30,
-                maxDamageAvailable,
+            query="choose the damage level to upgrade to",
+            defaultValue=max(
+                sword.baseDamage,
+                self.preferredMaxDamage
+                if self.preferredMaxDamage and AmountNeededToLevel(self.preferredMaxDamage, True) <= len(grindstones)
+                else 0,
             ),
-            sword.baseDamage + 1,
-            min(30, maxDamageAvailable),
-            1,
-            2,
-            "amount",
-            AmountNeededToLevel,
+            minValue=sword.baseDamage,
+            maxValue=30,
+            stepValue=1,
+            bigStepValue=2,
+            targetParamName="amount",
+            additionalInfoCallBack=AmountNeededToLevel,
         )
         character.macroState["submenue"].followUp = {
             "container": self,

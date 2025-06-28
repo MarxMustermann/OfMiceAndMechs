@@ -61,7 +61,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             if chosenDefenseValue == armorOriginalDamage:
                 return
 
-            amount_chitinPlates_consumed = 0
 
             ChitinPlates_consumed = 0
             base = D(params["armor"].armorValue)
@@ -70,8 +69,8 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 base += D("0.5")
 
             chitinPlates = params["chitinPlates"]
-            if amount_chitinPlates_consumed:
-                for chitinPlate in chitinPlates[:amount_chitinPlates_consumed]:
+            if ChitinPlates_consumed:
+                for chitinPlate in chitinPlates[:ChitinPlates_consumed]:
                     character.inventory.remove(chitinPlate)
 
             improvementAmount = int(chosenDefenseValue - armorOriginalDamage)
@@ -79,7 +78,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             params["productionTime"] = 20 * improvementAmount * 2
             params["doneProductionTime"] = 0
             params["improvementAmount"] = improvementAmount
-            params["cost"] = amount_chitinPlates_consumed
+            params["cost"] = ChitinPlates_consumed
             params["hitCounter"] = character.numAttackedWithoutResponse
             self.produceItem_wait(params)
             return
@@ -143,7 +142,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         def amountNeededToLevel(level, allowed=None):
             ChitinPlates_consumed = 0
             base = D(armor.armorValue)
-            if base == level:
+            if base == level and not allowed:
                 return "the armor won't be upgraded"
 
             while base < level:

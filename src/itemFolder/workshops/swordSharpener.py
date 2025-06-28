@@ -140,7 +140,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         def AmountNeededToLevel(level, allowed=None):
             grindstone_consumed = 0
-            if sword.baseDamage == level:
+            if sword.baseDamage == level and not allowed:
                 return "the sword won't be upgraded"
             for i in range(sword.baseDamage, level):
                 grindstone_consumed += self.amountNeededForOneUpgrade(i)

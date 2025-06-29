@@ -2,6 +2,7 @@ import random
 
 import src
 import src.menuFolder
+import src.menuFolder.oneKeystrokeMenu
 import src.menuFolder.sliderMenu
 
 class SwordSharpener(src.items.itemMap["WorkShop"]):
@@ -23,7 +24,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
         if current_damage_output < 15:
             return 0
 
-        if current_damage_output >= 30:
+        if current_damage_output > 30:
             return None
         # increase the amount of grindstones needed for better upgrades
         amount_grindstone_needed_for_upgrade = 1
@@ -115,7 +116,9 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # abort and notify the user if the sword is upgraded to the maximum already
         if sword.baseDamage == 30:
-            character.addMessage("you can't further improve the sword")
+            character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
+                "you can't further improve the sword"
+            )
             return
 
         # get improvement amount that has no costs associated
@@ -129,7 +132,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.addMessage("you can't improve your sword further.")
             return
 
-        if amount_grindstone_needed_for_upgrade > len(grindstones):
+        if amount_grindstone_needed_for_upgrade > len(grindstones) and improvementAmount == 0:
             character.addMessage(f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword.")
             character.changed("sharpened sword")
             return
@@ -140,7 +143,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         def AmountNeededToLevel(level, allowed=None):
             grindstone_consumed = 0
-            if sword.baseDamage == level:
+            if sword.baseDamage == level and not allowed:
                 return "the sword won't be upgraded"
             for i in range(sword.baseDamage, level):
                 grindstone_consumed += self.amountNeededForOneUpgrade(i)

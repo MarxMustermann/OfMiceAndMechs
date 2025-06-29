@@ -129,7 +129,7 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
             character.addMessage("you can't improve your sword further.")
             return
 
-        if amount_grindstone_needed_for_upgrade > len(grindstones):
+        if amount_grindstone_needed_for_upgrade > len(grindstones) and improvementAmount == 0:
             character.addMessage(f"you can't improve your sword.\nYou need {amount_grindstone_needed_for_upgrade} Grindstone to upgrade your sword.")
             character.changed("sharpened sword")
             return

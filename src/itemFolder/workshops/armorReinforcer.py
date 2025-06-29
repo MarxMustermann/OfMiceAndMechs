@@ -130,7 +130,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             character.addMessage("you can't improve your armor further.")
             return
 
-        if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
+        if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates) and improvementAmount == D("0"):
             character.addMessage(
                 f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
             )

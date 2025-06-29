@@ -2,6 +2,7 @@ import random
 
 import src
 import src.menuFolder
+import src.menuFolder.oneKeystrokeMenu
 import src.menuFolder.sliderMenu
 
 class SwordSharpener(src.items.itemMap["WorkShop"]):
@@ -115,7 +116,9 @@ class SwordSharpener(src.items.itemMap["WorkShop"]):
 
         # abort and notify the user if the sword is upgraded to the maximum already
         if sword.baseDamage == 30:
-            character.addMessage("you can't further improve the sword")
+            character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
+                "you can't further improve the sword"
+            )
             return
 
         # get improvement amount that has no costs associated

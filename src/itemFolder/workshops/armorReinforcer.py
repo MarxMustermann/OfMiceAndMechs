@@ -127,7 +127,9 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         )
 
         if amount_ChitinPlates_needed_for_upgrade is None:
-            character.addMessage("you can't improve your armor further.")
+            character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
+                "you can't improve the armor further."
+            )
             return
 
         if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates) and improvementAmount == D("0"):

@@ -240,7 +240,8 @@ The target tile is {direction[4:]}
                     for otherCharacter in character.container.characters:
                         if otherCharacter.faction == character.faction:
                             continue
-                        return (None,("gg","guard the room"))
+                        quest = src.quests.questMap["Fight"]()
+                        return ([quest],None)
 
                 for otherCharacter in character.container.characters:
                     if otherCharacter.faction == character.faction:
@@ -301,7 +302,8 @@ The target tile is {direction[4:]}
             if not self.paranoid:
                 if random.random() < 1.5 and "fighting" in self.character.skills:
                     if character.container.getEnemiesOnTile(character):
-                        return (None,("gg","guard the tile"))
+                        quest = src.quests.questMap["Fight"]()
+                        return ([quest],None)
 
                     if character.container.getEnemiesOnTile(character):
                         if character.health < character.maxHealth//5:

@@ -303,7 +303,7 @@ The room has to be a rectangle.
                         item.walkable = False
 
             # set new room as entry room
-            room.tag = "emptyRoom"
+            room.tag = "entryRoom"
             # add alarm bell
             alarmBell = src.items.itemMap["AlarmBell"]()
             alarmBell.bolted = True 

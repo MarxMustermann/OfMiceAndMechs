@@ -33,11 +33,11 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if current_defense_output >= D("4"):
             amount_ChitinPlates_needed_for_upgrade += 1
         if current_defense_output >= D("5"):
-            amount_ChitinPlates_needed_for_upgrade += 2
+            amount_ChitinPlates_needed_for_upgrade += 1
         if current_defense_output >= D("6"):
-            amount_ChitinPlates_needed_for_upgrade += 3
+            amount_ChitinPlates_needed_for_upgrade += 1
         if current_defense_output >= D("7"):
-            amount_ChitinPlates_needed_for_upgrade += 4
+            amount_ChitinPlates_needed_for_upgrade += 1
 
         return amount_ChitinPlates_needed_for_upgrade
 

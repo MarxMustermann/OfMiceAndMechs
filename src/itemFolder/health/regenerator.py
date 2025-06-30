@@ -25,16 +25,19 @@ class Regenerator(src.items.Item):
         '''
         start triggering a loop of healing events
         '''
-        if not self.activated:
-            self.addTickingEvent()
-            character.addMessage("You activated the regenerator")
-            submenue = src.menuFolder.textMenu.TextMenu(
-                f"You activated the Regenerator.\nIt will heal every creature in this room when it pulses.\nIt pulses every 15 ticks"
-            )
-            character.macroState["submenue"] = submenue
-            character.runCommandString("~",nativeKey=True)
-            self.activated = True
-            character.changed("regenerator activated",{})
+
+        if self.activated:
+            return
+
+        self.addTickingEvent()
+        character.addMessage("You activated the regenerator")
+        submenue = src.menuFolder.textMenu.TextMenu(
+            f"You activated the Regenerator.\nIt will heal every creature in this room when it pulses.\nIt pulses every 15 ticks"
+        )
+        character.macroState["submenue"] = submenue
+        character.runCommandString("~",nativeKey=True)
+        self.activated = True
+        character.changed("regenerator activated",{})
 
     def handleTicking(self):
         '''

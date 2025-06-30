@@ -1,12 +1,13 @@
 import src
 
 class Regenerator(src.items.Item):
+    '''
+    Ingame item that heals all characters in the room
+    '''
     type = "Regenerator"
     description = "heals all characters in the room"
     name = "regenerator"
-
     healing_amount = 25
-
     def __init__(self):
         self.bolted = True
         self.activated = False
@@ -52,16 +53,20 @@ class Regenerator(src.items.Item):
         a loop of events that does the actual healing. This event retriggers itself
         '''
 
+        # set up trigger to be called back later and form a loop
         self.addTickingEvent()
+
+        # show activity indicator to user
         self.container.addAnimation(
             self.getPosition(), "showchar", 1, {"char": ")("}
         )
 
+        # do the actual healing
         for character in self.container.characters:
             character.heal(self.healing_amount, reason="by the regenerator")
             self.container.addAnimation(
                 character.getPosition(), "showchar", 1, {"char": [(src.interaction.urwid.AttrSpec("#f00", "#fff"), "^^")]}
             )
 
-
+# registers class
 src.items.addType(Regenerator)

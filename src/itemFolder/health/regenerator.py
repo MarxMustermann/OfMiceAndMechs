@@ -8,6 +8,7 @@ class Regenerator(src.items.Item):
     description = "heals all characters in the room"
     name = "regenerator"
     healing_amount = 25
+    mana_charges = 100
     def __init__(self):
         self.bolted = True
         self.activated = False
@@ -65,12 +66,21 @@ class Regenerator(src.items.Item):
             self.getPosition(), "showchar", 1, {"char": ")("}
         )
 
-        # do the actual healing
+        # heal all characters within the room
         for character in self.container.characters:
+            
+            # abort when running out of mana
+            if mana_charges < 1:
+                break
+
+            # do the actual healing
             character.heal(self.healing_amount, reason="by the regenerator")
             self.container.addAnimation(
                 character.getPosition(), "showchar", 1, {"char": [(src.interaction.urwid.AttrSpec("#f00", "#fff"), "^^")]}
             )
+
+            # pay mana cost
+            mana_charges -= 1
 
 # registers class
 src.items.addType(Regenerator)

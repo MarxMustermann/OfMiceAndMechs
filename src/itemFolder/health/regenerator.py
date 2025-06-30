@@ -13,11 +13,18 @@ class Regenerator(src.items.Item):
         super().__init__(display="()")
 
     def addTickingEvent(self):
+        '''
+        sets up a loop of events that do the actual healing
+        '''
+            
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 15)
         event.setCallback({"container": self, "method": "handleTicking"})
         self.container.addEvent(event)
 
     def apply(self, character):
+        '''
+        start triggering a loop of healing events
+        '''
         if not self.activated:
             self.addTickingEvent()
             character.addMessage("You activated the regenerator")
@@ -30,6 +37,9 @@ class Regenerator(src.items.Item):
             character.changed("regenerator activated",{})
 
     def handleTicking(self):
+        '''
+        a loop of events that does the actual healing. This event retriggers itself
+        '''
         self.addTickingEvent()
         self.container.addAnimation(
             self.getPosition(), "showchar", 1, {"char": ")("}

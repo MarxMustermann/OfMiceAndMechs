@@ -73,7 +73,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 for chitinPlate in chitinPlates[:ChitinPlates_consumed]:
                     character.inventory.remove(chitinPlate)
 
-            improvementAmount = int(chosenDefenseValue - armorOriginalDamage)
+            improvementAmount = chosenDefenseValue - armorOriginalDamage
             # trigger the actual productions process
             params["productionTime"] = 20 * improvementAmount * 2
             params["doneProductionTime"] = 0

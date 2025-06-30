@@ -24,7 +24,10 @@ class Regenerator(src.items.Item):
 
     def apply(self, character):
         '''
-        start triggering a loop of healing events
+        start triggering a loop of healing events on user activation
+
+        Args:
+            character: the entity that used the regenerator
         '''
 
         # do nothing when already running

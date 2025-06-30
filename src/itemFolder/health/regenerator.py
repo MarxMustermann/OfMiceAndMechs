@@ -17,7 +17,8 @@ class Regenerator(src.items.Item):
         '''
         sets up a loop of events that do the actual healing
         '''
-            
+
+        # add event    
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick + 15)
         event.setCallback({"container": self, "method": "handleTicking"})
         self.container.addEvent(event)

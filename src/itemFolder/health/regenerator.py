@@ -1,9 +1,8 @@
 import src
 
-
 class Regenerator(src.items.Item):
     type = "Regenerator"
-    description = "Gives healing vibes to all characters"
+    description = "heals all characters in the room"
     name = "regenerator"
 
     healing_amount = 25

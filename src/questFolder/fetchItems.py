@@ -360,10 +360,11 @@ Press d to move the cursor and show the subquests description.
                                 sourceRoom = sourceRoom[0]
                                 if sourceRoom == character.container:
                                     continue
-                                if not sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage):
+                                outputSlots = sourceRoom.getNonEmptyOutputslots(itemType=inputSlot[1],allowStorage=allowStorage,)
+                                if not outputSlots:
                                     continue
 
-                                source = candidateSource
+                                source = (candidateSource[0],candidateSource[1],outputSlots)
                                 break
 
                             if not source:
@@ -475,7 +476,6 @@ Press d to move the cursor and show the subquests description.
         quest = extraParam["quest"]
 
         reason = extraParam.get("reason")
-        print(reason)
 
         if reason == "no path found":
             character = self.character

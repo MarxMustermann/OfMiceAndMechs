@@ -300,7 +300,7 @@ class GlassStatue(src.items.Item):
         if not character.getFreeInventorySpace() > 0:
             self.container.addItem(newItem,character.getPosition())
 
-            src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it")
+            src.popups.Popup.open_Popup(character, "the GlassHeart drops to the ground after you rip it out of the GlassStatue")
         else:
             character.inventory.append(newItem)
             src.popups.Popup.open_Popup(character, "you rip the GlassHeart and take it")

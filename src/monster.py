@@ -206,6 +206,16 @@ class Monster(src.characters.Character):
         )
         return color
 
+    @staticmethod
+    def get_random_multiplier():
+        match src.gamestate.gamestate.difficulty:
+            case "difficult":
+                return random.uniform(1, 2 * 7)
+            case "medium":
+                return random.uniform(1, 1 * 4)
+            case _:
+                return random.uniform(1, 0.5 * 4)
+
     def multiplier_range(self, multiplier):
         match src.gamestate.gamestate.difficulty:
             case "difficult":

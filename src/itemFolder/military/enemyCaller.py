@@ -12,6 +12,7 @@ class EnemyCaller(src.items.Item):
     enemy_limit = 50
 
     def __init__(self):
+        self.event = None
         super().__init__(display="EC")
 
     def handleEpochChange(self):

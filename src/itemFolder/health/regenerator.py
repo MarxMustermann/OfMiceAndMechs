@@ -73,6 +73,10 @@ class Regenerator(src.items.Item):
             if self.mana_charges < 1:
                 break
 
+            # only try healing wounded characters
+            if not character.maxHealth-character.health > self.healing_amount:
+                continue
+
             # do the actual healing
             character.heal(self.healing_amount, reason="by the regenerator")
             self.container.addAnimation(

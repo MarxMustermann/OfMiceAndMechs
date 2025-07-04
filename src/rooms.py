@@ -1156,7 +1156,7 @@ class Room:
                                 color = "#3f3"
 
                         bgColor = "#227"
-                        if character.faction != src.gamestate.gamestate.mainChar.faction:
+                        if src.gamestate.gamestate.mainChar and character.faction != src.gamestate.gamestate.mainChar.faction:
                             bgColor = "#722"
                             color = "#f00"
                             char = "EE"

@@ -188,10 +188,6 @@ class SiegeManager(src.items.Item):
         if params["action"] == "faction":
             self.faction = character.faction
 
-        # notify user
-        # DELETEME
-        character.addMessage("set schedule")
-
         # show schedule main menu
         self.scheduleLoop({"character":character})
 

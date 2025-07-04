@@ -107,6 +107,8 @@ class SiegeManager(src.items.Item):
                 else:
                     text += "  "
                 text += str(i+1) + "- tick: "+str(tick)+" - "+str(schedule["type"])+"\n"
+
+            # show the key available to press
             text += "\n"
             text += "\n"
             text += "press c to add new action\n"
@@ -116,6 +118,7 @@ class SiegeManager(src.items.Item):
             text += "press f to set faction\n"
             text += "\n"
 
+            # show UI and wait for user input
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,targetParamName="action")
             submenue.tag = "configure siege manager main"
             character.macroState["submenue"] = submenue

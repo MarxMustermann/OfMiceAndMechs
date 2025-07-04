@@ -196,11 +196,6 @@ class SiegeManager(src.items.Item):
         # show schedule main menu
         self.scheduleLoop({"character":character})
 
-    def orderHunkerDown(self,character):
-        #removeme
-        pass
-        terrain = self.getTerrain()
-
     def restrictOutside(self,character=None):
         '''
         restrict the outside movement

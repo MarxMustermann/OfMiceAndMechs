@@ -111,9 +111,10 @@ class SiegeManager(src.items.Item):
             # show the key available to press
             text += "\n"
             text += "\n"
-            text += "press c to add new action\n"
-            text += "press d to delete action\n"
             text += "press w/s to move cursor\n"
+            text += "press d to delete selected action\n"
+            text += "\n"
+            text += "press c to add new action\n"
             text += "press C to clear schedule\n"
             text += "press f to set faction\n"
             text += "\n"
@@ -175,31 +176,17 @@ class SiegeManager(src.items.Item):
             self.schedule[tick] = {"type":params.get("actionType")}
             character.addMessage("added schedule")
 
-        # show the UI to delete a scheduled action
+        # delete the scheduled action
         if params["action"] in ("d","delete"):
 
-            # get user input on what tick to clear
-            if not "actionTick" in params:
-                options = []
-                for (key,value) in self.schedule.items():
-                    options.append((key,str(key)+" - "+str(value)))
-                submenue = src.menuFolder.selectionMenu.SelectionMenu("select action to delete:\n\n",options,targetParamName="actionTick")
-                character.macroState["submenue"] = submenue
-                character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}
-                return
-
-            # abort on empty input
-            if params["actionTick"] == None:
-                self.scheduleLoop({"character":character})
-                return
-
-            # unschedule the action
-            if params["actionTick"] in self.schedule:
-                del self.schedule[params["actionTick"]]
-
-            # show schedule main menu
-            self.scheduleLoop({"character":character})
-            return
+            # delete action
+            items = list(self.schedule.items())
+            items.sort(key = lambda x: x[0])
+            for (i,(tick,schedule)) in enumerate(items):
+                if i != params["cursor"]:
+                    continue
+                del self.schedule[tick]
+                break
 
         # do shedule clearing
         if params["action"] in ("C","clear"):

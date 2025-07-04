@@ -115,13 +115,17 @@ class SiegeManager(src.items.Item):
 
             # draw the current planned actions
             for scheduledAction in self.getActionList():
-
                 # draw the action
+                line = ""
                 if scheduledAction[0] == params["cursor"]:
-                    text.append("> ")
+                    line += "> "
+                    color = "#fff"
                 else:
-                    text.append("  ")
-                text.append(str(scheduledAction[0]+1) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n")
+                    line += "  "
+                    color = "#bbc"
+                line += str(scheduledAction[0]+1) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n"
+
+                text.append((src.interaction.urwid.AttrSpec(color, "default"), line))
 
             # show the key available to press
             text.append("\n")

@@ -137,8 +137,8 @@ class CollectGlassHearts(src.quests.MetaQuestSequence):
 
             if siegeManager:
                 existingActions = []
-                for actionDefintion in siegeManager.schedule.values():
-                    existingActions.append(actionDefintion["type"])
+                for scheduledAction in siegeManager.getActionList():
+                    existingActions.append(scheduledAction[2]["type"])
 
                 if "restrict outside" not in existingActions or "sound alarms" not in existingActions or "unrestrict outside" not in existingActions or "silence alarms" not in existingActions:
                     quest = src.quests.questMap["ConfigureSiegeManager"]()

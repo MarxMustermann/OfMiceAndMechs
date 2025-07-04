@@ -35,8 +35,8 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
 
         # get the actions already scheduled
         existingActions = []
-        for actionDefintion in siegeManager.schedule.values():
-            existingActions.append(actionDefintion["type"])
+        for scheduledAction in siegeManager.getActionList():
+            existingActions.append(scheduledAction[2]["type"])
 
         # check if the needed actions were scheduled
         if "restrict outside" not in existingActions:
@@ -91,28 +91,107 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                 command += "j"
                 return (None,(command,"open the scheduling menu"))
 
-            # open the menu to schedule a new action
+            # navigate the scheduling menu
             if submenue.tag == "configure siege manager main":
-                menuEntry = "add"
-                counter = 1
-                for option in submenue.options.values():
-                    if option == menuEntry:
-                        index = counter
-                        break
-                    counter += 1
-                command = ""
-                if submenue.selectionIndex > counter:
-                    command += "w"*(submenue.selectionIndex-counter)
-                if submenue.selectionIndex < counter:
-                    command += "s"*(counter-submenue.selectionIndex)
-                command += "j"
+                actionList = siegeManager.getActionList()
+                if actionList:
+
+                    # get the basic data
+                    scheduledAction = actionList[submenue.followUp["params"]["cursor"]]
+                    upperTarget = 2800
+                    lowerTarget = 1500
+                    tick = scheduledAction[1]
+                    command = None
+
+                    # get keystrokes to move slider to the right place
+                    if scheduledAction[2]["type"] == "restrict outside":
+                        if tick <= upperTarget-250:
+                            command = "D"
+                        elif tick <= upperTarget-100:
+                            command = "E"
+                        elif tick <= upperTarget-10:
+                            command = "e"
+                        elif tick <= upperTarget-1:
+                            command = "d"
+                        if tick >= upperTarget+250:
+                            command = "A"
+                        elif tick >= upperTarget+100:
+                            command = "Q"
+                        elif tick >= upperTarget+10:
+                            command = "q"
+                        elif tick >= upperTarget+1:
+                            command = "a"
+
+                    # get keystrokes to move slider to the right place
+                    if scheduledAction[2]["type"] == "sound alarms":
+                        if tick <= upperTarget-250:
+                            command = "D"
+                        elif tick <= upperTarget-100:
+                            command = "E"
+                        elif tick <= upperTarget-10:
+                            command = "e"
+                        elif tick <= upperTarget-1:
+                            command = "d"
+                        if tick >= upperTarget+250:
+                            command = "A"
+                        elif tick >= upperTarget+100:
+                            command = "Q"
+                        elif tick >= upperTarget+10:
+                            command = "q"
+                        elif tick >= upperTarget+1:
+                            command = "a"
+
+                    # get keystrokes to move slider to the right place
+                    if scheduledAction[2]["type"] == "unrestrict outside":
+                        if tick <= lowerTarget-250:
+                            command = "D"
+                        elif tick <= lowerTarget-100:
+                            command = "E"
+                        elif tick <= lowerTarget-10:
+                            command = "e"
+                        elif tick <= lowerTarget-1:
+                            command = "d"
+                        if tick >= lowerTarget+250:
+                            command = "A"
+                        elif tick >= lowerTarget+100:
+                            command = "Q"
+                        elif tick >= lowerTarget+10:
+                            command = "q"
+                        elif tick >= lowerTarget+1:
+                            command = "a"
+
+                    # get keystrokes to move slider to the right place
+                    if scheduledAction[2]["type"] == "silence alarms":
+                        if tick <= lowerTarget-250:
+                            command = "D"
+                        elif tick <= lowerTarget-100:
+                            command = "E"
+                        elif tick <= lowerTarget-10:
+                            command = "e"
+                        elif tick <= lowerTarget-1:
+                            command = "d"
+                        if tick >= lowerTarget+250:
+                            command = "A"
+                        elif tick >= lowerTarget+100:
+                            command = "Q"
+                        elif tick >= lowerTarget+10:
+                            command = "q"
+                        elif tick >= lowerTarget+1:
+                            command = "a"
+
+                    # run the keystrokes to move slider to the right place
+                    if command:
+                        return (None,(command,"select when the action should happen"))
+
+                # open the menu to schedule a new action
+                command = "c"
                 return (None,(command,"add a new action"))
 
             # select the action to configure
             if submenue.tag == "configure siege manager task selection":
                 existingActions = []
-                for actionDefintion in siegeManager.schedule.values():
-                    existingActions.append(actionDefintion["type"])
+                for scheduledAction in siegeManager.getActionList():
+                    existingActions.append(scheduledAction[2]["type"])
 
                 desiredActions = ["restrict outside","sound alarms","unrestrict outside","silence alarms"]
 
@@ -136,32 +215,6 @@ class ConfigureSiegeManager(src.quests.MetaQuestSequence):
                     command += "s"*(counter-submenue.selectionIndex)
                 command += "j"
                 return (None,(command,"add "+toSelect+" action"))
-
-            # select the time to set
-            if submenue.tag == "configure siege manager time selection":
-                targetValue = 0
-                if submenue.followUp["params"].get("actionType") == "restrict outside":
-                    targetValue = 2800
-                if submenue.followUp["params"].get("actionType") == "sound alarms":
-                    targetValue = 2801
-                if submenue.followUp["params"].get("actionType") == "unrestrict outside":
-                    targetValue = 1500
-                if submenue.followUp["params"].get("actionType") == "silence alarms":
-                    targetValue = 1501
-                
-                if submenue.value <= targetValue-100:
-                    return (None,( "D",f"move the slider to tick {targetValue}"))
-                if submenue.value <= targetValue-10:
-                    return (None,( "d",f"move the slider to tick {targetValue}"))
-                if submenue.value <= targetValue-1:
-                    return (None,( ["right"],f"move the slider to tick {targetValue}"))
-                if submenue.value >= targetValue+100:
-                    return (None,( "A",f"move the slider to tick {targetValue}"))
-                if submenue.value >= targetValue+10:
-                    return (None,( "a",f"move the slider to tick {targetValue}"))
-                if submenue.value >= targetValue+1:
-                    return (None,( ["left"],f"move the slider to tick {targetValue}"))
-                return (None,( ["enter"],"actually schedule the action"))
 
             # close generic menues
             return (None,(["esc"],"to close menu"))

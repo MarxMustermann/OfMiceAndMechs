@@ -77,13 +77,9 @@ class SiegeManager(src.items.Item):
             text.append("-" * 35 + "\n")
             actions_by_index = {}
             indices_by_arrow = {}
-            counter = 1
-            for (tick,action) in self.schedule.items():
-                
-                indices_by_arrow[int((tick/3375)*35)] = counter
-                actions_by_index[counter] = action
-
-                counter += 1
+            for scheduledAction in self.getActionList():
+                indices_by_arrow[int((scheduledAction[1]/3375)*35)] = scheduledAction[0]
+                actions_by_index[scheduledAction[0]] = scheduledAction[2]
 
             # draw arrows
             for i in range(35):

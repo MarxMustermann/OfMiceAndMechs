@@ -243,3 +243,25 @@ def test_shrine_usage(character_room):
     for i in range(50):
         character.timeTaken = 0
         character.advance(advanceMacros=True)
+
+def test_regenerator_usage(character_room):
+    (character,room) = character_room
+
+    characterPos = character.getPosition()
+    itemPos = (characterPos[0]-1,characterPos[1],characterPos[2])
+
+    regenerator = src.items.itemMap["Regenerator"]()
+    room.addItem(regenerator,itemPos)
+
+    character.runCommandString(list("Jaj")+["enter"])
+
+    for i in range(50):
+        character.timeTaken = 0
+        character.advance(advanceMacros=True)
+
+    print(regenerator)
+    print(regenerator.activated)
+    
+    for i in range(50):
+        room.advance()
+        src.gamestate.gamestate.tick += 1

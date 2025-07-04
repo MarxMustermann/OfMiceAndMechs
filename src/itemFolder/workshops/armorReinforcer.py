@@ -215,7 +215,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         armor.armorValue += improvement
         character.addMessage(f"You improved the Armor by {improvement!s} to {armor.armorValue}")
 
-    def SetDefaultMaxUpgradeAmount(self, character):
+    def setDefaultMaxUpgradeAmount(self, character):
         """
         spawns the UI for setting the max upgrade amount
         """
@@ -245,7 +245,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         offer options for complex actions
         """
         base: dict = super().getConfigurationOptions(character)
-        base["s"] = ("set upgrade amount", self.SetDefaultMaxUpgradeAmount)
+        base["s"] = ("set upgrade amount", self.setDefaultMaxUpgradeAmount)
         return base
 
 # register the item

@@ -120,13 +120,17 @@ class SiegeManager(src.items.Item):
                     text += "> "
                 else:
                     text += "  "
-                text += str(scheduledAction[0]) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n"
+                text += str(scheduledAction[0]+1) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n"
 
             # show the key available to press
             text += "\n"
             text += "\n"
-            text += "press w/s to move cursor\n"
+            text += "press w/s to move cursor by 1\n"
             text += "press r to delete selected action\n"
+            text += "press a/d to move selected action by 1\n"
+            text += "press q/e to move selected action by 10\n"
+            text += "press Q/E to move selected action by 100\n"
+            text += "press A/D to move selected action by 250\n"
             text += "\n"
             text += "press c to add new action\n"
             text += "press C to clear schedule\n"
@@ -150,6 +154,46 @@ class SiegeManager(src.items.Item):
         if params["action"] == "s":
             params["cursor"] += 1
 
+        # move the selected action
+        if params["action"] in ("a","d","A","D","q","e","Q","E"):
+            # fetch action to move
+            action = None
+            scheduledAction = self.getActionList()[params["cursor"]]
+
+            # remove the action from the old spot
+            self.schedule[scheduledAction[1]].remove(scheduledAction[2])
+            if not self.schedule[scheduledAction[1]]:
+                del self.schedule[scheduledAction[1]]
+
+            # apply the tick change
+            tick = scheduledAction[1]
+            if params["action"] == "a":
+                offset = -1
+            if params["action"] == "d":
+                offset = 1
+            if params["action"] == "q":
+                offset = -10
+            if params["action"] == "e":
+                offset = 10
+            if params["action"] == "Q":
+                offset = -100
+            if params["action"] == "E":
+                offset = 100
+            if params["action"] == "A":
+                offset = -250
+            if params["action"] == "D":
+                offset = 250
+            tick += offset
+            if tick < 0:
+                tick = 15*15*15+tick
+            if tick > 15*15*15:
+                tick = tick-(15*15*15)
+
+            # readd the action to the new slot
+            if not tick in self.schedule:
+                self.schedule[tick] = []
+            self.schedule[tick].append(scheduledAction[2])
+            
         # show ui to schedule new items
         if params["action"] in ("c","add"):
 
@@ -171,6 +215,18 @@ class SiegeManager(src.items.Item):
             if params["actionType"] == None:
                 self.scheduleLoop({"character":character})
                 return
+
+            # assume ticks for actions
+            if params["actionType"] == "unrestrict outside":
+                params["actionTick"] = 1000
+            if params["actionType"] == "silence alarms":
+                params["actionTick"] = 1000
+            if params["actionType"] == "mop up":
+                params["actionTick"] = 1200
+            if params["actionType"] == "restrict outside":
+                params["actionTick"] = 2500
+            if params["actionType"] == "sound alarms":
+                params["actionTick"] = 2500
 
             # get user input on what action to add
             if not "actionTick" in params:

@@ -229,11 +229,11 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         )
         character.macroState["submenue"].followUp = {
             "container": self,
-            "method": "SetterDefaultMaxUpgradeAmount",
+            "method": "setterDefaultMaxUpgradeAmount",
             "params": {"character": character},
         }
 
-    def SetterDefaultMaxUpgradeAmount(self, params):
+    def setterDefaultMaxUpgradeAmount(self, params):
         """
         actually sets the max upgrade amount
         """

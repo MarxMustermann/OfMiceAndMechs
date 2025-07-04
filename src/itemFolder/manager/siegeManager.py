@@ -157,7 +157,6 @@ class SiegeManager(src.items.Item):
         # move the selected action
         if params["action"] in ("a","d","A","D","q","e","Q","E"):
             # fetch action to move
-            action = None
             scheduledAction = self.getActionList()[params["cursor"]]
 
             # remove the action from the old spot
@@ -193,6 +192,15 @@ class SiegeManager(src.items.Item):
             if not tick in self.schedule:
                 self.schedule[tick] = []
             self.schedule[tick].append(scheduledAction[2])
+
+            # set cursor to inserted action
+            counter = 0
+            for checkScheduledAction in self.getActionList():
+                if checkScheduledAction[2] != scheduledAction[2]:
+                    counter += 1
+                    continue
+                params["cursor"] = counter
+                break
             
         # show ui to schedule new items
         if params["action"] in ("c","add"):
@@ -245,8 +253,18 @@ class SiegeManager(src.items.Item):
             tick = int(params["actionTick"])
             if not tick in self.schedule:
                 self.schedule[tick] = []
-            self.schedule[tick].append({"type":params.get("actionType")})
+            action = {"type":params.get("actionType")}
+            self.schedule[tick].append(action)
             character.addMessage("added schedule")
+
+            # set cursor to inserted action
+            counter = 0
+            for scheduledAction in self.getActionList():
+                if scheduledAction[2] != action:
+                    counter += 1
+                    continue
+                params["cursor"] = counter
+                break
 
         # delete the scheduled action
         if params["action"] in ("r","delete"):

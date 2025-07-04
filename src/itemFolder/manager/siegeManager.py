@@ -71,9 +71,10 @@ class SiegeManager(src.items.Item):
         if not "action" in params:
 
             # draw header
-            text = "schedules:\n\n"
-            text+= "0" + " " * 14 + "tick"+ " " * 12 + "3375" + "\n"
-            text+= "-" * 35 + "\n"
+            text = []
+            text.append("schedules:\n\n")
+            text.append("0" + " " * 14 + "tick"+ " " * 12 + "3375" + "\n")
+            text.append("-" * 35 + "\n")
             actions_by_index = {}
             indices_by_arrow = {}
             counter = 1
@@ -87,13 +88,13 @@ class SiegeManager(src.items.Item):
             # draw arrows
             for i in range(35):
                 if i in indices_by_arrow:
-                    text+= "^"
+                    text.append("^")
                 else:
-                    text+= " "
+                    text.append(" ")
             text+= "\n"
             for i in range(35):
                 if i in indices_by_arrow:
-                    text+= "|"
+                    text.append("|")
                 else:
                     text+= " "
             text+= "\n"
@@ -103,42 +104,42 @@ class SiegeManager(src.items.Item):
                 if i in indices_by_arrow:
                     num = indices_by_arrow[i]
                     if num > 9:
-                        text = text[:-1] + str(num)
+                        text.append(str(num)[-1])
                     else:
-                        text+= str(num)
+                        text.append(str(num))
                     num+= 1
                 else:
-                    text+= " "
-            text+= "\n"
-            text+= "\n"
+                    text.append(" ")
+            text.append("\n")
+            text.append("\n")
 
             # draw the current planned actions
             for scheduledAction in self.getActionList():
 
                 # draw the action
                 if scheduledAction[0] == params["cursor"]:
-                    text += "> "
+                    text.append("> ")
                 else:
-                    text += "  "
-                text += str(scheduledAction[0]+1) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n"
+                    text.append("  ")
+                text.append(str(scheduledAction[0]+1) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n")
 
             # show the key available to press
-            text += "\n"
-            text += "\n"
-            text += "press w/s to move cursor by 1\n"
-            text += "press r to delete selected action\n"
-            text += "press a/d to move selected action by 1\n"
-            text += "press q/e to move selected action by 10\n"
-            text += "press Q/E to move selected action by 100\n"
-            text += "press A/D to move selected action by 250\n"
-            text += "\n"
-            text += "press c to add new action\n"
-            text += "press C to clear schedule\n"
-            text += "press f to set faction\n"
-            text += "\n"
+            text.append("\n")
+            text.append("\n")
+            text.append("press w/s to move cursor by 1\n")
+            text.append("press r to delete selected action\n")
+            text.append("press a/d to move selected action by 1\n")
+            text.append("press q/e to move selected action by 10\n")
+            text.append("press Q/E to move selected action by 100\n")
+            text.append("press A/D to move selected action by 250\n")
+            text.append("\n")
+            text.append("press c to add new action\n")
+            text.append("press C to clear schedule\n")
+            text.append("press f to set faction\n")
+            text.append("\n")
 
             # show UI and wait for user input
-            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,targetParamName="action")
+            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu([text],targetParamName="action")
             submenue.tag = "configure siege manager main"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}

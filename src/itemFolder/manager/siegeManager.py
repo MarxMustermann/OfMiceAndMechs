@@ -78,19 +78,33 @@ class SiegeManager(src.items.Item):
             actions_by_index = {}
             indices_by_arrow = {}
             for scheduledAction in self.getActionList():
-                indices_by_arrow[int((scheduledAction[1]/3375)*35)] = scheduledAction[0]
+                arrowNumber = int((scheduledAction[1]/3375)*35)
+                if not arrowNumber in indices_by_arrow:
+                    indices_by_arrow[arrowNumber] = []
+
+                indices_by_arrow[arrowNumber].append(scheduledAction[0])
                 actions_by_index[scheduledAction[0]] = scheduledAction[2]
 
             # draw arrows
             for i in range(35):
                 if i in indices_by_arrow:
-                    text.append("^")
+                    # mark selected arrow
+                    color = "#aab"
+                    for index in indices_by_arrow[i]:
+                        if index == params["cursor"]:
+                            color = "#fff"
+                    text.append((src.interaction.urwid.AttrSpec(color, "default"), "^"))
                 else:
                     text.append(" ")
             text+= "\n"
             for i in range(35):
                 if i in indices_by_arrow:
-                    text.append("|")
+                    # mark selected arrow
+                    color = "#aab"
+                    for index in indices_by_arrow[i]:
+                        if index == params["cursor"]:
+                            color = "#fff"
+                    text.append((src.interaction.urwid.AttrSpec(color, "default"), "|"))
                 else:
                     text+= " "
             text+= "\n"
@@ -98,12 +112,19 @@ class SiegeManager(src.items.Item):
             # draw numbers
             for i in range(35):
                 if i in indices_by_arrow:
-                    num = indices_by_arrow[i]
+                    # mark selected number
+                    color = "#aab"
+                    for index in indices_by_arrow[i]:
+                        if index == params["cursor"]:
+                            color = "#fff"
+
+                    # draw number
+                    num = indices_by_arrow[i][0]
                     if num > 9:
-                        text.append(str(num)[-1])
+                        numRender = str(num+1)[-1]
                     else:
-                        text.append(str(num))
-                    num+= 1
+                        numRender = str(num+1)
+                    text.append((src.interaction.urwid.AttrSpec(color, "default"), numRender))
                 else:
                     text.append(" ")
             text.append("\n")

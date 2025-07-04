@@ -13,7 +13,6 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
     description = "Use it to upgrade armors"
     walkable = False
     bolted = True
-
     def __init__(self):
         super().__init__(display="AR")
 
@@ -23,12 +22,15 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         self.preferredMaxDefense = None
 
     def amountNeededForOneUpgrade(self, current_defense_output):
-        if current_defense_output < D("3"):
-            return 0
-
+        # enforce bounds
         if current_defense_output > D("8"):
             return None
 
+        # handle free upgrades
+        if current_defense_output < D("3"):
+            return 0
+
+        # calculate the actual cost
         amount_ChitinPlates_needed_for_upgrade = 1
         if current_defense_output >= D("4"):
             amount_ChitinPlates_needed_for_upgrade += 1
@@ -39,6 +41,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         if current_defense_output >= D("7"):
             amount_ChitinPlates_needed_for_upgrade += 1
 
+        # return the calculated cost
         return amount_ChitinPlates_needed_for_upgrade
 
     def reinforceArmorHook(self, character):
@@ -82,6 +85,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             params["hitCounter"] = character.numAttackedWithoutResponse
             self.produceItem_wait(params)
             return
+
         # get user input on what armor to upgrade
         if "choice" not in params:
             options = [("Reinforce Equipped Armor", "Reinforce Equipped Armor"), ("Reinforce Armor", "Reinforce Armor")]
@@ -121,26 +125,29 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 character.addMessage("you don't have any Armor in the inventory")
                 return
 
-        improvementAmount = (D("3") - D(armor.armorValue)) if D(armor.armorValue) < D("3") else 0
-        amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(
-            D(armor.armorValue) + D("0.5") + improvementAmount
-        )
+        # assume free upgrades are desired
+        improvementAmount = 0
+        if D(armor.armorValue) < D("3"):
+            improvementAmount = D("3") - D(armor.armorValue)
 
-        if amount_ChitinPlates_needed_for_upgrade is None:
+        # abort and notify user if all upgrades are too expensive
+        if D(armor.armorValue) >= D("8"):
             character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                 "you can't improve the armor further."
             )
             return
 
-        if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates) and improvementAmount == D("0"):
+        # abort and notify the user if no ugrade can be afforded
+        next_upgrade_level = D(armor.armorValue) + D("0.5")
+        amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(next_upgrade_level)
+        if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
             character.addMessage(
                 f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
             )
             character.changed("improved armor")
             return
-        params["armor"] = armor
-        params["chitinPlates"] = chitinPlates
 
+        # define helper function to get total costs
         def amountNeededToLevel(level, allowed=None):
             ChitinPlates_consumed = 0
             base = D(armor.armorValue)
@@ -161,11 +168,15 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             else:
                 return f"You will need {ChitinPlates_consumed} ChitinPlates to be able to upgrade"
 
+        # DELETEME: backward compability
         try:
             self.preferredMaxDefense
         except:
             self.preferredMaxDefense = 6
 
+        # spawn a slider to allow the user to select the amount to upgrade
+        params["armor"] = armor
+        params["chitinPlates"] = chitinPlates
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "choose the Defense level to upgrade to",
             defaultValue=max(
@@ -205,6 +216,10 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         character.addMessage(f"You improved the Armor by {improvement!s} to {armor.armorValue}")
 
     def SetDefaultMaxUpgradeAmount(self, character):
+        """
+        spawns the UI for setting the max upgrade amount
+        """
+
         character.macroState["submenue"] = src.menuFolder.sliderMenu.SliderMenu(
             "set the preferred max amount of defense to upgrade to",
             self.preferredMaxDefense if self.preferredMaxDefense else 3,
@@ -219,12 +234,19 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
         }
 
     def SetterDefaultMaxUpgradeAmount(self, params):
+        """
+        actually sets the max upgrade amount
+        """
         character = params["character"]
         self.preferredMaxDefense = params["value"]
 
     def getConfigurationOptions(self, character):
+        """
+        offer options for complex actions
+        """
         base: dict = super().getConfigurationOptions(character)
         base["s"] = ("set upgrade amount", self.SetDefaultMaxUpgradeAmount)
         return base
 
+# register the item
 src.items.addType(ArmorReinforcer)

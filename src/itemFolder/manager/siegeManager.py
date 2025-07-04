@@ -116,12 +116,6 @@ class SiegeManager(src.items.Item):
             text += "press f to set faction\n"
             text += "\n"
 
-            #index = 0
-            #options.append(("exit",f"close schedule"))
-            #options.append(("add",f"schedule action"))
-            #options.append(("delete",f"delete action"))
-            #options.append(("clear",f"clear schedule"))
-            #options.append(("faction",f"set faction"))
             submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,targetParamName="action")
             submenue.tag = "configure siege manager main"
             character.macroState["submenue"] = submenue

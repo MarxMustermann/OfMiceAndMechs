@@ -116,7 +116,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
             next_upgrade_level = D(armor.armorValue) + D("0.5")
             amount_ChitinPlates_needed_for_upgrade = self.amountNeededForOneUpgrade(next_upgrade_level)
             if amount_ChitinPlates_needed_for_upgrade > len(chitinPlates):
-                character.addMessage(
+                character.macroState["submenue"] = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(
                     f"you can't improve your armor.\nYou need {amount_ChitinPlates_needed_for_upgrade} ChitinPlates to upgrade your armor."
                 )
                 character.changed("improved armor")

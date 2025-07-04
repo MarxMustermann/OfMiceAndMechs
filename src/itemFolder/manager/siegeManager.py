@@ -74,7 +74,6 @@ class SiegeManager(src.items.Item):
             text = []
             text.append("schedules:\n\n")
             text.append("0" + " " * 14 + "tick"+ " " * 12 + "3375" + "\n")
-            text.append("-" * 35 + "\n")
             actions_by_index = {}
             indices_by_arrow = {}
             for scheduledAction in self.getActionList():
@@ -84,6 +83,19 @@ class SiegeManager(src.items.Item):
 
                 indices_by_arrow[arrowNumber].append(scheduledAction[0])
                 actions_by_index[scheduledAction[0]] = scheduledAction[2]
+
+            # draw line
+            for i in range(35):
+                if i in indices_by_arrow:
+                    # mark selected arrow
+                    color = "#aab"
+                    for index in indices_by_arrow[i]:
+                        if index == params["cursor"]:
+                            color = "#fff"
+                    text.append((src.interaction.urwid.AttrSpec(color, "default"), "+"))
+                else:
+                    text.append((src.interaction.urwid.AttrSpec("#aab", "default"), "-"))
+            text.append("\n")
 
             # draw arrows
             for i in range(35):

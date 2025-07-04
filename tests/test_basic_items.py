@@ -259,9 +259,6 @@ def test_regenerator_usage(character_room):
         character.timeTaken = 0
         character.advance(advanceMacros=True)
 
-    print(regenerator)
-    print(regenerator.activated)
-    
     for i in range(50):
         room.advance()
         src.gamestate.gamestate.tick += 1

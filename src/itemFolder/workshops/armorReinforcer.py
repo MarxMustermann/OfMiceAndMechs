@@ -122,7 +122,7 @@ class ArmorReinforcer(src.items.itemMap["WorkShop"]):
                 character.changed("improved armor")
                 return
 
-            # define helper function to get total costs
+            # define callback to show total costs
             def amountNeededToLevel(level, allowed=None):
                 ChitinPlates_consumed = 0
                 base = D(armor.armorValue)

@@ -70,7 +70,7 @@ class Regenerator(src.items.Item):
         for character in self.container.characters:
             
             # abort when running out of mana
-            if mana_charges < 1:
+            if self.mana_charges < 1:
                 break
 
             # do the actual healing
@@ -80,7 +80,7 @@ class Regenerator(src.items.Item):
             )
 
             # pay mana cost
-            mana_charges -= 1
+            self.mana_charges -= 1
 
 # registers class
 src.items.addType(Regenerator)

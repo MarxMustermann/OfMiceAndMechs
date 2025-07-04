@@ -42,11 +42,11 @@ class SiegeManager(src.items.Item):
         show the scheduling menu
         '''
 
+        # upack the parameters
+        character = params["character"]
+
         # get user input on what the basic activity is
         if not "action" in params:
-
-            # upack the parameters
-            character = params["character"]
 
             # draw header
             text = "schedules:\n\n"
@@ -97,14 +97,13 @@ class SiegeManager(src.items.Item):
                 text += str(i+1) + "- tick: "+str(tick)+" - "+str(schedule["type"])+"\n"
             text += "\n"
 
-            options = []
-            index = 0
-            options.append(("exit",f"close schedule"))
-            options.append(("add",f"schedule action"))
-            options.append(("delete",f"delete action"))
-            options.append(("clear",f"clear schedule"))
-            options.append(("faction",f"set faction"))
-            submenue = src.menuFolder.selectionMenu.SelectionMenu(text,options,targetParamName="action")
+            #index = 0
+            #options.append(("exit",f"close schedule"))
+            #options.append(("add",f"schedule action"))
+            #options.append(("delete",f"delete action"))
+            #options.append(("clear",f"clear schedule"))
+            #options.append(("faction",f"set faction"))
+            submenue = src.menuFolder.oneKeystrokeMenu.OneKeystrokeMenu(text,targetParamName="action")
             submenue.tag = "configure siege manager main"
             character.macroState["submenue"] = submenue
             character.macroState["submenue"].followUp = {"container":self,"method":"scheduleLoop","params":params}

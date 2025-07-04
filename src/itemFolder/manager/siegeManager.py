@@ -37,6 +37,20 @@ class SiegeManager(src.items.Item):
         '''
         self.scheduleLoop({"character":character})
 
+    def getActionList(self):
+        '''
+        get an ordered list of scheduled actions
+        '''
+        actionList = []
+        items = list(self.schedule.items())
+        items.sort(key = lambda x: x[0])
+        counter = 0
+        for (i,(tick,tickList)) in enumerate(items):
+            for action in tickList:
+                actionList.append((counter,tick,action))
+                counter += 1
+        return actionList
+
     def scheduleLoop(self,params):
         '''
         show the scheduling menu
@@ -48,8 +62,8 @@ class SiegeManager(src.items.Item):
         # enforce cursor bounds
         if not "cursor" in params:
             params["cursor"] = 0
-        if params["cursor"] >= len(self.schedule):
-            params["cursor"] = len(self.schedule)-1
+        if params["cursor"] >= len(self.getActionList()):
+            params["cursor"] = len(self.getActionList())-1
         if params["cursor"] < 0:
             params["cursor"] = 0
 
@@ -99,14 +113,14 @@ class SiegeManager(src.items.Item):
             text+= "\n"
 
             # draw the current planned actions
-            items = list(self.schedule.items())
-            items.sort(key = lambda x: x[0])
-            for (i,(tick,schedule)) in enumerate(items):
-                if i == params["cursor"]:
+            for scheduledAction in self.getActionList():
+
+                # draw the action
+                if scheduledAction[0] == params["cursor"]:
                     text += "> "
                 else:
                     text += "  "
-                text += str(i+1) + "- tick: "+str(tick)+" - "+str(schedule["type"])+"\n"
+                text += str(scheduledAction[0]) + "- tick: "+str(scheduledAction[1])+" - "+str(scheduledAction[2]["type"])+"\n"
 
             # show the key available to press
             text += "\n"
@@ -173,19 +187,21 @@ class SiegeManager(src.items.Item):
 
             # schedule the action
             tick = int(params["actionTick"])
-            self.schedule[tick] = {"type":params.get("actionType")}
+            if not tick in self.schedule:
+                self.schedule[tick] = []
+            self.schedule[tick].append({"type":params.get("actionType")})
             character.addMessage("added schedule")
 
         # delete the scheduled action
         if params["action"] in ("r","delete"):
 
             # delete action
-            items = list(self.schedule.items())
-            items.sort(key = lambda x: x[0])
-            for (i,(tick,schedule)) in enumerate(items):
-                if i != params["cursor"]:
+            for scheduledAction in self.getActionList():
+                if params["cursor"] != scheduledAction[0]:
                     continue
-                del self.schedule[tick]
+                self.schedule[scheduledAction[1]].remove(scheduledAction[2])
+                if not self.schedule[scheduledAction[1]]:
+                    del self.schedule[scheduledAction[1]]
                 break
 
         # do shedule clearing
@@ -341,20 +357,21 @@ class SiegeManager(src.items.Item):
 
         # get action for that tick
         tick = src.gamestate.gamestate.tick%(15*15*15)
-        event = self.schedule.get(tick)
-
+        actions = self.schedule.get(tick)
+        
         # run action
-        if event:
-            if event["type"] == "restrict outside":
-                self.restrictOutside(None)
-            if event["type"] == "unrestrict outside":
-                self.unrestrictOutside(None)
-            if event["type"] == "mop up":
-                self.orderMopUp(None)
-            if event["type"] == "sound alarms":
-                self.soundAlarms()
-            if event["type"] == "silence alarms":
-                self.silenceAlarms()
+        if actions:
+            for event in actions:
+                if event["type"] == "restrict outside":
+                    self.restrictOutside(None)
+                if event["type"] == "unrestrict outside":
+                    self.unrestrictOutside(None)
+                if event["type"] == "mop up":
+                    self.orderMopUp(None)
+                if event["type"] == "sound alarms":
+                    self.soundAlarms()
+                if event["type"] == "silence alarms":
+                    self.silenceAlarms()
 
         # retrigger next tick to form a loop
         event = src.events.RunCallbackEvent(src.gamestate.gamestate.tick+1)

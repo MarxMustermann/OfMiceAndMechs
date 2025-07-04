@@ -112,7 +112,7 @@ class SiegeManager(src.items.Item):
             text += "\n"
             text += "\n"
             text += "press w/s to move cursor\n"
-            text += "press d to delete selected action\n"
+            text += "press r to delete selected action\n"
             text += "\n"
             text += "press c to add new action\n"
             text += "press C to clear schedule\n"
@@ -177,7 +177,7 @@ class SiegeManager(src.items.Item):
             character.addMessage("added schedule")
 
         # delete the scheduled action
-        if params["action"] in ("d","delete"):
+        if params["action"] in ("r","delete"):
 
             # delete action
             items = list(self.schedule.items())

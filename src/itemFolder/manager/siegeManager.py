@@ -45,7 +45,15 @@ class SiegeManager(src.items.Item):
         # upack the parameters
         character = params["character"]
 
-        # get user input on what the basic activity is
+        # enforce cursor bounds
+        if not "cursor" in params:
+            params["cursor"] = 0
+        if params["cursor"] >= len(self.schedule):
+            params["cursor"] = len(self.schedule)-1
+        if params["cursor"] < 0:
+            params["cursor"] = 0
+
+        # show state and get user input
         if not "action" in params:
 
             # draw header
@@ -94,7 +102,18 @@ class SiegeManager(src.items.Item):
             items = list(self.schedule.items())
             items.sort(key = lambda x: x[0])
             for (i,(tick,schedule)) in enumerate(items):
+                if i == params["cursor"]:
+                    text += "> "
+                else:
+                    text += "  "
                 text += str(i+1) + "- tick: "+str(tick)+" - "+str(schedule["type"])+"\n"
+            text += "\n"
+            text += "\n"
+            text += "press c to add new action\n"
+            text += "press d to delete action\n"
+            text += "press w/s to move cursor\n"
+            text += "press C to clear schedule\n"
+            text += "press f to set faction\n"
             text += "\n"
 
             #index = 0
@@ -110,11 +129,17 @@ class SiegeManager(src.items.Item):
             return
 
         # close menu if requested
-        if params["action"] in ("exit",None):
+        if params["action"] in ("esc","exit",None):
             return
 
+        # move cursor
+        if params["action"] == "w":
+            params["cursor"] -= 1
+        if params["action"] == "s":
+            params["cursor"] += 1
+
         # show ui to schedule new items
-        if params["action"] == "add":
+        if params["action"] in ("c","add"):
 
             # get user input on what action to add
             if not "actionType" in params:
@@ -154,7 +179,7 @@ class SiegeManager(src.items.Item):
             character.addMessage("added schedule")
 
         # show the UI to delete a scheduled action
-        if params["action"] == "delete":
+        if params["action"] in ("d","delete"):
 
             # get user input on what tick to clear
             if not "actionTick" in params:
@@ -180,16 +205,15 @@ class SiegeManager(src.items.Item):
             return
 
         # do shedule clearing
-        if params["action"] == "clear":
+        if params["action"] in ("C","clear"):
             self.schedule = {}
 
-        # set faction, wtf?
-        # DELETEME
-        if params["action"] == "faction":
+        # set faction, move to complex
+        if params["action"] == ("f","faction"):
             self.faction = character.faction
 
         # show schedule main menu
-        self.scheduleLoop({"character":character})
+        self.scheduleLoop({"character":character,"cursor":params["cursor"]})
 
     def restrictOutside(self,character=None):
         '''

@@ -2,8 +2,10 @@ import src
 
 
 class DrawWalkingSpace(src.quests.MetaQuestSequence):
+    '''
+    quest to draw walkingspaces
+    '''
     type = "DrawWalkingSpace"
-
     def __init__(self, description="draw walking space", creator=None, targetPosition=None, targetPositionBig=None,tryHard=False,reason=None):
         questList = []
         super().__init__(questList, creator=creator)
@@ -15,16 +17,27 @@ class DrawWalkingSpace(src.quests.MetaQuestSequence):
         self.reason = reason
 
     def triggerCompletionCheck(self,character=None):
-        if not character:
-            return None
+        '''
+        check for quest completion and end quest
+        '''
 
+        # abort on weird state
+        if not character:
+            return False
+
+        # end quest if thw walkingspace is drawn
         room = character.getTerrain().getRoomByPosition(self.targetPositionBig)[0]
         if self.targetPosition in room.walkingSpace:
             self.postHandler()
             return True
-        return None
+
+        # continue working otherwise
+        return False
 
     def generateTextDescription(self):
+        '''
+        generate a text description
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -46,6 +59,9 @@ Try as hard as you can to achieve this.
         return text
 
     def getNextStep(self,character=None,ignoreCommands=False, dryRun=True):
+        '''
+        generate the next step to solve the quest
+        '''
         if not self.subQuests:
             rooms = character.getTerrain().getRoomByPosition(self.targetPositionBig)
             if not rooms:

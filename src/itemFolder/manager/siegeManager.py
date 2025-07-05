@@ -435,7 +435,9 @@ class SiegeManager(src.items.Item):
         terrain = self.getTerrain()
         foundAlarm = False
         for room in terrain.rooms:
-            if room.getItemByType("AlarmBell"):
+            for alarmbell in room.getItemsByType("AlarmBell"):
+                if not alarmbell.bolted:
+                    continue
                 room.alarm = True
                 foundAlarm = True
 

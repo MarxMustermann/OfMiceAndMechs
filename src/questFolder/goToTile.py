@@ -347,6 +347,7 @@ The target tile is {direction[4:]}
                 self.fail("invalid step in tile path")
             return (None,None)
         else:
+            # actually enter the tile
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
                 return (None,("w","enter the tile"))
             if character.xPosition%15 == 7 and character.yPosition%15 == 0:
@@ -356,6 +357,7 @@ The target tile is {direction[4:]}
             if character.xPosition%15 == 0 and character.yPosition%15 == 7:
                 return (None,("d","enter the tile"))
 
+            # fight nearby enemies
             # TODO: reenable random
             if not self.paranoid:
                 if random.random() < 1.5 and "fighting" in self.character.skills:
@@ -371,12 +373,14 @@ The target tile is {direction[4:]}
                             quest = src.quests.questMap["Fight"]()
                             return ([quest],None)
 
+            # chack and regenerate path
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
                     self.fail()
                     return (None,None)
 
+            # go to tile edge
             if self.path[0] == (0,1):
                 if character.xPosition%15 == 7 and character.yPosition%15 == 13:
                     return (None,("s","exit the tile"))
@@ -401,6 +405,7 @@ The target tile is {direction[4:]}
                 quest = src.quests.questMap["GoToPosition"](targetPosition=(1,7,0),description="go to tile edge",reason="reach the tiles edge")
                 quest.generatePath(character)
                 return ([quest],None)
+
             return None
 
 

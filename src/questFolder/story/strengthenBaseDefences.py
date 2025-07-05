@@ -107,6 +107,15 @@ class StrengthenBaseDefences(src.quests.MetaQuestSequence):
             quest = src.quests.questMap["ConvertToTrapRoom"](roomPosition=random.choice(convertableRooms))
             return ([quest],None)
 
+        # subquest to help complete drawings of trap rooms 
+        for room in terrain.rooms:
+            if not room.tag in ("trapRoom",):
+                continue
+            if not room.floorPlan:
+                continue
+            quest = src.quests.questMap["DrawFloorPlan"](targetPosition=room.getPosition(),tryHard=True)
+            return ([quest],None)
+
         # add subquest to built a rooom already scheduled
         if plannedTraproomPositions:
             quest = src.quests.questMap["BuildRoom"](targetPosition=random.choice(plannedTraproomPositions),tryHard=True)

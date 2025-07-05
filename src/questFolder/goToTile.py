@@ -4,10 +4,23 @@ import src
 
 
 class GoToTile(src.quests.MetaQuestSequence):
+    '''
+    quest to go to a certain tile
+
+    Parameters:
+        description: the description to be shown in the UI
+        creator: the entitiy creating this quest (obsolete?)
+        targetPosition: the position to go to
+        lifetime: how long the quest will stay valid
+        paranoid: be very carful
+        showCoordinates: unclear (obsolete?)
+        reason: the reason for assigning the quest shown in the UI
+        abortHealthPercentage: abort quest on this threshold
+        story: optional story text for the description
+        allowMapMenu: allow solver to use the map menu
+    '''
     type = "GoToTile"
-
     def __init__(self, description="go to tile", creator=None, targetPosition=None, lifetime=None, paranoid=False, showCoordinates=True,reason=None,abortHealthPercentage=0, story=None, allowMapMenu=True):
-
         if targetPosition:
             if targetPosition[0] < 1 or targetPosition[0] > 13:
                 raise ValueError(f"target position {targetPosition} out of range")
@@ -30,6 +43,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         self.allowMapMenu = allowMapMenu
 
     def handleChangedTile(self):
+        '''
+        handle the charactar having moved from tile to tile
+        '''
         if not self.active:
             return
 
@@ -64,6 +80,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         return
 
     def handleMoved(self,extraInfo):
+        '''
+        handle the character having moved
+        '''
         if not self.active:
             return
 
@@ -76,6 +95,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         #self.generateSubquests(self.character)
 
     def getQuestMarkersTile(self,character):
+        '''
+        return quest markers for the minimap
+        '''
         if self.character.xPosition%15 == 0 or  self.character.yPosition%15 == 0 or self.character.xPosition%15 == 14 or self.character.yPosition%15 == 14:
             return []
         result = super().getQuestMarkersTile(character)
@@ -92,6 +114,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         return result
 
     def assignToCharacter(self, character):
+        '''
+        assign quest to character
+        '''
         if self.character:
             return None
 
@@ -101,6 +126,9 @@ class GoToTile(src.quests.MetaQuestSequence):
         return super().assignToCharacter(character)
 
     def generateTextDescription(self):
+        '''
+        generate a description of this quest
+        '''
         reason = ""
         if self.reason:
             reason = f", to {self.reason}"
@@ -136,6 +164,9 @@ The target tile is {direction[4:]}
         return text
 
     def triggerCompletionCheck(self, character=None):
+        '''
+        check if the quest is completed and end it
+        '''
         if not self.targetPosition:
             return False
         if not character:
@@ -152,6 +183,9 @@ The target tile is {direction[4:]}
         return False
 
     def isPathSane(self,character):
+        '''
+        check if path is still ok
+        '''
         if not self.path:
             return False
 
@@ -166,9 +200,15 @@ The target tile is {direction[4:]}
         return False
 
     def getNextStep(self,character=None,ignoreCommands=False,dryRun=True):
+        '''
+        generate the next step towards solving the quest
+        '''
+
+        # do nothing on weird state
         if character is None:
             return (None,None)
 
+        # validate the boundaries
         if self.targetPosition[0] < 1 or self.targetPosition[0] > 13:
             if not dryRun:
                 self.fail("target position out of range")
@@ -178,6 +218,7 @@ The target tile is {direction[4:]}
                 self.fail("target position out of range")
             return (None,None)
 
+        # move using the room menu
         if character.macroState["submenue"] and isinstance(character.macroState["submenue"],src.menuFolder.mapMenu.MapMenu) and not ignoreCommands:
             if self.targetPosition == (7,7,0):
                 return (None,("c","auto move to tile"))
@@ -195,14 +236,17 @@ The target tile is {direction[4:]}
             command += "j"
             return (None,(command,"auto move to tile"))
 
+        # close other menus
         if not ignoreCommands and character.macroState.get("submenue"):
             return (None,(["esc"],"exit submenu"))
 
+        # abort quest when too hurt
         if character.health < character.maxHealth*self.abortHealthPercentage:
             if not dryRun:
                 self.fail("low health")
             return (None,None)
 
+        # enter terrains properly
         bigPos = character.getBigPosition()
         if bigPos[0] == 0:
             return (None,("d","enter terrain"))
@@ -213,12 +257,15 @@ The target tile is {direction[4:]}
         if bigPos[1] == 14:
             return (None,("w","enter terrain"))
 
+        # generate path
         if not self.path:
             self.generatePath(character)
 
+        # do nothing on invalid path. (performance issue?)
         if not self.path:
             return (None,None)
 
+        # open map menu
         if self.allowMapMenu and len(self.path) > 3:
             menuCommand = "g"
             if "runaction" in character.interactionState:
@@ -230,11 +277,15 @@ The target tile is {direction[4:]}
             offset = (self.targetPosition[0]-currentPos[0], self.targetPosition[1]-currentPos[1], 0)
             return (None,(menuCommand+"m"+"d"*offset[0]+"a"*(-offset[0])+"s"*offset[1]+"w"*(-offset[1])+"j","use fast travel to reach your destination"))
 
+        # do nothing if there is a suqbquest
         if self.subQuests:
             return (None,None)
 
+        # handle the actual movement
         if isinstance(character.container,src.rooms.Room):
             # TODO: reenable random
+
+            # fight nearby enemies
             if not self.paranoid:
                 if random.random() < 1.5 and "fighting" in self.character.skills:
                     for otherCharacter in character.container.characters:
@@ -253,12 +304,14 @@ The target tile is {direction[4:]}
                         quest = src.quests.questMap["Fight"]()
                         return ([quest],None)
 
+            # check path and fail if appropriate
             if not self.isPathSane(character):
                 self.generatePath(character)
                 if not self.path:
                     self.fail()
                     return (None,None)
 
+            # exit the room
             if self.path[0] == (0,1):
                 if character.getPosition() == (6,12,0):
                     return (None,("ss","exit the room"))
@@ -287,6 +340,7 @@ The target tile is {direction[4:]}
                 quest.assignToCharacter(character)
                 quest.generatePath(character)
                 return ([quest],None)
+
             return None
         else:
             if character.xPosition%15 == 7 and character.yPosition%15 == 14:
